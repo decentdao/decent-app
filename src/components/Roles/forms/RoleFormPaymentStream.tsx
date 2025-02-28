@@ -244,35 +244,33 @@ export function RoleFormPaymentStream({ formIndex }: { formIndex: number }) {
             <PaymentCancelHint />
           </Show>
         )}
-        {(canBeCancelled || !streamId) && (
-          <Flex justifyContent="flex-end">
-            {!streamId && (
+        <Flex justifyContent="flex-end">
+          {!streamId && (
+            <Button
+              isDisabled={!!roleEditingPaymentsErrors}
+              onClick={() => {
+                setFieldValue('roleEditing.roleEditingPaymentIndex', undefined);
+                setFieldValue(`roleEditing.payments.${formIndex}.isValidatedAndSaved`, true);
+              }}
+            >
+              {t('savePayment')}
+            </Button>
+          )}
+          {canBeCancelled && (
+            <Show above="md">
               <Button
-                isDisabled={!!roleEditingPaymentsErrors}
-                onClick={() => {
-                  setFieldValue('roleEditing.roleEditingPaymentIndex', undefined);
-                  setFieldValue(`roleEditing.payments.${formIndex}.isValidatedAndSaved`, true);
-                }}
+                color="red-1"
+                borderColor="red-1"
+                _hover={{ color: 'red-0', borderColor: 'red-0' }}
+                variant="secondary"
+                leftIcon={<Trash />}
+                onClick={confirmCancelPayment}
               >
-                {t('savePayment')}
+                {t('cancelPayment')}
               </Button>
-            )}
-            {canBeCancelled && (
-              <Show above="md">
-                <Button
-                  color="red-1"
-                  borderColor="red-1"
-                  _hover={{ color: 'red-0', borderColor: 'red-0' }}
-                  variant="secondary"
-                  leftIcon={<Trash />}
-                  onClick={confirmCancelPayment}
-                >
-                  {t('cancelPayment')}
-                </Button>
-              </Show>
-            )}
-          </Flex>
-        )}
+            </Show>
+          )}
+        </Flex>
       </Box>
 
       <Show below="md">
