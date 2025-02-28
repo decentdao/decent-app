@@ -254,7 +254,7 @@ export function RoleFormPaymentStream({ formIndex }: { formIndex: number }) {
                   setFieldValue(`roleEditing.payments.${formIndex}.isValidatedAndSaved`, true);
                 }}
               >
-                {t('save')}
+                {t('savePayment')}
               </Button>
             )}
             {canBeCancelled && (
