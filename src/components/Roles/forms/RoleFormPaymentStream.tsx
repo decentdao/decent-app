@@ -1,7 +1,7 @@
-import { Alert, Box, Button, Flex, FormControl, Icon, Show, Text } from '@chakra-ui/react';
+import { Alert, Box, Button, Flex, FormControl, Icon, Show, Switch, Text } from '@chakra-ui/react';
 import { ArrowRight, Info, Trash } from '@phosphor-icons/react';
 import { addDays } from 'date-fns';
-import { Field, FieldProps, FormikErrors, useFormikContext } from 'formik';
+import { Field, FieldAttributes, FieldProps, FormikErrors, useFormikContext } from 'formik';
 import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DETAILS_BOX_SHADOW } from '../../../constants/common';
@@ -128,7 +128,7 @@ export function RoleFormPaymentStream({ formIndex }: { formIndex: number }) {
   );
 
   const canBeCancelled = existingPayment
-    ? existingPayment.isCancellable() && !payment?.isCancelling
+    ? existingPayment.canUserCancel() && !payment?.isCancelling
     : false;
 
   const cancelModal = useDecentModal(ModalType.NONE);
@@ -214,6 +214,30 @@ export function RoleFormPaymentStream({ formIndex }: { formIndex: number }) {
           >
             Set 10 min stream
           </Button>
+        )}
+        {!streamId && (
+          <Flex
+            align="flex-end"
+            alignItems="center"
+            gap="1.5rem"
+          >
+            <SectionTitle
+              title={t('cancelable')}
+              tooltipContent={t('cancelableSubTitle')}
+            />
+            <Field name={`roleEditing.payments.${formIndex}.cancelable`}>
+              {({ field }: FieldAttributes<FieldProps>) => (
+                <Switch
+                  {...field}
+                  isChecked={field.value}
+                  isDisabled={!!streamId}
+                  my={4}
+                  size="md"
+                  variant="secondary"
+                />
+              )}
+            </Field>
+          </Flex>
         )}
         {canBeCancelled && (
           <Show above="md">

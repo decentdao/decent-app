@@ -136,6 +136,7 @@ interface PaymentDetailsTopProps {
     isCancelled: boolean;
     isCancelling?: boolean;
     isStreaming: () => boolean;
+    isCancelableStream: boolean;
   };
   onClick?: () => void;
   isActiveStream: boolean;
@@ -186,6 +187,20 @@ function PaymentDetailsTop({ payment, onClick, isActiveStream }: PaymentDetailsT
                 borderRadius="lg"
               >
                 {t('cancelled')}
+              </Tag>
+            )}
+            {!payment.isCancelableStream && (
+              <Tag
+                variant="outlined"
+                color="yellow-0"
+                outline="unset"
+                border="1px solid"
+                py={0}
+                px={2}
+                height={6}
+                borderRadius="lg"
+              >
+                {t('nonCancelable')}
               </Tag>
             )}
             <GreenStreamingDot isStreaming={payment.isStreaming()} />
@@ -301,8 +316,8 @@ interface RolePaymentDetailsProps {
     cliffDate?: Date;
     isCancelled: boolean;
     isCancelling?: boolean;
+    isCancelableStream: boolean;
     isStreaming: () => boolean;
-    isCancellable: () => boolean;
     withdrawableAmount?: bigint;
   };
   onClick?: () => void;

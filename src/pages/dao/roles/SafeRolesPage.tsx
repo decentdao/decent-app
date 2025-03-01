@@ -100,7 +100,7 @@ export function SafeRolesPage() {
                       : roleHat.wearerAddress
                   }
                   handleRoleClick={() => handleNavigateToRole(roleHat.id)}
-                  paymentsCount={roleHat.payments?.filter(p => p.isStreaming()).length || undefined}
+                  paymentsCount={roleHat.payments.filter(p => p.isStreaming()).length || undefined}
                   isCurrentTermActive={roleHat.roleTerms.currentTerm?.isActive}
                 />
               );

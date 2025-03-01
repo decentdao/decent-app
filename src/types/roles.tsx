@@ -37,7 +37,7 @@ export interface DecentRoleHat extends Omit<DecentHat, 'smartAddress'> {
   smartAddress?: Address;
   roleTerms: DecentRoleHatTerms;
   canCreateProposals: boolean;
-  payments?: SablierPayment[];
+  payments: SablierPayment[];
   isTermed: boolean;
   eligibility?: Address;
 }
@@ -64,16 +64,17 @@ export interface SablierPayment {
   endDate: Date;
   cliffDate: Date | undefined;
   isStreaming: () => boolean;
-  isCancellable: () => boolean;
+  canUserCancel: () => boolean;
   withdrawableAmount: bigint;
   isCancelled: boolean;
 }
 
 export interface SablierPaymentFormValues extends Partial<SablierPayment> {
   isStreaming: () => boolean;
-  isCancellable: () => boolean;
-  isCancelling?: boolean;
+  canUserCancel: () => boolean;
+  isCancelling: boolean;
   isValidatedAndSaved?: boolean;
+  cancelable: boolean;
 }
 
 export interface RoleProps {
@@ -183,7 +184,7 @@ export interface RoleHatFormValue
   // Not a user-input field.
   // `resolvedWearer` is dynamically set from the resolved address of `wearer`, in case it's an ENS name.
   resolvedWearer?: Address;
-  payments?: SablierPaymentFormValues[];
+  payments: SablierPaymentFormValues[];
   // form specific state
   editedRole?: EditedRole;
   roleEditingPaymentIndex?: number;
@@ -220,6 +221,7 @@ export type PreparedNewStreamData = {
   cliffDateTs: number;
   totalAmount: bigint;
   assetAddress: Address;
+  cancelable: boolean;
 };
 
 export interface RoleDetailsDrawerProps {

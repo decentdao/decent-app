@@ -18,6 +18,7 @@ export interface Stream {
   id: string;
   startTime: string;
   endTime: string;
+  cancelable: boolean;
   canceled: boolean;
   category: string;
   cliff: boolean;
@@ -39,6 +40,7 @@ export const StreamsQuery = `query StreamsQuery($recipientAddress: Bytes) {
     startTime
     endTime
     canceled
+    cancelable
     category
     cliff
     cliffTime

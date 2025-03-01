@@ -31,7 +31,7 @@ const useRolesStore = create<RolesStore>()((set, get) => ({
   getPayment: (hatId, streamId) => {
     const hat = get().getHat(hatId);
 
-    if (!hat || !hat.payments) {
+    if (!hat) {
       return null;
     }
 
@@ -86,7 +86,7 @@ const useRolesStore = create<RolesStore>()((set, get) => ({
           return {
             ...roleHat,
             payments: roleHat.isTermed
-              ? roleHat.payments?.filter(payment => filteredStreamIds.includes(payment.streamId))
+              ? roleHat.payments.filter(payment => filteredStreamIds.includes(payment.streamId))
               : roleHat.payments,
           };
         }),
@@ -118,7 +118,7 @@ const useRolesStore = create<RolesStore>()((set, get) => ({
           if (roleHat.id !== hatId) return roleHat;
           return {
             ...roleHat,
-            payments: roleHat.payments?.map(p =>
+            payments: roleHat.payments.map(p =>
               p.streamId === streamId ? { ...p, withdrawableAmount: newWithdrawableAmount } : p,
             ),
           };

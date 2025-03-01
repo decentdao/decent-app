@@ -23,13 +23,15 @@ export function SafeRoleEditDetailsPage() {
   const { safe } = useDaoInfoStore();
   const { addressPrefix } = useNetworkConfigStore();
   const navigate = useNavigate();
-  const { values, setFieldValue, touched, setTouched } = useFormikContext<RoleFormValues>();
+
+  const editRolesFormikContext = useFormikContext<RoleFormValues>();
+  const { values, setFieldValue, touched, setTouched } = editRolesFormikContext;
+
   const [searchParams] = useSearchParams();
   const hatEditingId = searchParams.get('hatId');
 
   const [wasRoleActuallyEdited, setWasRoleActuallyEdited] = useState(false);
 
-  const editRolesFormikContext = useFormikContext<RoleFormValues>();
   const blocker = useNavigationBlocker({
     roleEditDetailsNavigationBlockerParams: { wasRoleActuallyEdited, ...editRolesFormikContext },
   });
