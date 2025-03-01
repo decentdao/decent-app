@@ -247,6 +247,22 @@ export function RoleFormPaymentStream({ formIndex }: { formIndex: number }) {
         <Flex justifyContent="flex-end">
           {!streamId && (
             <Button
+              variant="tertiary"
+              onClick={() => {
+                setFieldValue('roleEditing.roleEditingPaymentIndex', undefined);
+                // @todo: fix this doesn't work
+                const paymentIndex = values.roleEditing?.roleEditingPaymentIndex;
+                if (paymentIndex !== undefined) {
+                  setFieldValue(`roleEditing.payments.${paymentIndex}`, undefined);
+                }
+              }}
+              mr={2}
+            >
+              {t('cancel', { ns: 'common' })}
+            </Button>
+          )}
+          {!streamId && (
+            <Button
               isDisabled={!!roleEditingPaymentsErrors}
               onClick={() => {
                 setFieldValue('roleEditing.roleEditingPaymentIndex', undefined);
