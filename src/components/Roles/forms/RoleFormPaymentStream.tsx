@@ -245,7 +245,7 @@ export function RoleFormPaymentStream({ formIndex }: { formIndex: number }) {
           </Show>
         )}
         <Flex justifyContent="flex-end">
-          {!streamId && (
+          {/* {!streamId && (
             <Button
               variant="tertiary"
               onClick={() => {
@@ -260,7 +260,7 @@ export function RoleFormPaymentStream({ formIndex }: { formIndex: number }) {
             >
               {t('cancel', { ns: 'common' })}
             </Button>
-          )}
+          )} */}
           {!streamId && (
             <Button
               isDisabled={!!roleEditingPaymentsErrors}
