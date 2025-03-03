@@ -66,6 +66,7 @@
   "payments": "Payments",
   "payment": "Payment",
   "withdraw": "Withdraw",
+  "withdrawToDao": "Withdraw to DAO",
   "available": "Available",
   "withdrawPendingMessage": "Withdrawing your payment, hang tight",
   "withdrawSuccessMessage": "Payment successfully withdrawn. Check your wallet :)",
@@ -138,5 +139,6 @@
   "startTermPendingToastMessage": "Starting term",
   "startTermSuccessToastMessage": "Term started successfully",
   "startTermFailureToastMessage": "Failed to start term",
-  "invalidHatsTreeIdMessage": "Hats Tree ID is not valid"
+  "invalidHatsTreeIdMessage": "Hats Tree ID is not valid",
+  "withdrawPayment": "Withdraw {{amount}} from {{roleName}} to the DAO"
 }
