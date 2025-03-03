@@ -4,8 +4,8 @@ import { ChangeEventHandler, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { encodeFunctionData, zeroAddress } from 'viem';
+import { GaslessVotingToggleDAOSettings } from '../../../../components/GaslessVoting/GaslessVotingToggle';
 import { SettingsContentBox } from '../../../../components/SafeSettings/SettingsContentBox';
-import { GaslessVotingToggleDAOSettings } from '../../../../components/ui/GaslessVotingToggle';
 import { InputComponent } from '../../../../components/ui/forms/InputComponent';
 import { BarLoader } from '../../../../components/ui/loaders/BarLoader';
 import NestedPageHeader from '../../../../components/ui/page/Header/NestedPageHeader';
@@ -18,7 +18,6 @@ import { useNetworkConfigStore } from '../../../../providers/NetworkConfig/useNe
 import { useDaoInfoStore } from '../../../../store/daoInfo/useDaoInfoStore';
 import { BigIntValuePair, ProposalExecuteData } from '../../../../types';
 import { validateENSName } from '../../../../utils/url';
-
 export function SafeGeneralSettingsPage() {
   const { t } = useTranslation(['settings', 'settingsMetadata']);
   const [name, setName] = useState('');

@@ -123,5 +123,6 @@
   "recipients_one": "recipient",
   "recipients_other": "recipients",
   "airdrop": "Airdrop",
-  "pageXofY": "Page {{current}} of {{total}}"
+  "pageXofY": "Page {{current}} of {{total}}",
+  "network": "Network"
 }

@@ -14,7 +14,7 @@ import { useTranslation } from 'react-i18next';
 import { isFeatureEnabled } from '../../../helpers/featureFlags';
 import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
 import { FractalModuleType, ICreationStepProps, VotingStrategyType } from '../../../types';
-import { GaslessVotingToggleDAOCreate } from '../../ui/GaslessVotingToggle';
+import { GaslessVotingToggleDAOCreate } from '../../GaslessVoting/GaslessVotingToggle';
 import { BigIntInput } from '../../ui/forms/BigIntInput';
 import { CustomNonceInput } from '../../ui/forms/CustomNonceInput';
 import { LabelComponent } from '../../ui/forms/InputComponent';
