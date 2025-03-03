@@ -10,10 +10,12 @@ import { DETAILS_BOX_SHADOW } from '../../constants/common';
 import { DAO_ROUTES } from '../../constants/routes';
 import useNetworkPublicClient from '../../hooks/useNetworkPublicClient';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
+import { useProposalActionsStore } from '../../store/actions/useProposalActionsStore';
 import { useDaoInfoStore } from '../../store/daoInfo/useDaoInfoStore';
 import { useRolesStore } from '../../store/roles/useRolesStore';
-import { BigIntValuePair } from '../../types';
+import { BigIntValuePair, ProposalActionType } from '../../types';
 import { DEFAULT_DATE_FORMAT, formatCoin } from '../../utils';
+import { prepareWithdrawToDAOActionData } from '../../utils/dao/prepareWithdrawToDAOActionData';
 import { isDemoMode } from '../../utils/demoMode';
 import { ModalType } from '../ui/modals/ModalProvider';
 import { useDecentModal } from '../ui/modals/useDecentModal';
@@ -220,6 +222,7 @@ interface PaymentDetailsBottomProps {
   };
   assignedTerm?: { termNumber: number };
   canWithdraw: boolean;
+  isDAORecipient: boolean;
   handleClickWithdraw: () => void;
 }
 function PaymentDetailsBottom({
@@ -227,6 +230,7 @@ function PaymentDetailsBottom({
   assignedTerm,
   canWithdraw,
   handleClickWithdraw,
+  isDAORecipient,
 }: PaymentDetailsBottomProps) {
   const { t } = useTranslation(['roles']);
   return (
@@ -277,7 +281,7 @@ function PaymentDetailsBottom({
           />
         </GridItem>
       </Grid>
-      {canWithdraw && (
+      {(canWithdraw || isDAORecipient) && (
         <Box
           mt={4}
           px={4}
@@ -349,6 +353,10 @@ export function RolePaymentDetails({
     return isDemoMode();
   }, [connectedAccount, payment.recipient, showWithdraw, roleHatWearerAddress]);
 
+  const isDAORecipient = useMemo(() => {
+    return safe?.address === payment.recipient || safe?.address === roleHatWearerAddress;
+  }, [safe?.address, payment.recipient, roleHatWearerAddress]);
+
   const assignedTerm = useMemo(() => {
     return roleTerms.find(term => term.termEndDate.getTime() === payment.endDate.getTime());
   }, [payment.endDate, roleTerms]);
@@ -391,13 +399,74 @@ export function RolePaymentDetails({
   ]);
 
   const withdraw = useDecentModal(modalType, props);
+  const { addAction } = useProposalActionsStore();
+  const { t } = useTranslation('roles');
+  const { getHat } = useRolesStore();
 
   const handleClickWithdraw = useCallback(() => {
     if (safe?.address) {
-      navigate(DAO_ROUTES.roles.relative(addressPrefix, safe.address));
-      withdraw();
+      if (isDAORecipient && roleHatId) {
+        const withdrawableAmount = formatCoin(
+          payment.withdrawableAmount ?? 0n,
+          false,
+          payment.asset.decimals,
+          payment.asset.symbol,
+        );
+
+        const roleName = getHat(roleHatId)?.name;
+
+        if (
+          payment.streamId &&
+          payment.contractAddress &&
+          roleHatWearerAddress &&
+          roleHatSmartAccountAddress
+        ) {
+          const actionData = prepareWithdrawToDAOActionData({
+            daoAddress: safe.address,
+            streamId: payment.streamId,
+            roleHatSmartAccountAddress,
+            paymentContractAddress: payment.contractAddress,
+          });
+
+          addAction({
+            actionType: ProposalActionType.WITHDRAW_STREAM,
+            content: (
+              <Box>
+                <Text>
+                  {t('withdrawPayment', {
+                    amount: withdrawableAmount,
+                    roleName,
+                  })}
+                </Text>
+              </Box>
+            ),
+            transactions: actionData.transactions,
+          });
+          navigate(DAO_ROUTES.proposalWithActionsNew.relative(addressPrefix, safe.address));
+        }
+      } else {
+        navigate(DAO_ROUTES.roles.relative(addressPrefix, safe.address));
+        withdraw();
+      }
     }
-  }, [addressPrefix, navigate, safe?.address, withdraw]);
+  }, [
+    addAction,
+    addressPrefix,
+    getHat,
+    isDAORecipient,
+    navigate,
+    payment.asset.decimals,
+    payment.asset.symbol,
+    payment.contractAddress,
+    payment.streamId,
+    payment.withdrawableAmount,
+    roleHatId,
+    roleHatSmartAccountAddress,
+    roleHatWearerAddress,
+    safe?.address,
+    t,
+    withdraw,
+  ]);
 
   const isActiveStream =
     !payment.isCancelled && Date.now() < payment.endDate.getTime() && !payment.isCancelling;
@@ -425,6 +494,7 @@ export function RolePaymentDetails({
           payment={payment}
           assignedTerm={assignedTerm}
           canWithdraw={canWithdraw}
+          isDAORecipient={isDAORecipient}
           handleClickWithdraw={handleClickWithdraw}
         />
       </Box>
