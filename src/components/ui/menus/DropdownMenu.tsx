@@ -62,10 +62,10 @@ export function DropdownMenu<T>({
             cursor={isDisabled ? 'not-allowed' : 'pointer'}
             p={0}
             sx={{
-              '&:hover': {
-                'payment-menu-asset': {
-                  color: 'lilac--1',
-                  bg: 'white-alpha-04',
+              '&:disabled': {
+                '.payment-menu-asset *': {
+                  color: 'neutral-6',
+                  bg: 'transparent',
                 },
               },
             }}
