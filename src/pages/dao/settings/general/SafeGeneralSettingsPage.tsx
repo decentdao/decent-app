@@ -131,6 +131,7 @@ export function SafeGeneralSettingsPage() {
     };
 
     submitProposal({
+      safeAddress: safe?.address,
       proposalData,
       nonce: safe?.nextNonce,
       pendingToastMessage: t('proposalCreatePendingToastMessage', { ns: 'proposal' }),
