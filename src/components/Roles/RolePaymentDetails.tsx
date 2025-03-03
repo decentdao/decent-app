@@ -9,6 +9,7 @@ import { useAccount } from 'wagmi';
 import { DETAILS_BOX_SHADOW } from '../../constants/common';
 import { DAO_ROUTES } from '../../constants/routes';
 import useNetworkPublicClient from '../../hooks/useNetworkPublicClient';
+import { useCanUserCreateProposal } from '../../hooks/utils/useCanUserSubmitProposal';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
 import { useProposalActionsStore } from '../../store/actions/useProposalActionsStore';
 import { useDaoInfoStore } from '../../store/daoInfo/useDaoInfoStore';
@@ -292,7 +293,7 @@ function PaymentDetailsBottom({
             leftIcon={<Download />}
             onClick={handleClickWithdraw}
           >
-            {t('withdraw')}
+            {isDAORecipient ? t('withdrawToDao') : t('withdraw')}
           </Button>
         </Box>
       )}

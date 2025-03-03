@@ -66,6 +66,7 @@
   "payments": "Payments",
   "payment": "Payment",
   "withdraw": "Withdraw",
+  "withdrawToDao": "Withdraw to DAO",
   "available": "Available",
   "withdrawPendingMessage": "Withdrawing your payment, hang tight",
   "withdrawSuccessMessage": "Payment successfully withdrawn. Check your wallet :)",
