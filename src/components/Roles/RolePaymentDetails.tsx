@@ -234,6 +234,18 @@ function PaymentDetailsBottom({
   isDAORecipient,
 }: PaymentDetailsBottomProps) {
   const { t } = useTranslation(['roles']);
+  const { canUserCreateProposal } = useCanUserCreateProposal();
+
+  const isWithdrawButtonEnabled = useMemo(() => {
+    const hasWithdrawableFunds = (payment?.withdrawableAmount ?? 0n) > 0n;
+
+    if (isDAORecipient) {
+      return canUserCreateProposal && hasWithdrawableFunds;
+    }
+
+    return hasWithdrawableFunds;
+  }, [canUserCreateProposal, isDAORecipient, payment?.withdrawableAmount]);
+
   return (
     <Box {...getPaymentContainerProps('bottom', !payment.startDate ? false : true)}>
       <Grid
@@ -289,7 +301,7 @@ function PaymentDetailsBottom({
         >
           <Button
             w="full"
-            isDisabled={!((payment?.withdrawableAmount ?? 0n) > 0n)}
+            isDisabled={!isWithdrawButtonEnabled}
             leftIcon={<Download />}
             onClick={handleClickWithdraw}
           >
