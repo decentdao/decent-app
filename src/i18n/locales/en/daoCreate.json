@@ -104,8 +104,5 @@
   "networks": "Networks",
   "networkDescription": "What network would you like to deploy this DAO on?",
   "attachFractalModuleDescription": "This setting controls whether Parent DAO will be able to execute arbitrary transactions on Child DAO bypassing voting process on Child DAO.",
-  "fractalModuleAttachedDescription": "This setting can not be modified as Fractal Module already attached to the DAO.",
-  "gaslessVotingLabel": "Gasless Voting",
-  "gaslessVotingDescription": "Sponsor gas for votes and proposals.",
-  "gaslessVotingGettingStarted": "To get you started, we're covering your first 0.1 {{symbol}} of gas fees. You can top up your balance in your DAO settings, or by sending {{symbol}} to this address directly in your wallet."
+  "fractalModuleAttachedDescription": "This setting can not be modified as Fractal Module already attached to the DAO."
 }

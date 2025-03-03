@@ -120,7 +120,7 @@ export function SendAssetsModal({
 
           // @dev next couple of lines are written like this, to keep typing equivalent during the conversion from BN to bigint
           const inputBigint = values.inputAmount?.bigintValue;
-          const inputBigintIsZero = inputBigint ? inputBigint === 0n : undefined;
+          const inputBigintIsZero = inputBigint !== undefined ? inputBigint === 0n : undefined;
           const isSubmitDisabled = !values.inputAmount || inputBigintIsZero || overDraft;
 
           const selectedAssetIndex = fungibleAssetsWithBalance.findIndex(

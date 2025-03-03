@@ -74,7 +74,7 @@ export function DropdownMenu<T>({
               gap={2}
               alignItems="center"
               border="1px solid"
-              borderColor="neutral-3"
+              borderColor="neutral-4"
               borderRadius="9999px"
               w="fit-content"
               className="payment-menu-asset"
@@ -92,12 +92,13 @@ export function DropdownMenu<T>({
                 gap="0.75rem"
               >
                 <Text
-                  textStyle="labels-large"
+                  textStyle="body-large"
                   color="white-0"
                 >
                   {selectedItem?.label ?? selectPlaceholder}
                 </Text>
                 <Icon
+                  color="neutral-6"
                   as={CaretDown}
                   boxSize="1.5rem"
                 />
