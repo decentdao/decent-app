@@ -8,6 +8,7 @@ import COMMON_EN from './locales/en/common.json';
 import DAOCREATE_EN from './locales/en/daoCreate.json';
 import DAOEDIT_EN from './locales/en/daoEdit.json';
 import DASHBOARD_EN from './locales/en/dashboard.json';
+import GASLESS_VOTING_EN from './locales/en/gaslessVoting.json';
 import HOME_EN from './locales/en/home.json';
 import LANGUAGES_EN from './locales/en/languages.json';
 import MENU_EN from './locales/en/menu.json';
@@ -21,6 +22,7 @@ import SETTINGS_EN from './locales/en/settings.json';
 import STAKE_EN from './locales/en/stake.json';
 import TRANSACTION_EN from './locales/en/transaction.json';
 import TREASURY_EN from './locales/en/treasury.json';
+
 /**
  * Contains initialization for the react-i18next library, which handles displaying strings based on the browser's current
  * language setting. This library is based on the popular i18next JavaScript library, tailored specificaly to React.
@@ -64,6 +66,7 @@ export const supportedLanguages = {
     stake: STAKE_EN,
     home: HOME_EN,
     roles: ROLES_EN,
+    gaslessVoting: GASLESS_VOTING_EN,
   },
 };
 
