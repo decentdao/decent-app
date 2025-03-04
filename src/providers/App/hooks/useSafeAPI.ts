@@ -27,7 +27,8 @@ import { useNetworkConfigStore } from '../../NetworkConfig/useNetworkConfigStore
 class EnhancedSafeApiKit extends SafeApiKit {
   readonly publicClient: PublicClient;
   readonly networkConfig: NetworkConfig;
-  readonly safeClientUrlPrefix: string;
+  readonly safeClientSafesPrefix: string;
+  readonly safeClientTransactionsPrefix: string;
 
   // holds requests that have yet to return, to avoid calling the same
   // endpoint more than once
@@ -61,7 +62,8 @@ class EnhancedSafeApiKit extends SafeApiKit {
       chain: networkConfig.chain,
       transport: http(networkConfig.rpcEndpoint),
     });
-    this.safeClientUrlPrefix = `https://safe-client.safe.global/v1/chains/${networkConfig.chain.id}/safes/`;
+    this.safeClientSafesPrefix = `https://safe-client.safe.global/v1/chains/${networkConfig.chain.id}/safes/`;
+    this.safeClientTransactionsPrefix = `https://safe-client.safe.global/v1/chains/${networkConfig.chain.id}/transactions/`;
   }
 
   override async getSafeInfo(safeAddress: Address): Promise<SafeInfoResponse> {
@@ -132,8 +134,8 @@ class EnhancedSafeApiKit extends SafeApiKit {
     throw new Error('Failed to getSafeInfo()');
   }
 
-  private async _safeClientGet(safeAddress: Address, path: string): Promise<any> {
-    const value = await axios.get(`${this.safeClientUrlPrefix}${safeAddress}${path}`, {
+  private async _safeClientGet(safeAddress: string, path: string): Promise<any> {
+    const value = await axios.get(`${this.safeClientSafesPrefix}${safeAddress}${path}`, {
       headers: {
         accept: 'application/json',
       },
@@ -142,19 +144,19 @@ class EnhancedSafeApiKit extends SafeApiKit {
     return value.data;
   }
 
-  /*
-  TODO: Handle the request body
-  private async _safeClientPost(safeAddress: Address, path: string, data: string): Promise<any> {
-    const value = await axios.post(`${this.safeClientUrlPrefix}${safeAddress}${path}`, {
-      headers: {
-        accept: 'application/json',
+  private async _safeTransactionsPost(safeAddress: string, path: string, data: any): Promise<any> {
+    const value = await axios.post(
+      `${this.safeClientTransactionsPrefix}${safeAddress}${path}`,
+      data,
+      {
+        headers: {
+          accept: 'application/json',
+        },
       },
-      body: data,
-    });
+    );
 
     return value.data;
   }
-    */
 
   override async getAllTransactions(
     safeAddress: Address,
@@ -249,8 +251,16 @@ class EnhancedSafeApiKit extends SafeApiKit {
     }
 
     try {
-      // TODO ENG-294
-      // implement safe-client fallback
+      /*
+      {
+        "signature": "string"
+      }
+      */
+      const body = {
+        signature: signature,
+      };
+      // const bodyText = JSON.stringify(body);
+      await this._safeTransactionsPost(safeTxHash, '/confirmations', body);
     } catch (error) {
       console.error('Error posting confirmTransaction from safe-client:', error);
     }
@@ -270,14 +280,22 @@ class EnhancedSafeApiKit extends SafeApiKit {
       console.error('Error fetching getMultisigTransactions from safeAPI:', error);
     }
 
+    // /multisig-transactions/raw response matches SafeMultisigTransactionListResponse
     try {
-      // TODO ENG-295
-      // implement safe-client fallback
+      const response: SafeMultisigTransactionListResponse = await this._safeClientGet(
+        safeAddress,
+        '/multisig-transactions/raw',
+      );
+
+      return response;
     } catch (error) {
       console.error('Error fetching getMultisigTransactions from safe-client:', error);
     }
 
-    throw new Error('Failed to getMultisigTransactions()');
+    return {
+      count: 0,
+      results: [],
+    };
   }
 
   override async proposeTransaction({
@@ -302,9 +320,41 @@ class EnhancedSafeApiKit extends SafeApiKit {
     }
 
     try {
-      // TODO ENG-29
-      // implement safe-client fallback
-      // transactions/{address}/propose
+      /*
+      {
+        "to": "string",
+        "value": "string",
+        "data": "string",
+        "nonce": "string",
+        "operation": 0,
+        "safeTxGas": "string",
+        "baseGas": "string",
+        "gasPrice": "string",
+        "gasToken": "string",
+        "refundReceiver": "string",
+        "safeTxHash": "string",
+        "sender": "string",
+        "signature": "string",
+        "origin": "string"
+      }
+      */
+      const body = {
+        to: safeTransactionData.to,
+        value: safeTransactionData.value,
+        data: safeTransactionData.data,
+        nonce: `${safeTransactionData.nonce}`,
+        operation: safeTransactionData.operation,
+        safeTxGas: safeTransactionData.safeTxGas,
+        baseGas: safeTransactionData.baseGas,
+        gasPrice: safeTransactionData.gasPrice,
+        gasToken: safeTransactionData.gasToken,
+        refundReceiver: safeTransactionData.refundReceiver,
+        safeTxHash: safeTxHash,
+        sender: senderAddress,
+        signature: senderSignature,
+        origin: origin,
+      };
+      await this._safeTransactionsPost(safeAddress, '/propose', body);
     } catch (error) {
       console.error('Error posting proposeTransaction from safe-client:', error);
     }
@@ -320,9 +370,24 @@ class EnhancedSafeApiKit extends SafeApiKit {
     }
 
     try {
-      // TODO ENG-297
-      // implement safe-client fallback
-      // /data-decoder/
+      /*
+        {
+          "data": "string",
+          "to": "string",
+          "value": "string"
+        }ß
+      */
+      const body = {
+        data: data,
+      };
+      const prefix = `https://safe-client.safe.global/v1/chains/${this.networkConfig.chain.id}`;
+      const value = await axios.post(`${prefix}/data-decoder`, body, {
+        headers: {
+          accept: 'application/json',
+        },
+      });
+
+      return value.data;
     } catch (error) {
       console.error('Error decoding data from safe-client:', error);
     }

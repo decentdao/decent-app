@@ -1,5 +1,4 @@
 import { abis } from '@fractal-framework/fractal-contracts';
-import axios from 'axios';
 import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
@@ -24,7 +23,7 @@ import { useSafeAPI } from '../../../providers/App/hooks/useSafeAPI';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
 import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
 import { CreateProposalMetadata, MetaTransaction, ProposalExecuteData } from '../../../types';
-import { buildSafeApiUrl, getAzoriusModuleFromModules } from '../../../utils';
+import { getAzoriusModuleFromModules } from '../../../utils';
 import useNetworkPublicClient from '../../useNetworkPublicClient';
 import { useNetworkWalletClient } from '../../useNetworkWalletClient';
 import useVotingStrategiesAddresses from '../../utils/useVotingStrategiesAddresses';
@@ -101,7 +100,6 @@ export default function useSubmitProposal() {
   const lookupModules = useDecentModules();
   const {
     chain,
-    safeBaseURL,
     addressPrefix,
     contracts: { multiSendCallOnly },
   } = useNetworkConfigStore();
@@ -189,19 +187,27 @@ export default function useSubmitProposal() {
           operation = 1;
         }
 
-        const response = await axios.post(
-          buildSafeApiUrl(safeBaseURL, `/safes/${safeAddress}/multisig-transactions/`),
-          await buildSafeAPIPost(safeAddress, walletClient, chain.id, {
-            to,
-            value,
-            data,
-            operation,
-            nonce,
-          }),
-        );
+        const safeTransaction = await buildSafeAPIPost(safeAddress, walletClient, chain.id, {
+          to,
+          value,
+          data,
+          operation,
+          nonce,
+        });
+        await safeAPI.proposeTransaction(safeTransaction);
 
-        const responseData = JSON.parse(response.config.data);
-        const txHash = responseData.contractTransactionHash;
+        // const response = await axios.post(
+        //   buildSafeApiUrl(safeBaseURL, `/safes/${safeAddress}/multisig-transactions/`),
+        //   await buildSafeAPIPost(safeAddress, walletClient, chain.id, {
+        //     to,
+        //     value,
+        //     data,
+        //     operation,
+        //     nonce,
+        //   }),
+        // );
+
+        const txHash = safeTransaction.safeTxHash;
         pendingProposalAdd(txHash);
 
         await loadDAOProposals();
@@ -225,14 +231,14 @@ export default function useSubmitProposal() {
       }
     },
     [
-      addressPrefix,
-      chain.id,
-      ipfsClient,
-      loadDAOProposals,
-      multiSendCallOnly,
-      pendingProposalAdd,
-      safeBaseURL,
       walletClient,
+      chain.id,
+      safeAPI,
+      pendingProposalAdd,
+      loadDAOProposals,
+      ipfsClient,
+      multiSendCallOnly,
+      addressPrefix,
       t,
     ],
   );
