@@ -50,9 +50,9 @@ class EnhancedSafeApiKit extends SafeApiKit {
     this.safeClientTransactionsPrefix = `${this.safeClientBaseUrl}/transactions/`;
   }
 
-  private async _safeClientGet(safeAddress: string, path: string): Promise<any> {
+  private async _safeClientGet<T>(safeAddress: string, path: string): Promise<T> {
     const url = `${this.safeClientSafesPrefix}${safeAddress}${path}`;
-    const value = await axios.get(url, {
+    const value = await axios.get<T>(url, {
       headers: {
         accept: 'application/json',
       },
@@ -61,15 +61,13 @@ class EnhancedSafeApiKit extends SafeApiKit {
     return value.data;
   }
 
-  private async _safeTransactionsPost(safeAddress: string, path: string, data: any): Promise<any> {
+  private async _safeTransactionsPost(safeAddress: string, path: string, data: any) {
     const url = `${this.safeClientTransactionsPrefix}${safeAddress}${path}`;
-    const value = await axios.post(url, data, {
+    await axios.post(url, data, {
       headers: {
         accept: 'application/json',
       },
     });
-
-    return value.data;
   }
 
   override async getSafeInfo(safeAddress: Address): Promise<SafeInfoResponse> {
@@ -176,7 +174,7 @@ class EnhancedSafeApiKit extends SafeApiKit {
         readonly recommendedNonce: number;
       };
 
-      const response: SafeClientNonceResponse = await this._safeClientGet(safeAddress, '/nonces');
+      const response = await this._safeClientGet<SafeClientNonceResponse>(safeAddress, '/nonces');
 
       return response.recommendedNonce;
     } catch (error) {
@@ -233,11 +231,6 @@ class EnhancedSafeApiKit extends SafeApiKit {
     }
 
     try {
-      /*
-      {
-        "signature": "string"
-      }
-      */
       const body = {
         signature: signature,
       };
@@ -270,7 +263,7 @@ class EnhancedSafeApiKit extends SafeApiKit {
 
     // /multisig-transactions/raw response matches SafeMultisigTransactionListResponse
     try {
-      const response: SafeMultisigTransactionListResponse = await this._safeClientGet(
+      const response = await this._safeClientGet<SafeMultisigTransactionListResponse>(
         safeAddress,
         '/multisig-transactions/raw',
       );
@@ -309,24 +302,6 @@ class EnhancedSafeApiKit extends SafeApiKit {
     }
 
     try {
-      /*
-      {
-        "to": "string",
-        "value": "string",
-        "data": "string",
-        "nonce": "string",
-        "operation": 0,
-        "safeTxGas": "string",
-        "baseGas": "string",
-        "gasPrice": "string",
-        "gasToken": "string",
-        "refundReceiver": "string",
-        "safeTxHash": "string",
-        "sender": "string",
-        "signature": "string",
-        "origin": "string"
-      }
-      */
       const body = {
         to: safeTransactionData.to,
         value: safeTransactionData.value,
@@ -343,8 +318,7 @@ class EnhancedSafeApiKit extends SafeApiKit {
         signature: senderSignature,
         origin: origin,
       };
-      await this._safeTransactionsPost(safeAddress, '/propose', body);
-      return;
+      return await this._safeTransactionsPost(safeAddress, '/propose', body);
     } catch (error) {
       console.error('Error posting proposeTransaction from safe-client:', error);
     }
@@ -360,17 +334,10 @@ class EnhancedSafeApiKit extends SafeApiKit {
     }
 
     try {
-      /*
-        {
-          "data": "string",
-          "to": "string",
-          "value": "string"
-        }
-      */
       const body = {
         data: data,
       };
-      const value = await axios.post(`${this.safeClientBaseUrl}/data-decoder`, body, {
+      const value = await axios.post<any>(`${this.safeClientBaseUrl}/data-decoder`, body, {
         headers: {
           accept: 'application/json',
         },
