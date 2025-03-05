@@ -196,17 +196,6 @@ export default function useSubmitProposal() {
         });
         await safeAPI.proposeTransaction(safeTransaction);
 
-        // const response = await axios.post(
-        //   buildSafeApiUrl(safeBaseURL, `/safes/${safeAddress}/multisig-transactions/`),
-        //   await buildSafeAPIPost(safeAddress, walletClient, chain.id, {
-        //     to,
-        //     value,
-        //     data,
-        //     operation,
-        //     nonce,
-        //   }),
-        // );
-
         const txHash = safeTransaction.safeTxHash;
         pendingProposalAdd(txHash);
 

@@ -145,15 +145,12 @@ class EnhancedSafeApiKit extends SafeApiKit {
   }
 
   private async _safeTransactionsPost(safeAddress: string, path: string, data: any): Promise<any> {
-    const value = await axios.post(
-      `${this.safeClientTransactionsPrefix}${safeAddress}${path}`,
-      data,
-      {
-        headers: {
-          accept: 'application/json',
-        },
+    const url = `${this.safeClientTransactionsPrefix}${safeAddress}${path}`;
+    const value = await axios.post(url, data, {
+      headers: {
+        accept: 'application/json',
       },
-    );
+    });
 
     return value.data;
   }
@@ -355,6 +352,7 @@ class EnhancedSafeApiKit extends SafeApiKit {
         origin: origin,
       };
       await this._safeTransactionsPost(safeAddress, '/propose', body);
+      return;
     } catch (error) {
       console.error('Error posting proposeTransaction from safe-client:', error);
     }

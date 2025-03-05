@@ -85,9 +85,13 @@ export default function ProposalTransaction({
         isInvalid={!!transaction.targetAddress && !!txAddressError}
         value={transaction.targetAddress}
         testId="transaction.targetAddress"
-        onChange={e =>
-          setFieldValue(`transactions.${transactionIndex}.targetAddress`, e.target.value)
-        }
+        onChange={e => {
+          try {
+            setFieldValue(`transactions.${transactionIndex}.targetAddress`, e.target.value);
+          } catch (error) {
+            console.log(error);
+          }
+        }}
       />
       {transaction.targetAddress && (
         <Box mt="1.5rem">
