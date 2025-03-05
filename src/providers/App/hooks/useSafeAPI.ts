@@ -35,24 +35,6 @@ class EnhancedSafeApiKit extends SafeApiKit {
   // endpoint more than once
   requestMap = new Map<string, Promise<any> | null>();
 
-  // # Safe API function calls
-  //
-  // - overridden functions
-  //   - getSafeInfo ✅
-  //   - getAllTransactions 🟨 ENG-292
-  //   - getNextNonce 🟨 ENG-293
-  //   - getToken ✅
-  //   - confirmTransaction 🟨 ENG-294
-  //   - getMultisigTransactions 🟨 ENG-295
-  //   - proposeTransaction 🟨 ENG-296
-  //   - decodeData 🟨 ENG-297
-  // - custom functions
-  //   - getSafeData ✅ (this is actually not an overriden function of SafeApiKit, but a custom function)
-
-  // other file todos:
-  //   - /multisig-transactions/ in useSubmitProposal.ts
-  //   - /data-decoder/ in useSafeDecoder.ts
-
   constructor(networkConfig: NetworkConfig) {
     super({
       chainId: BigInt(networkConfig.chain.id),
