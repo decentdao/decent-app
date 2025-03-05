@@ -2,7 +2,7 @@ import { Button } from '@chakra-ui/react';
 import { useFormikContext } from 'formik';
 import { isFeatureEnabled } from '../../helpers/featureFlags';
 import { RoleFormValues } from '../../types/roles';
-
+import { DEV_STREAM_DURATION_MINUTES } from './devModeConstants';
 export function DevSet10MinPaymentStream({ formIndex }: { formIndex: number }) {
   const { values, setFieldValue } = useFormikContext<RoleFormValues>();
 
@@ -11,7 +11,7 @@ export function DevSet10MinPaymentStream({ formIndex }: { formIndex: number }) {
       size="sm"
       onClick={() => {
         const startDate = new Date();
-        const endDate = new Date(startDate.getTime() + 10 * 60 * 1000); // Add 10 minutes
+        const endDate = new Date(startDate.getTime() + DEV_STREAM_DURATION_MINUTES * 60 * 1000);
         setFieldValue(`roleEditing.payments.${formIndex}`, {
           ...values.roleEditing?.payments?.[formIndex],
           startDate,
@@ -20,7 +20,7 @@ export function DevSet10MinPaymentStream({ formIndex }: { formIndex: number }) {
       }}
       mb={4}
     >
-      Set 10 min stream
+      Set {DEV_STREAM_DURATION_MINUTES} min stream
     </Button>
   ) : null;
 }
