@@ -14,16 +14,10 @@ interface UseNetworkEnsAddressProps {
 
 export function useNetworkEnsAddress(props?: UseNetworkEnsAddressProps) {
   const { chain } = useNetworkConfigStore();
-
-  let effectiveChainId: number;
-  if (props?.chainId !== undefined) {
-    if (!supportedEnsNetworks.includes(props.chainId)) {
-      throw new Error(`ENS is not supported for chain ${props.chainId}`);
-    }
-    effectiveChainId = props.chainId;
-  } else {
-    effectiveChainId = supportedEnsNetworks.includes(chain.id) ? chain.id : mainnet.id;
-  }
+  const desiredChainId = props?.chainId ?? chain.id;
+  const effectiveChainId = supportedEnsNetworks.includes(desiredChainId)
+    ? desiredChainId
+    : mainnet.id;
 
   return useEnsAddress({ name: props?.name, chainId: effectiveChainId });
 }
