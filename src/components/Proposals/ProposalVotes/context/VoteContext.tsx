@@ -130,11 +130,15 @@ export function VoteContextProvider({
             address: azoriusProposal.votingStrategy,
             client: publicClient,
           });
-          newCanVote =
-            (await ozLinearVotingContract.read.getVotingWeight([
-              userAccount.address,
-              Number(proposal.proposalId),
-            ])) > 0n;
+          const votingWeight = await ozLinearVotingContract.read.getVotingWeight([
+            userAccount.address,
+            Number(proposal.proposalId),
+          ]);
+          const hasVotedOnchain = await ozLinearVotingContract.read.hasVoted([
+            Number(proposal.proposalId),
+            userAccount.address,
+          ]);
+          newCanVote = votingWeight > 0n && !hasVotedOnchain;
         } else if (governance.type === GovernanceType.AZORIUS_ERC721) {
           const votingWeight = await erc721VotingWeight();
           newCanVote = votingWeight > 0n && remainingTokenIdsLength > 0;
