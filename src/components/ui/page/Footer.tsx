@@ -10,7 +10,6 @@ import {
   URL_TWITTER,
   URL_WARPCAST,
 } from '../../../constants/url';
-import { isFeatureEnabled } from '../../../helpers/featureFlags';
 import { DemoModeButton } from '../../../utils/demoMode';
 import ExternalLink from '../links/ExternalLink';
 
@@ -68,9 +67,7 @@ export function Footer() {
         styleVariant="grey"
         fontSize="1.2rem"
       >
-        {isFeatureEnabled('flag_yelling')
-          ? t('madeWithLove', { ns: 'home' }).toUpperCase()
-          : t('madeWithLove', { ns: 'home' })}
+        {t('madeWithLove', { ns: 'home' })}
       </ExternalLink>
 
       <Flex
