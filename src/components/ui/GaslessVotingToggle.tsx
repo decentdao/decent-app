@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useBalance } from 'wagmi';
 import { DETAILS_BOX_SHADOW } from '../../constants/common';
 import { isFeatureEnabled } from '../../helpers/featureFlags';
+import { useCanUserCreateProposal } from '../../hooks/utils/useCanUserSubmitProposal';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
 import { useDaoInfoStore } from '../../store/daoInfo/useDaoInfoStore';
 import { BigIntValuePair } from '../../types';
@@ -22,6 +23,8 @@ function GaslessVotingToggleContent({
   isSettings,
 }: GaslessVotingToggleProps & { isSettings?: boolean }) {
   const { t } = useTranslation('daoCreate');
+
+  const { canUserCreateProposal } = useCanUserCreateProposal();
 
   return (
     <Box
@@ -56,6 +59,7 @@ function GaslessVotingToggleContent({
         </Flex>
         <Switch
           size="md"
+          isDisabled={!canUserCreateProposal}
           isChecked={isEnabled}
           onChange={() => onToggle()}
           variant="secondary"
