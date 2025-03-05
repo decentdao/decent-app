@@ -22,6 +22,8 @@ interface ImportMetaEnv {
   readonly VITE_APP_HOTJAR_SITE_ID: string;
   readonly VITE_APP_HOTJAR_VERSION: string;
   readonly VITE_APP_SENTRY_DSN_URL: string;
+
+  readonly VITE_APP_GIT_HASH: string;
 }
 
 interface ImportMeta {

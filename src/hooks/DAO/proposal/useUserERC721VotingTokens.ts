@@ -3,7 +3,6 @@ import { useCallback, useEffect, useState } from 'react';
 import { Address, erc721Abi, getContract } from 'viem';
 import { useAccount } from 'wagmi';
 import { useFractal } from '../../../providers/App/AppProvider';
-import { useSafeAPI } from '../../../providers/App/hooks/useSafeAPI';
 import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
 import { AzoriusGovernance, ERC721TokenData } from '../../../types';
 import useNetworkPublicClient from '../../useNetworkPublicClient';
@@ -48,7 +47,6 @@ export default function useUserERC721VotingTokens(
   } = useFractal();
   const user = useAccount();
   const { safe } = useDaoInfoStore();
-  const safeAPI = useSafeAPI();
   const publicClient = useNetworkPublicClient();
 
   const { getVotingStrategies } = useVotingStrategiesAddresses();
@@ -191,7 +189,7 @@ export default function useUserERC721VotingTokens(
       let linearVotingAddress =
         linearVotingErc721Address ?? linearVotingErc721WithHatsWhitelistingAddress;
 
-      if (!globalContextSafeAddress || !safeAPI || !user.address) {
+      if (!globalContextSafeAddress || !user.address) {
         return DEFAULT_RETURN;
       }
 
@@ -252,7 +250,6 @@ export default function useUserERC721VotingTokens(
       linearVotingErc721Address,
       linearVotingErc721WithHatsWhitelistingAddress,
       globalContextSafeAddress,
-      safeAPI,
       user.address,
       getUserERC721Tokens,
       getLinearVotingContract,

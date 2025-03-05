@@ -331,8 +331,12 @@ const getPaymentStreams = async (
 
           return !cancelled && !!start && !!end && start <= now && end > now;
         },
-        isCancellable: () =>
-          !lockupLinearStream.canceled && !!endDate && endDate.getTime() > Date.now(),
+        cancelable: lockupLinearStream.cancelable,
+        canUserCancel: () =>
+          lockupLinearStream.cancelable &&
+          !lockupLinearStream.canceled &&
+          !!endDate &&
+          endDate.getTime() > Date.now(),
       };
     });
 
@@ -348,7 +352,10 @@ const getPaymentStreams = async (
         const newWithdrawableAmount = await streamContract.read.withdrawableAmountOf([
           bigintStreamId,
         ]);
-        return { ...stream, withdrawableAmount: newWithdrawableAmount };
+        return {
+          ...stream,
+          withdrawableAmount: newWithdrawableAmount,
+        };
       }),
     );
     return streamsWithCurrentWithdrawableAmounts;

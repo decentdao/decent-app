@@ -18,7 +18,7 @@ import {
   DEV_TIMELOCK_PERIOD_DAYS,
   DEV_VOTING_PERIOD_DAYS,
 } from '../../../utils/dev/devModeConstants';
-import { GaslessVotingToggleDAOCreate } from '../../ui/GaslessVotingToggle';
+import { GaslessVotingToggleDAOCreate } from '../../GaslessVoting/GaslessVotingToggle';
 import { BigIntInput } from '../../ui/forms/BigIntInput';
 import { CustomNonceInput } from '../../ui/forms/CustomNonceInput';
 import { LabelComponent } from '../../ui/forms/InputComponent';

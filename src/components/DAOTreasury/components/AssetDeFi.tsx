@@ -52,7 +52,6 @@ export function DeFiRow({ asset }: { asset: DefiBalance }) {
 
   const { safe } = useDaoInfoStore();
 
-  // @todo do we need this feature?
   // Really only used for etherscan link below. Will not work for non-ETH chains
   const isNativePosition =
     asset.position?.address?.toLowerCase() ===

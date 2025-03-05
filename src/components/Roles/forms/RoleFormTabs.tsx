@@ -92,7 +92,9 @@ export function RoleFormTabs({
         my="1rem"
       >
         <Button
-          isDisabled={!!errors.roleEditing}
+          isDisabled={
+            !!errors.roleEditing || values.roleEditing?.roleEditingPaymentIndex !== undefined
+          }
           onClick={() => {
             if (!values.roleEditing) return;
             const roleUpdated = { ...values.roleEditing, editedRole: editedRoleData };

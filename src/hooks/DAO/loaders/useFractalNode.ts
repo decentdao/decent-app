@@ -60,6 +60,13 @@ export const useFractalNode = ({
         const graphDAOData = graphRawNodeData.data?.daos[0];
 
         if (!graphRawNodeData || !graphDAOData) {
+          setDaoInfo({
+            parentAddress: null,
+            childAddresses: [],
+            daoName: null,
+            daoSnapshotENS: null,
+            proposalTemplatesHash: null,
+          });
           console.error('No graph data found');
         }
 

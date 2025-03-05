@@ -10,4 +10,3 @@ export * from './proposalBuilder';
 export * from './safeGlobal';
 export * from './snapshot';
 export * from './transaction';
-export * from './votingFungibleToken';
