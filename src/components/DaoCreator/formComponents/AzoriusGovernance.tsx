@@ -14,10 +14,7 @@ import { useTranslation } from 'react-i18next';
 import { isFeatureEnabled } from '../../../helpers/featureFlags';
 import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
 import { FractalModuleType, ICreationStepProps, VotingStrategyType } from '../../../types';
-import {
-  DEV_TIMELOCK_PERIOD_DAYS,
-  DEV_VOTING_PERIOD_DAYS,
-} from '../../../utils/dev/devModeConstants';
+import { DEV_VOTING_PERIOD_MINUTES } from '../../../utils/dev/devModeConstants';
 import { GaslessVotingToggleDAOCreate } from '../../GaslessVoting/GaslessVotingToggle';
 import { BigIntInput } from '../../ui/forms/BigIntInput';
 import { CustomNonceInput } from '../../ui/forms/CustomNonceInput';
@@ -84,11 +81,12 @@ export function AzoriusGovernance(props: ICreationStepProps) {
   useStepRedirect({ values });
 
   const isDevMode = isFeatureEnabled('flag_dev');
-  const defaultVotingPeriod = isDevMode ? DEV_VOTING_PERIOD_DAYS : 7;
-  const defaultTimelockPeriod = isDevMode ? DEV_TIMELOCK_PERIOD_DAYS : 1;
+  const devModeVotingPeriodDays = DEV_VOTING_PERIOD_MINUTES / 24 / 60;
+  const defaultVotingPeriodDays = isDevMode ? devModeVotingPeriodDays : 7;
+  const defaultTimelockPeriodDays = 1;
 
-  const [votingPeriodDays, setVotingPeriodDays] = useState(defaultVotingPeriod);
-  const [timelockPeriodDays, setTimelockPeriodDays] = useState(defaultTimelockPeriod);
+  const [votingPeriodDays, setVotingPeriodDays] = useState(defaultVotingPeriodDays);
+  const [timelockPeriodDays, setTimelockPeriodDays] = useState(defaultTimelockPeriodDays);
 
   const [executionPeriodDays, setExecutionPeriodDays] = useState(2);
 

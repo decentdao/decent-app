@@ -1,3 +1,2 @@
-export const DEV_VOTING_PERIOD_DAYS = 0.0021;
-export const DEV_TIMELOCK_PERIOD_DAYS = 0;
+export const DEV_VOTING_PERIOD_MINUTES = 3;
 export const DEV_STREAM_DURATION_MINUTES = 10;
