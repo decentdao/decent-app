@@ -8,6 +8,51 @@ import { useDaoInfoStore } from '../../store/daoInfo/useDaoInfoStore';
 import { useRolesStore } from '../../store/roles/useRolesStore';
 import useNetworkPublicClient from '../useNetworkPublicClient';
 
+const getGaslessVotingEnabled = (
+  events: GetContractEventsReturnType<typeof abis.KeyValuePairs> | undefined,
+  chainId: number,
+) => {
+  if (!events) {
+    return;
+  }
+
+  // get most recent event where `gaslessVotingEnabled` was set
+  const gaslessVotingEnabledEvent = events
+    .filter(event => event.args.key && event.args.key === 'gaslessVotingEnabled')
+    .pop();
+
+  if (!gaslessVotingEnabledEvent) {
+    return;
+  }
+
+  if (!gaslessVotingEnabledEvent.args.value) {
+    logError({
+      message: "KVPairs 'gaslessVotingEnabledEvent' without a value",
+      network: chainId,
+      args: {
+        transactionHash: gaslessVotingEnabledEvent.transactionHash,
+        logIndex: gaslessVotingEnabledEvent.logIndex,
+      },
+    });
+    return undefined;
+  }
+
+  try {
+    const gaslessVotingEnabled = Boolean(gaslessVotingEnabledEvent.args.value);
+    return gaslessVotingEnabled;
+  } catch (e) {
+    logError({
+      message: "KVPairs 'gaslessVotingEnabledEvent' value not a boolean",
+      network: chainId,
+      args: {
+        transactionHash: gaslessVotingEnabledEvent.transactionHash,
+        logIndex: gaslessVotingEnabledEvent.logIndex,
+      },
+    });
+    return undefined;
+  }
+};
+
 const getHatsTreeId = (
   events: GetContractEventsReturnType<typeof abis.KeyValuePairs> | undefined,
   chainId: number,
@@ -98,7 +143,7 @@ const useKeyValuePairs = () => {
     contracts: { keyValuePairs, sablierV2LockupLinear },
   } = useNetworkConfigStore();
   const { setHatKeyValuePairData, resetHatsStore } = useRolesStore();
-
+  const { setGaslessVotingEnabled } = useDaoInfoStore();
   const safeAddress = node.safe?.address;
 
   useEffect(() => {
@@ -119,6 +164,8 @@ const useKeyValuePairs = () => {
           hatsTreeId: getHatsTreeId(safeEvents, chain.id),
           streamIdsToHatIds: getHatIdsToStreamIds(safeEvents, sablierV2LockupLinear, chain.id),
         });
+
+        setGaslessVotingEnabled(getGaslessVotingEnabled(safeEvents, chain.id) ?? false);
       })
       .catch(error => {
         setHatKeyValuePairData({
@@ -144,6 +191,8 @@ const useKeyValuePairs = () => {
               hatsTreeId: getHatsTreeId(logs, chain.id),
               streamIdsToHatIds: getHatIdsToStreamIds(logs, sablierV2LockupLinear, chain.id),
             });
+
+            setGaslessVotingEnabled(getGaslessVotingEnabled(logs, chain.id) ?? false);
           }, 20_000);
         },
       },
@@ -158,6 +207,7 @@ const useKeyValuePairs = () => {
     publicClient,
     setHatKeyValuePairData,
     sablierV2LockupLinear,
+    setGaslessVotingEnabled,
   ]);
 
   useEffect(() => {
