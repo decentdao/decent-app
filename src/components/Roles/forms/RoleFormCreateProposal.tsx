@@ -83,7 +83,7 @@ export function RoleFormCreateProposal({ close }: { close: () => void }) {
           roleTerms,
           isTermed: roleHat.isTermed ?? false,
           payments:
-            roleHat.payments?.map(payment => {
+            roleHat.payments.map(payment => {
               if (!payment.startDate || !payment.endDate || !payment.amount || !payment.asset) {
                 throw new Error('Payment missing data', {
                   cause: payment,
