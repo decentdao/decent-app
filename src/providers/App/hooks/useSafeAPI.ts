@@ -242,6 +242,10 @@ class EnhancedSafeApiKit extends SafeApiKit {
         signature: signature,
       };
       await this._safeTransactionsPost(safeTxHash, '/confirmations', body);
+
+      // The Safe Client returns a different response, but in keeping in line with the interface of
+      // Safe Transaction Service, we return the signature as is.
+      return { signature };
     } catch (error) {
       console.error('Error posting confirmTransaction from safe-client:', error);
     }
