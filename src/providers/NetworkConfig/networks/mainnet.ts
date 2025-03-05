@@ -69,6 +69,11 @@ export const mainnetConfig: NetworkConfig = {
       a.LinearERC721VotingWithHatsProposalCreation,
     ),
 
+    linearVotingErc20V1MasterCopy: '0x0000000000000000000000000000000000000000',
+    linearVotingErc20V1HatsWhitelistingMasterCopy: '0x0000000000000000000000000000000000000000',
+    linearVotingErc721V1MasterCopy: '0x0000000000000000000000000000000000000000',
+    linearVotingErc721V1HatsWhitelistingMasterCopy: '0x0000000000000000000000000000000000000000',
+
     moduleAzoriusMasterCopy: getAddress(a.Azorius),
     moduleFractalMasterCopy: getAddress(a.FractalModule),
 
@@ -100,6 +105,7 @@ export const mainnetConfig: NetworkConfig = {
     sablierV2LockupTranched: '0xf86B359035208e4529686A1825F2D5BeE38c28A8',
     sablierV2LockupLinear: '0x3962f6585946823440d274aD7C719B02b49DE51E',
     disperse: '0xD152f549545093347A162Dce210e7293f1452150',
+    paymasterFactory: '0x0000000000000000000000000000000000000000',
   },
   staking: {
     lido: {
