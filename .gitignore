@@ -33,9 +33,6 @@ yarn-error.log*
 # translation script outputs
 *.csv
 
-# GraphQL generated files
-/.graphclient
-
 # Wrangler
 /.wrangler
 .dev.vars

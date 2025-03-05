@@ -58,16 +58,14 @@ export const useERC20LinearToken = ({ onMount = true }: { onMount?: boolean }) =
       client: publicClient,
     });
 
-    const [tokenBalance, tokenDelegatee, tokenVotingWeight] = await Promise.all([
+    const [tokenBalance, tokenDelegatee] = await Promise.all([
       tokenContract.read.balanceOf([account]),
       tokenContract.read.delegates([account]),
-      tokenContract.read.getVotes([account]),
     ]);
 
     const tokenAccountData = {
       balance: tokenBalance,
       delegatee: tokenDelegatee,
-      votingWeight: tokenVotingWeight,
     };
 
     action.dispatch({

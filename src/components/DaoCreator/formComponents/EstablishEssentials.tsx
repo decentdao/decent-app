@@ -58,6 +58,8 @@ export function EstablishEssentials(props: ICreationStepProps) {
     !!safeAddress &&
     createAccountSubstring(safeAddress) !== subgraphInfo?.daoName;
 
+  const isNetworkSelectorDisabled = !!isEdit || !!safeAddress;
+
   // If in governance edit mode and snapshot URL is already set, disable the field
   const snapshotENSDisabled = isEdit && !!subgraphInfo?.daoSnapshotENS;
 
@@ -132,7 +134,7 @@ export function EstablishEssentials(props: ICreationStepProps) {
                 setCurrentConfig(getConfigByChainId(Number(item.value)));
               }}
               title={t('networks')}
-              isDisabled={false}
+              isDisabled={isNetworkSelectorDisabled}
               renderItem={(item, isSelected) => {
                 return (
                   <>

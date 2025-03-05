@@ -74,13 +74,18 @@ export const DAO_ROUTES = {
   },
   proposalNew: {
     relative: (addressPrefix: string, safeAddress: string) =>
-      `/proposals/new/metadata${getDaoQueryParam(addressPrefix, safeAddress)}`,
-    path: 'proposals/new/metadata',
+      `/proposals/new${getDaoQueryParam(addressPrefix, safeAddress)}`,
+    path: 'proposals/new',
   },
   proposalWithActionsNew: {
     relative: (addressPrefix: string, daoAddress: string) =>
-      `/proposals/actions/new/metadata${getDaoQueryParam(addressPrefix, daoAddress)}`,
-    path: 'proposals/actions/new/metadata',
+      `/proposals/actions/new${getDaoQueryParam(addressPrefix, daoAddress)}`,
+    path: 'proposals/actions/new',
+  },
+  proposalSablierNew: {
+    relative: (addressPrefix: string, daoAddress: string) =>
+      `/proposals/new/sablier${getDaoQueryParam(addressPrefix, daoAddress)}`,
+    path: 'proposals/new/sablier',
   },
   settings: {
     relative: (addressPrefix: string, safeAddress: string) =>
@@ -124,7 +129,7 @@ export const DAO_ROUTES = {
   },
   proposalTemplateNew: {
     relative: (addressPrefix: string, safeAddress: string) =>
-      `/proposal-templates/new/metadata${getDaoQueryParam(addressPrefix, safeAddress)}`,
-    path: 'proposal-templates/new/metadata',
+      `/proposal-templates/new${getDaoQueryParam(addressPrefix, safeAddress)}`,
+    path: 'proposal-templates/new',
   },
 };

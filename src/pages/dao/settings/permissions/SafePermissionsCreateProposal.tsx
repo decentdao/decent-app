@@ -216,7 +216,7 @@ export function SafePermissionsCreateProposal() {
         const { erc721Tokens, votingStrategy } = azoriusGovernance;
 
         if (!erc721Tokens || !votingStrategy?.votingPeriod || !votingStrategy.quorumThreshold) {
-          throw new Error('Voting strategy or votes token not found');
+          throw new Error('Voting strategy or NFT votes tokens not found');
         }
 
         const encodedStrategyInitParams = encodeAbiParameters(

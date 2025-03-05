@@ -23,19 +23,31 @@ export type CreateProposalMetadata = {
   documentationUrl?: string;
 };
 
-export enum ProposalBuilderMode {
-  // @dev - this is temporary mode.
-  // Probably will be removed in the future and actions are will be there by default.
-  // UI / UX for this globally is in flux.
-  PROPOSAL_WITH_ACTIONS = 'PROPOSAL_WITH_ACTIONS',
-  PROPOSAL = 'PROPOSAL',
-  TEMPLATE = 'TEMPLATE',
-}
 export type CreateProposalForm = {
   transactions: CreateProposalTransaction[];
   proposalMetadata: CreateProposalMetadata;
   nonce?: number;
 };
+
+export type Tranche = {
+  amount: BigIntValuePair;
+  duration: BigIntValuePair;
+};
+
+export type Stream = {
+  type: 'tranched';
+  tokenAddress: string;
+  recipientAddress: string;
+  startDate: Date;
+  tranches: Tranche[];
+  totalAmount: BigIntValuePair;
+  cancelable: boolean;
+  transferable: boolean;
+};
+
+export type CreateSablierProposalForm = {
+  streams: Stream[];
+} & CreateProposalForm;
 
 export type ProposalTemplate = {
   transactions: CreateProposalTransaction[];
@@ -46,21 +58,16 @@ export enum ProposalActionType {
   EDIT = 'edit',
   DELETE = 'delete',
   TRANSFER = 'transfer',
+  NATIVE_TRANSFER = 'native_transfer',
+  AIRDROP = 'airdrop',
+  WITHDRAW_STREAM = 'withdraw_stream',
 }
 
-export interface ProposalActionsStoreData {
-  actions: CreateProposalAction[];
-}
-
-export interface ProposalActionsStore extends ProposalActionsStoreData {
-  addAction: (action: CreateProposalAction) => void;
-  removeAction: (actionIndex: number) => void;
-  resetActions: () => void;
-  getTransactions: () => CreateProposalTransaction[];
-}
-
-export type CreateProposalAction<T = BigIntValuePair> = {
+export type CreateProposalActionData<T = BigIntValuePair> = {
   actionType: ProposalActionType;
-  content: ReactNode;
   transactions: CreateProposalTransaction<T>[];
+};
+
+export type CreateProposalAction<T = BigIntValuePair> = CreateProposalActionData<T> & {
+  content: ReactNode;
 };

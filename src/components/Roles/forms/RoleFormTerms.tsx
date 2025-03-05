@@ -18,7 +18,7 @@ import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { getAddress, Hex } from 'viem';
 import { DETAILS_BOX_SHADOW } from '../../../constants/common';
-import useNetworkPublicClient from '../../../hooks/useNetworkPublicClient';
+import { useNetworkEnsAddressAsync } from '../../../hooks/useNetworkEnsAddress';
 import { useRolesStore } from '../../../store/roles/useRolesStore';
 import { RoleFormTermStatus, RoleFormValues } from '../../../types/roles';
 import { DatePicker } from '../../ui/forms/DatePicker';
@@ -95,7 +95,7 @@ function RoleTermCreate({
 }) {
   const { t } = useTranslation('roles');
   const { values, errors, setFieldValue } = useFormikContext<RoleFormValues>();
-  const publicClient = useNetworkPublicClient();
+  const { getEnsAddress } = useNetworkEnsAddressAsync();
 
   const handleAddTerm = async () => {
     if (!values.newRoleTerm?.nominee || !values.newRoleTerm?.termEndDate) {
@@ -103,7 +103,7 @@ function RoleTermCreate({
     }
     let nomineeAddress = values.newRoleTerm.nominee;
     if (!values.newRoleTerm.nominee.startsWith('0x') && !getAddress(values.newRoleTerm.nominee)) {
-      const ens = await publicClient.getEnsAddress({
+      const ens = await getEnsAddress({
         name: values.newRoleTerm.nominee,
       });
       if (ens) {

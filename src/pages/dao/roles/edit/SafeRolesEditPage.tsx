@@ -34,7 +34,7 @@ export function SafeRolesEditPage() {
 
   const { values, setFieldValue } = useFormikContext<RoleFormValues>();
 
-  const { hatsTree } = useRolesStore();
+  const { hatsTree, getHat } = useRolesStore();
 
   const navigate = useNavigate();
 
@@ -127,20 +127,27 @@ export function SafeRolesEditPage() {
               emptyTextNotProposer="noRolesNotProposer"
             />
           )}
-          {values.hats.map(hat => (
-            <RoleCardEdit
-              key={hat.id}
-              name={hat.name}
-              wearerAddress={hat.resolvedWearer}
-              editStatus={hat.editedRole?.status}
-              handleRoleClick={() => {
-                setFieldValue('roleEditing', hat);
-                showRoleEditDetails(hat.id);
-              }}
-              payments={hat.payments}
-              isTermed={!!hat.isTermed}
-            />
-          ))}
+          {values.hats.map(hat => {
+            const existingRole = getHat(hat.id);
+            const isCurrentTermActive = existingRole?.roleTerms.currentTerm?.isActive;
+            const isMemberTermPending =
+              !isCurrentTermActive && existingRole?.wearerAddress !== hat.roleTerms?.[0]?.nominee;
+            return (
+              <RoleCardEdit
+                key={hat.id}
+                name={hat.name}
+                wearerAddress={hat.resolvedWearer}
+                editStatus={hat.editedRole?.status}
+                handleRoleClick={() => {
+                  setFieldValue('roleEditing', hat);
+                  showRoleEditDetails(hat.id);
+                }}
+                payments={hat.payments}
+                isCurrentTermActive={isCurrentTermActive}
+                isMemberTermPending={isMemberTermPending}
+              />
+            );
+          })}
         </Show>
       </Box>
       <Flex

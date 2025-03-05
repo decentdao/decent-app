@@ -21,7 +21,6 @@
   "parameter": "Parameter",
   "value": "Value",
   "userInput": "user input",
-  "eth": "ETH",
   "ethParemeterHelper": "Leave empty for a blank input",
   "emptyProposalTemplates": "You haven't added any Proposal Templates yet. Create one above.",
   "emptyProposalTemplatesNotProposer": "This Safe doesn't have any Proposal Templates yet.",
@@ -32,5 +31,12 @@
   "targetDAOAddressLabel": "Safe address",
   "targetDAOAddressHelper": "Set the location that will receive this duplicated template",
   "forkTemplateSubmitButton": "Review Forked Template",
-  "showParameters": "Show All"
+  "showParameters": "Show All",
+  "defaultTemplates": "Default Templates",
+  "templateTransferTitle": "Transfer",
+  "templateTransferDescription": "Send payment to a recipient",
+  "templateSablierTitle": "Stream",
+  "templateSablierDescription": "Stream funds to a recipient over time",
+  "templateAirdropTitle": "Airdrop",
+  "templateAirdropDescription": "Send tokens to multiple recipients"
 }

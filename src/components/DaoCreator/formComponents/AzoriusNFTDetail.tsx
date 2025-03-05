@@ -1,7 +1,7 @@
 import { Flex, Box, Text } from '@chakra-ui/react';
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Address, erc721Abi, getContract, isAddress } from 'viem';
+import { Address, erc721Abi, getContract } from 'viem';
 import useNetworkPublicClient from '../../../hooks/useNetworkPublicClient';
 import { useGetAccountName } from '../../../hooks/utils/useGetAccountName';
 import { BigIntValuePair, ERC721TokenConfig } from '../../../types';
@@ -36,7 +36,7 @@ export default function AzoriusNFTDetail({
 
       setLoading(true);
       try {
-        if (nft.tokenAddress && isAddress(nft.tokenAddress)) {
+        if (nft.tokenAddress) {
           const tokenContract = getContract({
             address: nft.tokenAddress,
             abi: erc721Abi,

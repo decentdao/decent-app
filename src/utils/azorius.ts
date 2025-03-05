@@ -130,7 +130,11 @@ const getProposalVotes = (
 
     const events = [];
     for (const event of erc20ProposalVoteEvents) {
-      if (!event.args.voteType || !event.args.weight || !event.args.voter) {
+      if (
+        event.args.voteType === undefined ||
+        event.args.weight === undefined ||
+        event.args.voter === undefined
+      ) {
         continue;
       }
       events.push({
@@ -149,10 +153,10 @@ const getProposalVotes = (
     const events = [];
     for (const event of erc721ProposalVoteEvents) {
       if (
-        !event.args.voteType ||
-        !event.args.voter ||
-        !event.args.tokenIds ||
-        !event.args.tokenAddresses
+        event.args.voteType === undefined ||
+        event.args.voter === undefined ||
+        event.args.tokenIds === undefined ||
+        event.args.tokenAddresses === undefined
       ) {
         continue;
       }

@@ -4,6 +4,7 @@ import { ModalProvider } from './components/ui/modals/ModalProvider';
 import { Global } from './components/ui/page/Global';
 import { BASE_ROUTES, DAO_ROUTES } from './constants/routes';
 import FourOhFourPage from './pages/404';
+import LoadingProblem from './pages/LoadingProblem';
 import { SafeCreatePage } from './pages/create/SafeCreatePage';
 import { SafeController } from './pages/dao/SafeController';
 import { SafeDashboardPage } from './pages/dao/SafeDashboardPage';
@@ -31,6 +32,9 @@ import { SafePermissionsSettingsPage } from './pages/dao/settings/permissions/Sa
 import { SafeTreasuryPage } from './pages/dao/treasury/SafeTreasuryPage';
 import HomePage from './pages/home/HomePage';
 
+interface LoaderFunctionArgs {
+  request: Request;
+}
 export const router = (addressPrefix: string, daoAddress: string | undefined) =>
   wrapCreateBrowserRouter(createBrowserRouter)([
     {
@@ -59,6 +63,16 @@ export const router = (addressPrefix: string, daoAddress: string | undefined) =>
         {
           path: '/',
           element: <SafeController />,
+          // @dev handles redirect when dao address query is missing from URL
+          loader: ({ request }: LoaderFunctionArgs) => {
+            const url = new URL(request.url);
+            const searchParams = new URLSearchParams(url.search);
+            const daoAddressWithPrefix = searchParams.get('dao');
+            if (!daoAddressWithPrefix) {
+              return <LoadingProblem type="badQueryParam" />;
+            }
+            return null;
+          },
           children: [
             {
               path: DAO_ROUTES.dao.path,
@@ -133,17 +147,8 @@ export const router = (addressPrefix: string, daoAddress: string | undefined) =>
                   element: <SafeProposalTemplatesPage />,
                 },
                 {
-                  path: 'new/*',
-                  element: <SafeCreateProposalTemplatePage />,
-                },
-                {
                   path: 'new',
-                  loader: () =>
-                    redirect(
-                      daoAddress
-                        ? DAO_ROUTES.proposalTemplateNew.relative(addressPrefix, daoAddress)
-                        : BASE_ROUTES.landing,
-                    ),
+                  element: <SafeCreateProposalTemplatePage />,
                 },
               ],
             },
@@ -164,45 +169,16 @@ export const router = (addressPrefix: string, daoAddress: string | undefined) =>
                   element: <SafeProposalDetailsPage />,
                 },
                 {
-                  path: 'new/*',
+                  path: 'new',
                   element: <SafeProposalCreatePage />,
                 },
                 {
-                  path: 'actions/new/*',
+                  path: 'actions/new',
                   element: <SafeProposalWithActionsCreatePage />,
                 },
                 {
-                  path: 'actions/new',
-                  loader: () =>
-                    redirect(
-                      daoAddress
-                        ? DAO_ROUTES.proposalWithActionsNew.relative(addressPrefix, daoAddress)
-                        : BASE_ROUTES.landing,
-                    ),
-                },
-                {
-                  path: 'new',
-                  loader: () =>
-                    redirect(
-                      daoAddress
-                        ? DAO_ROUTES.proposalNew.relative(addressPrefix, daoAddress)
-                        : BASE_ROUTES.landing,
-                    ),
-                },
-                {
-                  path: 'new/sablier/*',
-                  element: <SafeSablierProposalCreatePage />,
-                },
-                {
                   path: 'new/sablier',
-                  loader: () =>
-                    redirect(
-                      daoAddress
-                        ? DAO_ROUTES.proposalNew
-                            .relative(addressPrefix, daoAddress)
-                            .replace('new', 'new/sablier')
-                        : BASE_ROUTES.landing,
-                    ),
+                  element: <SafeSablierProposalCreatePage />,
                 },
               ],
             },

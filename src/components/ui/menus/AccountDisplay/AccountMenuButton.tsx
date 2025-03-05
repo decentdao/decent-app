@@ -2,7 +2,7 @@ import { Box, Flex, Icon, Show, Text } from '@chakra-ui/react';
 import { CaretDown } from '@phosphor-icons/react';
 import { useTranslation } from 'react-i18next';
 import { useAccount } from 'wagmi';
-import useAvatar from '../../../../hooks/utils/useAvatar';
+import { useNetworkEnsAvatar } from '../../../../hooks/useNetworkEnsAvatar';
 import { useGetAccountName } from '../../../../hooks/utils/useGetAccountName';
 import Avatar from '../../page/Header/Avatar';
 
@@ -28,7 +28,7 @@ function WalletMenuButton() {
   const user = useAccount();
   const account = user.address;
   const { displayName: accountDisplayName } = useGetAccountName(account);
-  const avatarURL = useAvatar(accountDisplayName);
+  const { data: avatarURL } = useNetworkEnsAvatar({ name: accountDisplayName });
 
   if (!account) {
     return null;

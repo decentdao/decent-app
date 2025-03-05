@@ -19,9 +19,9 @@ export function SettingsPermissionsStrategyForm({
   const tooltipContainerRef = useRef<HTMLDivElement>(null);
   const { governance } = useFractal();
   const azoriusGovernance = governance as AzoriusGovernance;
-  const { votesToken } = azoriusGovernance;
+  const { votesToken, erc721Tokens } = azoriusGovernance;
 
-  if (!votesToken) return null;
+  if (!votesToken && !erc721Tokens) return null;
 
   return (
     <Flex
@@ -73,7 +73,7 @@ export function SettingsPermissionsStrategyForm({
               textStyle="body-small"
               color="white-0"
             >
-              {votesToken.symbol}
+              {votesToken?.symbol || erc721Tokens?.map(token => token.symbol).join(', ')}
             </Text>
           </Flex>
         </Button>
@@ -84,7 +84,7 @@ export function SettingsPermissionsStrategyForm({
       >
         <BigIntInput
           onChange={setProposerThreshold}
-          decimalPlaces={votesToken.decimals}
+          decimalPlaces={votesToken ? votesToken.decimals : 0}
           value={proposerThreshold.bigintValue}
           parentFormikValue={proposerThreshold}
         />

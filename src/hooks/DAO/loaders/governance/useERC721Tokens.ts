@@ -8,17 +8,27 @@ import useNetworkPublicClient from '../../../useNetworkPublicClient';
 
 export default function useERC721Tokens() {
   const {
-    governanceContracts: { linearVotingErc721Address },
+    governanceContracts: {
+      linearVotingErc721Address,
+      linearVotingErc721WithHatsWhitelistingAddress,
+    },
     action,
   } = useFractal();
   const publicClient = useNetworkPublicClient();
   const loadERC721Tokens = useCallback(async () => {
-    if (!linearVotingErc721Address) {
+    const linear721VotingAddress =
+      linearVotingErc721Address ?? linearVotingErc721WithHatsWhitelistingAddress;
+
+    const linear721VotingAbi = linearVotingErc721Address
+      ? abis.LinearERC721Voting
+      : abis.LinearERC721VotingWithHatsProposalCreation;
+
+    if (!linear721VotingAddress) {
       return;
     }
     const erc721LinearVotingContract = getContract({
-      abi: abis.LinearERC721Voting,
-      address: linearVotingErc721Address,
+      abi: linear721VotingAbi,
+      address: linear721VotingAddress,
       client: publicClient,
     });
     const addresses = await erc721LinearVotingContract.read.getAllTokenAddresses();
@@ -45,7 +55,12 @@ export default function useERC721Tokens() {
       type: FractalGovernanceAction.SET_ERC721_TOKENS_DATA,
       payload: erc721Tokens,
     });
-  }, [action, linearVotingErc721Address, publicClient]);
+  }, [
+    action,
+    linearVotingErc721Address,
+    linearVotingErc721WithHatsWhitelistingAddress,
+    publicClient,
+  ]);
 
   return loadERC721Tokens;
 }

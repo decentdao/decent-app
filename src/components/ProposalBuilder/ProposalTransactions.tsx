@@ -14,18 +14,14 @@ import { FormikErrors, FormikProps } from 'formik';
 import { Dispatch, SetStateAction } from 'react';
 import { useTranslation } from 'react-i18next';
 import { BigIntValuePair } from '../../types';
-import {
-  CreateProposalForm,
-  CreateProposalTransaction,
-  ProposalBuilderMode,
-} from '../../types/proposalBuilder';
+import { CreateProposalForm, CreateProposalTransaction } from '../../types/proposalBuilder';
 import ProposalTransaction from './ProposalTransaction';
 
 interface ProposalTransactionsProps extends FormikProps<CreateProposalForm> {
   pendingTransaction: boolean;
   expandedIndecies: number[];
   setExpandedIndecies: Dispatch<SetStateAction<number[]>>;
-  mode: ProposalBuilderMode;
+  isProposalMode: boolean;
 }
 export default function ProposalTransactions({
   values: { transactions },
@@ -34,7 +30,7 @@ export default function ProposalTransactions({
   pendingTransaction,
   expandedIndecies,
   setExpandedIndecies,
-  mode,
+  isProposalMode,
 }: ProposalTransactionsProps) {
   const { t } = useTranslation(['proposal', 'proposalTemplate', 'common']);
 
@@ -120,7 +116,7 @@ export default function ProposalTransactions({
                     transactionIndex={index}
                     setFieldValue={setFieldValue}
                     transactionPending={pendingTransaction}
-                    mode={mode}
+                    isProposalMode={isProposalMode}
                   />
                 </AccordionPanel>
               </Box>

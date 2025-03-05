@@ -1,6 +1,15 @@
-import { gql } from '@apollo/client';
 import { useCallback, useMemo, useState } from 'react';
 import { useAccount } from 'wagmi';
+import { createSnapshotSubgraphClient } from '../../../../graphql';
+import {
+  ExtendedSnapshotProposalQuery,
+  ExtendedSnapshotProposalResponse,
+  SnapshotProposalVotesQuery,
+  SnapshotProposalVotesResponse,
+  SnapshotVote,
+  UserVotingWeightQuery,
+  UserVotingWeightResponse,
+} from '../../../../graphql/SnapshotQueries';
 import { logError } from '../../../../helpers/errorLogging';
 import { useDaoInfoStore } from '../../../../store/daoInfo/useDaoInfoStore';
 import {
@@ -11,7 +20,6 @@ import {
   SnapshotProposal,
   SnapshotWeightedVotingChoice,
 } from '../../../../types';
-import { createSnapshotGraphQlClient } from './';
 
 export default function useSnapshotProposal(proposal: FractalProposal | null | undefined) {
   const [extendedSnapshotProposal, setExtendedSnapshotProposal] =
@@ -19,7 +27,7 @@ export default function useSnapshotProposal(proposal: FractalProposal | null | u
   const { address } = useAccount();
 
   const { subgraphInfo } = useDaoInfoStore();
-  const snaphshotGraphQlClient = useMemo(() => createSnapshotGraphQlClient(), []);
+  const snaphshotGraphQlClient = useMemo(() => createSnapshotSubgraphClient(), []);
 
   const snapshotProposal = useMemo(() => {
     const possiblySnaphsotProposal = proposal as SnapshotProposal;
@@ -33,70 +41,38 @@ export default function useSnapshotProposal(proposal: FractalProposal | null | u
   const loadSnapshotProposal = useCallback(async () => {
     if (!!snapshotProposal && snaphshotGraphQlClient) {
       const proposalQueryResult = await snaphshotGraphQlClient
-        .query({
-          query: gql`
-          query ExtendedSnapshotProposal {
-            proposal(id: "${snapshotProposal.snapshotProposalId}") {
-              snapshot
-              type
-              quorum
-              privacy
-              strategies {
-                name
-                network
-                params
-              }
-              plugins
-              choices
-              ipfs
-            }
-          }
-        `,
+        .query<ExtendedSnapshotProposalResponse>(ExtendedSnapshotProposalQuery, {
+          snapshotProposalId: snapshotProposal.snapshotProposalId,
         })
-        .then(
-          ({
-            data: {
-              proposal: { snapshot, strategies, plugins, choices, type, quorum, privacy, ipfs },
-            },
-          }) => {
-            return {
-              snapshot,
-              strategies,
-              plugins,
-              choices,
-              type,
-              quorum,
-              privacy,
-              ipfs,
-            };
-          },
-        );
+        .toPromise();
+
+      if (!proposalQueryResult.data?.proposal) {
+        throw new Error('Failed to fetch proposal data');
+      }
+
+      const proposalData = proposalQueryResult.data.proposal;
 
       const votesQueryResult = await snaphshotGraphQlClient
-        .query({
-          query: gql`query SnapshotProposalVotes {
-          votes(where: {proposal: "${snapshotProposal.snapshotProposalId}"}, first: 500) {
-            id
-            voter
-            vp
-            vp_by_strategy
-            vp_state
-            created
-            choice
-          }
-        }`,
+        .query<SnapshotProposalVotesResponse>(SnapshotProposalVotesQuery, {
+          snapshotProposalId: snapshotProposal.snapshotProposalId,
         })
-        .then(({ data: { votes } }) => {
-          return votes.map(({ id, voter, vp, vp_by_strategy, vp_state, created, choice }: any) => ({
-            id,
-            voter,
-            votingWeight: vp,
-            votingWeightByStrategy: vp_by_strategy,
-            votingState: vp_state,
-            created,
-            choice,
-          }));
-        });
+        .toPromise();
+
+      if (!votesQueryResult.data?.votes) {
+        throw new Error('Failed to fetch votes data');
+      }
+
+      const votes = votesQueryResult.data.votes.map(
+        (vote: SnapshotVote): DecentSnapshotVote => ({
+          id: vote.id,
+          voter: vote.voter,
+          votingWeight: vote.vp,
+          votingWeightByStrategy: vote.vp_by_strategy,
+          votingState: vote.vp_state,
+          created: vote.created,
+          choice: vote.choice,
+        }),
+      );
 
       const votesBreakdown: {
         [voteChoice: string]: {
@@ -105,7 +81,7 @@ export default function useSnapshotProposal(proposal: FractalProposal | null | u
         };
       } = {};
 
-      const { choices, type, privacy } = proposalQueryResult;
+      const { choices, type, privacy } = proposalData;
 
       if (type === 'weighted') {
         Object.keys(choices).forEach((_choice: string, choiceIndex) => {
@@ -115,7 +91,7 @@ export default function useSnapshotProposal(proposal: FractalProposal | null | u
           };
         });
       } else {
-        choices.forEach((choice: string) => {
+        (choices as string[]).forEach(choice => {
           votesBreakdown[choice] = {
             votes: [],
             total: 0,
@@ -127,7 +103,7 @@ export default function useSnapshotProposal(proposal: FractalProposal | null | u
       const isClosed = snapshotProposal.state === FractalProposalState.CLOSED;
 
       if (!(isShielded && !isClosed)) {
-        votesQueryResult.forEach((vote: DecentSnapshotVote) => {
+        votes.forEach((vote: DecentSnapshotVote) => {
           if (type === 'weighted') {
             const voteChoices = vote.choice as SnapshotWeightedVotingChoice;
             if (typeof voteChoices === 'number') {
@@ -169,7 +145,7 @@ export default function useSnapshotProposal(proposal: FractalProposal | null | u
             }
           } else {
             const voteChoice = vote.choice as number;
-            const choiceKey = choices[voteChoice - 1];
+            const choiceKey = (choices as string[])[voteChoice - 1];
             const existingChoiceType = votesBreakdown[choiceKey];
 
             if (existingChoiceType) {
@@ -189,9 +165,9 @@ export default function useSnapshotProposal(proposal: FractalProposal | null | u
 
       const extendedProposal: ExtendedSnapshotProposal = {
         ...snapshotProposal,
-        ...proposalQueryResult,
+        ...proposalData,
         votesBreakdown,
-        votes: votesQueryResult,
+        votes,
       };
 
       setExtendedSnapshotProposal(extendedProposal);
@@ -204,35 +180,26 @@ export default function useSnapshotProposal(proposal: FractalProposal | null | u
       votingWeightByStrategy: [0],
       votingState: '',
     };
+
     if (snapshotProposal?.snapshotProposalId && snaphshotGraphQlClient) {
       const queryResult = await snaphshotGraphQlClient
-        .query({
-          query: gql`
-      query UserVotingWeight {
-          vp(
-              voter: "${address}"
-              space: "${subgraphInfo?.daoSnapshotENS}"
-              proposal: "${snapshotProposal.snapshotProposalId}"
-          ) {
-              vp
-              vp_by_strategy
-              vp_state
-          }
-      }`,
+        .query<UserVotingWeightResponse>(UserVotingWeightQuery, {
+          voter: address,
+          space: subgraphInfo?.daoSnapshotENS,
+          proposal: snapshotProposal.snapshotProposalId,
         })
-        .then(({ data: { vp } }) => {
-          if (!vp) {
-            logError('Error while retrieving Snapshot voting weight', vp);
-            return emptyVotingWeight;
-          }
-          return {
-            votingWeight: vp.vp,
-            votingWeightByStrategy: vp.vp_by_strategy,
-            votingState: vp.vp_state,
-          };
-        });
+        .toPromise();
 
-      return queryResult;
+      if (!queryResult.data?.vp) {
+        logError('Error while retrieving Snapshot voting weight', queryResult.data?.vp);
+        return emptyVotingWeight;
+      }
+
+      return {
+        votingWeight: queryResult.data.vp.vp,
+        votingWeightByStrategy: queryResult.data.vp.vp_by_strategy,
+        votingState: queryResult.data.vp.vp_state,
+      };
     }
 
     return emptyVotingWeight;

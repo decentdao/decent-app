@@ -1,4 +1,26 @@
-query DAOQuery($safeAddress: Bytes) {
+// Define the base DAO structure that can be nested
+interface DAONode {
+  id: string;
+  address: string;
+  parentAddress: string | null;
+  name: string | null;
+  snapshotENS: string | null;
+}
+
+// Define the recursive hierarchy structure
+interface DAOHierarchyNode extends DAONode {
+  hierarchy: DAOHierarchyNode[];
+}
+
+// Define the top-level DAO response structure
+export interface DAOQueryResponse {
+  daos: (DAONode & {
+    hierarchy: DAOHierarchyNode[];
+    proposalTemplatesHash: string | null;
+  })[];
+}
+
+export const DAOQuery = `query DAOQuery($safeAddress: Bytes) {
   daos(where: { id: $safeAddress }) {
     id
     address
@@ -39,4 +61,4 @@ query DAOQuery($safeAddress: Bytes) {
     }
     proposalTemplatesHash
   }
-}
+}`;

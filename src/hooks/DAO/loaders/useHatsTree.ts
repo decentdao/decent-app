@@ -1,9 +1,8 @@
-import { useApolloClient } from '@apollo/client';
 import { HatsSubgraphClient, Tree } from '@hatsprotocol/sdk-v1-subgraph';
 import { useCallback, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
-import { PublicClient } from 'viem';
+import { createSablierSubgraphClient } from '../../../graphql';
 import { useFractal } from '../../../providers/App/AppProvider';
 import useIPFSClient from '../../../providers/App/hooks/useIPFSClient';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
@@ -22,13 +21,15 @@ const useHatsTree = () => {
     governanceContracts: {
       linearVotingErc20WithHatsWhitelistingAddress,
       linearVotingErc721WithHatsWhitelistingAddress,
+      isLoaded: governanceContractsLoaded,
     },
   } = useFractal();
   const { hatsTreeId, contextChainId, setHatsTree } = useRolesStore();
 
   const ipfsClient = useIPFSClient();
   const {
-    sablierSubgraph,
+    chain,
+    getConfigByChainId,
     contracts: {
       hatsProtocol,
       erc6551Registry,
@@ -37,10 +38,9 @@ const useHatsTree = () => {
     },
   } = useNetworkConfigStore();
   const publicClient = useNetworkPublicClient();
-  const apolloClient = useApolloClient();
 
   const getHatsTree = useCallback(
-    async (params: { hatsTreeId: number; contextChainId: number; publicClient: PublicClient }) => {
+    async (params: { hatsTreeId: number; contextChainId: number }) => {
       try {
         const tree = await hatsSubgraphClient.getTree({
           chainId: params.contextChainId,
@@ -93,8 +93,9 @@ const useHatsTree = () => {
         );
 
         const treeWithFetchedDetails: Tree = { ...tree, hats: hatsWithFetchedDetails };
-
         try {
+          const config = getConfigByChainId(chain.id);
+          const sablierSubgraphClient = createSablierSubgraphClient(config);
           await setHatsTree({
             hatsTree: treeWithFetchedDetails,
             chainId: BigInt(params.contextChainId),
@@ -102,12 +103,11 @@ const useHatsTree = () => {
             erc6551Registry,
             hatsAccountImplementation,
             hatsElectionsImplementation,
-            publicClient: params.publicClient,
+            publicClient,
             whitelistingVotingStrategy:
               linearVotingErc20WithHatsWhitelistingAddress ||
               linearVotingErc721WithHatsWhitelistingAddress,
-            apolloClient,
-            sablierSubgraph,
+            sablierSubgraphClient,
           });
         } catch (e) {
           if (e instanceof DecentHatsError) {
@@ -115,6 +115,8 @@ const useHatsTree = () => {
           }
         }
       } catch (e) {
+        const config = getConfigByChainId(chain.id);
+        const sablierSubgraphClient = createSablierSubgraphClient(config);
         setHatsTree({
           hatsTree: null,
           chainId: BigInt(params.contextChainId),
@@ -122,9 +124,8 @@ const useHatsTree = () => {
           erc6551Registry,
           hatsAccountImplementation,
           hatsElectionsImplementation,
-          publicClient: params.publicClient,
-          apolloClient,
-          sablierSubgraph,
+          publicClient,
+          sablierSubgraphClient,
         });
         const message = t('invalidHatsTreeIdMessage');
         toast.error(message);
@@ -138,7 +139,8 @@ const useHatsTree = () => {
       }
     },
     [
-      apolloClient,
+      chain.id,
+      getConfigByChainId,
       erc6551Registry,
       hatsAccountImplementation,
       hatsElectionsImplementation,
@@ -146,19 +148,26 @@ const useHatsTree = () => {
       ipfsClient,
       linearVotingErc20WithHatsWhitelistingAddress,
       linearVotingErc721WithHatsWhitelistingAddress,
-      sablierSubgraph,
       setHatsTree,
+      publicClient,
       t,
     ],
   );
+
   const node = useDaoInfoStore();
   const safeAddress = node.safe?.address;
   const daoHatTreeloadKey = useRef<string | null>();
+
   useEffect(() => {
     const key = safeAddress && hatsTreeId ? `${safeAddress}:${hatsTreeId}` : null;
 
     const previousSafeAddress = daoHatTreeloadKey.current?.split(':')[0];
     const previousHatsTreeId = daoHatTreeloadKey.current?.split(':')[1];
+
+    // Whitelisting contracts might be not loaded yet which might lead to wrong permissions loading
+    if (!governanceContractsLoaded) {
+      return;
+    }
 
     if (
       !!hatsTreeId &&
@@ -170,7 +179,6 @@ const useHatsTree = () => {
       getHatsTree({
         hatsTreeId,
         contextChainId,
-        publicClient,
       });
 
       daoHatTreeloadKey.current = key;
@@ -178,7 +186,7 @@ const useHatsTree = () => {
       // If the safe address changes, reset the load key
       daoHatTreeloadKey.current = key;
     }
-  }, [contextChainId, getHatsTree, hatsTreeId, publicClient, safeAddress]);
+  }, [contextChainId, getHatsTree, hatsTreeId, safeAddress, governanceContractsLoaded]);
 };
 
 export { useHatsTree };

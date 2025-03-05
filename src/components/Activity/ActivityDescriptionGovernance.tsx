@@ -2,7 +2,7 @@ import { Box, Flex, Text } from '@chakra-ui/react';
 import { useTranslation } from 'react-i18next';
 import { getAddress } from 'viem';
 import { useGetMetadata } from '../../hooks/DAO/proposal/useGetMetadata';
-import useAvatar from '../../hooks/utils/useAvatar';
+import { useNetworkEnsAvatar } from '../../hooks/useNetworkEnsAvatar';
 import { useGetAccountName } from '../../hooks/utils/useGetAccountName';
 import {
   GovernanceActivity,
@@ -54,7 +54,7 @@ function ProposalAuthor({ activity }: { activity: FractalProposal }) {
         : undefined;
 
   const { displayName: author } = useGetAccountName(proposer);
-  const avatarURL = useAvatar(author);
+  const { data: avatarURL } = useNetworkEnsAvatar({ name: author });
 
   if (!proposer) {
     return null;

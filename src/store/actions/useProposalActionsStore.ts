@@ -1,6 +1,20 @@
 import { create } from 'zustand';
-import { ProposalActionsStore } from '../../types/proposalBuilder';
-import { initialProposalActionsStore } from './proposalActionsStoreUtils';
+import { CreateProposalAction, CreateProposalTransaction } from '../../types';
+
+interface ProposalActionsStoreData {
+  actions: CreateProposalAction[];
+}
+
+interface ProposalActionsStore extends ProposalActionsStoreData {
+  addAction: (action: CreateProposalAction) => void;
+  removeAction: (actionIndex: number) => void;
+  resetActions: () => void;
+  getTransactions: () => CreateProposalTransaction[];
+}
+
+const initialProposalActionsStore: ProposalActionsStoreData = {
+  actions: [],
+};
 
 export const useProposalActionsStore = create<ProposalActionsStore>()((set, get) => ({
   ...initialProposalActionsStore,

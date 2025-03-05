@@ -39,10 +39,7 @@ export default function SnapshotProposalDetails({ proposal }: ISnapshotProposalD
               proposal={proposal}
               extendedSnapshotProposal={extendedSnapshotProposal}
             >
-              <AzoriusOrSnapshotProposalAction
-                proposal={proposal}
-                expandedView
-              />
+              <AzoriusOrSnapshotProposalAction proposal={proposal} />
             </VoteContextProvider>
           )}
         </GridItem>

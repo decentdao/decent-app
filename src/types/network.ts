@@ -1,6 +1,12 @@
 import { Address, Chain } from 'viem';
 import { GovernanceType } from './fractal';
 
+export type TheGraphConfig = {
+  space: number; // for dev
+  slug: string; // for dev
+  id: string; // for prod
+};
+
 export type NetworkConfig = {
   order: number; // any arbitrary integer, used to "order" the networks in the dropdown
   chain: Chain;
@@ -10,16 +16,9 @@ export type NetworkConfig = {
   etherscanAPIUrl: string;
   addressPrefix: string; // copy whatever Safe uses
   nativeTokenIcon: string;
-  subgraph: {
-    space: number;
-    slug: string;
-    version: string;
-  };
-  // @dev - might be not supported on some chains
-  sablierSubgraph?: {
-    space: number;
-    slug: string;
-  };
+  isENSSupported: boolean;
+  decentSubgraph: TheGraphConfig;
+  sablierSubgraph: TheGraphConfig;
   moralis: {
     chainSupported: boolean;
     deFiSupported: boolean;
@@ -68,6 +67,7 @@ export type NetworkConfig = {
     sablierV2LockupDynamic: Address;
     sablierV2LockupTranched: Address;
     sablierV2LockupLinear: Address;
+    disperse: Address;
   };
   staking: {
     lido?: {
@@ -77,4 +77,5 @@ export type NetworkConfig = {
     };
   };
   createOptions: GovernanceType[];
+  gaslessVotingSupported: boolean;
 };

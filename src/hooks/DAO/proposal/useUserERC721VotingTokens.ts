@@ -1,13 +1,21 @@
 import { abis } from '@fractal-framework/fractal-contracts';
 import { useCallback, useEffect, useState } from 'react';
-import { Address, GetContractReturnType, PublicClient, erc721Abi, getContract } from 'viem';
+import { Address, erc721Abi, getContract } from 'viem';
 import { useAccount } from 'wagmi';
 import { useFractal } from '../../../providers/App/AppProvider';
-import { useSafeAPI } from '../../../providers/App/hooks/useSafeAPI';
 import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
-import { AzoriusGovernance } from '../../../types';
+import { AzoriusGovernance, ERC721TokenData } from '../../../types';
 import useNetworkPublicClient from '../../useNetworkPublicClient';
 import useVotingStrategiesAddresses from '../../utils/useVotingStrategiesAddresses';
+
+const DEFAULT_RETURN = {
+  totalVotingTokenAddresses: [],
+  totalVotingTokenIds: [],
+  remainingTokenAddresses: [],
+  remainingTokenIds: [],
+};
+
+type ERC721VotingType = 'erc721' | 'erc721WithHats';
 
 /**
  * Retrieves list of ERC-721 voting tokens for the supplied `address`(aka `user.address`) param
@@ -19,6 +27,7 @@ import useVotingStrategiesAddresses from '../../utils/useVotingStrategiesAddress
  * @returns {string[]} `remainingTokenIds - list of tokens that `address` can use for proposal under `proposalId` param. This covers the case when user already voted for proposal but received more tokens, that weren't used in this proposal.
  * @returns {string[]} `remainingTokenAddresses` - same as `totalVotingTokenAddresses` - repeats contract address of NFT for each token ID in `remainingTokenIds` array.
  */
+
 export default function useUserERC721VotingTokens(
   safeAddress: Address | null,
   proposalId: string | null,
@@ -30,102 +39,89 @@ export default function useUserERC721VotingTokens(
   const [remainingTokenAddresses, setRemainingTokenAddresses] = useState<Address[]>([]);
 
   const {
-    governanceContracts: { linearVotingErc721Address },
+    governanceContracts: {
+      linearVotingErc721Address,
+      linearVotingErc721WithHatsWhitelistingAddress,
+    },
     governance,
   } = useFractal();
   const user = useAccount();
   const { safe } = useDaoInfoStore();
-  const safeAPI = useSafeAPI();
   const publicClient = useNetworkPublicClient();
 
   const { getVotingStrategies } = useVotingStrategiesAddresses();
 
-  const azoriusGovernance = governance as AzoriusGovernance;
-  const { erc721Tokens } = azoriusGovernance;
+  const getLinearVotingContract = useCallback(
+    (_address: Address, _voting: ERC721VotingType) => {
+      return getContract({
+        abi:
+          _voting === 'erc721'
+            ? abis.LinearERC721Voting
+            : abis.LinearERC721VotingWithHatsProposalCreation,
+        address: _address,
+        client: publicClient,
+      });
+    },
+    [publicClient],
+  );
 
-  const globalContextSafeAddress = safe?.address;
+  // Means getting these for any safe, primary use case - calculating user voting weight for freeze voting
+  const getUserVotingTokenData = useCallback(
+    async (_safeAddress: Address) => {
+      const votingStrategies = await getVotingStrategies(_safeAddress);
+      if (votingStrategies) {
+        const votingStrategy = votingStrategies.find(
+          strategy =>
+            strategy.isLinearVotingErc721 || strategy.isLinearVotingErc721WithHatsProposalCreation,
+        );
+        if (votingStrategy) {
+          const linear721VotingAddress = votingStrategy.strategyAddress;
+          const votingContract = votingStrategy.isLinearVotingErc721
+            ? getLinearVotingContract(linear721VotingAddress, 'erc721')
+            : getLinearVotingContract(linear721VotingAddress, 'erc721WithHats');
 
-  const getUserERC721VotingTokens = useCallback(
-    async (_safeAddress: Address | null, _proposalId: number | null) => {
-      const totalTokenAddresses: Address[] = [];
-      const totalTokenIds: string[] = [];
-      const tokenAddresses: Address[] = [];
-      const tokenIds: string[] = [];
-      const userERC721Tokens = new Map<Address, Set<string>>();
+          const addresses = await votingContract.read.getAllTokenAddresses();
+          const governanceTokens = await Promise.all(
+            addresses.map(async tokenAddress => {
+              if (!votingContract) {
+                throw new Error('Voting contract is undefined');
+              }
 
-      let governanceTokens = erc721Tokens;
-      let votingContract:
-        | GetContractReturnType<typeof abis.LinearERC721Voting, PublicClient>
-        | undefined;
+              const tokenContract = getContract({
+                abi: erc721Abi,
+                address: tokenAddress,
+                client: publicClient,
+              });
 
-      if (!globalContextSafeAddress || !safeAPI) {
-        return {
-          totalVotingTokenAddresses: totalTokenAddresses,
-          totalVotingTokenIds: totalTokenIds,
-          remainingTokenAddresses: tokenAddresses,
-          remainingTokenIds: tokenIds,
-        };
-      }
+              const [votingWeight, name, symbol] = await Promise.all([
+                votingContract.read.getTokenWeight([tokenAddress]),
+                tokenContract.read.name(),
+                tokenContract.read.symbol(),
+              ]);
 
-      if (_safeAddress && globalContextSafeAddress !== _safeAddress) {
-        // Means getting these for any safe, primary use case - calculating user voting weight for freeze voting
-        const votingStrategies = await getVotingStrategies(_safeAddress);
-        if (votingStrategies) {
-          const votingStrategyAddress = votingStrategies.find(
-            strategy =>
-              strategy.isLinearVotingErc721 ||
-              strategy.isLinearVotingErc721WithHatsProposalCreation,
-          )?.strategyAddress;
-          if (votingStrategyAddress) {
-            votingContract = getContract({
-              abi: abis.LinearERC721Voting,
-              address: votingStrategyAddress,
-              client: publicClient,
-            });
-            const addresses = await votingContract.read.getAllTokenAddresses();
-            governanceTokens = await Promise.all(
-              addresses.map(async tokenAddress => {
-                if (!votingContract) {
-                  throw new Error('Voting contract is undefined');
-                }
-
-                const tokenContract = getContract({
-                  abi: erc721Abi,
-                  address: tokenAddress,
-                  client: publicClient,
-                });
-
-                const [votingWeight, name, symbol] = await Promise.all([
-                  votingContract.read.getTokenWeight([tokenAddress]),
-                  tokenContract.read.name(),
-                  tokenContract.read.symbol(),
-                ]);
-
-                return { name, symbol, address: tokenAddress, votingWeight };
-              }),
-            );
-          }
+              return { name, symbol, address: tokenAddress, votingWeight };
+            }),
+          );
+          return {
+            votingType: votingStrategy.isLinearVotingErc721
+              ? 'erc721'
+              : ('erc721WithHats' as ERC721VotingType),
+            governanceTokens,
+            linear721VotingAddress,
+          };
         }
       }
+      return undefined;
+    },
+    [getLinearVotingContract, getVotingStrategies, publicClient],
+  );
 
-      if (linearVotingErc721Address && !votingContract) {
-        votingContract = getContract({
-          abi: abis.LinearERC721Voting,
-          address: linearVotingErc721Address,
-          client: publicClient,
-        });
+  const getUserERC721Tokens = useCallback(
+    async (userAddress: Address, governanceTokens: ERC721TokenData[] | undefined) => {
+      const userERC721Tokens = new Map<Address, Set<string>>();
+      if (!governanceTokens || !userAddress) {
+        return userERC721Tokens;
       }
-
-      if (!governanceTokens || !votingContract || !user.address) {
-        return {
-          totalVotingTokenAddresses: totalTokenAddresses,
-          totalVotingTokenIds: totalTokenIds,
-          remainingTokenAddresses: tokenAddresses,
-          remainingTokenIds: tokenIds,
-        };
-      }
-
-      const userAddress = user.address;
       await Promise.all(
         // Using `map` instead of `forEach` to simplify usage of `Promise.all`
         // and guarantee syncronous contractFn assignment
@@ -169,56 +165,95 @@ export default function useUserERC721VotingTokens(
           }
         }),
       );
+      return userERC721Tokens;
+    },
+    [publicClient],
+  );
 
-      const tokenIdsSets = [...userERC721Tokens.values()];
-      const tokenAddressesKeys = [...userERC721Tokens.keys()];
-      await Promise.all(
-        // Same here
-        tokenIdsSets.map(async (tokenIdsSet, setIndex) => {
-          const tokenAddress = tokenAddressesKeys[setIndex];
-          // Damn, this is so ugly
-          // Probably using Moralis API might improve this
-          // But I also don't want to intruduce another API for this single thing
-          // Maybe, if we will encounter need to wider support of ERC-1155 - we will bring it and improve this piece of crap as well :D
-          await Promise.all(
-            [...tokenIdsSet.values()].map(async tokenId => {
-              if (!votingContract) {
-                throw new Error('Voting contract is undefined');
-              }
+  const azoriusGovernance = governance as AzoriusGovernance;
+  const { erc721Tokens } = azoriusGovernance;
 
-              totalTokenAddresses.push(tokenAddress);
-              totalTokenIds.push(tokenId);
+  const globalContextSafeAddress = safe?.address;
 
-              if (_proposalId !== null) {
-                const tokenVoted = await votingContract.read.hasVoted([
-                  _proposalId,
-                  tokenAddress,
-                  BigInt(tokenId),
-                ]);
-                if (!tokenVoted) {
-                  tokenAddresses.push(tokenAddress);
-                  tokenIds.push(tokenId);
-                }
-              }
-            }),
-          );
-        }),
+  const getUserERC721VotingTokens = useCallback(
+    async (_safeAddress: Address | null, _proposalId: number | null) => {
+      let governanceTokens = erc721Tokens;
+
+      // @dev global is set as defaults
+      let votingType: ERC721VotingType | undefined = linearVotingErc721Address
+        ? 'erc721'
+        : linearVotingErc721WithHatsWhitelistingAddress
+          ? 'erc721WithHats'
+          : undefined;
+
+      let linearVotingAddress =
+        linearVotingErc721Address ?? linearVotingErc721WithHatsWhitelistingAddress;
+
+      if (!globalContextSafeAddress || !user.address) {
+        return DEFAULT_RETURN;
+      }
+
+      if (_safeAddress && globalContextSafeAddress !== _safeAddress) {
+        const userVotingTokenData = await getUserVotingTokenData(_safeAddress);
+        if (userVotingTokenData) {
+          governanceTokens = userVotingTokenData.governanceTokens;
+          votingType = userVotingTokenData.votingType;
+          linearVotingAddress = userVotingTokenData.linear721VotingAddress;
+        }
+      }
+
+      if (!governanceTokens || !votingType || !linearVotingAddress) {
+        return DEFAULT_RETURN;
+      }
+
+      const userAddress = user.address;
+      const userERC721Tokens = await getUserERC721Tokens(userAddress, governanceTokens);
+
+      const votingContract =
+        votingType === 'erc721'
+          ? getLinearVotingContract(linearVotingAddress, 'erc721')
+          : getLinearVotingContract(linearVotingAddress, 'erc721WithHats');
+
+      const tokenDataPromises = Array.from(userERC721Tokens.entries()).flatMap(
+        ([tokenAddress, tokenIdsSet]) => {
+          return Array.from(tokenIdsSet).map(async tokenId => {
+            let hasVoted = false;
+            if (_proposalId !== null) {
+              hasVoted = await votingContract.read.hasVoted([
+                _proposalId,
+                tokenAddress,
+                BigInt(tokenId),
+              ]);
+            }
+            return { tokenAddress, tokenId, hasVoted };
+          });
+        },
       );
+
+      const tokenData = await Promise.all(tokenDataPromises);
+
       return {
-        totalVotingTokenAddresses: totalTokenAddresses,
-        totalVotingTokenIds: totalTokenIds,
-        remainingTokenAddresses: tokenAddresses,
-        remainingTokenIds: tokenIds,
+        totalVotingTokenAddresses: tokenData.map(data => data.tokenAddress),
+        totalVotingTokenIds: tokenData.map(data => data.tokenId),
+        remainingTokenAddresses:
+          _proposalId !== null
+            ? tokenData.filter(data => !data.hasVoted).map(data => data.tokenAddress)
+            : [],
+        remainingTokenIds:
+          _proposalId !== null
+            ? tokenData.filter(data => !data.hasVoted).map(data => data.tokenId)
+            : [],
       };
     },
     [
       erc721Tokens,
-      getVotingStrategies,
-      publicClient,
-      safeAPI,
-      globalContextSafeAddress,
       linearVotingErc721Address,
+      linearVotingErc721WithHatsWhitelistingAddress,
+      globalContextSafeAddress,
       user.address,
+      getUserERC721Tokens,
+      getLinearVotingContract,
+      getUserVotingTokenData,
     ],
   );
 
@@ -234,10 +269,10 @@ export default function useUserERC721VotingTokens(
   }, [getUserERC721VotingTokens, proposalId, safeAddress]);
 
   useEffect(() => {
-    if (loadOnMount && linearVotingErc721Address) {
+    if (loadOnMount) {
       loadUserERC721VotingTokens();
     }
-  }, [loadUserERC721VotingTokens, loadOnMount, linearVotingErc721Address]);
+  }, [loadUserERC721VotingTokens, loadOnMount]);
 
   return {
     totalVotingTokenIds,

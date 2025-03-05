@@ -1,13 +1,13 @@
-import { ApolloClient } from '@apollo/client';
 import { abis } from '@fractal-framework/fractal-contracts';
 import { HatsModulesClient } from '@hatsprotocol/modules-sdk';
 import { Hat, Tree } from '@hatsprotocol/sdk-v1-subgraph';
+import { Client } from 'urql';
 import { Address, Hex, PublicClient, formatUnits, getAddress, getContract } from 'viem';
-import { StreamsQueryDocument } from '../../../.graphclient';
 import ERC6551RegistryAbi from '../../assets/abi/ERC6551RegistryAbi';
 import { HatsElectionsEligibilityAbi } from '../../assets/abi/HatsElectionsEligibilityAbi';
 import { SablierV2LockupLinearAbi } from '../../assets/abi/SablierV2LockupLinear';
 import { ERC6551_REGISTRY_SALT } from '../../constants/common';
+import { StreamsQuery, StreamsQueryResponse, Stream } from '../../graphql/StreamsQueries';
 import { convertStreamIdToBigInt } from '../../hooks/streams/useCreateSablierStream';
 import { CacheKeys } from '../../hooks/utils/cache/cacheDefaults';
 import { getValue } from '../../hooks/utils/cache/useLocalStorage';
@@ -268,28 +268,19 @@ const getRoleHatTerms = async (
 const getPaymentStreams = async (
   paymentRecipient: Address,
   publicClient: PublicClient,
-  apolloClient: ApolloClient<object>,
-  sablierSubgraph: {
-    space: number;
-    slug: string;
-  },
+  client: Client,
 ): Promise<SablierPayment[]> => {
-  if (!sablierSubgraph) {
-    return [];
-  }
-  const streamQueryResult = await apolloClient.query({
-    query: StreamsQueryDocument,
-    variables: { recipientAddress: paymentRecipient },
-    context: { subgraphSpace: sablierSubgraph.space, subgraphSlug: sablierSubgraph.slug },
+  const streamQueryResult = await client.query<StreamsQueryResponse>(StreamsQuery, {
+    recipientAddress: paymentRecipient,
   });
 
   if (!streamQueryResult.error) {
-    if (!streamQueryResult.data.streams.length) {
+    if (!streamQueryResult.data?.streams.length) {
       return [];
     }
     const secondsTimestampToDate = (ts: string) => new Date(Number(ts) * 1000);
     const lockupLinearStreams = streamQueryResult.data.streams.filter(
-      stream => stream.category === 'LockupLinear',
+      (stream: Stream) => stream.category === 'LockupLinear',
     );
     const formattedLinearStreams = lockupLinearStreams.map(lockupLinearStream => {
       const parsedAmount = formatUnits(
@@ -340,8 +331,12 @@ const getPaymentStreams = async (
 
           return !cancelled && !!start && !!end && start <= now && end > now;
         },
-        isCancellable: () =>
-          !lockupLinearStream.canceled && !!endDate && endDate.getTime() > Date.now(),
+        cancelable: lockupLinearStream.cancelable,
+        canUserCancel: () =>
+          lockupLinearStream.cancelable &&
+          !lockupLinearStream.canceled &&
+          !!endDate &&
+          endDate.getTime() > Date.now(),
       };
     });
 
@@ -357,7 +352,10 @@ const getPaymentStreams = async (
         const newWithdrawableAmount = await streamContract.read.withdrawableAmountOf([
           bigintStreamId,
         ]);
-        return { ...stream, withdrawableAmount: newWithdrawableAmount };
+        return {
+          ...stream,
+          withdrawableAmount: newWithdrawableAmount,
+        };
       }),
     );
     return streamsWithCurrentWithdrawableAmounts;
@@ -373,11 +371,7 @@ export const sanitize = async (
   hats: Address,
   chainId: bigint,
   publicClient: PublicClient,
-  apolloClient: ApolloClient<object>,
-  sablierSubgraph?: {
-    space: number;
-    slug: string;
-  },
+  sablierSubgraphClient: Client,
   whitelistingVotingStrategy?: Address,
 ): Promise<undefined | null | DecentTree> => {
   if (hatsTree === undefined || hatsTree === null) {
@@ -489,35 +483,30 @@ export const sanitize = async (
     }
 
     const payments: SablierPayment[] = [];
-    if (sablierSubgraph !== undefined) {
-      if (isTermed) {
-        const uniqueRecipients = [...new Set(roleTerms.allTerms.map(term => term.nominee))];
-        for (const recipient of uniqueRecipients) {
-          payments.push(
-            ...(await getPaymentStreams(recipient, publicClient, apolloClient, sablierSubgraph)),
-          );
-        }
-      } else {
-        if (!roleHatSmartAccountAddress) {
-          throw new Error('Smart account address not found');
-        }
-        payments.push(
-          ...(await getPaymentStreams(
-            roleHatSmartAccountAddress,
-            publicClient,
-            apolloClient,
-            sablierSubgraph,
-          )),
-        );
+
+    if (isTermed) {
+      const uniqueRecipients = [...new Set(roleTerms.allTerms.map(term => term.nominee))];
+      for (const recipient of uniqueRecipients) {
+        payments.push(...(await getPaymentStreams(recipient, publicClient, sablierSubgraphClient)));
       }
     } else {
-      // @todo - fallback if sablier subgraph is not supported on network
+      if (!roleHatSmartAccountAddress) {
+        throw new Error('Smart account address not found');
+      }
+      payments.push(
+        ...(await getPaymentStreams(
+          roleHatSmartAccountAddress,
+          publicClient,
+          sablierSubgraphClient,
+        )),
+      );
     }
 
     roleHats.push({
       id: rawHat.id,
       prettyId: rawHat.prettyId ?? '',
-      name: hatMetadata.name,
+      // UI fix for a spelling error on a Decent DAO role
+      name: hatMetadata.name.replace('Tokenomisc', 'Tokenomics'),
       description: hatMetadata.description,
       wearerAddress: getAddress(rawHat.wearers[0].id),
       smartAddress: roleHatSmartAccountAddress,

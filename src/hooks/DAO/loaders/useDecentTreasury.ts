@@ -6,7 +6,7 @@ import {
 } from '@safe-global/api-kit';
 import { useEffect, useCallback, useRef } from 'react';
 import { toast } from 'sonner';
-import { Address, erc20Abi, getAddress, zeroAddress } from 'viem';
+import { Address, getAddress, zeroAddress } from 'viem';
 import { useFractal } from '../../../providers/App/AppProvider';
 import useBalancesAPI from '../../../providers/App/hooks/useBalancesAPI';
 import { useSafeAPI } from '../../../providers/App/hooks/useSafeAPI';
@@ -20,8 +20,6 @@ import {
   TransferWithTokenInfo,
 } from '../../../types';
 import { formatCoin } from '../../../utils';
-import { MOCK_MORALIS_ETH_ADDRESS } from '../../../utils/address';
-import useNetworkPublicClient from '../../useNetworkPublicClient';
 import { CacheExpiry, CacheKeys } from '../../utils/cache/cacheDefaults';
 import { setValue } from '../../utils/cache/useLocalStorage';
 
@@ -45,8 +43,6 @@ export const useDecentTreasury = () => {
 
   const { chain, nativeTokenIcon } = useNetworkConfigStore();
   const safeAddress = safe?.address;
-
-  const publicClient = useNetworkPublicClient();
 
   const formatTransfer = useCallback(
     ({ transfer, isLast }: { transfer: TransferWithTokenInfo; isLast: boolean }) => {
@@ -184,40 +180,27 @@ export const useDecentTreasury = () => {
 
     const transfersTokenInfo = await Promise.all(
       tokenAddressesOfTransfers.map(async address => {
-        let tokenInfo: TokenInfoResponse;
+        const fallbackTokenBalance = tokenBalances?.find(
+          tokenBalanceData => getAddress(tokenBalanceData.tokenAddress) === address,
+        );
 
-        try {
-          tokenInfo = await safeAPI.getToken(address);
-        } catch (e) {
-          const fallbackTokenData = tokenBalances?.find(
-            tokenBalanceData => getAddress(tokenBalanceData.tokenAddress) === address,
-          );
-          if (!fallbackTokenData) {
-            // Fallback to blockchain call if token info not available
-
-            const [name, symbol, decimals] = await Promise.all([
-              publicClient.readContract({ address, abi: erc20Abi, functionName: 'name' }),
-              publicClient.readContract({ address, abi: erc20Abi, functionName: 'symbol' }),
-              publicClient.readContract({ address, abi: erc20Abi, functionName: 'decimals' }),
-            ]);
-
-            return {
-              address,
-              name,
-              symbol,
-              decimals,
-            };
-          }
-
-          tokenInfo = {
+        if (fallbackTokenBalance) {
+          const fallbackTokenInfo = {
             address,
-            name: fallbackTokenData.name,
-            symbol: fallbackTokenData.symbol,
-            decimals: fallbackTokenData.decimals,
-            logoUri: fallbackTokenData.logo,
+            name: fallbackTokenBalance.name,
+            symbol: fallbackTokenBalance.symbol,
+            decimals: fallbackTokenBalance.decimals,
+            logoUri: fallbackTokenBalance.logo,
           };
+          setValue(
+            { cacheName: CacheKeys.TOKEN_INFO, tokenAddress: address },
+            fallbackTokenInfo,
+            CacheExpiry.NEVER,
+          );
+          return fallbackTokenInfo;
         }
 
+        const tokenInfo = await safeAPI.getToken(address);
         setValue(
           { cacheName: CacheKeys.TOKEN_INFO, tokenAddress: address },
           tokenInfo,
@@ -236,7 +219,7 @@ export const useDecentTreasury = () => {
       .forEach(async (transfer, index, _transfers) => {
         // @note assume native token if no token address
         let tokenInfo: TokenInfoResponse = {
-          address: MOCK_MORALIS_ETH_ADDRESS,
+          address: '',
           name: chain.nativeCurrency.name,
           symbol: chain.nativeCurrency.symbol,
           decimals: chain.nativeCurrency.decimals,
@@ -264,18 +247,17 @@ export const useDecentTreasury = () => {
         }
       });
   }, [
+    safeAddress,
+    safeAPI,
+    getTokenBalances,
+    getNFTBalances,
+    getDeFiBalances,
     action,
-    chain.nativeCurrency.decimals,
     chain.nativeCurrency.name,
     chain.nativeCurrency.symbol,
-    safeAddress,
-    formatTransfer,
-    getDeFiBalances,
-    getNFTBalances,
-    getTokenBalances,
+    chain.nativeCurrency.decimals,
     nativeTokenIcon,
-    publicClient,
-    safeAPI,
+    formatTransfer,
   ]);
 
   useEffect(() => {

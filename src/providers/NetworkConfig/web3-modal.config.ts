@@ -33,9 +33,6 @@ export const wagmiConfig = defaultWagmiConfig({
   projectId: walletConnectProjectId,
   metadata,
   transports: supportedNetworks.reduce(transportsReducer, {}),
-  batch: {
-    multicall: true,
-  },
 });
 
 if (walletConnectProjectId) {

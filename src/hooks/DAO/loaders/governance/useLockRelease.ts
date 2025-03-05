@@ -40,18 +40,15 @@ export const useLockRelease = ({ onMount = true }: { onMount?: boolean }) => {
     }
     const account = user.address;
 
-    const [tokenAmountTotal, tokenAmountReleased, tokenDelegatee, tokenVotingWeight] =
-      await Promise.all([
-        lockReleaseContract.read.getTotal([account]),
-        lockReleaseContract.read.getReleased([account]),
-        lockReleaseContract.read.delegates([account]),
-        lockReleaseContract.read.getVotes([account]),
-      ]);
+    const [tokenAmountTotal, tokenAmountReleased, tokenDelegatee] = await Promise.all([
+      lockReleaseContract.read.getTotal([account]),
+      lockReleaseContract.read.getReleased([account]),
+      lockReleaseContract.read.delegates([account]),
+    ]);
 
     const tokenAccountData = {
       balance: tokenAmountTotal - tokenAmountReleased,
       delegatee: tokenDelegatee,
-      votingWeight: tokenVotingWeight,
     };
     action.dispatch({
       type: DecentGovernanceAction.SET_LOCKED_TOKEN_ACCOUNT_DATA,

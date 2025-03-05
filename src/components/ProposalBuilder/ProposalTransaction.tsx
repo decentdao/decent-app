@@ -1,20 +1,20 @@
 import {
-  VStack,
-  HStack,
-  Text,
+  Accordion,
+  AccordionButton,
+  AccordionItem,
+  AccordionPanel,
   Box,
   Flex,
+  HStack,
   IconButton,
-  Accordion,
-  AccordionPanel,
-  AccordionItem,
-  AccordionButton,
   Radio,
+  Text,
+  VStack,
 } from '@chakra-ui/react';
-import { Plus, MinusCircle, CaretDown, CaretRight } from '@phosphor-icons/react';
+import { CaretDown, CaretRight, MinusCircle, Plus } from '@phosphor-icons/react';
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { CreateProposalTransaction, ProposalBuilderMode } from '../../types/proposalBuilder';
+import { CreateProposalTransaction } from '../../types/proposalBuilder';
 import { scrollToBottom } from '../../utils/ui';
 import ABISelector, { ABIElement } from '../ui/forms/ABISelector';
 import ExampleLabel from '../ui/forms/ExampleLabel';
@@ -30,7 +30,7 @@ interface ProposalTransactionProps {
   txAddressError?: string;
   txFunctionError?: string;
   setFieldValue: (field: string, value: any, shouldValidate?: boolean | undefined) => void;
-  mode: ProposalBuilderMode;
+  isProposalMode: boolean;
 }
 
 export default function ProposalTransaction({
@@ -40,9 +40,8 @@ export default function ProposalTransaction({
   txAddressError,
   txFunctionError,
   setFieldValue,
-  mode,
+  isProposalMode,
 }: ProposalTransactionProps) {
-  const isProposalMode = mode === ProposalBuilderMode.PROPOSAL;
   const { t } = useTranslation(['proposal', 'proposalTemplate', 'common']);
   const [expandedIndecies, setExpandedIndecies] = useState<number[]>([0]);
 
@@ -193,7 +192,7 @@ export default function ProposalTransaction({
                             setFieldValue(
                               `transactions.${transactionIndex}.parameters`,
                               transaction.parameters.filter(
-                                (parameterToRemove, parameterToRemoveIndex) =>
+                                (_parameterToRemove, parameterToRemoveIndex) =>
                                   parameterToRemoveIndex !== i,
                               ),
                             )

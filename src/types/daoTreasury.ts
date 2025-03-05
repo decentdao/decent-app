@@ -14,7 +14,7 @@ export interface TokenEvent {
 }
 
 export type TokenBalance = {
-  tokenAddress: string;
+  tokenAddress: Address;
   symbol: string;
   name: string;
   logo?: string;
@@ -62,10 +62,11 @@ interface DefiPositionDetails {
   healthFactor?: number;
 }
 
-export type DefiPositionTokenBalance = {
+type DefiPositionTokenBalance = {
   contractAddress?: string;
   tokenType: 'supplied' | 'defi-token';
 } & TokenBalance;
+
 export type DefiPosition = {
   label: string;
   tokens: DefiPositionTokenBalance[];
@@ -102,7 +103,7 @@ export type NFTMedia =
   | undefined;
 
 export type NFTBalance = {
-  tokenAddress: string;
+  tokenAddress: Address;
   media: NFTMedia;
   metadata?: {
     backgroundImage?: string;

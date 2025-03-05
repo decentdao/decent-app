@@ -6,8 +6,8 @@ import { Address, encodeFunctionData, getContract } from 'viem';
 import HatsAccount1ofNAbi from '../../../assets/abi/HatsAccount1ofN';
 import { SablierV2LockupLinearAbi } from '../../../assets/abi/SablierV2LockupLinear';
 import { convertStreamIdToBigInt } from '../../../hooks/streams/useCreateSablierStream';
+import { useNetworkEnsAvatar } from '../../../hooks/useNetworkEnsAvatar';
 import { useNetworkWalletClient } from '../../../hooks/useNetworkWalletClient';
-import useAvatar from '../../../hooks/utils/useAvatar';
 import { useGetAccountName } from '../../../hooks/utils/useGetAccountName';
 import { useTransaction } from '../../../hooks/utils/useTransaction';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
@@ -40,9 +40,9 @@ export function PaymentWithdrawModal({
 }) {
   const { data: walletClient } = useNetworkWalletClient();
   const [contractCall, pendingTransaction] = useTransaction();
-  const { t } = useTranslation(['roles', 'menu', 'common', 'modals']);
+  const { t } = useTranslation(['roles', 'common', 'modals']);
   const { displayName: accountDisplayName } = useGetAccountName(withdrawInformation.recipient);
-  const avatarURL = useAvatar(accountDisplayName);
+  const { data: avatarURL } = useNetworkEnsAvatar({ name: accountDisplayName });
   const iconSize = useBreakpointValue<AvatarSize>({ base: 'sm', md: 'icon' }) || 'sm';
   const { chain, addressPrefix } = useNetworkConfigStore();
 
@@ -185,7 +185,7 @@ export function PaymentWithdrawModal({
           color="neutral-7"
           flex={3}
         >
-          {t('network', { ns: 'menu' })}
+          {t('network', { ns: 'common' })}
         </Text>
         <Flex
           alignItems="center"

@@ -15,30 +15,11 @@ export interface MetaTransaction {
   operation: number;
 }
 
-type Modify<T, R> = Omit<T, keyof R> & R;
-
-export interface SafePostTransaction
-  extends Modify<
-    SafeTransaction,
-    {
-      safe: Address;
-      contractTransactionHash: string;
-      sender: Address;
-      signature: string;
-      value: string;
-    }
-  > {}
-
 export interface SafeTransaction extends MetaTransaction {
-  safeTxGas: string | number;
-  baseGas: string | number;
-  gasPrice: string | number;
+  safeTxGas: string;
+  baseGas: string;
+  gasPrice: string;
   gasToken: Address;
   refundReceiver: Address;
-  nonce: string | number;
+  nonce: number;
 }
-export type DecodedTxParam = {
-  name: string;
-  type: string;
-  value: string;
-};

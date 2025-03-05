@@ -19,7 +19,7 @@ interface SnapshotVotingStrategy {
   };
 }
 
-interface SnapshotPlugin {}
+export interface SnapshotPlugin {}
 export interface SnapshotWeightedVotingChoice {
   [choice: number]: number;
 }

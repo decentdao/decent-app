@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Address } from 'viem';
-import { useEnsName } from 'wagmi';
-import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
+import { useNetworkEnsName } from '../useNetworkEnsName';
 
 export const createAccountSubstring = (account: string) => {
   return `${account.substring(0, 6)}...${account.slice(-4)}`;
@@ -17,12 +16,10 @@ export const createAccountSubstring = (account: string) => {
  * @todo Should switch to object for props
  */
 export const useGetAccountName = (account?: Address | null, truncate?: boolean) => {
-  const { chain } = useNetworkConfigStore();
   if (truncate === undefined) truncate = true;
 
-  const { data: ensName } = useEnsName({
-    address: !!account ? account : undefined,
-    chainId: chain.id,
+  const { data: ensName } = useNetworkEnsName({
+    address: account ?? undefined,
   });
 
   const [accountSubstring, setAccountSubstring] = useState<string>();

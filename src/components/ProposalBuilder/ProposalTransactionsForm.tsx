@@ -3,7 +3,7 @@ import { Plus } from '@phosphor-icons/react';
 import { FormikProps } from 'formik';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { CreateProposalForm, ProposalBuilderMode } from '../../types/proposalBuilder';
+import { CreateProposalForm } from '../../types/proposalBuilder';
 import { scrollToBottom } from '../../utils/ui';
 import CeleryButtonWithIcon from '../ui/utils/CeleryButtonWithIcon';
 import Divider from '../ui/utils/Divider';
@@ -13,7 +13,7 @@ import { DEFAULT_PROPOSAL_TRANSACTION } from './constants';
 interface ProposalTransactionsFormProps extends FormikProps<CreateProposalForm> {
   pendingTransaction: boolean;
   safeNonce?: number;
-  mode: ProposalBuilderMode;
+  isProposalMode: boolean;
 }
 
 export default function ProposalTransactionsForm(props: ProposalTransactionsFormProps) {

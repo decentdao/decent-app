@@ -49,6 +49,7 @@ const endpoints = {
     transform: transformDefiResponse,
     fetch: async ({ chain, address }: { chain: string; address: string }, c: { env: Env }) => {
       const result = await fetchMoralis<DefiResponse>({
+        isPaginated: false,
         endpoint: endpoints.defi.moralisPath(address),
         chain,
         apiKey: c.env.MORALIS_API_KEY,
