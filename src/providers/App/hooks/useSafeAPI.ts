@@ -241,7 +241,6 @@ class EnhancedSafeApiKit extends SafeApiKit {
       const body = {
         signature: signature,
       };
-      // const bodyText = JSON.stringify(body);
       await this._safeTransactionsPost(safeTxHash, '/confirmations', body);
     } catch (error) {
       console.error('Error posting confirmTransaction from safe-client:', error);
@@ -249,6 +248,9 @@ class EnhancedSafeApiKit extends SafeApiKit {
 
     // Note: because Safe requires all necessary signatures to be provided
     // at the time of the transaction, we can't implement an onchain fallback here.
+    //
+    // Note2: is this correct? What about the "approveHash" function?
+    // https://github.com/safe-global/safe-smart-account/blob/186a21a74b327f17fc41217a927dea7064f74604/contracts/GnosisSafe.sol#L333C14-L333C25
 
     throw new Error('Failed to confirmTransaction()');
   }
@@ -274,6 +276,7 @@ class EnhancedSafeApiKit extends SafeApiKit {
       console.error('Error fetching getMultisigTransactions from safe-client:', error);
     }
 
+    // We need to return *something* here, else stuff breaks downstream
     return {
       count: 0,
       results: [],
