@@ -27,6 +27,7 @@ import { useNetworkConfigStore } from '../../NetworkConfig/useNetworkConfigStore
 class EnhancedSafeApiKit extends SafeApiKit {
   readonly publicClient: PublicClient;
   readonly networkConfig: NetworkConfig;
+  readonly safeClientBaseUrl: string;
   readonly safeClientSafesPrefix: string;
   readonly safeClientTransactionsPrefix: string;
 
@@ -62,8 +63,9 @@ class EnhancedSafeApiKit extends SafeApiKit {
       chain: networkConfig.chain,
       transport: http(networkConfig.rpcEndpoint),
     });
-    this.safeClientSafesPrefix = `https://safe-client.safe.global/v1/chains/${networkConfig.chain.id}/safes/`;
-    this.safeClientTransactionsPrefix = `https://safe-client.safe.global/v1/chains/${networkConfig.chain.id}/transactions/`;
+    this.safeClientBaseUrl = `https://safe-client.safe.global/v1/chains/${networkConfig.chain.id}`;
+    this.safeClientSafesPrefix = `${this.safeClientBaseUrl}/safes/`;
+    this.safeClientTransactionsPrefix = `${this.safeClientBaseUrl}/transactions/`;
   }
 
   override async getSafeInfo(safeAddress: Address): Promise<SafeInfoResponse> {
@@ -378,8 +380,7 @@ class EnhancedSafeApiKit extends SafeApiKit {
       const body = {
         data: data,
       };
-      const prefix = `https://safe-client.safe.global/v1/chains/${this.networkConfig.chain.id}`;
-      const value = await axios.post(`${prefix}/data-decoder`, body, {
+      const value = await axios.post(`${this.safeClientBaseUrl}/data-decoder`, body, {
         headers: {
           accept: 'application/json',
         },
@@ -402,8 +403,7 @@ class EnhancedSafeApiKit extends SafeApiKit {
 }
 
 export function useSafeAPI() {
-  const { getConfigByChainId, chain } = useNetworkConfigStore();
-  const networkConfig = getConfigByChainId(chain.id);
+  const networkConfig = useNetworkConfigStore();
 
   const safeAPI = useMemo(() => {
     return new EnhancedSafeApiKit(networkConfig);
