@@ -1,0 +1,2 @@
+export const DEV_VOTING_PERIOD_MINUTES = 3;
+export const DEV_STREAM_DURATION_MINUTES = 10;
