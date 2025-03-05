@@ -12,7 +12,6 @@ import { CreateProposalButton } from '../../../../../components/ProposalBuilder/
 import { DEFAULT_PROPOSAL } from '../../../../../components/ProposalBuilder/constants';
 import { BarLoader } from '../../../../../components/ui/loaders/BarLoader';
 import { AddActions } from '../../../../../components/ui/modals/AddActions';
-import { SendAssetsData } from '../../../../../components/ui/modals/SendAssetsModal';
 import { useHeaderHeight } from '../../../../../constants/common';
 import { DAO_ROUTES } from '../../../../../constants/routes';
 import { usePrepareProposal } from '../../../../../hooks/DAO/proposal/usePrepareProposal';
@@ -21,31 +20,19 @@ import { useFractal } from '../../../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../../../providers/NetworkConfig/useNetworkConfigStore';
 import { useProposalActionsStore } from '../../../../../store/actions/useProposalActionsStore';
 import { useDaoInfoStore } from '../../../../../store/daoInfo/useDaoInfoStore';
-import { CreateProposalSteps, ProposalActionType } from '../../../../../types';
+import { CreateProposalSteps } from '../../../../../types';
+import {
+  prepareSendAssetsActionData,
+  SendAssetsData,
+} from '../../../../../utils/dao/prepareSendAssetsActionData';
 
 function ActionsExperience() {
   const { t } = useTranslation('actions');
   const { actions, addAction } = useProposalActionsStore();
 
-  const handleAddSendAssetsAction = (data: SendAssetsData) => {
-    addAction({
-      actionType: ProposalActionType.TRANSFER,
-      content: <></>,
-      transactions: [
-        {
-          targetAddress: data.asset.tokenAddress,
-          ethValue: {
-            bigintValue: 0n,
-            value: '0',
-          },
-          functionName: 'transfer',
-          parameters: [
-            { signature: 'address', value: data.destinationAddress },
-            { signature: 'uint256', value: data.transferAmount.toString() },
-          ],
-        },
-      ],
-    });
+  const handleAddSendAssetsAction = (sendAssetsData: SendAssetsData) => {
+    const { action } = prepareSendAssetsActionData(sendAssetsData);
+    addAction({ ...action, content: <></> });
   };
 
   return (

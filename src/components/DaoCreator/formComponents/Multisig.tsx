@@ -3,7 +3,7 @@ import { MinusCircle, Plus } from '@phosphor-icons/react';
 import { Field, FieldAttributes } from 'formik';
 import { useTranslation } from 'react-i18next';
 import { ICreationStepProps } from '../../../types';
-import { GaslessVotingToggleDAOCreate } from '../../ui/GaslessVotingToggle';
+import { GaslessVotingToggleDAOCreate } from '../../GaslessVoting/GaslessVotingToggle';
 import { AddressInput } from '../../ui/forms/EthAddressInput';
 import { LabelComponent } from '../../ui/forms/InputComponent';
 import LabelWrapper from '../../ui/forms/LabelWrapper';

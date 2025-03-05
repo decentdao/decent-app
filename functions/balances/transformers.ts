@@ -1,10 +1,11 @@
+import { getAddress } from 'viem';
 import { DefiBalance, NFTBalance, TokenBalance } from '../../src/types/daoTreasury';
 import { DefiResponse, NFTResponse, TokenResponse } from '../shared/moralisTypes';
 
 export function transformTokenResponse(token: TokenResponse): TokenBalance {
   return {
     ...token,
-    tokenAddress: token.token_address,
+    tokenAddress: getAddress(token.token_address),
     verifiedContract: token.verified_contract,
     balanceFormatted: token.balance_formatted,
     nativeToken: token.native_token,
@@ -19,7 +20,7 @@ export function transformTokenResponse(token: TokenResponse): TokenBalance {
 export function transformNFTResponse(nft: NFTResponse): NFTBalance {
   return {
     ...nft,
-    tokenAddress: nft.token_address,
+    tokenAddress: getAddress(nft.token_address),
     tokenId: nft.token_id,
     possibleSpam: !!nft.possible_spam,
     media: nft.media,
@@ -53,7 +54,7 @@ export function transformDefiResponse(defi: DefiResponse): DefiBalance {
         usdValue: token.usd_value,
         nativeToken: false,
         portfolioPercentage: 0,
-        tokenAddress: token.contract_address || '',
+        tokenAddress: token.contract_address ? getAddress(token.contract_address) : '0x',
         verifiedContract: true,
       })),
       address: defi.position.address,

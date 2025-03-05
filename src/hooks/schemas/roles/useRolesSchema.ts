@@ -48,9 +48,7 @@ export const useRolesSchema = () => {
           // @dev if payment isn't new validation is skipped
           if (currentPayment?.streamId) return true;
           if (!parentAssetAddress) return false;
-          const asset = assetsFungible.find(
-            _asset => getAddress(_asset.tokenAddress) === parentAssetAddress,
-          );
+          const asset = assetsFungible.find(_asset => _asset.tokenAddress === parentAssetAddress);
 
           if (!asset) return false;
 
@@ -80,7 +78,7 @@ export const useRolesSchema = () => {
 
           const allHatPayments: SablierPaymentFormValues[] = formContextHats
             .filter(hat => hat.id === currentRoleHat.id)
-            .map(hat => hat.payments ?? [])
+            .map(hat => hat.payments)
             .flat();
 
           const totalPendingAmounts = [
@@ -88,9 +86,7 @@ export const useRolesSchema = () => {
             ...allCurrentRolePayments,
           ].reduce((prev, curr) => (curr.amount?.bigintValue ?? 0n) + prev, 0n);
 
-          const asset = assetsFungible.find(
-            _asset => getAddress(_asset.tokenAddress) === getAddress(parentAssetAddress),
-          );
+          const asset = assetsFungible.find(_asset => _asset.tokenAddress === parentAssetAddress);
           if (!asset) return false;
 
           return value >= 0n && value <= BigInt(asset.balance) - totalPendingAmounts;

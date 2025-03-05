@@ -1,7 +1,7 @@
 import { Button, Flex, Icon, IconButton, Text } from '@chakra-ui/react';
 import { ArrowsDownUp, CheckSquare, Trash } from '@phosphor-icons/react';
 import { useTranslation } from 'react-i18next';
-import { formatUnits, getAddress, zeroAddress } from 'viem';
+import { formatUnits, getAddress, isAddress } from 'viem';
 import PencilWithLineIcon from '../../assets/theme/custom/icons/PencilWithLineIcon';
 import { useFractal } from '../../providers/App/AppProvider';
 import { useProposalActionsStore } from '../../store/actions/useProposalActionsStore';
@@ -9,7 +9,7 @@ import { CreateProposalAction, ProposalActionType } from '../../types/proposalBu
 import { Card } from '../ui/cards/Card';
 import { SendAssetsActionCard } from '../ui/cards/SendAssetsActionCard';
 
-export function SendAssetsAction({
+function SendAssetsAction({
   action,
   onRemove,
 }: {
@@ -19,30 +19,49 @@ export function SendAssetsAction({
   const {
     treasury: { assetsFungible },
   } = useFractal();
-  const destinationAddress = action.transactions[0].parameters[0].value
-    ? getAddress(action.transactions[0].parameters[0].value)
-    : zeroAddress;
-  const transferAmount = BigInt(action.transactions[0].parameters[1].value || '0');
 
-  if (!destinationAddress || !transferAmount) {
+  const isNativeAssetTransfer = action.actionType === ProposalActionType.NATIVE_TRANSFER;
+
+  // If the transfer is a native asset transfer, `targetAddress` is the recipient address, and `parameters` is an empty array.
+  // Otherwise, the first parameter to the call to `transfer` is the recipient address.
+  const recipientAddress = isNativeAssetTransfer
+    ? action.transactions[0].targetAddress
+    : action.transactions[0].parameters[0].value;
+
+  if (!recipientAddress || !isAddress(recipientAddress)) {
+    console.error('Send assets action is invalid without a valid recipient address', action);
     return null;
   }
 
-  // @todo: This does not work for native asset
-  const actionAsset = assetsFungible.find(
-    asset => getAddress(asset.tokenAddress) === getAddress(action.transactions[0].targetAddress),
+  // Amount to transfer is either `ethValue` for native asset transfers, or the second parameter to the `transfer` function call for ERC20 transfers
+  let transferAmount: bigint;
+  if (isNativeAssetTransfer && action.transactions[0].ethValue.bigintValue !== undefined) {
+    transferAmount = action.transactions[0].ethValue.bigintValue;
+  } else if (action.transactions[0].parameters[1].value !== undefined) {
+    transferAmount = BigInt(action.transactions[0].parameters[1].value);
+  } else {
+    console.error('Send assets action is invalid without an amount to transfer', action);
+    return null;
+  }
+
+  // The asset to transfer is either the native asset, or the asset with the target address
+  const asset = assetsFungible.find(a =>
+    isNativeAssetTransfer
+      ? a.nativeToken
+      : a.tokenAddress === getAddress(action.transactions[0].targetAddress),
   );
 
-  if (!actionAsset) {
+  if (!asset) {
+    console.error('Asset to transfer not found', { asset, assetsFungible });
     return null;
   }
 
   return (
     <SendAssetsActionCard
       action={{
-        destinationAddress,
+        recipientAddress,
         transferAmount,
-        asset: actionAsset,
+        asset,
         nonceInput: undefined,
       }}
       onRemove={onRemove}
@@ -71,7 +90,7 @@ export function AirdropAction({
   // Thus we can find the asset by looking at the target address of the first transaction
 
   const actionAsset = assetsFungible.find(
-    asset => getAddress(asset.tokenAddress) === getAddress(action.transactions[0].targetAddress),
+    asset => asset.tokenAddress === getAddress(action.transactions[0].targetAddress),
   );
 
   if (!actionAsset) {
@@ -122,7 +141,10 @@ export function ProposalActionCard({
   canBeDeleted: boolean;
 }) {
   const { removeAction } = useProposalActionsStore();
-  if (action.actionType === ProposalActionType.TRANSFER) {
+  if (
+    action.actionType === ProposalActionType.TRANSFER ||
+    action.actionType === ProposalActionType.NATIVE_TRANSFER
+  ) {
     return (
       <SendAssetsAction
         action={action}

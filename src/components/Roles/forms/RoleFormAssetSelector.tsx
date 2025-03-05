@@ -14,7 +14,6 @@ import { useFractal } from '../../../providers/App/AppProvider';
 import { BigIntValuePair } from '../../../types';
 import { RoleFormValues } from '../../../types/roles';
 import { formatCoin, formatUSD } from '../../../utils';
-import { MOCK_MORALIS_ETH_ADDRESS } from '../../../utils/address';
 import { BigIntInput } from '../../ui/forms/BigIntInput';
 import LabelWrapper from '../../ui/forms/LabelWrapper';
 import { DropdownMenu } from '../../ui/menus/DropdownMenu';
@@ -27,9 +26,7 @@ export function AssetSelector({ formIndex, disabled }: { formIndex: number; disa
   } = useFractal();
 
   const fungibleAssetsWithBalance = assetsFungible.filter(
-    asset =>
-      parseFloat(asset.balance) > 0 &&
-      asset.tokenAddress.toLowerCase() !== MOCK_MORALIS_ETH_ADDRESS.toLowerCase(),
+    asset => parseFloat(asset.balance) > 0 && !asset.nativeToken,
   );
 
   const selectedAsset = values.roleEditing?.payments?.[formIndex]?.asset;
@@ -38,7 +35,7 @@ export function AssetSelector({ formIndex, disabled }: { formIndex: number; disa
     value: asset.tokenAddress,
     label: asset.symbol,
     icon: asset.logo ?? asset.thumbnail ?? '/images/coin-icon-default.svg',
-    selected: selectedAsset?.address === getAddress(asset.tokenAddress),
+    selected: selectedAsset?.address === asset.tokenAddress,
     assetData: {
       name: asset.name,
       balance: asset.balance,
@@ -69,15 +66,13 @@ export function AssetSelector({ formIndex, disabled }: { formIndex: number; disa
               selectedItem={dropdownItems.find(item => item.selected)}
               onSelect={item => {
                 const chosenAsset = fungibleAssetsWithBalance.find(
-                  asset => getAddress(asset.tokenAddress) === getAddress(item.value),
+                  asset => asset.tokenAddress === getAddress(item.value),
                 );
                 if (chosenAsset) {
                   setFieldValue(`roleEditing.payments.${formIndex}.asset`, {
-                    name: chosenAsset.name,
-                    address: getAddress(chosenAsset.tokenAddress),
-                    symbol: chosenAsset.symbol,
+                    ...chosenAsset,
                     logo: chosenAsset.logo ?? '',
-                    decimals: chosenAsset.decimals,
+                    address: chosenAsset.tokenAddress,
                   });
                 } else {
                   setFieldValue(`roleEditing.payments.${formIndex}.asset`, undefined);

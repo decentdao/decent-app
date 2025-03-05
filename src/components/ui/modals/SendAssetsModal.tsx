@@ -3,13 +3,14 @@ import { CaretDown } from '@phosphor-icons/react';
 import { Field, FieldAttributes, FieldProps, Form, Formik } from 'formik';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Address, getAddress } from 'viem';
+import { getAddress } from 'viem';
 import * as Yup from 'yup';
 import { useValidationAddress } from '../../../hooks/schemas/common/useValidationAddress';
 import { useNetworkEnsAddressAsync } from '../../../hooks/useNetworkEnsAddress';
 import { useFractal } from '../../../providers/App/AppProvider';
 import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
 import { BigIntValuePair, TokenBalance } from '../../../types';
+import { SendAssetsData } from '../../../utils/dao/prepareSendAssetsActionData';
 import { formatCoinFromAsset, formatCoinUnits } from '../../../utils/numberFormats';
 import { validateENSName } from '../../../utils/url';
 import NoDataCard from '../containers/NoDataCard';
@@ -23,13 +24,6 @@ interface SendAssetsFormValues {
   destinationAddress: string;
   selectedAsset: TokenBalance;
   inputAmount?: BigIntValuePair;
-}
-
-export interface SendAssetsData {
-  destinationAddress: Address;
-  transferAmount: bigint;
-  asset: TokenBalance;
-  nonceInput: number | undefined; // this is only releveant when the caller action results in a proposal
 }
 
 export function SendAssetsModal({
@@ -87,7 +81,7 @@ export function SendAssetsModal({
     sendAssetsData({
       transferAmount: values.inputAmount?.bigintValue || 0n,
       asset: values.selectedAsset,
-      destinationAddress: getAddress(destAddress),
+      recipientAddress: getAddress(destAddress),
       nonceInput,
     });
 
@@ -126,7 +120,7 @@ export function SendAssetsModal({
 
           // @dev next couple of lines are written like this, to keep typing equivalent during the conversion from BN to bigint
           const inputBigint = values.inputAmount?.bigintValue;
-          const inputBigintIsZero = inputBigint ? inputBigint === 0n : undefined;
+          const inputBigintIsZero = inputBigint !== undefined ? inputBigint === 0n : undefined;
           const isSubmitDisabled = !values.inputAmount || inputBigintIsZero || overDraft;
 
           const selectedAssetIndex = fungibleAssetsWithBalance.findIndex(

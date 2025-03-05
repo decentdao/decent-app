@@ -3,7 +3,7 @@ import { ArrowsDownUp, Trash } from '@phosphor-icons/react';
 import { useTranslation } from 'react-i18next';
 import { formatUnits } from 'viem';
 import { useGetAccountName } from '../../../hooks/utils/useGetAccountName';
-import { SendAssetsData } from '../modals/SendAssetsModal';
+import { SendAssetsData } from '../../../utils/dao/prepareSendAssetsActionData';
 
 export function SendAssetsActionCard({
   action,
@@ -13,7 +13,7 @@ export function SendAssetsActionCard({
   onRemove: () => void;
 }) {
   const { t } = useTranslation('common');
-  const { displayName } = useGetAccountName(action.destinationAddress);
+  const { displayName } = useGetAccountName(action.recipientAddress);
   return (
     <Card my="0.5rem">
       <Flex justifyContent="space-between">

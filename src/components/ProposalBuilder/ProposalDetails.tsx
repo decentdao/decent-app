@@ -2,6 +2,7 @@ import { Avatar, Box, HStack, Text, VStack } from '@chakra-ui/react';
 import { Fragment, PropsWithChildren, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import '../../assets/css/Markdown.css';
+import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
 import { BigIntValuePair } from '../../types/common';
 import { CreateProposalTransaction, Stream } from '../../types/proposalBuilder';
 import Markdown from '../ui/proposal/Markdown';
@@ -26,6 +27,7 @@ export function TransactionsDetails({
   transactions: CreateProposalTransaction<BigIntValuePair>[];
 }) {
   const { t } = useTranslation(['proposalTemplate', 'proposal']);
+  const { chain } = useNetworkConfigStore();
 
   return (
     <>
@@ -60,7 +62,7 @@ export function TransactionsDetails({
             ))}
             <Divider />
             <HStack justifyContent="space-between">
-              <Text color="neutral-7">{t('eth')}</Text>
+              <Text color="neutral-7">{chain.nativeCurrency.symbol}</Text>
               <Text
                 textAlign="right"
                 color={valueBiggerThanZero ? 'white-0' : 'neutral-7'}

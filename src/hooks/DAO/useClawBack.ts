@@ -14,7 +14,6 @@ import { logError } from '../../helpers/errorLogging';
 import useBalancesAPI from '../../providers/App/hooks/useBalancesAPI';
 import { useSafeAPI } from '../../providers/App/hooks/useSafeAPI';
 import { FractalModuleType, DecentModule } from '../../types';
-import { MOCK_MORALIS_ETH_ADDRESS } from '../../utils/address';
 import { useCanUserCreateProposal } from '../utils/useCanUserSubmitProposal';
 import useSubmitProposal from './proposal/useSubmitProposal';
 
@@ -60,8 +59,8 @@ export default function useClawBack({ childSafeInfo, parentAddress }: IUseClawBa
             const transactions = childSafeTokenBalance.data
               .filter(tokenBalance => !tokenBalance.possibleSpam)
               .map(asset => {
-                if (!asset.tokenAddress || asset.tokenAddress === MOCK_MORALIS_ETH_ADDRESS) {
-                  // Seems like we're operating with native coin i.e ETH
+                if (!asset.nativeToken) {
+                  // We're operating with native coin e.g. ETH
                   const fractalModuleCalldata = encodeFunctionData({
                     abi: abis.FractalModule,
                     functionName: 'execTx',
@@ -89,7 +88,7 @@ export default function useClawBack({ childSafeInfo, parentAddress }: IUseClawBa
 
                   const txData = encodeAbiParameters(
                     parseAbiParameters('address, uint256, bytes, uint8'),
-                    [getAddress(asset.tokenAddress), 0n, clawBackCalldata, 0],
+                    [asset.tokenAddress, 0n, clawBackCalldata, 0],
                   );
 
                   const fractalModuleCalldata = encodeFunctionData({
@@ -148,13 +147,14 @@ export default function useClawBack({ childSafeInfo, parentAddress }: IUseClawBa
       }
     }
   }, [
-    getCanUserCreateProposal,
-    childSafeInfo,
+    childSafeInfo.daoAddress,
+    childSafeInfo.modules,
     parentAddress,
-    submitProposal,
-    t,
     safeAPI,
     getTokenBalances,
+    getCanUserCreateProposal,
+    t,
+    submitProposal,
   ]);
 
   return { handleClawBack };

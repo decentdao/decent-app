@@ -58,22 +58,16 @@ export enum ProposalActionType {
   EDIT = 'edit',
   DELETE = 'delete',
   TRANSFER = 'transfer',
+  NATIVE_TRANSFER = 'native_transfer',
   AIRDROP = 'airdrop',
+  WITHDRAW_STREAM = 'withdraw_stream',
 }
 
-export interface ProposalActionsStoreData {
-  actions: CreateProposalAction[];
-}
-
-export interface ProposalActionsStore extends ProposalActionsStoreData {
-  addAction: (action: CreateProposalAction) => void;
-  removeAction: (actionIndex: number) => void;
-  resetActions: () => void;
-  getTransactions: () => CreateProposalTransaction[];
-}
-
-export type CreateProposalAction<T = BigIntValuePair> = {
+export type CreateProposalActionData<T = BigIntValuePair> = {
   actionType: ProposalActionType;
-  content: ReactNode;
   transactions: CreateProposalTransaction<T>[];
+};
+
+export type CreateProposalAction<T = BigIntValuePair> = CreateProposalActionData<T> & {
+  content: ReactNode;
 };

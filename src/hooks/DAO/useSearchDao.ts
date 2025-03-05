@@ -1,17 +1,17 @@
-import SafeApiKit from '@safe-global/api-kit';
 import { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Address } from 'viem';
 import {
   supportedEnsNetworks,
   supportedNetworks,
+  useNetworkConfigStore,
 } from '../../providers/NetworkConfig/useNetworkConfigStore';
+import { getIsSafe } from '../safe/useIsSafe';
 import { useResolveENSName } from '../utils/useResolveENSName';
 
 type ResolvedAddressWithChainId = {
   address: Address;
   chainId: number;
-  safeBaseURL: string;
 };
 export const useSearchDao = () => {
   const { t } = useTranslation('dashboard');
@@ -24,39 +24,46 @@ export const useSearchDao = () => {
     ResolvedAddressWithChainId[]
   >([]);
 
-  const findSafes = useCallback(
-    async (
-      resolvedAddressesWithChainId: { address: Address; chainId: number; safeBaseURL: string }[],
-    ) => {
-      for await (const resolved of resolvedAddressesWithChainId) {
-        const safeAPI = new SafeApiKit({
-          chainId: BigInt(resolved.chainId),
-          txServiceUrl: `${resolved.safeBaseURL}/api`,
-        });
-        safeAPI.getSafeCreationInfo(resolved.address);
-        try {
-          await safeAPI.getSafeCreationInfo(resolved.address);
+  const { getConfigByChainId } = useNetworkConfigStore();
 
-          setSafeResolvedAddressesWithPrefix(prevState => [...prevState, resolved]);
-        } catch (e) {
-          // Safe not found
-          continue;
-        }
-      }
+  const findSafes = useCallback(
+    async (resolvedAddressesWithChainId: { address: Address; chainId: number }[]) => {
+      /*
+      This function only checks if the address is a Safe on any of the EVM networks. 
+      The same Safe could of on multiple networks
+      */
+
+      const realSafes = (
+        await Promise.all(
+          resolvedAddressesWithChainId.map(async resolved => {
+            const networkConfig = getConfigByChainId(resolved.chainId);
+            const isSafe = await getIsSafe(resolved.address, networkConfig);
+            if (isSafe) {
+              return resolved;
+            } else {
+              return null;
+            }
+          }),
+        )
+      ).filter(safe => safe !== null);
+
+      // We're left with a list of chains and addresses
+      // (all the same address) that have a Safe at that address.
+      setSafeResolvedAddressesWithPrefix(realSafes);
     },
-    [],
+    [getConfigByChainId],
   );
 
   const resolveInput = useCallback(
     async (input: string) => {
       setIsSafeLookupLoading(true);
       try {
-        const resolvePromises = supportedEnsNetworks.map(async chainId => {
+        const resolvedAddressPromises = supportedEnsNetworks.map(async chainId => {
           const { resolvedAddress, isValid } = await resolveENSName(input, chainId);
           return isValid ? resolvedAddress : null;
         });
 
-        const resolvedAddresses = (await Promise.all(resolvePromises)).filter(
+        const resolvedAddresses = (await Promise.all(resolvedAddressPromises)).filter(
           address => address !== null,
         );
 
@@ -73,7 +80,6 @@ export const useSearchDao = () => {
             mappedAddressesWithChainIds.push({
               address,
               chainId: network.chain.id,
-              safeBaseURL: network.safeBaseURL,
             });
           }
         }

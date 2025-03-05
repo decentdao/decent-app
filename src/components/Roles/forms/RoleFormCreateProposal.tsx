@@ -13,11 +13,11 @@ import {
   RoleDetailsDrawerEditingRoleHatProp,
   RoleFormValues,
 } from '../../../types/roles';
+import { SendAssetsData } from '../../../utils/dao/prepareSendAssetsActionData';
 import { SendAssetsActionCard } from '../../ui/cards/SendAssetsActionCard';
 import { CustomNonceInput } from '../../ui/forms/CustomNonceInput';
 import { InputComponent, TextareaComponent } from '../../ui/forms/InputComponent';
 import { AddActions } from '../../ui/modals/AddActions';
-import { SendAssetsData } from '../../ui/modals/SendAssetsModal';
 import { RoleCardShort } from '../RoleCard';
 import RolesDetailsDrawer from '../RolesDetailsDrawer';
 import RolesDetailsDrawerMobile from '../RolesDetailsDrawerMobile';
@@ -82,26 +82,24 @@ export function RoleFormCreateProposal({ close }: { close: () => void }) {
           wearer,
           roleTerms,
           isTermed: roleHat.isTermed ?? false,
-          payments: roleHat.payments
-            ? roleHat.payments.map(payment => {
-                if (!payment.startDate || !payment.endDate || !payment.amount || !payment.asset) {
-                  throw new Error('Payment missing data', {
-                    cause: payment,
-                  });
-                }
-                return {
-                  ...payment,
-                  recipient: wearer,
-                  startDate: payment.startDate,
-                  endDate: payment.endDate,
-                  amount: payment.amount,
-                  asset: payment.asset,
-                  cliffDate: payment.cliffDate,
-                  withdrawableAmount: 0n,
-                  isCancelled: false,
-                };
-              })
-            : [],
+          payments: roleHat.payments.map(payment => {
+            if (!payment.startDate || !payment.endDate || !payment.amount || !payment.asset) {
+              throw new Error('Payment missing data', {
+                cause: payment,
+              });
+            }
+            return {
+              ...payment,
+              recipient: wearer,
+              startDate: payment.startDate,
+              endDate: payment.endDate,
+              amount: payment.amount,
+              asset: payment.asset,
+              cliffDate: payment.cliffDate,
+              withdrawableAmount: 0n,
+              isCancelled: false,
+            };
+          }),
         };
       });
   }, [

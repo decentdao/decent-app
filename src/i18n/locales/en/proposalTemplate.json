@@ -21,7 +21,6 @@
   "parameter": "Parameter",
   "value": "Value",
   "userInput": "user input",
-  "eth": "ETH",
   "ethParemeterHelper": "Leave empty for a blank input",
   "emptyProposalTemplates": "You haven't added any Proposal Templates yet. Create one above.",
   "emptyProposalTemplatesNotProposer": "This Safe doesn't have any Proposal Templates yet.",

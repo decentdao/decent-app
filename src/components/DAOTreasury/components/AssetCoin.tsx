@@ -4,7 +4,6 @@ import { useFractal } from '../../../providers/App/AppProvider';
 import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
 import { TokenBalance } from '../../../types';
 import { formatCoin, formatPercentage, formatUSD } from '../../../utils';
-import { MOCK_MORALIS_ETH_ADDRESS } from '../../../utils/address';
 import { DecentTooltip } from '../../ui/DecentTooltip';
 import EtherscanLink from '../../ui/links/EtherscanLink';
 
@@ -53,11 +52,7 @@ export function CoinRow({ asset }: { asset: TokenBalance }) {
 
   const { safe } = useDaoInfoStore();
 
-  const isNativeCoin =
-    asset.tokenAddress.toLowerCase() === MOCK_MORALIS_ETH_ADDRESS.toLowerCase() ||
-    asset.nativeToken;
-
-  const etherscanLinkValue = isNativeCoin ? (safe?.address ?? null) : asset.tokenAddress;
+  const etherscanLinkValue = asset.nativeToken ? (safe?.address ?? null) : asset.tokenAddress;
 
   return (
     <Flex
@@ -85,7 +80,7 @@ export function CoinRow({ asset }: { asset: TokenBalance }) {
           padding={0}
           borderWidth={0}
           value={etherscanLinkValue}
-          type={isNativeCoin ? 'address' : 'token'}
+          type={asset.nativeToken ? 'address' : 'token'}
           wordBreak="break-word"
         >
           {asset.symbol}

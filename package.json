@@ -1,6 +1,6 @@
 {
   "name": "decent-interface",
-  "version": "0.7.1",
+  "version": "0.8.1",
   "private": true,
   "dependencies": {
     "@amplitude/analytics-browser": "^2.11.1",
@@ -63,9 +63,9 @@
     "lint:check": "eslint . --ext .ts,.tsx",
     "pretty": "prettier . --write",
     "pretty:check": "prettier . --check",
-    "dev": "vite --force",
-    "preview": "vite preview",
-    "build": "vite build && vite build --mode page-function",
+    "dev": "VITE_APP_GIT_HASH=$(git rev-parse --short HEAD) vite",
+    "preview": "VITE_APP_GIT_HASH=$(git rev-parse --short HEAD) vite preview",
+    "build": "VITE_APP_GIT_HASH=$(git rev-parse --short HEAD) vite build && vite build --mode page-function",
     "test": "vitest --dir=test"
   },
   "engines": {
