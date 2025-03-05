@@ -23,7 +23,6 @@ import {
   FractalProposal,
   GovernanceType,
   MultisigProposal,
-  SnapshotProposal,
 } from '../../../../types';
 
 interface IVoteContext {
@@ -61,7 +60,7 @@ export function VoteContextProvider({
   const { governance } = useFractal();
   const userAccount = useAccount();
   const { safe } = useDaoInfoStore();
-  const { loadVotingWeight, snapshotProposal } = useSnapshotProposal(proposal as SnapshotProposal);
+  const { loadVotingWeight, snapshotProposal } = useSnapshotProposal(proposal);
   const { remainingTokenIds } = useUserERC721VotingTokens(null, proposal.proposalId, true);
   const publicClient = useNetworkPublicClient();
 
