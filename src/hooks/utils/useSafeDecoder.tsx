@@ -4,14 +4,22 @@ import { useCallback } from 'react';
 import { Address, decodeFunctionData, encodePacked, Hex, keccak256 } from 'viem';
 import { useSafeAPI } from '../../providers/App/hooks/useSafeAPI';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
-import { DecodedTransaction, DecodedTxParam } from '../../types';
+import { DecodedTransaction } from '../../types';
 import { parseMultiSendTransactions } from '../../utils';
 import useNetworkPublicClient from '../useNetworkPublicClient';
 import { CacheKeys } from './cache/cacheDefaults';
 import { DBObjectKeys, useIndexedDB } from './cache/useLocalDB';
+
 /**
  * Handles decoding and caching transactions via the Safe API.
  */
+
+type DecodedTxParam = {
+  name: string;
+  type: string;
+  value: string;
+};
+
 export const useSafeDecoder = () => {
   const client = useNetworkPublicClient();
   const { etherscanAPIUrl } = useNetworkConfigStore();

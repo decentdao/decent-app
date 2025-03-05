@@ -37,8 +37,3 @@ export interface SafeTransaction extends MetaTransaction {
   refundReceiver: Address;
   nonce: number;
 }
-export type DecodedTxParam = {
-  name: string;
-  type: string;
-  value: string;
-};
