@@ -15,20 +15,6 @@ export interface MetaTransaction {
   operation: number;
 }
 
-type Modify<T, R> = Omit<T, keyof R> & R;
-
-export interface SafePostTransaction
-  extends Modify<
-    SafeTransaction,
-    {
-      safe: Address;
-      contractTransactionHash: string;
-      sender: Address;
-      signature: string;
-      value: string;
-    }
-  > {}
-
 export interface SafeTransaction extends MetaTransaction {
   safeTxGas: string;
   baseGas: string;
