@@ -50,6 +50,28 @@ class EnhancedSafeApiKit extends SafeApiKit {
     this.safeClientTransactionsPrefix = `${this.safeClientBaseUrl}/transactions/`;
   }
 
+  private async _safeClientGet(safeAddress: string, path: string): Promise<any> {
+    const url = `${this.safeClientSafesPrefix}${safeAddress}${path}`;
+    const value = await axios.get(url, {
+      headers: {
+        accept: 'application/json',
+      },
+    });
+
+    return value.data;
+  }
+
+  private async _safeTransactionsPost(safeAddress: string, path: string, data: any): Promise<any> {
+    const url = `${this.safeClientTransactionsPrefix}${safeAddress}${path}`;
+    const value = await axios.post(url, data, {
+      headers: {
+        accept: 'application/json',
+      },
+    });
+
+    return value.data;
+  }
+
   override async getSafeInfo(safeAddress: Address): Promise<SafeInfoResponse> {
     const checksummedSafeAddress = getAddress(safeAddress);
 
@@ -116,27 +138,6 @@ class EnhancedSafeApiKit extends SafeApiKit {
     }
 
     throw new Error('Failed to getSafeInfo()');
-  }
-
-  private async _safeClientGet(safeAddress: string, path: string): Promise<any> {
-    const value = await axios.get(`${this.safeClientSafesPrefix}${safeAddress}${path}`, {
-      headers: {
-        accept: 'application/json',
-      },
-    });
-
-    return value.data;
-  }
-
-  private async _safeTransactionsPost(safeAddress: string, path: string, data: any): Promise<any> {
-    const url = `${this.safeClientTransactionsPrefix}${safeAddress}${path}`;
-    const value = await axios.post(url, data, {
-      headers: {
-        accept: 'application/json',
-      },
-    });
-
-    return value.data;
   }
 
   override async getAllTransactions(
