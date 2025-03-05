@@ -1,3 +1,4 @@
+import { ProposeTransactionProps } from '@safe-global/api-kit';
 import {
   hashTypedData,
   Hash,
@@ -12,7 +13,7 @@ import {
   Abi,
   WalletClient,
 } from 'viem';
-import { MetaTransaction, SafePostTransaction, SafeTransaction } from '../types/transaction';
+import { MetaTransaction, SafeTransaction } from '../types/transaction';
 
 export interface SafeSignature {
   signer: string;
@@ -80,9 +81,9 @@ export const buildSafeTransaction = (template: {
     value: template.value || 0n,
     data: template.data || '0x',
     operation: template.operation || 0,
-    safeTxGas: template.safeTxGas || 0,
-    baseGas: template.baseGas || 0,
-    gasPrice: template.gasPrice || 0,
+    safeTxGas: `${template.safeTxGas || 0}`,
+    baseGas: `${template.baseGas || 0}`,
+    gasPrice: `${template.gasPrice || 0}`,
     gasToken: template.gasToken || zeroAddress,
     refundReceiver: template.refundReceiver || zeroAddress,
     nonce: template.nonce,
@@ -139,7 +140,7 @@ export const buildSafeAPIPost = async (
     refundReceiver?: Address;
     nonce: number;
   },
-): Promise<SafePostTransaction> => {
+): Promise<ProposeTransactionProps> => {
   if (!walletClient.account) throw new Error("Signer doesn't have account");
 
   const safeTx = buildSafeTransaction(template);
@@ -147,20 +148,22 @@ export const buildSafeAPIPost = async (
   const sig = [await safeSignTypedData(walletClient, safeAddress, safeTx, chainId)];
   const signatureBytes = buildSignatureBytes(sig);
   return {
-    safe: safeAddress,
-    to: safeTx.to,
-    value: safeTx.value ? safeTx.value.toString() : '0',
-    data: safeTx.data,
-    operation: safeTx.operation,
-    safeTxGas: safeTx.safeTxGas,
-    baseGas: safeTx.baseGas,
-    gasPrice: safeTx.gasPrice,
-    gasToken: safeTx.gasToken,
-    refundReceiver: safeTx.refundReceiver,
-    nonce: safeTx.nonce,
-    contractTransactionHash: txHash,
-    sender: walletClient.account.address,
-    signature: signatureBytes,
+    safeAddress: safeAddress,
+    safeTransactionData: {
+      to: safeTx.to,
+      value: safeTx.value ? safeTx.value.toString() : '0',
+      data: safeTx.data,
+      operation: safeTx.operation,
+      safeTxGas: `${safeTx.safeTxGas}`,
+      baseGas: `${safeTx.baseGas}`,
+      gasPrice: `${safeTx.gasPrice}`,
+      gasToken: safeTx.gasToken,
+      refundReceiver: safeTx.refundReceiver,
+      nonce: safeTx.nonce,
+    },
+    safeTxHash: txHash,
+    senderAddress: walletClient.account.address,
+    senderSignature: signatureBytes,
   };
 };
 

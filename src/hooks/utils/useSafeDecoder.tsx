@@ -2,19 +2,29 @@ import axios from 'axios';
 import detectProxyTarget from 'evm-proxy-detection';
 import { useCallback } from 'react';
 import { Address, decodeFunctionData, encodePacked, Hex, keccak256 } from 'viem';
+import { useSafeAPI } from '../../providers/App/hooks/useSafeAPI';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
-import { DecodedTransaction, DecodedTxParam } from '../../types';
-import { buildSafeApiUrl, parseMultiSendTransactions } from '../../utils';
+import { DecodedTransaction } from '../../types';
+import { parseMultiSendTransactions } from '../../utils';
 import useNetworkPublicClient from '../useNetworkPublicClient';
 import { CacheKeys } from './cache/cacheDefaults';
 import { DBObjectKeys, useIndexedDB } from './cache/useLocalDB';
+
 /**
  * Handles decoding and caching transactions via the Safe API.
  */
+
+type DecodedTxParam = {
+  name: string;
+  type: string;
+  value: string;
+};
+
 export const useSafeDecoder = () => {
   const client = useNetworkPublicClient();
-  const { safeBaseURL, etherscanAPIUrl } = useNetworkConfigStore();
+  const { etherscanAPIUrl } = useNetworkConfigStore();
   const [setValue, getValue] = useIndexedDB(DBObjectKeys.DECODED_TRANSACTIONS);
+  const safeAPI = useSafeAPI();
   const decode = useCallback(
     async (value: string, to: Address, data?: string): Promise<DecodedTransaction[]> => {
       if (!data || data.length <= 2) {
@@ -39,12 +49,7 @@ export const useSafeDecoder = () => {
       let decoded: DecodedTransaction | DecodedTransaction[];
       try {
         try {
-          const decodedData = (
-            await axios.post(buildSafeApiUrl(safeBaseURL, '/data-decoder/'), {
-              to,
-              data,
-            })
-          ).data;
+          const decodedData = await safeAPI.decodeData(data);
           if (decodedData.parameters && decodedData.method === 'multiSend') {
             const internalTransactionsMap = new Map<number, DecodedTransaction>();
             parseMultiSendTransactions(internalTransactionsMap, decodedData.parameters);
@@ -111,7 +116,7 @@ export const useSafeDecoder = () => {
 
       return decoded;
     },
-    [getValue, safeBaseURL, etherscanAPIUrl, setValue, client],
+    [getValue, setValue, safeAPI, etherscanAPIUrl, client],
   );
   return decode;
 };
