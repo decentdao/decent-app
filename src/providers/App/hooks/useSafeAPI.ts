@@ -373,7 +373,7 @@ class EnhancedSafeApiKit extends SafeApiKit {
           "data": "string",
           "to": "string",
           "value": "string"
-        }ß
+        }
       */
       const body = {
         data: data,
