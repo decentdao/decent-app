@@ -160,6 +160,9 @@ export interface IDAO {
   safe: GnosisSafe | null;
   subgraphInfo: DAOSubgraph | null;
   modules: DecentModule[] | null;
+
+  // @todo: Preferrably should live in governance store. Using here fore convenience till we refactor governance store for zustand.
+  gaslessVotingEnabled: boolean;
 }
 
 export interface GovernanceActivity extends ActivityBase {
