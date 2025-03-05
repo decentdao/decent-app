@@ -83,11 +83,9 @@ export function AzoriusGovernance(props: ICreationStepProps) {
   const isDevMode = isFeatureEnabled('flag_dev');
   const devModeVotingPeriodDays = DEV_VOTING_PERIOD_MINUTES / 24 / 60;
   const defaultVotingPeriodDays = isDevMode ? devModeVotingPeriodDays : 7;
-  const defaultTimelockPeriodDays = 1;
 
   const [votingPeriodDays, setVotingPeriodDays] = useState(defaultVotingPeriodDays);
-  const [timelockPeriodDays, setTimelockPeriodDays] = useState(defaultTimelockPeriodDays);
-
+  const [timelockPeriodDays, setTimelockPeriodDays] = useState(1);
   const [executionPeriodDays, setExecutionPeriodDays] = useState(2);
 
   useEffect(() => {
