@@ -26,7 +26,7 @@ export function SafeGeneralSettingsPage() {
   const [snapshotENS, setSnapshotENS] = useState('');
   const [snapshotENSValid, setSnapshotENSValid] = useState<boolean>();
 
-  const { gaslessVotingEnabled } = useDaoInfoStore();
+  const { gaslessVotingEnabled, paymasterAddress } = useDaoInfoStore();
 
   const [isGaslessVotingEnabledToggled, setIsGaslessVotingEnabledToggled] =
     useState(gaslessVotingEnabled);
@@ -133,16 +133,18 @@ export function SafeGeneralSettingsPage() {
         throw new Error('Safe address is not set');
       }
 
-      targets.push(paymasterFactory);
-      calldatas.push(
-        encodeFunctionData({
-          // @todo replace with the deployed abi
-          abi: DecentPaymasterFactoryV1Abi,
-          functionName: 'createPaymaster',
-          args: [safeAddress, BigInt(PAYMASTER_SALT)],
-        }),
-      );
-      values.push(0n);
+      if (!paymasterAddress) {
+        targets.push(paymasterFactory);
+        calldatas.push(
+          encodeFunctionData({
+            // @todo replace with the deployed abi
+            abi: DecentPaymasterFactoryV1Abi,
+            functionName: 'createPaymaster',
+            args: [safeAddress, BigInt(PAYMASTER_SALT)],
+          }),
+        );
+        values.push(0n);
+      }
 
       const modulesAddresses = safe?.modulesAddresses;
       if (modulesAddresses) {
