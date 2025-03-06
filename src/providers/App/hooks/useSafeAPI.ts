@@ -491,13 +491,6 @@ class EnhancedSafeApiKit extends SafeApiKit {
 
   async getTransfers(safeAddress: Address): Promise<TransferWithTokenInfoResponse[]> {
     try {
-      const allTransactions = await this.getAllTransactions(safeAddress);
-      return this._getTransfersFrom(allTransactions);
-    } catch (err) {
-      console.error('Error fetching getTransfers from safe-transaction:', err);
-    }
-
-    try {
       const response: ListResponse<ISafeTransaction> = await this._safeClientGet(
         safeAddress,
         '/transactions/history',
