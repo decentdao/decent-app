@@ -125,7 +125,7 @@ class EnhancedSafeApiKit extends SafeApiKit {
     try {
       return await super.getSafeInfo(checksummedSafeAddress);
     } catch (error) {
-      console.error('Error fetching getSafeInfo from safeAPI:', error);
+      console.error('Error fetching getSafeInfo from safe-transaction:', error);
     }
 
     try {
@@ -194,8 +194,9 @@ class EnhancedSafeApiKit extends SafeApiKit {
     try {
       return await super.getAllTransactions(safeAddress, options);
     } catch (error) {
-      console.error('Error fetching getAllTransactions from safeAPI:', error);
+      console.error('Error fetching getAllTransactions from safe-transaction:', error);
     }
+
     throw new Error('Failed to getAllTransactions()');
   }
 
@@ -203,7 +204,7 @@ class EnhancedSafeApiKit extends SafeApiKit {
     try {
       return await super.getIncomingTransactions(safeAddress);
     } catch (error) {
-      console.error('Error fetching getAllTransactions from safeAPI:', error);
+      console.error('Error fetching getIncomingTransactions from safe-transaction:', error);
     }
 
     try {
@@ -211,7 +212,7 @@ class EnhancedSafeApiKit extends SafeApiKit {
       // return response.results.map(transfer => transfer);
       console.log(response);
     } catch (error) {
-      console.error('Error fetching getAllTransactions from safe-client:', error);
+      console.error('Error fetching getIncomingTransactions from safe-client:', error);
     }
 
     throw new Error('Failed to getIncomingTransactions()');
@@ -222,7 +223,7 @@ class EnhancedSafeApiKit extends SafeApiKit {
       const allTransactions = await this.getAllTransactions(safeAddress);
       return this._getTransfersFrom(allTransactions);
     } catch (err) {
-      console.log(err);
+      console.error('Error fetching getTransfers from safe-transaction:', err);
     }
 
     try {
@@ -235,13 +236,13 @@ class EnhancedSafeApiKit extends SafeApiKit {
 
       return transfers;
     } catch (error) {
-      console.error('Error fetching getAllTransactions from safe-client:', error);
+      console.error('Error fetching getTransfers from safe-client:', error);
     }
 
     return [];
   }
 
-  _transferOf(transaction: ISafeTransaction): TransferWithTokenInfoResponse | undefined {
+  private _transferOf(transaction: ISafeTransaction): TransferWithTokenInfoResponse | undefined {
     const transfer = transaction.transaction?.txInfo?.transferInfo;
     if (transfer) {
       const timestamp = transaction.transaction?.timestamp;
@@ -330,7 +331,7 @@ class EnhancedSafeApiKit extends SafeApiKit {
     try {
       return await super.getNextNonce(safeAddress);
     } catch (error) {
-      console.error('Error fetching getNextNonce from safeAPI:', error);
+      console.error('Error fetching getNextNonce from safe-transaction:', error);
     }
 
     try {
@@ -365,8 +366,10 @@ class EnhancedSafeApiKit extends SafeApiKit {
     try {
       return await super.getToken(tokenAddress);
     } catch (error) {
-      console.error('Error fetching getToken from safeAPI:', error);
+      console.error('Error fetching getToken from safe-transaction:', error);
+    }
 
+    try {
       const [name, symbol, decimals] = await this.publicClient.multicall({
         contracts: [
           { address: tokenAddress, abi: erc20Abi, functionName: 'name' },
@@ -382,7 +385,11 @@ class EnhancedSafeApiKit extends SafeApiKit {
         symbol,
         decimals,
       };
+    } catch (error) {
+      console.error('Error fetching getToken from contract:', error);
     }
+
+    throw new Error('Failed to getToken()');
   }
 
   override async confirmTransaction(
@@ -392,7 +399,7 @@ class EnhancedSafeApiKit extends SafeApiKit {
     try {
       return await super.confirmTransaction(safeTxHash, signature);
     } catch (error) {
-      console.error('Error posting confirmTransaction from safeAPI:', error);
+      console.error('Error posting confirmTransaction from safe-transaction:', error);
     }
 
     try {
@@ -423,7 +430,7 @@ class EnhancedSafeApiKit extends SafeApiKit {
     try {
       return await super.getMultisigTransactions(safeAddress);
     } catch (error) {
-      console.error('Error fetching getMultisigTransactions from safeAPI:', error);
+      console.error('Error fetching getMultisigTransactions from safe-transaction:', error);
     }
 
     // /multisig-transactions/raw response matches SafeMultisigTransactionListResponse
@@ -463,7 +470,7 @@ class EnhancedSafeApiKit extends SafeApiKit {
         origin,
       });
     } catch (error) {
-      console.error('Error posting proposeTransaction from safeAPI:', error);
+      console.error('Error posting proposeTransaction from safe-transaction:', error);
     }
 
     try {
@@ -495,7 +502,7 @@ class EnhancedSafeApiKit extends SafeApiKit {
     try {
       return await super.decodeData(data);
     } catch (error) {
-      console.error('Error decoding data from safeAPI:', error);
+      console.error('Error decoding data from safe-transaction:', error);
     }
 
     try {
