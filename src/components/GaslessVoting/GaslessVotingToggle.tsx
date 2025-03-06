@@ -129,7 +129,7 @@ export function GaslessVotingToggleDAOSettings(
   const navigate = useNavigate();
 
   // @todo: Retrieve and use the paymaster address here for `gasTankAddress`. Replace safe.address with the paymaster address.
-  const { safe } = useDaoInfoStore();
+  const { safe, gaslessVotingEnabled } = useDaoInfoStore();
   const paymasterAddress = safe?.address;
 
   const { data: nativeTokenBalance } = useBalance({
@@ -169,8 +169,6 @@ export function GaslessVotingToggleDAOSettings(
   const formattedNativeTokenBalance =
     balance && formatCoin(balance.value, true, balance.decimals, balance.symbol, false);
 
-  const { isEnabled } = props;
-
   return (
     <Box
       gap="1.5rem"
@@ -188,27 +186,9 @@ export function GaslessVotingToggleDAOSettings(
         isSettings
       />
 
-      {!isEnabled && <StarterPromoBanner />}
+      {!gaslessVotingEnabled && <StarterPromoBanner />}
 
-      {/* {isEnabled && gasTankAddress && (
-        <Box
-          borderRadius="0.75rem"
-          border="1px solid"
-          borderColor="neutral-3"
-          p="1rem 0.5rem"
-          w="100%"
-        >
-          <EtherscanLink
-            type="address"
-            value={gasTankAddress}
-            isTextLink
-          >
-            <Text as="span">{gasTankAddress}</Text>
-          </EtherscanLink>
-        </Box>
-      )} */}
-
-      {isEnabled && (
+      {gaslessVotingEnabled && (
         <Flex justifyContent="space-between">
           <Flex
             direction="column"
@@ -217,6 +197,7 @@ export function GaslessVotingToggleDAOSettings(
             <Text
               textStyle="labels-small"
               color="neutral-7"
+              mb="0.25rem"
             >
               {t('paymasterBalance')}
             </Text>
