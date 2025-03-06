@@ -1,12 +1,18 @@
 import SafeApiKit, {
   AllTransactionsListResponse,
   AllTransactionsOptions,
+  EthereumTxWithTransfersResponse,
   ProposeTransactionProps,
   SafeInfoResponse,
+  SafeModuleTransactionWithTransfersResponse,
   SafeMultisigTransactionListResponse,
+  SafeMultisigTransactionWithTransfersResponse,
   SignatureResponse,
   TokenInfoResponse,
+  TransferListResponse,
+  TransferWithTokenInfoResponse,
 } from '@safe-global/api-kit';
+import { ListResponse } from '@safe-global/safe-core-sdk-types';
 import axios from 'axios';
 import { useMemo } from 'react';
 import {
@@ -23,6 +29,49 @@ import { SENTINEL_ADDRESS } from '../../../constants/common';
 import { SafeWithNextNonce } from '../../../types';
 import { NetworkConfig } from '../../../types/network';
 import { useNetworkConfigStore } from '../../NetworkConfig/useNetworkConfigStore';
+
+/*
+Interface to map the response from Safe Client's transactions/history
+*/
+interface ITransferInfo {
+  type: string;
+  value: string;
+
+  tokenAddress: string;
+  tokenName: string;
+  tokenSymbol: string;
+  decimals: number;
+  logoUri: string;
+
+  trusted: true;
+  imitation: false;
+}
+
+interface ITxDestination {
+  name?: string;
+  logoUri?: string;
+  value: string; // address
+}
+
+interface ITxInfo {
+  direction: string;
+  type: string;
+  recipient?: ITxDestination;
+  sender?: ITxDestination;
+  transferInfo?: ITransferInfo;
+}
+
+interface ITransaction {
+  timestamp: number;
+  txHash: string;
+  txStatus: string;
+  txInfo: ITxInfo;
+}
+
+interface ISafeTransaction {
+  type: string;
+  transaction: ITransaction;
+}
 
 class EnhancedSafeApiKit extends SafeApiKit {
   readonly publicClient: PublicClient;
@@ -147,18 +196,134 @@ class EnhancedSafeApiKit extends SafeApiKit {
     } catch (error) {
       console.error('Error fetching getAllTransactions from safeAPI:', error);
     }
+    throw new Error('Failed to getAllTransactions()');
+  }
+
+  override async getIncomingTransactions(safeAddress: string): Promise<TransferListResponse> {
+    try {
+      return await super.getIncomingTransactions(safeAddress);
+    } catch (error) {
+      console.error('Error fetching getAllTransactions from safeAPI:', error);
+    }
 
     try {
-      // TODO ENG-292
-      // implement safe-client fallback
+      const response: any = await this._safeClientGet(safeAddress, '/incoming-transfers');
+      // return response.results.map(transfer => transfer);
+      console.log(response);
     } catch (error) {
       console.error('Error fetching getAllTransactions from safe-client:', error);
     }
 
-    return {
-      count: 0,
-      results: [],
-    };
+    throw new Error('Failed to getIncomingTransactions()');
+  }
+
+  async getTransfers(safeAddress: Address): Promise<TransferWithTokenInfoResponse[]> {
+    try {
+      const allTransactions = await this.getAllTransactions(safeAddress);
+      return this._getTransfersFrom(allTransactions);
+    } catch (err) {
+      console.log(err);
+    }
+
+    try {
+      const response: ListResponse<ISafeTransaction> = await this._safeClientGet(
+        safeAddress,
+        '/transactions/history',
+      );
+
+      const transfers = response.results.flatMap(tx => this._transferOf(tx) ?? []);
+
+      return transfers;
+    } catch (error) {
+      console.error('Error fetching getAllTransactions from safe-client:', error);
+    }
+
+    return [];
+  }
+
+  _transferOf(transaction: ISafeTransaction): TransferWithTokenInfoResponse | undefined {
+    const transfer = transaction.transaction?.txInfo?.transferInfo;
+    if (transfer) {
+      const timestamp = transaction.transaction?.timestamp;
+      const timeText = timestamp != undefined ? this._timestampToString(timestamp) : undefined;
+      if (timeText) {
+        return {
+          type: transaction.transaction?.txInfo.type,
+          executionDate: timeText,
+          blockNumber: timestamp,
+          transactionHash: transaction.transaction?.txHash,
+          to: transaction.transaction?.txInfo?.recipient?.value ?? '',
+          value: transfer.value,
+          tokenId: transfer.tokenAddress,
+          tokenAddress: transfer.tokenAddress,
+          from: transaction.transaction?.txInfo?.sender?.value ?? '',
+          tokenInfo: {
+            address: transfer.tokenAddress,
+            name: transfer.tokenName,
+            symbol: transfer.tokenSymbol,
+            decimals: transfer.decimals,
+            logoUri: transfer.logoUri,
+          },
+        };
+      }
+    }
+    return undefined;
+  }
+
+  _timestampToString(timestamp: number): string | undefined {
+    try {
+      const date = new Date(timestamp);
+      return date.toISOString();
+    } catch (err) {
+      return undefined;
+    }
+  }
+
+  _getTransfersFrom(transactions: AllTransactionsListResponse): TransferWithTokenInfoResponse[] {
+    const groupedTransactions = transactions.results.reduce(
+      (acc, tx) => {
+        const txType = tx.txType || 'UNKNOWN';
+        if (!acc[txType]) {
+          acc[txType] = [];
+        }
+        acc[txType].push(tx);
+        return acc;
+      },
+      {} as Record<
+        string,
+        Array<
+          | SafeModuleTransactionWithTransfersResponse
+          | SafeMultisigTransactionWithTransfersResponse
+          | EthereumTxWithTransfersResponse
+        >
+      >,
+    );
+
+    const moduleTransactions = (groupedTransactions.MODULE_TRANSACTION ||
+      []) as SafeModuleTransactionWithTransfersResponse[];
+    const multisigTransactions = (groupedTransactions.MULTISIG_TRANSACTION ||
+      []) as SafeMultisigTransactionWithTransfersResponse[];
+    const ethereumTransactions = (groupedTransactions.ETHEREUM_TRANSACTION ||
+      []) as EthereumTxWithTransfersResponse[];
+
+    const uniqueModuleTransactions = Array.from(
+      new Map(moduleTransactions.map(tx => [tx.transactionHash, tx])).values(),
+    );
+
+    const uniqueMultisigTransactions = Array.from(
+      new Map(multisigTransactions.map(tx => [tx.transactionHash, tx])).values(),
+    );
+
+    const uniqueEthereumTransactions = Array.from(
+      new Map(ethereumTransactions.map(tx => [tx.txHash, tx])).values(),
+    );
+
+    const flattenedTransfers = [
+      ...uniqueModuleTransactions.flatMap(tx => tx.transfers || []),
+      ...uniqueMultisigTransactions.flatMap(tx => tx.transfers || []),
+      ...uniqueEthereumTransactions.flatMap(tx => tx.transfers || []),
+    ];
+    return flattenedTransfers;
   }
 
   override async getNextNonce(safeAddress: Address): Promise<number> {
