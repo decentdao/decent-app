@@ -9,7 +9,6 @@ import SafeApiKit, {
   SafeMultisigTransactionWithTransfersResponse,
   SignatureResponse,
   TokenInfoResponse,
-  TransferListResponse,
   TransferWithTokenInfoResponse,
 } from '@safe-global/api-kit';
 import { ListResponse } from '@safe-global/safe-core-sdk-types';
@@ -285,24 +284,6 @@ class EnhancedSafeApiKit extends SafeApiKit {
     }
 
     throw new Error('Failed to getAllTransactions()');
-  }
-
-  override async getIncomingTransactions(safeAddress: string): Promise<TransferListResponse> {
-    try {
-      return await super.getIncomingTransactions(safeAddress);
-    } catch (error) {
-      console.error('Error fetching getIncomingTransactions from safe-transaction:', error);
-    }
-
-    try {
-      const response: any = await this._safeClientGet(safeAddress, '/incoming-transfers');
-      // return response.results.map(transfer => transfer);
-      console.log(response);
-    } catch (error) {
-      console.error('Error fetching getIncomingTransactions from safe-client:', error);
-    }
-
-    throw new Error('Failed to getIncomingTransactions()');
   }
 
   override async getNextNonce(safeAddress: Address): Promise<number> {
