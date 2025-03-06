@@ -21,7 +21,7 @@ import { analyticsEvents } from '../../../../insights/analyticsEvents';
 import { useNetworkConfigStore } from '../../../../providers/NetworkConfig/useNetworkConfigStore';
 import { useDaoInfoStore } from '../../../../store/daoInfo/useDaoInfoStore';
 import { useRolesStore } from '../../../../store/roles/useRolesStore';
-import { RoleFormValues } from '../../../../types/roles';
+import { RoleFormValues, RoleHatFormValue } from '../../../../types/roles';
 
 export function SafeRolesEditPage() {
   useEffect(() => {
@@ -109,7 +109,12 @@ export function SafeRolesEditPage() {
             ),
             onClick: async () => {
               const newId = toHex(getRandomBytes(), { size: 32 });
-              setFieldValue('roleEditing', { id: newId, canCreateProposals: false });
+              const newRole: RoleHatFormValue = {
+                id: newId,
+                canCreateProposals: false,
+                payments: [],
+              };
+              setFieldValue('roleEditing', newRole);
               showRoleEditDetails(newId);
             },
           }}
