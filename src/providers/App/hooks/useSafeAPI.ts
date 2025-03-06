@@ -1,15 +1,9 @@
 import SafeApiKit, {
-  AllTransactionsListResponse,
-  AllTransactionsOptions,
-  EthereumTxWithTransfersResponse,
   ProposeTransactionProps,
   SafeInfoResponse,
-  SafeModuleTransactionWithTransfersResponse,
   SafeMultisigTransactionListResponse,
-  SafeMultisigTransactionWithTransfersResponse,
   SignatureResponse,
   TokenInfoResponse,
-  TransferListResponse,
   TransferWithTokenInfoResponse,
 } from '@safe-global/api-kit';
 import { ListResponse } from '@safe-global/safe-core-sdk-types';
@@ -73,7 +67,8 @@ interface ISafeTransaction {
   transaction: ITransaction;
 }
 
-class EnhancedSafeApiKit extends SafeApiKit {
+class EnhancedSafeApiKit {
+  readonly safeApiKit: SafeApiKit;
   readonly publicClient: PublicClient;
   readonly networkConfig: NetworkConfig;
   readonly safeClientBaseUrl: string;
@@ -85,7 +80,7 @@ class EnhancedSafeApiKit extends SafeApiKit {
   requestMap = new Map<string, Promise<any> | null>();
 
   constructor(networkConfig: NetworkConfig) {
-    super({
+    this.safeApiKit = new SafeApiKit({
       chainId: BigInt(networkConfig.chain.id),
       txServiceUrl: `${networkConfig.safeBaseURL}/api`,
     });
@@ -119,13 +114,51 @@ class EnhancedSafeApiKit extends SafeApiKit {
     });
   }
 
-  override async getSafeInfo(safeAddress: Address): Promise<SafeInfoResponse> {
+  private _timestampToString(timestamp: number): string | undefined {
+    try {
+      const date = new Date(timestamp);
+      return date.toISOString();
+    } catch (err) {
+      return undefined;
+    }
+  }
+
+  private _transferOf(transaction: ISafeTransaction): TransferWithTokenInfoResponse | undefined {
+    const transfer = transaction.transaction?.txInfo?.transferInfo;
+    if (transfer) {
+      const timestamp = transaction.transaction?.timestamp;
+      const timeText = timestamp != undefined ? this._timestampToString(timestamp) : undefined;
+      if (timeText) {
+        return {
+          type: transaction.transaction?.txInfo.type,
+          executionDate: timeText,
+          blockNumber: timestamp,
+          transactionHash: transaction.transaction?.txHash,
+          to: transaction.transaction?.txInfo?.recipient?.value ?? '',
+          value: transfer.value,
+          tokenId: transfer.tokenAddress,
+          tokenAddress: transfer.tokenAddress,
+          from: transaction.transaction?.txInfo?.sender?.value ?? '',
+          tokenInfo: {
+            address: transfer.tokenAddress,
+            name: transfer.tokenName,
+            symbol: transfer.tokenSymbol,
+            decimals: transfer.decimals,
+            logoUri: transfer.logoUri,
+          },
+        };
+      }
+    }
+    return undefined;
+  }
+
+  async getSafeInfo(safeAddress: Address): Promise<SafeInfoResponse> {
     const checksummedSafeAddress = getAddress(safeAddress);
 
     try {
-      return await super.getSafeInfo(checksummedSafeAddress);
+      return await this.safeApiKit.getSafeInfo(checksummedSafeAddress);
     } catch (error) {
-      console.error('Error fetching getSafeInfo from safeAPI:', error);
+      console.error('Error fetching getSafeInfo from safe-transaction:', error);
     }
 
     try {
@@ -187,150 +220,11 @@ class EnhancedSafeApiKit extends SafeApiKit {
     throw new Error('Failed to getSafeInfo()');
   }
 
-  override async getAllTransactions(
-    safeAddress: Address,
-    options?: AllTransactionsOptions,
-  ): Promise<AllTransactionsListResponse> {
+  async getNextNonce(safeAddress: Address): Promise<number> {
     try {
-      return await super.getAllTransactions(safeAddress, options);
+      return await this.safeApiKit.getNextNonce(safeAddress);
     } catch (error) {
-      console.error('Error fetching getAllTransactions from safeAPI:', error);
-    }
-    throw new Error('Failed to getAllTransactions()');
-  }
-
-  override async getIncomingTransactions(safeAddress: string): Promise<TransferListResponse> {
-    try {
-      return await super.getIncomingTransactions(safeAddress);
-    } catch (error) {
-      console.error('Error fetching getAllTransactions from safeAPI:', error);
-    }
-
-    try {
-      const response: any = await this._safeClientGet(safeAddress, '/incoming-transfers');
-      // return response.results.map(transfer => transfer);
-      console.log(response);
-    } catch (error) {
-      console.error('Error fetching getAllTransactions from safe-client:', error);
-    }
-
-    throw new Error('Failed to getIncomingTransactions()');
-  }
-
-  async getTransfers(safeAddress: Address): Promise<TransferWithTokenInfoResponse[]> {
-    try {
-      const allTransactions = await this.getAllTransactions(safeAddress);
-      return this._getTransfersFrom(allTransactions);
-    } catch (err) {
-      console.log(err);
-    }
-
-    try {
-      const response: ListResponse<ISafeTransaction> = await this._safeClientGet(
-        safeAddress,
-        '/transactions/history',
-      );
-
-      const transfers = response.results.flatMap(tx => this._transferOf(tx) ?? []);
-
-      return transfers;
-    } catch (error) {
-      console.error('Error fetching getAllTransactions from safe-client:', error);
-    }
-
-    return [];
-  }
-
-  _transferOf(transaction: ISafeTransaction): TransferWithTokenInfoResponse | undefined {
-    const transfer = transaction.transaction?.txInfo?.transferInfo;
-    if (transfer) {
-      const timestamp = transaction.transaction?.timestamp;
-      const timeText = timestamp != undefined ? this._timestampToString(timestamp) : undefined;
-      if (timeText) {
-        return {
-          type: transaction.transaction?.txInfo.type,
-          executionDate: timeText,
-          blockNumber: timestamp,
-          transactionHash: transaction.transaction?.txHash,
-          to: transaction.transaction?.txInfo?.recipient?.value ?? '',
-          value: transfer.value,
-          tokenId: transfer.tokenAddress,
-          tokenAddress: transfer.tokenAddress,
-          from: transaction.transaction?.txInfo?.sender?.value ?? '',
-          tokenInfo: {
-            address: transfer.tokenAddress,
-            name: transfer.tokenName,
-            symbol: transfer.tokenSymbol,
-            decimals: transfer.decimals,
-            logoUri: transfer.logoUri,
-          },
-        };
-      }
-    }
-    return undefined;
-  }
-
-  _timestampToString(timestamp: number): string | undefined {
-    try {
-      const date = new Date(timestamp);
-      return date.toISOString();
-    } catch (err) {
-      return undefined;
-    }
-  }
-
-  _getTransfersFrom(transactions: AllTransactionsListResponse): TransferWithTokenInfoResponse[] {
-    const groupedTransactions = transactions.results.reduce(
-      (acc, tx) => {
-        const txType = tx.txType || 'UNKNOWN';
-        if (!acc[txType]) {
-          acc[txType] = [];
-        }
-        acc[txType].push(tx);
-        return acc;
-      },
-      {} as Record<
-        string,
-        Array<
-          | SafeModuleTransactionWithTransfersResponse
-          | SafeMultisigTransactionWithTransfersResponse
-          | EthereumTxWithTransfersResponse
-        >
-      >,
-    );
-
-    const moduleTransactions = (groupedTransactions.MODULE_TRANSACTION ||
-      []) as SafeModuleTransactionWithTransfersResponse[];
-    const multisigTransactions = (groupedTransactions.MULTISIG_TRANSACTION ||
-      []) as SafeMultisigTransactionWithTransfersResponse[];
-    const ethereumTransactions = (groupedTransactions.ETHEREUM_TRANSACTION ||
-      []) as EthereumTxWithTransfersResponse[];
-
-    const uniqueModuleTransactions = Array.from(
-      new Map(moduleTransactions.map(tx => [tx.transactionHash, tx])).values(),
-    );
-
-    const uniqueMultisigTransactions = Array.from(
-      new Map(multisigTransactions.map(tx => [tx.transactionHash, tx])).values(),
-    );
-
-    const uniqueEthereumTransactions = Array.from(
-      new Map(ethereumTransactions.map(tx => [tx.txHash, tx])).values(),
-    );
-
-    const flattenedTransfers = [
-      ...uniqueModuleTransactions.flatMap(tx => tx.transfers || []),
-      ...uniqueMultisigTransactions.flatMap(tx => tx.transfers || []),
-      ...uniqueEthereumTransactions.flatMap(tx => tx.transfers || []),
-    ];
-    return flattenedTransfers;
-  }
-
-  override async getNextNonce(safeAddress: Address): Promise<number> {
-    try {
-      return await super.getNextNonce(safeAddress);
-    } catch (error) {
-      console.error('Error fetching getNextNonce from safeAPI:', error);
+      console.error('Error fetching getNextNonce from safe-transaction:', error);
     }
 
     try {
@@ -361,12 +255,14 @@ class EnhancedSafeApiKit extends SafeApiKit {
     throw new Error('Failed to getNextNonce()');
   }
 
-  override async getToken(tokenAddress: Address): Promise<TokenInfoResponse> {
+  async getToken(tokenAddress: Address): Promise<TokenInfoResponse> {
     try {
-      return await super.getToken(tokenAddress);
+      return await this.safeApiKit.getToken(tokenAddress);
     } catch (error) {
-      console.error('Error fetching getToken from safeAPI:', error);
+      console.error('Error fetching getToken from safe-transaction:', error);
+    }
 
+    try {
       const [name, symbol, decimals] = await this.publicClient.multicall({
         contracts: [
           { address: tokenAddress, abi: erc20Abi, functionName: 'name' },
@@ -382,17 +278,18 @@ class EnhancedSafeApiKit extends SafeApiKit {
         symbol,
         decimals,
       };
+    } catch (error) {
+      console.error('Error fetching getToken from contract:', error);
     }
+
+    throw new Error('Failed to getToken()');
   }
 
-  override async confirmTransaction(
-    safeTxHash: string,
-    signature: string,
-  ): Promise<SignatureResponse> {
+  async confirmTransaction(safeTxHash: string, signature: string): Promise<SignatureResponse> {
     try {
-      return await super.confirmTransaction(safeTxHash, signature);
+      return await this.safeApiKit.confirmTransaction(safeTxHash, signature);
     } catch (error) {
-      console.error('Error posting confirmTransaction from safeAPI:', error);
+      console.error('Error posting confirmTransaction from safe-transaction:', error);
     }
 
     try {
@@ -417,13 +314,13 @@ class EnhancedSafeApiKit extends SafeApiKit {
     throw new Error('Failed to confirmTransaction()');
   }
 
-  override async getMultisigTransactions(
+  async getMultisigTransactions(
     safeAddress: Address,
   ): Promise<SafeMultisigTransactionListResponse> {
     try {
-      return await super.getMultisigTransactions(safeAddress);
+      return await this.safeApiKit.getMultisigTransactions(safeAddress);
     } catch (error) {
-      console.error('Error fetching getMultisigTransactions from safeAPI:', error);
+      console.error('Error fetching getMultisigTransactions from safe-transaction:', error);
     }
 
     // /multisig-transactions/raw response matches SafeMultisigTransactionListResponse
@@ -445,7 +342,7 @@ class EnhancedSafeApiKit extends SafeApiKit {
     };
   }
 
-  override async proposeTransaction({
+  async proposeTransaction({
     safeAddress,
     safeTransactionData,
     safeTxHash,
@@ -454,7 +351,7 @@ class EnhancedSafeApiKit extends SafeApiKit {
     origin,
   }: ProposeTransactionProps): Promise<void> {
     try {
-      return await super.proposeTransaction({
+      return await this.safeApiKit.proposeTransaction({
         safeAddress,
         safeTransactionData,
         safeTxHash,
@@ -463,7 +360,7 @@ class EnhancedSafeApiKit extends SafeApiKit {
         origin,
       });
     } catch (error) {
-      console.error('Error posting proposeTransaction from safeAPI:', error);
+      console.error('Error posting proposeTransaction from safe-transaction:', error);
     }
 
     try {
@@ -491,18 +388,18 @@ class EnhancedSafeApiKit extends SafeApiKit {
     throw new Error('Failed to proposeTransaction()');
   }
 
-  override async decodeData(data: string): Promise<any> {
+  async decodeData(data: string): Promise<any> {
     try {
-      return await super.decodeData(data);
+      return await this.safeApiKit.decodeData(data);
     } catch (error) {
-      console.error('Error decoding data from safeAPI:', error);
+      console.error('Error decoding data from safe-transaction:', error);
     }
 
     try {
       const body = {
         data: data,
       };
-      const value = await axios.post<any>(`${this.safeClientBaseUrl}/data-decoder`, body, {
+      const value = await axios.post(`${this.safeClientBaseUrl}/data-decoder`, body, {
         headers: {
           accept: 'application/json',
         },
@@ -521,6 +418,23 @@ class EnhancedSafeApiKit extends SafeApiKit {
     const safeInfoResponse = await this.getSafeInfo(checksummedSafeAddress);
     const nextNonce = await this.getNextNonce(checksummedSafeAddress);
     return { ...safeInfoResponse, nextNonce };
+  }
+
+  async getTransfers(safeAddress: Address): Promise<TransferWithTokenInfoResponse[]> {
+    try {
+      const response: ListResponse<ISafeTransaction> = await this._safeClientGet(
+        safeAddress,
+        '/transactions/history',
+      );
+
+      const transfers = response.results.flatMap(tx => this._transferOf(tx) ?? []);
+
+      return transfers;
+    } catch (error) {
+      console.error('Error fetching getTransfers from safe-client:', error);
+    }
+
+    return [];
   }
 }
 
