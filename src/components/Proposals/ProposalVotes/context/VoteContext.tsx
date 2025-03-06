@@ -134,11 +134,7 @@ export function VoteContextProvider({
             userAccount.address,
             Number(proposal.proposalId),
           ]);
-          const hasVotedOnchain = await ozLinearVotingContract.read.hasVoted([
-            Number(proposal.proposalId),
-            userAccount.address,
-          ]);
-          newCanVote = votingWeight > 0n && !hasVotedOnchain;
+          newCanVote = votingWeight > 0n;
         } else if (governance.type === GovernanceType.AZORIUS_ERC721) {
           const votingWeight = await erc721VotingWeight();
           newCanVote = votingWeight > 0n && remainingTokenIdsLength > 0;
