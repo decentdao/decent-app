@@ -156,12 +156,6 @@ class EnhancedSafeApiKit {
     const checksummedSafeAddress = getAddress(safeAddress);
 
     try {
-      return await this.safeApiKit.getSafeInfo(checksummedSafeAddress);
-    } catch (error) {
-      console.error('Error fetching getSafeInfo from safe-transaction:', error);
-    }
-
-    try {
       // Fetch necessary details from the contract
       const [nonce, threshold, modules, owners, version] = await this.publicClient.multicall({
         contracts: [
@@ -222,12 +216,6 @@ class EnhancedSafeApiKit {
 
   async getNextNonce(safeAddress: Address): Promise<number> {
     try {
-      return await this.safeApiKit.getNextNonce(safeAddress);
-    } catch (error) {
-      console.error('Error fetching getNextNonce from safe-transaction:', error);
-    }
-
-    try {
       type SafeClientNonceResponse = {
         readonly currentNonce: number;
         readonly recommendedNonce: number;
@@ -256,6 +244,21 @@ class EnhancedSafeApiKit {
   }
 
   async getToken(tokenAddress: Address): Promise<TokenInfoResponse> {
+    // leaving this for now, because the onchain fallback is not a FULL replacement
+    // for the safe-transaction service call.
+    //
+    // export type TokenInfoResponse = {
+    //   readonly type?: string;
+    //   readonly address: string;
+    //   readonly name: string;
+    //   readonly symbol: string;
+    //   readonly decimals: number;
+    //   readonly logoUri?: string;
+    // };
+    //
+    // a question though... now that the safe-transaction-service seems to be
+    // turning back on after the bybit hack, does the actual response type
+    // of this call still match the type we're using here?
     try {
       return await this.safeApiKit.getToken(tokenAddress);
     } catch (error) {
@@ -287,12 +290,6 @@ class EnhancedSafeApiKit {
 
   async confirmTransaction(safeTxHash: string, signature: string): Promise<SignatureResponse> {
     try {
-      return await this.safeApiKit.confirmTransaction(safeTxHash, signature);
-    } catch (error) {
-      console.error('Error posting confirmTransaction from safe-transaction:', error);
-    }
-
-    try {
       const body = {
         signature: signature,
       };
@@ -317,12 +314,6 @@ class EnhancedSafeApiKit {
   async getMultisigTransactions(
     safeAddress: Address,
   ): Promise<SafeMultisigTransactionListResponse> {
-    try {
-      return await this.safeApiKit.getMultisigTransactions(safeAddress);
-    } catch (error) {
-      console.error('Error fetching getMultisigTransactions from safe-transaction:', error);
-    }
-
     // /multisig-transactions/raw response matches SafeMultisigTransactionListResponse
     try {
       const response = await this._safeClientGet<SafeMultisigTransactionListResponse>(
@@ -351,19 +342,6 @@ class EnhancedSafeApiKit {
     origin,
   }: ProposeTransactionProps): Promise<void> {
     try {
-      return await this.safeApiKit.proposeTransaction({
-        safeAddress,
-        safeTransactionData,
-        safeTxHash,
-        senderAddress,
-        senderSignature,
-        origin,
-      });
-    } catch (error) {
-      console.error('Error posting proposeTransaction from safe-transaction:', error);
-    }
-
-    try {
       const body = {
         to: safeTransactionData.to,
         value: safeTransactionData.value,
@@ -389,12 +367,6 @@ class EnhancedSafeApiKit {
   }
 
   async decodeData(data: string): Promise<any> {
-    try {
-      return await this.safeApiKit.decodeData(data);
-    } catch (error) {
-      console.error('Error decoding data from safe-transaction:', error);
-    }
-
     try {
       const body = {
         data: data,
