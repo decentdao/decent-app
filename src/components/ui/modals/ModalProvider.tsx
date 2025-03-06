@@ -18,6 +18,7 @@ import { ModalBase, ModalBaseSize } from './ModalBase';
 import PaymentCancelConfirmModal from './PaymentCancelConfirmModal';
 import { PaymentWithdrawModal } from './PaymentWithdrawModal';
 import ProposalTemplateModal from './ProposalTemplateModal';
+import { RefillGasData, RefillGasTankModal } from './RefillGasTankModal';
 import { SendAssetsModal } from './SendAssetsModal';
 import StakeModal from './Stake';
 import { UnsavedChangesWarningContent } from './UnsavedChangesWarningContent';
@@ -39,6 +40,7 @@ export enum ModalType {
   CONFIRM_DELETE_STRATEGY,
   SEND_ASSETS,
   AIRDROP,
+  REFILL_GAS,
 }
 
 export type CurrentModal = {
@@ -92,6 +94,10 @@ export type ModalPropsTypes = {
   [ModalType.AIRDROP]: {
     onSubmit: (airdropData: AirdropData) => void;
     submitButtonText: string;
+    showNonceInput: boolean;
+  };
+  [ModalType.REFILL_GAS]: {
+    onSubmit: (refillGasData: RefillGasData) => void;
     showNonceInput: boolean;
   };
 };
@@ -265,6 +271,18 @@ export function ModalProvider({ children }: { children: ReactNode }) {
             showNonceInput={current.props.showNonceInput}
             close={closeModal}
             sendAssetsData={(data: SendAssetsData) => {
+              current.props.onSubmit(data);
+              closeModal();
+            }}
+          />
+        );
+        break;
+      case ModalType.REFILL_GAS:
+        modalContent = (
+          <RefillGasTankModal
+            showNonceInput={current.props.showNonceInput}
+            close={closeModal}
+            refillGasData={(data: RefillGasData) => {
               current.props.onSubmit(data);
               closeModal();
             }}

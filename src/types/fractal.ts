@@ -12,7 +12,6 @@ import { FreezeGuardType, FreezeVotingType } from './daoGovernance';
 import { AzoriusProposal, MultisigProposal, ProposalData } from './daoProposal';
 import { ProposalTemplate } from './proposalBuilder';
 import { SafeInfoResponseWithGuard } from './safeGlobal';
-import { BIFormattedPair } from './votingFungibleToken';
 import {
   DefiBalance,
   NFTBalance,
@@ -303,6 +302,11 @@ export interface Governance {
 
 export interface VotingStrategyAzorius extends VotingStrategy {
   strategyType?: VotingStrategyType;
+}
+
+interface BIFormattedPair {
+  value: bigint;
+  formatted?: string;
 }
 
 export interface VotingStrategy<Type = BIFormattedPair> {
