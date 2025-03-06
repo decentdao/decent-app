@@ -1,9 +1,4 @@
-import {
-  EthereumTxWithTransfersResponse,
-  SafeModuleTransactionWithTransfersResponse,
-  SafeMultisigTransactionWithTransfersResponse,
-  TokenInfoResponse,
-} from '@safe-global/api-kit';
+import { TokenInfoResponse } from '@safe-global/api-kit';
 import { useEffect, useCallback, useRef } from 'react';
 import { toast } from 'sonner';
 import { Address, getAddress, zeroAddress } from 'viem';
@@ -79,60 +74,18 @@ export const useDecentTreasury = () => {
     }
 
     const [
-      allTransactions,
+      transfers,
       { data: tokenBalances, error: tokenBalancesError },
       { data: nftBalances, error: nftBalancesError },
       { data: defiBalances, error: defiBalancesError },
     ] = await Promise.all([
-      safeAPI.getAllTransactions(safeAddress),
+      safeAPI.getTransfers(safeAddress),
       getTokenBalances(safeAddress),
       getNFTBalances(safeAddress),
       getDeFiBalances(safeAddress),
     ]);
 
-    const groupedTransactions = allTransactions.results.reduce(
-      (acc, tx) => {
-        const txType = tx.txType || 'UNKNOWN';
-        if (!acc[txType]) {
-          acc[txType] = [];
-        }
-        acc[txType].push(tx);
-        return acc;
-      },
-      {} as Record<
-        string,
-        Array<
-          | SafeModuleTransactionWithTransfersResponse
-          | SafeMultisigTransactionWithTransfersResponse
-          | EthereumTxWithTransfersResponse
-        >
-      >,
-    );
-
-    const moduleTransactions = (groupedTransactions.MODULE_TRANSACTION ||
-      []) as SafeModuleTransactionWithTransfersResponse[];
-    const multisigTransactions = (groupedTransactions.MULTISIG_TRANSACTION ||
-      []) as SafeMultisigTransactionWithTransfersResponse[];
-    const ethereumTransactions = (groupedTransactions.ETHEREUM_TRANSACTION ||
-      []) as EthereumTxWithTransfersResponse[];
-
-    const uniqueModuleTransactions = Array.from(
-      new Map(moduleTransactions.map(tx => [tx.transactionHash, tx])).values(),
-    );
-
-    const uniqueMultisigTransactions = Array.from(
-      new Map(multisigTransactions.map(tx => [tx.transactionHash, tx])).values(),
-    );
-
-    const uniqueEthereumTransactions = Array.from(
-      new Map(ethereumTransactions.map(tx => [tx.txHash, tx])).values(),
-    );
-
-    const flattenedTransfers = [
-      ...uniqueModuleTransactions.flatMap(tx => tx.transfers || []),
-      ...uniqueMultisigTransactions.flatMap(tx => tx.transfers || []),
-      ...uniqueEthereumTransactions.flatMap(tx => tx.transfers || []),
-    ];
+    const flattenedTransfers = transfers;
 
     if (tokenBalancesError) {
       toast.warning(tokenBalancesError, { duration: 2000 });
