@@ -1,12 +1,7 @@
 import SafeApiKit, {
-  AllTransactionsListResponse,
-  AllTransactionsOptions,
-  EthereumTxWithTransfersResponse,
   ProposeTransactionProps,
   SafeInfoResponse,
-  SafeModuleTransactionWithTransfersResponse,
   SafeMultisigTransactionListResponse,
-  SafeMultisigTransactionWithTransfersResponse,
   SignatureResponse,
   TokenInfoResponse,
   TransferWithTokenInfoResponse,
@@ -156,55 +151,6 @@ class EnhancedSafeApiKit extends SafeApiKit {
     return undefined;
   }
 
-  private _getTransfersFrom(
-    transactions: AllTransactionsListResponse,
-  ): TransferWithTokenInfoResponse[] {
-    const groupedTransactions = transactions.results.reduce(
-      (acc, tx) => {
-        const txType = tx.txType || 'UNKNOWN';
-        if (!acc[txType]) {
-          acc[txType] = [];
-        }
-        acc[txType].push(tx);
-        return acc;
-      },
-      {} as Record<
-        string,
-        Array<
-          | SafeModuleTransactionWithTransfersResponse
-          | SafeMultisigTransactionWithTransfersResponse
-          | EthereumTxWithTransfersResponse
-        >
-      >,
-    );
-
-    const moduleTransactions = (groupedTransactions.MODULE_TRANSACTION ||
-      []) as SafeModuleTransactionWithTransfersResponse[];
-    const multisigTransactions = (groupedTransactions.MULTISIG_TRANSACTION ||
-      []) as SafeMultisigTransactionWithTransfersResponse[];
-    const ethereumTransactions = (groupedTransactions.ETHEREUM_TRANSACTION ||
-      []) as EthereumTxWithTransfersResponse[];
-
-    const uniqueModuleTransactions = Array.from(
-      new Map(moduleTransactions.map(tx => [tx.transactionHash, tx])).values(),
-    );
-
-    const uniqueMultisigTransactions = Array.from(
-      new Map(multisigTransactions.map(tx => [tx.transactionHash, tx])).values(),
-    );
-
-    const uniqueEthereumTransactions = Array.from(
-      new Map(ethereumTransactions.map(tx => [tx.txHash, tx])).values(),
-    );
-
-    const flattenedTransfers = [
-      ...uniqueModuleTransactions.flatMap(tx => tx.transfers || []),
-      ...uniqueMultisigTransactions.flatMap(tx => tx.transfers || []),
-      ...uniqueEthereumTransactions.flatMap(tx => tx.transfers || []),
-    ];
-    return flattenedTransfers;
-  }
-
   override async getSafeInfo(safeAddress: Address): Promise<SafeInfoResponse> {
     const checksummedSafeAddress = getAddress(safeAddress);
 
@@ -271,19 +217,6 @@ class EnhancedSafeApiKit extends SafeApiKit {
     }
 
     throw new Error('Failed to getSafeInfo()');
-  }
-
-  override async getAllTransactions(
-    safeAddress: Address,
-    options?: AllTransactionsOptions,
-  ): Promise<AllTransactionsListResponse> {
-    try {
-      return await super.getAllTransactions(safeAddress, options);
-    } catch (error) {
-      console.error('Error fetching getAllTransactions from safe-transaction:', error);
-    }
-
-    throw new Error('Failed to getAllTransactions()');
   }
 
   override async getNextNonce(safeAddress: Address): Promise<number> {
