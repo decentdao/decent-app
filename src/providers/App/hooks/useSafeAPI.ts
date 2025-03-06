@@ -67,7 +67,8 @@ interface ISafeTransaction {
   transaction: ITransaction;
 }
 
-class EnhancedSafeApiKit extends SafeApiKit {
+class EnhancedSafeApiKit {
+  readonly safeApiKit: SafeApiKit;
   readonly publicClient: PublicClient;
   readonly networkConfig: NetworkConfig;
   readonly safeClientBaseUrl: string;
@@ -79,7 +80,7 @@ class EnhancedSafeApiKit extends SafeApiKit {
   requestMap = new Map<string, Promise<any> | null>();
 
   constructor(networkConfig: NetworkConfig) {
-    super({
+    this.safeApiKit = new SafeApiKit({
       chainId: BigInt(networkConfig.chain.id),
       txServiceUrl: `${networkConfig.safeBaseURL}/api`,
     });
@@ -151,11 +152,11 @@ class EnhancedSafeApiKit extends SafeApiKit {
     return undefined;
   }
 
-  override async getSafeInfo(safeAddress: Address): Promise<SafeInfoResponse> {
+  async getSafeInfo(safeAddress: Address): Promise<SafeInfoResponse> {
     const checksummedSafeAddress = getAddress(safeAddress);
 
     try {
-      return await super.getSafeInfo(checksummedSafeAddress);
+      return await this.safeApiKit.getSafeInfo(checksummedSafeAddress);
     } catch (error) {
       console.error('Error fetching getSafeInfo from safe-transaction:', error);
     }
@@ -219,9 +220,9 @@ class EnhancedSafeApiKit extends SafeApiKit {
     throw new Error('Failed to getSafeInfo()');
   }
 
-  override async getNextNonce(safeAddress: Address): Promise<number> {
+  async getNextNonce(safeAddress: Address): Promise<number> {
     try {
-      return await super.getNextNonce(safeAddress);
+      return await this.safeApiKit.getNextNonce(safeAddress);
     } catch (error) {
       console.error('Error fetching getNextNonce from safe-transaction:', error);
     }
@@ -254,9 +255,9 @@ class EnhancedSafeApiKit extends SafeApiKit {
     throw new Error('Failed to getNextNonce()');
   }
 
-  override async getToken(tokenAddress: Address): Promise<TokenInfoResponse> {
+  async getToken(tokenAddress: Address): Promise<TokenInfoResponse> {
     try {
-      return await super.getToken(tokenAddress);
+      return await this.safeApiKit.getToken(tokenAddress);
     } catch (error) {
       console.error('Error fetching getToken from safe-transaction:', error);
     }
@@ -284,12 +285,9 @@ class EnhancedSafeApiKit extends SafeApiKit {
     throw new Error('Failed to getToken()');
   }
 
-  override async confirmTransaction(
-    safeTxHash: string,
-    signature: string,
-  ): Promise<SignatureResponse> {
+  async confirmTransaction(safeTxHash: string, signature: string): Promise<SignatureResponse> {
     try {
-      return await super.confirmTransaction(safeTxHash, signature);
+      return await this.safeApiKit.confirmTransaction(safeTxHash, signature);
     } catch (error) {
       console.error('Error posting confirmTransaction from safe-transaction:', error);
     }
@@ -316,11 +314,11 @@ class EnhancedSafeApiKit extends SafeApiKit {
     throw new Error('Failed to confirmTransaction()');
   }
 
-  override async getMultisigTransactions(
+  async getMultisigTransactions(
     safeAddress: Address,
   ): Promise<SafeMultisigTransactionListResponse> {
     try {
-      return await super.getMultisigTransactions(safeAddress);
+      return await this.safeApiKit.getMultisigTransactions(safeAddress);
     } catch (error) {
       console.error('Error fetching getMultisigTransactions from safe-transaction:', error);
     }
@@ -344,7 +342,7 @@ class EnhancedSafeApiKit extends SafeApiKit {
     };
   }
 
-  override async proposeTransaction({
+  async proposeTransaction({
     safeAddress,
     safeTransactionData,
     safeTxHash,
@@ -353,7 +351,7 @@ class EnhancedSafeApiKit extends SafeApiKit {
     origin,
   }: ProposeTransactionProps): Promise<void> {
     try {
-      return await super.proposeTransaction({
+      return await this.safeApiKit.proposeTransaction({
         safeAddress,
         safeTransactionData,
         safeTxHash,
@@ -390,9 +388,9 @@ class EnhancedSafeApiKit extends SafeApiKit {
     throw new Error('Failed to proposeTransaction()');
   }
 
-  override async decodeData(data: string): Promise<any> {
+  async decodeData(data: string): Promise<any> {
     try {
-      return await super.decodeData(data);
+      return await this.safeApiKit.decodeData(data);
     } catch (error) {
       console.error('Error decoding data from safe-transaction:', error);
     }
