@@ -162,6 +162,7 @@ export interface IDAO {
 
   // @todo: Preferrably should live in governance store. Using here fore convenience till we refactor governance store for zustand.
   gaslessVotingEnabled: boolean;
+  paymasterAddress: Address | null;
 }
 
 export interface GovernanceActivity extends ActivityBase {

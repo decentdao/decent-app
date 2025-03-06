@@ -128,12 +128,11 @@ export function GaslessVotingToggleDAOSettings(
 
   const navigate = useNavigate();
 
-  // @todo: Retrieve and use the paymaster address here for `gasTankAddress`. Replace safe.address with the paymaster address.
-  const { safe, gaslessVotingEnabled } = useDaoInfoStore();
-  const paymasterAddress = safe?.address;
+  const { safe, gaslessVotingEnabled, paymasterAddress } = useDaoInfoStore();
 
-  const { data: nativeTokenBalance } = useBalance({
-    address: safe?.address,
+  const { data: paymasterBalance } = useBalance({
+    address: paymasterAddress ?? undefined,
+    chainId: chain.id,
   });
 
   const { addAction } = useProposalActionsStore();
@@ -149,8 +148,8 @@ export function GaslessVotingToggleDAOSettings(
         paymasterAddress,
         nonceInput: refillGasData.nonceInput,
         nativeToken: {
-          decimals: nativeTokenBalance?.decimals ?? 18,
-          symbol: nativeTokenBalance?.symbol ?? 'Native Token',
+          decimals: paymasterBalance?.decimals ?? 18,
+          symbol: paymasterBalance?.symbol ?? 'Native Token',
         },
       });
 
@@ -161,13 +160,18 @@ export function GaslessVotingToggleDAOSettings(
     showNonceInput: true,
   });
 
-  const { data: balance } = useBalance({ address: paymasterAddress, chainId: chain.id });
-
   if (!isFeatureEnabled('flag_gasless_voting')) return null;
   if (!gaslessVotingSupported) return null;
 
-  const formattedNativeTokenBalance =
-    balance && formatCoin(balance.value, true, balance.decimals, balance.symbol, false);
+  const formattedPaymasterBalance =
+    paymasterBalance &&
+    formatCoin(
+      paymasterBalance.value,
+      true,
+      paymasterBalance.decimals,
+      paymasterBalance.symbol,
+      false,
+    );
 
   return (
     <Box
@@ -206,17 +210,17 @@ export function GaslessVotingToggleDAOSettings(
               display="flex"
               alignItems="center"
             >
-              {formattedNativeTokenBalance}
+              {formattedPaymasterBalance}
               <Image
                 src={'/images/coin-icon-default.svg'} // @todo: Use the correct image for the token.
                 fallbackSrc={'/images/coin-icon-default.svg'}
-                alt={balance?.symbol}
+                alt={paymasterBalance?.symbol}
                 w="1.25rem"
                 h="1.25rem"
                 ml="0.5rem"
                 mr="0.25rem"
               />
-              {balance?.symbol}
+              {paymasterBalance?.symbol}
             </Text>
           </Flex>
 
