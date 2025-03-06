@@ -468,7 +468,7 @@ class EnhancedSafeApiKit extends SafeApiKit {
       const body = {
         data: data,
       };
-      const value = await axios.post<any>(`${this.safeClientBaseUrl}/data-decoder`, body, {
+      const value = await axios.post(`${this.safeClientBaseUrl}/data-decoder`, body, {
         headers: {
           accept: 'application/json',
         },
