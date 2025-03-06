@@ -51,7 +51,9 @@ export function TxActions({ proposal }: { proposal: MultisigProposal }) {
   const { loadSafeMultisigProposals } = useSafeMultisigProposals();
   const { data: walletClient } = useNetworkWalletClient();
 
-  const isOwner = safe?.owners?.includes(userAccount.address ?? zeroAddress);
+  const isOwner = safe?.owners
+    ?.map(owner => owner.toLowerCase())
+    .includes(userAccount.address?.toLowerCase() ?? zeroAddress);
 
   if (!isOwner) return null;
 
