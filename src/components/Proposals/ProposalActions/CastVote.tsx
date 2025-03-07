@@ -1,5 +1,5 @@
 import { Button, Box, Text, Image, Flex, Radio, RadioGroup, Icon } from '@chakra-ui/react';
-import { Check, CheckCircle } from '@phosphor-icons/react';
+import { Check, CheckCircle, Sparkle } from '@phosphor-icons/react';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { TOOLTIP_MAXW } from '../../../constants/common';
@@ -7,6 +7,7 @@ import useSnapshotProposal from '../../../hooks/DAO/loaders/snapshot/useSnapshot
 import useCastSnapshotVote from '../../../hooks/DAO/proposal/useCastSnapshotVote';
 import useCastVote from '../../../hooks/DAO/proposal/useCastVote';
 import useCurrentBlockNumber from '../../../hooks/utils/useCurrentBlockNumber';
+import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
 import {
   AzoriusProposal,
   FractalProposal,
@@ -45,6 +46,8 @@ export function CastVote({ proposal }: { proposal: FractalProposal }) {
   } = useCastSnapshotVote(extendedSnapshotProposal);
 
   const { canVoteLoading, hasVoted, hasVotedLoading } = useVoteContext();
+
+  const { gaslessVotingEnabled } = useDaoInfoStore();
 
   // If user is lucky enough - he could create a proposal and proceed to vote on it
   // even before the block, in which proposal was created, was mined.
@@ -207,10 +210,11 @@ export function CastVote({ proposal }: { proposal: FractalProposal }) {
           padding="3"
           height="3.25rem"
           width="full"
+          leftIcon={gaslessVotingEnabled ? <Icon as={Sparkle} /> : undefined}
           isDisabled={disabled}
           onClick={() => selectedVoteChoice !== undefined && castVote(selectedVoteChoice)}
         >
-          {t('vote')}
+          {!gaslessVotingEnabled ? t('vote') : t('voteForFree')}
         </Button>
       </RadioGroup>
     </DecentTooltip>
