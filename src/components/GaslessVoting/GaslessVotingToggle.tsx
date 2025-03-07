@@ -1,17 +1,21 @@
 import { Box, Text, HStack, Switch, Flex, Icon, Button, Image } from '@chakra-ui/react';
 import { WarningCircle } from '@phosphor-icons/react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { useBalance } from 'wagmi';
-import { DETAILS_BOX_SHADOW } from '../../constants/common';
+import { getContract } from 'viem';
+import { EntryPointAbi } from '../../assets/abi/EntryPointAbi';
+import { DETAILS_BOX_SHADOW, ENTRY_POINT_ADDRESS } from '../../constants/common';
 import { DAO_ROUTES } from '../../constants/routes';
 import { isFeatureEnabled } from '../../helpers/featureFlags';
+import useNetworkPublicClient from '../../hooks/useNetworkPublicClient';
+import { useCanUserCreateProposal } from '../../hooks/utils/useCanUserSubmitProposal';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
 import { useProposalActionsStore } from '../../store/actions/useProposalActionsStore';
 import { useDaoInfoStore } from '../../store/daoInfo/useDaoInfoStore';
 import { BigIntValuePair } from '../../types';
 import { formatCoin } from '../../utils';
-import { prepareRefillPaymasterActionData } from '../../utils/dao/prepareRefillPaymasterActionData';
+import { prepareRefillPaymasterAction } from '../../utils/dao/prepareRefillPaymasterActionData';
 import { ModalType } from '../ui/modals/ModalProvider';
 import { RefillGasData } from '../ui/modals/RefillGasTankModal';
 import { useDecentModal } from '../ui/modals/useDecentModal';
@@ -120,16 +124,30 @@ export function GaslessVotingToggleDAOSettings(
   },
 ) {
   const { t } = useTranslation('gaslessVoting');
-  const { chain, gaslessVotingSupported, addressPrefix } = useNetworkConfigStore();
+  const { gaslessVotingSupported, addressPrefix } = useNetworkConfigStore();
 
   const navigate = useNavigate();
+  const publicClient = useNetworkPublicClient();
+  const nativeCurrency = publicClient.chain.nativeCurrency;
 
   const { safe, gaslessVotingEnabled, paymasterAddress } = useDaoInfoStore();
 
-  const { data: paymasterBalance } = useBalance({
-    address: paymasterAddress ?? undefined,
-    chainId: chain.id,
-  });
+  const [paymasterBalance, setPaymasterBalance] = useState<BigIntValuePair>();
+  useEffect(() => {
+    if (!paymasterAddress || !safe?.address) return;
+    const entryPoint = getContract({
+      address: ENTRY_POINT_ADDRESS,
+      abi: EntryPointAbi,
+      client: publicClient,
+    });
+
+    entryPoint.read.balanceOf([paymasterAddress]).then(balance => {
+      setPaymasterBalance({
+        value: balance.toString(),
+        bigintValue: balance,
+      });
+    });
+  }, [paymasterAddress, publicClient, safe?.address]);
 
   const { addAction } = useProposalActionsStore();
 
@@ -139,14 +157,11 @@ export function GaslessVotingToggleDAOSettings(
         return;
       }
 
-      const action = prepareRefillPaymasterActionData({
+      const action = prepareRefillPaymasterAction({
         refillAmount: refillGasData.transferAmount,
         paymasterAddress,
         nonceInput: refillGasData.nonceInput,
-        nativeToken: {
-          decimals: paymasterBalance?.decimals ?? 18,
-          symbol: paymasterBalance?.symbol ?? 'Native Token',
-        },
+        nativeToken: nativeCurrency,
       });
 
       addAction({ ...action, content: <></> });
@@ -161,13 +176,7 @@ export function GaslessVotingToggleDAOSettings(
 
   const formattedPaymasterBalance =
     paymasterBalance &&
-    formatCoin(
-      paymasterBalance.value,
-      true,
-      paymasterBalance.decimals,
-      paymasterBalance.symbol,
-      false,
-    );
+    formatCoin(paymasterBalance.value, true, nativeCurrency.decimals, nativeCurrency.symbol, false);
 
   return (
     <Box
@@ -210,13 +219,13 @@ export function GaslessVotingToggleDAOSettings(
               <Image
                 src={'/images/coin-icon-default.svg'} // @todo: Use the correct image for the token.
                 fallbackSrc={'/images/coin-icon-default.svg'}
-                alt={paymasterBalance?.symbol}
+                alt={nativeCurrency.symbol}
                 w="1.25rem"
                 h="1.25rem"
                 ml="0.5rem"
                 mr="0.25rem"
               />
-              {paymasterBalance?.symbol}
+              {nativeCurrency.symbol}
             </Text>
           </Flex>
 

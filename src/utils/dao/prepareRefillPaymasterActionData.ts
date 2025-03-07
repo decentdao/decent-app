@@ -15,12 +15,9 @@ export interface RefillPaymasterData {
 /**
  * Prepare the data for a paymaster refill action.
  *
- * @returns Returns a `RefillPaymasterActionData` object.
- * `.tokenAddress` is `null` if this is a native token transfer.
- * `.transferAmount` is the amount of tokens being transferred.
- * `.calldata` is the calldata for the transfer function. `0x` if this is a native token transfer.
+ * @returns Returns a `CreateProposalActionData` object.
  */
-export const prepareRefillPaymasterActionData = ({
+export const prepareRefillPaymasterAction = ({
   refillAmount,
   paymasterAddress,
   nativeToken,
