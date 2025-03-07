@@ -131,7 +131,16 @@ export function DaoHierarchyNode({
         }
 
         if (!queryResult.data) {
-          throw new Error('No data found');
+          return {
+            parentAddress: null,
+            childAddresses: [],
+            daoName: null,
+            daoSnapshotENS: null,
+            proposalTemplatesHash: null,
+            modules: [],
+            votingStrategies: [],
+            safeAddress: _safeAddress,
+          };
         }
 
         const modules = await lookupModules(safe.modules);

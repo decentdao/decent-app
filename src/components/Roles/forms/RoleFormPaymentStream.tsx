@@ -1,13 +1,13 @@
-import { Alert, Box, Button, Flex, FormControl, Icon, Show, Text } from '@chakra-ui/react';
+import { Alert, Box, Button, Flex, FormControl, Icon, Show, Switch, Text } from '@chakra-ui/react';
 import { ArrowRight, Info, Trash } from '@phosphor-icons/react';
 import { addDays } from 'date-fns';
-import { Field, FieldProps, FormikErrors, useFormikContext } from 'formik';
+import { Field, FieldAttributes, FieldProps, FormikErrors, useFormikContext } from 'formik';
 import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DETAILS_BOX_SHADOW } from '../../../constants/common';
-import { isFeatureEnabled } from '../../../helpers/featureFlags';
 import { useRolesStore } from '../../../store/roles/useRolesStore';
 import { RoleFormValues, RoleHatFormValue } from '../../../types/roles';
+import { DevSet10MinPaymentStream } from '../../../utils/dev/DevSet10MinPaymentStream';
 import { DatePicker } from '../../ui/forms/DatePicker';
 import { ModalType } from '../../ui/modals/ModalProvider';
 import { useDecentModal } from '../../ui/modals/useDecentModal';
@@ -128,7 +128,7 @@ export function RoleFormPaymentStream({ formIndex }: { formIndex: number }) {
   );
 
   const canBeCancelled = existingPayment
-    ? existingPayment.isCancellable() && !payment?.isCancelling
+    ? existingPayment.canUserCancel() && !payment?.isCancelling
     : false;
 
   const cancelModal = useDecentModal(ModalType.NONE);
@@ -198,57 +198,79 @@ export function RoleFormPaymentStream({ formIndex }: { formIndex: number }) {
           formIndex={formIndex}
           disabled={!!streamId}
         />
-        {isFeatureEnabled('flag_dev') && (
-          <Button
-            size="sm"
-            onClick={() => {
-              const startDate = new Date();
-              const endDate = new Date(startDate.getTime() + 10 * 60 * 1000); // Add 10 minutes
-              setFieldValue(`roleEditing.payments.${formIndex}`, {
-                ...values.roleEditing?.payments?.[formIndex],
-                startDate,
-                endDate,
-              });
-            }}
-            mb={4}
+        <DevSet10MinPaymentStream formIndex={formIndex} />
+        {!streamId && (
+          <Flex
+            align="flex-end"
+            alignItems="center"
+            gap="1.5rem"
           >
-            Set 10 min stream
-          </Button>
+            <SectionTitle
+              title={t('cancelable')}
+              tooltipContent={t('cancelableSubTitle')}
+            />
+            <Field name={`roleEditing.payments.${formIndex}.cancelable`}>
+              {({ field }: FieldAttributes<FieldProps>) => (
+                <Switch
+                  {...field}
+                  isChecked={field.value}
+                  isDisabled={!!streamId}
+                  my={4}
+                  size="md"
+                  variant="secondary"
+                />
+              )}
+            </Field>
+          </Flex>
         )}
         {canBeCancelled && (
           <Show above="md">
             <PaymentCancelHint />
           </Show>
         )}
-        {(canBeCancelled || !streamId) && (
-          <Flex justifyContent="flex-end">
-            {!streamId && (
+        <Flex justifyContent="flex-end">
+          {/* {!streamId && (
+            <Button
+              variant="tertiary"
+              onClick={() => {
+                setFieldValue('roleEditing.roleEditingPaymentIndex', undefined);
+                // @todo: fix this doesn't work
+                const paymentIndex = values.roleEditing?.roleEditingPaymentIndex;
+                if (paymentIndex !== undefined) {
+                  setFieldValue(`roleEditing.payments.${paymentIndex}`, undefined);
+                }
+              }}
+              mr={2}
+            >
+              {t('cancel', { ns: 'common' })}
+            </Button>
+          )} */}
+          {!streamId && (
+            <Button
+              isDisabled={!!roleEditingPaymentsErrors}
+              onClick={() => {
+                setFieldValue('roleEditing.roleEditingPaymentIndex', undefined);
+                setFieldValue(`roleEditing.payments.${formIndex}.isValidatedAndSaved`, true);
+              }}
+            >
+              {t('savePayment')}
+            </Button>
+          )}
+          {canBeCancelled && (
+            <Show above="md">
               <Button
-                isDisabled={!!roleEditingPaymentsErrors}
-                onClick={() => {
-                  setFieldValue('roleEditing.roleEditingPaymentIndex', undefined);
-                  setFieldValue(`roleEditing.payments.${formIndex}.isValidatedAndSaved`, true);
-                }}
+                color="red-1"
+                borderColor="red-1"
+                _hover={{ color: 'red-0', borderColor: 'red-0' }}
+                variant="secondary"
+                leftIcon={<Trash />}
+                onClick={confirmCancelPayment}
               >
-                {t('save')}
+                {t('cancelPayment')}
               </Button>
-            )}
-            {canBeCancelled && (
-              <Show above="md">
-                <Button
-                  color="red-1"
-                  borderColor="red-1"
-                  _hover={{ color: 'red-0', borderColor: 'red-0' }}
-                  variant="secondary"
-                  leftIcon={<Trash />}
-                  onClick={confirmCancelPayment}
-                >
-                  {t('cancelPayment')}
-                </Button>
-              </Show>
-            )}
-          </Flex>
-        )}
+            </Show>
+          )}
+        </Flex>
       </Box>
 
       <Show below="md">

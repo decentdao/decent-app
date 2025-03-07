@@ -78,7 +78,7 @@ export const useRolesSchema = () => {
 
           const allHatPayments: SablierPaymentFormValues[] = formContextHats
             .filter(hat => hat.id === currentRoleHat.id)
-            .map(hat => hat.payments ?? [])
+            .map(hat => hat.payments)
             .flat();
 
           const totalPendingAmounts = [

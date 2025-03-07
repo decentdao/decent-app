@@ -48,13 +48,23 @@ export const useFractalGovernance = () => {
         }
 
         if (!result.data) {
+          action.dispatch({
+            type: FractalGovernanceAction.SET_PROPOSAL_TEMPLATES,
+            payload: [],
+          });
           return;
         }
         const { daos } = result.data;
         const dao = daos[0];
 
         // `dao` might be undefined despite what the type says
-        if (!dao) return;
+        if (!dao) {
+          action.dispatch({
+            type: FractalGovernanceAction.SET_PROPOSAL_TEMPLATES,
+            payload: [],
+          });
+          return;
+        }
 
         const { proposalTemplatesHash } = dao;
 

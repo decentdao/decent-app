@@ -32,6 +32,11 @@ export default function SafeRolesEditFormikPageWrapper() {
         resolvedWearer: hat.wearerAddress,
         wearer: hat.wearerAddress,
         roleTerms: hat.roleTerms.allTerms,
+        payments: hat.payments.map(payment => ({
+          ...payment,
+          cancelable: true,
+          isCancelling: false,
+        })),
       })),
       customNonce: safe?.nextNonce || 0,
       actions: [],

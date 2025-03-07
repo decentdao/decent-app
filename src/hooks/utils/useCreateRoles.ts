@@ -349,6 +349,7 @@ export default function useCreateRoles() {
         startTimestamp: number;
         cliffTimestamp: number;
         endTimestamp: number;
+        cancelable: boolean;
       }[],
       termEndDateTs: bigint,
     ) => {
@@ -366,7 +367,7 @@ export default function useCreateRoles() {
           sender: safeAddress,
           totalAmount: payment.totalAmount,
           asset: payment.asset,
-          cancelable: true,
+          cancelable: payment.cancelable,
           transferable: true,
           timestamps: {
             start: payment.startTimestamp,
@@ -400,6 +401,7 @@ export default function useCreateRoles() {
           startTimestamp: Math.floor(payment.startDate.getTime() / 1000),
           cliffTimestamp: payment.cliffDate ? Math.floor(payment.cliffDate.getTime() / 1000) : 0,
           endTimestamp: Math.floor(payment.endDate.getTime() / 1000),
+          cancelable: payment.cancelable,
         };
       });
     },
@@ -434,7 +436,7 @@ export default function useCreateRoles() {
             throw new Error('Hat name or description of added hat is undefined.');
           }
 
-          const sablierPayments = parseSablierPaymentsFromFormRolePayments(role.payments ?? []);
+          const sablierPayments = parseSablierPaymentsFromFormRolePayments(role.payments);
 
           const [firstTerm] = parseRoleTermsFromFormRoleTerms(role.roleTerms ?? []);
           if (!firstTerm && role.isTermed) {
@@ -608,7 +610,7 @@ export default function useCreateRoles() {
         formRole.name,
         formRole.description,
         firstWearer,
-        parseSablierPaymentsFromFormRolePayments(formRole.payments ?? []),
+        parseSablierPaymentsFromFormRolePayments(formRole.payments),
         termEndDateTs,
       );
 
@@ -772,6 +774,7 @@ export default function useCreateRoles() {
           cliffDateTs: Math.floor((stream.cliffDate?.getTime() ?? 0) / 1000),
           totalAmount: stream.amount.bigintValue,
           assetAddress: stream.asset.address,
+          cancelable: stream.cancelable,
         };
       });
 
@@ -781,25 +784,25 @@ export default function useCreateRoles() {
   );
 
   const getMemberChangedStreamsWithFundsToClaim = useCallback((formHat: RoleHatFormValueEdited) => {
-    return (formHat.payments ?? []).filter(
+    return formHat.payments.filter(
       payment => (payment?.withdrawableAmount ?? 0n) > 0n && !payment.isCancelling,
     );
   }, []);
 
   const getNewStreamsFromFormHat = useCallback((formHat: RoleHatFormValueEdited) => {
-    return (formHat.payments ?? []).filter(payment => !payment.streamId);
+    return formHat.payments.filter(payment => !payment.streamId);
   }, []);
 
   const getCancelledStreamsFromFormHat = useCallback((formHat: RoleHatFormValueEdited) => {
-    return (formHat.payments ?? []).filter(payment => payment.isCancelling && !!payment.streamId);
+    return formHat.payments.filter(payment => payment.isCancelling && !!payment.streamId);
   }, []);
 
   const getRoleRemovedStreamsWithFundsToClaim = useCallback((formHat: RoleHatFormValueEdited) => {
-    return (formHat.payments ?? []).filter(payment => (payment?.withdrawableAmount ?? 0n) > 0n);
+    return formHat.payments.filter(payment => (payment?.withdrawableAmount ?? 0n) > 0n);
   }, []);
 
   const getActiveStreamsFromFormHat = useCallback((formHat: RoleHatFormValueEdited) => {
-    return (formHat.payments ?? []).filter(
+    return formHat.payments.filter(
       payment => !payment.isCancelled && !!payment.endDate && payment.endDate > new Date(),
     );
   }, []);

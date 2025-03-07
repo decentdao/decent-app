@@ -1,12 +1,12 @@
 import SafeApiKit, {
-  AllTransactionsListResponse,
-  AllTransactionsOptions,
   ProposeTransactionProps,
   SafeInfoResponse,
   SafeMultisigTransactionListResponse,
   SignatureResponse,
   TokenInfoResponse,
+  TransferWithTokenInfoResponse,
 } from '@safe-global/api-kit';
+import { ListResponse } from '@safe-global/safe-core-sdk-types';
 import axios from 'axios';
 import { useMemo } from 'react';
 import {
@@ -24,35 +24,63 @@ import { SafeWithNextNonce } from '../../../types';
 import { NetworkConfig } from '../../../types/network';
 import { useNetworkConfigStore } from '../../NetworkConfig/useNetworkConfigStore';
 
-class EnhancedSafeApiKit extends SafeApiKit {
+/*
+Interface to map the response from Safe Client's transactions/history
+*/
+interface ITransferInfo {
+  type: string;
+  value: string;
+
+  tokenAddress: string;
+  tokenName: string;
+  tokenSymbol: string;
+  decimals: number;
+  logoUri: string;
+
+  trusted: true;
+  imitation: false;
+}
+
+interface ITxDestination {
+  name?: string;
+  logoUri?: string;
+  value: string; // address
+}
+
+interface ITxInfo {
+  direction: string;
+  type: string;
+  recipient?: ITxDestination;
+  sender?: ITxDestination;
+  transferInfo?: ITransferInfo;
+}
+
+interface ITransaction {
+  timestamp: number;
+  txHash: string;
+  txStatus: string;
+  txInfo: ITxInfo;
+}
+
+interface ISafeTransaction {
+  type: string;
+  transaction: ITransaction;
+}
+
+class EnhancedSafeApiKit {
+  readonly safeApiKit: SafeApiKit;
   readonly publicClient: PublicClient;
   readonly networkConfig: NetworkConfig;
-  readonly safeClientUrlPrefix: string;
+  readonly safeClientBaseUrl: string;
+  readonly safeClientSafesPrefix: string;
+  readonly safeClientTransactionsPrefix: string;
 
   // holds requests that have yet to return, to avoid calling the same
   // endpoint more than once
   requestMap = new Map<string, Promise<any> | null>();
 
-  // # Safe API function calls
-  //
-  // - overridden functions
-  //   - getSafeInfo ✅
-  //   - getAllTransactions 🟨 ENG-292
-  //   - getNextNonce 🟨 ENG-293
-  //   - getToken ✅
-  //   - confirmTransaction 🟨 ENG-294
-  //   - getMultisigTransactions 🟨 ENG-295
-  //   - proposeTransaction 🟨 ENG-296
-  //   - decodeData 🟨 ENG-297
-  // - custom functions
-  //   - getSafeData ✅ (this is actually not an overriden function of SafeApiKit, but a custom function)
-
-  // other file todos:
-  //   - /multisig-transactions/ in useSubmitProposal.ts
-  //   - /data-decoder/ in useSafeDecoder.ts
-
   constructor(networkConfig: NetworkConfig) {
-    super({
+    this.safeApiKit = new SafeApiKit({
       chainId: BigInt(networkConfig.chain.id),
       txServiceUrl: `${networkConfig.safeBaseURL}/api`,
     });
@@ -61,17 +89,71 @@ class EnhancedSafeApiKit extends SafeApiKit {
       chain: networkConfig.chain,
       transport: http(networkConfig.rpcEndpoint),
     });
-    this.safeClientUrlPrefix = `https://safe-client.safe.global/v1/chains/${networkConfig.chain.id}/safes/`;
+    this.safeClientBaseUrl = `https://safe-client.safe.global/v1/chains/${networkConfig.chain.id}`;
+    this.safeClientSafesPrefix = `${this.safeClientBaseUrl}/safes/`;
+    this.safeClientTransactionsPrefix = `${this.safeClientBaseUrl}/transactions/`;
   }
 
-  override async getSafeInfo(safeAddress: Address): Promise<SafeInfoResponse> {
-    const checksummedSafeAddress = getAddress(safeAddress);
+  private async _safeClientGet<T>(safeAddress: string, path: string): Promise<T> {
+    const url = `${this.safeClientSafesPrefix}${safeAddress}${path}`;
+    const value = await axios.get<T>(url, {
+      headers: {
+        accept: 'application/json',
+      },
+    });
 
+    return value.data;
+  }
+
+  private async _safeTransactionsPost(safeAddress: string, path: string, data: any) {
+    const url = `${this.safeClientTransactionsPrefix}${safeAddress}${path}`;
+    await axios.post(url, data, {
+      headers: {
+        accept: 'application/json',
+      },
+    });
+  }
+
+  private _timestampToString(timestamp: number): string | undefined {
     try {
-      return await super.getSafeInfo(checksummedSafeAddress);
-    } catch (error) {
-      console.error('Error fetching getSafeInfo from safeAPI:', error);
+      const date = new Date(timestamp);
+      return date.toISOString();
+    } catch (err) {
+      return undefined;
     }
+  }
+
+  private _transferOf(transaction: ISafeTransaction): TransferWithTokenInfoResponse | undefined {
+    const transfer = transaction.transaction?.txInfo?.transferInfo;
+    if (transfer) {
+      const timestamp = transaction.transaction?.timestamp;
+      const timeText = timestamp != undefined ? this._timestampToString(timestamp) : undefined;
+      if (timeText) {
+        return {
+          type: transaction.transaction?.txInfo.type,
+          executionDate: timeText,
+          blockNumber: timestamp,
+          transactionHash: transaction.transaction?.txHash,
+          to: transaction.transaction?.txInfo?.recipient?.value ?? '',
+          value: transfer.value,
+          tokenId: transfer.tokenAddress,
+          tokenAddress: transfer.tokenAddress,
+          from: transaction.transaction?.txInfo?.sender?.value ?? '',
+          tokenInfo: {
+            address: transfer.tokenAddress,
+            name: transfer.tokenName,
+            symbol: transfer.tokenSymbol,
+            decimals: transfer.decimals,
+            logoUri: transfer.logoUri,
+          },
+        };
+      }
+    }
+    return undefined;
+  }
+
+  async getSafeInfo(safeAddress: Address): Promise<SafeInfoResponse> {
+    const checksummedSafeAddress = getAddress(safeAddress);
 
     try {
       // Fetch necessary details from the contract
@@ -132,67 +214,14 @@ class EnhancedSafeApiKit extends SafeApiKit {
     throw new Error('Failed to getSafeInfo()');
   }
 
-  private async _safeClientGet(safeAddress: Address, path: string): Promise<any> {
-    const value = await axios.get(`${this.safeClientUrlPrefix}${safeAddress}${path}`, {
-      headers: {
-        accept: 'application/json',
-      },
-    });
-
-    return value.data;
-  }
-
-  /*
-  TODO: Handle the request body
-  private async _safeClientPost(safeAddress: Address, path: string, data: string): Promise<any> {
-    const value = await axios.post(`${this.safeClientUrlPrefix}${safeAddress}${path}`, {
-      headers: {
-        accept: 'application/json',
-      },
-      body: data,
-    });
-
-    return value.data;
-  }
-    */
-
-  override async getAllTransactions(
-    safeAddress: Address,
-    options?: AllTransactionsOptions,
-  ): Promise<AllTransactionsListResponse> {
-    try {
-      return await super.getAllTransactions(safeAddress, options);
-    } catch (error) {
-      console.error('Error fetching getAllTransactions from safeAPI:', error);
-    }
-
-    try {
-      // TODO ENG-292
-      // implement safe-client fallback
-    } catch (error) {
-      console.error('Error fetching getAllTransactions from safe-client:', error);
-    }
-
-    return {
-      count: 0,
-      results: [],
-    };
-  }
-
-  override async getNextNonce(safeAddress: Address): Promise<number> {
-    try {
-      return await super.getNextNonce(safeAddress);
-    } catch (error) {
-      console.error('Error fetching getNextNonce from safeAPI:', error);
-    }
-
+  async getNextNonce(safeAddress: Address): Promise<number> {
     try {
       type SafeClientNonceResponse = {
         readonly currentNonce: number;
         readonly recommendedNonce: number;
       };
 
-      const response: SafeClientNonceResponse = await this._safeClientGet(safeAddress, '/nonces');
+      const response = await this._safeClientGet<SafeClientNonceResponse>(safeAddress, '/nonces');
 
       return response.recommendedNonce;
     } catch (error) {
@@ -214,12 +243,29 @@ class EnhancedSafeApiKit extends SafeApiKit {
     throw new Error('Failed to getNextNonce()');
   }
 
-  override async getToken(tokenAddress: Address): Promise<TokenInfoResponse> {
+  async getToken(tokenAddress: Address): Promise<TokenInfoResponse> {
+    // leaving this for now, because the onchain fallback is not a FULL replacement
+    // for the safe-transaction service call.
+    //
+    // export type TokenInfoResponse = {
+    //   readonly type?: string;
+    //   readonly address: string;
+    //   readonly name: string;
+    //   readonly symbol: string;
+    //   readonly decimals: number;
+    //   readonly logoUri?: string;
+    // };
+    //
+    // a question though... now that the safe-transaction-service seems to be
+    // turning back on after the bybit hack, does the actual response type
+    // of this call still match the type we're using here?
     try {
-      return await super.getToken(tokenAddress);
+      return await this.safeApiKit.getToken(tokenAddress);
     } catch (error) {
-      console.error('Error fetching getToken from safeAPI:', error);
+      console.error('Error fetching getToken from safe-transaction:', error);
+    }
 
+    try {
       const [name, symbol, decimals] = await this.publicClient.multicall({
         contracts: [
           { address: tokenAddress, abi: erc20Abi, functionName: 'name' },
@@ -235,52 +281,59 @@ class EnhancedSafeApiKit extends SafeApiKit {
         symbol,
         decimals,
       };
+    } catch (error) {
+      console.error('Error fetching getToken from contract:', error);
     }
+
+    throw new Error('Failed to getToken()');
   }
 
-  override async confirmTransaction(
-    safeTxHash: string,
-    signature: string,
-  ): Promise<SignatureResponse> {
+  async confirmTransaction(safeTxHash: string, signature: string): Promise<SignatureResponse> {
     try {
-      return await super.confirmTransaction(safeTxHash, signature);
-    } catch (error) {
-      console.error('Error posting confirmTransaction from safeAPI:', error);
-    }
+      const body = {
+        signature: signature,
+      };
+      await this._safeTransactionsPost(safeTxHash, '/confirmations', body);
 
-    try {
-      // TODO ENG-294
-      // implement safe-client fallback
+      // The Safe Client returns a different response, but in keeping in line with the interface of
+      // Safe Transaction Service, we return the signature as is.
+      return { signature };
     } catch (error) {
       console.error('Error posting confirmTransaction from safe-client:', error);
     }
 
     // Note: because Safe requires all necessary signatures to be provided
     // at the time of the transaction, we can't implement an onchain fallback here.
+    //
+    // Note2: is this correct? What about the "approveHash" function?
+    // https://github.com/safe-global/safe-smart-account/blob/186a21a74b327f17fc41217a927dea7064f74604/contracts/GnosisSafe.sol#L333C14-L333C25
 
     throw new Error('Failed to confirmTransaction()');
   }
 
-  override async getMultisigTransactions(
+  async getMultisigTransactions(
     safeAddress: Address,
   ): Promise<SafeMultisigTransactionListResponse> {
+    // /multisig-transactions/raw response matches SafeMultisigTransactionListResponse
     try {
-      return await super.getMultisigTransactions(safeAddress);
-    } catch (error) {
-      console.error('Error fetching getMultisigTransactions from safeAPI:', error);
-    }
+      const response = await this._safeClientGet<SafeMultisigTransactionListResponse>(
+        safeAddress,
+        '/multisig-transactions/raw',
+      );
 
-    try {
-      // TODO ENG-295
-      // implement safe-client fallback
+      return response;
     } catch (error) {
       console.error('Error fetching getMultisigTransactions from safe-client:', error);
     }
 
-    throw new Error('Failed to getMultisigTransactions()');
+    // We need to return *something* here, else stuff breaks downstream
+    return {
+      count: 0,
+      results: [],
+    };
   }
 
-  override async proposeTransaction({
+  async proposeTransaction({
     safeAddress,
     safeTransactionData,
     safeTxHash,
@@ -289,22 +342,23 @@ class EnhancedSafeApiKit extends SafeApiKit {
     origin,
   }: ProposeTransactionProps): Promise<void> {
     try {
-      return await super.proposeTransaction({
-        safeAddress,
-        safeTransactionData,
-        safeTxHash,
-        senderAddress,
-        senderSignature,
-        origin,
-      });
-    } catch (error) {
-      console.error('Error posting proposeTransaction from safeAPI:', error);
-    }
-
-    try {
-      // TODO ENG-29
-      // implement safe-client fallback
-      // transactions/{address}/propose
+      const body = {
+        to: safeTransactionData.to,
+        value: safeTransactionData.value,
+        data: safeTransactionData.data,
+        nonce: `${safeTransactionData.nonce}`,
+        operation: safeTransactionData.operation,
+        safeTxGas: safeTransactionData.safeTxGas,
+        baseGas: safeTransactionData.baseGas,
+        gasPrice: safeTransactionData.gasPrice,
+        gasToken: safeTransactionData.gasToken,
+        refundReceiver: safeTransactionData.refundReceiver,
+        safeTxHash: safeTxHash,
+        sender: senderAddress,
+        signature: senderSignature,
+        origin: origin,
+      };
+      return await this._safeTransactionsPost(safeAddress, '/propose', body);
     } catch (error) {
       console.error('Error posting proposeTransaction from safe-client:', error);
     }
@@ -312,17 +366,18 @@ class EnhancedSafeApiKit extends SafeApiKit {
     throw new Error('Failed to proposeTransaction()');
   }
 
-  override async decodeData(data: string): Promise<any> {
+  async decodeData(data: string): Promise<any> {
     try {
-      return await super.decodeData(data);
-    } catch (error) {
-      console.error('Error decoding data from safeAPI:', error);
-    }
+      const body = {
+        data: data,
+      };
+      const value = await axios.post(`${this.safeClientBaseUrl}/data-decoder`, body, {
+        headers: {
+          accept: 'application/json',
+        },
+      });
 
-    try {
-      // TODO ENG-297
-      // implement safe-client fallback
-      // /data-decoder/
+      return value.data;
     } catch (error) {
       console.error('Error decoding data from safe-client:', error);
     }
@@ -336,11 +391,27 @@ class EnhancedSafeApiKit extends SafeApiKit {
     const nextNonce = await this.getNextNonce(checksummedSafeAddress);
     return { ...safeInfoResponse, nextNonce };
   }
+
+  async getTransfers(safeAddress: Address): Promise<TransferWithTokenInfoResponse[]> {
+    try {
+      const response: ListResponse<ISafeTransaction> = await this._safeClientGet(
+        safeAddress,
+        '/transactions/history',
+      );
+
+      const transfers = response.results.flatMap(tx => this._transferOf(tx) ?? []);
+
+      return transfers;
+    } catch (error) {
+      console.error('Error fetching getTransfers from safe-client:', error);
+    }
+
+    return [];
+  }
 }
 
 export function useSafeAPI() {
-  const { getConfigByChainId, chain } = useNetworkConfigStore();
-  const networkConfig = getConfigByChainId(chain.id);
+  const networkConfig = useNetworkConfigStore();
 
   const safeAPI = useMemo(() => {
     return new EnhancedSafeApiKit(networkConfig);

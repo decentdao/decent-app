@@ -40,7 +40,7 @@ export function PaymentWithdrawModal({
 }) {
   const { data: walletClient } = useNetworkWalletClient();
   const [contractCall, pendingTransaction] = useTransaction();
-  const { t } = useTranslation(['roles', 'menu', 'common', 'modals']);
+  const { t } = useTranslation(['roles', 'common', 'modals']);
   const { displayName: accountDisplayName } = useGetAccountName(withdrawInformation.recipient);
   const { data: avatarURL } = useNetworkEnsAvatar({ name: accountDisplayName });
   const iconSize = useBreakpointValue<AvatarSize>({ base: 'sm', md: 'icon' }) || 'sm';
@@ -185,7 +185,7 @@ export function PaymentWithdrawModal({
           color="neutral-7"
           flex={3}
         >
-          {t('network', { ns: 'menu' })}
+          {t('network', { ns: 'common' })}
         </Text>
         <Flex
           alignItems="center"
