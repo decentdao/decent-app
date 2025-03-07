@@ -172,6 +172,7 @@ export function ProposalBuilder({
           !canUserCreateProposal ||
           !!formikProps.errors.transactions ||
           !!formikProps.errors.nonce ||
+          !title ||
           pendingCreateTx;
 
         const renderButtons = (step: CreateProposalSteps) => {
