@@ -23,6 +23,7 @@ import {
   ITextInput,
   IRemoval,
   IToggleInput,
+  INotice,
 } from '../../input/Interfaces';
 
 export const CreateDAOPresenter = {
@@ -453,7 +454,7 @@ export const CreateDAOPresenter = {
     };
   },
 
-  multiSignOwners(t: TFunction<[string, string], undefined>): IInput & IInputRequirements {
+  _multiSigOwners(t: TFunction<[string, string], undefined>): IInput & IInputRequirements {
     return {
       label: t('titleSignerAddresses'),
       description: t('subTitleSignerAddresses'),
@@ -461,7 +462,7 @@ export const CreateDAOPresenter = {
     };
   },
 
-  multiSign(
+  multiSigAddress(
     t: TFunction<[string, string], undefined>,
     index: number,
     error: string | undefined,
@@ -481,7 +482,7 @@ export const CreateDAOPresenter = {
     };
   },
 
-  gaslessVoting(
+  _gaslessVoting(
     t: TFunction<[string, string], undefined>,
     gaslessVotingSupported: boolean,
     onValueChange: (value: boolean) => void,
@@ -489,20 +490,42 @@ export const CreateDAOPresenter = {
     if (!isFeatureEnabled('flag_gasless_voting')) return undefined;
     if (!gaslessVotingSupported) return undefined;
 
-    return undefined;
-    // return {
-    //   id: `multiSigOwner${index}`,
-    //   fieldName: `multisig.trustedAddresses.${index}`,
-    //   testId: `safeConfig-signer-${index}`,
-    //   error: error,
-    //   isRequired: true,
-    //   removalIndex: index,
-    //   removalLabel: t('removeSigner'),
-    //   onValueChange: onValueChange,
-    //   onRemoval: onRemoval,
-    // };
+    return {
+      id: `gaslessVoting`,
+      label: t('gaslessVotingLabel'),
+      description: t('gaslessVotingDescription'),
+      fieldName: `essentials.gaslessVoting`,
+      onValueChange: onValueChange,
+    };
+  },
 
-    // const { t } = useTranslation('daoCreate');
-    // const { chain, gaslessVotingSupported } = useNetworkConfigStore();
+  _gaslessVotingInfo(
+    t: TFunction<[string, string], undefined>,
+    gaslessVotingSupported: boolean,
+  ): INotice | undefined {
+    if (!isFeatureEnabled('flag_gasless_voting')) return undefined;
+    if (!gaslessVotingSupported) return undefined;
+
+    return {
+      id: `gaslessVotingNotice`,
+      label: t('gaslessVotingGettingStarted'),
+    };
+  },
+
+  multiSig(
+    t: TFunction<[string, string], undefined>,
+    tGasless: TFunction<[string, string], undefined>,
+    gaslessVotingSupported: boolean,
+    onGaslessVotingChanged: (value: boolean) => void,
+  ): {
+    owners: IInput & IInputRequirements;
+    gaslessVoting: IToggleInput | undefined;
+    gaslessVotingInfo: INotice | undefined;
+  } {
+    return {
+      owners: this._multiSigOwners(t),
+      gaslessVoting: this._gaslessVoting(tGasless, gaslessVotingSupported, onGaslessVotingChanged),
+      gaslessVotingInfo: this._gaslessVotingInfo(tGasless, gaslessVotingSupported),
+    };
   },
 };

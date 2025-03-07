@@ -3,12 +3,15 @@ import { MinusCircle, Plus } from '@phosphor-icons/react';
 import { Field, FieldAttributes } from 'formik';
 import { useTranslation } from 'react-i18next';
 import { isFeatureEnabled } from '../../../helpers/featureFlags';
+import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
 import { ICreationStepProps } from '../../../types';
 import { GaslessVotingToggleDAOCreate } from '../../GaslessVoting/GaslessVotingToggle';
 import { MultiInputs } from '../../input/CompositeInput';
 import { InputSection } from '../../input/InputSection';
 import { IInputSection } from '../../input/Interfaces';
+import { Notice } from '../../input/Notice';
 import { EmbeddedAddressInput } from '../../input/TextInput';
+import { ToggleInput } from '../../input/ToggleInput';
 import { AddressInput } from '../../ui/forms/EthAddressInput';
 import { LabelComponent } from '../../ui/forms/InputComponent';
 import LabelWrapper from '../../ui/forms/LabelWrapper';
@@ -22,6 +25,7 @@ import { DAOCreateMode } from './EstablishEssentials';
 export function Multisig(props: ICreationStepProps) {
   const { values, errors, setFieldValue, isSubmitting, transactionPending, isSubDAO, mode } = props;
   const { t } = useTranslation('daoCreate');
+  const tGasless = useTranslation('gaslessVoting').t;
   useStepRedirect({ values });
 
   // ensures no decimal places or numbers greater than 99
@@ -38,10 +42,18 @@ export function Multisig(props: ICreationStepProps) {
     return updatedNum !== num;
   };
 
+  const { gaslessVotingSupported } = useNetworkConfigStore();
   if (isFeatureEnabled('flag_higher_components')) {
     const section: IInputSection = CreateDAOPresenter.section(undefined);
 
-    const multiSigOwners = CreateDAOPresenter.multiSignOwners(t);
+    const { owners, gaslessVoting, gaslessVotingInfo } = CreateDAOPresenter.multiSig(
+      t,
+      tGasless,
+      gaslessVotingSupported,
+      value => {
+        setFieldValue('essentials.gaslessVoting', value);
+      },
+    );
 
     return (
       <>
@@ -72,13 +84,13 @@ export function Multisig(props: ICreationStepProps) {
               <Text>{t('owner', { ns: 'common' })}</Text>
             </Button>
 
-            <MultiInputs {...multiSigOwners}>
+            <MultiInputs {...owners}>
               {values.multisig.trustedAddresses.map((trustedAddress, i) => {
                 const errorMessage =
                   errors?.multisig?.trustedAddresses?.[i] && trustedAddress.length
                     ? errors?.multisig?.trustedAddresses?.[i]
                     : undefined;
-                const multiSign = CreateDAOPresenter.multiSign(
+                const multiSign = CreateDAOPresenter.multiSigAddress(
                   t,
                   i,
                   errorMessage,
@@ -101,10 +113,12 @@ export function Multisig(props: ICreationStepProps) {
                     }
                   },
                 );
-                <EmbeddedAddressInput
-                  {...multiSign}
-                  key={multiSign.id}
-                />;
+                return (
+                  <EmbeddedAddressInput
+                    {...multiSign}
+                    key={multiSign.id}
+                  />
+                );
               })}
             </MultiInputs>
 
@@ -124,6 +138,12 @@ export function Multisig(props: ICreationStepProps) {
               </Flex>
             </LabelComponent>
           </InputSection>
+          {gaslessVoting && gaslessVotingInfo && (
+            <InputSection {...section}>
+              <ToggleInput {...gaslessVoting!} />
+              <Notice {...gaslessVotingInfo!} />
+            </InputSection>
+          )}
         </StepWrapper>
         <StepButtons
           {...props}

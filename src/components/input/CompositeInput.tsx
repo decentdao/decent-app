@@ -4,10 +4,13 @@ import { LabelComponent } from '../ui/forms/InputComponent';
 import LabelWrapper from '../ui/forms/LabelWrapper';
 import { IInput, IInputRequirements } from './Interfaces';
 
-export function MultiInputs(
-  { label, description, isRequired, error }: IInput & IInputRequirements,
-  { children }: PropsWithChildren<{}>,
-) {
+export function MultiInputs({
+  label,
+  description,
+  isRequired,
+  error,
+  children,
+}: PropsWithChildren<IInput & IInputRequirements>) {
   return (
     <LabelComponent
       label={label}

@@ -39,16 +39,6 @@ export interface ITextInput extends ITextValueChange, IInputRequirements {
   testId?: string; // optional test id
 }
 
-export interface IToggleValueChange {
-  onValueChange?: (value: boolean) => void; // on change callback with input value
-}
-
-export interface IToggleInput extends IToggleValueChange {
-  id: string; // id of the input
-  fieldName?: string; // key path for Formik,
-  value?: boolean; // current value
-}
-
 export interface IRemoval {
   removalLabel?: string;
   removalIndex: number;
@@ -81,4 +71,19 @@ export interface IStepperInput extends IInput {
   unit?: string; // stepper unit
   value: number; // current value
   onValueChange?: (value: number) => void; // on change callback with input value
+}
+
+export interface IToggleValueChange {
+  onValueChange?: (value: boolean) => void; // on change callback with input value
+}
+
+export interface IToggleInput extends IInput, IToggleValueChange {
+  id: string; // id of the input
+  fieldName?: string; // key path for Formik,
+  value?: boolean; // current value
+}
+
+export interface INotice {
+  id: string;
+  label: string; // just a string
 }
