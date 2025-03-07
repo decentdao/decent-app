@@ -20,7 +20,7 @@ import { useVoteContext } from '../ProposalVotes/context/VoteContext';
 
 export function CastVote({ proposal }: { proposal: FractalProposal }) {
   const [selectedVoteChoice, setVoiceChoice] = useState<number>();
-  const { t } = useTranslation(['common', 'proposal', 'transaction']);
+  const { t } = useTranslation(['proposal', 'transaction']);
   const { isLoaded: isCurrentBlockLoaded, currentBlockNumber } = useCurrentBlockNumber();
 
   const { snapshotProposal, extendedSnapshotProposal, loadSnapshotProposal } =
