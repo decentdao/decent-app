@@ -163,8 +163,27 @@ export function GaslessVotingToggleDAOSettings(
         nonceInput: refillGasData.nonceInput,
         nativeToken: nativeCurrency,
       });
+      const formattedRefillAmount = formatCoin(
+        refillGasData.transferAmount,
+        true,
+        nativeCurrency.decimals,
+        nativeCurrency.symbol,
+        false,
+      );
 
-      addAction({ ...action, content: <></> });
+      addAction({
+        ...action,
+        content: (
+          <Box>
+            <Text>
+              {t('refillPaymasterAction', {
+                amount: formattedRefillAmount,
+                symbol: nativeCurrency.symbol,
+              })}
+            </Text>
+          </Box>
+        ),
+      });
 
       navigate(DAO_ROUTES.proposalWithActionsNew.relative(addressPrefix, safe.address));
     },
