@@ -1,21 +1,27 @@
 import { Button, Box, Text, Image, Flex, Radio, RadioGroup, Icon } from '@chakra-ui/react';
 import { Check, CheckCircle, Sparkle } from '@phosphor-icons/react';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { TOOLTIP_MAXW } from '../../../constants/common';
+import { getContract } from 'viem';
+import { EntryPointAbi } from '../../../assets/abi/EntryPointAbi';
+import { ENTRY_POINT_ADDRESS, TOOLTIP_MAXW } from '../../../constants/common';
 import useSnapshotProposal from '../../../hooks/DAO/loaders/snapshot/useSnapshotProposal';
 import useCastSnapshotVote from '../../../hooks/DAO/proposal/useCastSnapshotVote';
 import useCastVote from '../../../hooks/DAO/proposal/useCastVote';
+import useNetworkPublicClient from '../../../hooks/useNetworkPublicClient';
 import useCurrentBlockNumber from '../../../hooks/utils/useCurrentBlockNumber';
 import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
 import {
   AzoriusProposal,
+  BigIntValuePair,
   FractalProposal,
   FractalProposalState,
   VOTE_CHOICES,
 } from '../../../types';
 import { DecentTooltip } from '../../ui/DecentTooltip';
 import WeightedInput from '../../ui/forms/WeightedInput';
+import { ModalType } from '../../ui/modals/ModalProvider';
+import { useDecentModal } from '../../ui/modals/useDecentModal';
 import { useVoteContext } from '../ProposalVotes/context/VoteContext';
 
 export function CastVote({ proposal }: { proposal: FractalProposal }) {
@@ -47,7 +53,36 @@ export function CastVote({ proposal }: { proposal: FractalProposal }) {
 
   const { canVoteLoading, hasVoted, hasVotedLoading } = useVoteContext();
 
-  const { gaslessVotingEnabled } = useDaoInfoStore();
+  const { gaslessVotingEnabled, paymasterAddress } = useDaoInfoStore();
+
+  const createSmartWallet = useDecentModal(ModalType.CREATE_SMART_WALLET);
+
+  const publicClient = useNetworkPublicClient();
+  const [paymasterBalance, setPaymasterBalance] = useState<BigIntValuePair>();
+  useEffect(() => {
+    if (!paymasterAddress) return;
+    const entryPoint = getContract({
+      address: ENTRY_POINT_ADDRESS,
+      abi: EntryPointAbi,
+      client: publicClient,
+    });
+
+    entryPoint.read.balanceOf([paymasterAddress]).then(balance => {
+      setPaymasterBalance({
+        value: balance.toString(),
+        bigintValue: balance,
+      });
+    });
+  }, [paymasterAddress, publicClient]);
+
+  const minimumPaymasterBalance = 0n; // @todo: update to reasonable amount
+  const canVoteForFree = useMemo(() => {
+    return (
+      gaslessVotingEnabled &&
+      paymasterBalance?.bigintValue &&
+      paymasterBalance.bigintValue > minimumPaymasterBalance
+    );
+  }, [gaslessVotingEnabled, minimumPaymasterBalance, paymasterBalance?.bigintValue]);
 
   // If user is lucky enough - he could create a proposal and proceed to vote on it
   // even before the block, in which proposal was created, was mined.
@@ -210,11 +245,16 @@ export function CastVote({ proposal }: { proposal: FractalProposal }) {
           padding="3"
           height="3.25rem"
           width="full"
-          leftIcon={gaslessVotingEnabled ? <Icon as={Sparkle} /> : undefined}
-          isDisabled={disabled}
-          onClick={() => selectedVoteChoice !== undefined && castVote(selectedVoteChoice)}
+          leftIcon={canVoteForFree ? <Icon as={Sparkle} /> : undefined}
+          onClick={() => {
+            if (canVoteForFree) {
+              createSmartWallet();
+            } else if (selectedVoteChoice !== undefined) {
+              castVote(selectedVoteChoice);
+            }
+          }}
         >
-          {!gaslessVotingEnabled ? t('vote') : t('voteForFree')}
+          {canVoteForFree ? t('voteForFree') : t('vote')}
         </Button>
       </RadioGroup>
     </DecentTooltip>

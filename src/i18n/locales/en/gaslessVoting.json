@@ -13,5 +13,11 @@
   "submitRefillAmount": "Send Now",
   "amountLabel": "You're sending",
   "usdValue": "${{value}}",
-  "availableBalance": "{{balance}}"
+  "availableBalance": "{{balance}}",
+  "createSmartWallet": "Create Smart Wallet",
+  "createSmartWalletDescription": "You need to create a Smart Wallet to access Sponsored Voting.",
+  "cancelCreateSmartWallet": "I'll Do It Later",
+  "proceedCreateSmartWallet": "Create Now",
+  "cancelCreateSmartWalletConsequence": "If you continue without creating it, you will need to pay for gas fees on every transaction.",
+  "createSmartWalletOneTimeGasFeeNotice": "Creating your Smart Wallet will require a one-time gas fee."
 }

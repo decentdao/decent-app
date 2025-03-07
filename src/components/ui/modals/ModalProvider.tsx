@@ -14,6 +14,7 @@ import { ConfirmModifyGovernanceModal } from './ConfirmModifyGovernanceModal';
 import { ConfirmUrlModal } from './ConfirmUrlModal';
 import { DelegateModal } from './DelegateModal';
 import ForkProposalTemplateModal from './ForkProposalTemplateModal';
+import { CreateSmartWalletModal } from './GaslessVoting/CreateSmartWalletModal';
 import { ModalBase, ModalBaseSize } from './ModalBase';
 import PaymentCancelConfirmModal from './PaymentCancelConfirmModal';
 import { PaymentWithdrawModal } from './PaymentWithdrawModal';
@@ -41,6 +42,7 @@ export enum ModalType {
   SEND_ASSETS,
   AIRDROP,
   REFILL_GAS,
+  CREATE_SMART_WALLET,
 }
 
 export type CurrentModal = {
@@ -99,6 +101,9 @@ export type ModalPropsTypes = {
   [ModalType.REFILL_GAS]: {
     onSubmit: (refillGasData: RefillGasData) => void;
     showNonceInput: boolean;
+  };
+  [ModalType.CREATE_SMART_WALLET]: {
+    onSubmit: () => void;
   };
 };
 
@@ -288,6 +293,9 @@ export function ModalProvider({ children }: { children: ReactNode }) {
             }}
           />
         );
+        break;
+      case ModalType.CREATE_SMART_WALLET:
+        modalContent = <CreateSmartWalletModal close={closeModal} />;
         break;
       case ModalType.AIRDROP:
         modalContent = (
