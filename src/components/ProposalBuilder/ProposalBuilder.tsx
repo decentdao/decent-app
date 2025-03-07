@@ -169,7 +169,10 @@ export function ProposalBuilder({
         const trimmedTitle = title.trim();
 
         const createProposalButtonDisabled =
-          !canUserCreateProposal || Object.keys(formikProps.errors).length > 0 || pendingCreateTx;
+          !canUserCreateProposal ||
+          Object.keys(formikProps.errors).length > 0 ||
+          !trimmedTitle ||
+          pendingCreateTx;
 
         const renderButtons = (step: CreateProposalSteps) => {
           const buttons = stepButtons({
