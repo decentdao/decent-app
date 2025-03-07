@@ -16,8 +16,8 @@ import { useDaoInfoStore } from '../../store/daoInfo/useDaoInfoStore';
 import { BigIntValuePair } from '../../types';
 import { formatCoin } from '../../utils';
 import { prepareRefillPaymasterAction } from '../../utils/dao/prepareRefillPaymasterActionData';
+import { RefillGasData } from '../ui/modals/GaslessVoting/RefillGasTankModal';
 import { ModalType } from '../ui/modals/ModalProvider';
-import { RefillGasData } from '../ui/modals/RefillGasTankModal';
 import { useDecentModal } from '../ui/modals/useDecentModal';
 import Divider from '../ui/utils/Divider';
 import { StarterPromoBanner } from './StarterPromoBanner';
@@ -134,7 +134,7 @@ export function GaslessVotingToggleDAOSettings(
 
   const [paymasterBalance, setPaymasterBalance] = useState<BigIntValuePair>();
   useEffect(() => {
-    if (!paymasterAddress || !safe?.address) return;
+    if (!paymasterAddress) return;
     const entryPoint = getContract({
       address: ENTRY_POINT_ADDRESS,
       abi: EntryPointAbi,
@@ -147,7 +147,7 @@ export function GaslessVotingToggleDAOSettings(
         bigintValue: balance,
       });
     });
-  }, [paymasterAddress, publicClient, safe?.address]);
+  }, [paymasterAddress, publicClient]);
 
   const { addAction } = useProposalActionsStore();
 
