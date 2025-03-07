@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { Address } from 'viem';
 import Avatar from '../../components/ui/page/Header/Avatar';
 import { DAO_ROUTES } from '../../constants/routes';
-import useAvatar from '../../hooks/utils/useAvatar';
+import { useNetworkEnsAvatar } from '../../hooks/useNetworkEnsAvatar';
 import { createAccountSubstring } from '../../hooks/utils/useGetAccountName';
 import { useGetSafeName } from '../../hooks/utils/useGetSafeName';
 import { getChainIdFromPrefix, getChainName, getNetworkIcon } from '../../utils/url';
@@ -38,8 +38,7 @@ export function SafeDisplayRow({
 
   const { t } = useTranslation('dashboard');
 
-  // if the safe name is an ENS name, let's attempt to get the avatar for that
-  const avatarURL = useAvatar(safeName ?? '');
+  const { data: avatarURL } = useNetworkEnsAvatar({ name: safeName });
 
   const onClickNav = () => {
     if (onClick) onClick();

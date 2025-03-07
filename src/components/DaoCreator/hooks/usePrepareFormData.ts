@@ -1,6 +1,7 @@
 import { useCallback } from 'react';
 import { Address, getContract } from 'viem';
 import IVotesAbi from '../../../assets/abi/IVotes';
+import { useNetworkEnsAddressAsync } from '../../../hooks/useNetworkEnsAddress';
 import useNetworkPublicClient from '../../../hooks/useNetworkPublicClient';
 import {
   AzoriusERC20DAO,
@@ -18,7 +19,7 @@ type FreezeGuardConfigParam = { freezeGuard?: DAOFreezeGuardConfig<BigIntValuePa
 
 export function usePrepareFormData() {
   const publicClient = useNetworkPublicClient();
-
+  const { getEnsAddress } = useNetworkEnsAddressAsync();
   // Helper function to prepare freezeGuard data
   const prepareFreezeGuardData = useCallback(
     async (
@@ -80,8 +81,8 @@ export function usePrepareFormData() {
     }: SafeMultisigDAO & FreezeGuardConfigParam) => {
       const resolvedAddresses = await Promise.all(
         trustedAddresses.map(async inputValue => {
-          if (validateENSName(inputValue) && publicClient) {
-            const maybeEnsAddress = await publicClient.getEnsAddress({
+          if (validateENSName(inputValue)) {
+            const maybeEnsAddress = await getEnsAddress({
               name: inputValue,
             });
             if (maybeEnsAddress) {
@@ -101,7 +102,7 @@ export function usePrepareFormData() {
         ...rest,
       };
     },
-    [publicClient, prepareFreezeGuardData],
+    [getEnsAddress, prepareFreezeGuardData],
   );
 
   const prepareAzoriusERC20FormData = useCallback(
@@ -120,52 +121,50 @@ export function usePrepareFormData() {
     }: AzoriusERC20DAO<BigIntValuePair> & FreezeGuardConfigParam): Promise<
       AzoriusERC20DAO | undefined
     > => {
-      if (publicClient) {
-        const resolvedTokenAllocations = await Promise.all(
-          tokenAllocations.map(async allocation => {
-            let address = allocation.address;
-            if (validateENSName(address) && publicClient) {
-              const maybeEnsAddress = await publicClient.getEnsAddress({
-                name: allocation.address,
-              });
-              if (maybeEnsAddress) {
-                address = maybeEnsAddress;
-              }
+      const resolvedTokenAllocations = await Promise.all(
+        tokenAllocations.map(async allocation => {
+          let address = allocation.address;
+          if (validateENSName(address)) {
+            const maybeEnsAddress = await getEnsAddress({
+              name: allocation.address,
+            });
+            if (maybeEnsAddress) {
+              address = maybeEnsAddress;
             }
-            return { amount: allocation.amount.bigintValue!, address: address };
-          }),
-        );
-        let freezeGuardData;
-        if (freezeGuard) {
-          freezeGuardData = await prepareFreezeGuardData(freezeGuard);
-        }
-        const isTokenImported =
-          tokenCreationType === TokenCreationType.IMPORTED && !!tokenImportAddress;
-        let isVotesToken: boolean | undefined = false;
-        if (isTokenImported) {
-          isVotesToken = await checkVotesToken(tokenImportAddress);
-        }
-        return {
-          tokenSupply: tokenSupply.bigintValue!,
-          parentAllocationAmount: parentAllocationAmount?.bigintValue!,
-          quorumPercentage: quorumPercentage.bigintValue!,
-          timelock: await getEstimatedNumberOfBlocks(timelock.bigintValue!, publicClient),
-          executionPeriod: await getEstimatedNumberOfBlocks(
-            executionPeriod.bigintValue!,
-            publicClient,
-          ),
-          votingPeriod: await getEstimatedNumberOfBlocks(votingPeriod.bigintValue!, publicClient),
-          tokenAllocations: resolvedTokenAllocations,
-          tokenImportAddress,
-          tokenCreationType,
-          isTokenImported,
-          isVotesToken,
-          ...freezeGuardData,
-          ...rest,
-        };
+          }
+          return { amount: allocation.amount.bigintValue!, address: address };
+        }),
+      );
+      let freezeGuardData;
+      if (freezeGuard) {
+        freezeGuardData = await prepareFreezeGuardData(freezeGuard);
       }
+      const isTokenImported =
+        tokenCreationType === TokenCreationType.IMPORTED && !!tokenImportAddress;
+      let isVotesToken: boolean | undefined = false;
+      if (isTokenImported) {
+        isVotesToken = await checkVotesToken(tokenImportAddress);
+      }
+      return {
+        tokenSupply: tokenSupply.bigintValue!,
+        parentAllocationAmount: parentAllocationAmount?.bigintValue!,
+        quorumPercentage: quorumPercentage.bigintValue!,
+        timelock: await getEstimatedNumberOfBlocks(timelock.bigintValue!, publicClient),
+        executionPeriod: await getEstimatedNumberOfBlocks(
+          executionPeriod.bigintValue!,
+          publicClient,
+        ),
+        votingPeriod: await getEstimatedNumberOfBlocks(votingPeriod.bigintValue!, publicClient),
+        tokenAllocations: resolvedTokenAllocations,
+        tokenImportAddress,
+        tokenCreationType,
+        isTokenImported,
+        isVotesToken,
+        ...freezeGuardData,
+        ...rest,
+      };
     },
-    [checkVotesToken, publicClient, prepareFreezeGuardData],
+    [publicClient, getEnsAddress, prepareFreezeGuardData, checkVotesToken],
   );
 
   const prepareAzoriusERC721FormData = useCallback(
@@ -181,46 +180,44 @@ export function usePrepareFormData() {
     }: AzoriusERC721DAO<BigIntValuePair> & FreezeGuardConfigParam): Promise<
       AzoriusERC721DAO | undefined
     > => {
-      if (publicClient) {
-        let freezeGuardData;
-        if (freezeGuard) {
-          freezeGuardData = await prepareFreezeGuardData(freezeGuard);
-        }
-
-        const resolvedNFTs = await Promise.all(
-          nfts.map(async nft => {
-            let address = nft.tokenAddress;
-            if (validateENSName(address) && nft.tokenAddress) {
-              const maybeEnsAddress = await publicClient.getEnsAddress({
-                name: nft.tokenAddress,
-              });
-              if (maybeEnsAddress) {
-                address = maybeEnsAddress;
-              }
-            }
-            return {
-              tokenAddress: address,
-              tokenWeight: nft.tokenWeight.bigintValue!,
-            };
-          }),
-        );
-
-        return {
-          quorumPercentage: quorumPercentage.bigintValue!,
-          timelock: await getEstimatedNumberOfBlocks(timelock.bigintValue!, publicClient),
-          executionPeriod: await getEstimatedNumberOfBlocks(
-            executionPeriod.bigintValue!,
-            publicClient,
-          ),
-          votingPeriod: await getEstimatedNumberOfBlocks(votingPeriod.bigintValue!, publicClient),
-          nfts: resolvedNFTs,
-          quorumThreshold: quorumThreshold.bigintValue!,
-          ...freezeGuardData,
-          ...rest,
-        };
+      let freezeGuardData;
+      if (freezeGuard) {
+        freezeGuardData = await prepareFreezeGuardData(freezeGuard);
       }
+
+      const resolvedNFTs = await Promise.all(
+        nfts.map(async nft => {
+          let address = nft.tokenAddress;
+          if (validateENSName(address) && nft.tokenAddress) {
+            const maybeEnsAddress = await getEnsAddress({
+              name: nft.tokenAddress,
+            });
+            if (maybeEnsAddress) {
+              address = maybeEnsAddress;
+            }
+          }
+          return {
+            tokenAddress: address,
+            tokenWeight: nft.tokenWeight.bigintValue!,
+          };
+        }),
+      );
+
+      return {
+        quorumPercentage: quorumPercentage.bigintValue!,
+        timelock: await getEstimatedNumberOfBlocks(timelock.bigintValue!, publicClient),
+        executionPeriod: await getEstimatedNumberOfBlocks(
+          executionPeriod.bigintValue!,
+          publicClient,
+        ),
+        votingPeriod: await getEstimatedNumberOfBlocks(votingPeriod.bigintValue!, publicClient),
+        nfts: resolvedNFTs,
+        quorumThreshold: quorumThreshold.bigintValue!,
+        ...freezeGuardData,
+        ...rest,
+      };
     },
-    [prepareFreezeGuardData, publicClient],
+    [getEnsAddress, prepareFreezeGuardData, publicClient],
   );
   return {
     prepareMultisigFormData,

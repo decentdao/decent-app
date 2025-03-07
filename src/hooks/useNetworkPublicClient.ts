@@ -4,15 +4,11 @@ import { useNetworkConfigStore } from '../providers/NetworkConfig/useNetworkConf
 
 export default function useNetworkPublicClient() {
   const { chain, rpcEndpoint } = useNetworkConfigStore();
+
   const publicClient = useMemo(
     () =>
       createPublicClient({
         chain,
-        batch: {
-          multicall: {
-            wait: 200,
-          },
-        },
         transport: http(rpcEndpoint),
       }),
     [chain, rpcEndpoint],

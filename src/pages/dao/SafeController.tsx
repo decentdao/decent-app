@@ -32,6 +32,7 @@ export function SafeController() {
     addressPrefix,
     safeAddress,
     wrongNetwork,
+    invalidQuery,
   });
 
   useGovernanceContracts();

@@ -30,6 +30,7 @@ function RolesDetailsPayments({
   payments: (Omit<SablierPayment, 'contractAddress' | 'streamId'> & {
     contractAddress?: Address;
     streamId?: string;
+    cancelable?: boolean;
   })[];
   roleHatId: Hex | undefined;
   roleHatWearerAddress: Address | undefined;
@@ -68,7 +69,10 @@ function RolesDetailsPayments({
         return (
           <RolePaymentDetails
             key={thisPaymentIndex}
-            payment={payment}
+            payment={{
+              ...payment,
+              isCancelableStream: payment.cancelable ?? true,
+            }}
             roleHatSmartAccountAddress={roleHatSmartAccountAddress}
             roleHatId={roleHatId}
             roleTerms={roleTerms}

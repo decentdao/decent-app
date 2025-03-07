@@ -25,14 +25,16 @@ export const mainnetConfig: NetworkConfig = {
   etherscanAPIUrl: `https://api.etherscan.io/api?apikey=${import.meta.env?.VITE_APP_ETHERSCAN_MAINNET_API_KEY}`,
   addressPrefix: 'eth',
   nativeTokenIcon: '/images/coin-icon-eth.svg',
-  subgraph: {
+  isENSSupported: true,
+  decentSubgraph: {
     space: 71032,
     slug: 'fractal-mainnet',
-    version: 'v0.1.2',
+    id: 'EwAjJixmcVMcxoj1qt1o2oae1rbvvZNdfshkfovLrbxp',
   },
   sablierSubgraph: {
     space: 57079,
     slug: 'sablier-v2',
+    id: 'AvDAMYYHGaEwn9F9585uqq6MM5CfvRtYcb7KjK7LKPCt',
   },
   contracts: {
     gnosisSafeL2Singleton: getSafeContractDeploymentAddress(
@@ -97,6 +99,7 @@ export const mainnetConfig: NetworkConfig = {
     sablierV2LockupDynamic: '0x9DeaBf7815b42Bf4E9a03EEc35a486fF74ee7459',
     sablierV2LockupTranched: '0xf86B359035208e4529686A1825F2D5BeE38c28A8',
     sablierV2LockupLinear: '0x3962f6585946823440d274aD7C719B02b49DE51E',
+    disperse: '0xD152f549545093347A162Dce210e7293f1452150',
   },
   staking: {
     lido: {
@@ -114,6 +117,7 @@ export const mainnetConfig: NetworkConfig = {
     GovernanceType.AZORIUS_ERC20,
     GovernanceType.AZORIUS_ERC721,
   ],
+  gaslessVotingSupported: true,
 };
 
 export default mainnetConfig;

@@ -14,6 +14,7 @@ export const initialState: CreatorFormState = {
     daoName: '',
     governance: GovernanceType.AZORIUS_ERC20,
     snapshotENS: '',
+    gaslessVoting: false,
   },
   erc20Token: {
     tokenCreationType: TokenCreationType.IMPORTED,

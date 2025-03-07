@@ -2,7 +2,7 @@ import { Box, Button, Flex, MenuItem, Text } from '@chakra-ui/react';
 import { CopySimple } from '@phosphor-icons/react';
 import { useTranslation } from 'react-i18next';
 import { useAccount } from 'wagmi';
-import useAvatar from '../../../../hooks/utils/useAvatar';
+import { useNetworkEnsAvatar } from '../../../../hooks/useNetworkEnsAvatar';
 import { useCopyText } from '../../../../hooks/utils/useCopyText';
 import { useGetAccountName } from '../../../../hooks/utils/useGetAccountName';
 import Avatar from '../../page/Header/Avatar';
@@ -15,7 +15,7 @@ export function ConnectedWalletMenuItem() {
   const user = useAccount();
   const account = user.address;
   const { displayName: accountDisplayName } = useGetAccountName(account);
-  const avatarURL = useAvatar(accountDisplayName);
+  const { data: avatarURL } = useNetworkEnsAvatar({ name: accountDisplayName });
   const copyTextToClipboard = useCopyText();
   const { t } = useTranslation('menu');
 

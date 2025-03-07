@@ -9,6 +9,9 @@ interface NetworkConfigStore extends NetworkConfig {
 }
 
 export const supportedNetworks = Object.values(networks).sort((a, b) => a.order - b.order);
+export const supportedEnsNetworks = Object.values(networks)
+  .filter(n => n.isENSSupported)
+  .map(n => n.chain.id);
 
 export const moralisSupportedChainIds = supportedNetworks
   .filter(network => network.moralis.chainSupported)

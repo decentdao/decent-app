@@ -3,8 +3,7 @@ import { WarningCircle, WarningDiamond } from '@phosphor-icons/react';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Address } from 'viem';
-import { useEnsName } from 'wagmi';
-import { useNetworkConfigStore } from '../../../../providers/NetworkConfig/useNetworkConfigStore';
+import { useNetworkEnsName } from '../../../../hooks/useNetworkEnsName';
 import { useDaoInfoStore } from '../../../../store/daoInfo/useDaoInfoStore';
 import { SENTINEL_MODULE } from '../../../../utils/address';
 import SupportTooltip from '../../../ui/badges/SupportTooltip';
@@ -32,10 +31,8 @@ function RemoveSignerModal({
   const [threshold, setThreshold] = useState<number>(defaultNewThreshold);
 
   const [nonce, setNonce] = useState<number | undefined>(safe!.nextNonce);
-  const { chain } = useNetworkConfigStore();
-  const { data: ensName } = useEnsName({
+  const { data: ensName } = useNetworkEnsName({
     address: selectedSigner,
-    chainId: chain.id,
   });
   const { t } = useTranslation(['modals', 'common']);
   const tooltipContainer = useRef<HTMLDivElement>(null);

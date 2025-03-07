@@ -5,8 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { getAddress } from 'viem';
 import { DAO_ROUTES } from '../../../constants/routes';
 import { useIsSafe } from '../../../hooks/safe/useIsSafe';
-import { validateAddress } from '../../../hooks/schemas/common/useValidationAddress';
-import useNetworkPublicClient from '../../../hooks/useNetworkPublicClient';
+import { useValidationAddress } from '../../../hooks/schemas/common/useValidationAddress';
 import { useCanUserCreateProposal } from '../../../hooks/utils/useCanUserSubmitProposal';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
 import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
@@ -31,9 +30,9 @@ export default function ForkProposalTemplateModal({
 
   const { t } = useTranslation('proposalTemplate');
   const navigate = useNavigate();
-  const publicClient = useNetworkPublicClient();
   const { chain, addressPrefix } = useNetworkConfigStore();
   const { subgraphInfo } = useDaoInfoStore();
+  const { validateAddress } = useValidationAddress();
 
   const { isSafe, isSafeLoading } = useIsSafe(targetDAOAddress);
   const { getCanUserCreateProposal } = useCanUserCreateProposal();
@@ -51,7 +50,7 @@ export default function ForkProposalTemplateModal({
 
     const {
       validation: { address, isValidAddress },
-    } = await validateAddress({ address: inputValue, publicClient });
+    } = await validateAddress({ address: inputValue });
 
     if (!isValidAddress) {
       setError(t('errorInvalidAddress', { ns: 'common' }));
@@ -71,7 +70,7 @@ export default function ForkProposalTemplateModal({
     }
 
     return isValidAddress;
-  }, [getCanUserCreateProposal, inputValue, isSafe, isSafeLoading, chain, publicClient, t]);
+  }, [inputValue, isSafeLoading, validateAddress, t, isSafe, getCanUserCreateProposal, chain.name]);
 
   const handleSubmit = () => {
     if (!subgraphInfo?.proposalTemplatesHash) {

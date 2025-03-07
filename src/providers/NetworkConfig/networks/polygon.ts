@@ -25,14 +25,16 @@ export const polygonConfig: NetworkConfig = {
   etherscanAPIUrl: `https://api.polygonscan.com/api?apikey=${import.meta.env?.VITE_APP_ETHERSCAN_POLYGON_API_KEY}`,
   addressPrefix: 'matic',
   nativeTokenIcon: '/images/coin-icon-pol.svg',
-  subgraph: {
+  isENSSupported: false,
+  decentSubgraph: {
     space: 71032,
-    slug: 'fractal-base-polygon',
-    version: 'v0.1.2',
+    slug: 'fractal-polygon',
+    id: 'E7GsrUKtVS2sd5DUaAF29JasYWF81gjmFUWndNf4jYqr',
   },
   sablierSubgraph: {
     space: 57079,
     slug: 'sablier-v2-polygon',
+    id: '8fgeQMEQ8sskVeWE5nvtsVL2VpezDrAkx2d1VeiHiheu',
   },
   contracts: {
     gnosisSafeL2Singleton: getSafeContractDeploymentAddress(
@@ -97,6 +99,7 @@ export const polygonConfig: NetworkConfig = {
     sablierV2LockupDynamic: '0x4994325F8D4B4A36Bd643128BEb3EC3e582192C0',
     sablierV2LockupTranched: '0xBF67f0A1E847564D0eFAD475782236D3Fa7e9Ec2',
     sablierV2LockupLinear: '0x8D4dDc187a73017a5d7Cef733841f55115B13762',
+    disperse: '0xD152f549545093347A162Dce210e7293f1452150',
   },
   staking: {},
   moralis: {
@@ -108,6 +111,7 @@ export const polygonConfig: NetworkConfig = {
     GovernanceType.AZORIUS_ERC20,
     GovernanceType.AZORIUS_ERC721,
   ],
+  gaslessVotingSupported: false,
 };
 
 export default polygonConfig;

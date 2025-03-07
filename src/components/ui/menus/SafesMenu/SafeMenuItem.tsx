@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { Address } from 'viem';
 import { DAO_ROUTES } from '../../../../constants/routes';
-import useAvatar from '../../../../hooks/utils/useAvatar';
+import { useNetworkEnsAvatar } from '../../../../hooks/useNetworkEnsAvatar';
 import { getNetworkIcon } from '../../../../utils/url';
 import Avatar from '../../page/Header/Avatar';
 
@@ -19,7 +19,7 @@ export function SafeMenuItem({ address, network, name }: SafeMenuItemProps) {
   const navigate = useNavigate();
 
   // if by chance the safe name is an ENS name, let's attempt to get the avatar for that
-  const avatarURL = useAvatar(name);
+  const { data: avatarURL } = useNetworkEnsAvatar({ name });
 
   const { t } = useTranslation('dashboard');
 

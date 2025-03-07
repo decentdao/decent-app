@@ -3,6 +3,7 @@ import * as Sentry from '@sentry/react';
 import { useEffect, useState } from 'react';
 import { useAccount } from 'wagmi';
 import { useAccountFavorites } from '../../../../hooks/DAO/loaders/useFavorites';
+import { useNetworkEnsNameAsync } from '../../../../hooks/useNetworkEnsName';
 import {
   CacheExpiry,
   CacheKeys,
@@ -33,6 +34,7 @@ const useUserTracking = () => {
 
 const useUpdateFavoritesCache = (onFavoritesUpdated: () => void) => {
   const { favoritesList } = useAccountFavorites();
+  const { getEnsName } = useNetworkEnsNameAsync();
 
   useEffect(() => {
     (async () => {
@@ -54,7 +56,7 @@ const useUpdateFavoritesCache = (onFavoritesUpdated: () => void) => {
 
           const networkConfig = getNetworkConfig(favoriteChain.id);
 
-          return Promise.all([favorite, getSafeName(networkConfig.subgraph, favorite.address)]);
+          return Promise.all([favorite, getSafeName(networkConfig, favorite.address, getEnsName)]);
         }),
       );
 
@@ -86,7 +88,9 @@ const useUpdateFavoritesCache = (onFavoritesUpdated: () => void) => {
         onFavoritesUpdated();
       }
     })();
-  }, [favoritesList, onFavoritesUpdated]);
+  }, [favoritesList, getEnsName, onFavoritesUpdated]);
+
+  return null;
 };
 
 export function Global() {

@@ -171,7 +171,10 @@ export function CastVote({ proposal }: { proposal: FractalProposal }) {
             : undefined
       }
     >
-      <RadioGroup>
+      <RadioGroup
+        mt={6}
+        mx={-2}
+      >
         {VOTE_CHOICES.map(choice => (
           <Radio
             key={choice.value}
@@ -194,14 +197,15 @@ export function CastVote({ proposal }: { proposal: FractalProposal }) {
               color: 'lilac--3',
               borderWidth: '6px',
             }}
+            mb={2}
           >
             {t(choice.label, { ns: 'common' })}
           </Radio>
         ))}
         <Button
           marginTop={5}
-          padding="1.5rem 6rem"
-          height="auto"
+          padding="3"
+          height="3.25rem"
           width="full"
           isDisabled={disabled}
           onClick={() => selectedVoteChoice !== undefined && castVote(selectedVoteChoice)}

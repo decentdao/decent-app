@@ -1,65 +1,13 @@
 import { useCallback, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Address, PublicClient, getAddress, isAddress } from 'viem';
+import { Address, getAddress, isAddress } from 'viem';
 import { normalize } from 'viem/ens';
 import { AnyObject } from 'yup';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
 import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
 import { AddressValidationMap, ERC721TokenConfig } from '../../../types';
 import { validateENSName } from '../../../utils/url';
-import useNetworkPublicClient from '../../useNetworkPublicClient';
-
-export async function validateAddress({
-  publicClient,
-  address,
-  checkENS = true,
-}: {
-  publicClient: PublicClient;
-  address: string;
-  checkENS?: boolean;
-}): Promise<{
-  validation: { address: string; isValidAddress: boolean };
-  isValid: boolean;
-}> {
-  if (checkENS && !isAddress(address)) {
-    const resolvedAddress = await publicClient.getEnsAddress({ name: normalize(address) });
-    if (resolvedAddress) {
-      return {
-        validation: {
-          address: resolvedAddress,
-          isValidAddress: true,
-        },
-        isValid: false,
-      };
-    } else {
-      return {
-        validation: {
-          address: '',
-          isValidAddress: false,
-        },
-        isValid: false,
-      };
-    }
-  }
-  const isValidAddress = isAddress(address);
-  if (isValidAddress) {
-    return {
-      validation: {
-        address,
-        isValidAddress,
-      },
-      isValid: true,
-    };
-  } else {
-    return {
-      validation: {
-        address: '',
-        isValidAddress,
-      },
-      isValid: false,
-    };
-  }
-}
+import { useNetworkEnsAddressAsync } from '../../useNetworkEnsAddress';
 
 export const useValidationAddress = () => {
   /**
@@ -75,9 +23,61 @@ export const useValidationAddress = () => {
   const { safe } = useDaoInfoStore();
   const { chain } = useNetworkConfigStore();
 
-  const publicClient = useNetworkPublicClient();
-
+  const { getEnsAddress } = useNetworkEnsAddressAsync();
   const [isValidating, setIsValidating] = useState(false);
+
+  const validateAddress = useCallback(
+    async ({
+      address,
+      checkENS = true,
+    }: {
+      address: string;
+      checkENS?: boolean;
+    }): Promise<{
+      validation: { address: string; isValidAddress: boolean };
+      isValid: boolean;
+    }> => {
+      if (checkENS && !isAddress(address)) {
+        const resolvedAddress = await getEnsAddress({ name: normalize(address) });
+        if (resolvedAddress) {
+          return {
+            validation: {
+              address: resolvedAddress,
+              isValidAddress: true,
+            },
+            isValid: false,
+          };
+        } else {
+          return {
+            validation: {
+              address: '',
+              isValidAddress: false,
+            },
+            isValid: false,
+          };
+        }
+      }
+      const isValidAddress = isAddress(address);
+      if (isValidAddress) {
+        return {
+          validation: {
+            address,
+            isValidAddress,
+          },
+          isValid: true,
+        };
+      } else {
+        return {
+          validation: {
+            address: '',
+            isValidAddress,
+          },
+          isValid: false,
+        };
+      }
+    },
+    [getEnsAddress],
+  );
 
   const addressValidationTest = useMemo(() => {
     return {
@@ -88,7 +88,7 @@ export const useValidationAddress = () => {
         setIsValidating(true);
 
         try {
-          const { validation } = await validateAddress({ publicClient, address });
+          const { validation } = await validateAddress({ address });
           if (validation.isValidAddress) {
             addressValidationMap.current.set(address, validation);
           }
@@ -100,7 +100,7 @@ export const useValidationAddress = () => {
         }
       },
     };
-  }, [chain.name, publicClient, t]);
+  }, [chain.name, t, validateAddress]);
 
   const ensNameValidationTest = useMemo(() => {
     return {
@@ -122,7 +122,6 @@ export const useValidationAddress = () => {
         if (!address) return false;
         setIsValidating(true);
         const { validation } = await validateAddress({
-          publicClient,
           address,
           checkENS: false,
         });
@@ -133,7 +132,7 @@ export const useValidationAddress = () => {
         return validation.isValidAddress;
       },
     };
-  }, [publicClient, addressValidationMap, t]);
+  }, [validateAddress, addressValidationMap, t]);
 
   const newSignerValidationTest = useMemo(() => {
     return {
@@ -145,7 +144,7 @@ export const useValidationAddress = () => {
         let resolvedAddress: Address | null;
 
         if (validateENSName(addressOrENS)) {
-          resolvedAddress = await publicClient.getEnsAddress({
+          resolvedAddress = await getEnsAddress({
             name: normalize(addressOrENS),
           });
 
@@ -157,14 +156,14 @@ export const useValidationAddress = () => {
         return !safe.owners.includes(resolvedAddress);
       },
     };
-  }, [safe, publicClient, t]);
+  }, [safe, getEnsAddress, t]);
 
   const testUniqueAddressArray = useCallback(
     async (value: string, addressArray: string[]) => {
       // looks up tested value
       let inputValidation = addressValidationMap.current.get(value);
       if (!!value && !inputValidation) {
-        inputValidation = (await validateAddress({ publicClient, address: value })).validation;
+        inputValidation = (await validateAddress({ address: value })).validation;
       }
       // converts all inputs to addresses to compare
       // uses addressValidationMap to save on requests
@@ -177,7 +176,7 @@ export const useValidationAddress = () => {
           }
           // because mapping is not 'state', this catches values that may not be resolved yet
           if (normalize(address)) {
-            const { validation } = await validateAddress({ publicClient, address });
+            const { validation } = await validateAddress({ address });
             return validation.address;
           }
           return address;
@@ -190,7 +189,7 @@ export const useValidationAddress = () => {
 
       return uniqueFilter.length === 1;
     },
-    [publicClient],
+    [validateAddress],
   );
 
   const uniqueAddressValidationTest = useMemo(() => {
@@ -231,5 +230,6 @@ export const useValidationAddress = () => {
     uniqueAddressValidationTest,
     uniqueNFTAddressValidationTest,
     isValidating,
+    validateAddress,
   };
 };

@@ -3,8 +3,9 @@ import { ArrowsDownUp, Plus, SquaresFour } from '@phosphor-icons/react';
 import { useTranslation } from 'react-i18next';
 import { DETAILS_BOX_SHADOW } from '../../../constants/common';
 import { useFractal } from '../../../providers/App/AppProvider';
+import { SendAssetsData } from '../../../utils/dao/prepareSendAssetsActionData';
 import { ModalBase } from './ModalBase';
-import { SendAssetsData, SendAssetsModal } from './SendAssetsModal';
+import { SendAssetsModal } from './SendAssetsModal';
 
 function ActionCard({
   title,

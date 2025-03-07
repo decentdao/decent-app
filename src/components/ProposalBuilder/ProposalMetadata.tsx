@@ -1,21 +1,45 @@
 import { VStack } from '@chakra-ui/react';
 import { FormikProps } from 'formik';
+import { TFunction } from 'i18next';
 import { useTranslation } from 'react-i18next';
-import { CreateProposalForm, ProposalBuilderMode } from '../../types/proposalBuilder';
+import { CreateProposalForm } from '../../types/proposalBuilder';
 import { InputComponent, TextareaComponent } from '../ui/forms/InputComponent';
 
+export interface ProposalMetadataTypeProps {
+  titleLabel: string;
+  titleHelper: string;
+  descriptionLabel: string;
+  descriptionHelper: string;
+}
+
+export const DEFAULT_PROPOSAL_METADATA_TYPE_PROPS = (
+  t: TFunction<[string, string, string], undefined>,
+): ProposalMetadataTypeProps => ({
+  titleLabel: t('proposalTitle', { ns: 'proposal' }),
+  titleHelper: t('proposalTitleHelper', { ns: 'proposal' }),
+  descriptionLabel: t('proposalDescription', { ns: 'proposal' }),
+  descriptionHelper: t('proposalDescriptionHelper', { ns: 'proposal' }),
+});
+
+export const TEMPLATE_PROPOSAL_METADATA_TYPE_PROPS = (
+  t: TFunction<[string, string, string], undefined>,
+): ProposalMetadataTypeProps => ({
+  titleLabel: t('proposalTemplateTitle', { ns: 'proposalTemplate' }),
+  titleHelper: t('proposalTemplateTitleHelperText', { ns: 'proposalTemplate' }),
+  descriptionLabel: t('proposalTemplateDescription', { ns: 'proposalTemplate' }),
+  descriptionHelper: t('proposalTemplateDescriptionHelperText', { ns: 'proposalTemplate' }),
+});
+
 export interface ProposalMetadataProps extends FormikProps<CreateProposalForm> {
-  mode: ProposalBuilderMode;
+  typeProps: ProposalMetadataTypeProps;
 }
 
 export default function ProposalMetadata({
   values: { proposalMetadata },
   setFieldValue,
-  mode,
+  typeProps,
 }: ProposalMetadataProps) {
-  const { t } = useTranslation(['proposalTemplate', 'proposal', 'common']);
-  const isProposalMode =
-    mode === ProposalBuilderMode.PROPOSAL || mode === ProposalBuilderMode.PROPOSAL_WITH_ACTIONS;
+  const { t } = useTranslation(['proposal']);
 
   return (
     <VStack
@@ -24,12 +48,8 @@ export default function ProposalMetadata({
       p="1.5rem"
     >
       <InputComponent
-        label={isProposalMode ? t('proposalTitle', { ns: 'proposal' }) : t('proposalTemplateTitle')}
-        helper={
-          isProposalMode
-            ? t('proposalTitleHelper', { ns: 'proposal' })
-            : t('proposalTemplateTitleHelperText')
-        }
+        label={typeProps.titleLabel}
+        helper={typeProps.titleHelper}
         placeholder={t('proposalTitlePlaceholder', { ns: 'proposal' })}
         isRequired
         value={proposalMetadata.title}
@@ -38,17 +58,9 @@ export default function ProposalMetadata({
         maxLength={50}
       />
       <TextareaComponent
-        label={
-          isProposalMode
-            ? t('proposalDescription', { ns: 'proposal' })
-            : t('proposalTemplateDescription')
-        }
+        label={typeProps.descriptionLabel}
         subLabel={t('')}
-        helper={
-          isProposalMode
-            ? t('proposalDescriptionHelper', { ns: 'proposal' })
-            : t('proposalTemplateDescriptionHelperText')
-        }
+        helper={typeProps.descriptionHelper}
         placeholder={t('proposalDescriptionPlaceholder', { ns: 'proposal' })}
         isRequired={false}
         value={proposalMetadata.description}

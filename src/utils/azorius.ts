@@ -124,13 +124,17 @@ const getProposalVotes = (
 
   if (erc20VotedEvents !== undefined) {
     const erc20ProposalVoteEvents = erc20VotedEvents.filter(voteEvent => {
-      if (!voteEvent.args.proposalId) return false;
+      if (voteEvent.args.proposalId === undefined) return false;
       return proposalId === voteEvent.args.proposalId;
     });
 
     const events = [];
     for (const event of erc20ProposalVoteEvents) {
-      if (!event.args.voteType || !event.args.weight || !event.args.voter) {
+      if (
+        event.args.voteType === undefined ||
+        event.args.weight === undefined ||
+        event.args.voter === undefined
+      ) {
         continue;
       }
       events.push({
@@ -142,17 +146,17 @@ const getProposalVotes = (
     return events;
   } else if (erc721VotedEvents !== undefined) {
     const erc721ProposalVoteEvents = erc721VotedEvents.filter(voteEvent => {
-      if (!voteEvent.args.proposalId) return false;
+      if (voteEvent.args.proposalId === undefined) return false;
       return proposalId === voteEvent.args.proposalId;
     });
 
     const events = [];
     for (const event of erc721ProposalVoteEvents) {
       if (
-        !event.args.voteType ||
-        !event.args.voter ||
-        !event.args.tokenIds ||
-        !event.args.tokenAddresses
+        event.args.voteType === undefined ||
+        event.args.voter === undefined ||
+        event.args.tokenIds === undefined ||
+        event.args.tokenAddresses === undefined
       ) {
         continue;
       }

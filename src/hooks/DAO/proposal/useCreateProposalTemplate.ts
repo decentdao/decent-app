@@ -9,7 +9,7 @@ import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetwo
 import { ProposalExecuteData } from '../../../types';
 import { CreateProposalForm } from '../../../types/proposalBuilder';
 import { validateENSName } from '../../../utils/url';
-import useNetworkPublicClient from '../../useNetworkPublicClient';
+import { useNetworkEnsAddressAsync } from '../../useNetworkEnsAddress';
 
 const customSerializer = (_: string, value: any) => {
   if (typeof value === 'bigint') {
@@ -20,7 +20,7 @@ const customSerializer = (_: string, value: any) => {
 };
 
 export default function useCreateProposalTemplate() {
-  const publicClient = useNetworkPublicClient();
+  const { getEnsAddress } = useNetworkEnsAddressAsync();
   const client = useIPFSClient();
   const {
     governance: { proposalTemplates },
@@ -48,7 +48,7 @@ export default function useCreateProposalTemplate() {
             values.transactions.map(async tx => ({
               ...tx,
               targetAddress: validateENSName(tx.targetAddress)
-                ? await publicClient.getEnsAddress({ name: normalize(tx.targetAddress) })
+                ? await getEnsAddress({ name: normalize(tx.targetAddress) })
                 : tx.targetAddress,
               parameters: tx.parameters
                 .map(param => {
@@ -84,7 +84,7 @@ export default function useCreateProposalTemplate() {
         return proposal;
       }
     },
-    [client, keyValuePairs, proposalTemplates, publicClient, t],
+    [client, getEnsAddress, keyValuePairs, proposalTemplates, t],
   );
 
   return { prepareProposalTemplateProposal };

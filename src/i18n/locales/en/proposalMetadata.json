@@ -7,6 +7,8 @@
   "removeProposalTemplateTitle": "Remove Proposal Template",
   "removeProposalTemplateDescription": "Execution of this proposal will remove the proposal template attached to this Safe.",
   "updatesSafeName": "Update Safe Name",
+  "enableGaslessVoting": "Enable Gasless Voting",
+  "topupGasTank": "Top up Gas Tank",
   "updateSnapshotSpace": "Update Snapshot Space",
   "lidoWithdrawalTitle": "Lido Withdrawal",
   "lidoWithdrawalDescription": "This proposal will burn your Lido Withdrawal NFT and return the ETH to your Safe.",

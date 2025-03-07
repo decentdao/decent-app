@@ -1,7 +1,7 @@
-import { Box, Button, Flex, Grid, GridItem, Icon, Image, Show, Tag, Text } from '@chakra-ui/react';
-import { CalendarBlank, Download, Link, Trash } from '@phosphor-icons/react';
+import { Box, Button, Flex, Grid, GridItem, Icon, Image, Tag, Text } from '@chakra-ui/react';
+import { CalendarBlank, Download, Link } from '@phosphor-icons/react';
 import { format } from 'date-fns';
-import { TouchEvent, useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { Address, getAddress, Hex } from 'viem';
@@ -9,14 +9,48 @@ import { useAccount } from 'wagmi';
 import { DETAILS_BOX_SHADOW } from '../../constants/common';
 import { DAO_ROUTES } from '../../constants/routes';
 import useNetworkPublicClient from '../../hooks/useNetworkPublicClient';
+import { useCanUserCreateProposal } from '../../hooks/utils/useCanUserSubmitProposal';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
+import { useProposalActionsStore } from '../../store/actions/useProposalActionsStore';
 import { useDaoInfoStore } from '../../store/daoInfo/useDaoInfoStore';
 import { useRolesStore } from '../../store/roles/useRolesStore';
-import { BigIntValuePair } from '../../types';
+import { BigIntValuePair, ProposalActionType } from '../../types';
 import { DEFAULT_DATE_FORMAT, formatCoin } from '../../utils';
+import { prepareWithdrawToDAOActionData } from '../../utils/dao/prepareWithdrawToDAOActionData';
 import { isDemoMode } from '../../utils/demoMode';
 import { ModalType } from '../ui/modals/ModalProvider';
 import { useDecentModal } from '../ui/modals/useDecentModal';
+
+function getPaymentContainerProps(section: 'top' | 'bottom', isActiveStream: boolean) {
+  const borderTopRadius = section === 'top' ? '0.75rem' : '0';
+  const borderBottomRadius = section === 'bottom' ? '0.75rem' : '0';
+  const borderBottom = section === 'bottom' ? '1px solid' : 'none';
+
+  return isActiveStream
+    ? {
+        bg: 'neutral-2',
+        sx: undefined,
+        boxShadow: DETAILS_BOX_SHADOW,
+        borderTopRadius,
+        borderBottomRadius,
+        py: '1rem',
+      }
+    : {
+        sx: {
+          p: {
+            color: 'neutral-6',
+          },
+        },
+        bg: 'none',
+        boxShadow: 'none',
+        border: '1px solid',
+        borderBottom,
+        borderTopRadius,
+        borderBottomRadius,
+        py: '1rem',
+        borderColor: 'neutral-4',
+      };
+}
 
 function PaymentDate({ label, date }: { label: string; date?: Date }) {
   const { t } = useTranslation(['roles']);
@@ -98,7 +132,186 @@ function GreenStreamingDot({ isStreaming }: { isStreaming: boolean }) {
     />
   );
 }
+interface PaymentDetailsTopProps {
+  payment: {
+    asset: { logo: string; symbol: string; decimals: number };
+    amount: BigIntValuePair;
+    isCancelled: boolean;
+    isCancelling?: boolean;
+    isStreaming: () => boolean;
+    isCancelableStream: boolean;
+  };
+  onClick?: () => void;
+  isActiveStream: boolean;
+}
+function PaymentDetailsTop({ payment, onClick, isActiveStream }: PaymentDetailsTopProps) {
+  const { t } = useTranslation(['roles']);
+  return (
+    <Box
+      onClick={onClick}
+      cursor={onClick ? 'pointer' : 'default'}
+      {...getPaymentContainerProps('top', isActiveStream)}
+    >
+      <Flex
+        flexDir="column"
+        mx={4}
+      >
+        <Flex justifyContent="space-between">
+          <Flex gap={2}>
+            <Image
+              h="1.5rem"
+              src={payment.asset.logo}
+              fallbackSrc="/images/coin-icon-default.svg"
+            />
+            <Text
+              textStyle="heading-small"
+              color="white-0"
+            >
+              {payment.amount?.bigintValue
+                ? formatCoin(
+                    payment.amount.bigintValue,
+                    false,
+                    payment.asset.decimals,
+                    payment.asset.symbol,
+                  )
+                : undefined}
+            </Text>
+          </Flex>
+          <Flex gap={6}>
+            {(payment.isCancelled || payment.isCancelling) && (
+              <Tag
+                variant="outlined"
+                color="red-1"
+                outline="unset"
+                border="1px solid"
+                py={0}
+                px={2}
+                height={6}
+                borderRadius="lg"
+              >
+                {t('cancelled')}
+              </Tag>
+            )}
+            {!payment.isCancelableStream && (
+              <Tag
+                variant="outlined"
+                color="yellow-0"
+                outline="unset"
+                border="1px solid"
+                py={0}
+                px={2}
+                height={6}
+                borderRadius="lg"
+              >
+                {t('nonCancelable')}
+              </Tag>
+            )}
+            <GreenStreamingDot isStreaming={payment.isStreaming()} />
+          </Flex>
+        </Flex>
+      </Flex>
+    </Box>
+  );
+}
 
+interface PaymentDetailsBottomProps {
+  payment: {
+    startDate: Date;
+    endDate: Date;
+    cliffDate?: Date;
+    withdrawableAmount?: bigint;
+  };
+  assignedTerm?: { termNumber: number };
+  canWithdraw: boolean;
+  isDAORecipient: boolean;
+  handleClickWithdraw: () => void;
+}
+function PaymentDetailsBottom({
+  payment,
+  assignedTerm,
+  canWithdraw,
+  handleClickWithdraw,
+  isDAORecipient,
+}: PaymentDetailsBottomProps) {
+  const { t } = useTranslation(['roles']);
+  const { canUserCreateProposal } = useCanUserCreateProposal();
+
+  const isWithdrawButtonEnabled = useMemo(() => {
+    const hasWithdrawableFunds = (payment?.withdrawableAmount ?? 0n) > 0n;
+
+    if (isDAORecipient) {
+      return canUserCreateProposal && hasWithdrawableFunds;
+    }
+
+    return hasWithdrawableFunds;
+  }, [canUserCreateProposal, isDAORecipient, payment?.withdrawableAmount]);
+
+  return (
+    <Box {...getPaymentContainerProps('bottom', !payment.startDate ? false : true)}>
+      <Grid
+        mx={4}
+        templateAreas='"starting dividerOne cliff dividerTwo ending"'
+        templateColumns="1fr 24px 1fr 24px 1fr"
+      >
+        <GridItem area="starting">
+          {assignedTerm ? (
+            <TermedAssigned termNumber={assignedTerm.termNumber} />
+          ) : (
+            <PaymentDate
+              label="starting"
+              date={payment.startDate}
+            />
+          )}
+        </GridItem>
+        <GridItem area="dividerOne">
+          <Box
+            borderLeft="1px solid"
+            borderColor="white-alpha-08"
+            h="full"
+            boxShadow={DETAILS_BOX_SHADOW}
+            w="0"
+          />
+        </GridItem>
+        <GridItem area="cliff">
+          <PaymentDate
+            label="cliff"
+            date={payment.cliffDate}
+          />
+        </GridItem>
+        <GridItem area="dividerTwo">
+          <Box
+            borderLeft="1px solid"
+            borderColor="white-alpha-08"
+            h="full"
+            boxShadow={DETAILS_BOX_SHADOW}
+            w="0"
+          />
+        </GridItem>
+        <GridItem area="ending">
+          <PaymentDate
+            label="ending"
+            date={payment.endDate}
+          />
+        </GridItem>
+      </Grid>
+      {(canWithdraw || isDAORecipient) && (
+        <Box
+          mt={4}
+          px={4}
+        >
+          <Button
+            w="full"
+            isDisabled={!isWithdrawButtonEnabled}
+            leftIcon={<Download />}
+            onClick={handleClickWithdraw}
+          >
+            {isDAORecipient ? t('withdrawToDao') : t('withdraw')}
+          </Button>
+        </Box>
+      )}
+    </Box>
+  );
+}
 interface RolePaymentDetailsProps {
   roleHatWearerAddress?: Address;
   roleHatSmartAccountAddress?: Address;
@@ -120,14 +333,12 @@ interface RolePaymentDetailsProps {
     cliffDate?: Date;
     isCancelled: boolean;
     isCancelling?: boolean;
+    isCancelableStream: boolean;
     isStreaming: () => boolean;
-    isCancellable: () => boolean;
     withdrawableAmount?: bigint;
   };
   onClick?: () => void;
-  onCancel?: () => void;
   showWithdraw?: boolean;
-  showCancel?: boolean;
 }
 export function RolePaymentDetails({
   payment,
@@ -136,11 +347,8 @@ export function RolePaymentDetails({
   roleHatWearerAddress,
   roleHatSmartAccountAddress,
   roleHatId,
-  showCancel,
-  onCancel,
   roleTerms,
 }: RolePaymentDetailsProps) {
-  const { t } = useTranslation(['roles']);
   const { safe } = useDaoInfoStore();
   const { address: connectedAccount } = useAccount();
   const { addressPrefix } = useNetworkConfigStore();
@@ -157,6 +365,10 @@ export function RolePaymentDetails({
     }
     return isDemoMode();
   }, [connectedAccount, payment.recipient, showWithdraw, roleHatWearerAddress]);
+
+  const isDAORecipient = useMemo(() => {
+    return safe?.address === payment.recipient || safe?.address === roleHatWearerAddress;
+  }, [safe?.address, payment.recipient, roleHatWearerAddress]);
 
   const assignedTerm = useMemo(() => {
     return roleTerms.find(term => term.termEndDate.getTime() === payment.endDate.getTime());
@@ -200,258 +412,105 @@ export function RolePaymentDetails({
   ]);
 
   const withdraw = useDecentModal(modalType, props);
+  const { addAction } = useProposalActionsStore();
+  const { t } = useTranslation('roles');
+  const { getHat } = useRolesStore();
 
   const handleClickWithdraw = useCallback(() => {
     if (safe?.address) {
-      navigate(DAO_ROUTES.roles.relative(addressPrefix, safe.address));
-      withdraw();
+      if (isDAORecipient && roleHatId) {
+        const withdrawableAmount = formatCoin(
+          payment.withdrawableAmount ?? 0n,
+          false,
+          payment.asset.decimals,
+          payment.asset.symbol,
+        );
+
+        const roleName = getHat(roleHatId)?.name;
+
+        if (
+          payment.streamId &&
+          payment.contractAddress &&
+          roleHatWearerAddress &&
+          roleHatSmartAccountAddress
+        ) {
+          const actionData = prepareWithdrawToDAOActionData({
+            daoAddress: safe.address,
+            streamId: payment.streamId,
+            roleHatSmartAccountAddress,
+            paymentContractAddress: payment.contractAddress,
+          });
+
+          addAction({
+            actionType: ProposalActionType.WITHDRAW_STREAM,
+            content: (
+              <Box>
+                <Text>
+                  {t('withdrawPayment', {
+                    amount: withdrawableAmount,
+                    roleName,
+                  })}
+                </Text>
+              </Box>
+            ),
+            transactions: actionData.transactions,
+          });
+          navigate(DAO_ROUTES.proposalWithActionsNew.relative(addressPrefix, safe.address));
+        }
+      } else {
+        navigate(DAO_ROUTES.roles.relative(addressPrefix, safe.address));
+        withdraw();
+      }
     }
-  }, [addressPrefix, navigate, safe?.address, withdraw]);
+  }, [
+    addAction,
+    addressPrefix,
+    getHat,
+    isDAORecipient,
+    navigate,
+    payment.asset.decimals,
+    payment.asset.symbol,
+    payment.contractAddress,
+    payment.streamId,
+    payment.withdrawableAmount,
+    roleHatId,
+    roleHatSmartAccountAddress,
+    roleHatWearerAddress,
+    safe?.address,
+    t,
+    withdraw,
+  ]);
 
   const isActiveStream =
     !payment.isCancelled && Date.now() < payment.endDate.getTime() && !payment.isCancelling;
-
-  const activeStreamProps = useCallback(
-    (section: 'top' | 'bottom') => {
-      const borderTopRadius = section === 'top' ? '0.75rem' : '0';
-      const borderBottomRadius = section === 'bottom' ? '0.75rem' : '0';
-      const borderBottom = section === 'bottom' ? '1px solid' : 'none';
-
-      return isActiveStream
-        ? {
-            bg: 'neutral-2',
-            sx: undefined,
-            boxShadow: DETAILS_BOX_SHADOW,
-            borderTopRadius,
-            borderBottomRadius,
-            py: '1rem',
-          }
-        : {
-            sx: {
-              p: {
-                color: 'neutral-6',
-              },
-            },
-            bg: 'none',
-            boxShadow: 'none',
-            border: '1px solid',
-            borderBottom,
-            borderTopRadius,
-            borderBottomRadius,
-            py: '1rem',
-            borderColor: 'neutral-4',
-          };
-    },
-    [isActiveStream],
-  );
-
-  const [showInlineDelete, setShowInlineDelete] = useState(false);
-  const [touchStart, setTouchStart] = useState<number>();
-  const [touchEnd, setTouchEnd] = useState<number>();
-
-  // the required distance between touchStart and touchEnd to be detected as a swipe
-  const minSwipeDistance = 30;
-
-  const onTouchStart = (e: TouchEvent<HTMLDivElement>) => {
-    setTouchEnd(undefined); // otherwise the swipe is fired even with usual touch events
-    setTouchStart(e.targetTouches[0].clientX);
-  };
-
-  const onTouchMove = (e: TouchEvent<HTMLDivElement>) => setTouchEnd(e.targetTouches[0].clientX);
-
-  const onTouchEnd = () => {
-    if (!touchStart || !touchEnd) return;
-    const distance = touchStart - touchEnd;
-    const isLeftSwipe = distance > minSwipeDistance;
-    const isRightSwipe = distance < -minSwipeDistance;
-    if (isRightSwipe && showInlineDelete) {
-      setShowInlineDelete(false);
-    } else if (isLeftSwipe && !showInlineDelete) {
-      setShowInlineDelete(true);
-    }
-  };
-
-  const handleConfirmCancelPayment = useCallback(() => {
-    if (onCancel) {
-      onCancel();
-    }
-  }, [onCancel]);
-
-  const confirmCancelPayment = useDecentModal(ModalType.CONFIRM_CANCEL_PAYMENT, {
-    onSubmit: handleConfirmCancelPayment,
-  });
-
-  useEffect(() => {
-    if (payment.isCancelling && showInlineDelete) {
-      setTouchEnd(undefined);
-      setTouchStart(undefined);
-      setShowInlineDelete(false);
-    }
-  }, [payment.isCancelling, showInlineDelete]);
 
   return (
     <Flex
       my="0.75rem"
       w="full"
-      onTouchStart={showCancel ? onTouchStart : undefined}
-      onTouchMove={showCancel ? onTouchMove : undefined}
-      onTouchEnd={showCancel ? onTouchEnd : undefined}
       position="relative"
     >
       <Box
-        w={showInlineDelete ? 'calc(100% - 56px)' : 'full'}
+        w="full"
         zIndex={2}
         transitionDuration="300ms"
         transitionProperty="all"
         transitionTimingFunction="ease-out"
       >
-        <Box
+        <PaymentDetailsTop
+          payment={payment}
           onClick={onClick}
-          cursor={!!onClick ? 'pointer' : 'default'}
-          {...activeStreamProps('top')}
-        >
-          <Flex
-            flexDir="column"
-            mx={4}
-          >
-            <Flex justifyContent="space-between">
-              <Flex
-                alignItems="center"
-                gap={2}
-              >
-                <Image
-                  h="2rem"
-                  src={payment.asset.logo}
-                  fallbackSrc="/images/coin-icon-default.svg"
-                />
-                <Text
-                  textStyle="heading-large"
-                  color="white-0"
-                >
-                  {payment.amount?.bigintValue
-                    ? formatCoin(
-                        payment.amount.bigintValue,
-                        false,
-                        payment.asset.decimals,
-                        payment.asset.symbol,
-                      )
-                    : undefined}
-                </Text>
-              </Flex>
-              <Flex
-                gap={6}
-                alignItems="center"
-              >
-                {(payment.isCancelled || payment.isCancelling) && (
-                  <Tag
-                    variant="outlined"
-                    color="red-1"
-                    outline="unset"
-                    border="1px solid"
-                    py={0}
-                    px={2}
-                    height={6}
-                    borderRadius="lg"
-                  >
-                    {t('cancelled')}
-                  </Tag>
-                )}
-                <GreenStreamingDot isStreaming={payment.isStreaming()} />
-              </Flex>
-            </Flex>
-          </Flex>
-        </Box>
+          isActiveStream={isActiveStream}
+        />
 
-        <Box {...activeStreamProps('bottom')}>
-          <Grid
-            mx={4}
-            templateAreas='"starting dividerOne cliff dividerTwo ending"'
-            templateColumns="1fr 24px 1fr 24px 1fr"
-          >
-            <GridItem area="starting">
-              {assignedTerm ? (
-                <TermedAssigned termNumber={assignedTerm.termNumber} />
-              ) : (
-                <PaymentDate
-                  label="starting"
-                  date={payment.startDate}
-                />
-              )}
-            </GridItem>
-            <GridItem area="dividerOne">
-              <Box
-                borderLeft="1px solid"
-                borderColor="white-alpha-08"
-                h="full"
-                boxShadow={DETAILS_BOX_SHADOW}
-                w="0"
-              />
-            </GridItem>
-            <GridItem area="cliff">
-              <PaymentDate
-                label="cliff"
-                date={payment.cliffDate}
-              />
-            </GridItem>
-            <GridItem area="dividerTwo">
-              <Box
-                borderLeft="1px solid"
-                borderColor="white-alpha-08"
-                h="full"
-                boxShadow={DETAILS_BOX_SHADOW}
-                w="0"
-              />
-            </GridItem>
-            <GridItem area="ending">
-              <PaymentDate
-                label="ending"
-                date={payment.endDate}
-              />
-            </GridItem>
-          </Grid>
-          {canWithdraw && (
-            <Box
-              mt={4}
-              px={4}
-            >
-              <Button
-                w="full"
-                isDisabled={!((payment?.withdrawableAmount ?? 0n) > 0n)}
-                leftIcon={<Download />}
-                onClick={handleClickWithdraw}
-              >
-                {t('withdraw')}
-              </Button>
-            </Box>
-          )}
-        </Box>
+        <PaymentDetailsBottom
+          payment={payment}
+          assignedTerm={assignedTerm}
+          canWithdraw={canWithdraw}
+          isDAORecipient={isDAORecipient}
+          handleClickWithdraw={handleClickWithdraw}
+        />
       </Box>
-      <Show below="md">
-        <Button
-          backgroundColor="red-0"
-          height="100%"
-          zIndex={1}
-          position="absolute"
-          top={0}
-          right={showInlineDelete ? '0.5rem' : 0}
-          transitionDuration="300ms"
-          transitionProperty="all"
-          transitionTimingFunction="ease-out"
-          width={showInlineDelete ? '56px' : '0px'}
-          borderTopRightRadius="0.5rem"
-          borderBottomRightRadius="0.5rem"
-          boxShadow={DETAILS_BOX_SHADOW}
-          overflow="hidden"
-          alignItems="center"
-          justifyContent="center"
-          py="1rem"
-          opacity={showInlineDelete ? '1' : '0'}
-          variant="unstyled"
-          onClick={confirmCancelPayment}
-        >
-          <Trash size="24" />
-        </Button>
-      </Show>
     </Flex>
   );
 }

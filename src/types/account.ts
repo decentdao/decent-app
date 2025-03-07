@@ -4,7 +4,6 @@ export interface VotesTokenData extends VotesData, ERC20TokenData {}
 export interface VotesData {
   balance: bigint | null;
   delegatee: Address | null;
-  votingWeight: bigint | null;
 }
 
 export interface BaseTokenData {

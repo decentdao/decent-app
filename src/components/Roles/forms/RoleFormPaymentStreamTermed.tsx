@@ -247,6 +247,7 @@ function TermSelectorMenu({ paymentIndex }: { paymentIndex: number }) {
               _hover={{ bg: 'neutral-3' }}
               _active={{ bg: 'neutral-2' }}
               transition="all ease-out 300ms"
+              type="button"
             >
               {!!selectedTerm && (
                 <Flex

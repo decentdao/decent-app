@@ -2,6 +2,7 @@
   "advanced": "Advanced",
   "no": "No",
   "yes": "Yes",
+  "abstain": "Abstain",
   "skip": "Skip",
   "next": "Next",
   "back": "Back",
@@ -31,7 +32,6 @@
   "minutes": "Minutes",
   "quorum": "Quorum",
   "deploy": "Deploy",
-  "abstain": "Abstain",
   "loading": "Loading...",
   "goHome": "Go Home",
   "delegate": "Delegate",
@@ -120,5 +120,9 @@
   "and": "and",
   "days": "Days",
   "owner": "Owner",
-  "pageXofY": "Page {{current}} of {{total}}"
+  "recipients_one": "recipient",
+  "recipients_other": "recipients",
+  "airdrop": "Airdrop",
+  "pageXofY": "Page {{current}} of {{total}}",
+  "network": "Network"
 }

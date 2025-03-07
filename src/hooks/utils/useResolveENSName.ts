@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react';
-import { Address, createPublicClient, http, isAddress, getAddress, zeroAddress } from 'viem';
+import { Address, isAddress, getAddress, zeroAddress } from 'viem';
 import { normalize } from 'viem/ens';
-import { supportedNetworks } from '../../providers/NetworkConfig/useNetworkConfigStore';
+import { useNetworkEnsAddressAsync } from '../useNetworkEnsAddress';
 
 type ResolveENSNameReturnType = {
   resolvedAddress: Address;
@@ -9,52 +9,49 @@ type ResolveENSNameReturnType = {
 };
 export const useResolveENSName = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const { getEnsAddress } = useNetworkEnsAddressAsync();
 
-  const resolveENSName = useCallback(async (input: string): Promise<ResolveENSNameReturnType> => {
-    setIsLoading(true);
+  const resolveENSName = useCallback(
+    async (input: string, chainId?: number): Promise<ResolveENSNameReturnType> => {
+      setIsLoading(true);
 
-    const returnedResult: ResolveENSNameReturnType = {
-      resolvedAddress: zeroAddress,
-      isValid: false,
-    };
+      const returnedResult: ResolveENSNameReturnType = {
+        resolvedAddress: zeroAddress,
+        isValid: false,
+      };
 
-    if (input === '') {
-      throw new Error('ENS name is empty');
-    }
+      if (input === '') {
+        throw new Error('ENS name is empty');
+      }
 
-    if (isAddress(input)) {
-      // @dev if its a valid address, its valid on all networks
-      returnedResult.isValid = true;
-      returnedResult.resolvedAddress = getAddress(input);
+      if (isAddress(input)) {
+        // @dev if its a valid address, its valid on all networks
+        returnedResult.isValid = true;
+        returnedResult.resolvedAddress = getAddress(input);
+        setIsLoading(false);
+        return returnedResult;
+      }
+
+      // @dev if its not an address, try to resolve as possible ENS name on all networks
+      let normalizedName: string;
+      try {
+        normalizedName = normalize(input);
+      } catch {
+        setIsLoading(false);
+        return returnedResult;
+      }
+
+      const resolvedAddress = await getEnsAddress({ name: normalizedName, chainId });
+      if (resolvedAddress) {
+        returnedResult.resolvedAddress = resolvedAddress;
+        returnedResult.isValid = true;
+      }
+
       setIsLoading(false);
       return returnedResult;
-    }
+    },
+    [getEnsAddress],
+  );
 
-    // @dev if its not an address, try to resolve as possible ENS name on all networks
-    let normalizedName: string;
-    try {
-      normalizedName = normalize(input);
-    } catch {
-      setIsLoading(false);
-      return returnedResult;
-    }
-    const mainnet = supportedNetworks.find(network => network.chain.id === 1);
-    if (!mainnet) {
-      throw new Error('Mainnet not found');
-    }
-
-    const mainnetPublicClient = createPublicClient({
-      chain: mainnet.chain,
-      transport: http(mainnet.rpcEndpoint),
-    });
-    const resolvedAddress = await mainnetPublicClient.getEnsAddress({ name: normalizedName });
-    if (resolvedAddress) {
-      returnedResult.resolvedAddress = resolvedAddress;
-      returnedResult.isValid = true;
-    }
-
-    setIsLoading(false);
-    return returnedResult;
-  }, []);
   return { resolveENSName, isLoading };
 };

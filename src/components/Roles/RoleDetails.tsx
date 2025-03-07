@@ -5,8 +5,8 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import PencilWithLineIcon from '../../assets/theme/custom/icons/PencilWithLineIcon';
 import { DAO_ROUTES } from '../../constants/routes';
+import { useNetworkEnsAvatar } from '../../hooks/useNetworkEnsAvatar';
 import useAddress from '../../hooks/utils/useAddress';
-import useAvatar from '../../hooks/utils/useAvatar';
 import { useCanUserCreateProposal } from '../../hooks/utils/useCanUserSubmitProposal';
 import { useCopyText } from '../../hooks/utils/useCopyText';
 import { useGetAccountName } from '../../hooks/utils/useGetAccountName';
@@ -90,7 +90,7 @@ export default function RolesDetails({
   const { displayName } = useGetAccountName(roleHatWearerAddress);
 
   const { t } = useTranslation(['roles']);
-  const avatarURL = useAvatar(roleHatWearer);
+  const { data: avatarURL } = useNetworkEnsAvatar({ name: roleHatWearer });
 
   const sortedPayments = useMemo(
     () =>

@@ -26,13 +26,13 @@ export function SafePermissionsSettingsPage() {
   const { addressPrefix } = useNetworkConfigStore();
   const {
     governance,
-    governanceContracts: { isLoaded, linearVotingErc20Address },
+    governanceContracts: { isLoaded, linearVotingErc20Address, linearVotingErc721Address },
   } = useFractal();
   const { safe } = useDaoInfoStore();
 
   const { canUserCreateProposal } = useCanUserCreateProposal();
   const azoriusGovernance = governance as AzoriusGovernance;
-  const { votesToken } = azoriusGovernance;
+  const { votesToken, erc721Tokens } = azoriusGovernance;
 
   const isMobile = useBreakpointValue({ base: true, md: false });
   const [searchParams] = useSearchParams();
@@ -48,6 +48,8 @@ export function SafePermissionsSettingsPage() {
     return null;
   }
 
+  const proposerThreshold = azoriusGovernance.votingStrategy?.proposerThreshold?.formatted;
+
   return (
     <>
       <Show below="md">
@@ -58,7 +60,7 @@ export function SafePermissionsSettingsPage() {
             href: DAO_ROUTES.settings.relative(addressPrefix, safe.address),
           }}
         >
-          {!linearVotingErc20Address && (
+          {!linearVotingErc20Address && !linearVotingErc721Address && (
             <Flex
               width="25%"
               justifyContent="flex-end"
@@ -97,7 +99,8 @@ export function SafePermissionsSettingsPage() {
           >
             <BarLoader />
           </Card>
-        ) : !votesToken || !linearVotingErc20Address ? (
+        ) : (!votesToken || !linearVotingErc20Address) &&
+          (!erc721Tokens || !linearVotingErc721Address) ? (
           <NoDataCard
             emptyText="emptyPermissions"
             emptyTextNotProposer="emptyPermissionsNotProposer"
@@ -106,13 +109,13 @@ export function SafePermissionsSettingsPage() {
         ) : (
           <Card
             onClick={
-              canUserCreateProposal && linearVotingErc20Address
+              canUserCreateProposal && (linearVotingErc20Address || linearVotingErc721Address)
                 ? () =>
                     navigate(
                       DAO_ROUTES.settingsPermissionsCreateProposal.relative(
                         addressPrefix,
                         safe.address,
-                        linearVotingErc20Address,
+                        linearVotingErc20Address || linearVotingErc721Address,
                       ),
                     )
                 : undefined
@@ -145,10 +148,16 @@ export function SafePermissionsSettingsPage() {
                     textStyle="labels-large"
                     color="neutral-7"
                   >
-                    {t('permissionsCreateProposalsDescription', {
-                      symbol: votesToken.symbol,
-                      tokensCount: azoriusGovernance.votingStrategy?.proposerThreshold?.formatted,
-                    })}
+                    {votesToken
+                      ? t('permissionsErc20CreateProposalsDescription', {
+                          symbol: votesToken.symbol,
+                          proposerThreshold,
+                        })
+                      : t('permissionsErc721CreateProposalsDescription', {
+                          proposerThreshold,
+                          symbol: erc721Tokens?.[0]?.symbol,
+                          count: erc721Tokens?.length,
+                        })}
                   </Text>
                 </Box>
               </Flex>

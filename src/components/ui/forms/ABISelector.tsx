@@ -4,8 +4,8 @@ import detectProxyTarget from 'evm-proxy-detection';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { isAddress } from 'viem';
-import { useEnsAddress } from 'wagmi';
 import { logError } from '../../../helpers/errorLogging';
+import { useNetworkEnsAddress } from '../../../hooks/useNetworkEnsAddress';
 import useNetworkPublicClient from '../../../hooks/useNetworkPublicClient';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
 import { LabelComponent } from './InputComponent';
@@ -29,7 +29,10 @@ export default function ABISelector({ target, onChange }: IABISelector) {
   const [abi, setABI] = useState<ABIElement[]>([]);
   const { etherscanAPIUrl, chain } = useNetworkConfigStore();
   const { t } = useTranslation('common');
-  const { data: ensAddress } = useEnsAddress({ name: target?.toLowerCase(), chainId: chain.id });
+  const { data: ensAddress } = useNetworkEnsAddress({
+    name: target?.toLowerCase(),
+    chainId: chain.id,
+  });
   const client = useNetworkPublicClient();
 
   useEffect(() => {
@@ -49,10 +52,15 @@ export default function ABISelector({ target, onChange }: IABISelector) {
           if (responseData.status === '1') {
             const fetchedABI = JSON.parse(responseData.result);
             setABI(fetchedABI);
+          } else {
+            setABI([]);
           }
         } catch (e) {
+          setABI([]);
           logError(e, 'Error fetching ABI for smart contract');
         }
+      } else {
+        setABI([]);
       }
     };
     loadABI();

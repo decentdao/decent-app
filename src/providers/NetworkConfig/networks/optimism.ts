@@ -25,14 +25,16 @@ export const optimismConfig: NetworkConfig = {
   etherscanAPIUrl: `https://api-optimistic.etherscan.io/api?apikey=${import.meta.env?.VITE_APP_ETHERSCAN_OPTIMISM_API_KEY}`,
   addressPrefix: 'oeth',
   nativeTokenIcon: '/images/coin-icon-op.svg',
-  subgraph: {
+  isENSSupported: false,
+  decentSubgraph: {
     space: 71032,
     slug: 'fractal-optimism',
-    version: 'v0.1.2',
+    id: 'HUiUhcR6A3BTjw7VoeLj5n2pAPPJ51K5DBD8Q2Uu94MH',
   },
   sablierSubgraph: {
     space: 57079,
     slug: 'sablier-v2-optimism',
+    id: 'NZHzd2JNFKhHP5EWUiDxa5TaxGCFbSD4g6YnYr8JGi6',
   },
   contracts: {
     gnosisSafeL2Singleton: getSafeContractDeploymentAddress(
@@ -97,6 +99,7 @@ export const optimismConfig: NetworkConfig = {
     sablierV2LockupDynamic: '0x4994325F8D4B4A36Bd643128BEb3EC3e582192C0',
     sablierV2LockupTranched: '0x90952912a50079bef00D5F49c975058d6573aCdC',
     sablierV2LockupLinear: '0x5C22471A86E9558ed9d22235dD5E0429207ccf4B',
+    disperse: '0xD152f549545093347A162Dce210e7293f1452150',
   },
   staking: {},
   moralis: {
@@ -108,6 +111,7 @@ export const optimismConfig: NetworkConfig = {
     GovernanceType.AZORIUS_ERC20,
     GovernanceType.AZORIUS_ERC721,
   ],
+  gaslessVotingSupported: false,
 };
 
 export default optimismConfig;

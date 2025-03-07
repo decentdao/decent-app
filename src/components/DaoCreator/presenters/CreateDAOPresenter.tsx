@@ -3,6 +3,7 @@
 
 import { TFunction } from 'i18next/typescript/t';
 import { ChangeEvent } from 'react';
+import { isFeatureEnabled } from '../../../helpers/featureFlags';
 import {
   BigIntValuePair,
   GovernanceType,
@@ -21,6 +22,7 @@ import {
   IInputRequirements,
   ITextInput,
   IRemoval,
+  IToggleInput,
 } from '../../input/Interfaces';
 
 export const CreateDAOPresenter = {
@@ -477,5 +479,30 @@ export const CreateDAOPresenter = {
       onValueChange: onValueChange,
       onRemoval: onRemoval,
     };
+  },
+
+  gaslessVoting(
+    t: TFunction<[string, string], undefined>,
+    gaslessVotingSupported: boolean,
+    onValueChange: (value: boolean) => void,
+  ): IToggleInput | undefined {
+    if (!isFeatureEnabled('flag_gasless_voting')) return undefined;
+    if (!gaslessVotingSupported) return undefined;
+
+    return undefined;
+    // return {
+    //   id: `multiSigOwner${index}`,
+    //   fieldName: `multisig.trustedAddresses.${index}`,
+    //   testId: `safeConfig-signer-${index}`,
+    //   error: error,
+    //   isRequired: true,
+    //   removalIndex: index,
+    //   removalLabel: t('removeSigner'),
+    //   onValueChange: onValueChange,
+    //   onRemoval: onRemoval,
+    // };
+
+    // const { t } = useTranslation('daoCreate');
+    // const { chain, gaslessVotingSupported } = useNetworkConfigStore();
   },
 };

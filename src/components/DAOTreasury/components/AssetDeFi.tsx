@@ -4,7 +4,6 @@ import { useFractal } from '../../../providers/App/AppProvider';
 import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
 import { DefiBalance } from '../../../types';
 import { formatCoin, formatPercentage, formatUSD } from '../../../utils';
-import { MOCK_MORALIS_ETH_ADDRESS } from '../../../utils/address';
 import { DecentTooltip } from '../../ui/DecentTooltip';
 import EtherscanLink from '../../ui/links/EtherscanLink';
 
@@ -53,8 +52,10 @@ export function DeFiRow({ asset }: { asset: DefiBalance }) {
 
   const { safe } = useDaoInfoStore();
 
+  // Really only used for etherscan link below. Will not work for non-ETH chains
   const isNativePosition =
-    asset.position?.address?.toLowerCase() === MOCK_MORALIS_ETH_ADDRESS.toLowerCase();
+    asset.position?.address?.toLowerCase() ===
+    '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE'.toLowerCase();
 
   const tooltipLabel = asset.position?.tokens
     .map(token =>

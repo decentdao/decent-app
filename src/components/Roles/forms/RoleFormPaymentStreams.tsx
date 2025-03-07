@@ -9,8 +9,6 @@ import {
   paymentSorterByWithdrawAmount,
 } from '../../../store/roles/rolesStoreUtils';
 import { RoleFormValues, SablierPaymentFormValues } from '../../../types/roles';
-import { ModalType } from '../../ui/modals/ModalProvider';
-import { useDecentModal } from '../../ui/modals/useDecentModal';
 import Divider from '../../ui/utils/Divider';
 import { RolePaymentDetails } from '../RolePaymentDetails';
 import { RoleFormPaymentStream } from './RoleFormPaymentStream';
@@ -35,7 +33,6 @@ export function RoleFormPaymentRenderer() {
 export function RoleFormPaymentStreams() {
   const { t } = useTranslation(['roles']);
   const { values, setFieldValue, validateForm } = useFormikContext<RoleFormValues>();
-  const cancelModal = useDecentModal(ModalType.NONE);
   const payments = values.roleEditing?.payments;
 
   const sortedPayments = useMemo(
@@ -77,25 +74,28 @@ export function RoleFormPaymentStreams() {
     <FieldArray name="roleEditing.payments">
       {({ push: pushPayment }: { push: (streamFormValue: SablierPaymentFormValues) => void }) => (
         <Box>
-          <Button
-            variant="secondary"
-            size="sm"
-            isDisabled={values.roleEditing?.isTermed ? !isTermsAvailable : false}
-            leftIcon={<Plus size="1rem" />}
-            iconSpacing={0}
-            onClick={async () => {
-              pushPayment({
-                isStreaming: () => false,
-                isCancellable: () => false,
-                isCancelling: false,
-                isValidatedAndSaved: false,
-              });
-              await validateForm();
-              setFieldValue('roleEditing.roleEditingPaymentIndex', (payments ?? []).length);
-            }}
-          >
-            {t('addPayment')}
-          </Button>
+          {values.roleEditing?.roleEditingPaymentIndex === undefined && (
+            <Button
+              variant="secondary"
+              size="sm"
+              isDisabled={values.roleEditing?.isTermed ? !isTermsAvailable : false}
+              leftIcon={<Plus size="1rem" />}
+              iconSpacing={0}
+              onClick={async () => {
+                pushPayment({
+                  isStreaming: () => false,
+                  canUserCancel: () => false,
+                  isCancelling: false,
+                  isValidatedAndSaved: false,
+                  cancelable: true, // Newly added payments are cancelable by default
+                });
+                await validateForm();
+                setFieldValue('roleEditing.roleEditingPaymentIndex', (payments ?? []).length);
+              }}
+            >
+              {t('addPayment')}
+            </Button>
+          )}
           {sortedPayments.length === 0 && (
             <Flex
               bg="neutral-2"
@@ -125,25 +125,15 @@ export function RoleFormPaymentStreams() {
               if (!payment.amount || !payment.asset || !payment.startDate || !payment.endDate)
                 return null;
 
-              const canBeCancelled = payment.isCancellable();
               const thisPaymentIndex = payments?.findIndex(p => p.streamId === payment.streamId);
               return (
                 <RolePaymentDetails
                   key={thisPaymentIndex}
-                  showCancel={canBeCancelled || !payment.isCancelling}
                   onClick={
-                    canBeCancelled
+                    payment.canUserCancel()
                       ? () => setFieldValue('roleEditing.roleEditingPaymentIndex', thisPaymentIndex)
                       : undefined
                   }
-                  onCancel={() => {
-                    setFieldValue(`roleEditing.payments.${thisPaymentIndex}`, {
-                      ...payment,
-                      isCancelling: true,
-                    });
-                    cancelModal();
-                    setFieldValue('roleEditing.roleEditingPaymentIndex', undefined);
-                  }}
                   roleTerms={roleTerms}
                   payment={{
                     streamId: payment.streamId,
@@ -153,8 +143,8 @@ export function RoleFormPaymentStreams() {
                     startDate: payment.startDate,
                     cliffDate: payment.cliffDate,
                     isCancelled: payment.isCancelled ?? false,
-                    isStreaming: payment.isStreaming ?? (() => false),
-                    isCancellable: payment.isCancellable ?? (() => false),
+                    isStreaming: payment.isStreaming,
+                    isCancelableStream: payment.cancelable,
                     isCancelling: payment.isCancelling,
                   }}
                 />

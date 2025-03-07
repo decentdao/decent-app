@@ -1,27 +1,101 @@
 import { Button, Flex, Icon, IconButton, Text } from '@chakra-ui/react';
 import { ArrowsDownUp, CheckSquare, Trash } from '@phosphor-icons/react';
 import { useTranslation } from 'react-i18next';
-import { formatUnits, getAddress, zeroAddress } from 'viem';
+import { formatUnits, getAddress, isAddress } from 'viem';
 import PencilWithLineIcon from '../../assets/theme/custom/icons/PencilWithLineIcon';
-import { useGetAccountName } from '../../hooks/utils/useGetAccountName';
 import { useFractal } from '../../providers/App/AppProvider';
 import { useProposalActionsStore } from '../../store/actions/useProposalActionsStore';
 import { CreateProposalAction, ProposalActionType } from '../../types/proposalBuilder';
 import { Card } from '../ui/cards/Card';
-import { SendAssetsData } from '../ui/modals/SendAssetsModal';
+import { SendAssetsActionCard } from '../ui/cards/SendAssetsActionCard';
 
-export function SendAssetsAction({
-  index,
+function SendAssetsAction({
   action,
   onRemove,
 }: {
-  index: number;
-  action: SendAssetsData;
-  onRemove: (index: number) => void;
+  action: CreateProposalAction;
+  onRemove: () => void;
+}) {
+  const {
+    treasury: { assetsFungible },
+  } = useFractal();
+
+  const isNativeAssetTransfer = action.actionType === ProposalActionType.NATIVE_TRANSFER;
+
+  // If the transfer is a native asset transfer, `targetAddress` is the recipient address, and `parameters` is an empty array.
+  // Otherwise, the first parameter to the call to `transfer` is the recipient address.
+  const recipientAddress = isNativeAssetTransfer
+    ? action.transactions[0].targetAddress
+    : action.transactions[0].parameters[0].value;
+
+  if (!recipientAddress || !isAddress(recipientAddress)) {
+    console.error('Send assets action is invalid without a valid recipient address', action);
+    return null;
+  }
+
+  // Amount to transfer is either `ethValue` for native asset transfers, or the second parameter to the `transfer` function call for ERC20 transfers
+  let transferAmount: bigint;
+  if (isNativeAssetTransfer && action.transactions[0].ethValue.bigintValue !== undefined) {
+    transferAmount = action.transactions[0].ethValue.bigintValue;
+  } else if (action.transactions[0].parameters[1].value !== undefined) {
+    transferAmount = BigInt(action.transactions[0].parameters[1].value);
+  } else {
+    console.error('Send assets action is invalid without an amount to transfer', action);
+    return null;
+  }
+
+  // The asset to transfer is either the native asset, or the asset with the target address
+  const asset = assetsFungible.find(a =>
+    isNativeAssetTransfer
+      ? a.nativeToken
+      : a.tokenAddress === getAddress(action.transactions[0].targetAddress),
+  );
+
+  if (!asset) {
+    console.error('Asset to transfer not found', { asset, assetsFungible });
+    return null;
+  }
+
+  return (
+    <SendAssetsActionCard
+      action={{
+        recipientAddress,
+        transferAmount,
+        asset,
+        nonceInput: undefined,
+      }}
+      onRemove={onRemove}
+    />
+  );
+}
+
+export function AirdropAction({
+  action,
+  onRemove,
+}: {
+  action: CreateProposalAction;
+  onRemove: () => void;
 }) {
   const { t } = useTranslation('common');
-  const { displayName } = useGetAccountName(action.destinationAddress);
+  const {
+    treasury: { assetsFungible },
+  } = useFractal();
+  const totalAmountString = action.transactions[1].parameters[2].value?.slice(1, -1);
+  const totalAmount = BigInt(
+    totalAmountString?.split(',').reduce((acc, curr) => acc + BigInt(curr), 0n) || '0',
+  );
+  const recipientsCount = action.transactions[1].parameters[1].value?.split(',').length || 0;
 
+  // First transaction in the airdrop proposal will be approval transaction, which is called on the token
+  // Thus we can find the asset by looking at the target address of the first transaction
+
+  const actionAsset = assetsFungible.find(
+    asset => asset.tokenAddress === getAddress(action.transactions[0].targetAddress),
+  );
+
+  if (!actionAsset) {
+    return null;
+  }
   return (
     <Card my="0.5rem">
       <Flex justifyContent="space-between">
@@ -35,20 +109,20 @@ export function SendAssetsAction({
             h="1.5rem"
             color="lilac-0"
           />
-          <Text>{t('transfer')}</Text>
+          <Text>{t('airdrop')}</Text>
           <Text color="lilac-0">
-            {formatUnits(action.transferAmount, action.asset.decimals)} {action.asset.symbol}
+            {formatUnits(totalAmount, actionAsset.decimals)} {actionAsset.symbol}
           </Text>
           <Text>{t('to').toLowerCase()}</Text>
-          <Text color="lilac-0">{displayName}</Text>
+          <Text color="lilac-0">
+            {recipientsCount} {t('recipients', { count: recipientsCount })}
+          </Text>
         </Flex>
         <Button
           color="red-0"
           variant="tertiary"
           size="sm"
-          onClick={() => {
-            onRemove(index);
-          }}
+          onClick={onRemove}
         >
           <Icon as={Trash} />
         </Button>
@@ -67,36 +141,21 @@ export function ProposalActionCard({
   canBeDeleted: boolean;
 }) {
   const { removeAction } = useProposalActionsStore();
-  const {
-    treasury: { assetsFungible },
-  } = useFractal();
-  if (action.actionType === ProposalActionType.TRANSFER) {
-    const destinationAddress = action.transactions[0].parameters[0].value
-      ? getAddress(action.transactions[0].parameters[0].value)
-      : zeroAddress;
-    const transferAmount = BigInt(action.transactions[0].parameters[1].value || '0');
-    if (!destinationAddress || !transferAmount) {
-      return null;
-    }
-
-    const actionAsset = assetsFungible.find(
-      asset => getAddress(asset.tokenAddress) === destinationAddress,
-    );
-
-    if (!actionAsset) {
-      return null;
-    }
+  if (
+    action.actionType === ProposalActionType.TRANSFER ||
+    action.actionType === ProposalActionType.NATIVE_TRANSFER
+  ) {
     return (
       <SendAssetsAction
-        key={index}
-        index={index}
-        action={{
-          destinationAddress,
-          transferAmount,
-          asset: actionAsset,
-          nonceInput: undefined,
-        }}
-        onRemove={removeAction}
+        action={action}
+        onRemove={() => removeAction(index)}
+      />
+    );
+  } else if (action.actionType === ProposalActionType.AIRDROP) {
+    return (
+      <AirdropAction
+        action={action}
+        onRemove={() => removeAction(index)}
       />
     );
   }

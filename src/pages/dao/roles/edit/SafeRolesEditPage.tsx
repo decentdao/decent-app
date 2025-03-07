@@ -21,7 +21,7 @@ import { analyticsEvents } from '../../../../insights/analyticsEvents';
 import { useNetworkConfigStore } from '../../../../providers/NetworkConfig/useNetworkConfigStore';
 import { useDaoInfoStore } from '../../../../store/daoInfo/useDaoInfoStore';
 import { useRolesStore } from '../../../../store/roles/useRolesStore';
-import { RoleFormValues } from '../../../../types/roles';
+import { RoleFormValues, RoleHatFormValue } from '../../../../types/roles';
 
 export function SafeRolesEditPage() {
   useEffect(() => {
@@ -34,7 +34,7 @@ export function SafeRolesEditPage() {
 
   const { values, setFieldValue } = useFormikContext<RoleFormValues>();
 
-  const { hatsTree } = useRolesStore();
+  const { hatsTree, getHat } = useRolesStore();
 
   const navigate = useNavigate();
 
@@ -109,7 +109,12 @@ export function SafeRolesEditPage() {
             ),
             onClick: async () => {
               const newId = toHex(getRandomBytes(), { size: 32 });
-              setFieldValue('roleEditing', { id: newId, canCreateProposals: false });
+              const newRole: RoleHatFormValue = {
+                id: newId,
+                canCreateProposals: false,
+                payments: [],
+              };
+              setFieldValue('roleEditing', newRole);
               showRoleEditDetails(newId);
             },
           }}
@@ -127,20 +132,27 @@ export function SafeRolesEditPage() {
               emptyTextNotProposer="noRolesNotProposer"
             />
           )}
-          {values.hats.map(hat => (
-            <RoleCardEdit
-              key={hat.id}
-              name={hat.name}
-              wearerAddress={hat.resolvedWearer}
-              editStatus={hat.editedRole?.status}
-              handleRoleClick={() => {
-                setFieldValue('roleEditing', hat);
-                showRoleEditDetails(hat.id);
-              }}
-              payments={hat.payments}
-              isTermed={!!hat.isTermed}
-            />
-          ))}
+          {values.hats.map(hat => {
+            const existingRole = getHat(hat.id);
+            const isCurrentTermActive = existingRole?.roleTerms.currentTerm?.isActive;
+            const isMemberTermPending =
+              !isCurrentTermActive && existingRole?.wearerAddress !== hat.roleTerms?.[0]?.nominee;
+            return (
+              <RoleCardEdit
+                key={hat.id}
+                name={hat.name}
+                wearerAddress={hat.resolvedWearer}
+                editStatus={hat.editedRole?.status}
+                handleRoleClick={() => {
+                  setFieldValue('roleEditing', hat);
+                  showRoleEditDetails(hat.id);
+                }}
+                payments={hat.payments}
+                isCurrentTermActive={isCurrentTermActive}
+                isMemberTermPending={isMemberTermPending}
+              />
+            );
+          })}
         </Show>
       </Box>
       <Flex

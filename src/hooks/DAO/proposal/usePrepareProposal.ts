@@ -3,11 +3,10 @@ import { Hex, getAddress } from 'viem';
 import { CreateProposalForm } from '../../../types/proposalBuilder';
 import { encodeFunction } from '../../../utils/crypto';
 import { validateENSName, isValidUrl } from '../../../utils/url';
-import useNetworkPublicClient from '../../useNetworkPublicClient';
+import { useNetworkEnsAddressAsync } from '../../useNetworkEnsAddress';
 
 export function usePrepareProposal() {
-  const publicClient = useNetworkPublicClient();
-
+  const { getEnsAddress } = useNetworkEnsAddressAsync();
   const prepareProposal = useCallback(
     async (values: CreateProposalForm) => {
       const { transactions, proposalMetadata } = values;
@@ -36,7 +35,7 @@ export function usePrepareProposal() {
       const targets = await Promise.all(
         transactionsWithEncoding.map(async tx => {
           if (tx.targetAddress && validateENSName(tx.targetAddress)) {
-            const address = await publicClient.getEnsAddress({ name: tx.targetAddress });
+            const address = await getEnsAddress({ name: tx.targetAddress });
             if (address) {
               return address;
             }
@@ -56,7 +55,7 @@ export function usePrepareProposal() {
         },
       };
     },
-    [publicClient],
+    [getEnsAddress],
   );
   return { prepareProposal };
 }

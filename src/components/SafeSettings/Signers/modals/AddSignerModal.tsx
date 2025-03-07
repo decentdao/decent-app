@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { Address, getAddress } from 'viem';
 import * as Yup from 'yup';
 import { useValidationAddress } from '../../../../hooks/schemas/common/useValidationAddress';
-import useNetworkPublicClient from '../../../../hooks/useNetworkPublicClient';
+import { useNetworkEnsAddressAsync } from '../../../../hooks/useNetworkEnsAddress';
 import { useDaoInfoStore } from '../../../../store/daoInfo/useDaoInfoStore';
 import { validateENSName } from '../../../../utils/url';
 import SupportTooltip from '../../../ui/badges/SupportTooltip';
@@ -31,7 +31,7 @@ function AddSignerModal({
   }
 
   const { t } = useTranslation(['modals', 'common']);
-  const publicClient = useNetworkPublicClient();
+  const { getEnsAddress } = useNetworkEnsAddressAsync();
   const { addressValidationTest, newSignerValidationTest } = useValidationAddress();
   const tooltipContainer = useRef<HTMLDivElement>(null);
 
@@ -42,7 +42,7 @@ function AddSignerModal({
       const { address, nonce, threshold } = values;
       let validAddress = address;
       if (validateENSName(validAddress)) {
-        const maybeEnsAddress = await publicClient.getEnsAddress({ name: address });
+        const maybeEnsAddress = await getEnsAddress({ name: address });
         if (maybeEnsAddress) {
           validAddress = maybeEnsAddress;
         }
@@ -56,7 +56,7 @@ function AddSignerModal({
         close: close,
       });
     },
-    [addSigner, close, safe, publicClient],
+    [addSigner, safe.address, close, getEnsAddress],
   );
 
   const addSignerValidationSchema = Yup.object().shape({

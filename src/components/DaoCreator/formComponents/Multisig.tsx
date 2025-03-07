@@ -4,6 +4,7 @@ import { Field, FieldAttributes } from 'formik';
 import { useTranslation } from 'react-i18next';
 import { isFeatureEnabled } from '../../../helpers/featureFlags';
 import { ICreationStepProps } from '../../../types';
+import { GaslessVotingToggleDAOCreate } from '../../GaslessVoting/GaslessVotingToggle';
 import { MultiInputs } from '../../input/CompositeInput';
 import { InputSection } from '../../input/InputSection';
 import { IInputSection } from '../../input/Interfaces';
@@ -251,6 +252,11 @@ export function Multisig(props: ICreationStepProps) {
           </LabelComponent>
         </Flex>
       </StepWrapper>
+
+      <GaslessVotingToggleDAOCreate
+        isEnabled={values.essentials.gaslessVoting}
+        onToggle={() => setFieldValue('essentials.gaslessVoting', !values.essentials.gaslessVoting)}
+      />
       <StepButtons
         {...props}
         isEdit={mode === DAOCreateMode.EDIT}

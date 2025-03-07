@@ -12,7 +12,7 @@
   "pendingDeploySafe": "Deploying your Safe",
   "failedDeploySafe": "Deployment failed",
   "successDeploySafe": "Deployment successful",
-  "failedIndexSafe": "Your DAOs was deployed but is not yet available to view. It has been added to your favorited list of 'My DAOs'.",
+  "failedIndexSafe": "Your DAO was deployed but is not yet available to view. It has been added to your favorited list of 'My DAOs'.",
   "errorUserDeniedTransaction": "User rejected the transaction",
   "errorInsufficientFunds": "Insufficient funds for transaction",
   "pendingTokenClaim": "Claiming {{ symbol }}",

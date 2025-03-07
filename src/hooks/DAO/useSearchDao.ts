@@ -1,11 +1,15 @@
-import SafeApiKit from '@safe-global/api-kit';
 import { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Address } from 'viem';
-import { supportedNetworks } from '../../providers/NetworkConfig/useNetworkConfigStore';
+import {
+  supportedEnsNetworks,
+  supportedNetworks,
+  useNetworkConfigStore,
+} from '../../providers/NetworkConfig/useNetworkConfigStore';
+import { getIsSafe } from '../safe/useIsSafe';
 import { useResolveENSName } from '../utils/useResolveENSName';
 
-type ResolvedAddressWithPrefix = {
+type ResolvedAddressWithChainId = {
   address: Address;
   chainId: number;
 };
@@ -17,44 +21,74 @@ export const useSearchDao = () => {
 
   const [isSafeLookupLoading, setIsSafeLookupLoading] = useState<boolean>(false);
   const [resolvedAddressesWithPrefix, setSafeResolvedAddressesWithPrefix] = useState<
-    ResolvedAddressWithPrefix[]
+    ResolvedAddressWithChainId[]
   >([]);
+
+  const { getConfigByChainId } = useNetworkConfigStore();
 
   const findSafes = useCallback(
     async (resolvedAddressesWithChainId: { address: Address; chainId: number }[]) => {
-      setIsSafeLookupLoading(true);
-      for await (const resolved of resolvedAddressesWithChainId) {
-        const safeAPI = new SafeApiKit({ chainId: BigInt(resolved.chainId) });
-        safeAPI.getSafeCreationInfo(resolved.address);
-        try {
-          await safeAPI.getSafeCreationInfo(resolved.address);
+      /*
+      This function only checks if the address is a Safe on any of the EVM networks. 
+      The same Safe could of on multiple networks
+      */
 
-          setSafeResolvedAddressesWithPrefix(prevState => [...prevState, resolved]);
-        } catch (e) {
-          // Safe not found
-          continue;
-        }
-      }
-      setIsSafeLookupLoading(false);
+      const realSafes = (
+        await Promise.all(
+          resolvedAddressesWithChainId.map(async resolved => {
+            const networkConfig = getConfigByChainId(resolved.chainId);
+            const isSafe = await getIsSafe(resolved.address, networkConfig);
+            if (isSafe) {
+              return resolved;
+            } else {
+              return null;
+            }
+          }),
+        )
+      ).filter(safe => safe !== null);
+
+      // We're left with a list of chains and addresses
+      // (all the same address) that have a Safe at that address.
+      setSafeResolvedAddressesWithPrefix(realSafes);
     },
-    [],
+    [getConfigByChainId],
   );
 
   const resolveInput = useCallback(
     async (input: string) => {
-      const { resolvedAddress, isValid } = await resolveENSName(input);
-      if (isValid) {
-        await findSafes(
-          supportedNetworks.map(network => ({
-            address: resolvedAddress,
-            chainId: network.chain.id,
-          })),
+      setIsSafeLookupLoading(true);
+      try {
+        const resolvedAddressPromises = supportedEnsNetworks.map(async chainId => {
+          const { resolvedAddress, isValid } = await resolveENSName(input, chainId);
+          return isValid ? resolvedAddress : null;
+        });
+
+        const resolvedAddresses = (await Promise.all(resolvedAddressPromises)).filter(
+          address => address !== null,
         );
-      } else {
-        setErrorMessage('Invalid search');
+
+        if (resolvedAddresses.length === 0) {
+          setErrorMessage('Invalid search');
+          return;
+        }
+
+        const resolvedAddressesSet = new Set(resolvedAddresses);
+        const mappedAddressesWithChainIds: ResolvedAddressWithChainId[] = [];
+
+        for (const network of supportedNetworks) {
+          for (const address of resolvedAddressesSet) {
+            mappedAddressesWithChainIds.push({ address, chainId: network.chain.id });
+          }
+        }
+
+        await findSafes(mappedAddressesWithChainIds);
+      } catch (error) {
+        setErrorMessage(t('errorInvalidSearch'));
+      } finally {
+        setIsSafeLookupLoading(false);
       }
     },
-    [findSafes, resolveENSName],
+    [findSafes, resolveENSName, t],
   );
 
   useEffect(() => {

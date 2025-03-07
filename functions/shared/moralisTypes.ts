@@ -1,4 +1,4 @@
-import { DefiPosition, NFTMedia } from '../../src/types/daoTreasury';
+import { NFTMedia } from '../../src/types/daoTreasury';
 
 export type TokenResponse = {
   balance: string;
@@ -54,11 +54,33 @@ export type NFTResponse = {
   floor_price_currency: string | null;
 };
 
-export type DefiResponse = {
-  chain: string;
+interface DefiTokenResponse {
+  contract_address?: string;
+  token_type: 'supplied' | 'defi-token';
+  symbol: string;
+  name: string;
+  decimals: number;
+  balance: string;
+  balance_formatted: string;
+  logo?: string;
+  thumbnail?: string;
+  usd_price?: number;
+  usd_value?: number;
+}
+
+interface DefiPositionResponse {
+  label: string;
+  tokens: DefiTokenResponse[];
+  address?: string;
+  balance_usd: number;
+  total_unclaimed_usd_value: number;
+  position_details?: Record<string, any>;
+}
+
+export interface DefiResponse {
+  protocol_name: string;
   protocol: string;
-  protocolId: string;
-  protocolUrl: string;
-  protocolLogo: string;
-  position: DefiPosition;
-};
+  protocol_url: string;
+  protocol_logo: string;
+  position: DefiPositionResponse;
+}

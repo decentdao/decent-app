@@ -1,0 +1,16 @@
+{
+  "gaslessVotingLabel": "Gasless Voting",
+  "gaslessVotingDescription": "Sponsor gas for votes and proposals.",
+  "gaslessVotingGettingStarted": "To get you started, we're covering your first 0.1 {{symbol}} of gas fees. You can top up your balance in your DAO settings, or by sending {{symbol}} to this address directly in your wallet.",
+  "gaslessVotingLabelSettings": "Sponsored Votes",
+  "gaslessVotingDescriptionSettings": "Create a paymaster to sponsor network fees for proposal votes.",
+  "addGas": "Refill",
+  "refillTank": "Refill Paymaster",
+  "starterPromoTitle": "STARTER PROMO",
+  "starterPromoDescription": "Join our Telegram and reach out to our team to learn how to get your network fees covered by Decent: ",
+  "paymasterBalance": "Paymaster Balance",
+  "submitRefillAmount": "Send Now",
+  "amountLabel": "You're sending",
+  "usdValue": "${{value}}",
+  "availableBalance": "{{balance}}"
+}
