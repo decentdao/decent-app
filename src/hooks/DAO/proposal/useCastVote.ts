@@ -1,7 +1,7 @@
 import { abis } from '@fractal-framework/fractal-contracts';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Address, getContract } from 'viem';
+import { Address, getContract, encodeFunctionData } from 'viem';
 import { useFractal } from '../../../providers/App/AppProvider';
 import { useNetworkWalletClient } from '../../useNetworkWalletClient';
 import { useTransaction } from '../../utils/useTransaction';
@@ -27,6 +27,51 @@ const useCastVote = (proposalId: string, strategy: Address) => {
   const { data: walletClient } = useNetworkWalletClient();
 
   const { t } = useTranslation('transaction');
+
+  const prepareCastVoteData = useCallback(
+    (vote: number) => {
+      if (!walletClient) {
+        return null;
+      }
+
+      if (
+        strategy === linearVotingErc20Address ||
+        strategy === linearVotingErc20WithHatsWhitelistingAddress
+      ) {
+        return encodeFunctionData({
+          abi: abis.LinearERC20Voting,
+          functionName: 'vote',
+          args: [Number(proposalId), vote],
+        });
+      } else if (
+        strategy === linearVotingErc721Address ||
+        strategy === linearVotingErc721WithHatsWhitelistingAddress
+      ) {
+        return encodeFunctionData({
+          abi: abis.LinearERC721Voting,
+          functionName: 'vote',
+          args: [
+            Number(proposalId),
+            vote,
+            remainingTokenAddresses,
+            remainingTokenIds.map(i => BigInt(i)),
+          ],
+        });
+      }
+      return null;
+    },
+    [
+      linearVotingErc721Address,
+      linearVotingErc721WithHatsWhitelistingAddress,
+      linearVotingErc20Address,
+      linearVotingErc20WithHatsWhitelistingAddress,
+      proposalId,
+      remainingTokenAddresses,
+      remainingTokenIds,
+      walletClient,
+      strategy,
+    ],
+  );
 
   const castVote = useCallback(
     async (vote: number) => {
@@ -89,6 +134,7 @@ const useCastVote = (proposalId: string, strategy: Address) => {
 
   return {
     castVote,
+    prepareCastVoteData,
     castVotePending: pending,
   };
 };
