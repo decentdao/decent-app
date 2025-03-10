@@ -298,7 +298,13 @@ export function ModalProvider({ children }: { children: ReactNode }) {
         );
         break;
       case ModalType.CREATE_SMART_WALLET:
-        modalContent = <CreateSmartWalletModal close={closeModal} />;
+        modalContent = (
+          <CreateSmartWalletModal
+            close={closeModal}
+            successCallback={current.props.successCallback}
+          />
+        );
+        break;
         break;
       case ModalType.AIRDROP:
         modalContent = (
