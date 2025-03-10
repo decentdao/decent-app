@@ -1,12 +1,13 @@
 import { Box, Button, Flex, Icon, Text } from '@chakra-ui/react';
 import { Cardholder, Gauge } from '@phosphor-icons/react';
 import { useTranslation } from 'react-i18next';
-import { getContract, keccak256, stringToHex } from 'viem';
+import { getContract } from 'viem';
 import { useAccount } from 'wagmi';
 import { SimpleAccountFactoryAbi } from '../../../../assets/abi/SimpleAccountFactoryAbi';
 import { useNetworkWalletClient } from '../../../../hooks/useNetworkWalletClient';
 import { useTransaction } from '../../../../hooks/utils/useTransaction';
 import { useNetworkConfigStore } from '../../../../providers/NetworkConfig/useNetworkConfigStore';
+import { getUserSmartWalletSalt } from '../../../../utils/gaslessVoting';
 
 export function CreateSmartWalletModal({
   close,
@@ -36,12 +37,13 @@ export function CreateSmartWalletModal({
       client: walletClient,
     });
 
-    const salt = `${EOA}-${chain.id}`;
-    const saltHash = keccak256(stringToHex(salt));
-    const userSmartWalletSaltBigInt = BigInt(saltHash);
+    const userSmartWalletSalt = getUserSmartWalletSalt({
+      EOA,
+      chainId: chain.id,
+    });
 
     contractCall({
-      contractFn: () => contract.write.createAccount([EOA, userSmartWalletSaltBigInt]),
+      contractFn: () => contract.write.createAccount([EOA, userSmartWalletSalt]),
       pendingMessage: t('createSmartWalletPending'),
       failedMessage: t('createSmartWalletFailed'),
       successMessage: t('createSmartWalletSuccess'),
