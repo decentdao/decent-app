@@ -121,11 +121,7 @@ export function GaslessVotingToggleDAOCreate(props: GaslessVotingToggleProps) {
   );
 }
 
-export function GaslessVotingToggleDAOSettings(
-  props: GaslessVotingToggleProps & {
-    onGasTankTopupAmountChange: (amount: BigIntValuePair) => void;
-  },
-) {
+export function GaslessVotingToggleDAOSettings(props: GaslessVotingToggleProps) {
   const { t } = useTranslation('gaslessVoting');
   const { gaslessVotingSupported, addressPrefix } = useNetworkConfigStore();
 
@@ -255,16 +251,7 @@ export function GaslessVotingToggleDAOSettings(
             variant="secondary"
             size="sm"
             onClick={() => {
-              console.log(
-                'addGas. Add this action to the proposal, to be submitted via propose changes button.',
-              );
               refillGas();
-
-              // @todo: Add UI to set the amount, then call onGasTankTopupAmountChange.
-              props.onGasTankTopupAmountChange({
-                value: '1',
-                bigintValue: 1n,
-              });
             }}
           >
             {t('addGas')}

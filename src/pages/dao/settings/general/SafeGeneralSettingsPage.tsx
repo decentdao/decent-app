@@ -19,7 +19,7 @@ import { createAccountSubstring } from '../../../../hooks/utils/useGetAccountNam
 import { useInstallVersionedVotingStrategy } from '../../../../hooks/utils/useInstallVersionedVotingStrategy';
 import { useNetworkConfigStore } from '../../../../providers/NetworkConfig/useNetworkConfigStore';
 import { useDaoInfoStore } from '../../../../store/daoInfo/useDaoInfoStore';
-import { BigIntValuePair, ProposalExecuteData } from '../../../../types';
+import { ProposalExecuteData } from '../../../../types';
 import { validateENSName } from '../../../../utils/url';
 export function SafeGeneralSettingsPage() {
   const { t } = useTranslation(['settings', 'settingsMetadata']);
@@ -35,8 +35,6 @@ export function SafeGeneralSettingsPage() {
   useEffect(() => {
     setIsGaslessVotingEnabledToggled(gaslessVotingEnabled);
   }, [gaslessVotingEnabled]);
-
-  const [gasTankTopupAmount, setGasTankTopupAmount] = useState<BigIntValuePair>();
 
   const navigate = useNavigate();
 
@@ -82,8 +80,6 @@ export function SafeGeneralSettingsPage() {
   const nameChanged = name !== subgraphInfo?.daoName;
   const snapshotChanged = snapshotENSValid && snapshotENS !== subgraphInfo?.daoSnapshotENS;
   const gaslessVotingChanged = isGaslessVotingEnabledToggled !== gaslessVotingEnabled;
-  const gasTankTopupAmountSet =
-    gasTankTopupAmount?.bigintValue !== undefined && gasTankTopupAmount.bigintValue > 0n;
 
   const { buildInstallVersionedVotingStrategy } = useInstallVersionedVotingStrategy();
 
@@ -111,12 +107,6 @@ export function SafeGeneralSettingsPage() {
       valueArgs.push(`${isGaslessVotingEnabledToggled}`);
     }
 
-    if (gasTankTopupAmountSet) {
-      changeTitles.push(t('topupGasTank', { ns: 'proposalMetadata' }));
-
-      // @todo add tx to send `gasTankTopupAmount` to gas tank address
-    }
-
     const title = changeTitles.join(`; `);
 
     const targets = [keyValuePairs];
@@ -141,6 +131,7 @@ export function SafeGeneralSettingsPage() {
             // @todo replace with the deployed abi
             abi: DecentPaymasterFactoryV1Abi,
             functionName: 'createPaymaster',
+            // @todo: use dao specific salt here: ${safeAddress}-${chainId}
             args: [safeAddress, BigInt(PAYMASTER_SALT)],
           }),
         );
@@ -272,7 +263,6 @@ export function SafeGeneralSettingsPage() {
             onToggle={() => {
               setIsGaslessVotingEnabledToggled(!isGaslessVotingEnabledToggled);
             }}
-            onGasTankTopupAmountChange={setGasTankTopupAmount}
           />
           {canUserCreateProposal && (
             <>

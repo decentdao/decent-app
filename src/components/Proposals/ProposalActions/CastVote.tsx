@@ -247,10 +247,12 @@ export function CastVote({ proposal }: { proposal: FractalProposal }) {
           width="full"
           leftIcon={canVoteForFree ? <Icon as={Sparkle} /> : undefined}
           onClick={() => {
-            if (canVoteForFree) {
-              createSmartWallet();
-            } else if (selectedVoteChoice !== undefined) {
-              castVote(selectedVoteChoice);
+            if (selectedVoteChoice !== undefined) {
+              if (canVoteForFree) {
+                createSmartWallet();
+              } else {
+                castVote(selectedVoteChoice);
+              }
             }
           }}
         >
