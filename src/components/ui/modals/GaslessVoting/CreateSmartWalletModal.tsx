@@ -1,12 +1,55 @@
 import { Box, Button, Flex, Icon, Text } from '@chakra-ui/react';
 import { Cardholder, Gauge } from '@phosphor-icons/react';
 import { useTranslation } from 'react-i18next';
+import { getContract, keccak256, stringToHex } from 'viem';
+import { useAccount } from 'wagmi';
+import { SimpleAccountAbi } from '../../../../assets/abi/SimpleAccountAbi';
+import { useNetworkWalletClient } from '../../../../hooks/useNetworkWalletClient';
+import { useTransaction } from '../../../../hooks/utils/useTransaction';
+import { useNetworkConfigStore } from '../../../../providers/NetworkConfig/useNetworkConfigStore';
 
-export function CreateSmartWalletModal({ close }: { close: () => void }) {
+export function CreateSmartWalletModal({
+  close,
+  successCallback,
+}: {
+  close: () => void;
+  successCallback: () => void;
+}) {
   const { t } = useTranslation('gaslessVoting');
+  const {
+    contracts: { simpleAccountFactory },
+  } = useNetworkConfigStore();
+  const { data: walletClient } = useNetworkWalletClient();
+  const { chain } = useNetworkConfigStore();
+
+  const { address: EOA } = useAccount();
+  const [contractCall] = useTransaction();
 
   const handleCreateSmartWalletSubmit = async () => {
-    close();
+    if (!EOA || !walletClient) {
+      throw new Error('Wallet not connected');
+    }
+
+    const contract = getContract({
+      address: simpleAccountFactory,
+      abi: SimpleAccountAbi,
+      client: walletClient,
+    });
+
+    const salt = `${EOA}-${chain.id}`;
+    const saltHash = keccak256(stringToHex(salt));
+    const userSmartWalletSaltBigInt = BigInt(saltHash);
+
+    contractCall({
+      contractFn: () => contract.write.createAccount([EOA, userSmartWalletSaltBigInt]),
+      pendingMessage: t('createSmartWalletPending'),
+      failedMessage: t('createSmartWalletFailed'),
+      successMessage: t('createSmartWalletSuccess'),
+      successCallback: () => {
+        close();
+        successCallback();
+      },
+    });
   };
 
   return (
