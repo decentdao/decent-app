@@ -5,7 +5,6 @@ import { useTranslation } from 'react-i18next';
 import { getContract } from 'viem';
 import { useAccount } from 'wagmi';
 import { EntryPointAbi } from '../../../assets/abi/EntryPointAbi';
-import { SimpleAccountFactoryAbi } from '../../../assets/abi/SimpleAccountFactoryAbi';
 import { ENTRY_POINT_ADDRESS, TOOLTIP_MAXW } from '../../../constants/common';
 import useSnapshotProposal from '../../../hooks/DAO/loaders/snapshot/useSnapshotProposal';
 import useCastSnapshotVote from '../../../hooks/DAO/proposal/useCastSnapshotVote';
@@ -22,7 +21,7 @@ import {
   FractalProposalState,
   VOTE_CHOICES,
 } from '../../../types';
-import { getUserSmartWalletSalt } from '../../../utils/gaslessVoting';
+import { getUserSmartWalletAddress, userHasSmartWallet } from '../../../utils/gaslessVoting';
 import { DecentTooltip } from '../../ui/DecentTooltip';
 import WeightedInput from '../../ui/forms/WeightedInput';
 import { ModalType } from '../../ui/modals/ModalProvider';
@@ -86,19 +85,12 @@ export function CastVote({ proposal }: { proposal: FractalProposal }) {
     }
 
     // Get user's smart wallet address
-    const smartWalletSalt = getUserSmartWalletSalt({
-      EOA: address,
-      chainId: chain.id,
-    });
-    const smartWalletContract = getContract({
-      address: simpleAccountFactory,
-      abi: SimpleAccountFactoryAbi,
-      client: publicClient,
-    });
-    const smartWalletAddress = await smartWalletContract.read.getAddress([
+    const smartWalletAddress = await getUserSmartWalletAddress({
       address,
-      smartWalletSalt,
-    ]);
+      chainId: chain.id,
+      publicClient,
+      simpleAccountFactory,
+    });
 
     const castVoteCallData = prepareCastVoteData(selectedVoteChoice);
 
@@ -131,13 +123,9 @@ export function CastVote({ proposal }: { proposal: FractalProposal }) {
       callData: castVoteCallData,
       accountGasLimits,
       gasFees: ('0x' + '0'.padStart(64, '0')) as `0x${string}`,
-      preVerificationGas: 50000n,
+      preVerificationGas: 90000n,
       signature: '0x', // This is set below
       paymasterAndData: paymasterAddress,
-    };
-    const userOp = {
-      ...userOpData,
-      paymaster: paymasterAddress,
     };
 
     // Sign the UserOperation
@@ -145,7 +133,22 @@ export function CastVote({ proposal }: { proposal: FractalProposal }) {
     const signature = await walletClient.signMessage({
       message: { raw: userOpHash },
     });
-    userOp.signature = signature;
+
+    const maxPriorityFeePerGas = '0x13AB6680' as `0x${string}`;
+    const maxFeePerGas = '0x3000000000' as `0x${string}`;
+
+    const userOpPostBody = {
+      sender: smartWalletAddress,
+      callData: castVoteCallData,
+      nonce: `0x${userOpData.nonce.toString(16)}`,
+      callGasLimit: `0x${callGasLimit.toString(16)}`,
+      verificationGasLimit: `0x${validationGasLimit.toString(16)}`,
+      preVerificationGas: `0x${userOpData.preVerificationGas.toString(16)}`,
+      maxFeePerGas,
+      maxPriorityFeePerGas,
+      signature,
+      paymaster: paymasterAddress,
+    };
 
     // Send UserOperation to bundler
     const options = {
@@ -155,7 +158,7 @@ export function CastVote({ proposal }: { proposal: FractalProposal }) {
         id: 1,
         jsonrpc: '2.0',
         method: 'eth_sendUserOperation',
-        params: [userOp],
+        params: [userOpPostBody, ENTRY_POINT_ADDRESS],
       }),
     };
 
@@ -183,7 +186,8 @@ export function CastVote({ proposal }: { proposal: FractalProposal }) {
     });
   }, [entryPoint.read, paymasterAddress, publicClient]);
 
-  const minimumPaymasterBalance = 0n; // @todo: update to reasonable amount
+  // Set a reasonable minimum (slightly higher than the required amount)
+  const minimumPaymasterBalance = 60000000000000000n; // 0.06 ETH in wei
   const canVoteForFree = useMemo(() => {
     return (
       gaslessVotingEnabled &&
@@ -355,10 +359,25 @@ export function CastVote({ proposal }: { proposal: FractalProposal }) {
           width="full"
           leftIcon={canVoteForFree ? <Icon as={Sparkle} /> : undefined}
           isDisabled={disabled}
-          onClick={() => {
-            if (selectedVoteChoice !== undefined) {
+          onClick={async () => {
+            if (selectedVoteChoice !== undefined && address !== undefined) {
+              // If there's the option to vote for free,
+              //  - If user has previously created a smart wallet, go straight to casting the vote
+              //  - Otherwise, create a smart wallet first, then cast the vote
+              // Otherwise, cast the vote directly
               if (canVoteForFree) {
-                createSmartWallet();
+                const hasSmartWallet = await userHasSmartWallet({
+                  address,
+                  chainId: chain.id,
+                  publicClient,
+                  simpleAccountFactory,
+                });
+
+                if (hasSmartWallet) {
+                  castGaslessVote();
+                } else {
+                  createSmartWallet();
+                }
               } else {
                 castVote(selectedVoteChoice);
               }
