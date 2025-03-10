@@ -2,7 +2,7 @@ import { Button, Box, Text, Image, Flex, Radio, RadioGroup, Icon } from '@chakra
 import { Check, CheckCircle, Sparkle } from '@phosphor-icons/react';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { encodePacked, getContract, keccak256 } from 'viem';
+import { getContract } from 'viem';
 import { useAccount } from 'wagmi';
 import { EntryPointAbi } from '../../../assets/abi/EntryPointAbi';
 import { SimpleAccountFactoryAbi } from '../../../assets/abi/SimpleAccountFactoryAbi';
@@ -22,6 +22,7 @@ import {
   FractalProposalState,
   VOTE_CHOICES,
 } from '../../../types';
+import { getUserSmartWalletSalt } from '../../../utils/gaslessVoting';
 import { DecentTooltip } from '../../ui/DecentTooltip';
 import WeightedInput from '../../ui/forms/WeightedInput';
 import { ModalType } from '../../ui/modals/ModalProvider';
@@ -74,19 +75,31 @@ export function CastVote({ proposal }: { proposal: FractalProposal }) {
   });
 
   const castGaslessVote = async () => {
-    if (!chain || !address || !paymasterAddress || !walletClient) return;
+    if (
+      !chain ||
+      !address ||
+      !paymasterAddress ||
+      !walletClient ||
+      selectedVoteChoice === undefined
+    )
+      return;
 
-    // Get predicted smart wallet address
-    const smartWalletSalt = keccak256(
-      encodePacked(['address', 'uint256'], [address, BigInt(chain.id)]),
-    );
-    const smartWalletAddress = await getContract({
+    // Get user's smart wallet address
+    const smartWalletSalt = getUserSmartWalletSalt({
+      EOA: address,
+      chainId: chain.id,
+    });
+    const smartWalletContract = getContract({
       address: simpleAccountFactory,
       abi: SimpleAccountFactoryAbi,
       client: publicClient,
-    }).read.getAddress([address, BigInt(smartWalletSalt)]);
+    });
+    const smartWalletAddress = await smartWalletContract.read.getAddress([
+      address,
+      smartWalletSalt,
+    ]);
 
-    const castVoteCallData = prepareCastVoteData(selectedVoteChoice!);
+    const castVoteCallData = prepareCastVoteData(selectedVoteChoice);
 
     if (!castVoteCallData) {
       throw new Error('Cast vote call data is not valid');
