@@ -2,6 +2,7 @@ import { Button, Box, Text, Image, Flex, Radio, RadioGroup, Icon } from '@chakra
 import { Check, CheckCircle, Sparkle } from '@phosphor-icons/react';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { toast } from 'sonner';
 import { getContract } from 'viem';
 import { useAccount } from 'wagmi';
 import { EntryPointAbi } from '../../../assets/abi/EntryPointAbi';
@@ -84,88 +85,96 @@ export function CastVote({ proposal }: { proposal: FractalProposal }) {
       return;
     }
 
-    // Get user's smart wallet address
-    const smartWalletAddress = await getUserSmartWalletAddress({
-      address,
-      chainId: chain.id,
-      publicClient,
-      simpleAccountFactory,
-    });
+    try {
+      // Get user's smart wallet address
+      const smartWalletAddress = await getUserSmartWalletAddress({
+        address,
+        chainId: chain.id,
+        publicClient,
+        simpleAccountFactory,
+      });
 
-    const castVoteCallData = prepareCastVoteData(selectedVoteChoice);
+      const castVoteCallData = prepareCastVoteData(selectedVoteChoice);
 
-    if (!castVoteCallData) {
-      throw new Error('Cast vote call data is not valid');
+      if (!castVoteCallData) {
+        throw new Error('Cast vote call data is not valid');
+      }
+
+      const validationGasLimit = 150000n;
+      const callGasLimit = 150000n;
+
+      // Pack them together into a single bytes32
+      const accountGasLimits = ('0x' +
+        validationGasLimit.toString(16).padStart(32, '0') + // First 16 bytes
+        callGasLimit.toString(16).padStart(32, '0')) as `0x${string}`;
+
+      const userOpData = {
+        sender: smartWalletAddress,
+        nonce: await entryPoint.read.getNonce([smartWalletAddress, 0n]),
+        initCode: '0x' as `0x${string}`,
+        callData: castVoteCallData,
+        accountGasLimits,
+        gasFees: ('0x' + '0'.padStart(64, '0')) as `0x${string}`,
+        preVerificationGas: 90000n,
+        signature: '0x' as `0x${string}`, // This is set below
+        paymasterAndData: paymasterAddress,
+      };
+
+      // Sign the UserOperation
+      const userOpHash = await entryPoint.read.getUserOpHash([userOpData]);
+      const signature = await walletClient.signMessage({
+        message: userOpHash,
+      });
+
+      // Get current gas prices from the network
+      const gasPrice = await publicClient.getGasPrice();
+      // Add 20% buffer to ensure acceptance
+      const maxFeePerGas = (gasPrice * 120n) / 100n;
+      const maxPriorityFeePerGas = (gasPrice * 15n) / 100n; // Increased to 15% of base fee
+
+      const userOpPostBody = {
+        sender: smartWalletAddress,
+        callData: castVoteCallData,
+        nonce: `0x${userOpData.nonce.toString(16)}`,
+        callGasLimit: `0x${callGasLimit.toString(16)}`,
+        verificationGasLimit: `0x${validationGasLimit.toString(16)}`,
+        preVerificationGas: `0x${userOpData.preVerificationGas.toString(16)}`,
+        maxFeePerGas: `0x${maxFeePerGas.toString(16)}`,
+        maxPriorityFeePerGas: `0x${maxPriorityFeePerGas.toString(16)}`,
+        signature,
+        paymaster: paymasterAddress,
+      };
+
+      // Send UserOperation to bundler
+      const response = await fetch(rpcEndpoint, {
+        method: 'POST',
+        headers: {
+          accept: 'application/json',
+          'content-type': 'application/json',
+        },
+        body: JSON.stringify({
+          id: 1,
+          jsonrpc: '2.0',
+          method: 'eth_sendUserOperation',
+          params: [userOpPostBody, ENTRY_POINT_ADDRESS],
+        }),
+      });
+
+      const result = await response.json();
+
+      if (result.error) {
+        console.error('UserOperation error:', result.error);
+        throw new Error(
+          result.error.message ||
+            'Failed to send gasless vote. Please try again or use regular voting.',
+        );
+      }
+
+      return result;
+    } catch (error) {
+      console.error('Gasless voting error:', error);
+      throw error;
     }
-
-    const validationGasLimit = 100000n;
-    const callGasLimit = 100000n;
-
-    // Pack them together into a single bytes32
-    const accountGasLimits = ('0x' +
-      validationGasLimit.toString(16).padStart(32, '0') + // First 16 bytes
-      callGasLimit.toString(16).padStart(32, '0')) as `0x${string}`;
-
-    const userOpData: {
-      sender: `0x${string}`;
-      nonce: bigint;
-      initCode: `0x${string}`;
-      callData: `0x${string}`;
-      accountGasLimits: `0x${string}`;
-      preVerificationGas: bigint;
-      gasFees: `0x${string}`;
-      paymasterAndData: `0x${string}`;
-      signature: `0x${string}`;
-    } = {
-      sender: smartWalletAddress,
-      nonce: await entryPoint.read.getNonce([smartWalletAddress, 0n]),
-      initCode: '0x',
-      callData: castVoteCallData,
-      accountGasLimits,
-      gasFees: ('0x' + '0'.padStart(64, '0')) as `0x${string}`,
-      preVerificationGas: 90000n,
-      signature: '0x', // This is set below
-      paymasterAndData: paymasterAddress,
-    };
-
-    // Sign the UserOperation
-    const userOpHash = await entryPoint.read.getUserOpHash([userOpData]);
-    const signature = await walletClient.signMessage({
-      message: { raw: userOpHash },
-    });
-
-    const maxPriorityFeePerGas = '0x13AB6680' as `0x${string}`;
-    const maxFeePerGas = '0x3000000000' as `0x${string}`;
-
-    const userOpPostBody = {
-      sender: smartWalletAddress,
-      callData: castVoteCallData,
-      nonce: `0x${userOpData.nonce.toString(16)}`,
-      callGasLimit: `0x${callGasLimit.toString(16)}`,
-      verificationGasLimit: `0x${validationGasLimit.toString(16)}`,
-      preVerificationGas: `0x${userOpData.preVerificationGas.toString(16)}`,
-      maxFeePerGas,
-      maxPriorityFeePerGas,
-      signature,
-      paymaster: paymasterAddress,
-    };
-
-    // Send UserOperation to bundler
-    const options = {
-      method: 'POST',
-      headers: { accept: 'application/json', 'content-type': 'application/json' },
-      body: JSON.stringify({
-        id: 1,
-        jsonrpc: '2.0',
-        method: 'eth_sendUserOperation',
-        params: [userOpPostBody, ENTRY_POINT_ADDRESS],
-      }),
-    };
-
-    fetch(rpcEndpoint, options)
-      .then(res => res.json())
-      .then(res => console.log(res))
-      .catch(err => console.error(err));
   };
 
   const createSmartWallet = useDecentModal(ModalType.CREATE_SMART_WALLET, {
@@ -214,6 +223,31 @@ export function CastVote({ proposal }: { proposal: FractalProposal }) {
     canVoteLoading ||
     hasVoted ||
     hasVotedLoading;
+
+  const handleVoteClick = async () => {
+    if (selectedVoteChoice !== undefined && address !== undefined) {
+      try {
+        if (canVoteForFree) {
+          const hasSmartWallet = await userHasSmartWallet({
+            address,
+            chainId: chain.id,
+            publicClient,
+            simpleAccountFactory,
+          });
+
+          if (hasSmartWallet) {
+            await castGaslessVote();
+          } else {
+            createSmartWallet();
+          }
+        } else {
+          await castVote(selectedVoteChoice);
+        }
+      } catch (error) {
+        toast.error('Vote casting failed. Please try again or use regular voting.');
+      }
+    }
+  };
 
   if (snapshotProposal && extendedSnapshotProposal) {
     const isWeighted = extendedSnapshotProposal.type === 'weighted';
@@ -359,30 +393,7 @@ export function CastVote({ proposal }: { proposal: FractalProposal }) {
           width="full"
           leftIcon={canVoteForFree ? <Icon as={Sparkle} /> : undefined}
           isDisabled={disabled}
-          onClick={async () => {
-            if (selectedVoteChoice !== undefined && address !== undefined) {
-              // If there's the option to vote for free,
-              //  - If user has previously created a smart wallet, go straight to casting the vote
-              //  - Otherwise, create a smart wallet first, then cast the vote
-              // Otherwise, cast the vote directly
-              if (canVoteForFree) {
-                const hasSmartWallet = await userHasSmartWallet({
-                  address,
-                  chainId: chain.id,
-                  publicClient,
-                  simpleAccountFactory,
-                });
-
-                if (hasSmartWallet) {
-                  castGaslessVote();
-                } else {
-                  createSmartWallet();
-                }
-              } else {
-                castVote(selectedVoteChoice);
-              }
-            }
-          }}
+          onClick={handleVoteClick}
         >
           {canVoteForFree ? t('voteForFree') : t('vote')}
         </Button>
