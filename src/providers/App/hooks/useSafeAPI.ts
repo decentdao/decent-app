@@ -157,7 +157,7 @@ class EnhancedSafeApiKit {
 
     try {
       // Fetch necessary details from the contract
-      const [nonce, threshold, modules, owners, version] = await this.publicClient.multicall({
+      const [nonce, threshold, owners, version] = await this.publicClient.multicall({
         contracts: [
           {
             abi: GnosisSafeL2Abi,
@@ -168,12 +168,6 @@ class EnhancedSafeApiKit {
             abi: GnosisSafeL2Abi,
             address: checksummedSafeAddress,
             functionName: 'getThreshold',
-          },
-          {
-            abi: GnosisSafeL2Abi,
-            address: checksummedSafeAddress,
-            functionName: 'getModulesPaginated',
-            args: [SENTINEL_ADDRESS, 10n],
           },
           {
             abi: GnosisSafeL2Abi,
@@ -196,12 +190,36 @@ class EnhancedSafeApiKit {
         slot: GUARD_STORAGE_SLOT,
       });
 
+      // Fetch modules
+      let startAddress: Address = SENTINEL_ADDRESS;
+      let nextAddress: Address = zeroAddress; // placeholder
+      const modules: Address[] = [];
+
+      while (nextAddress !== SENTINEL_ADDRESS) {
+        const lastModuleResponse = await this.publicClient.readContract({
+          address: checksummedSafeAddress,
+          abi: GnosisSafeL2Abi,
+          functionName: 'getModulesPaginated',
+          args: [startAddress, 1n], // get one module per page
+        });
+        const strategies = lastModuleResponse[0]; // "one page" of modules
+        const next = lastModuleResponse[1]; // cursor for next page
+
+        // a Safe might not have any modules installed
+        if (strategies.length > 0) {
+          modules.push(strategies[0]); // only one module per page
+        }
+
+        nextAddress = next;
+        startAddress = nextAddress;
+      }
+
       return {
         address: checksummedSafeAddress,
         nonce: Number(nonce ? nonce : 0),
         threshold: Number(threshold ? threshold : 0),
         owners: owners as string[],
-        modules: [...modules[0], modules[1]],
+        modules: modules,
         fallbackHandler: zeroAddress, // not used
         guard: guardStorageValue ? getAddress(`0x${guardStorageValue.slice(-40)}`) : zeroAddress,
         version: version,
