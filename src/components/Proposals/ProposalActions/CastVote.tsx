@@ -81,8 +81,9 @@ export function CastVote({ proposal }: { proposal: FractalProposal }) {
       !paymasterAddress ||
       !walletClient ||
       selectedVoteChoice === undefined
-    )
+    ) {
       return;
+    }
 
     // Get user's smart wallet address
     const smartWalletSalt = getUserSmartWalletSalt({
@@ -105,7 +106,15 @@ export function CastVote({ proposal }: { proposal: FractalProposal }) {
       throw new Error('Cast vote call data is not valid');
     }
 
-    const userOp: {
+    const validationGasLimit = 100000n;
+    const callGasLimit = 100000n;
+
+    // Pack them together into a single bytes32
+    const accountGasLimits = ('0x' +
+      validationGasLimit.toString(16).padStart(32, '0') + // First 16 bytes
+      callGasLimit.toString(16).padStart(32, '0')) as `0x${string}`;
+
+    const userOpData: {
       sender: `0x${string}`;
       nonce: bigint;
       initCode: `0x${string}`;
@@ -120,15 +129,19 @@ export function CastVote({ proposal }: { proposal: FractalProposal }) {
       nonce: await entryPoint.read.getNonce([smartWalletAddress, 0n]),
       initCode: '0x',
       callData: castVoteCallData,
-      accountGasLimits: '0x',
+      accountGasLimits,
+      gasFees: ('0x' + '0'.padStart(64, '0')) as `0x${string}`,
       preVerificationGas: 50000n,
-      gasFees: '0x',
       signature: '0x', // This is set below
       paymasterAndData: paymasterAddress,
     };
+    const userOp = {
+      ...userOpData,
+      paymaster: paymasterAddress,
+    };
 
     // Sign the UserOperation
-    const userOpHash = await entryPoint.read.getUserOpHash([userOp]);
+    const userOpHash = await entryPoint.read.getUserOpHash([userOpData]);
     const signature = await walletClient.signMessage({
       message: { raw: userOpHash },
     });
