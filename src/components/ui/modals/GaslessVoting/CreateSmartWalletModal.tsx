@@ -3,7 +3,7 @@ import { Cardholder, Gauge } from '@phosphor-icons/react';
 import { useTranslation } from 'react-i18next';
 import { getContract, keccak256, stringToHex } from 'viem';
 import { useAccount } from 'wagmi';
-import { SimpleAccountAbi } from '../../../../assets/abi/SimpleAccountAbi';
+import { SimpleAccountFactoryAbi } from '../../../../assets/abi/SimpleAccountFactoryAbi';
 import { useNetworkWalletClient } from '../../../../hooks/useNetworkWalletClient';
 import { useTransaction } from '../../../../hooks/utils/useTransaction';
 import { useNetworkConfigStore } from '../../../../providers/NetworkConfig/useNetworkConfigStore';
@@ -32,7 +32,7 @@ export function CreateSmartWalletModal({
 
     const contract = getContract({
       address: simpleAccountFactory,
-      abi: SimpleAccountAbi,
+      abi: SimpleAccountFactoryAbi,
       client: walletClient,
     });
 

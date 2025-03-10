@@ -2,14 +2,18 @@ import { Button, Box, Text, Image, Flex, Radio, RadioGroup, Icon } from '@chakra
 import { Check, CheckCircle, Sparkle } from '@phosphor-icons/react';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { getContract } from 'viem';
+import { encodePacked, getContract, keccak256 } from 'viem';
+import { useAccount } from 'wagmi';
 import { EntryPointAbi } from '../../../assets/abi/EntryPointAbi';
+import { SimpleAccountFactoryAbi } from '../../../assets/abi/SimpleAccountFactoryAbi';
 import { ENTRY_POINT_ADDRESS, TOOLTIP_MAXW } from '../../../constants/common';
 import useSnapshotProposal from '../../../hooks/DAO/loaders/snapshot/useSnapshotProposal';
 import useCastSnapshotVote from '../../../hooks/DAO/proposal/useCastSnapshotVote';
 import useCastVote from '../../../hooks/DAO/proposal/useCastVote';
 import useNetworkPublicClient from '../../../hooks/useNetworkPublicClient';
+import { useNetworkWalletClient } from '../../../hooks/useNetworkWalletClient';
 import useCurrentBlockNumber from '../../../hooks/utils/useCurrentBlockNumber';
+import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
 import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
 import {
   AzoriusProposal,
@@ -38,7 +42,7 @@ export function CastVote({ proposal }: { proposal: FractalProposal }) {
 
   const azoriusProposal = proposal as AzoriusProposal;
 
-  const { castVote, castVotePending } = useCastVote(
+  const { castVote, castVotePending, prepareCastVoteData } = useCastVote(
     proposal.proposalId,
     azoriusProposal.votingStrategy,
   );
@@ -51,21 +55,99 @@ export function CastVote({ proposal }: { proposal: FractalProposal }) {
     snapshotWeightedChoice,
   } = useCastSnapshotVote(extendedSnapshotProposal);
 
+  const publicClient = useNetworkPublicClient();
+  const {
+    rpcEndpoint,
+    chain,
+    contracts: { simpleAccountFactory },
+  } = useNetworkConfigStore();
+  const { data: walletClient } = useNetworkWalletClient();
+  const { address } = useAccount();
   const { canVoteLoading, hasVoted, hasVotedLoading } = useVoteContext();
 
   const { gaslessVotingEnabled, paymasterAddress } = useDaoInfoStore();
 
-  const createSmartWallet = useDecentModal(ModalType.CREATE_SMART_WALLET);
+  const entryPoint = getContract({
+    address: ENTRY_POINT_ADDRESS,
+    abi: EntryPointAbi,
+    client: publicClient,
+  });
 
-  const publicClient = useNetworkPublicClient();
+  const castGaslessVote = async () => {
+    if (!chain || !address || !paymasterAddress || !walletClient) return;
+
+    // Get predicted smart wallet address
+    const smartWalletSalt = keccak256(
+      encodePacked(['address', 'uint256'], [address, BigInt(chain.id)]),
+    );
+    const smartWalletAddress = await getContract({
+      address: simpleAccountFactory,
+      abi: SimpleAccountFactoryAbi,
+      client: publicClient,
+    }).read.getAddress([address, BigInt(smartWalletSalt)]);
+
+    const castVoteCallData = prepareCastVoteData(selectedVoteChoice!);
+
+    if (!castVoteCallData) {
+      throw new Error('Cast vote call data is not valid');
+    }
+
+    const userOp: {
+      sender: `0x${string}`;
+      nonce: bigint;
+      initCode: `0x${string}`;
+      callData: `0x${string}`;
+      accountGasLimits: `0x${string}`;
+      preVerificationGas: bigint;
+      gasFees: `0x${string}`;
+      paymasterAndData: `0x${string}`;
+      signature: `0x${string}`;
+    } = {
+      sender: smartWalletAddress,
+      nonce: await entryPoint.read.getNonce([smartWalletAddress, 0n]),
+      initCode: '0x',
+      callData: castVoteCallData,
+      accountGasLimits: '0x',
+      preVerificationGas: 50000n,
+      gasFees: '0x',
+      signature: '0x', // This is set below
+      paymasterAndData: paymasterAddress,
+    };
+
+    // Sign the UserOperation
+    const userOpHash = await entryPoint.read.getUserOpHash([userOp]);
+    const signature = await walletClient.signMessage({
+      message: { raw: userOpHash },
+    });
+    userOp.signature = signature;
+
+    // Send UserOperation to bundler
+    const options = {
+      method: 'POST',
+      headers: { accept: 'application/json', 'content-type': 'application/json' },
+      body: JSON.stringify({
+        id: 1,
+        jsonrpc: '2.0',
+        method: 'eth_sendUserOperation',
+        params: [userOp],
+      }),
+    };
+
+    fetch(rpcEndpoint, options)
+      .then(res => res.json())
+      .then(res => console.log(res))
+      .catch(err => console.error(err));
+  };
+
+  const createSmartWallet = useDecentModal(ModalType.CREATE_SMART_WALLET, {
+    successCallback: () => {
+      castGaslessVote();
+    },
+  });
+
   const [paymasterBalance, setPaymasterBalance] = useState<BigIntValuePair>();
   useEffect(() => {
     if (!paymasterAddress) return;
-    const entryPoint = getContract({
-      address: ENTRY_POINT_ADDRESS,
-      abi: EntryPointAbi,
-      client: publicClient,
-    });
 
     entryPoint.read.balanceOf([paymasterAddress]).then(balance => {
       setPaymasterBalance({
@@ -73,7 +155,7 @@ export function CastVote({ proposal }: { proposal: FractalProposal }) {
         bigintValue: balance,
       });
     });
-  }, [paymasterAddress, publicClient]);
+  }, [entryPoint.read, paymasterAddress, publicClient]);
 
   const minimumPaymasterBalance = 0n; // @todo: update to reasonable amount
   const canVoteForFree = useMemo(() => {
@@ -246,6 +328,7 @@ export function CastVote({ proposal }: { proposal: FractalProposal }) {
           height="3.25rem"
           width="full"
           leftIcon={canVoteForFree ? <Icon as={Sparkle} /> : undefined}
+          isDisabled={disabled}
           onClick={() => {
             if (selectedVoteChoice !== undefined) {
               if (canVoteForFree) {
