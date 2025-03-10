@@ -106,6 +106,7 @@ export const optimismConfig: NetworkConfig = {
     sablierV2LockupLinear: '0x5C22471A86E9558ed9d22235dD5E0429207ccf4B',
     disperse: '0xD152f549545093347A162Dce210e7293f1452150',
     paymasterFactory: '0x0000000000000000000000000000000000000000',
+    simpleAccountFactory: '0x0000000000000000000000000000000000000000',
   },
   staking: {},
   moralis: {

@@ -106,6 +106,7 @@ export const mainnetConfig: NetworkConfig = {
     sablierV2LockupLinear: '0x3962f6585946823440d274aD7C719B02b49DE51E',
     disperse: '0xD152f549545093347A162Dce210e7293f1452150',
     paymasterFactory: '0x0000000000000000000000000000000000000000',
+    simpleAccountFactory: '0x0000000000000000000000000000000000000000',
   },
   staking: {
     lido: {
