@@ -74,7 +74,6 @@ export function CastVote({ proposal }: { proposal: FractalProposal }) {
     client: publicClient,
   });
 
-  const NOT_ENOUGH_PAYMASTER_BALANCE_ERROR = 'insufficient paymaster balance';
   const castGaslessVote = async () => {
     if (
       !chain ||
@@ -108,12 +107,13 @@ export function CastVote({ proposal }: { proposal: FractalProposal }) {
       const estimatedCost = (estimatedGasPrice * totalGasNeeded * 120n) / 100n;
 
       if (paymasterCurrentBalance < estimatedCost) {
-        throw new Error(NOT_ENOUGH_PAYMASTER_BALANCE_ERROR);
+        toast.error(t('insufficientPaymasterBalance'));
+        return;
       }
 
       const castVoteCallData = prepareCastVoteData(selectedVoteChoice);
       if (!castVoteCallData) {
-        throw new Error('Cast vote call data is not valid');
+        throw new Error('Invalid cast vote calldata');
       }
 
       // Pack gas limits together into a single bytes32
@@ -181,10 +181,14 @@ export function CastVote({ proposal }: { proposal: FractalProposal }) {
       console.error('Gasless voting error:', error);
 
       if (error instanceof Error && error.message.match(/must be at least (\d+)/)) {
-        throw new Error(NOT_ENOUGH_PAYMASTER_BALANCE_ERROR);
-      }
+        toast.error(t('insufficientPaymasterBalance'));
 
-      throw new Error(t('castVoteError'));
+        // Wait 1.5 seconds to give the user time to process. Fall back to regular voting.
+        await new Promise(resolve => setTimeout(resolve, 1500));
+        await castVote(selectedVoteChoice);
+      } else {
+        toast.error(t('castVoteError'));
+      }
     }
   };
 
@@ -247,20 +251,7 @@ export function CastVote({ proposal }: { proposal: FractalProposal }) {
           });
 
           if (hasSmartWallet) {
-            try {
-              await castGaslessVote();
-            } catch (error) {
-              if (
-                error instanceof Error &&
-                error.message.includes(NOT_ENOUGH_PAYMASTER_BALANCE_ERROR)
-              ) {
-                toast.error(t('insufficientPaymasterBalance'));
-              }
-
-              // Fall back to regular voting. Wait 1.5 seconds to give the user time to process.
-              await new Promise(resolve => setTimeout(resolve, 1500));
-              await castVote(selectedVoteChoice);
-            }
+            await castGaslessVote();
           } else {
             createSmartWallet();
           }
