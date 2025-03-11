@@ -96,6 +96,58 @@ export function SafeProposalTemplatesPage() {
     showNonceInput: false,
   });
 
+  const handleCoWSwapSubmit = (data: AirdropData) => {
+    if (!safeAddress) return;
+
+    const totalAmount = data.recipients.reduce((acc, recipient) => acc + recipient.amount, 0n);
+
+    addAction({
+      actionType: ProposalActionType.AIRDROP,
+      content: <></>,
+      transactions: [
+        {
+          targetAddress: data.asset.tokenAddress,
+          ethValue: {
+            bigintValue: 0n,
+            value: '0',
+          },
+          functionName: 'approve',
+          parameters: [
+            { signature: 'address', value: disperse },
+            { signature: 'uint256', value: totalAmount.toString() },
+          ],
+        },
+        {
+          targetAddress: disperse,
+          ethValue: {
+            bigintValue: 0n,
+            value: '0',
+          },
+          functionName: 'disperseToken',
+          parameters: [
+            { signature: 'address', value: data.asset.tokenAddress },
+            {
+              signature: 'address[]',
+              value: `[${data.recipients.map(recipient => recipient.address).join(',')}]`,
+            },
+            {
+              signature: 'uint256[]',
+              value: `[${data.recipients.map(recipient => recipient.amount.toString()).join(',')}]`,
+            },
+          ],
+        },
+      ],
+    });
+
+    navigate(DAO_ROUTES.proposalWithActionsNew.relative(addressPrefix, safeAddress));
+  };
+
+  const openCoWSwapModal = useDecentModal(ModalType.COW_SWAP, {
+    onSubmit: handleCoWSwapSubmit,
+    submitButtonText: t('submitProposal', { ns: 'modals' }),
+    showNonceInput: false,
+  });
+
   const EXAMPLE_TEMPLATES = useMemo(() => {
     if (!safeAddress) return [];
     return [
@@ -103,6 +155,11 @@ export function SafeProposalTemplatesPage() {
         title: t('templateAirdropTitle', { ns: 'proposalTemplate' }),
         description: t('templateAirdropDescription', { ns: 'proposalTemplate' }),
         onProposalTemplateClick: openAirdropModal,
+      },
+      {
+        title: t('templateCoWSwapTitle', { ns: 'proposalTemplate' }),
+        description: t('templateCoWSwapDescription', { ns: 'proposalTemplate' }),
+        onProposalTemplateClick: openCoWSwapModal,
       },
       {
         title: t('templateSablierTitle', { ns: 'proposalTemplate' }),

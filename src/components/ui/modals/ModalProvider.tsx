@@ -22,6 +22,7 @@ import { RefillGasData, RefillGasTankModal } from './RefillGasTankModal';
 import { SendAssetsModal } from './SendAssetsModal';
 import StakeModal from './Stake';
 import { UnsavedChangesWarningContent } from './UnsavedChangesWarningContent';
+import { CoWSwapModal } from './CoWSwapModal/CoWSwapModal';
 
 export enum ModalType {
   NONE,
@@ -41,6 +42,7 @@ export enum ModalType {
   SEND_ASSETS,
   AIRDROP,
   REFILL_GAS,
+  COW_SWAP,
 }
 
 export type CurrentModal = {
@@ -98,6 +100,11 @@ export type ModalPropsTypes = {
   };
   [ModalType.REFILL_GAS]: {
     onSubmit: (refillGasData: RefillGasData) => void;
+    showNonceInput: boolean;
+  };
+  [ModalType.COW_SWAP]: {
+    onSubmit: (airdropData: AirdropData) => void;
+    submitButtonText: string;
     showNonceInput: boolean;
   };
 };
@@ -292,6 +299,19 @@ export function ModalProvider({ children }: { children: ReactNode }) {
       case ModalType.AIRDROP:
         modalContent = (
           <AirdropModal
+            submitButtonText={current.props.submitButtonText}
+            showNonceInput={current.props.showNonceInput}
+            close={closeModal}
+            airdropData={(data: AirdropData) => {
+              current.props.onSubmit(data);
+              closeModal();
+            }}
+          />
+        );
+        break;
+      case ModalType.COW_SWAP:
+        modalContent = (
+          <CoWSwapModal
             submitButtonText={current.props.submitButtonText}
             showNonceInput={current.props.showNonceInput}
             close={closeModal}
