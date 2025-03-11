@@ -9,6 +9,7 @@ import RemoveSignerModal from '../../SafeSettings/Signers/modals/RemoveSignerMod
 import DraggableDrawer from '../containers/DraggableDrawer';
 import AddStrategyPermissionModal from './AddStrategyPermissionModal';
 import { AirdropData, AirdropModal } from './AirdropModal/AirdropModal';
+import { CoWSwapModal } from './CoWSwapModal/CoWSwapModal';
 import { ConfirmDeleteStrategyModal } from './ConfirmDeleteStrategyModal';
 import { ConfirmModifyGovernanceModal } from './ConfirmModifyGovernanceModal';
 import { ConfirmUrlModal } from './ConfirmUrlModal';
@@ -22,7 +23,6 @@ import { RefillGasData, RefillGasTankModal } from './RefillGasTankModal';
 import { SendAssetsModal } from './SendAssetsModal';
 import StakeModal from './Stake';
 import { UnsavedChangesWarningContent } from './UnsavedChangesWarningContent';
-import { CoWSwapModal } from './CoWSwapModal/CoWSwapModal';
 
 export enum ModalType {
   NONE,

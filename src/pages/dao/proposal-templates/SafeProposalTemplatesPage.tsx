@@ -22,6 +22,7 @@ import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetwo
 import { useProposalActionsStore } from '../../../store/actions/useProposalActionsStore';
 import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
 import { ProposalActionType } from '../../../types/proposalBuilder';
+import { isFeatureEnabled } from '../../../helpers/featureFlags';
 
 export function SafeProposalTemplatesPage() {
   useEffect(() => {
@@ -150,16 +151,11 @@ export function SafeProposalTemplatesPage() {
 
   const EXAMPLE_TEMPLATES = useMemo(() => {
     if (!safeAddress) return [];
-    return [
+    const _templates = [
       {
         title: t('templateAirdropTitle', { ns: 'proposalTemplate' }),
         description: t('templateAirdropDescription', { ns: 'proposalTemplate' }),
         onProposalTemplateClick: openAirdropModal,
-      },
-      {
-        title: t('templateCoWSwapTitle', { ns: 'proposalTemplate' }),
-        description: t('templateCoWSwapDescription', { ns: 'proposalTemplate' }),
-        onProposalTemplateClick: openCoWSwapModal,
       },
       {
         title: t('templateSablierTitle', { ns: 'proposalTemplate' }),
@@ -173,6 +169,15 @@ export function SafeProposalTemplatesPage() {
         onProposalTemplateClick: openSendAssetsModal,
       },
     ];
+    if (isFeatureEnabled('flag_cowswap_template')) {
+      _templates.push({
+        title: t('templateCoWSwapTitle', { ns: 'proposalTemplate' }),
+        description: t('templateCoWSwapDescription', { ns: 'proposalTemplate' }),
+        onProposalTemplateClick: openCoWSwapModal,
+      });
+    }
+
+    return _templates;
   }, [t, openSendAssetsModal, navigate, safeAddress, addressPrefix, openAirdropModal]);
 
   return (
