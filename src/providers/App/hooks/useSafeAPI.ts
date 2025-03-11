@@ -193,21 +193,21 @@ class EnhancedSafeApiKit {
       // Fetch modules
       let startAddress: Address = SENTINEL_ADDRESS;
       let nextAddress: Address = zeroAddress; // placeholder
-      const modules: Address[] = [];
+      const allModules: Address[] = [];
 
       while (nextAddress !== SENTINEL_ADDRESS) {
         const lastModuleResponse = await this.publicClient.readContract({
           address: checksummedSafeAddress,
           abi: GnosisSafeL2Abi,
           functionName: 'getModulesPaginated',
-          args: [startAddress, 1n], // get one module per page
+          args: [startAddress, 10n], // get 10 modules per page
         });
-        const strategies = lastModuleResponse[0]; // "one page" of modules
+        const pageOfModules = lastModuleResponse[0]; // one page of modules
         const next = lastModuleResponse[1]; // cursor for next page
 
         // a Safe might not have any modules installed
-        if (strategies.length > 0) {
-          modules.push(strategies[0]); // only one module per page
+        if (pageOfModules.length > 0) {
+          allModules.push(...pageOfModules);
         }
 
         nextAddress = next;
@@ -219,7 +219,7 @@ class EnhancedSafeApiKit {
         nonce: Number(nonce ? nonce : 0),
         threshold: Number(threshold ? threshold : 0),
         owners: owners as string[],
-        modules: modules,
+        modules: allModules,
         fallbackHandler: zeroAddress, // not used
         guard: guardStorageValue ? getAddress(`0x${guardStorageValue.slice(-40)}`) : zeroAddress,
         version: version,
