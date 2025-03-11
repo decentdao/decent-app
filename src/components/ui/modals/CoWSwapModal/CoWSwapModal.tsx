@@ -1,6 +1,7 @@
+import { Box } from '@chakra-ui/react';
 import { Address } from 'viem';
 import { TokenBalance } from '../../../../types';
-import { Box } from '@chakra-ui/react';
+import { CowSwapWidget, CowSwapWidgetParams, TradeType } from '@cowprotocol/widget-react';
 
 export interface AirdropData {
   recipients: {
@@ -22,5 +23,12 @@ export function CoWSwapModal({
   close: () => void;
   airdropData: (airdropData: AirdropData) => void;
 }) {
-  return <Box>CoWSwap</Box>;
+  const cowSwapWidgetParams: CowSwapWidgetParams = {
+    appCode: 'Decent App', // Add here the name of your app. e.g. "Pig Swap"
+    width: '464px',
+    height: '420px',
+    tradeType: TradeType.SWAP,
+  };
+
+  return <CowSwapWidget params={cowSwapWidgetParams} />;
 }
