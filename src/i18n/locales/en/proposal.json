@@ -182,5 +182,6 @@
   "streamCancelableHelper": "If enabled, the stream can be canceled by the owner of the Safe",
   "streamTransferableHelper": "If enabled, the stream can be transferred to another address by the stream's recipient",
   "proposalSummaryNotEnoughVotingPower": "Your voting power did not meet requirements to vote on this proposal when it was created.",
-  "proposalSummaryNotEnoughVotingPowerSecondary": "Delegate voting tokens to your address to be eligible to vote on future proposals."
+  "proposalSummaryNotEnoughVotingPowerSecondary": "Delegate voting tokens to your address to be eligible to vote on future proposals.",
+  "castVoteError": "Failed to send vote"
 }
