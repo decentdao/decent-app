@@ -1,6 +1,7 @@
 import { abis } from '@fractal-framework/fractal-contracts';
 import { useCallback } from 'react';
-import { Abi, Address, getContract, Hex } from 'viem';
+import { Abi, Address, getContract } from 'viem';
+import { DecentPaymasterV1Abi } from '../../assets/abi/DecentPaymasterV1Abi';
 import useNetworkPublicClient from '../useNetworkPublicClient';
 
 // https://github.com/adamgall/fractal-contract-identification/blob/229fc398661c5d684600feeb98a4eb767f728632/src/identify-contracts.ts
@@ -282,49 +283,19 @@ export function useAddressContractType() {
     [publicClient],
   );
 
-  const checkInterfaceSupport = useCallback(
-    async (contractAddress: Address, interfaceId: Hex) => {
-      const erc165Abi = [
-        {
-          type: 'function',
-          name: 'supportsInterface',
-          inputs: [
-            {
-              type: 'bytes4',
-              name: 'interfaceId',
-            },
-          ],
-          outputs: [
-            {
-              type: 'bool',
-            },
-          ],
-          stateMutability: 'view',
-        } as const,
-      ];
+  // @todo: This whole thing is really just to check if the current DAO strategy(s) support gasless voting. Needs more robust logic.
+  const isIVersionSupport = useCallback(
+    async (contractAddress: Address) => {
       const contract = getContract({
-        abi: erc165Abi,
+        abi: DecentPaymasterV1Abi,
         address: contractAddress,
         client: publicClient,
       });
 
-      try {
-        const isSupported = await contract.read.supportsInterface([interfaceId]);
-        return isSupported;
-      } catch (error) {
-        console.error('Error checking interface support:', error);
-        return false;
-      }
+      const version = await contract.read.getVersion();
+      return version === 1;
     },
     [publicClient],
-  );
-
-  const isIVersionSupport = useCallback(
-    async (contractAddress: Address) => {
-      const isSupported = await checkInterfaceSupport(contractAddress, '0x0d8e6e2c');
-      return isSupported;
-    },
-    [checkInterfaceSupport],
   );
 
   return { getAddressContractType, isIVersionSupport };
