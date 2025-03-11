@@ -9,7 +9,7 @@ import { InputComponent } from '../../../../components/ui/forms/InputComponent';
 import { BarLoader } from '../../../../components/ui/loaders/BarLoader';
 import NestedPageHeader from '../../../../components/ui/page/Header/NestedPageHeader';
 import Divider from '../../../../components/ui/utils/Divider';
-import { DecentPaymasterFactoryV1Abi, PAYMASTER_SALT } from '../../../../constants/common';
+import { DecentPaymasterFactoryV1Abi } from '../../../../constants/common';
 import { DAO_ROUTES } from '../../../../constants/routes';
 import useSubmitProposal from '../../../../hooks/DAO/proposal/useSubmitProposal';
 import { useAddressContractType } from '../../../../hooks/utils/useAddressContractType';
@@ -19,6 +19,7 @@ import { useInstallVersionedVotingStrategy } from '../../../../hooks/utils/useIn
 import { useNetworkConfigStore } from '../../../../providers/NetworkConfig/useNetworkConfigStore';
 import { useDaoInfoStore } from '../../../../store/daoInfo/useDaoInfoStore';
 import { ProposalExecuteData } from '../../../../types';
+import { getPaymasterSalt } from '../../../../utils/gaslessVoting';
 import { validateENSName } from '../../../../utils/url';
 export function SafeGeneralSettingsPage() {
   const { t } = useTranslation(['settings', 'settingsMetadata']);
@@ -42,6 +43,7 @@ export function SafeGeneralSettingsPage() {
   const { subgraphInfo, safe } = useDaoInfoStore();
   const {
     addressPrefix,
+    chain: { id: chainId },
     contracts: { keyValuePairs, paymasterFactory },
   } = useNetworkConfigStore();
 
@@ -130,8 +132,7 @@ export function SafeGeneralSettingsPage() {
             // @todo replace with the deployed abi
             abi: DecentPaymasterFactoryV1Abi,
             functionName: 'createPaymaster',
-            // @todo: use dao specific salt here: ${safeAddress}-${chainId}
-            args: [safeAddress, BigInt(PAYMASTER_SALT)],
+            args: [safeAddress, getPaymasterSalt(safeAddress, chainId)],
           }),
         );
         values.push(0n);

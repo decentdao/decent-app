@@ -211,7 +211,7 @@ export function CastVote({ proposal }: { proposal: FractalProposal }) {
   }, [entryPoint.read, paymasterAddress, publicClient]);
 
   // Set a reasonable minimum (slightly higher than the required amount)
-  const minimumPaymasterBalance = 100000000000000000n; // 0.1 ETH in wei
+  const minimumPaymasterBalance = 60000000000000000n; // 0.06 ETH in wei
   const canVoteForFree = useMemo(() => {
     return (
       gaslessVotingEnabled &&
