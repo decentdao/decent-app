@@ -3,24 +3,29 @@ import { abis } from '@fractal-framework/fractal-contracts';
 import { ChangeEventHandler, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { encodeFunctionData, zeroAddress } from 'viem';
+import { encodeFunctionData, keccak256, stringToHex, zeroAddress } from 'viem';
+import { DecentPaymasterFactoryV1Abi } from '../../../../assets/abi/DecentPaymasterFactoryV1Abi';
+import { DecentPaymasterV1Abi } from '../../../../assets/abi/DecentPaymasterV1Abi';
+import { GaslessVotingToggleDAOSettings } from '../../../../components/GaslessVoting/GaslessVotingToggle';
 import { SettingsContentBox } from '../../../../components/SafeSettings/SettingsContentBox';
 import { InputComponent } from '../../../../components/ui/forms/InputComponent';
 import { BarLoader } from '../../../../components/ui/loaders/BarLoader';
 import NestedPageHeader from '../../../../components/ui/page/Header/NestedPageHeader';
 import Divider from '../../../../components/ui/utils/Divider';
-import { DecentPaymasterFactoryV1Abi } from '../../../../constants/common';
 import { DAO_ROUTES } from '../../../../constants/routes';
 import useSubmitProposal from '../../../../hooks/DAO/proposal/useSubmitProposal';
+import useNetworkPublicClient from '../../../../hooks/useNetworkPublicClient';
 import { useAddressContractType } from '../../../../hooks/utils/useAddressContractType';
 import { useCanUserCreateProposal } from '../../../../hooks/utils/useCanUserSubmitProposal';
 import { createAccountSubstring } from '../../../../hooks/utils/useGetAccountName';
 import { useInstallVersionedVotingStrategy } from '../../../../hooks/utils/useInstallVersionedVotingStrategy';
+import { useFractal } from '../../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../../providers/NetworkConfig/useNetworkConfigStore';
 import { useDaoInfoStore } from '../../../../store/daoInfo/useDaoInfoStore';
-import { ProposalExecuteData } from '../../../../types';
-import { getPaymasterSalt } from '../../../../utils/gaslessVoting';
+import { GovernanceType, ProposalExecuteData } from '../../../../types';
+import { getPaymasterAddress, getPaymasterSalt } from '../../../../utils/gaslessVoting';
 import { validateENSName } from '../../../../utils/url';
+
 export function SafeGeneralSettingsPage() {
   const { t } = useTranslation(['settings', 'settingsMetadata']);
   const [name, setName] = useState('');
@@ -36,6 +41,16 @@ export function SafeGeneralSettingsPage() {
     setIsGaslessVotingEnabledToggled(gaslessVotingEnabled);
   }, [gaslessVotingEnabled]);
 
+  const {
+    governanceContracts: {
+      linearVotingErc20Address,
+      linearVotingErc721Address,
+      linearVotingErc20WithHatsWhitelistingAddress,
+      linearVotingErc721WithHatsWhitelistingAddress,
+    },
+    governance: { type: votingStrategyType },
+  } = useFractal();
+
   const navigate = useNavigate();
 
   const { submitProposal } = useSubmitProposal();
@@ -46,6 +61,8 @@ export function SafeGeneralSettingsPage() {
     chain: { id: chainId },
     contracts: { keyValuePairs, paymasterFactory },
   } = useNetworkConfigStore();
+
+  const publicClient = useNetworkPublicClient();
 
   const { isIVersionSupport } = useAddressContractType();
 
@@ -125,7 +142,15 @@ export function SafeGeneralSettingsPage() {
         throw new Error('Safe address is not set');
       }
 
+      const strategyAddresses = [
+        linearVotingErc20Address,
+        linearVotingErc721Address,
+        linearVotingErc20WithHatsWhitelistingAddress,
+        linearVotingErc721WithHatsWhitelistingAddress,
+      ].filter(addr => !!addr);
+
       if (!paymasterAddress) {
+        // Create a new paymaster
         targets.push(paymasterFactory);
         calldatas.push(
           encodeFunctionData({
@@ -136,19 +161,54 @@ export function SafeGeneralSettingsPage() {
           }),
         );
         values.push(0n);
-      }
 
-      const modulesAddresses = safe?.modulesAddresses;
-      if (modulesAddresses) {
-        let isUpdatedModule = false;
-        let i = 0;
-        while (!isUpdatedModule && i < modulesAddresses.length) {
-          const moduleAddress = modulesAddresses[i];
-          isUpdatedModule = await isIVersionSupport(moduleAddress);
-          i++;
+        // Approve the `vote` function call on the Paymaster
+        // // // // // // // // // // // // // // // // // // //
+        const predictedPaymasterAddress = await getPaymasterAddress({
+          address: safeAddress,
+          chainId,
+          publicClient,
+          paymasterFactory,
+        });
+
+        if (strategyAddresses.length === 0 || !votingStrategyType) {
+          throw new Error('No strategy addresses defined');
         }
 
-        if (!isUpdatedModule) {
+        const voteSelector = keccak256(
+          stringToHex(
+            votingStrategyType === GovernanceType.AZORIUS_ERC20
+              ? 'vote(uint32,uint8)'
+              : 'vote(uint32,uint8,address[],uint256[])',
+          ),
+        ).slice(0, 10) as `0x${string}`;
+
+        strategyAddresses.forEach(strategyAddress => {
+          targets.push(predictedPaymasterAddress);
+          calldatas.push(
+            encodeFunctionData({
+              abi: DecentPaymasterV1Abi,
+              functionName: 'setStrategyFunctionApproval',
+              args: [strategyAddress, [voteSelector], [true]],
+            }),
+          );
+          values.push(0n);
+        });
+      }
+
+      if (strategyAddresses.length) {
+        // Check if all strategy contracts support the latest version
+        let allStrategiesAreUpdated = true;
+
+        for (const strategyAddress of strategyAddresses) {
+          const supportsLatestVersion = await isIVersionSupport(strategyAddress);
+          if (!supportsLatestVersion) {
+            allStrategiesAreUpdated = false;
+            break;
+          }
+        }
+
+        if (!allStrategiesAreUpdated) {
           // The safe is using the old modules.
           // Include txs to disable the old voting strategy and enable the new one.
           const installVersionedStrategyTxData = await buildInstallVersionedVotingStrategy();
