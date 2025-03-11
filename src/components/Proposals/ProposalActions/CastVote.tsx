@@ -74,6 +74,7 @@ export function CastVote({ proposal }: { proposal: FractalProposal }) {
     client: publicClient,
   });
 
+  const NOT_ENOUGH_PAYMASTER_BALANCE_ERROR = 'insufficient paymaster balance';
   const castGaslessVote = async () => {
     if (
       !chain ||
@@ -82,11 +83,10 @@ export function CastVote({ proposal }: { proposal: FractalProposal }) {
       !walletClient ||
       selectedVoteChoice === undefined
     ) {
-      return;
+      throw new Error('Invalid state');
     }
 
     try {
-      // Get user's smart wallet address
       const smartWalletAddress = await getUserSmartWalletAddress({
         address,
         chainId: chain.id,
@@ -94,18 +94,31 @@ export function CastVote({ proposal }: { proposal: FractalProposal }) {
         simpleAccountFactory,
       });
 
-      const castVoteCallData = prepareCastVoteData(selectedVoteChoice);
+      // Check paymaster balance first
+      const paymasterCurrentBalance = await entryPoint.read.balanceOf([paymasterAddress]);
+      const estimatedGasPrice = await publicClient.getGasPrice();
 
+      // Using 150k gas limit with 20% buffer
+      const validationGasLimit = 150000n;
+      const callGasLimit = 150000n;
+      const preVerificationGas = 90000n;
+
+      // Total gas needed with 20% buffer
+      const totalGasNeeded = validationGasLimit + callGasLimit + preVerificationGas;
+      const estimatedCost = (estimatedGasPrice * totalGasNeeded * 120n) / 100n;
+
+      if (paymasterCurrentBalance < estimatedCost) {
+        throw new Error(NOT_ENOUGH_PAYMASTER_BALANCE_ERROR);
+      }
+
+      const castVoteCallData = prepareCastVoteData(selectedVoteChoice);
       if (!castVoteCallData) {
         throw new Error('Cast vote call data is not valid');
       }
 
-      const validationGasLimit = 150000n;
-      const callGasLimit = 150000n;
-
-      // Pack them together into a single bytes32
+      // Pack gas limits together into a single bytes32
       const accountGasLimits = ('0x' +
-        validationGasLimit.toString(16).padStart(32, '0') + // First 16 bytes
+        validationGasLimit.toString(16).padStart(32, '0') +
         callGasLimit.toString(16).padStart(32, '0')) as `0x${string}`;
 
       const userOpData = {
@@ -115,22 +128,18 @@ export function CastVote({ proposal }: { proposal: FractalProposal }) {
         callData: castVoteCallData,
         accountGasLimits,
         gasFees: ('0x' + '0'.padStart(64, '0')) as `0x${string}`,
-        preVerificationGas: 90000n,
-        signature: '0x' as `0x${string}`, // This is set below
+        preVerificationGas,
+        signature: '0x' as `0x${string}`,
         paymasterAndData: paymasterAddress,
       };
 
       // Sign the UserOperation
       const userOpHash = await entryPoint.read.getUserOpHash([userOpData]);
-      const signature = await walletClient.signMessage({
-        message: userOpHash,
-      });
+      const signature = await walletClient.signMessage({ message: userOpHash });
 
-      // Get current gas prices from the network
-      const gasPrice = await publicClient.getGasPrice();
-      // Add 20% buffer to ensure acceptance
-      const maxFeePerGas = (gasPrice * 120n) / 100n;
-      const maxPriorityFeePerGas = (gasPrice * 15n) / 100n; // Increased to 15% of base fee
+      // Add 20% buffer
+      const maxFeePerGas = (estimatedGasPrice * 120n) / 100n;
+      const maxPriorityFeePerGas = (estimatedGasPrice * 15n) / 100n;
 
       const userOpPostBody = {
         sender: smartWalletAddress,
@@ -138,7 +147,7 @@ export function CastVote({ proposal }: { proposal: FractalProposal }) {
         nonce: `0x${userOpData.nonce.toString(16)}`,
         callGasLimit: `0x${callGasLimit.toString(16)}`,
         verificationGasLimit: `0x${validationGasLimit.toString(16)}`,
-        preVerificationGas: `0x${userOpData.preVerificationGas.toString(16)}`,
+        preVerificationGas: `0x${preVerificationGas.toString(16)}`,
         maxFeePerGas: `0x${maxFeePerGas.toString(16)}`,
         maxPriorityFeePerGas: `0x${maxPriorityFeePerGas.toString(16)}`,
         signature,
@@ -164,16 +173,18 @@ export function CastVote({ proposal }: { proposal: FractalProposal }) {
 
       if (result.error) {
         console.error('UserOperation error:', result.error);
-        throw new Error(
-          result.error.message ||
-            'Failed to send gasless vote. Please try again or use regular voting.',
-        );
+        throw new Error(result.error.message || 'Failed to send gasless vote');
       }
 
       return result;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Gasless voting error:', error);
-      throw error;
+
+      if (error instanceof Error && error.message.match(/must be at least (\d+)/)) {
+        throw new Error(NOT_ENOUGH_PAYMASTER_BALANCE_ERROR);
+      }
+
+      throw new Error(t('castVoteError'));
     }
   };
 
@@ -196,7 +207,7 @@ export function CastVote({ proposal }: { proposal: FractalProposal }) {
   }, [entryPoint.read, paymasterAddress, publicClient]);
 
   // Set a reasonable minimum (slightly higher than the required amount)
-  const minimumPaymasterBalance = 60000000000000000n; // 0.06 ETH in wei
+  const minimumPaymasterBalance = 100000000000000000n; // 0.1 ETH in wei
   const canVoteForFree = useMemo(() => {
     return (
       gaslessVotingEnabled &&
@@ -236,15 +247,29 @@ export function CastVote({ proposal }: { proposal: FractalProposal }) {
           });
 
           if (hasSmartWallet) {
-            await castGaslessVote();
+            try {
+              await castGaslessVote();
+            } catch (error) {
+              if (
+                error instanceof Error &&
+                error.message.includes(NOT_ENOUGH_PAYMASTER_BALANCE_ERROR)
+              ) {
+                toast.error(t('insufficientPaymasterBalance'));
+              }
+
+              // Fall back to regular voting. Wait 1.5 seconds to give the user time to process.
+              await new Promise(resolve => setTimeout(resolve, 1500));
+              await castVote(selectedVoteChoice);
+            }
           } else {
             createSmartWallet();
           }
         } else {
           await castVote(selectedVoteChoice);
         }
-      } catch (error) {
-        toast.error('Vote casting failed. Please try again or use regular voting.');
+      } catch (error: any) {
+        console.error('Cast vote error:', error);
+        toast.error(t('castVoteError'));
       }
     }
   };
