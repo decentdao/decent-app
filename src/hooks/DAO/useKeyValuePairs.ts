@@ -2,11 +2,12 @@ import { abis } from '@fractal-framework/fractal-contracts';
 import { hatIdToTreeId } from '@hatsprotocol/sdk-v1-core';
 import { useEffect } from 'react';
 import { Address, GetContractEventsReturnType, PublicClient, getContract } from 'viem';
-import { DecentPaymasterFactoryV1Abi, PAYMASTER_SALT } from '../../constants/common';
+import { DecentPaymasterFactoryV1Abi } from '../../assets/abi/DecentPaymasterFactoryV1Abi';
 import { logError } from '../../helpers/errorLogging';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
 import { useDaoInfoStore } from '../../store/daoInfo/useDaoInfoStore';
 import { useRolesStore } from '../../store/roles/useRolesStore';
+import { getPaymasterSalt } from '../../utils/gaslessVoting';
 import useNetworkPublicClient from '../useNetworkPublicClient';
 
 const getGaslessVotingDaoData = async (
@@ -50,7 +51,7 @@ const getGaslessVotingDaoData = async (
 
       paymasterAddress = await paymasterFactoryContract.read.getAddress([
         safeAddress,
-        BigInt(PAYMASTER_SALT),
+        getPaymasterSalt(safeAddress, chainId),
       ]);
     }
 
@@ -222,8 +223,8 @@ const useKeyValuePairs = () => {
               paymasterFactory,
               safeAddress,
               publicClient,
-            ).then(gaslessVotingEnabled => {
-              setGaslessVotingDaoData(gaslessVotingEnabled ?? false);
+            ).then(gaslessVotingDaoData => {
+              setGaslessVotingDaoData(gaslessVotingDaoData);
             });
           }, 20_000);
         },

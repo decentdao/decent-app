@@ -182,13 +182,13 @@ export function CastVote({ proposal }: { proposal: FractalProposal }) {
 
       if (error instanceof Error && error.message.match(/must be at least (\d+)/)) {
         toast.error(t('insufficientPaymasterBalance'));
-
-        // Wait 1.5 seconds to give the user time to process. Fall back to regular voting.
-        await new Promise(resolve => setTimeout(resolve, 1500));
-        await castVote(selectedVoteChoice);
       } else {
         toast.error(t('castVoteError'));
       }
+
+      // Wait a bit to give the user time to process. Fall back to regular voting.
+      await new Promise(resolve => setTimeout(resolve, 3000));
+      await castVote(selectedVoteChoice);
     }
   };
 
