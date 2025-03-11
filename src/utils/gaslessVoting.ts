@@ -42,3 +42,7 @@ export const userHasSmartWallet = async (args: {
   });
   return bytecode !== undefined && bytecode !== '0x';
 };
+
+export const getPaymasterSalt = (safeAddress: Address, chainId: number) => {
+  return BigInt(`${safeAddress}-${chainId}`);
+};
