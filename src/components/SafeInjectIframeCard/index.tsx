@@ -17,12 +17,17 @@ const BUILDIN_APPS = [
     value: 'https://app.uniswap.org',
     label: 'Uniswap',
   },
+  // Violate CSP, can't access sablier with iframe way
+  // { value: 'https://app.sablier.com/', label: 'Sablier' },
   {
     value: 'https://jokerace.xyz',
     label: 'Jokerace',
   },
 ];
 
+/**
+ * @example wrap this component with SafeInjectProvider to provide address and chainId
+ */
 export default function SafeInjectIframeCard() {
   const { appUrl, iframeRef, address, setAppUrl, setLatestTransaction } = useSafeInject();
   const [urlInput, setUrlInput] = useState<string>('');
