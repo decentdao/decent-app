@@ -31,7 +31,7 @@ import { useVoteContext } from '../ProposalVotes/context/VoteContext';
 
 export function CastVote({ proposal }: { proposal: FractalProposal }) {
   const [selectedVoteChoice, setVoiceChoice] = useState<number>();
-  const { t } = useTranslation(['proposal', 'transaction']);
+  const { t } = useTranslation(['proposal', 'transaction', 'gaslessVoting']);
   const { isLoaded: isCurrentBlockLoaded, currentBlockNumber } = useCurrentBlockNumber();
 
   const { snapshotProposal, extendedSnapshotProposal, loadSnapshotProposal } =
@@ -93,21 +93,27 @@ export function CastVote({ proposal }: { proposal: FractalProposal }) {
         simpleAccountFactory,
       });
 
-      // Check paymaster balance first
-      const paymasterCurrentBalance = await entryPoint.read.balanceOf([paymasterAddress]);
-      const estimatedGasPrice = await publicClient.getGasPrice();
+      // Get current network conditions
+      const [baseFeePerGas, maxPriorityFeePerGas] = await Promise.all([
+        publicClient.getBlock({ blockTag: 'latest' }).then(block => block.baseFeePerGas || 0n),
+        publicClient.estimateMaxPriorityFeePerGas(),
+      ]);
 
-      // Using 150k gas limit with 20% buffer
+      // Calculate maxFeePerGas with 20% buffer
+      const maxFeePerGas = ((baseFeePerGas + maxPriorityFeePerGas) * 120n) / 100n;
+
       const validationGasLimit = 150000n;
       const callGasLimit = 150000n;
       const preVerificationGas = 90000n;
 
-      // Total gas needed with 20% buffer
+      // Calculate total cost including buffer
       const totalGasNeeded = validationGasLimit + callGasLimit + preVerificationGas;
-      const estimatedCost = (estimatedGasPrice * totalGasNeeded * 120n) / 100n;
+      const estimatedCost = totalGasNeeded * maxFeePerGas;
 
+      // Check paymaster balance
+      const paymasterCurrentBalance = await entryPoint.read.balanceOf([paymasterAddress]);
       if (paymasterCurrentBalance < estimatedCost) {
-        toast.error(t('insufficientPaymasterBalance'));
+        toast.error(t('insufficientPaymasterBalance', { ns: 'gaslessVoting' }));
         return;
       }
 
@@ -116,7 +122,6 @@ export function CastVote({ proposal }: { proposal: FractalProposal }) {
         throw new Error('Invalid cast vote calldata');
       }
 
-      // Pack gas limits together into a single bytes32
       const accountGasLimits = ('0x' +
         validationGasLimit.toString(16).padStart(32, '0') +
         callGasLimit.toString(16).padStart(32, '0')) as `0x${string}`;
@@ -136,10 +141,6 @@ export function CastVote({ proposal }: { proposal: FractalProposal }) {
       // Sign the UserOperation
       const userOpHash = await entryPoint.read.getUserOpHash([userOpData]);
       const signature = await walletClient.signMessage({ message: userOpHash });
-
-      // Add 20% buffer
-      const maxFeePerGas = (estimatedGasPrice * 120n) / 100n;
-      const maxPriorityFeePerGas = (estimatedGasPrice * 15n) / 100n;
 
       const userOpPostBody = {
         sender: smartWalletAddress,
@@ -187,8 +188,8 @@ export function CastVote({ proposal }: { proposal: FractalProposal }) {
       }
 
       // Wait a bit to give the user time to process. Fall back to regular voting.
-      await new Promise(resolve => setTimeout(resolve, 3000));
-      await castVote(selectedVoteChoice);
+      // await new Promise(resolve => setTimeout(resolve, 3000));
+      // await castVote(selectedVoteChoice);
     }
   };
 
