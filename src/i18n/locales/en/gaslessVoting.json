@@ -20,5 +20,10 @@
   "proceedCreateSmartWallet": "Create Now",
   "cancelCreateSmartWalletConsequence": "If you continue without creating it, you will need to pay for gas fees on every transaction.",
   "createSmartWalletOneTimeGasFeeNotice": "Creating your Smart Wallet will require a one-time gas fee.",
-  "insufficientPaymasterBalance": "The DAO paymaster does not have enough balance to sponsor your vote at this time."
+  "insufficientPaymasterBalance": "The DAO paymaster does not have enough balance to sponsor your vote at this time.",
+  "createSmartWalletPending": "Creating your Smart Wallet...",
+  "createSmartWalletFailed": "Failed to create Smart Wallet.",
+  "createSmartWalletSuccess": "Your Smart Wallet has been created successfully.",
+  "voteIsSponsoredTitle": "Your vote is sponsored.",
+  "voteIsSponsoredSubtitle": "Enjoy zero fees for this vote!"
 }
