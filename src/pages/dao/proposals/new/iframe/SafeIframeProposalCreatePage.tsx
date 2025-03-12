@@ -8,8 +8,8 @@ import { Address, encodeFunctionData, erc20Abi, getAddress, Hash, zeroAddress } 
 import SablierV2BatchAbi from '../../../../../assets/abi/SablierV2Batch';
 import { ProposalBuilder } from '../../../../../components/ProposalBuilder/ProposalBuilder';
 import { StreamsDetails } from '../../../../../components/ProposalBuilder/ProposalDetails';
+import { ProposalIframe } from '../../../../../components/ProposalBuilder/ProposalIframe';
 import { DEFAULT_PROPOSAL_METADATA_TYPE_PROPS } from '../../../../../components/ProposalBuilder/ProposalMetadata';
-import { ProposalStreams } from '../../../../../components/ProposalBuilder/ProposalStreams';
 import { GoToTransactionsStepButton } from '../../../../../components/ProposalBuilder/StepButtons';
 import { DEFAULT_SABLIER_PROPOSAL } from '../../../../../components/ProposalBuilder/constants';
 import { BarLoader } from '../../../../../components/ui/loaders/BarLoader';
@@ -165,7 +165,7 @@ export function SafeIframeProposalCreatePage() {
       mainContent={(formikProps, pendingCreateTx, nonce, currentStep) => {
         if (currentStep !== CreateProposalSteps.TRANSACTIONS) return null;
         return (
-          <ProposalStreams
+          <ProposalIframe
             pendingTransaction={pendingCreateTx}
             {...formikProps}
             values={formikProps.values as CreateSablierProposalForm}

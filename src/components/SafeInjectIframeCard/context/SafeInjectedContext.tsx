@@ -111,7 +111,7 @@ export function SafeInjectProvider({
         let response;
         switch (params.call) {
           case 'eth_call':
-            response = await publicClient.call(params.params[0] as any);
+            response = await publicClient.call({ account: address, ...(params.params[0] as any) });
             break;
           case 'eth_gasPrice':
             response = await publicClient.getGasPrice();
@@ -157,7 +157,11 @@ export function SafeInjectProvider({
         //   params.call,
         //   params.params,
         // )) as MethodToResponse['rpcCall'];
-        console.debug('[DEBUG] rpcCall', { method: params.call, params: params.params, response });
+        console.debug('[DEBUG] rpcCall', {
+          method: params.call,
+          params: params.params[0],
+          response,
+        });
         return response;
       } catch (err) {
         return err;
