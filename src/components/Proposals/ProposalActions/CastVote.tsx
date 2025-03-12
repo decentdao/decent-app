@@ -94,10 +94,12 @@ export function CastVote({ proposal }: { proposal: FractalProposal }) {
       });
 
       // Get current network conditions
-      const [baseFeePerGas, maxPriorityFeePerGas] = await Promise.all([
+      const [baseFeePerGas, maxPriorityFeePerGass] = await Promise.all([
         publicClient.getBlock({ blockTag: 'latest' }).then(block => block.baseFeePerGas || 0n),
         publicClient.estimateMaxPriorityFeePerGas(),
       ]);
+
+      const maxPriorityFeePerGas = maxPriorityFeePerGass * 100n;
 
       // Calculate maxFeePerGas with 20% buffer
       const maxFeePerGas = ((baseFeePerGas + maxPriorityFeePerGas) * 120n) / 100n;
@@ -134,7 +136,7 @@ export function CastVote({ proposal }: { proposal: FractalProposal }) {
         accountGasLimits,
         gasFees: ('0x' + '0'.padStart(64, '0')) as `0x${string}`,
         preVerificationGas,
-        signature: '0x' as `0x${string}`,
+        signature: '0x' as `0x${string}`, // Not used in gatUserOpHash
         paymasterAndData: paymasterAddress,
       };
 
@@ -155,6 +157,8 @@ export function CastVote({ proposal }: { proposal: FractalProposal }) {
         paymaster: paymasterAddress,
       };
 
+      console.log({ userOpPostBody });
+
       // Send UserOperation to bundler
       const response = await fetch(rpcEndpoint, {
         method: 'POST',
@@ -165,6 +169,7 @@ export function CastVote({ proposal }: { proposal: FractalProposal }) {
         body: JSON.stringify({
           id: 1,
           jsonrpc: '2.0',
+          // method: 'eth_estimateUserOperationGas',
           method: 'eth_sendUserOperation',
           params: [userOpPostBody, ENTRY_POINT_ADDRESS],
         }),
@@ -188,8 +193,8 @@ export function CastVote({ proposal }: { proposal: FractalProposal }) {
       }
 
       // Wait a bit to give the user time to process. Fall back to regular voting.
-      // await new Promise(resolve => setTimeout(resolve, 3000));
-      // await castVote(selectedVoteChoice);
+      await new Promise(resolve => setTimeout(resolve, 3000));
+      await castVote(selectedVoteChoice);
     }
   };
 
