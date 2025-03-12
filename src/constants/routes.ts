@@ -87,6 +87,11 @@ export const DAO_ROUTES = {
       `/proposals/new/sablier${getDaoQueryParam(addressPrefix, daoAddress)}`,
     path: 'proposals/new/sablier',
   },
+  proposalIframeNew: {
+    relative: (addressPrefix: string, daoAddress: string) =>
+      `/proposals/new/iframe${getDaoQueryParam(addressPrefix, daoAddress)}`,
+    path: 'proposals/new/iframe',
+  },
   settings: {
     relative: (addressPrefix: string, safeAddress: string) =>
       `/settings${getDaoQueryParam(addressPrefix, safeAddress)}`,

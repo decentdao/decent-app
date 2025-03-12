@@ -9,7 +9,6 @@ import RemoveSignerModal from '../../SafeSettings/Signers/modals/RemoveSignerMod
 import DraggableDrawer from '../containers/DraggableDrawer';
 import AddStrategyPermissionModal from './AddStrategyPermissionModal';
 import { AirdropData, AirdropModal } from './AirdropModal/AirdropModal';
-import { CoWSwapModal } from './CoWSwapModal/CoWSwapModal';
 import { ConfirmDeleteStrategyModal } from './ConfirmDeleteStrategyModal';
 import { ConfirmModifyGovernanceModal } from './ConfirmModifyGovernanceModal';
 import { ConfirmUrlModal } from './ConfirmUrlModal';
@@ -42,7 +41,6 @@ export enum ModalType {
   SEND_ASSETS,
   AIRDROP,
   REFILL_GAS,
-  COW_SWAP,
 }
 
 export type CurrentModal = {
@@ -100,11 +98,6 @@ export type ModalPropsTypes = {
   };
   [ModalType.REFILL_GAS]: {
     onSubmit: (refillGasData: RefillGasData) => void;
-    showNonceInput: boolean;
-  };
-  [ModalType.COW_SWAP]: {
-    onSubmit: (airdropData: AirdropData) => void;
-    submitButtonText: string;
     showNonceInput: boolean;
   };
 };
@@ -299,19 +292,6 @@ export function ModalProvider({ children }: { children: ReactNode }) {
       case ModalType.AIRDROP:
         modalContent = (
           <AirdropModal
-            submitButtonText={current.props.submitButtonText}
-            showNonceInput={current.props.showNonceInput}
-            close={closeModal}
-            airdropData={(data: AirdropData) => {
-              current.props.onSubmit(data);
-              closeModal();
-            }}
-          />
-        );
-        break;
-      case ModalType.COW_SWAP:
-        modalContent = (
-          <CoWSwapModal
             submitButtonText={current.props.submitButtonText}
             showNonceInput={current.props.showNonceInput}
             close={closeModal}

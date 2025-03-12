@@ -31,6 +31,7 @@ import { SafePermissionsCreateProposal } from './pages/dao/settings/permissions/
 import { SafePermissionsSettingsPage } from './pages/dao/settings/permissions/SafePermissionsSettingsPage';
 import { SafeTreasuryPage } from './pages/dao/treasury/SafeTreasuryPage';
 import HomePage from './pages/home/HomePage';
+import { SafeIframeProposalCreatePage } from './pages/dao/proposals/new/iframe/SafeIframeProposalCreatePage';
 
 interface LoaderFunctionArgs {
   request: Request;
@@ -179,6 +180,10 @@ export const router = (addressPrefix: string, daoAddress: string | undefined) =>
                 {
                   path: 'new/sablier',
                   element: <SafeSablierProposalCreatePage />,
+                },
+                {
+                  path: 'new/iframe',
+                  element: <SafeIframeProposalCreatePage />,
                 },
               ],
             },

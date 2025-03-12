@@ -39,6 +39,6 @@
   "templateSablierDescription": "Stream funds to a recipient over time",
   "templateAirdropTitle": "Airdrop",
   "templateAirdropDescription": "Send tokens to multiple recipients",
-  "templateCoWSwapTitle": "CoWSwap",
-  "templateCoWSwapDescription": "Swap token on CoWSwap"
+  "templateIframeTitle": "Iframe",
+  "templateIframeDescription": "Open dapps in iframe"
 }
