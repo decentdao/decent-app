@@ -34,11 +34,13 @@ const useCastVote = (proposalId: string, strategy: Address) => {
         return null;
       }
 
+      let castVoteCalldata: `0x${string}`;
+
       if (
         strategy === linearVotingErc20Address ||
         strategy === linearVotingErc20WithHatsWhitelistingAddress
       ) {
-        return encodeFunctionData({
+        castVoteCalldata = encodeFunctionData({
           abi: abis.LinearERC20Voting,
           functionName: 'vote',
           args: [Number(proposalId), vote],
@@ -47,7 +49,7 @@ const useCastVote = (proposalId: string, strategy: Address) => {
         strategy === linearVotingErc721Address ||
         strategy === linearVotingErc721WithHatsWhitelistingAddress
       ) {
-        return encodeFunctionData({
+        castVoteCalldata = encodeFunctionData({
           abi: abis.LinearERC721Voting,
           functionName: 'vote',
           args: [
@@ -57,8 +59,27 @@ const useCastVote = (proposalId: string, strategy: Address) => {
             remainingTokenIds.map(i => BigInt(i)),
           ],
         });
+      } else {
+        throw new Error('Invalid strategy');
       }
-      return null;
+
+      return encodeFunctionData({
+        abi: [
+          {
+            inputs: [
+              { name: 'target', type: 'address' },
+              { name: 'value', type: 'uint256' },
+              { name: 'data', type: 'bytes' },
+            ],
+            name: 'execute',
+            outputs: [{ name: '', type: 'bytes' }],
+            stateMutability: 'nonpayable',
+            type: 'function',
+          },
+        ],
+        functionName: 'execute',
+        args: [strategy, 0n, castVoteCalldata],
+      });
     },
     [
       linearVotingErc721Address,
