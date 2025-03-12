@@ -292,8 +292,12 @@ export function useAddressContractType() {
         client: publicClient,
       });
 
-      const version = await contract.read.getVersion();
-      return version === 1;
+      try {
+        const version = await contract.read.getVersion();
+        return version === 1;
+      } catch (error) {
+        return false;
+      }
     },
     [publicClient],
   );
