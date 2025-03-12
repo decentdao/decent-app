@@ -3,6 +3,7 @@ import { useFormikContext } from 'formik';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { erc20Abi, getContract, isAddress, zeroAddress } from 'viem';
+import { isFeatureEnabled } from '../../../helpers/featureFlags';
 import useNetworkPublicClient from '../../../hooks/useNetworkPublicClient';
 import { createAccountSubstring } from '../../../hooks/utils/useGetAccountName';
 import { CreatorFormState, ICreationStepProps, TokenCreationType } from '../../../types';
@@ -14,10 +15,15 @@ import { StepWrapper } from '../StepWrapper';
 import { usePrepareFormData } from '../hooks/usePrepareFormData';
 import useStepRedirect from '../hooks/useStepRedirect';
 import { AzoriusTokenAllocations } from './AzoriusTokenAllocations';
+import { VotesToken } from './VotesToken';
 import { VotesTokenImport } from './VotesTokenImport';
 import { VotesTokenNew } from './VotesTokenNew';
 
 function TokenConfigDisplay(props: ICreationStepProps) {
+  if (isFeatureEnabled('flag_higher_components')) {
+    return <VotesToken {...props} />;
+  }
+
   switch (props.values.erc20Token.tokenCreationType) {
     case TokenCreationType.NEW:
       return <VotesTokenNew {...props} />;

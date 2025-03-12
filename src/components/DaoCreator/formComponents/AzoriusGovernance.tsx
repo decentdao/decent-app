@@ -16,6 +16,9 @@ import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
 import { FractalModuleType, ICreationStepProps, VotingStrategyType } from '../../../types';
 import { DEV_VOTING_PERIOD_MINUTES } from '../../../utils/dev/devModeConstants';
 import { GaslessVotingToggleDAOCreate } from '../../GaslessVoting/GaslessVotingToggle';
+import { InputSection } from '../../input/InputSection';
+import { StepperInput } from '../../input/StepperInput';
+import { BigIntTextInput } from '../../input/TextInput';
 import { BigIntInput } from '../../ui/forms/BigIntInput';
 import { CustomNonceInput } from '../../ui/forms/CustomNonceInput';
 import { LabelComponent } from '../../ui/forms/InputComponent';
@@ -23,6 +26,7 @@ import { NumberStepperInput } from '../../ui/forms/NumberStepperInput';
 import { StepButtons } from '../StepButtons';
 import { StepWrapper } from '../StepWrapper';
 import useStepRedirect from '../hooks/useStepRedirect';
+import { CreateDAOPresenter } from '../presenters/CreateDAOPresenter';
 import { DAOCreateMode } from './EstablishEssentials';
 
 function DayStepperInput({
@@ -104,6 +108,124 @@ export function AzoriusGovernance(props: ICreationStepProps) {
     const minutes = executionPeriodDays * 24 * 60;
     setFieldValue('azorius.executionPeriod', { bigintValue: minutes, value: minutes.toString() });
   }, [setFieldValue, executionPeriodDays]);
+
+  if (isFeatureEnabled('flag_higher_components')) {
+    const { quorum, votingPeriod, timelockPeriod, executionPeriod } = CreateDAOPresenter.governance(
+      t,
+      values.azorius.votingStrategyType,
+      values.azorius.votingStrategyType === VotingStrategyType.LINEAR_ERC20
+        ? values.azorius.quorumPercentage.bigintValue
+        : values.erc721Token.quorumThreshold.bigintValue,
+      votingPeriodDays,
+      timelockPeriodDays,
+      executionPeriodDays,
+      value =>
+        setFieldValue(
+          values.azorius.votingStrategyType === VotingStrategyType.LINEAR_ERC20
+            ? 'azorius.quorumPercentage'
+            : 'erc721Token.quorumThreshold',
+          value,
+        ),
+      setVotingPeriodDays,
+      setTimelockPeriodDays,
+      setExecutionPeriodDays,
+    );
+
+    const section = CreateDAOPresenter.section();
+
+    return (
+      <>
+        <StepWrapper
+          mode={mode}
+          isSubDAO={isSubDAO}
+          isFormSubmitting={!!isSubmitting || transactionPending}
+          allSteps={props.steps}
+          stepNumber={3}
+        >
+          <InputSection {...section}>
+            <BigIntTextInput {...quorum} />
+            <StepperInput {...votingPeriod} />
+            <StepperInput {...timelockPeriod} />
+            <StepperInput {...executionPeriod} />
+
+            <Alert
+              status="info"
+              gap={4}
+            >
+              <Box
+                width="1.5rem"
+                height="1.5rem"
+              >
+                <WarningCircle size="24" />
+              </Box>
+              <Text
+                whiteSpace="pre-wrap"
+                ml="1rem"
+              >
+                {t('governanceDescription')}
+              </Text>
+            </Alert>
+          </InputSection>
+        </StepWrapper>
+        {!!subgraphInfo?.parentAddress && (
+          <Box
+            padding="1.5rem"
+            bg="neutral-2"
+            borderRadius="0.25rem"
+            mt="1.5rem"
+            mb={showCustomNonce ? '1.5rem' : 0}
+          >
+            <FormControl
+              gap="0.5rem"
+              width="100%"
+              justifyContent="space-between"
+              display="flex"
+              isDisabled={!!fractalModule}
+            >
+              <Text>{t('attachFractalModuleLabel')}</Text>
+              <Switch
+                size="md"
+                variant="secondary"
+                onChange={() =>
+                  setFieldValue('freeze.attachFractalModule', !values.freeze.attachFractalModule)
+                }
+                isChecked={!!fractalModule || values.freeze.attachFractalModule}
+                isDisabled={!!fractalModule}
+              />
+            </FormControl>
+            <Text
+              color="neutral-7"
+              width="50%"
+            >
+              {t(
+                fractalModule
+                  ? 'fractalModuleAttachedDescription'
+                  : 'attachFractalModuleDescription',
+              )}
+            </Text>
+          </Box>
+        )}
+        {showCustomNonce && (
+          <Box
+            padding="1.5rem"
+            bg="neutral-2"
+            borderRadius="0.25rem"
+            my="1.5rem"
+          >
+            <CustomNonceInput
+              nonce={values.multisig.customNonce}
+              onChange={handleNonceChange}
+              renderTrimmed={false}
+            />
+          </Box>
+        )}
+        <StepButtons
+          {...props}
+          isEdit={mode === DAOCreateMode.EDIT}
+        />
+      </>
+    );
+  }
 
   return (
     <>

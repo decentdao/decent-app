@@ -3,6 +3,7 @@ import { CheckCircle } from '@phosphor-icons/react';
 import debounce from 'lodash.debounce';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { isFeatureEnabled } from '../../../helpers/featureFlags';
 import { createAccountSubstring } from '../../../hooks/utils/useGetAccountName';
 import {
   supportedNetworks,
@@ -11,12 +12,17 @@ import {
 import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
 import { GovernanceType, ICreationStepProps, VotingStrategyType } from '../../../types';
 import { getNetworkIcon } from '../../../utils/url';
+import { InputSection } from '../../input/InputSection';
+import { IInputSection } from '../../input/Interfaces';
+import { DropdownMenuSelection, RadioSelection } from '../../input/SelectionInput';
+import { TextInput } from '../../input/TextInput';
 import { InputComponent, LabelComponent } from '../../ui/forms/InputComponent';
 import LabelWrapper from '../../ui/forms/LabelWrapper';
 import { RadioWithText } from '../../ui/forms/Radio/RadioWithText';
 import { DropdownMenu } from '../../ui/menus/DropdownMenu';
 import { StepButtons } from '../StepButtons';
 import { StepWrapper } from '../StepWrapper';
+import { CreateDAOPresenter } from '../presenters/CreateDAOPresenter';
 
 export enum DAOCreateMode {
   ROOTDAO,
@@ -95,6 +101,77 @@ export function EstablishEssentials(props: ICreationStepProps) {
     icon: getNetworkIcon(network.addressPrefix),
     selected: chain.id === network.chain.id,
   }));
+
+  if (isFeatureEnabled('flag_higher_components')) {
+    const { daoname, chainOptions, governanceOptions, snapshot } = CreateDAOPresenter.essential(
+      t,
+      daoNameDisabled,
+      supportedNetworks,
+      chain.id,
+      values.essentials.governance,
+      snapshotENSDisabled,
+      errors?.essentials?.snapshotENS,
+      value => setFieldValue('essentials.daoName', value, true),
+      chainId => setCurrentConfig(getConfigByChainId(Number(chainId))),
+      handleGovernanceChange,
+      value => setFieldValue('essentials.snapshotENS', value, true),
+    );
+
+    // const daoName: ILabeledTextInput = CreateDAOPresenter.daoname(t, daoNameDisabled, value =>
+    //   setFieldValue('essentials.daoName', value, true),
+    // );
+
+    // const chainOptions: ISelectionInput = CreateDAOPresenter.chainOptions(
+    //   t,
+    //   supportedNetworks,
+    //   chain.id,
+    //   chainId => {
+    //     setCurrentConfig(getConfigByChainId(Number(chainId)));
+    //   },
+    // );
+
+    // const governanceOptions: ISelectionInput = CreateDAOPresenter.governanceOptions(
+    //   t,
+    //   values.essentials.governance,
+    //   handleGovernanceChange,
+    // );
+
+    // const snapshot: ILabeledTextInput = CreateDAOPresenter.snapshot(
+    //   t,
+    //   snapshotENSDisabled,
+    //   errors?.essentials?.snapshotENS,
+    //   value => setFieldValue('essentials.snapshotENS', value, true),
+    // );
+
+    const section: IInputSection = CreateDAOPresenter.section(undefined);
+
+    return (
+      <>
+        <StepWrapper
+          mode={mode}
+          isSubDAO={isSubDAO}
+          isFormSubmitting={!!isSubmitting || transactionPending}
+          allSteps={props.steps}
+          stepNumber={1}
+        >
+          <InputSection {...section}>
+            <TextInput {...daoname} />
+            <DropdownMenuSelection {...chainOptions} />
+            <RadioSelection {...governanceOptions} />
+            <TextInput {...snapshot} />
+          </InputSection>
+        </StepWrapper>
+        <StepButtons
+          {...props}
+          isNextDisabled={
+            (!!errors.essentials && Object.keys(errors.essentials).length > 0) ||
+            (isEdit && values.essentials.governance === GovernanceType.MULTISIG)
+          }
+          isEdit={isEdit}
+        />
+      </>
+    );
+  }
 
   return (
     <>
