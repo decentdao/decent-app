@@ -111,7 +111,7 @@ export function SafeInjectProvider({
         let response;
         switch (params.call) {
           case 'eth_call':
-            response = await publicClient.call({ account: address, ...(params.params[0] as any) });
+            response = (await publicClient.call(params.params[0] as any)).data;
             break;
           case 'eth_gasPrice':
             response = await publicClient.getGasPrice();
@@ -149,7 +149,8 @@ export function SafeInjectProvider({
             });
             break;
           case 'eth_estimateGas':
-            response = await publicClient.estimateGas(params.params[0] as any);
+            const p = params.params[0] as any;
+            response = await publicClient.estimateGas({ ...p, account: p.from });
             break;
         }
 
