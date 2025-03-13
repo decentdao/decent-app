@@ -16,6 +16,7 @@ export function ProposalIframe() {
   useEffect(() => {
     const processTransactions = async () => {
       if (latestTransactions && latestTransactions.length > 0) {
+        // TODO remove this toast or add an i18n key
         toast.success(`Received ${latestTransactions.length} transactions from dApp`);
         const updatedTransactions: CreateProposalTransaction[] = [];
 
