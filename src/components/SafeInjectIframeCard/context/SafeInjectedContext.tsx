@@ -154,15 +154,11 @@ export function SafeInjectProvider({
             break;
         }
 
-        // const response = (await provider.send(
-        //   params.call,
-        //   params.params,
-        // )) as MethodToResponse['rpcCall'];
-        console.debug('[DEBUG] rpcCall', {
-          method: params.call,
-          params: params.params[0],
-          response,
-        });
+        // console.debug('[DEBUG] rpcCall', {
+        //   method: params.call,
+        //   params: params.params[0],
+        //   response,
+        // });
         return response;
       } catch (err) {
         return err;
@@ -181,6 +177,7 @@ export function SafeInjectProvider({
           return { ...rest };
         }
       });
+      console.debug('found transactions', transactions);
       setLatestTransaction({
         id: parseInt(msg.data.id.toString()),
         ...transactions[0],
