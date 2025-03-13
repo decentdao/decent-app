@@ -21,11 +21,11 @@ const core = new Core({
 export default function useWalletConnect({
   uri,
   address,
-  setLatestTransaction,
+  setLatestTransactions,
 }: {
   uri: string;
   address: string;
-  setLatestTransaction: (tx: TransactionWithId) => void;
+  setLatestTransactions: (tx: TransactionWithId[]) => void;
 }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string>();
@@ -123,7 +123,7 @@ export default function useWalletConnect({
             data: params[0].data,
             value: params[0].value ? parseInt(params[0].value, 16).toString() : '0',
           };
-          setLatestTransaction(newTxn);
+          setLatestTransactions([newTxn]);
           if (web3wallet && topic) {
             await web3wallet.respondSessionRequest({
               topic,

@@ -29,7 +29,7 @@ const BUILDIN_APPS = [
  * @example wrap this component with SafeInjectProvider to provide address and chainId
  */
 export default function SafeInjectIframeCard() {
-  const { appUrl, iframeRef, address, setAppUrl, setLatestTransaction } = useSafeInject();
+  const { appUrl, iframeRef, address, setAppUrl, setLatestTransactions } = useSafeInject();
   const [urlInput, setUrlInput] = useState<string>('');
   const [walletConnectUri, setWalletConnectUri] = useState<string>('');
   const [selectedItemIndex, setSelectedItemIndex] = useState<number>(0);
@@ -37,7 +37,7 @@ export default function SafeInjectIframeCard() {
   const { connect, disconnect, isConnected, loading } = useWalletConnect({
     uri: walletConnectUri,
     address: address || '',
-    setLatestTransaction,
+    setLatestTransactions,
   });
 
   useDebounce<string | undefined>(urlInput, 500, (k: string | undefined) => {
