@@ -1,4 +1,5 @@
 import { Box, Button, Flex, Hide, Show, Text } from '@chakra-ui/react';
+import { ethers } from 'ethers';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
@@ -96,9 +97,11 @@ export default function HomePage() {
             // Calculate maxFeePerGas with 20% buffer
             const maxFeePerGas = ((baseFeePerGas + maxPriorityFeePerGas) * 120n) / 100n;
 
-            const validationGasLimit = 150000n * 20n;
-            const callGasLimit = 150000n * 20n;
-            const preVerificationGas = 90000n * 20n;
+            const validationGasLimit = 15000n * 20n;
+            const callGasLimit = 15000n * 20n;
+            const preVerificationGas = 9000n * 20n;
+            const paymasterVerificationGasLimit = 15000n * 20n;
+            const paymasterPostOpGasLimit = 0;
 
             const entryPoint = getContract({
               address: ENTRY_POINT_ADDRESS,
@@ -128,7 +131,7 @@ export default function HomePage() {
                 },
               ],
               functionName: 'mint',
-              args: ['0x44361baC177810392449d5D26A7d0371b6c430c3', 1n],
+              args: [smartWalletAddress, 1n],
             });
 
             const dummyTarget = '0xaf039944af128b8dd75872866fc47fdd4eb45621';
@@ -154,39 +157,53 @@ export default function HomePage() {
               validationGasLimit.toString(16).padStart(32, '0') +
               callGasLimit.toString(16).padStart(32, '0')) as `0x${string}`;
 
-            const userOpData = {
-              sender: '0x44361baC177810392449d5D26A7d0371b6c430c3' as `0x${string}`,
-              nonce: await entryPoint.read.getNonce([
-                '0x44361baC177810392449d5D26A7d0371b6c430c3',
-                0n,
-              ]),
+            const gasFees = ('0x' +
+              maxPriorityFeePerGas.toString(16).padStart(32, '0') +
+              maxFeePerGas.toString(16).padStart(32, '0')) as `0x${string}`;
+
+            const paymasterAndData = (paymasterAddress +
+              paymasterVerificationGasLimit.toString(16).padStart(32, '0') +
+              paymasterPostOpGasLimit.toString(16).padStart(32, '0')) as `0x${string}`;
+
+            const nonce = await entryPoint.read.getNonce([smartWalletAddress, 0n]);
+            let userOpData = {
+              sender: smartWalletAddress as `0x${string}`,
+              nonce: nonce,
+
               initCode: '0x' as `0x${string}`,
               callData: castVoteCallData,
+
               accountGasLimits,
-              gasFees: ('0x' + '0'.padStart(64, '0')) as `0x${string}`,
               preVerificationGas,
+
+              gasFees: gasFees,
+
+              paymasterAndData: paymasterAndData,
               signature: '0x' as `0x${string}`, // Not used in gatUserOpHash
-              paymasterAndData: paymasterAddress,
             };
 
             // Sign the UserOperation
             const userOpHash = await entryPoint.read.getUserOpHash([userOpData]);
-            const signature = await walletClient!.signMessage({ message: userOpHash });
+            const signature = await walletClient!.signMessage({
+              message: { raw: ethers.getBytes(userOpHash) },
+            });
+            userOpData.signature = signature as `0x${string}`;
 
             const userOpPostBody = {
-              sender: smartWalletAddress,
-              callData: castVoteCallData,
-              nonce: `0x${userOpData.nonce.toString(16)}`,
+              sender: userOpData.sender,
+              callData: userOpData.callData,
+              nonce: `0x${nonce.toString(32)}`,
               callGasLimit: `0x${callGasLimit.toString(16)}`,
               verificationGasLimit: `0x${validationGasLimit.toString(16)}`,
               preVerificationGas: `0x${preVerificationGas.toString(16)}`,
               maxFeePerGas: `0x${maxFeePerGas.toString(16)}`,
               maxPriorityFeePerGas: `0x${maxPriorityFeePerGas.toString(16)}`,
-              signature,
+              paymasterVerificationGasLimit: `0x${validationGasLimit.toString(16)}`,
+              signature: signature as `0x${string}`,
               paymaster: paymasterAddress!,
             };
 
-            console.log({ userOpPostBody });
+            console.log({ userOpData });
 
             // Send UserOperation to bundler
             const response = await fetch(rpcEndpoint, {
