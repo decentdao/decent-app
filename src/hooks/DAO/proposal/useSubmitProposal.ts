@@ -305,6 +305,9 @@ export default function useSubmitProposal() {
       successCallback,
       safeAddress,
     }: ISubmitProposal) => {
+      // FIXME this will sliently fail if any of the required data is missing
+      //   for example, user did not connect wallet
+      //   conside throw an error or return early
       if (!proposalData || !safeAPI || !userAddress) {
         return;
       }

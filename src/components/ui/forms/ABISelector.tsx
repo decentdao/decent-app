@@ -13,7 +13,7 @@ interface IABISelector {
 }
 
 export default function ABISelector({ target, onChange }: IABISelector) {
-  const abi = useABI(target);
+  const { abi } = useABI(target);
   const { t } = useTranslation('common');
 
   /*

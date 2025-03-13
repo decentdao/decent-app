@@ -30,8 +30,8 @@ type SafeInjectContextType = {
   appUrl: string | undefined;
   //rpcUrl: string | undefined;
   iframeRef: React.RefObject<HTMLIFrameElement> | null;
-  latestTransaction: TransactionWithId | undefined;
-  setLatestTransaction: React.Dispatch<React.SetStateAction<TransactionWithId | undefined>>;
+  latestTransactions: TransactionWithId[] | undefined;
+  setLatestTransactions: React.Dispatch<React.SetStateAction<TransactionWithId[] | undefined>>;
   setAddress: React.Dispatch<React.SetStateAction<string | undefined>>;
   setAppUrl: React.Dispatch<React.SetStateAction<string | undefined>>;
   //setRpcUrl: React.Dispatch<React.SetStateAction<string | undefined>>;
@@ -42,8 +42,8 @@ export const SafeInjectContext = createContext<SafeInjectContextType>({
   address: undefined,
   appUrl: undefined,
   iframeRef: null,
-  latestTransaction: undefined,
-  setLatestTransaction: () => {},
+  latestTransactions: undefined,
+  setLatestTransactions: () => {},
   setAddress: () => {},
   setAppUrl: () => {},
   sendMessageToIFrame: () => {},
@@ -65,7 +65,7 @@ export function SafeInjectProvider({
   //     ?.provider as providers.JsonRpcProvider) || (ethersProvider as providers.JsonRpcProvider);
   // const provider = new providers.StaticJsonRpcProvider(_provider.connection.url);
   const publicClient = useNetworkPublicClient();
-  const [latestTransaction, setLatestTransaction] = useState<TransactionWithId>();
+  const [latestTransactions, setLatestTransactions] = useState<TransactionWithId[]>();
 
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const communicator = useAppCommunicator(iframeRef);
@@ -177,11 +177,15 @@ export function SafeInjectProvider({
           return { ...rest };
         }
       });
-      console.debug('found transactions', transactions);
-      setLatestTransaction({
-        id: parseInt(msg.data.id.toString()),
-        ...transactions[0],
-      });
+      console.debug('Iframe.sendTransactions', transactions);
+      setLatestTransactions(
+        transactions.map(txn => {
+          return {
+            id: parseInt(msg.data.id.toString()),
+            ...txn,
+          };
+        }),
+      );
       // openConfirmationModal(transactions, msg.data.params.params, msg.data.id)
     });
 
@@ -204,8 +208,8 @@ export function SafeInjectProvider({
         address,
         appUrl,
         iframeRef,
-        latestTransaction,
-        setLatestTransaction,
+        latestTransactions,
+        setLatestTransactions,
         setAddress,
         setAppUrl,
         sendMessageToIFrame,

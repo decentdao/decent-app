@@ -1,6 +1,6 @@
 import axios from 'axios';
 import detectProxyTarget from 'evm-proxy-detection';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { isAddress } from 'viem';
 import { logError } from '../../helpers/errorLogging';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
@@ -22,37 +22,45 @@ export function useABI(target?: string) {
     chainId: chain.id,
   });
   const client = useNetworkPublicClient();
-
-  useEffect(() => {
-    const loadABI = async () => {
-      if (target && ((ensAddress && isAddress(ensAddress)) || isAddress(target))) {
+  const loadABI = useCallback(
+    async (targetAddress?: string) => {
+      const address = targetAddress || target;
+      if (address && ((ensAddress && isAddress(ensAddress)) || isAddress(address))) {
         try {
           const requestFunc = ({ method, params }: { method: any; params: any }) =>
             client.request({ method, params });
 
-          const implementationAddress = await detectProxyTarget(ensAddress || target, requestFunc);
+          const implementationAddress = await detectProxyTarget(ensAddress || address, requestFunc);
 
           const response = await axios.get(
-            `${etherscanAPIUrl}&module=contract&action=getabi&address=${implementationAddress || ensAddress || target}`,
+            `${etherscanAPIUrl}&module=contract&action=getabi&address=${implementationAddress || ensAddress || address}`,
           );
           const responseData = response.data;
 
           if (responseData.status === '1') {
             const fetchedABI = JSON.parse(responseData.result);
             setABI(fetchedABI);
+            return fetchedABI;
           } else {
             setABI([]);
+            return [];
           }
         } catch (e) {
           setABI([]);
           logError(e, 'Error fetching ABI for smart contract');
+          return [];
         }
       } else {
         setABI([]);
+        return [];
       }
-    };
-    loadABI();
-  }, [target, ensAddress, etherscanAPIUrl, client]);
+    },
+    [target, ensAddress, etherscanAPIUrl, client],
+  );
 
-  return abi;
+  useEffect(() => {
+    loadABI();
+  }, [loadABI]);
+
+  return { abi, loadABI };
 }

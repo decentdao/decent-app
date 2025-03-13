@@ -1,71 +1,74 @@
 import { Box } from '@chakra-ui/react';
 import { useFormikContext } from 'formik';
 import { useEffect } from 'react';
-import { AbiFunction, decodeAbiParameters, decodeFunctionData, getAbiItem, Hash } from 'viem';
+import { toast } from 'sonner';
+import { AbiFunction, decodeFunctionData, getAbiItem, Hash } from 'viem';
 import { useABI } from '../../hooks/utils/useABI';
-import { CreateProposalForm } from '../../types/proposalBuilder';
+import { CreateProposalForm, CreateProposalTransaction } from '../../types/proposalBuilder';
 import SafeInjectIframeCard from '../SafeInjectIframeCard';
 import { useSafeInject } from '../SafeInjectIframeCard/context/SafeInjectedContext';
 
 export function ProposalIframe() {
   const { values, setFieldValue } = useFormikContext<CreateProposalForm>();
-  const { latestTransaction, setLatestTransaction } = useSafeInject();
-  const abi = useABI(latestTransaction?.to);
+  const { latestTransactions, setLatestTransactions } = useSafeInject();
+  const { loadABI } = useABI();
 
   useEffect(() => {
-    if (latestTransaction) {
-      const abiFunction = getAbiItem({
-        abi: abi,
-        name: latestTransaction.data.slice(0, 10), // 4 byte function selector
-      }) as AbiFunction;
-      // is there ABI for this transaction?
-      if (abiFunction) {
-        // decode parameters from data
-        const { args: paramValues } = decodeFunctionData({
-          abi,
-          data: latestTransaction.data as Hash,
-        });
-        const parameters = abiFunction.inputs.map((abiInput, index) => ({
-          signature: `${abiInput.type} ${abiInput.name}`,
-          label: '',
-          value: paramValues?.[index]!.toString() || '',
-        }));
+    const processTransactions = async () => {
+      if (latestTransactions && latestTransactions.length > 0) {
+        toast.success(`Received ${latestTransactions.length} transactions from dApp`);
+        const updatedTransactions: CreateProposalTransaction[] = [];
+
+        for (const latestTransaction of latestTransactions) {
+          const functionSelector = latestTransaction.data.slice(0, 10);
+          const abi = await loadABI(latestTransaction.to);
+          const abiFunction = getAbiItem({
+            abi: abi,
+            name: functionSelector,
+          }) as AbiFunction;
+
+          // is there ABI for this transaction?
+          if (abiFunction) {
+            // decode parameters from data
+            const { args: paramValues } = decodeFunctionData({
+              abi,
+              data: latestTransaction.data as Hash,
+            });
+            const parameters = abiFunction.inputs.map((abiInput, index) => ({
+              signature: `${abiInput.type} ${abiInput.name}`,
+              label: '',
+              value: paramValues?.[index]!.toString() || '',
+            }));
+
+            updatedTransactions.push({
+              targetAddress: latestTransaction.to || '',
+              functionName: abiFunction.name,
+              ethValue: {
+                value: latestTransaction.value,
+                bigintValue: BigInt(latestTransaction.value),
+              },
+              parameters,
+            });
+          } else {
+            console.warn('loadABIandMatch.fail', latestTransaction, abi, abiFunction);
+            toast.warning(`Failed to parse transaction-${functionSelector}`);
+          }
+        }
 
         const previousTransactions = values.transactions || [];
         // if there is only one transaction and it is empty, replace it
         if (previousTransactions.length === 1 && previousTransactions[0].targetAddress === '') {
-          setFieldValue('transactions', [
-            {
-              targetAddress: latestTransaction.to,
-              functionName: abiFunction.name,
-              ethValue: {
-                value: latestTransaction.value,
-                bigintValue: BigInt(latestTransaction.value),
-              },
-              parameters,
-            },
-          ]);
+          setFieldValue('transactions', updatedTransactions);
         } else {
-          setFieldValue('transactions', [
-            ...previousTransactions,
-            {
-              targetAddress: latestTransaction.to,
-              functionName: abiFunction.name,
-              ethValue: {
-                value: latestTransaction.value,
-                bigintValue: BigInt(latestTransaction.value),
-              },
-              parameters,
-            },
-          ]);
+          setFieldValue('transactions', [...previousTransactions, ...updatedTransactions]);
         }
 
-        setLatestTransaction(undefined);
+        setLatestTransactions([]);
       }
-    }
-  }, [abi, latestTransaction, setFieldValue, setLatestTransaction, values.transactions]);
+    };
 
-  console.debug('aha', values);
+    processTransactions();
+  }, [latestTransactions, loadABI, setFieldValue, setLatestTransactions, values.transactions]);
 
   return (
     <Box>
