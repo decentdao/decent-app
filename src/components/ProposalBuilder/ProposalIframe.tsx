@@ -28,7 +28,7 @@ export function ProposalIframe() {
         const parameters = abiFunction.inputs.map((abiInput, index) => ({
           signature: `${abiInput.type} ${abiInput.name}`,
           label: '',
-          value: paramValues?.[index] || '',
+          value: paramValues?.[index]!.toString() || '',
         }));
 
         const previousTransactions = values.transactions || [];
