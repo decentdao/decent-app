@@ -1,9 +1,10 @@
-import { Text, Icon, Button, Box, Input, Flex } from '@chakra-ui/react';
+import { Text, Icon, Button, Box, VStack } from '@chakra-ui/react';
 import { CheckCircle } from '@phosphor-icons/react';
-import { t } from 'i18next';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { isAddress } from 'viem';
 import { useDebounce } from '../../hooks/utils/useDebounce';
+import { InputComponent } from '../ui/forms/InputComponent';
 import { DropdownMenu } from '../ui/menus/DropdownMenu';
 import { useSafeInject } from './context/SafeInjectedContext';
 import useWalletConnect from './hooks/WalletConnect';
@@ -29,6 +30,7 @@ const BUILDIN_APPS = [
  * @example wrap this component with SafeInjectProvider to provide address and chainId
  */
 export default function SafeInjectIframeCard() {
+  const { t } = useTranslation(['proposalTemplate', 'common']);
   const { appUrl, iframeRef, address, setAppUrl, setLatestTransactions } = useSafeInject();
   const [urlInput, setUrlInput] = useState<string>('');
   const [walletConnectUri, setWalletConnectUri] = useState<string>('');
@@ -58,158 +60,105 @@ export default function SafeInjectIframeCard() {
   ];
 
   return (
-    <div>
-      <Text
-        as="label"
-        display="block"
-        fontSize="sm"
-        fontWeight="medium"
-        color="gray.700"
-      >
-        {'Load with other dApp'}
-      </Text>
-      <Text
-        fontSize="xs"
-        color="gray.500"
-      >
-        {
-          'You can visit any dApps that supports Safe, interact with interface and get transaction you need to sign here.'
-        }
-      </Text>
-      <Flex
-        mt={1}
-        flexDirection={{ base: 'column', md: 'row' }}
-        gap={2}
-      >
-        <Input
-          type="text"
-          height="10"
-          borderRadius="md"
-          borderColor="gray.300"
-          boxShadow="sm"
-          _focus={{
-            borderColor: 'indigo.500',
-            ringColor: 'indigo.500',
-          }}
-          size="sm"
-          width={{ base: 'full', md: '2/3' }}
+    <VStack
+      align="left"
+      px="1.5rem"
+      mt={6}
+    >
+      <Box>
+        <InputComponent
+          label={t('labelIframeUrlInput')}
+          helper={t('helperIframUrlInput')}
+          placeholder="url"
+          isRequired={true}
           value={urlInput}
           onChange={e => setUrlInput(e.target.value)}
-          isDisabled={!isAddress(address || '')}
-          placeholder={
-            isAddress(address || '')
-              ? 'Input app url you want to load'
-              : 'No project owner address founded'
+          disabled={!isAddress(address || '')}
+          subLabel={
+            <Box height="auto">
+              <DropdownMenu<{}>
+                items={dropdownItems}
+                selectedItem={dropdownItems.find(item => item.selected)}
+                onSelect={item => {
+                  const index = dropdownItems.findIndex(i => i.value === item.value);
+                  setSelectedItemIndex(index);
+                  setUrlInput(item.value);
+                }}
+                title={t('titleIframeDappsDropdown')}
+                isDisabled={!isAddress(address || '')}
+                renderItem={(item, isSelected) => {
+                  return (
+                    <>
+                      <Text
+                        textStyle="labels-large"
+                        color="white-0"
+                      >
+                        {item.label}
+                      </Text>
+                      {isSelected && (
+                        <Icon
+                          as={CheckCircle}
+                          boxSize="1.5rem"
+                          color="lilac-0"
+                        />
+                      )}
+                    </>
+                  );
+                }}
+              />
+            </Box>
           }
+          testId="iframe.urlInput"
         />
+      </Box>
 
-        <Box width={{ base: 'full', md: '1/3' }}>
-          <DropdownMenu<{}>
-            items={dropdownItems}
-            selectedItem={dropdownItems.find(item => item.selected)}
-            onSelect={item => {
-              const index = dropdownItems.findIndex(i => i.value === item.value);
-              setSelectedItemIndex(index);
-              setUrlInput(item.value);
-            }}
-            title={t('titleAssets', { ns: 'treasury' })}
-            isDisabled={!isAddress(address || '')}
-            selectPlaceholder={t('selectLabel', { ns: 'modals' })}
-            emptyMessage={t('emptyRolesAssets', { ns: 'roles' })}
-            renderItem={(item, isSelected) => {
-              return (
-                <>
-                  <Text
-                    textStyle="labels-large"
-                    color="white-0"
-                  >
-                    {item.label}
-                  </Text>
-                  {isSelected && (
-                    <Icon
-                      as={CheckCircle}
-                      boxSize="1.5rem"
-                      color="lilac-0"
-                    />
-                  )}
-                </>
-              );
-            }}
-          />
-        </Box>
-      </Flex>
-
-      <Text
-        mt={3}
-        fontSize="xs"
-        color="gray.500"
+      <Box
+        mt="2rem"
+        mb="2rem"
       >
-        {"For dApps that doesn't support Safe, you can use WalletConnect to connect."}
-      </Text>
-
-      <Flex
-        flexDirection={{ base: 'column', md: 'row' }}
-        gap={2}
-      >
-        <Input
-          type="text"
-          height="10"
-          borderRadius="md"
-          borderColor="gray.300"
-          boxShadow="sm"
-          _focus={{
-            borderColor: 'indigo.500',
-            ringColor: 'indigo.500',
-          }}
-          size="sm"
-          width={{ base: 'full', md: '2/3' }}
+        <InputComponent
+          label={t('labelIframeWalletConnectUri')}
+          helper={t('helperIframeWalletConnectUri')}
+          placeholder="uri"
+          isRequired={false}
           value={walletConnectUri}
           onChange={e => setWalletConnectUri(e.target.value)}
-          isDisabled={!isAddress(address || '')}
-          placeholder={
-            isAddress(address || '')
-              ? 'Select WalletConnect method and copy URI here to connect'
-              : 'No project owner address founded'
+          disabled={!isAddress(address || '')}
+          subLabel={
+            <Box height="auto">
+              <Button
+                px="2rem"
+                isDisabled={false}
+                onClick={() => {
+                  if (isConnected) {
+                    disconnect();
+                    setWalletConnectUri('');
+                  } else {
+                    connect();
+                  }
+                }}
+              >
+                {isConnected ? t('buttonDisconnectWalletConnect') : t('buttonConnectWalletConnect')}
+              </Button>
+            </Box>
           }
+          testId="iframe.urlInput"
         />
-
-        <Flex
-          justifyContent="flex-end"
-          width={{ base: 'full', md: '1/3' }}
-        >
-          <Button
-            px="2rem"
-            isDisabled={false}
-            onClick={() => {
-              if (isConnected) {
-                disconnect();
-                setWalletConnectUri('');
-              } else {
-                connect();
-              }
-            }}
-          >
-            {t('confirm')}
-          </Button>
-        </Flex>
-      </Flex>
+      </Box>
 
       {appUrl && (
-        <Box
-          mt={2}
-          overflowY="auto"
-        >
+        <Box overflowY="auto">
           <Box
             as="iframe"
             ref={iframeRef}
             src={appUrl}
-            height="60vh"
+            height="80vh"
             width="full"
             p={2}
             allow="clipboard-write"
           />
         </Box>
       )}
-    </div>
+    </VStack>
   );
 }

@@ -40,5 +40,12 @@
   "templateAirdropTitle": "Airdrop",
   "templateAirdropDescription": "Send tokens to multiple recipients",
   "templateIframeTitle": "Iframe",
-  "templateIframeDescription": "Open dApps in iframe"
+  "templateIframeDescription": "Open dApps in iframe",
+  "titleIframeDappsDropdown": "dApps",
+  "labelIframeUrlInput": "dApp URL",
+  "helperIframUrlInput": "Enter the URL of the dApp you want to open in the iframe",
+  "labelIframeWalletConnectUri": "WalletConnect URI",
+  "helperIframeWalletConnectUri": "For dApps that doesn't support Safe, you can use WalletConnect to connect",
+  "buttonConnectWalletConnect": "Connect",
+  "buttonDisconnectWalletConnect": "Disconnect"
 }
