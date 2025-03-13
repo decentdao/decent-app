@@ -1,14 +1,13 @@
 import { Box, Button, Flex, Hide, Show, Text } from '@chakra-ui/react';
-
-import { toSimpleSmartAccount } from 'permissionless/accounts';
+import { toLightSmartAccount } from 'permissionless/accounts';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
-import { http } from 'viem';
+import { getAddress, http, parseEther } from 'viem';
 import { createBundlerClient } from 'viem/account-abstraction';
-import { privateKeyToAccount } from 'viem/accounts';
 import { DAOSearch } from '../../components/ui/menus/DAOSearch';
 import useNetworkPublicClient from '../../hooks/useNetworkPublicClient';
+import { useNetworkWalletClient } from '../../hooks/useNetworkWalletClient';
 import { useFractal } from '../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
 import { useDaoInfoStore } from '../../store/daoInfo/useDaoInfoStore';
@@ -22,6 +21,7 @@ export default function HomePage() {
 
   const { rpcEndpoint } = useNetworkConfigStore();
   const publicClient = useNetworkPublicClient();
+  const walletClient = useNetworkWalletClient();
 
   useEffect(() => {
     // @todo @dev Let's revisit this logic in future when state has been updated
@@ -70,56 +70,54 @@ export default function HomePage() {
       <Button
         onClick={async () => {
           try {
-            const paymasterAddress = '0x830f97bfC85a0263a5Fa74d153A79E3992B9a918' as `0x${string}`;
-
-            const dummyTarget = '0xaf039944af128b8dd75872866fc47fdd4eb45621';
+            const smartWallet = await toLightSmartAccount({
+              client: publicClient!,
+              owner: walletClient.data!,
+              version: '2.0.0',
+            });
 
             const bundlerClient = createBundlerClient({
+              account: smartWallet,
               client: publicClient,
               transport: http(rpcEndpoint),
             });
-            const supportedEntryPoints = await bundlerClient.getSupportedEntryPoints();
-            console.log({ supportedEntryPoints });
 
-            const theAccount = privateKeyToAccount('[REDACTED LMAOOO]');
-
-            const smartWallet = await toSimpleSmartAccount({
-              client: publicClient!,
-              owner: theAccount,
-            });
-
-            const hashhh = await bundlerClient.sendUserOperation({
-              account: smartWallet,
-              paymaster: paymasterAddress,
-              maxPriorityFeePerGas: 100000000n,
-              calls: [
+            const paymasterAddress = getAddress('0x830f97bfC85a0263a5Fa74d153A79E3992B9a918');
+            const dummyTarget = getAddress('0xaf039944af128b8dd75872866fc47fdd4eb45621');
+            const dummyCall = {
+              to: dummyTarget,
+              abi: [
                 {
-                  to: dummyTarget,
-                  abi: [
-                    {
-                      inputs: [
-                        { name: 'to', type: 'address' },
-                        { name: 'amount', type: 'uint256' },
-                      ],
-                      name: 'mint',
-                      outputs: [],
-                      stateMutability: 'nonpayable',
-                      type: 'function',
-                    },
+                  inputs: [
+                    { name: 'to', type: 'address' },
+                    { name: 'amount', type: 'uint256' },
                   ],
-                  functionName: 'mint',
-                  args: ['0x44361baC177810392449d5D26A7d0371b6c430c3', 1n],
+                  name: 'mint',
+                  outputs: [],
+                  stateMutability: 'nonpayable',
+                  type: 'function',
                 },
               ],
+              functionName: 'mint',
+              args: [walletClient.data!.account.address, parseEther('1')],
+            };
+
+            const { maxFeePerGas, maxPriorityFeePerGas } = await publicClient!.estimateFeesPerGas();
+
+            const hash = await bundlerClient.sendUserOperation({
+              paymaster: paymasterAddress,
+              calls: [dummyCall],
+
+              // i don't really know why we need to do this, but we do
+              maxPriorityFeePerGas: maxPriorityFeePerGas * 100n,
+              maxFeePerGas: maxFeePerGas * 100n,
             });
 
-            console.log({ hashhh });
+            console.log({ hash });
 
-            const receipt = await bundlerClient.waitForUserOperationReceipt({ hash: hashhh });
+            const receipt = await bundlerClient.waitForUserOperationReceipt({ hash });
 
             console.log({ receipt });
-
-            return;
           } catch (error: any) {
             console.error('Gasless voting error:', error);
 
