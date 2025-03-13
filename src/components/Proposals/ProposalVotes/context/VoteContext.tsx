@@ -23,7 +23,6 @@ import {
   FractalProposal,
   GovernanceType,
   MultisigProposal,
-  SnapshotProposal,
 } from '../../../../types';
 
 interface IVoteContext {
@@ -61,9 +60,8 @@ export function VoteContextProvider({
   const { governance } = useFractal();
   const userAccount = useAccount();
   const { safe } = useDaoInfoStore();
-  const { loadVotingWeight } = useSnapshotProposal(proposal as SnapshotProposal);
+  const { loadVotingWeight, snapshotProposal } = useSnapshotProposal(proposal);
   const { remainingTokenIds } = useUserERC721VotingTokens(null, proposal.proposalId, true);
-  const { snapshotProposal } = useSnapshotProposal(proposal);
   const publicClient = useNetworkPublicClient();
 
   const getHasVoted = useCallback(() => {
@@ -132,11 +130,11 @@ export function VoteContextProvider({
             address: azoriusProposal.votingStrategy,
             client: publicClient,
           });
-          newCanVote =
-            (await ozLinearVotingContract.read.getVotingWeight([
-              userAccount.address,
-              Number(proposal.proposalId),
-            ])) > 0n;
+          const votingWeight = await ozLinearVotingContract.read.getVotingWeight([
+            userAccount.address,
+            Number(proposal.proposalId),
+          ]);
+          newCanVote = votingWeight > 0n;
         } else if (governance.type === GovernanceType.AZORIUS_ERC721) {
           const votingWeight = await erc721VotingWeight();
           newCanVote = votingWeight > 0n && remainingTokenIdsLength > 0;

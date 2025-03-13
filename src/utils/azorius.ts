@@ -124,7 +124,7 @@ const getProposalVotes = (
 
   if (erc20VotedEvents !== undefined) {
     const erc20ProposalVoteEvents = erc20VotedEvents.filter(voteEvent => {
-      if (!voteEvent.args.proposalId) return false;
+      if (voteEvent.args.proposalId === undefined) return false;
       return proposalId === voteEvent.args.proposalId;
     });
 
@@ -146,7 +146,7 @@ const getProposalVotes = (
     return events;
   } else if (erc721VotedEvents !== undefined) {
     const erc721ProposalVoteEvents = erc721VotedEvents.filter(voteEvent => {
-      if (!voteEvent.args.proposalId) return false;
+      if (voteEvent.args.proposalId === undefined) return false;
       return proposalId === voteEvent.args.proposalId;
     });
 
