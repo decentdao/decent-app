@@ -74,7 +74,6 @@ export type NetworkConfig = {
     sablierV2LockupLinear: Address;
     disperse: Address;
     paymasterFactory: Address;
-    simpleAccountFactory: Address;
   };
   staking: {
     lido?: {
