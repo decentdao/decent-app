@@ -1,5 +1,6 @@
 import { Button, Box, Text, Image, Flex, Radio, RadioGroup, Icon } from '@chakra-ui/react';
 import { Check, CheckCircle, Sparkle } from '@phosphor-icons/react';
+// eslint-disable-next-line import/no-extraneous-dependencies
 import { toLightSmartAccount } from 'permissionless/accounts';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
