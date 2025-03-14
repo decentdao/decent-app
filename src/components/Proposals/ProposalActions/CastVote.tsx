@@ -27,6 +27,8 @@ import {
 } from '../../../types';
 import { DecentTooltip } from '../../ui/DecentTooltip';
 import WeightedInput from '../../ui/forms/WeightedInput';
+import { ModalType } from '../../ui/modals/ModalProvider';
+import { useDecentModal } from '../../ui/modals/useDecentModal';
 import { useVoteContext } from '../ProposalVotes/context/VoteContext';
 
 export function CastVote({ proposal }: { proposal: FractalProposal }) {
@@ -63,6 +65,8 @@ export function CastVote({ proposal }: { proposal: FractalProposal }) {
   const { canVoteLoading, hasVoted, hasVotedLoading } = useVoteContext();
 
   const { gaslessVotingEnabled, paymasterAddress } = useDaoInfoStore();
+
+  const gaslessVoteSuccessModal = useDecentModal(ModalType.GASLESS_VOTE_SUCCESS);
 
   const entryPoint = getContract({
     address: ENTRY_POINT_ADDRESS,
@@ -113,10 +117,15 @@ export function CastVote({ proposal }: { proposal: FractalProposal }) {
         maxPriorityFeePerGas: maxPriorityFeePerGas * 100n,
         maxFeePerGas: maxFeePerGas * 100n,
       });
+      gaslessVoteSuccessModal();
       const receipt = await bundlerClient.waitForUserOperationReceipt({ hash });
 
       console.log({ receipt });
     } catch (error: any) {
+      if (error.name === 'UserRejectedRequestError') {
+        toast.error(t('userRejectedSignature', { ns: 'gaslessVoting' }));
+        return;
+      }
       console.error('Gasless voting error:', error);
       toast.error(t('castVoteError'));
 

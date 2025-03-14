@@ -25,5 +25,6 @@
   "createSmartWalletFailed": "Failed to create Smart Wallet.",
   "createSmartWalletSuccess": "Your Smart Wallet has been created successfully.",
   "voteIsSponsoredTitle": "Your vote is sponsored.",
-  "voteIsSponsoredSubtitle": "Enjoy zero fees for this vote!"
+  "voteIsSponsoredSubtitle": "Enjoy zero fees for this vote!",
+  "userRejectedSignature": "User declined to sign."
 }
