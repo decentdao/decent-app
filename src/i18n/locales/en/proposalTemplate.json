@@ -47,5 +47,8 @@
   "labelIframeWalletConnectUri": "WalletConnect URI",
   "helperIframeWalletConnectUri": "For dApps that doesn't support Safe, you can use WalletConnect to connect",
   "buttonConnectWalletConnect": "Connect",
-  "buttonDisconnectWalletConnect": "Disconnect"
+  "buttonDisconnectWalletConnect": "Disconnect",
+  "toastIframeReceiveTransactions": "Received {{amount}} transactions from dApp",
+  "toastIframeFailedToLoadABI": "Failed to load ABI for transaction-{{selector}}",
+  "toastIframeFailedToMatchFunction": "Failed to match function for transaction-{{selector}}"
 }

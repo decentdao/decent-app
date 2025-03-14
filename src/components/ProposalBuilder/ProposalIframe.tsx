@@ -1,6 +1,7 @@
 import { Box } from '@chakra-ui/react';
 import { useFormikContext } from 'formik';
 import { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { AbiFunction, decodeFunctionData, getAbiItem, Hash } from 'viem';
 import { useABI } from '../../hooks/utils/useABI';
@@ -9,6 +10,7 @@ import SafeInjectIframeCard from '../SafeInjectIframeCard';
 import { useSafeInject } from '../SafeInjectIframeCard/context/SafeInjectedContext';
 
 export function ProposalIframe() {
+  const { t } = useTranslation(['proposalTemplate']);
   const { values, setFieldValue } = useFormikContext<CreateProposalForm>();
   const { latestTransactions, setLatestTransactions } = useSafeInject();
   const { loadABI } = useABI();
@@ -16,8 +18,7 @@ export function ProposalIframe() {
   useEffect(() => {
     const processTransactions = async () => {
       if (latestTransactions && latestTransactions.length > 0) {
-        // TODO remove this toast or add an i18n key
-        toast.success(`Received ${latestTransactions.length} transactions from dApp`);
+        toast.success(t('toastIframeReceiveTransactions', { amount: latestTransactions.length }));
         const updatedTransactions: CreateProposalTransaction[] = [];
 
         for (const latestTransaction of latestTransactions) {
@@ -51,8 +52,12 @@ export function ProposalIframe() {
               parameters,
             });
           } else {
-            console.warn('loadABIandMatch.fail', latestTransaction, abi, abiFunction);
-            toast.warning(`Failed to parse transaction-${functionSelector}`);
+            console.warn('loadABIandMatch.fail', { latestTransaction, abi, abiFunction });
+            if (abi.length === 0) {
+              toast.warning(t('toastIframeFailedToLoadABI', { seletctor: functionSelector }));
+            } else {
+              toast.warning(t('toastIframeFailedToMatchFunction', { seletctor: functionSelector }));
+            }
           }
         }
 
@@ -69,7 +74,7 @@ export function ProposalIframe() {
     };
 
     processTransactions();
-  }, [latestTransactions, loadABI, setFieldValue, setLatestTransactions, values.transactions]);
+  }, [latestTransactions, loadABI, setFieldValue, setLatestTransactions, t, values.transactions]);
 
   return (
     <Box>
