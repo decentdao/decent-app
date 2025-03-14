@@ -1,4 +1,4 @@
-import { BigNumberish, BytesLike } from 'ethers';
+import { Hash } from 'viem';
 
 export interface SelectedNetworkOption {
   label: string;
@@ -491,9 +491,9 @@ export declare type SignMessageParams = {
 export interface TypedDataDomain {
   name?: string;
   version?: string;
-  chainId?: BigNumberish;
+  chainId?: bigint;
   verifyingContract?: string;
-  salt?: BytesLike;
+  salt?: Hash;
 }
 export interface TypedDataTypes {
   name: string;
