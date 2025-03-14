@@ -186,6 +186,9 @@ export function SafeInjectProvider({
           };
         }),
       );
+      // tell the iframe that we received the transactions
+      //   and "confirmed" so it can continue
+      return true;
       // openConfirmationModal(transactions, msg.data.params.params, msg.data.id)
     });
 
