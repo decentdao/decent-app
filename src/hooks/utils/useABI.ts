@@ -23,7 +23,7 @@ export function useABI(target?: string) {
   });
   const client = useNetworkPublicClient();
   const loadABI = useCallback(
-    async (targetAddress?: string) => {
+    async (targetAddress?: string): Promise<ABIElement[]> => {
       const address = targetAddress || target;
       if (address && ((ensAddress && isAddress(ensAddress)) || isAddress(address))) {
         try {
