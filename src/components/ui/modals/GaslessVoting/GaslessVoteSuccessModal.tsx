@@ -1,7 +1,7 @@
 import { Box, CloseButton, Flex, Text, Image } from '@chakra-ui/react';
 import { useTranslation } from 'react-i18next';
 
-export function CreateSmartWalletSuccessModal({ close }: { close: () => void }) {
+export function GaslessVoteSuccessModal({ close }: { close: () => void }) {
   const { t } = useTranslation('gaslessVoting');
 
   return (

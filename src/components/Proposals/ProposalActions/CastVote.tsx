@@ -25,11 +25,8 @@ import {
   FractalProposalState,
   VOTE_CHOICES,
 } from '../../../types';
-import { userHasSmartWallet } from '../../../utils/gaslessVoting';
 import { DecentTooltip } from '../../ui/DecentTooltip';
 import WeightedInput from '../../ui/forms/WeightedInput';
-import { ModalType } from '../../ui/modals/ModalProvider';
-import { useDecentModal } from '../../ui/modals/useDecentModal';
 import { useVoteContext } from '../ProposalVotes/context/VoteContext';
 
 export function CastVote({ proposal }: { proposal: FractalProposal }) {
@@ -60,11 +57,7 @@ export function CastVote({ proposal }: { proposal: FractalProposal }) {
   } = useCastSnapshotVote(extendedSnapshotProposal);
 
   const publicClient = useNetworkPublicClient();
-  const {
-    rpcEndpoint,
-    chain,
-    contracts: { simpleAccountFactory },
-  } = useNetworkConfigStore();
+  const { rpcEndpoint, chain } = useNetworkConfigStore();
   const { data: walletClient } = useNetworkWalletClient();
   const { address } = useAccount();
   const { canVoteLoading, hasVoted, hasVotedLoading } = useVoteContext();
@@ -89,13 +82,6 @@ export function CastVote({ proposal }: { proposal: FractalProposal }) {
     }
 
     try {
-      // const smartWalletAddress = await getUserSmartWalletAddress({
-      //   address,
-      //   chainId: chain.id,
-      //   publicClient,
-      //   simpleAccountFactory,
-      // });
-
       const smartWallet = await toLightSmartAccount({
         client: publicClient,
         owner: walletClient,
@@ -140,12 +126,6 @@ export function CastVote({ proposal }: { proposal: FractalProposal }) {
       await castVote(selectedVoteChoice);
     }
   };
-
-  const createSmartWallet = useDecentModal(ModalType.CREATE_SMART_WALLET, {
-    successCallback: () => {
-      castGaslessVote();
-    },
-  });
 
   const [paymasterBalance, setPaymasterBalance] = useState<BigIntValuePair>();
   useEffect(() => {
@@ -192,18 +172,7 @@ export function CastVote({ proposal }: { proposal: FractalProposal }) {
     if (selectedVoteChoice !== undefined && address !== undefined) {
       try {
         if (canVoteForFree) {
-          const hasSmartWallet = await userHasSmartWallet({
-            address,
-            chainId: chain.id,
-            publicClient,
-            simpleAccountFactory,
-          });
-
-          if (hasSmartWallet) {
-            await castGaslessVote();
-          } else {
-            createSmartWallet();
-          }
+          await castGaslessVote();
         } else {
           await castVote(selectedVoteChoice);
         }

@@ -106,7 +106,6 @@ export const polygonConfig: NetworkConfig = {
     sablierV2LockupLinear: '0x8D4dDc187a73017a5d7Cef733841f55115B13762',
     disperse: '0xD152f549545093347A162Dce210e7293f1452150',
     paymasterFactory: '0x0000000000000000000000000000000000000000',
-    simpleAccountFactory: '0x0000000000000000000000000000000000000000',
   },
   staking: {},
   moralis: {

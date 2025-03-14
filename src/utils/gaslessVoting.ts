@@ -1,6 +1,5 @@
 import { Address, getContract, keccak256, PublicClient, stringToHex } from 'viem';
 import { DecentPaymasterFactoryV1Abi } from '../assets/abi/DecentPaymasterFactoryV1Abi';
-import { SimpleAccountFactoryAbi } from '../assets/abi/SimpleAccountFactoryAbi';
 
 export const getUserSmartWalletSalt = (args: { EOA: Address; chainId: number }) => {
   const { EOA, chainId } = args;
@@ -33,37 +32,4 @@ export const getPaymasterAddress = async (args: {
   });
   const paymasterAddress = await paymasterContract.read.getAddress([address, paymasterSalt]);
   return paymasterAddress;
-};
-
-export const getUserSmartWalletAddress = async (args: {
-  address: Address;
-  chainId: number;
-  publicClient: PublicClient;
-  simpleAccountFactory: Address;
-}) => {
-  const { address, chainId, publicClient, simpleAccountFactory } = args;
-  const smartWalletSalt = getUserSmartWalletSalt({
-    EOA: address,
-    chainId,
-  });
-  const smartWalletContract = getContract({
-    address: simpleAccountFactory,
-    abi: SimpleAccountFactoryAbi,
-    client: publicClient,
-  });
-  const smartWalletAddress = await smartWalletContract.read.getAddress([address, smartWalletSalt]);
-  return smartWalletAddress;
-};
-
-export const userHasSmartWallet = async (args: {
-  address: Address;
-  chainId: number;
-  publicClient: PublicClient;
-  simpleAccountFactory: Address;
-}) => {
-  const smartWalletAddress = await getUserSmartWalletAddress(args);
-  const bytecode = await args.publicClient.getBytecode({
-    address: smartWalletAddress,
-  });
-  return bytecode !== undefined && bytecode !== '0x';
 };

@@ -14,8 +14,7 @@ import { ConfirmModifyGovernanceModal } from './ConfirmModifyGovernanceModal';
 import { ConfirmUrlModal } from './ConfirmUrlModal';
 import { DelegateModal } from './DelegateModal';
 import ForkProposalTemplateModal from './ForkProposalTemplateModal';
-import { CreateSmartWalletModal } from './GaslessVoting/CreateSmartWalletModal';
-import { CreateSmartWalletSuccessModal } from './GaslessVoting/CreateSmartWalletSuccessModal';
+import { GaslessVoteSuccessModal } from './GaslessVoting/GaslessVoteSuccessModal';
 import { RefillGasData, RefillGasTankModal } from './GaslessVoting/RefillGasTankModal';
 import { ModalBase, ModalBaseSize } from './ModalBase';
 import PaymentCancelConfirmModal from './PaymentCancelConfirmModal';
@@ -44,7 +43,7 @@ export enum ModalType {
   AIRDROP,
   REFILL_GAS,
   CREATE_SMART_WALLET,
-  CREATE_SMART_WALLET_SUCCESS,
+  GASLESS_VOTE_SUCCESS,
 }
 
 export type CurrentModal = {
@@ -107,7 +106,7 @@ export type ModalPropsTypes = {
   [ModalType.CREATE_SMART_WALLET]: {
     successCallback: () => void;
   };
-  [ModalType.CREATE_SMART_WALLET_SUCCESS]: {};
+  [ModalType.GASLESS_VOTE_SUCCESS]: {};
 };
 
 export interface IModalContext {
@@ -297,16 +296,9 @@ export function ModalProvider({ children }: { children: ReactNode }) {
           />
         );
         break;
-      case ModalType.CREATE_SMART_WALLET:
-        modalContent = (
-          <CreateSmartWalletModal
-            close={closeModal}
-            successCallback={current.props.successCallback}
-          />
-        );
-        break;
-      case ModalType.CREATE_SMART_WALLET_SUCCESS:
-        modalContent = <CreateSmartWalletSuccessModal close={closeModal} />;
+
+      case ModalType.GASLESS_VOTE_SUCCESS:
+        modalContent = <GaslessVoteSuccessModal close={closeModal} />;
         modalSize = 'md';
         break;
       case ModalType.AIRDROP:
