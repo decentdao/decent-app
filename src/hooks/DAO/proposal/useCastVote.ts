@@ -1,7 +1,7 @@
 import { abis } from '@fractal-framework/fractal-contracts';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Address, getContract, encodeFunctionData } from 'viem';
+import { Address, getContract } from 'viem';
 import { useFractal } from '../../../providers/App/AppProvider';
 import { useNetworkWalletClient } from '../../useNetworkWalletClient';
 import { useTransaction } from '../../utils/useTransaction';
@@ -30,56 +30,36 @@ const useCastVote = (proposalId: string, strategy: Address) => {
 
   const prepareCastVoteData = useCallback(
     (vote: number) => {
-      if (!walletClient) {
-        return null;
-      }
-
-      let castVoteCalldata: `0x${string}`;
+      let voteArgs: any[] = [];
+      let abi: any;
 
       if (
         strategy === linearVotingErc20Address ||
         strategy === linearVotingErc20WithHatsWhitelistingAddress
       ) {
-        castVoteCalldata = encodeFunctionData({
-          abi: abis.LinearERC20Voting,
-          functionName: 'vote',
-          args: [Number(proposalId), vote],
-        });
+        abi = abis.LinearERC20Voting;
+        voteArgs = [Number(proposalId), vote];
       } else if (
         strategy === linearVotingErc721Address ||
         strategy === linearVotingErc721WithHatsWhitelistingAddress
       ) {
-        castVoteCalldata = encodeFunctionData({
-          abi: abis.LinearERC721Voting,
-          functionName: 'vote',
-          args: [
-            Number(proposalId),
-            vote,
-            remainingTokenAddresses,
-            remainingTokenIds.map(i => BigInt(i)),
-          ],
-        });
+        abi = abis.LinearERC721Voting;
+        voteArgs = [
+          Number(proposalId),
+          vote,
+          remainingTokenAddresses,
+          remainingTokenIds.map(i => BigInt(i)),
+        ];
       } else {
         throw new Error('Invalid strategy');
       }
 
-      return encodeFunctionData({
-        abi: [
-          {
-            inputs: [
-              { name: 'target', type: 'address' },
-              { name: 'value', type: 'uint256' },
-              { name: 'data', type: 'bytes' },
-            ],
-            name: 'execute',
-            outputs: [{ name: '', type: 'bytes' }],
-            stateMutability: 'nonpayable',
-            type: 'function',
-          },
-        ],
-        functionName: 'execute',
-        args: [strategy, 0n, castVoteCalldata],
-      });
+      return {
+        to: strategy,
+        abi,
+        functionName: 'vote',
+        args: voteArgs,
+      };
     },
     [
       linearVotingErc721Address,
@@ -89,7 +69,6 @@ const useCastVote = (proposalId: string, strategy: Address) => {
       proposalId,
       remainingTokenAddresses,
       remainingTokenIds,
-      walletClient,
       strategy,
     ],
   );

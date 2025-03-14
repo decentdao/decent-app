@@ -1,9 +1,11 @@
 import { Button, Box, Text, Image, Flex, Radio, RadioGroup, Icon } from '@chakra-ui/react';
 import { Check, CheckCircle, Sparkle } from '@phosphor-icons/react';
+import { toLightSmartAccount } from 'permissionless/accounts';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
-import { getContract } from 'viem';
+import { getContract, http } from 'viem';
+import { createBundlerClient } from 'viem/account-abstraction';
 import { useAccount } from 'wagmi';
 import { EntryPointAbi } from '../../../assets/abi/EntryPointAbi';
 import { ENTRY_POINT_ADDRESS, TOOLTIP_MAXW } from '../../../constants/common';
@@ -22,7 +24,7 @@ import {
   FractalProposalState,
   VOTE_CHOICES,
 } from '../../../types';
-import { getUserSmartWalletAddress, userHasSmartWallet } from '../../../utils/gaslessVoting';
+import { userHasSmartWallet } from '../../../utils/gaslessVoting';
 import { DecentTooltip } from '../../ui/DecentTooltip';
 import WeightedInput from '../../ui/forms/WeightedInput';
 import { ModalType } from '../../ui/modals/ModalProvider';
@@ -86,113 +88,53 @@ export function CastVote({ proposal }: { proposal: FractalProposal }) {
     }
 
     try {
-      const smartWalletAddress = await getUserSmartWalletAddress({
-        address,
-        chainId: chain.id,
-        publicClient,
-        simpleAccountFactory,
+      // const smartWalletAddress = await getUserSmartWalletAddress({
+      //   address,
+      //   chainId: chain.id,
+      //   publicClient,
+      //   simpleAccountFactory,
+      // });
+
+      const smartWallet = await toLightSmartAccount({
+        client: publicClient,
+        owner: walletClient,
+        version: '2.0.0',
+      });
+
+      const bundlerClient = createBundlerClient({
+        account: smartWallet,
+        client: publicClient,
+        transport: http(rpcEndpoint),
       });
 
       // Get current network conditions
-      const [baseFeePerGas, maxPriorityFeePerGass] = await Promise.all([
-        publicClient.getBlock({ blockTag: 'latest' }).then(block => block.baseFeePerGas || 0n),
-        publicClient.estimateMaxPriorityFeePerGas(),
-      ]);
+      const { maxFeePerGas, maxPriorityFeePerGas } = await publicClient.estimateFeesPerGas();
 
-      const maxPriorityFeePerGas = maxPriorityFeePerGass * 100n;
-
-      // Calculate maxFeePerGas with 20% buffer
-      const maxFeePerGas = ((baseFeePerGas + maxPriorityFeePerGas) * 120n) / 100n;
-
-      const validationGasLimit = 150000n;
-      const callGasLimit = 150000n;
-      const preVerificationGas = 90000n;
-
-      // Calculate total cost including buffer
-      const totalGasNeeded = validationGasLimit + callGasLimit + preVerificationGas;
-      const estimatedCost = totalGasNeeded * maxFeePerGas;
-
-      // Check paymaster balance
-      const paymasterCurrentBalance = await entryPoint.read.balanceOf([paymasterAddress]);
-      if (paymasterCurrentBalance < estimatedCost) {
-        toast.error(t('insufficientPaymasterBalance', { ns: 'gaslessVoting' }));
-        return;
+      // Need this to shut typescript up
+      if (!maxFeePerGas || !maxPriorityFeePerGas) {
+        throw new Error('Failed to estimate fees');
       }
 
       const castVoteCallData = prepareCastVoteData(selectedVoteChoice);
-      if (!castVoteCallData) {
-        throw new Error('Invalid cast vote calldata');
-      }
 
-      const accountGasLimits = ('0x' +
-        validationGasLimit.toString(16).padStart(32, '0') +
-        callGasLimit.toString(16).padStart(32, '0')) as `0x${string}`;
-
-      const userOpData = {
-        sender: smartWalletAddress,
-        nonce: await entryPoint.read.getNonce([smartWalletAddress, 0n]),
-        initCode: '0x' as `0x${string}`,
-        callData: castVoteCallData,
-        accountGasLimits,
-        gasFees: ('0x' + '0'.padStart(64, '0')) as `0x${string}`,
-        preVerificationGas,
-        signature: '0x' as `0x${string}`, // Not used in gatUserOpHash
-        paymasterAndData: paymasterAddress,
-      };
-
-      // Sign the UserOperation
-      const userOpHash = await entryPoint.read.getUserOpHash([userOpData]);
-      const signature = await walletClient.signMessage({ message: userOpHash });
-
-      const userOpPostBody = {
-        sender: smartWalletAddress,
-        callData: castVoteCallData,
-        nonce: `0x${userOpData.nonce.toString(16)}`,
-        callGasLimit: `0x${callGasLimit.toString(16)}`,
-        verificationGasLimit: `0x${validationGasLimit.toString(16)}`,
-        preVerificationGas: `0x${preVerificationGas.toString(16)}`,
-        maxFeePerGas: `0x${maxFeePerGas.toString(16)}`,
-        maxPriorityFeePerGas: `0x${maxPriorityFeePerGas.toString(16)}`,
-        signature,
+      // Sign and send UserOperation to bundler
+      const hash = await bundlerClient.sendUserOperation({
         paymaster: paymasterAddress,
-      };
+        calls: [castVoteCallData],
 
-      console.log({ userOpPostBody });
-
-      // Send UserOperation to bundler
-      const response = await fetch(rpcEndpoint, {
-        method: 'POST',
-        headers: {
-          accept: 'application/json',
-          'content-type': 'application/json',
-        },
-        body: JSON.stringify({
-          id: 1,
-          jsonrpc: '2.0',
-          // method: 'eth_estimateUserOperationGas',
-          method: 'eth_sendUserOperation',
-          params: [userOpPostBody, ENTRY_POINT_ADDRESS],
-        }),
+        // i don't really know why we need to do this, but we do
+        maxPriorityFeePerGas: maxPriorityFeePerGas * 100n,
+        maxFeePerGas: maxFeePerGas * 100n,
       });
+      const receipt = await bundlerClient.waitForUserOperationReceipt({ hash });
 
-      const result = await response.json();
-
-      if (result.error) {
-        console.error('UserOperation error:', result.error);
-        throw new Error(result.error.message || 'Failed to send gasless vote');
-      }
-
-      return result;
+      console.log({ receipt });
     } catch (error: any) {
       console.error('Gasless voting error:', error);
-
-      if (error instanceof Error && error.message.match(/must be at least (\d+)/)) {
-        toast.error(t('insufficientPaymasterBalance'));
-      } else {
-        toast.error(t('castVoteError'));
-      }
+      toast.error(t('castVoteError'));
 
       // Wait a bit to give the user time to process. Fall back to regular voting.
+      // @todo instead, show a modal to user, give them option to retry, cancel, or pay their own gas to cast vote
       await new Promise(resolve => setTimeout(resolve, 3000));
       await castVote(selectedVoteChoice);
     }
