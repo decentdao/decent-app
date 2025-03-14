@@ -16,6 +16,7 @@ import { SafeCreateProposalTemplatePage } from './pages/dao/proposal-templates/n
 import { SafeProposalDetailsPage } from './pages/dao/proposals/[proposalId]';
 import { SafeProposalWithActionsCreatePage } from './pages/dao/proposals/actions/new/SafeProposalWithActionsCreatePage';
 import { SafeProposalCreatePage } from './pages/dao/proposals/new/SafeProposalCreatePage';
+import { SafeIframeProposalCreatePage } from './pages/dao/proposals/new/iframe/SafeIframeProposalCreatePage';
 import { SafeSablierProposalCreatePage } from './pages/dao/proposals/new/sablier/SafeSablierProposalCreatePage';
 import { SafeRolesPage } from './pages/dao/roles/SafeRolesPage';
 import { SafeRoleDetailsPage } from './pages/dao/roles/details/SafeRoleDetailsPage';
@@ -31,7 +32,6 @@ import { SafePermissionsCreateProposal } from './pages/dao/settings/permissions/
 import { SafePermissionsSettingsPage } from './pages/dao/settings/permissions/SafePermissionsSettingsPage';
 import { SafeTreasuryPage } from './pages/dao/treasury/SafeTreasuryPage';
 import HomePage from './pages/home/HomePage';
-import { SafeIframeProposalCreatePage } from './pages/dao/proposals/new/iframe/SafeIframeProposalCreatePage';
 
 interface LoaderFunctionArgs {
   request: Request;

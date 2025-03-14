@@ -16,8 +16,6 @@ import {
   Methods,
   RequestId,
   RPCPayload,
-  SignMessageParams,
-  SignTypedMessageParams,
   Transaction,
 } from '../types';
 
@@ -192,18 +190,16 @@ export function SafeInjectProvider({
       // openConfirmationModal(transactions, msg.data.params.params, msg.data.id)
     });
 
-    communicator?.on(Methods.signMessage, async msg => {
-      const { message } = msg.data.params as SignMessageParams;
+    // communicator?.on(Methods.signMessage, async msg => {
+    //   const { message } = msg.data.params as SignMessageParams;
+    //   // openSignMessageModal(message, msg.data.id, Methods.signMessage)
+    // });
 
-      // openSignMessageModal(message, msg.data.id, Methods.signMessage)
-    });
-
-    communicator?.on(Methods.signTypedMessage, async msg => {
-      const { typedData } = msg.data.params as SignTypedMessageParams;
-
-      // openSignMessageModal(typedData, msg.data.id, Methods.signTypedMessage)
-    });
-  }, [communicator, address]);
+    // communicator?.on(Methods.signTypedMessage, async msg => {
+    //   const { typedData } = msg.data.params as SignTypedMessageParams;
+    //   // openSignMessageModal(typedData, msg.data.id, Methods.signTypedMessage)
+    // });
+  }, [communicator, address, chainId, publicClient]);
 
   return (
     <SafeInjectContext.Provider

@@ -36,7 +36,7 @@ export default function SafeInjectIframeCard() {
   const [walletConnectUri, setWalletConnectUri] = useState<string>('');
   const [selectedItemIndex, setSelectedItemIndex] = useState<number>(0);
 
-  const { connect, disconnect, isConnected, loading } = useWalletConnect({
+  const { connect, disconnect, isConnected } = useWalletConnect({
     uri: walletConnectUri,
     address: address || '',
     setLatestTransactions,

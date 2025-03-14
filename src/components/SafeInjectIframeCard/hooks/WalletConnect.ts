@@ -85,7 +85,7 @@ export default function useWalletConnect({
         };
 
         if (requiredNamespace && requiredNamespace.chains) {
-          const chainId = parseInt(requiredNamespace.chains[0].split(':')[1]);
+          //const chainId = parseInt(requiredNamespace.chains[0].split(':')[1]);
           // TODO: this is chain using by dApp connected
         }
 
@@ -167,17 +167,14 @@ export default function useWalletConnect({
     newChainId?: number;
     newAddress?: string;
   }) => {
-    let _chainId = newChainId;
-    let _address = newAddress;
-
     if (walletConnector && walletConnectSession) {
       await walletConnector.emitSessionEvent({
         topic: walletConnectSession.topic,
         event: {
           name: newChainId ? 'chainChanged' : 'accountsChanged',
-          data: [_address],
+          data: [newAddress],
         },
-        chainId: `eip155:${_chainId}`,
+        chainId: `eip155:${newChainId}`,
       });
       setLoading(false);
     } else {
