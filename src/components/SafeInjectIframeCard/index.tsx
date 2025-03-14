@@ -1,7 +1,8 @@
 import { Text, Icon, Button, Box, VStack } from '@chakra-ui/react';
 import { CheckCircle } from '@phosphor-icons/react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { toast } from 'sonner';
 import { isAddress } from 'viem';
 import { useDebounce } from '../../hooks/utils/useDebounce';
 import { InputComponent } from '../ui/forms/InputComponent';
@@ -19,19 +20,29 @@ const BUILDIN_APPS = [
     label: 'Uniswap',
   },
   // Violate CSP, can't access sablier with iframe way
-  // { value: 'https://app.sablier.com/', label: 'Sablier' },
+  { value: 'https://app.sablier.com/', label: 'Sablier' },
   {
     value: 'https://jokerace.xyz',
     label: 'Jokerace',
   },
 ];
 
+function isValidUrl(url: string): boolean {
+  try {
+    new URL(url);
+    return true;
+  } catch (_) {
+    return false;
+  }
+}
+
 /**
  * @example wrap this component with SafeInjectProvider to provide address and chainId
  */
 export default function SafeInjectIframeCard() {
   const { t } = useTranslation(['proposalTemplate', 'common']);
-  const { appUrl, iframeRef, address, setAppUrl, setLatestTransactions } = useSafeInject();
+  const { appUrl, lastAppUrlSupported, iframeRef, address, setAppUrl, setLatestTransactions } =
+    useSafeInject();
   const [urlInput, setUrlInput] = useState<string>('');
   const [walletConnectUri, setWalletConnectUri] = useState<string>('');
   const [selectedItemIndex, setSelectedItemIndex] = useState<number>(0);
@@ -47,6 +58,39 @@ export default function SafeInjectIframeCard() {
       setAppUrl(k);
     }
   });
+
+  useEffect(() => {
+    let checkSupportTimeout: NodeJS.Timeout;
+
+    if (appUrl && isValidUrl(appUrl)) {
+      // Doc: as a security precaution user agents do not fire the error event on <iframe>s,
+      // and the load event is always triggered even if the <iframe> content fails to load.
+      //  check https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe#error_and_load_event_behavior
+
+      // Impl: so we need to check if the site is supported by the iframe
+      //   by giving a timeout to check if the site response in time
+      checkSupportTimeout = setTimeout(() => {
+        if (lastAppUrlSupported !== appUrl) {
+          toast(t('toastIframedAppNotSupported'), {
+            action: {
+              label: 'Open in new tab',
+              onClick: () => {
+                // open in new tab
+                window.open(appUrl, '_blank');
+              },
+            },
+            duration: Infinity,
+          });
+        }
+      }, 3000);
+    }
+
+    return () => {
+      if (checkSupportTimeout) {
+        clearTimeout(checkSupportTimeout);
+      }
+    };
+  }, [appUrl, lastAppUrlSupported, setAppUrl, t]);
 
   const dropdownItems = [
     {

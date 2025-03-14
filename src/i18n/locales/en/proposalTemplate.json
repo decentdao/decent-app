@@ -50,5 +50,6 @@
   "buttonDisconnectWalletConnect": "Disconnect",
   "toastIframeReceiveTransactions": "Received {{amount}} transactions from dApp",
   "toastIframeFailedToLoadABI": "Failed to load ABI for transaction-{{selector}}",
-  "toastIframeFailedToMatchFunction": "Failed to match function for transaction-{{selector}}"
+  "toastIframeFailedToMatchFunction": "Failed to match function for transaction-{{selector}}",
+  "toastIframedAppNotSupported": "Failed to connect site, consider go to that site directly and copy the WalletConnect URI here."
 }

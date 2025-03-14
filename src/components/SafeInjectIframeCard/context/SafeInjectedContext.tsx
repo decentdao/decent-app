@@ -26,6 +26,7 @@ export interface TransactionWithId extends Transaction {
 type SafeInjectContextType = {
   address: string | undefined;
   appUrl: string | undefined;
+  lastAppUrlSupported: string | undefined;
   //rpcUrl: string | undefined;
   iframeRef: React.RefObject<HTMLIFrameElement> | null;
   latestTransactions: TransactionWithId[] | undefined;
@@ -39,6 +40,7 @@ type SafeInjectContextType = {
 export const SafeInjectContext = createContext<SafeInjectContextType>({
   address: undefined,
   appUrl: undefined,
+  lastAppUrlSupported: undefined,
   iframeRef: null,
   latestTransactions: undefined,
   setLatestTransactions: () => {},
@@ -57,11 +59,7 @@ export function SafeInjectProvider({
 }>) {
   const [address, setAddress] = useState<string | undefined>(defaultAddress);
   const [appUrl, setAppUrl] = useState<string>();
-  // const ethersProvider = useEthersProvider();
-  // const _provider =
-  //   ((ethersProvider as providers.FallbackProvider)?.providerConfigs[0]
-  //     ?.provider as providers.JsonRpcProvider) || (ethersProvider as providers.JsonRpcProvider);
-  // const provider = new providers.StaticJsonRpcProvider(_provider.connection.url);
+  const [lastAppUrlSupported, setLastAppUrlSupported] = useState<string>();
   const publicClient = useNetworkPublicClient();
   const [latestTransactions, setLatestTransactions] = useState<TransactionWithId[]>();
 
@@ -87,7 +85,10 @@ export function SafeInjectProvider({
   );
 
   useEffect(() => {
-    communicator?.on(Methods.getSafeInfo, async () => {
+    communicator?.on(Methods.getSafeInfo, async msg => {
+      if (appUrl?.startsWith(msg.origin)) {
+        setLastAppUrlSupported(appUrl);
+      }
       const ret = {
         safeAddress: address,
         chainId,
@@ -199,13 +200,14 @@ export function SafeInjectProvider({
     //   const { typedData } = msg.data.params as SignTypedMessageParams;
     //   // openSignMessageModal(typedData, msg.data.id, Methods.signTypedMessage)
     // });
-  }, [communicator, address, chainId, publicClient]);
+  }, [communicator, address, chainId, publicClient, appUrl]);
 
   return (
     <SafeInjectContext.Provider
       value={{
         address,
         appUrl,
+        lastAppUrlSupported,
         iframeRef,
         latestTransactions,
         setLatestTransactions,
