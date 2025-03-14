@@ -5,8 +5,8 @@ import {
   SuccessResponse,
   MethodToResponse,
   Methods,
-} from "../types";
-import { getSDKVersion, generateRequestId } from "./utils";
+} from '../types';
+import { getSDKVersion, generateRequestId } from './utils';
 
 class MessageFormatter {
   static makeRequest = <M extends Methods = Methods, P = unknown>(
@@ -36,11 +36,7 @@ class MessageFormatter {
     data,
   });
 
-  static makeErrorResponse = (
-    id: RequestId,
-    error: string,
-    version: string,
-  ): ErrorResponse => ({
+  static makeErrorResponse = (id: RequestId, error: string, version: string): ErrorResponse => ({
     id,
     success: false,
     error,
