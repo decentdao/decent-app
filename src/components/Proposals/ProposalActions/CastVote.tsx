@@ -348,7 +348,7 @@ export function CastVote({ proposal }: { proposal: FractalProposal }) {
             }}
             mb={2}
           >
-            {t(choice.label, { ns: 'common' })}
+            {t(choice.label)}
           </Radio>
         ))}
         <Button
