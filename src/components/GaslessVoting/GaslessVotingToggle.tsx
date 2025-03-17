@@ -34,6 +34,8 @@ function GaslessVotingToggleContent({
 }: GaslessVotingToggleProps & { isSettings?: boolean }) {
   const { t } = useTranslation('gaslessVoting');
 
+  const { canUserCreateProposal } = useCanUserCreateProposal();
+
   return (
     <Box
       display="flex"
@@ -62,6 +64,7 @@ function GaslessVotingToggleContent({
         </Flex>
         <Switch
           size="md"
+          isDisabled={isSettings && !canUserCreateProposal}
           isChecked={isEnabled}
           onChange={() => onToggle()}
           variant="secondary"
