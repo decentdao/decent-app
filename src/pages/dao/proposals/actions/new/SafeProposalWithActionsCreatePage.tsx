@@ -79,8 +79,8 @@ export function SafeProposalWithActionsCreatePage() {
   const { safe } = useDaoInfoStore();
 
   const { prepareProposal } = usePrepareProposal();
-  const { getTransactions } = useProposalActionsStore();
-  const transactions = useMemo(() => getTransactions(), [getTransactions]);
+  const { getTransactions, actions } = useProposalActionsStore();
+  const transactions = useMemo(() => getTransactions(), [getTransactions, actions]);
   const { addressPrefix } = useNetworkConfigStore();
 
   const HEADER_HEIGHT = useHeaderHeight();
