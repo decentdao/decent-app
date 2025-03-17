@@ -14,6 +14,7 @@ import { useDecentModal } from '../../../components/ui/modals/useDecentModal';
 import PageHeader from '../../../components/ui/page/Header/PageHeader';
 import Divider from '../../../components/ui/utils/Divider';
 import { DAO_ROUTES } from '../../../constants/routes';
+import { isFeatureEnabled } from '../../../helpers/featureFlags';
 import useSendAssetsActionModal from '../../../hooks/DAO/useSendAssetsActionModal';
 import { useCanUserCreateProposal } from '../../../hooks/utils/useCanUserSubmitProposal';
 import { analyticsEvents } from '../../../insights/analyticsEvents';
@@ -98,7 +99,7 @@ export function SafeProposalTemplatesPage() {
 
   const EXAMPLE_TEMPLATES = useMemo(() => {
     if (!safeAddress) return [];
-    return [
+    const templates = [
       {
         title: t('templateAirdropTitle', { ns: 'proposalTemplate' }),
         description: t('templateAirdropDescription', { ns: 'proposalTemplate' }),
@@ -116,6 +117,15 @@ export function SafeProposalTemplatesPage() {
         onProposalTemplateClick: openSendAssetsModal,
       },
     ];
+    if (isFeatureEnabled('flag_iframe_template')) {
+      templates.push({
+        title: t('templateIframeTitle', { ns: 'proposalTemplate' }),
+        description: t('templateIframeDescription', { ns: 'proposalTemplate' }),
+        onProposalTemplateClick: () => {},
+      });
+    }
+
+    return templates;
   }, [t, openSendAssetsModal, navigate, safeAddress, addressPrefix, openAirdropModal]);
 
   return (
