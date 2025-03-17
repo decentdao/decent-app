@@ -22,6 +22,7 @@ import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetwo
 import { useProposalActionsStore } from '../../../store/actions/useProposalActionsStore';
 import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
 import { ProposalActionType } from '../../../types/proposalBuilder';
+import { isFeatureEnabled } from '../../../helpers/featureFlags';
 
 export function SafeProposalTemplatesPage() {
   useEffect(() => {
@@ -98,7 +99,7 @@ export function SafeProposalTemplatesPage() {
 
   const EXAMPLE_TEMPLATES = useMemo(() => {
     if (!safeAddress) return [];
-    return [
+    const templates = [
       {
         title: t('templateAirdropTitle', { ns: 'proposalTemplate' }),
         description: t('templateAirdropDescription', { ns: 'proposalTemplate' }),
@@ -116,6 +117,15 @@ export function SafeProposalTemplatesPage() {
         onProposalTemplateClick: openSendAssetsModal,
       },
     ];
+    if (isFeatureEnabled('flag_iframe_template')) {
+      templates.push({
+        title: t('templateIframeTitle', { ns: 'proposalTemplate' }),
+        description: t('templateIframeDescription', { ns: 'proposalTemplate' }),
+        onProposalTemplateClick: () => {},
+      });
+    }
+
+    return templates;
   }, [t, openSendAssetsModal, navigate, safeAddress, addressPrefix, openAirdropModal]);
 
   return (
