@@ -80,6 +80,8 @@ export function SafeProposalWithActionsCreatePage() {
 
   const { prepareProposal } = usePrepareProposal();
   const { getTransactions, actions } = useProposalActionsStore();
+  // getTransactions function depends on actions internally
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const transactions = useMemo(() => getTransactions(), [getTransactions, actions]);
   const { addressPrefix } = useNetworkConfigStore();
 
