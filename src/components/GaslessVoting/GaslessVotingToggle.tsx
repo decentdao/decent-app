@@ -72,7 +72,7 @@ function GaslessVotingToggleContent({
 }
 
 export function GaslessVotingToggleDAOCreate(props: GaslessVotingToggleProps) {
-  const { t } = useTranslation('daoCreate');
+  const { t } = useTranslation(['daoCreate', 'gaslessVoting']);
   const { chain, gaslessVotingSupported } = useNetworkConfigStore();
 
   if (!isFeatureEnabled('flag_gasless_voting')) return null;
@@ -97,7 +97,10 @@ export function GaslessVotingToggleDAOCreate(props: GaslessVotingToggleProps) {
         bg="neutral-3"
         borderRadius="0.75rem"
       >
-        <Flex alignItems="center">
+        <Flex
+          alignItems="center"
+          mr="2rem"
+        >
           <Icon
             as={WarningCircle}
             color="lilac-0"
@@ -110,6 +113,7 @@ export function GaslessVotingToggleDAOCreate(props: GaslessVotingToggleProps) {
           >
             {t('gaslessVotingGettingStarted', {
               symbol: chain.nativeCurrency.symbol,
+              ns: 'gaslessVoting',
             })}
           </Text>
         </Flex>
