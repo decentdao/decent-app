@@ -68,7 +68,6 @@ interface ISafeTransaction {
 }
 
 class EnhancedSafeApiKit {
-  readonly safeApiKit: SafeApiKit;
   readonly publicClient: PublicClient;
   readonly networkConfig: NetworkConfig;
   readonly safeClientBaseUrl: string;
@@ -80,10 +79,6 @@ class EnhancedSafeApiKit {
   requestMap = new Map<string, Promise<any> | null>();
 
   constructor(networkConfig: NetworkConfig) {
-    this.safeApiKit = new SafeApiKit({
-      chainId: BigInt(networkConfig.chain.id),
-      txServiceUrl: `${networkConfig.safeBaseURL}/api`,
-    });
     this.networkConfig = networkConfig;
     this.publicClient = createPublicClient({
       chain: networkConfig.chain,
@@ -277,11 +272,6 @@ class EnhancedSafeApiKit {
     // a question though... now that the safe-transaction-service seems to be
     // turning back on after the bybit hack, does the actual response type
     // of this call still match the type we're using here?
-    try {
-      return await this.safeApiKit.getToken(tokenAddress);
-    } catch (error) {
-      console.error('Error fetching getToken from safe-transaction:', error);
-    }
 
     try {
       const [name, symbol, decimals] = await this.publicClient.multicall({
