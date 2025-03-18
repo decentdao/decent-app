@@ -1,4 +1,4 @@
-import { Address, getContract, keccak256, PublicClient, stringToHex } from 'viem';
+import { Address, getAddress, getContract, keccak256, PublicClient, stringToHex } from 'viem';
 import { DecentPaymasterFactoryV1Abi } from '../assets/abi/DecentPaymasterFactoryV1Abi';
 
 export const getUserSmartWalletSalt = (args: { EOA: Address; chainId: number }) => {
@@ -31,5 +31,5 @@ export const getPaymasterAddress = async (args: {
     client: publicClient,
   });
   const paymasterAddress = await paymasterContract.read.getAddress([address, paymasterSalt]);
-  return paymasterAddress;
+  return getAddress(paymasterAddress);
 };

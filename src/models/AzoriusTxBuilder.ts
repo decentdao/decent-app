@@ -11,8 +11,10 @@ import {
   getCreate2Address,
   keccak256,
   parseAbiParameters,
+  stringToHex,
 } from 'viem';
 import { DecentPaymasterFactoryV1Abi } from '../assets/abi/DecentPaymasterFactoryV1Abi';
+import { DecentPaymasterV1Abi } from '../assets/abi/DecentPaymasterV1Abi';
 import GnosisSafeL2Abi from '../assets/abi/GnosisSafeL2';
 import { ZodiacModuleProxyFactoryAbi } from '../assets/abi/ZodiacModuleProxyFactoryAbi';
 import { buildContractCall, getRandomBytes } from '../helpers';
@@ -20,11 +22,12 @@ import {
   AzoriusERC20DAO,
   AzoriusERC721DAO,
   AzoriusGovernanceDAO,
+  GovernanceType,
   SafeTransaction,
   VotingStrategyType,
 } from '../types';
 import { SENTINEL_MODULE } from '../utils/address';
-import { getPaymasterSalt } from '../utils/gaslessVoting';
+import { getPaymasterSalt, getPaymasterAddress } from '../utils/gaslessVoting';
 import { BaseTxBuilder } from './BaseTxBuilder';
 import { generateContractByteCodeLinear, generateSalt } from './helpers/utils';
 
@@ -270,6 +273,32 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
         this.safeContractAddress,
         getPaymasterSalt(this.safeContractAddress, this.publicClient.chain!.id),
       ],
+      0,
+      false,
+    );
+  }
+
+  public async buildApproveStrategyOnPaymasterTx(): Promise<SafeTransaction> {
+    const predictedPaymasterAddress = await getPaymasterAddress({
+      address: this.safeContractAddress,
+      chainId: this.publicClient.chain!.id,
+      publicClient: this.publicClient,
+      paymasterFactory: this.paymasterFactoryAddress,
+    });
+
+    const voteSelector = keccak256(
+      stringToHex(
+        this.daoData.governance === GovernanceType.AZORIUS_ERC20
+          ? 'vote(uint32,uint8)'
+          : 'vote(uint32,uint8,address[],uint256[])',
+      ),
+    ).slice(0, 10) as `0x${string}`;
+
+    return buildContractCall(
+      DecentPaymasterV1Abi,
+      predictedPaymasterAddress,
+      'setStrategyFunctionApproval',
+      [this.predictedStrategyAddress, [voteSelector], [true]],
       0,
       false,
     );
