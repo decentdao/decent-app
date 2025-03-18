@@ -35,6 +35,7 @@ const useBuildDAOTx = () => {
       freezeVotingErc20MasterCopy,
       freezeVotingErc721MasterCopy,
       freezeVotingMultisigMasterCopy,
+      paymasterFactory,
     },
   } = useNetworkConfigStore();
 
@@ -86,6 +87,7 @@ const useBuildDAOTx = () => {
         linearVotingErc20V1MasterCopy,
         linearVotingErc721V1MasterCopy,
         moduleAzoriusMasterCopy,
+        paymasterFactory,
         parentAddress,
         parentTokenAddress,
       );
@@ -111,6 +113,7 @@ const useBuildDAOTx = () => {
       const buildSafeTxParams = {
         shouldSetName: true, // We KNOW this will always be true because the Decent UI doesn't allow creating a safe without a name
         shouldSetSnapshot: daoData.snapshotENS !== '',
+        enableGaslessVoting: daoData.gaslessVoting,
       };
 
       // Build Tx bundle based on governance type (Azorius or Multisig)
@@ -144,6 +147,7 @@ const useBuildDAOTx = () => {
       linearVotingErc20V1MasterCopy,
       linearVotingErc721V1MasterCopy,
       moduleAzoriusMasterCopy,
+      paymasterFactory,
       governance,
       linearVotingErc721Address,
     ],

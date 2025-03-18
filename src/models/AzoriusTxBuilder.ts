@@ -12,6 +12,7 @@ import {
   keccak256,
   parseAbiParameters,
 } from 'viem';
+import { DecentPaymasterFactoryV1Abi } from '../assets/abi/DecentPaymasterFactoryV1Abi';
 import GnosisSafeL2Abi from '../assets/abi/GnosisSafeL2';
 import { ZodiacModuleProxyFactoryAbi } from '../assets/abi/ZodiacModuleProxyFactoryAbi';
 import { buildContractCall, getRandomBytes } from '../helpers';
@@ -23,6 +24,7 @@ import {
   VotingStrategyType,
 } from '../types';
 import { SENTINEL_MODULE } from '../utils/address';
+import { getPaymasterSalt } from '../utils/gaslessVoting';
 import { BaseTxBuilder } from './BaseTxBuilder';
 import { generateContractByteCodeLinear, generateSalt } from './helpers/utils';
 
@@ -55,6 +57,8 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
   private azoriusNonce: bigint;
   private claimNonce: bigint;
 
+  private paymasterFactoryAddress: Address;
+
   constructor(
     publicClient: PublicClient,
     daoData: AzoriusERC20DAO | AzoriusERC721DAO,
@@ -66,6 +70,7 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
     linearVotingErc20MasterCopy: Address,
     linearVotingErc721MasterCopy: Address,
     moduleAzoriusMasterCopy: Address,
+    paymasterFactoryAddress: Address,
 
     parentAddress?: Address,
     parentTokenAddress?: Address,
@@ -85,6 +90,8 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
     this.linearVotingErc20MasterCopy = linearVotingErc20MasterCopy;
     this.linearVotingErc721MasterCopy = linearVotingErc721MasterCopy;
     this.moduleAzoriusMasterCopy = moduleAzoriusMasterCopy;
+
+    this.paymasterFactoryAddress = paymasterFactoryAddress;
 
     if (daoData.votingStrategyType === VotingStrategyType.LINEAR_ERC20) {
       daoData = daoData as AzoriusERC20DAO;
@@ -248,6 +255,21 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
       this.zodiacModuleProxyFactory,
       'deployModule',
       [this.claimErc20MasterCopy, this.encodedSetupTokenClaimData, this.claimNonce],
+      0,
+      false,
+    );
+  }
+
+  public buildDeployPaymasterTx(): SafeTransaction {
+    return buildContractCall(
+      // @todo replace with the deployed abi
+      DecentPaymasterFactoryV1Abi,
+      this.paymasterFactoryAddress,
+      'createPaymaster',
+      [
+        this.safeContractAddress,
+        getPaymasterSalt(this.safeContractAddress, this.publicClient.chain!.id),
+      ],
       0,
       false,
     );

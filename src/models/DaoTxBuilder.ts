@@ -83,9 +83,10 @@ export class DaoTxBuilder extends BaseTxBuilder {
   public async buildAzoriusTx(params: {
     shouldSetName: boolean;
     shouldSetSnapshot: boolean;
+    enableGaslessVoting: boolean;
     existingSafeOwners?: string[];
   }): Promise<string> {
-    const { shouldSetName, shouldSetSnapshot, existingSafeOwners } = params;
+    const { shouldSetName, shouldSetSnapshot, existingSafeOwners, enableGaslessVoting } = params;
     const azoriusTxBuilder = await this.txBuilderFactory.createAzoriusTxBuilder();
 
     // transactions that must be called by safe
@@ -142,6 +143,12 @@ export class DaoTxBuilder extends BaseTxBuilder {
 
     txs.push(azoriusTxBuilder.buildDeployStrategyTx());
     txs.push(azoriusTxBuilder.buildDeployAzoriusTx());
+
+    // Deploy paymaster and set gasless voting enabled
+    if (enableGaslessVoting) {
+      txs.push(azoriusTxBuilder.buildDeployPaymasterTx());
+      this.internalTxs.push(this.buildSetGaslessVotingEnabledTx());
+    }
 
     // If subDAO and parentAllocation, deploy claim module
     let tokenClaimTx: SafeTransaction | undefined;
@@ -264,6 +271,17 @@ export class DaoTxBuilder extends BaseTxBuilder {
       this.keyValuePairs,
       'updateValues',
       [['snapshotENS'], [this.daoData.snapshotENS]],
+      0,
+      false,
+    );
+  }
+
+  private buildSetGaslessVotingEnabledTx(): SafeTransaction {
+    return buildContractCall(
+      abis.KeyValuePairs,
+      this.keyValuePairs,
+      'updateValues',
+      [['gaslessVotingEnabled'], ['true']],
       0,
       false,
     );
