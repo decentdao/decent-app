@@ -31,7 +31,7 @@ type SafeInjectContextType = {
 
 export const SafeInjectContext = createContext<SafeInjectContextType>({
   address: undefined,
-  appUrl: undefined,
+  appUrl: 'https://swap.cow.fi',
   lastAppUrlSupported: undefined,
   iframeRef: null,
   latestTransactions: undefined,
