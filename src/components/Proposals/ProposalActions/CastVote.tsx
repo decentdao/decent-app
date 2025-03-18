@@ -107,6 +107,8 @@ export function CastVote({ proposal }: { proposal: FractalProposal }) {
       const validationGasLimit = 150000n;
       const callGasLimit = 150000n;
       const preVerificationGas = 90000n;
+      const paymasterVerificationGasLimit = 150000n;
+      const paymasterPostOpGasLimit = 0;
 
       // Calculate total cost including buffer
       const totalGasNeeded = validationGasLimit + callGasLimit + preVerificationGas;
@@ -128,31 +130,46 @@ export function CastVote({ proposal }: { proposal: FractalProposal }) {
         validationGasLimit.toString(16).padStart(32, '0') +
         callGasLimit.toString(16).padStart(32, '0')) as `0x${string}`;
 
+      const gasFees = ('0x' +
+        maxPriorityFeePerGas.toString(16).padStart(32, '0') +
+        maxFeePerGas.toString(16).padStart(32, '0')) as `0x${string}`;
+
+      const paymasterAndData = (paymasterAddress +
+        paymasterVerificationGasLimit.toString(16).padStart(32, '0') +
+        paymasterPostOpGasLimit.toString(16).padStart(32, '0')) as `0x${string}`;
+
+      const nonce = await entryPoint.read.getNonce([smartWalletAddress, 0n]);
+
       const userOpData = {
         sender: smartWalletAddress,
-        nonce: await entryPoint.read.getNonce([smartWalletAddress, 0n]),
+        nonce: nonce,
         initCode: '0x' as `0x${string}`,
         callData: castVoteCallData,
         accountGasLimits,
-        gasFees: ('0x' + '0'.padStart(64, '0')) as `0x${string}`,
+        gasFees: gasFees,
         preVerificationGas,
         signature: '0x' as `0x${string}`, // Not used in gatUserOpHash
-        paymasterAndData: paymasterAddress,
+        paymasterAndData: paymasterAndData,
       };
 
       // Sign the UserOperation
       const userOpHash = await entryPoint.read.getUserOpHash([userOpData]);
-      const signature = await walletClient.signMessage({ message: userOpHash });
+      const signature = await walletClient.signMessage({
+        message: {
+          raw: userOpHash,
+        },
+      });
 
       const userOpPostBody = {
         sender: smartWalletAddress,
         callData: castVoteCallData,
-        nonce: `0x${userOpData.nonce.toString(16)}`,
+        nonce: `0x${nonce.toString(32)}`,
         callGasLimit: `0x${callGasLimit.toString(16)}`,
         verificationGasLimit: `0x${validationGasLimit.toString(16)}`,
         preVerificationGas: `0x${preVerificationGas.toString(16)}`,
         maxFeePerGas: `0x${maxFeePerGas.toString(16)}`,
         maxPriorityFeePerGas: `0x${maxPriorityFeePerGas.toString(16)}`,
+        paymasterVerificationGasLimit: `0x${validationGasLimit.toString(16)}`,
         signature,
         paymaster: paymasterAddress,
       };
