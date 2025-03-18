@@ -40,5 +40,9 @@
   "templateAirdropTitle": "Airdrop",
   "templateAirdropDescription": "Send tokens to multiple recipients",
   "templateIframeTitle": "Swap Tokens",
-  "templateIframeDescription": "with Cow swap"
+  "templateIframeDescription": "with Cow swap",
+  "labelIframeUrlInput": "dApp URL",
+  "helperIframUrlInput": "Which dApp you want to open?",
+  "labelIframeWalletConnectUri": "WalletConnect URI",
+  "helperIframeWalletConnectUri": "Paste to connect"
 }
