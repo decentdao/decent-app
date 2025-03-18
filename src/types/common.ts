@@ -7,3 +7,10 @@ export interface BigIntValuePair {
 }
 
 export type WithError = { error?: string };
+
+declare module 'abitype' {
+  export interface Register {
+    addressType: `0x${string}`;
+    bytesType: `0x${string}`;
+  }
+}

@@ -239,12 +239,13 @@ export const useAzoriusProposals = () => {
           const metadataEvent = parseProposalMetadata(proposalCreatedEvent.args.metadata);
 
           try {
+            const txs = proposalCreatedEvent.args.transactions;
             const decodedTransactions = await decodeTransactions(
               _decode,
-              proposalCreatedEvent.args.transactions.map(tx => ({
+              txs.map(tx => ({
                 ...tx,
                 to: tx.to,
-                data: tx.data,
+                data: tx.data as `0x${string}`,
                 value: tx.value,
               })),
             );
@@ -259,7 +260,7 @@ export const useAzoriusProposals = () => {
                 ...tx,
                 to: tx.to,
                 value: tx.value,
-                data: tx.data,
+                data: tx.data as `0x${string}`,
               })),
               decodedTransactions,
             };

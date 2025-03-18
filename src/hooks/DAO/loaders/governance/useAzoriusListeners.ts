@@ -1,6 +1,6 @@
 import { abis } from '@fractal-framework/fractal-contracts';
 import { useEffect, useMemo } from 'react';
-import { getContract } from 'viem';
+import { getContract, Hex } from 'viem';
 import { logError } from '../../../../helpers/errorLogging';
 import { useFractal } from '../../../../providers/App/AppProvider';
 import { FractalGovernanceAction } from '../../../../providers/App/governance/action';
@@ -118,7 +118,7 @@ export const useAzoriusListeners = () => {
           const typedTransactions = log.args.transactions.map(t => ({
             ...t,
             to: t.to,
-            data: t.data,
+            data: t.data as `0x${string}`,
             value: t.value,
           }));
 
