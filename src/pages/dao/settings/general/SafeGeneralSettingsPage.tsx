@@ -119,7 +119,11 @@ export function SafeGeneralSettingsPage() {
     }
 
     if (gaslessVotingChanged) {
-      changeTitles.push(t('enableGaslessVoting', { ns: 'proposalMetadata' }));
+      if (isGaslessVotingEnabledToggled) {
+        changeTitles.push(t('enableGaslessVoting', { ns: 'proposalMetadata' }));
+      } else {
+        changeTitles.push(t('disableGaslessVoting', { ns: 'proposalMetadata' }));
+      }
 
       keyArgs.push('gaslessVotingEnabled');
       valueArgs.push(`${isGaslessVotingEnabledToggled}`);
