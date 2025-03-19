@@ -3,7 +3,7 @@ import { WarningCircle } from '@phosphor-icons/react';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { getContract } from 'viem';
+import { Client, getContract } from 'viem';
 import { EntryPointAbi } from '../../assets/abi/EntryPointAbi';
 import { DETAILS_BOX_SHADOW, ENTRY_POINT_ADDRESS } from '../../constants/common';
 import { DAO_ROUTES } from '../../constants/routes';
@@ -82,46 +82,36 @@ export function GaslessVotingToggleDAOCreate(props: GaslessVotingToggleProps) {
   if (!gaslessVotingSupported) return null;
 
   return (
-    <Box
-      borderRadius="0.75rem"
-      bg="neutral-2"
-      p="1.5rem"
-      display="flex"
-      flexDirection="column"
-      alignItems="flex-start"
-      gap="1.5rem"
-      boxShadow={DETAILS_BOX_SHADOW}
-      mt={2}
+    <Flex
+      direction="column"
+      gap="0.5rem"
     >
-      <GaslessVotingToggleContent {...props} />
-
       <Box
-        p="1rem"
-        bg="neutral-3"
         borderRadius="0.75rem"
+        bg="neutral-2"
+        p="1.5rem"
+        display="flex"
+        flexDirection="column"
+        gap="1.5rem"
+        boxShadow={DETAILS_BOX_SHADOW}
+        mt={2}
       >
-        <Flex
-          alignItems="center"
-          mr="2rem"
+        <Box
+          borderRadius="0.5rem"
+          border="1px solid"
+          borderColor="neutral-3"
+          px="1.5rem"
+          py="1rem"
+          display="flex"
+          flexDirection="column"
+          alignItems="flex-start"
+          mt={2}
         >
-          <Icon
-            as={WarningCircle}
-            color="lilac-0"
-            width="1.5rem"
-            height="1.5rem"
-          />
-          <Text
-            color="lilac-0"
-            marginLeft="1rem"
-          >
-            {t('gaslessVotingGettingStarted', {
-              symbol: chain.nativeCurrency.symbol,
-              ns: 'gaslessVoting',
-            })}
-          </Text>
-        </Flex>
+          <GaslessVotingToggleContent {...props} />
+        </Box>
       </Box>
-    </Box>
+      <StarterPromoBanner />
+    </Flex>
   );
 }
 
@@ -143,7 +133,7 @@ export function GaslessVotingToggleDAOSettings(props: GaslessVotingToggleProps) 
     const entryPoint = getContract({
       address: ENTRY_POINT_ADDRESS,
       abi: EntryPointAbi,
-      client: publicClient,
+      client: publicClient as Client,
     });
 
     entryPoint.read.balanceOf([paymasterAddress]).then(balance => {
