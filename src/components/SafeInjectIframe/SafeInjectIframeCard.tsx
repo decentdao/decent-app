@@ -46,13 +46,14 @@ export default function SafeInjectIframeCard() {
         if (lastAppUrlSupported !== appUrl && sessionMetadata?.url !== appUrl) {
           toast(t('toastIframedAppNotSupported'), {
             action: {
-              label: 'Open in new tab',
+              label: t('toastIframedAppNotSupportedButtonLabel'),
               onClick: () => {
                 // open in new tab
                 window.open(appUrl, '_blank');
               },
             },
-            duration: Infinity,
+            closeButton: false,
+            duration: 5000,
           });
         }
       }, 3000);

@@ -48,5 +48,6 @@
   "buttonConnectWalletConnect": "Connect",
   "buttonConnectingWalletConnect": "Connecting...",
   "buttonDisconnectWalletConnect": "Disconnect",
-  "toastIframedAppNotSupported": "Failed to connect site, consider go to that site directly and copy the WalletConnect URI here."
+  "toastIframedAppNotSupported": "Use Wallet Connect to connect to Decent",
+  "toastIframedAppNotSupportedButtonLabel": "Open"
 }
