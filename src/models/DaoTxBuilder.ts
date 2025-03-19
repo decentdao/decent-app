@@ -146,9 +146,9 @@ export class DaoTxBuilder extends BaseTxBuilder {
 
     // Deploy paymaster and set gasless voting enabled
     if (enableGaslessVoting) {
-      txs.push(azoriusTxBuilder.buildDeployPaymasterTx());
-      txs.push(await azoriusTxBuilder.buildApproveStrategyOnPaymasterTx());
-      txs.push(this.buildSetGaslessVotingEnabledTx());
+      this.internalTxs.push(azoriusTxBuilder.buildDeployPaymasterTx());
+      this.internalTxs.push(this.buildSetGaslessVotingEnabledTx());
+      this.internalTxs.push(await azoriusTxBuilder.buildApproveStrategyOnPaymasterTx());
     }
 
     // If subDAO and parentAllocation, deploy claim module

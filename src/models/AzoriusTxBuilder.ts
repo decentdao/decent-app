@@ -433,7 +433,7 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
       }
 
       const linearERC20VotingMasterCopyContract = getContract({
-        abi: abis.LinearERC20Voting,
+        abi: LinearERC20VotingV1Abi, // @todo: use the deployed abi
         address: this.linearVotingErc20MasterCopy,
         client: this.publicClient,
       });
@@ -453,7 +453,7 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
       );
 
       const encodedStrategySetupData = encodeFunctionData({
-        abi: abis.LinearERC20Voting,
+        abi: LinearERC20VotingV1Abi, // @todo: use the deployed abi
         functionName: 'setUp',
         args: [encodedStrategyInitParams],
       });
