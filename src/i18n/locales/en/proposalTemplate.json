@@ -49,5 +49,5 @@
   "buttonConnectingWalletConnect": "Connecting...",
   "buttonDisconnectWalletConnect": "Disconnect",
   "toastIframedAppNotSupported": "Use Wallet Connect to connect to Decent",
-  "toastIframedAppNotSupportedButtonLabel": "Open"
+  "toastIframedAppNotSupportedButtonLabel": "Open in new Tab"
 }

@@ -11,10 +11,14 @@ type SafeInjectContextType = {
    */
   appUrl: string | undefined;
   /**
+   * Whether the app is still connecting
+   */
+  connecting: boolean;
+  /**
    * Last url which received getSafeInfo request,
    *   we can use it to determine if the app is supported by the Safe
    */
-  lastAppUrlSupported: string | undefined;
+  connectedAppUrl: string | undefined;
   iframeRef: React.RefObject<HTMLIFrameElement> | null;
   /**
    * Transactions intercepted from iframe
@@ -32,7 +36,8 @@ type SafeInjectContextType = {
 export const SafeInjectContext = createContext<SafeInjectContextType>({
   address: undefined,
   appUrl: 'https://swap.cow.fi',
-  lastAppUrlSupported: undefined,
+  connecting: false,
+  connectedAppUrl: '',
   iframeRef: null,
   latestTransactions: undefined,
   setLatestTransactions: () => {},

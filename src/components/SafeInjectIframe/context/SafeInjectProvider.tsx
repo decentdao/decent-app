@@ -16,7 +16,8 @@ export function SafeInjectProvider({
 }>) {
   const [address, setAddress] = useState<string | undefined>(defaultAddress);
   const [appUrl, setAppUrl] = useState<string>();
-  const [lastAppUrlSupported, setLastAppUrlSupported] = useState<string>();
+  const [connecting, setConnecting] = useState(false);
+  const [connectedAppUrl, setConnectedAppUrl] = useState<string>('');
   const publicClient = useNetworkPublicClient();
   const [latestTransactions, setLatestTransactions] = useState<TransactionWithId[]>();
 
@@ -42,9 +43,16 @@ export function SafeInjectProvider({
   );
 
   useEffect(() => {
+    if (iframeRef) {
+      iframeRef.current?.addEventListener('load', () => {
+        console.log('iframe loaded');
+        setConnecting(false);
+      });
+    }
+
     communicator?.on(Methods.getSafeInfo, async msg => {
       if (appUrl?.startsWith(msg.origin)) {
-        setLastAppUrlSupported(appUrl);
+        setConnectedAppUrl(appUrl);
       }
       const ret = {
         safeAddress: address,
@@ -79,7 +87,7 @@ export function SafeInjectProvider({
             response = await publicClient.getBalance({ address: params.params[0] as Address });
             break;
           case 'eth_getCode':
-            response = await publicClient.getBytecode({ address: params.params[0] as Address });
+            response = await publicClient.getCode({ address: params.params[0] as Address });
             break;
           case 'eth_getBlockByHash':
             response = await publicClient.getBlock({ blockHash: params.params[0] as Hash });
@@ -153,12 +161,16 @@ export function SafeInjectProvider({
       value={{
         address,
         appUrl,
-        lastAppUrlSupported,
+        connecting,
+        connectedAppUrl,
         iframeRef,
         latestTransactions,
         setLatestTransactions,
         setAddress,
-        setAppUrl,
+        setAppUrl: s => {
+          setConnecting(true);
+          setAppUrl(s);
+        },
         sendMessageToIFrame,
       }}
     >

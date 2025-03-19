@@ -54,7 +54,6 @@ export default function useWalletConnect({
         if (loading) {
           setLoading(false);
         }
-        console.debug('EVENT', 'session_proposal', proposal);
 
         const { requiredNamespaces, optionalNamespaces, proposer } = proposal.params;
         const connectedUrl = proposer.metadata.url;
@@ -92,7 +91,6 @@ export default function useWalletConnect({
           // TODO: this is chain using by dApp connected
         }
 
-        console.debug('approve before', namespace);
         const session = await web3wallet.approveSession({
           id: proposal.id,
           namespaces: {
@@ -195,7 +193,6 @@ export default function useWalletConnect({
           topic: walletConnectSession.topic,
           reason: getSdkError('USER_DISCONNECTED'),
         });
-        setUrlInput('');
       } catch (e) {
         console.error('killSession', e);
       }
