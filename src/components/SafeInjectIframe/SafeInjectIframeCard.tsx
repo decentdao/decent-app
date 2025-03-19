@@ -63,7 +63,7 @@ export default function SafeInjectIframeCard() {
         clearTimeout(checkSupportTimeout);
       }
     };
-  }, [appUrl, lastAppUrlSupported, setAppUrl, t]);
+  }, [appUrl, lastAppUrlSupported, sessionMetadata?.url, setAppUrl, t]);
 
   return (
     <VStack
