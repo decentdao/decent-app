@@ -3,7 +3,7 @@ import { abis } from '@fractal-framework/fractal-contracts';
 import { ChangeEventHandler, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { encodeFunctionData, keccak256, stringToHex, zeroAddress } from 'viem';
+import { Address, encodeFunctionData, keccak256, stringToHex, zeroAddress } from 'viem';
 import { DecentPaymasterFactoryV1Abi } from '../../../../assets/abi/DecentPaymasterFactoryV1Abi';
 import { DecentPaymasterV1Abi } from '../../../../assets/abi/DecentPaymasterV1Abi';
 import { GaslessVotingToggleDAOSettings } from '../../../../components/GaslessVoting/GaslessVotingToggle';
@@ -151,10 +151,27 @@ export function SafeGeneralSettingsPage() {
         linearVotingErc721Address,
         linearVotingErc20WithHatsWhitelistingAddress,
         linearVotingErc721WithHatsWhitelistingAddress,
-      ].filter(addr => !!addr);
+      ].filter(addr => addr !== undefined);
 
-      if (!paymasterAddress) {
-        // Create a new paymaster
+      let predictedPaymasterAddress: Address;
+
+      if (paymasterAddress) {
+        predictedPaymasterAddress = paymasterAddress;
+      } else {
+        predictedPaymasterAddress = await getPaymasterAddress({
+          address: safeAddress,
+          chainId,
+          publicClient,
+          paymasterFactory,
+        });
+      }
+
+      const paymasterCode = await publicClient.getCode({
+        address: predictedPaymasterAddress,
+      });
+
+      if (!paymasterCode || paymasterCode === '0x') {
+        // Paymaster does not exist, deploy a new one
         targets.push(paymasterFactory);
         calldatas.push(
           encodeFunctionData({
@@ -168,13 +185,6 @@ export function SafeGeneralSettingsPage() {
 
         // Approve the `vote` function call on the Paymaster
         // // // // // // // // // // // // // // // // // // //
-        const predictedPaymasterAddress = await getPaymasterAddress({
-          address: safeAddress,
-          chainId,
-          publicClient,
-          paymasterFactory,
-        });
-
         if (strategyAddresses.length === 0 || !votingStrategyType) {
           throw new Error('No strategy addresses defined');
         }
