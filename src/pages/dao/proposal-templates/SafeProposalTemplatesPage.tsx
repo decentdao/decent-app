@@ -15,6 +15,7 @@ import PageHeader from '../../../components/ui/page/Header/PageHeader';
 import Divider from '../../../components/ui/utils/Divider';
 import { DAO_ROUTES } from '../../../constants/routes';
 import { isFeatureEnabled } from '../../../helpers/featureFlags';
+import useIframeActionModal from '../../../hooks/DAO/useIframeActionModal';
 import useSendAssetsActionModal from '../../../hooks/DAO/useSendAssetsActionModal';
 import { useCanUserCreateProposal } from '../../../hooks/utils/useCanUserSubmitProposal';
 import { analyticsEvents } from '../../../insights/analyticsEvents';
@@ -44,6 +45,7 @@ export function SafeProposalTemplatesPage() {
 
   const safeAddress = safe?.address;
   const { openSendAssetsModal } = useSendAssetsActionModal();
+  const { openIframeModal } = useIframeActionModal();
 
   const handleAirdropSubmit = (data: AirdropData) => {
     if (!safeAddress) return;
@@ -121,12 +123,20 @@ export function SafeProposalTemplatesPage() {
       templates.push({
         title: t('templateIframeTitle', { ns: 'proposalTemplate' }),
         description: t('templateIframeDescription', { ns: 'proposalTemplate' }),
-        onProposalTemplateClick: () => {},
+        onProposalTemplateClick: openIframeModal,
       });
     }
 
     return templates;
-  }, [t, openSendAssetsModal, navigate, safeAddress, addressPrefix, openAirdropModal]);
+  }, [
+    safeAddress,
+    t,
+    openAirdropModal,
+    openSendAssetsModal,
+    navigate,
+    addressPrefix,
+    openIframeModal,
+  ]);
 
   return (
     <div>
