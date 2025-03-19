@@ -79,8 +79,10 @@ export function SafeProposalWithActionsCreatePage() {
   const { safe } = useDaoInfoStore();
 
   const { prepareProposal } = usePrepareProposal();
-  const { getTransactions } = useProposalActionsStore();
-  const transactions = useMemo(() => getTransactions(), [getTransactions]);
+  const { getTransactions, actions } = useProposalActionsStore();
+  // getTransactions function depends on actions internally
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const transactions = useMemo(() => getTransactions(), [getTransactions, actions]);
   const { addressPrefix } = useNetworkConfigStore();
 
   const HEADER_HEIGHT = useHeaderHeight();

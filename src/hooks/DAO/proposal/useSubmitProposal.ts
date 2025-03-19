@@ -386,13 +386,17 @@ export default function useSubmitProposal() {
                 if (!votingStrategy) {
                   return { isProposer: false, votingStrategy };
                 }
-                const votingContract = getContract({
-                  abi: abis.LinearERC20Voting,
-                  client: publicClient,
-                  address: votingStrategy,
-                });
-                const isProposer = await votingContract.read.isProposer([userAddress]);
-                return { isProposer, votingStrategy };
+                try {
+                  const votingContract = getContract({
+                    abi: abis.LinearERC20Voting,
+                    client: publicClient,
+                    address: votingStrategy,
+                  });
+                  const isProposer = await votingContract.read.isProposer([userAddress]);
+                  return { isProposer, votingStrategy };
+                } catch (e) {
+                  return { isProposer: false, votingStrategy };
+                }
               }),
             )
           ).find(votingStrategy => votingStrategy.isProposer);
