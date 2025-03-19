@@ -169,7 +169,7 @@ export function CastVote({ proposal }: { proposal: FractalProposal }) {
         preVerificationGas: `0x${preVerificationGas.toString(16)}`,
         maxFeePerGas: `0x${maxFeePerGas.toString(16)}`,
         maxPriorityFeePerGas: `0x${maxPriorityFeePerGas.toString(16)}`,
-        paymasterVerificationGasLimit: `0x${validationGasLimit.toString(16)}`,
+        paymasterVerificationGasLimit: `0x${paymasterVerificationGasLimit.toString(16)}`,
         signature,
         paymaster: paymasterAddress,
       };
