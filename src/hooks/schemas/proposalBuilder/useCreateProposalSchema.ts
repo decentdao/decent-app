@@ -28,12 +28,21 @@ const useCreateProposalSchema = () => {
     return false;
   };
 
+  const bigintValidationTest: Yup.TestFunction<any, Yup.AnyObject> = value => {
+    if (value === undefined || value === null) {
+      return true; // Allow undefined or null values if not required
+    }
+    if (typeof value === 'bigint') {
+      return true;
+    }
+    return false;
+  };
+
   const createProposalValidation = useMemo(
     () =>
-      Yup.object().shape({
-        transactions: Yup.array()
-          .min(1)
-          .of(
+      Yup.object()
+        .shape({
+          transactions: Yup.array().of(
             Yup.object().shape({
               targetAddress: Yup.string().test(addressValidationTest),
               ethValue: Yup.object().shape({
@@ -57,15 +66,61 @@ const useCreateProposalSchema = () => {
               ),
             }),
           ),
-        proposalMetadata: Yup.object().shape({
-          title: Yup.string().trim().required().max(50),
-          description: Yup.string().trim().notRequired(),
-          documentationUrl: Yup.string().trim().notRequired(),
+          streams: Yup.array().of(
+            Yup.object().shape({
+              type: Yup.string().oneOf(['tranched']).required(),
+              tokenAddress: Yup.string().test(addressValidationTest).required(),
+              recipientAddress: Yup.string().test(addressValidationTest).required(),
+              startDate: Yup.date().required(),
+              tranches: Yup.array()
+                .of(
+                  Yup.object().shape({
+                    amount: Yup.object()
+                      .shape({
+                        value: Yup.string().required(),
+                        bigintValue: Yup.mixed()
+                          .test('bigint', t('invalidBigIntValue'), bigintValidationTest)
+                          .notRequired(),
+                      })
+                      .required(),
+                    duration: Yup.object()
+                      .shape({
+                        value: Yup.string().required(),
+                        bigintValue: Yup.mixed()
+                          .test('bigint', t('invalidBigIntValue'), bigintValidationTest)
+                          .notRequired(),
+                      })
+                      .required(),
+                  }),
+                )
+                .required(),
+              totalAmount: Yup.object()
+                .shape({
+                  value: Yup.string().required(),
+                  bigintValue: Yup.mixed()
+                    .test('bigint', t('invalidBigIntValue'), bigintValidationTest)
+                    .notRequired(),
+                })
+                .required(),
+              cancelable: Yup.boolean().required(),
+              transferable: Yup.boolean().required(),
+            }),
+          ),
+          proposalMetadata: Yup.object().shape({
+            title: Yup.string().trim().required().max(50),
+            description: Yup.string().trim().notRequired(),
+            documentationUrl: Yup.string().trim().notRequired(),
+          }),
+          nonce: Yup.number()
+            .required()
+            .moreThan((!!safe && safe.nonce - 1) || 0),
+        })
+        .test('at-least-one-transactions-or-streams', t('atLeastOneRequired'), value => {
+          return !!(
+            (value.transactions?.length && value.transactions.length > 0) ||
+            (value.streams?.length && value.streams.length > 0)
+          );
         }),
-        nonce: Yup.number()
-          .required()
-          .moreThan((!!safe && safe.nonce - 1) || 0),
-      }),
     [addressValidationTest, t, safe],
   );
   return { createProposalValidation };

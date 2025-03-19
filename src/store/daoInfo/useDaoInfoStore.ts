@@ -36,8 +36,8 @@ export const useDaoInfoStore = create<DaoInfoStore>()(set => ({
     const { address, owners, nonce, nextNonce, threshold, modules, guard } = safe;
     set({
       safe: {
-        owners: owners.map(getAddress),
-        modulesAddresses: modules.map(getAddress),
+        owners: owners.map(owner => getAddress(owner)),
+        modulesAddresses: modules.map(module => getAddress(module)),
         guard: getAddress(guard),
         address: getAddress(address),
         nextNonce,

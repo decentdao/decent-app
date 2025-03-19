@@ -14,6 +14,7 @@ import { ConfirmModifyGovernanceModal } from './ConfirmModifyGovernanceModal';
 import { ConfirmUrlModal } from './ConfirmUrlModal';
 import { DelegateModal } from './DelegateModal';
 import ForkProposalTemplateModal from './ForkProposalTemplateModal';
+import { IframeModal } from './IframeModal';
 import { ModalBase, ModalBaseSize } from './ModalBase';
 import PaymentCancelConfirmModal from './PaymentCancelConfirmModal';
 import { PaymentWithdrawModal } from './PaymentWithdrawModal';
@@ -41,6 +42,7 @@ export enum ModalType {
   SEND_ASSETS,
   AIRDROP,
   REFILL_GAS,
+  IFRAME,
 }
 
 export type CurrentModal = {
@@ -100,6 +102,7 @@ export type ModalPropsTypes = {
     onSubmit: (refillGasData: RefillGasData) => void;
     showNonceInput: boolean;
   };
+  [ModalType.IFRAME]: {};
 };
 
 export interface IModalContext {
@@ -301,6 +304,9 @@ export function ModalProvider({ children }: { children: ReactNode }) {
             }}
           />
         );
+        break;
+      case ModalType.IFRAME:
+        modalContent = <IframeModal />;
         break;
       case ModalType.NONE:
       default:
