@@ -31,5 +31,5 @@ export const getPaymasterAddress = async (args: {
     client: publicClient,
   });
   const paymasterAddress = await paymasterContract.read.getAddress([address, paymasterSalt]);
-  return getAddress(paymasterAddress);
+  return paymasterAddress;
 };

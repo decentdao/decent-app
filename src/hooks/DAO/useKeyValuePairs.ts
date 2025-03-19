@@ -1,5 +1,4 @@
 import { abis } from '@fractal-framework/fractal-contracts';
-import { hatIdToTreeId } from '@hatsprotocol/sdk-v1-core';
 import { useEffect } from 'react';
 import { Address, GetContractEventsReturnType, PublicClient, getContract } from 'viem';
 import { DecentPaymasterFactoryV1Abi } from '../../assets/abi/DecentPaymasterFactoryV1Abi';
@@ -9,6 +8,11 @@ import { useDaoInfoStore } from '../../store/daoInfo/useDaoInfoStore';
 import { useRolesStore } from '../../store/roles/useRolesStore';
 import { getPaymasterSalt } from '../../utils/gaslessVoting';
 import useNetworkPublicClient from '../useNetworkPublicClient';
+
+// copied from @hatsprotocol/sdk-v1-core
+function hatIdToTreeId(hatId: bigint): number {
+  return parseInt('0x' + BigInt(hatId).toString(16).padStart(64, '0').substring(0, 8), 16);
+}
 
 const getGaslessVotingDaoData = async (
   events: GetContractEventsReturnType<typeof abis.KeyValuePairs>,

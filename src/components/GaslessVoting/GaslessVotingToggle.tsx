@@ -3,7 +3,7 @@ import { WarningCircle } from '@phosphor-icons/react';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { Client, getContract } from 'viem';
+import { getContract } from 'viem';
 import { EntryPointAbi } from '../../assets/abi/EntryPointAbi';
 import { DETAILS_BOX_SHADOW, ENTRY_POINT_ADDRESS } from '../../constants/common';
 import { DAO_ROUTES } from '../../constants/routes';
@@ -133,7 +133,7 @@ export function GaslessVotingToggleDAOSettings(props: GaslessVotingToggleProps) 
     const entryPoint = getContract({
       address: ENTRY_POINT_ADDRESS,
       abi: EntryPointAbi,
-      client: publicClient as Client,
+      client: publicClient,
     });
 
     entryPoint.read.balanceOf([paymasterAddress]).then(balance => {
