@@ -170,9 +170,8 @@ export function ProposalBuilder({
 
         const createProposalButtonDisabled =
           !canUserCreateProposal ||
-          !!formikProps.errors.transactions ||
-          !!formikProps.errors.nonce ||
-          !title ||
+          Object.keys(formikProps.errors).length > 0 ||
+          !trimmedTitle ||
           pendingCreateTx;
 
         const renderButtons = (step: CreateProposalSteps) => {

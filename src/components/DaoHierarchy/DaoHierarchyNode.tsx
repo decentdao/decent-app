@@ -205,20 +205,6 @@ export function DaoHierarchyNode({
     }
   }, [chain.id, loadDao, safeAddress]);
 
-  if (!hierarchyNode) {
-    // node hasn't loaded yet
-    return (
-      <Flex
-        w="full"
-        minH="full"
-      >
-        <Center w="100%">
-          <BarLoader />
-        </Center>
-      </Flex>
-    );
-  }
-
   if (hasErrorLoading) {
     return (
       <Flex
@@ -237,6 +223,20 @@ export function DaoHierarchyNode({
           >
             {t('errorMySafesNotLoaded')}
           </Text>
+        </Center>
+      </Flex>
+    );
+  }
+
+  if (!hierarchyNode) {
+    // node hasn't loaded yet
+    return (
+      <Flex
+        w="full"
+        minH="full"
+      >
+        <Center w="100%">
+          <BarLoader />
         </Center>
       </Flex>
     );

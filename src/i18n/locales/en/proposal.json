@@ -131,6 +131,7 @@
   "noTimeDifference": "0 seconds",
   "functionNameError": "The function name can contain only numbers and letters.",
   "labelOrValueRequired": "Parameter Label or Parameter Value is required",
+  "invalidBigIntValue": "Invalid value for BigInt",
   "votingSystem": "Voting System",
   "basicSnapshotVotingSystem": "Basic voting",
   "singleSnapshotVotingSystem": "Single choice voting",

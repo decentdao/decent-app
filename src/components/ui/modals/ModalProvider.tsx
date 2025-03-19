@@ -16,6 +16,7 @@ import { DelegateModal } from './DelegateModal';
 import ForkProposalTemplateModal from './ForkProposalTemplateModal';
 import { GaslessVoteSuccessModal } from './GaslessVoting/GaslessVoteSuccessModal';
 import { RefillGasData, RefillGasTankModal } from './GaslessVoting/RefillGasTankModal';
+import { IframeModal } from './IframeModal';
 import { ModalBase, ModalBaseSize } from './ModalBase';
 import PaymentCancelConfirmModal from './PaymentCancelConfirmModal';
 import { PaymentWithdrawModal } from './PaymentWithdrawModal';
@@ -44,6 +45,7 @@ export enum ModalType {
   REFILL_GAS,
   CREATE_SMART_WALLET,
   GASLESS_VOTE_SUCCESS,
+  IFRAME,
 }
 
 export type CurrentModal = {
@@ -107,6 +109,7 @@ export type ModalPropsTypes = {
     successCallback: () => void;
   };
   [ModalType.GASLESS_VOTE_SUCCESS]: {};
+  [ModalType.IFRAME]: {};
 };
 
 export interface IModalContext {
@@ -313,6 +316,9 @@ export function ModalProvider({ children }: { children: ReactNode }) {
             }}
           />
         );
+        break;
+      case ModalType.IFRAME:
+        modalContent = <IframeModal />;
         break;
       case ModalType.NONE:
       default:
