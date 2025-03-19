@@ -18,5 +18,6 @@
     "incremental": true,
     "allowImportingTsExtensions": true
   },
-  "include": ["src", "tests", "test", "app", "functions", "vite.config.mts", "vitest.setup.ts"]
+  "include": ["src", "tests", "test", "app", "functions", "vite.config.mts", "vitest.setup.ts"],
+  "exclude": ["local-declarations.d.ts"]
 }
