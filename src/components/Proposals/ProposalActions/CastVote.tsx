@@ -153,7 +153,7 @@ export function CastVote({ proposal }: { proposal: FractalProposal }) {
   const canVoteForFree = useMemo(() => {
     return (
       gaslessVotingEnabled &&
-      paymasterBalance?.bigintValue &&
+      paymasterBalance?.bigintValue !== undefined &&
       paymasterBalance.bigintValue > minimumPaymasterBalance
     );
   }, [gaslessVotingEnabled, minimumPaymasterBalance, paymasterBalance?.bigintValue]);
