@@ -39,7 +39,7 @@ const getGaslessVotingDaoData = async (
   }
 
   try {
-    const gaslessVotingEnabled = Boolean(gaslessVotingEnabledEvent.args.value);
+    const gaslessVotingEnabled = gaslessVotingEnabledEvent.args.value === 'true';
 
     let paymasterAddress: Address | undefined;
     if (gaslessVotingEnabled) {
