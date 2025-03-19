@@ -1,5 +1,4 @@
-import { Box, Text, HStack, Switch, Flex, Icon, Button, Image } from '@chakra-ui/react';
-import { WarningCircle } from '@phosphor-icons/react';
+import { Box, Text, HStack, Switch, Flex, Button, Image } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
@@ -75,8 +74,7 @@ function GaslessVotingToggleContent({
 }
 
 export function GaslessVotingToggleDAOCreate(props: GaslessVotingToggleProps) {
-  const { t } = useTranslation(['daoCreate', 'gaslessVoting']);
-  const { chain, gaslessVotingSupported } = useNetworkConfigStore();
+  const { gaslessVotingSupported } = useNetworkConfigStore();
 
   if (!isFeatureEnabled('flag_gasless_voting')) return null;
   if (!gaslessVotingSupported) return null;

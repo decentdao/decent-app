@@ -1,4 +1,4 @@
-import { Address, getAddress, getContract, keccak256, PublicClient, stringToHex } from 'viem';
+import { Address, getContract, keccak256, PublicClient, stringToHex } from 'viem';
 import { DecentPaymasterFactoryV1Abi } from '../assets/abi/DecentPaymasterFactoryV1Abi';
 
 export const getUserSmartWalletSalt = (args: { EOA: Address; chainId: number }) => {
