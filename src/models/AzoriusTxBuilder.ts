@@ -30,6 +30,8 @@ import { SENTINEL_MODULE } from '../utils/address';
 import { getPaymasterSalt, getPaymasterAddress } from '../utils/gaslessVoting';
 import { BaseTxBuilder } from './BaseTxBuilder';
 import { generateContractByteCodeLinear, generateSalt } from './helpers/utils';
+import { LinearERC20VotingV1Abi } from '../assets/abi/LinearERC20VotingV1';
+import { LinearERC721VotingV1Abi } from '../assets/abi/LinearERC721VotingV1';
 
 export class AzoriusTxBuilder extends BaseTxBuilder {
   private readonly safeContractAddress: Address;
@@ -496,7 +498,7 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
       );
 
       const encodedStrategySetupData = encodeFunctionData({
-        abi: abis.LinearERC721Voting,
+        abi: LinearERC721VotingV1Abi, // @todo: use the deployed abi
         functionName: 'setUp',
         args: [encodedStrategyInitParams],
       });
