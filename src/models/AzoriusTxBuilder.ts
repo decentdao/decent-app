@@ -16,6 +16,8 @@ import {
 import { DecentPaymasterFactoryV1Abi } from '../assets/abi/DecentPaymasterFactoryV1Abi';
 import { DecentPaymasterV1Abi } from '../assets/abi/DecentPaymasterV1Abi';
 import GnosisSafeL2Abi from '../assets/abi/GnosisSafeL2';
+import { LinearERC20VotingV1Abi } from '../assets/abi/LinearERC20VotingV1';
+import { LinearERC721VotingV1Abi } from '../assets/abi/LinearERC721VotingV1';
 import { ZodiacModuleProxyFactoryAbi } from '../assets/abi/ZodiacModuleProxyFactoryAbi';
 import { buildContractCall, getRandomBytes } from '../helpers';
 import {
@@ -30,8 +32,6 @@ import { SENTINEL_MODULE } from '../utils/address';
 import { getPaymasterSalt, getPaymasterAddress } from '../utils/gaslessVoting';
 import { BaseTxBuilder } from './BaseTxBuilder';
 import { generateContractByteCodeLinear, generateSalt } from './helpers/utils';
-import { LinearERC20VotingV1Abi } from '../assets/abi/LinearERC20VotingV1';
-import { LinearERC721VotingV1Abi } from '../assets/abi/LinearERC721VotingV1';
 
 export class AzoriusTxBuilder extends BaseTxBuilder {
   private readonly safeContractAddress: Address;

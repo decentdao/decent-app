@@ -17,8 +17,6 @@ import ForkProposalTemplateModal from './ForkProposalTemplateModal';
 import { GaslessVoteSuccessModal } from './GaslessVoting/GaslessVoteSuccessModal';
 import { RefillGasData, RefillGasTankModal } from './GaslessVoting/RefillGasTankModal';
 import { IframeModal } from './IframeModal';
-import { GaslessVoteSuccessModal } from './GaslessVoting/GaslessVoteSuccessModal';
-import { RefillGasData, RefillGasTankModal } from './GaslessVoting/RefillGasTankModal';
 import { ModalBase, ModalBaseSize } from './ModalBase';
 import PaymentCancelConfirmModal from './PaymentCancelConfirmModal';
 import { PaymentWithdrawModal } from './PaymentWithdrawModal';
@@ -45,11 +43,8 @@ export enum ModalType {
   SEND_ASSETS,
   AIRDROP,
   REFILL_GAS,
-  CREATE_SMART_WALLET,
   GASLESS_VOTE_SUCCESS,
   IFRAME,
-  CREATE_SMART_WALLET,
-  GASLESS_VOTE_SUCCESS,
 }
 
 export type CurrentModal = {
@@ -109,14 +104,8 @@ export type ModalPropsTypes = {
     onSubmit: (refillGasData: RefillGasData) => void;
     showNonceInput: boolean;
   };
-  [ModalType.CREATE_SMART_WALLET]: {
-    successCallback: () => void;
-  };
   [ModalType.GASLESS_VOTE_SUCCESS]: {};
   [ModalType.IFRAME]: {};
-  [ModalType.CREATE_SMART_WALLET]: {
-    successCallback: () => void;
-  };
   [ModalType.GASLESS_VOTE_SUCCESS]: {};
 };
 
