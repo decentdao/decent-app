@@ -61,6 +61,7 @@ export enum ProposalActionType {
   NATIVE_TRANSFER = 'native_transfer',
   AIRDROP = 'airdrop',
   WITHDRAW_STREAM = 'withdraw_stream',
+  DAPP_INTERACTION = 'dapp_interaction',
 }
 
 export type CreateProposalActionData<T = BigIntValuePair> = {
