@@ -13,6 +13,10 @@ interface SafeInjectProviderProps {
    * Callback function to handle transactions received from the Safe app.
    */
   onTransactionsReceived?: (transactions: TransactionWithId[]) => void;
+  /**
+   * Callback function to handle app connection.
+   */
+  onAppConnected?: (appUrl: string) => void;
 }
 
 export function SafeInjectProvider({
@@ -20,11 +24,19 @@ export function SafeInjectProvider({
   defaultAddress,
   chainId = 1,
   onTransactionsReceived,
+  onAppConnected,
 }: PropsWithChildren<SafeInjectProviderProps>) {
   const [address, setAddress] = useState<string | undefined>(defaultAddress);
   const [appUrl, setAppUrl] = useState<string>();
   const [connecting, setConnecting] = useState(false);
   const [connectedAppUrl, setConnectedAppUrl] = useState<string>('');
+  const receivedConnection = useCallback(
+    (url: string) => {
+      setConnectedAppUrl(url);
+      onAppConnected?.(url);
+    },
+    [onAppConnected],
+  );
   const publicClient = useNetworkPublicClient();
   const [latestTransactions, setLatestTransactions] = useState<TransactionWithId[]>([]);
   const receivedTransactions = useCallback(
@@ -59,14 +71,13 @@ export function SafeInjectProvider({
   useEffect(() => {
     if (iframeRef) {
       iframeRef.current?.addEventListener('load', () => {
-        console.log('iframe loaded');
         setConnecting(false);
       });
     }
 
     communicator?.on(Methods.getSafeInfo, async msg => {
       if (appUrl?.startsWith(msg.origin)) {
-        setConnectedAppUrl(appUrl);
+        receivedConnection(appUrl);
       }
       const ret = {
         safeAddress: address,

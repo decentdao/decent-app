@@ -106,6 +106,7 @@ export type ModalPropsTypes = {
   };
   [ModalType.IFRAME]: {};
   [ModalType.CONFIRM_TRANSACTION]: {
+    appName: string;
     transactionArray: CreateProposalTransaction[];
   };
 };
@@ -318,6 +319,7 @@ export function ModalProvider({ children }: { children: ReactNode }) {
         modalTitle = t('confirmTransactionTitle');
         modalContent = (
           <ConfirmTransactionModal
+            appName={current.props.appName}
             transactionArray={current.props.transactionArray}
             close={closeModal}
           />

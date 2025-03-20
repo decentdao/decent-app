@@ -7,6 +7,7 @@ import { useFractal } from '../../providers/App/AppProvider';
 import { useProposalActionsStore } from '../../store/actions/useProposalActionsStore';
 import { CreateProposalAction, ProposalActionType } from '../../types/proposalBuilder';
 import { Card } from '../ui/cards/Card';
+import { DappInteractionActionCard } from '../ui/cards/DappInteractionActionCard';
 import { SendAssetsActionCard } from '../ui/cards/SendAssetsActionCard';
 
 function SendAssetsAction({
@@ -154,6 +155,13 @@ export function ProposalActionCard({
   } else if (action.actionType === ProposalActionType.AIRDROP) {
     return (
       <AirdropAction
+        action={action}
+        onRemove={() => removeAction(index)}
+      />
+    );
+  } else if (action.actionType === ProposalActionType.DAPP_INTEGRATION) {
+    return (
+      <DappInteractionActionCard
         action={action}
         onRemove={() => removeAction(index)}
       />

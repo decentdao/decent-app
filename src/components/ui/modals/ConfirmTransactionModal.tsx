@@ -14,21 +14,23 @@ import {
   ProposalActionType,
 } from '../../../types';
 import ProposalTransactionsForm from '../../ProposalBuilder/ProposalTransactionsForm';
-import { DEFAULT_PROPOSAL } from '../../ProposalBuilder/constants';
 import Divider from '../utils/Divider';
+import da from 'date-fns/esm/locale/da/index';
 
 /**
  * Use ProposalTransactionsForm to render transactions, add them to actionsStore
  *   if confirmed by user and then navigate to proposalWithActionNew page.
  */
 export function ConfirmTransactionModal({
+  appName,
   transactionArray,
   close,
 }: {
+  appName: string;
   transactionArray: CreateProposalTransaction[];
   close: () => void;
 }) {
-  const { t } = useTranslation('modals');
+  const { t } = useTranslation(['modals', 'common']);
   const { safe } = useDaoInfoStore();
   const { addressPrefix } = useNetworkConfigStore();
   const { addAction } = useProposalActionsStore();
@@ -36,10 +38,19 @@ export function ConfirmTransactionModal({
 
   const { createProposalValidation } = useCreateProposalSchema();
 
+  const dappLabel = t('dappIntegration', { appName, ns: 'common' });
+
   return (
     <Formik<CreateProposalForm>
       validationSchema={createProposalValidation}
-      initialValues={{ ...DEFAULT_PROPOSAL, transactions: transactionArray }}
+      initialValues={{
+        nonce: 1,
+        proposalMetadata: {
+          title: 'THIS IS JUST',
+          description: 'FOR FORM VALIDATION',
+        },
+        transactions: transactionArray,
+      }}
       enableReinitialize
       onSubmit={async values => {
         if (!safe?.address) {
@@ -47,11 +58,16 @@ export function ConfirmTransactionModal({
         }
 
         const action: CreateProposalActionData = {
-          actionType: ProposalActionType.DAPP_INTERACTION,
+          actionType: ProposalActionType.DAPP_INTEGRATION,
           transactions: values.transactions,
         };
-        addAction({ ...action, content: <></> });
+
+        addAction({
+          ...action,
+          content: <Text>{dappLabel}</Text>,
+        });
         navigate(DAO_ROUTES.proposalWithActionsNew.relative(addressPrefix, safe.address));
+        close();
       }}
     >
       {(formikProps: FormikProps<CreateProposalForm>) => {
@@ -70,7 +86,6 @@ export function ConfirmTransactionModal({
                 <Text marginBottom="1rem">{t('confirmAction')}</Text>
                 <Button
                   width="100%"
-                  onClick={close}
                   type="submit"
                   disabled={createProposalButtonDisabled}
                 >

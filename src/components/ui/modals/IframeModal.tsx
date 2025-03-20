@@ -14,8 +14,10 @@ export function IframeModal() {
   const { chain } = useNetworkConfigStore();
   const { loadABI } = useABI();
 
+  const [connectAppUrl, setConnectAppUrl] = useState<string>('Unknown');
   const [decodedTransactions, setDecodedTransactions] = useState<CreateProposalTransaction[]>([]);
   const openConfirmTransactionModal = useDecentModal(ModalType.CONFIRM_TRANSACTION, {
+    appName: connectAppUrl, // url can be a key to real appName in future
     transactionArray: decodedTransactions,
   });
 
@@ -39,6 +41,9 @@ export function IframeModal() {
             setDecodedTransactions(decoded);
           }
         })();
+      }}
+      onAppConnected={url => {
+        setConnectAppUrl(url);
       }}
     >
       <SafeInjectIframeCard />
