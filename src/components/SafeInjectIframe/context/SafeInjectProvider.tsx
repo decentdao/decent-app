@@ -179,7 +179,15 @@ export function SafeInjectProvider({
       //   and "confirmed" so it can continue
       return true;
     });
-  }, [communicator, address, chainId, publicClient, appUrl, receivedTransactions]);
+  }, [
+    communicator,
+    address,
+    chainId,
+    publicClient,
+    appUrl,
+    receivedTransactions,
+    receivedConnection,
+  ]);
 
   return (
     <SafeInjectContext.Provider
