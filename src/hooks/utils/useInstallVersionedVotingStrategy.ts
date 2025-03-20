@@ -36,7 +36,7 @@ export const useInstallVersionedVotingStrategy = () => {
     contracts: {
       linearVotingErc20MasterCopy,
       linearVotingErc20V1MasterCopy,
-      linearVotingErc721MasterCopy,
+      linearVotingErc721V1MasterCopy,
       zodiacModuleProxyFactory,
     },
   } = useNetworkConfigStore();
@@ -186,16 +186,16 @@ export const useInstallVersionedVotingStrategy = () => {
         args: [encodedStrategyInitParams],
       });
 
-      const deployWhitelistingVotingStrategyTx = {
+      const deployERC721VotingStrategyTx = {
         targetAddress: zodiacModuleProxyFactory,
         calldata: encodeFunctionData({
           abi: ZodiacModuleProxyFactoryAbi,
           functionName: 'deployModule',
-          args: [linearVotingErc721MasterCopy, encodedStrategySetupData, strategyNonce],
+          args: [linearVotingErc721V1MasterCopy, encodedStrategySetupData, strategyNonce],
         }),
       };
 
-      const strategyByteCodeLinear = generateContractByteCodeLinear(linearVotingErc721MasterCopy);
+      const strategyByteCodeLinear = generateContractByteCodeLinear(linearVotingErc721V1MasterCopy);
 
       const strategySalt = generateSalt(encodedStrategySetupData, strategyNonce);
 
@@ -216,7 +216,7 @@ export const useInstallVersionedVotingStrategy = () => {
 
       return [
         disableVotingStrategyTx,
-        deployWhitelistingVotingStrategyTx,
+        deployERC721VotingStrategyTx,
         enableDeployedVotingStrategyTx,
       ];
     } else {
@@ -231,7 +231,7 @@ export const useInstallVersionedVotingStrategy = () => {
     linearVotingErc20MasterCopy,
     zodiacModuleProxyFactory,
     linearVotingErc20V1MasterCopy,
-    linearVotingErc721MasterCopy,
+    linearVotingErc721V1MasterCopy,
   ]);
 
   return {

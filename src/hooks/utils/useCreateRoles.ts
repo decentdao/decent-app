@@ -105,8 +105,8 @@ export default function useCreateRoles() {
       erc6551Registry,
       keyValuePairs,
       sablierV2LockupLinear,
-      linearVotingErc20HatsWhitelistingMasterCopy,
-      linearVotingErc721HatsWhitelistingMasterCopy,
+      linearVotingErc20V1HatsWhitelistingMasterCopy,
+      linearVotingErc721V1HatsWhitelistingMasterCopy,
       zodiacModuleProxyFactory,
       decentAutonomousAdminV1MasterCopy,
       hatsElectionsEligibilityMasterCopy,
@@ -139,7 +139,7 @@ export default function useCreateRoles() {
         const strategyNonce = getRandomBytes();
         const linearERC20VotingMasterCopyContract = getContract({
           abi: abis.LinearERC20Voting,
-          address: linearVotingErc20HatsWhitelistingMasterCopy,
+          address: linearVotingErc20V1HatsWhitelistingMasterCopy,
           client: publicClient,
         });
 
@@ -179,7 +179,7 @@ export default function useCreateRoles() {
             abi: ZodiacModuleProxyFactoryAbi,
             functionName: 'deployModule',
             args: [
-              linearVotingErc20HatsWhitelistingMasterCopy,
+              linearVotingErc20V1HatsWhitelistingMasterCopy,
               encodedStrategySetupData,
               strategyNonce,
             ],
@@ -188,7 +188,7 @@ export default function useCreateRoles() {
         };
 
         const strategyByteCodeLinear = generateContractByteCodeLinear(
-          linearVotingErc20HatsWhitelistingMasterCopy,
+          linearVotingErc20V1HatsWhitelistingMasterCopy,
         );
 
         const strategySalt = keccak256(
@@ -255,7 +255,7 @@ export default function useCreateRoles() {
             abi: ZodiacModuleProxyFactoryAbi,
             functionName: 'deployModule',
             args: [
-              linearVotingErc721HatsWhitelistingMasterCopy,
+              linearVotingErc721V1HatsWhitelistingMasterCopy,
               encodedStrategySetupData,
               strategyNonce,
             ],
@@ -264,7 +264,7 @@ export default function useCreateRoles() {
         };
 
         const strategyByteCodeLinear = generateContractByteCodeLinear(
-          linearVotingErc721HatsWhitelistingMasterCopy,
+          linearVotingErc721V1HatsWhitelistingMasterCopy,
         );
 
         const strategySalt = keccak256(
@@ -300,8 +300,8 @@ export default function useCreateRoles() {
       safeAddress,
       governance,
       hatsProtocol,
-      linearVotingErc20HatsWhitelistingMasterCopy,
-      linearVotingErc721HatsWhitelistingMasterCopy,
+      linearVotingErc20V1HatsWhitelistingMasterCopy,
+      linearVotingErc721V1HatsWhitelistingMasterCopy,
       moduleAzoriusAddress,
       publicClient,
       zodiacModuleProxyFactory,
