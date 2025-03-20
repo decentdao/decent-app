@@ -1,5 +1,6 @@
 import * as amplitude from '@amplitude/analytics-browser';
 import { Box, Button, Flex, Show, Text } from '@chakra-ui/react';
+import { AppStoreLogo, ArrowsDownUp, HourglassMedium, Parachute } from '@phosphor-icons/react';
 import { useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
@@ -103,17 +104,20 @@ export function SafeProposalTemplatesPage() {
     if (!safeAddress) return [];
     const templates = [
       {
+        icon: Parachute,
         title: t('templateAirdropTitle', { ns: 'proposalTemplate' }),
         description: t('templateAirdropDescription', { ns: 'proposalTemplate' }),
         onProposalTemplateClick: openAirdropModal,
       },
       {
+        icon: HourglassMedium,
         title: t('templateSablierTitle', { ns: 'proposalTemplate' }),
         description: t('templateSablierDescription', { ns: 'proposalTemplate' }),
         onProposalTemplateClick: () =>
           navigate(DAO_ROUTES.proposalSablierNew.relative(addressPrefix, safeAddress)),
       },
       {
+        icon: ArrowsDownUp,
         title: t('templateTransferTitle', { ns: 'proposalTemplate' }),
         description: t('templateTransferDescription', { ns: 'proposalTemplate' }),
         onProposalTemplateClick: openSendAssetsModal,
@@ -121,6 +125,7 @@ export function SafeProposalTemplatesPage() {
     ];
     if (isFeatureEnabled('flag_iframe_template')) {
       templates.push({
+        icon: AppStoreLogo,
         title: t('templateIframeTitle', { ns: 'proposalTemplate' }),
         description: t('templateIframeDescription', { ns: 'proposalTemplate' }),
         onProposalTemplateClick: openIframeModal,
@@ -202,6 +207,7 @@ export function SafeProposalTemplatesPage() {
         {EXAMPLE_TEMPLATES.map((exampleTemplate, i) => (
           <ExampleTemplateCard
             key={i}
+            icon={exampleTemplate.icon}
             title={exampleTemplate.title}
             description={exampleTemplate.description}
             onProposalTemplateClick={exampleTemplate.onProposalTemplateClick}
