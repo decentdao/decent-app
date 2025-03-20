@@ -217,7 +217,6 @@ export default function useSubmitProposal() {
         ) {
           toast.dismiss(toastId);
           toast.info(t('errorUserDeniedTransaction', { ns: 'transaction', id: toastId }));
-          setPendingCreateTx(false);
           return;
         }
 
@@ -308,7 +307,6 @@ export default function useSubmitProposal() {
           (e as ProviderRpcError).code === 4001
         ) {
           toast.info(t('errorUserDeniedTransaction', { ns: 'transaction', id: toastId }));
-          setPendingCreateTx(false);
           return;
         }
         toast.error(failedToastMessage, { id: toastId });
