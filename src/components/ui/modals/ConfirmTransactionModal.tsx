@@ -15,7 +15,6 @@ import {
 } from '../../../types';
 import ProposalTransactionsForm from '../../ProposalBuilder/ProposalTransactionsForm';
 import Divider from '../utils/Divider';
-import da from 'date-fns/esm/locale/da/index';
 
 /**
  * Use ProposalTransactionsForm to render transactions, add them to actionsStore
