@@ -9,7 +9,7 @@ import { getContract, http } from 'viem';
 import { createBundlerClient } from 'viem/account-abstraction';
 import { useAccount } from 'wagmi';
 import { EntryPoint07Abi } from '../../../assets/abi/EntryPoint07Abi';
-import { ENTRY_POINT_07_ADDRESS, TOOLTIP_MAXW } from '../../../constants/common';
+import { TOOLTIP_MAXW } from '../../../constants/common';
 import useSnapshotProposal from '../../../hooks/DAO/loaders/snapshot/useSnapshotProposal';
 import useCastSnapshotVote from '../../../hooks/DAO/proposal/useCastSnapshotVote';
 import useCastVote from '../../../hooks/DAO/proposal/useCastVote';
@@ -59,7 +59,11 @@ export function CastVote({ proposal }: { proposal: FractalProposal }) {
   } = useCastSnapshotVote(extendedSnapshotProposal);
 
   const publicClient = useNetworkPublicClient();
-  const { rpcEndpoint, chain } = useNetworkConfigStore();
+  const {
+    rpcEndpoint,
+    chain,
+    contracts: { entryPointv07 },
+  } = useNetworkConfigStore();
   const { data: walletClient } = useNetworkWalletClient();
   const { address } = useAccount();
   const { canVoteLoading, hasVoted, hasVotedLoading } = useVoteContext();
@@ -69,7 +73,7 @@ export function CastVote({ proposal }: { proposal: FractalProposal }) {
   const gaslessVoteSuccessModal = useDecentModal(ModalType.GASLESS_VOTE_SUCCESS);
 
   const entryPoint = getContract({
-    address: ENTRY_POINT_07_ADDRESS,
+    address: entryPointv07,
     abi: EntryPoint07Abi,
     client: publicClient,
   });

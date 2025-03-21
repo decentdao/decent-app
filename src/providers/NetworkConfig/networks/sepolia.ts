@@ -105,6 +105,7 @@ export const sepoliaConfig: NetworkConfig = {
     sablierV2LockupTranched: '0x3a1beA13A8C24c0EA2b8fAE91E4b2762A59D7aF5',
     sablierV2LockupLinear: '0x3E435560fd0a03ddF70694b35b673C25c65aBB6C',
     disperse: '0xD152f549545093347A162Dce210e7293f1452150',
+    entryPointv07: '0x0000000071727De22E5E9d8BAf0edAc6f37da032', // https://etherscan.io/address/0x0000000071727de22e5e9d8baf0edac6f37da032#code
     paymasterFactory: '0xD64b53AEF9E63C54689CDf72C7bcDd6e983EC2B8',
   },
   staking: {},
