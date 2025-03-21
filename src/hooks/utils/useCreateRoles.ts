@@ -136,22 +136,16 @@ export default function useCreateRoles() {
           return;
         }
 
-        const strategyNonce = getRandomBytes();
-        const linearERC20VotingMasterCopyContract = getContract({
-          abi: abis.LinearERC20Voting,
-          address: linearVotingErc20V1HatsWhitelistingMasterCopy,
-          client: publicClient,
-        });
-
-        const quorumDenominator =
-          await linearERC20VotingMasterCopyContract.read.QUORUM_DENOMINATOR();
-
         const votingStrategyContract = getContract({
           abi: abis.LinearERC20Voting,
           address: linearVotingErc20Address,
           client: publicClient,
         });
+
         const existingVotingPeriod = await votingStrategyContract.read.votingPeriod();
+        const existingQuorumNumerator = await votingStrategyContract.read.quorumNumerator();
+        const existingBasisNumerator = await votingStrategyContract.read.basisNumerator();
+
         const encodedStrategyInitParams = encodeAbiParameters(
           parseAbiParameters(
             'address, address, address, uint32, uint256, uint256, address, uint256[]',
@@ -161,8 +155,8 @@ export default function useCreateRoles() {
             votesToken.address, // governance token
             moduleAzoriusAddress, // Azorius module
             existingVotingPeriod,
-            (votingStrategy.quorumPercentage.value * quorumDenominator) / 100n, // quorom numerator, denominator is 1,000,000, so quorum percentage is quorumNumerator * 100 / quorumDenominator
-            500000n, // basis numerator, denominator is 1,000,000, so basis percentage is 50% (simple majority)
+            existingQuorumNumerator,
+            existingBasisNumerator,
             hatsProtocol,
             whitelistedHatsIds,
           ],
@@ -174,6 +168,7 @@ export default function useCreateRoles() {
           args: [encodedStrategyInitParams],
         });
 
+        const strategyNonce = getRandomBytes();
         const deployWhitelistingVotingStrategyTx = {
           calldata: encodeFunctionData({
             abi: ZodiacModuleProxyFactoryAbi,
@@ -219,13 +214,15 @@ export default function useCreateRoles() {
           return;
         }
 
-        const strategyNonce = getRandomBytes();
         const votingStrategyContract = getContract({
           abi: abis.LinearERC721Voting,
           address: linearVotingErc721Address,
           client: publicClient,
         });
+
         const existingVotingPeriod = await votingStrategyContract.read.votingPeriod();
+        const existingQuorumThreshold = await votingStrategyContract.read.quorumThreshold();
+        const existingBasisNumerator = await votingStrategyContract.read.basisNumerator();
 
         const encodedStrategyInitParams = encodeAbiParameters(
           parseAbiParameters(
@@ -237,8 +234,8 @@ export default function useCreateRoles() {
             erc721Tokens.map(token => token.votingWeight), // governance tokens weights
             moduleAzoriusAddress, // Azorius module
             existingVotingPeriod,
-            votingStrategy.quorumThreshold.value, // quorom threshold, number of yes + abstain votes has to >= threshold
-            500000n, // basis numerator, denominator is 1,000,000, so basis percentage is 50% (simple majority)
+            existingQuorumThreshold,
+            existingBasisNumerator,
             hatsProtocol,
             whitelistedHatsIds,
           ],
@@ -250,6 +247,7 @@ export default function useCreateRoles() {
           args: [encodedStrategyInitParams],
         });
 
+        const strategyNonce = getRandomBytes();
         const deployWhitelistingVotingStrategyTx = {
           calldata: encodeFunctionData({
             abi: ZodiacModuleProxyFactoryAbi,
