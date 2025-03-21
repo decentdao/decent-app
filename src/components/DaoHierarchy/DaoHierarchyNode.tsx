@@ -126,21 +126,12 @@ export function DaoHierarchyNode({
           safeAddress: _safeAddress,
         });
 
-        if (!queryResult.data) {
-          return {
-            parentAddress: null,
-            childAddresses: [],
-            daoName: null,
-            daoSnapshotENS: null,
-            proposalTemplatesHash: null,
-            modules: [],
-            votingStrategies: [],
-            safeAddress: _safeAddress,
-          };
+        if (queryResult.error) {
+          throw new Error('Query failed');
         }
 
         const modules = await lookupModules(safe.modules);
-        const graphDAOData = queryResult.data.daos[0];
+        const graphDAOData = queryResult.data?.daos[0];
         const azoriusModule = getAzoriusModuleFromModules(modules ?? []);
         const votingStrategies: DaoHierarchyStrategyType[] = azoriusModule
           ? await getGovernanceTypes(azoriusModule)
