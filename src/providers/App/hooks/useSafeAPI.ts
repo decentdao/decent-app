@@ -184,7 +184,8 @@ class EnhancedSafeApiKit {
       });
 
       // Fetch guard using getStorageAt
-      const GUARD_STORAGE_SLOT = '0x3a'; // Slot defined in Safe contracts (could vary)
+      const GUARD_STORAGE_SLOT =
+        '0x4a204f620c8c5ccdca3fd54d003badd85ba500436a431f0cbda4f558c93c34c8';
       const guardStorageValue = await this.publicClient.getStorageAt({
         address: checksummedSafeAddress,
         slot: GUARD_STORAGE_SLOT,
