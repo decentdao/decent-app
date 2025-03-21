@@ -14,9 +14,10 @@ import {
 import { CaretDown, CaretRight, MinusCircle, Plus } from '@phosphor-icons/react';
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { ABIElement } from '../../hooks/utils/useABI';
 import { CreateProposalTransaction } from '../../types/proposalBuilder';
 import { scrollToBottom } from '../../utils/ui';
-import ABISelector, { ABIElement } from '../ui/forms/ABISelector';
+import ABISelector from '../ui/forms/ABISelector';
 import ExampleLabel from '../ui/forms/ExampleLabel';
 import { BigIntComponent, InputComponent } from '../ui/forms/InputComponent';
 import CeleryButtonWithIcon from '../ui/utils/CeleryButtonWithIcon';

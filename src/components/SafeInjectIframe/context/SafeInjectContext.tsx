@@ -23,8 +23,8 @@ type SafeInjectContextType = {
   /**
    * Transactions intercepted from iframe
    */
-  latestTransactions: TransactionWithId[] | undefined;
-  setLatestTransactions: React.Dispatch<React.SetStateAction<TransactionWithId[] | undefined>>;
+  latestTransactions: TransactionWithId[];
+  setLatestTransactions: (transactions: TransactionWithId[]) => void;
   setAddress: React.Dispatch<React.SetStateAction<string | undefined>>;
   setAppUrl: React.Dispatch<React.SetStateAction<string | undefined>>;
   /**
@@ -39,7 +39,7 @@ export const SafeInjectContext = createContext<SafeInjectContextType>({
   connecting: false,
   connectedAppUrl: '',
   iframeRef: null,
-  latestTransactions: undefined,
+  latestTransactions: [],
   setLatestTransactions: () => {},
   setAddress: () => {},
   setAppUrl: () => {},
