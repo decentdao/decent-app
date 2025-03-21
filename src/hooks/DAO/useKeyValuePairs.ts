@@ -26,18 +26,6 @@ const getGaslessVotingDaoData = async (
     return { gaslessVotingEnabled: false, paymasterAddress: undefined };
   }
 
-  if (!gaslessVotingEnabledEvent.args.value) {
-    logError({
-      message: "KVPairs 'gaslessVotingEnabledEvent' without a value",
-      network: chainId,
-      args: {
-        transactionHash: gaslessVotingEnabledEvent.transactionHash,
-        logIndex: gaslessVotingEnabledEvent.logIndex,
-      },
-    });
-    return { gaslessVotingEnabled: false, paymasterAddress: undefined };
-  }
-
   try {
     const gaslessVotingEnabled = gaslessVotingEnabledEvent.args.value === 'true';
 
