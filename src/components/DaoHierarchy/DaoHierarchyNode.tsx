@@ -126,10 +126,6 @@ export function DaoHierarchyNode({
           safeAddress: _safeAddress,
         });
 
-        if (queryResult.error) {
-          throw new Error('Query failed');
-        }
-
         if (!queryResult.data) {
           return {
             parentAddress: null,
@@ -150,19 +146,15 @@ export function DaoHierarchyNode({
           ? await getGovernanceTypes(azoriusModule)
           : ['MULTISIG'];
 
-        if (!graphDAOData) {
-          throw new Error('No data found');
-        }
-
         return {
-          daoName: graphDAOData.name ?? null,
+          daoName: graphDAOData?.name ?? null,
           safeAddress: _safeAddress,
-          parentAddress: graphDAOData.parentAddress as Address | null,
-          childAddresses: graphDAOData.hierarchy.map(
+          parentAddress: graphDAOData?.parentAddress as Address | null,
+          childAddresses: (graphDAOData?.hierarchy ?? []).map(
             (child: { address: string }) => child.address as Address,
           ),
-          daoSnapshotENS: graphDAOData.snapshotENS ?? null,
-          proposalTemplatesHash: graphDAOData.proposalTemplatesHash ?? null,
+          daoSnapshotENS: graphDAOData?.snapshotENS ?? null,
+          proposalTemplatesHash: graphDAOData?.proposalTemplatesHash ?? null,
           modules,
           votingStrategies,
         };
@@ -189,6 +181,7 @@ export function DaoHierarchyNode({
 
       loadDao(safeAddress).then(_node => {
         if (!_node) {
+          console.log('🚀 ~ _node:', _node);
           setErrorLoading(true);
           return;
         }
