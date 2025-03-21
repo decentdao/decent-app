@@ -203,17 +203,13 @@ const useKeyValuePairs = () => {
               hatsTreeId: getHatsTreeId(logs, chain.id),
               streamIdsToHatIds: getHatIdsToStreamIds(logs, sablierV2LockupLinear, chain.id),
             });
-
-            getGaslessVotingDaoData(
-              logs,
-              chain.id,
-              paymasterFactory,
-              safeAddress,
-              publicClient,
-            ).then(gaslessVotingDaoData => {
-              setGaslessVotingDaoData(gaslessVotingDaoData);
-            });
           }, 20_000);
+
+          getGaslessVotingDaoData(logs, chain.id, paymasterFactory, safeAddress, publicClient).then(
+            gaslessVotingDaoData => {
+              setGaslessVotingDaoData(gaslessVotingDaoData);
+            },
+          );
         },
       },
     );
