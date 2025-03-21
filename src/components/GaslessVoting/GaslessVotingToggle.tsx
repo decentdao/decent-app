@@ -159,6 +159,7 @@ export function GaslessVotingToggleDAOSettings(props: GaslessVotingToggleProps) 
         paymasterAddress,
         nonceInput: refillGasData.nonceInput,
         nativeToken: nativeCurrency,
+        entryPointAddress: entryPointv07,
       });
       const formattedRefillAmount = formatCoin(
         refillGasData.transferAmount,
