@@ -1,7 +1,6 @@
 import { abis } from '@fractal-framework/fractal-contracts';
 import { useCallback } from 'react';
 import {
-  getContract,
   encodeAbiParameters,
   parseAbiParameters,
   encodeFunctionData,
@@ -89,18 +88,37 @@ export const useInstallVersionedVotingStrategy = () => {
         return;
       }
 
-      const votingStrategyContract = getContract({
+      const existingAbiAndAddress = {
         abi: abis.LinearERC20Voting,
         address: linearVotingErc20Address,
-        client: publicClient,
+      };
+
+      const [
+        existingVotingPeriod,
+        existingQuorumNumerator,
+        existingBasisNumerator,
+        existingRequiredProposerWeight,
+      ] = await publicClient.multicall({
+        contracts: [
+          {
+            ...existingAbiAndAddress,
+            functionName: 'votingPeriod',
+          },
+          {
+            ...existingAbiAndAddress,
+            functionName: 'quorumNumerator',
+          },
+          {
+            ...existingAbiAndAddress,
+            functionName: 'basisNumerator',
+          },
+          {
+            ...existingAbiAndAddress,
+            functionName: 'requiredProposerWeight',
+          },
+        ],
+        allowFailure: false,
       });
-
-      const existingVotingPeriod = await votingStrategyContract.read.votingPeriod();
-      const existingQuorumNumerator = await votingStrategyContract.read.quorumNumerator();
-      const existingBasisNumerator = await votingStrategyContract.read.basisNumerator();
-
-      const existingRequiredProposerWeight =
-        await votingStrategyContract.read.requiredProposerWeight();
 
       const encodedStrategyInitParams = encodeAbiParameters(
         parseAbiParameters('address, address, address, uint32, uint256, uint256, uint256'),
@@ -155,16 +173,37 @@ export const useInstallVersionedVotingStrategy = () => {
         return;
       }
 
-      const strategyNonce = getRandomBytes();
-      const votingStrategyContract = getContract({
+      const existingAbiAndAddress = {
         abi: abis.LinearERC721Voting,
         address: linearVotingErc721Address,
-        client: publicClient,
+      };
+
+      const [
+        existingVotingPeriod,
+        existingQuorumThreshold,
+        existingProposerThreshold,
+        existingBasisNumerator,
+      ] = await publicClient.multicall({
+        contracts: [
+          {
+            ...existingAbiAndAddress,
+            functionName: 'votingPeriod',
+          },
+          {
+            ...existingAbiAndAddress,
+            functionName: 'quorumThreshold',
+          },
+          {
+            ...existingAbiAndAddress,
+            functionName: 'proposerThreshold',
+          },
+          {
+            ...existingAbiAndAddress,
+            functionName: 'basisNumerator',
+          },
+        ],
+        allowFailure: false,
       });
-      const existingVotingPeriod = await votingStrategyContract.read.votingPeriod();
-      const existingQuorumThreshold = await votingStrategyContract.read.quorumThreshold();
-      const existingProposerThreshold = await votingStrategyContract.read.proposerThreshold();
-      const existingBasisNumerator = await votingStrategyContract.read.basisNumerator();
 
       const encodedStrategyInitParams = encodeAbiParameters(
         parseAbiParameters(
@@ -188,6 +227,7 @@ export const useInstallVersionedVotingStrategy = () => {
         args: [encodedStrategyInitParams],
       });
 
+      const strategyNonce = getRandomBytes();
       const deployERC721VotingStrategyTx = {
         targetAddress: zodiacModuleProxyFactory,
         calldata: encodeFunctionData({
