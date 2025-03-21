@@ -268,7 +268,7 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
 
   public buildDeployPaymasterTx(): SafeTransaction {
     return buildContractCall(
-      // @todo replace with the deployed abi
+      // @todo (gv) replace with the deployed abi
       DecentPaymasterFactoryV1Abi,
       this.paymasterFactoryAddress,
       'createPaymaster',
@@ -437,7 +437,7 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
       }
 
       const linearERC20VotingMasterCopyContract = getContract({
-        abi: LinearERC20VotingV1Abi, // @todo: use the deployed abi
+        abi: LinearERC20VotingV1Abi, // @todo: (gv) use the deployed abi
         address: this.linearVotingErc20MasterCopy,
         client: this.publicClient,
       });
@@ -457,7 +457,7 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
       );
 
       const encodedStrategySetupData = encodeFunctionData({
-        abi: LinearERC20VotingV1Abi, // @todo: use the deployed abi
+        abi: LinearERC20VotingV1Abi, // @todo: (gv) use the deployed abi
         functionName: 'setUp',
         args: [encodedStrategyInitParams],
       });
@@ -500,7 +500,7 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
       );
 
       const encodedStrategySetupData = encodeFunctionData({
-        abi: LinearERC721VotingV1Abi, // @todo: use the deployed abi
+        abi: LinearERC721VotingV1Abi, // @todo: (gv) use the deployed abi
         functionName: 'setUp',
         args: [encodedStrategyInitParams],
       });

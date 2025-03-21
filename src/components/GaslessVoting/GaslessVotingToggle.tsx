@@ -229,7 +229,7 @@ export function GaslessVotingToggleDAOSettings(props: GaslessVotingToggleProps) 
             >
               {formattedPaymasterBalance}
               <Image
-                src={'/images/coin-icon-default.svg'} // @todo: Use the correct image for the token.
+                src={'/images/coin-icon-default.svg'} // @todo: (gv) Use the correct image for the token.
                 fallbackSrc={'/images/coin-icon-default.svg'}
                 alt={nativeCurrency.symbol}
                 w="1.25rem"

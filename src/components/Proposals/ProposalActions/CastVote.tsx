@@ -130,7 +130,7 @@ export function CastVote({ proposal }: { proposal: FractalProposal }) {
       toast.error(t('castVoteError'));
 
       // Wait a bit to give the user time to process. Fall back to regular voting.
-      // @todo instead, show a modal to user, give them option to retry, cancel, or pay their own gas to cast vote
+      // @todo: (gv) instead, show a modal to user, give them option to retry, cancel, or pay their own gas to cast vote
       await new Promise(resolve => setTimeout(resolve, 3000));
       await castVote(selectedVoteChoice);
     }

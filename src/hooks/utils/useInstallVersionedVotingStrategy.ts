@@ -116,7 +116,7 @@ export const useInstallVersionedVotingStrategy = () => {
       );
 
       const encodedStrategySetupData = encodeFunctionData({
-        abi: LinearERC20VotingV1Abi, // @todo: use the deployed abi
+        abi: LinearERC20VotingV1Abi, // @todo: (gv) use the deployed abi
         functionName: 'setUp',
         args: [encodedStrategyInitParams],
       });
@@ -183,7 +183,7 @@ export const useInstallVersionedVotingStrategy = () => {
       );
 
       const encodedStrategySetupData = encodeFunctionData({
-        abi: LinearERC721VotingV1Abi, // @todo: use the deployed abi
+        abi: LinearERC721VotingV1Abi, // @todo: (gv) use the deployed abi
         functionName: 'setUp',
         args: [encodedStrategyInitParams],
       });

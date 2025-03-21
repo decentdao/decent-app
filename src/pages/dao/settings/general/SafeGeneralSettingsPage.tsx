@@ -175,7 +175,7 @@ export function SafeGeneralSettingsPage() {
         targets.push(paymasterFactory);
         calldatas.push(
           encodeFunctionData({
-            // @todo replace with the deployed abi
+            // @todo (gv) replace with the deployed abi
             abi: DecentPaymasterFactoryV1Abi,
             functionName: 'createPaymaster',
             args: [safeAddress, getPaymasterSalt(safeAddress, chainId)],
