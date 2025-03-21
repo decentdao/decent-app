@@ -3,8 +3,8 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { getContract } from 'viem';
-import { EntryPointAbi } from '../../assets/abi/EntryPointAbi';
-import { DETAILS_BOX_SHADOW, ENTRY_POINT_ADDRESS } from '../../constants/common';
+import { EntryPoint07Abi } from '../../assets/abi/EntryPoint07Abi';
+import { DETAILS_BOX_SHADOW, ENTRY_POINT_07_ADDRESS } from '../../constants/common';
 import { DAO_ROUTES } from '../../constants/routes';
 import { isFeatureEnabled } from '../../helpers/featureFlags';
 import useNetworkPublicClient from '../../hooks/useNetworkPublicClient';
@@ -129,8 +129,8 @@ export function GaslessVotingToggleDAOSettings(props: GaslessVotingToggleProps) 
   useEffect(() => {
     if (!paymasterAddress) return;
     const entryPoint = getContract({
-      address: ENTRY_POINT_ADDRESS,
-      abi: EntryPointAbi,
+      address: ENTRY_POINT_07_ADDRESS,
+      abi: EntryPoint07Abi,
       client: publicClient,
     });
 

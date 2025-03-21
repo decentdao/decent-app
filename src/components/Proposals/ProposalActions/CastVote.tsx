@@ -8,8 +8,8 @@ import { toast } from 'sonner';
 import { getContract, http } from 'viem';
 import { createBundlerClient } from 'viem/account-abstraction';
 import { useAccount } from 'wagmi';
-import { EntryPointAbi } from '../../../assets/abi/EntryPointAbi';
-import { ENTRY_POINT_ADDRESS, TOOLTIP_MAXW } from '../../../constants/common';
+import { EntryPoint07Abi } from '../../../assets/abi/EntryPoint07Abi';
+import { ENTRY_POINT_07_ADDRESS, TOOLTIP_MAXW } from '../../../constants/common';
 import useSnapshotProposal from '../../../hooks/DAO/loaders/snapshot/useSnapshotProposal';
 import useCastSnapshotVote from '../../../hooks/DAO/proposal/useCastSnapshotVote';
 import useCastVote from '../../../hooks/DAO/proposal/useCastVote';
@@ -69,8 +69,8 @@ export function CastVote({ proposal }: { proposal: FractalProposal }) {
   const gaslessVoteSuccessModal = useDecentModal(ModalType.GASLESS_VOTE_SUCCESS);
 
   const entryPoint = getContract({
-    address: ENTRY_POINT_ADDRESS,
-    abi: EntryPointAbi,
+    address: ENTRY_POINT_07_ADDRESS,
+    abi: EntryPoint07Abi,
     client: publicClient,
   });
 

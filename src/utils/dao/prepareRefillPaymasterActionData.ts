@@ -1,5 +1,5 @@
 import { Address } from 'viem';
-import { ENTRY_POINT_ADDRESS } from '../../constants/common';
+import { ENTRY_POINT_07_ADDRESS } from '../../constants/common';
 import { CreateProposalActionData, ProposalActionType } from '../../types';
 import { formatCoin } from '../numberFormats';
 
@@ -31,7 +31,7 @@ export const prepareRefillPaymasterAction = ({
     false,
   );
 
-  const targetAddress = ENTRY_POINT_ADDRESS;
+  const targetAddress = ENTRY_POINT_07_ADDRESS;
   const ethValue = {
     bigintValue: refillAmount,
     value: formattedNativeTokenValue,
