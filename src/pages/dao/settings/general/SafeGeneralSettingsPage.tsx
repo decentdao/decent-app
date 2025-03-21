@@ -3,7 +3,7 @@ import { abis } from '@fractal-framework/fractal-contracts';
 import { ChangeEventHandler, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { Address, encodeFunctionData, keccak256, stringToHex, zeroAddress } from 'viem';
+import { Address, encodeFunctionData, getAbiItem, toFunctionSelector, zeroAddress } from 'viem';
 import { DecentPaymasterFactoryV1Abi } from '../../../../assets/abi/DecentPaymasterFactoryV1Abi';
 import { DecentPaymasterV1Abi } from '../../../../assets/abi/DecentPaymasterV1Abi';
 import { GaslessVotingToggleDAOSettings } from '../../../../components/GaslessVoting/GaslessVotingToggle';
@@ -189,13 +189,14 @@ export function SafeGeneralSettingsPage() {
           throw new Error('No strategy addresses defined');
         }
 
-        const voteSelector = keccak256(
-          stringToHex(
+        const voteAbiItem = getAbiItem({
+          name: 'vote',
+          abi:
             votingStrategyType === GovernanceType.AZORIUS_ERC20
-              ? 'vote(uint32,uint8)'
-              : 'vote(uint32,uint8,address[],uint256[])',
-          ),
-        ).slice(0, 10) as `0x${string}`;
+              ? abis.LinearERC20Voting
+              : abis.LinearERC721Voting,
+        });
+        const voteSelector = toFunctionSelector(voteAbiItem);
 
         strategyAddresses.forEach(strategyAddress => {
           targets.push(predictedPaymasterAddress);

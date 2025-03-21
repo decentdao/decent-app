@@ -6,12 +6,13 @@ import {
   encodeAbiParameters,
   encodeFunctionData,
   encodePacked,
+  getAbiItem,
   getAddress,
   getContract,
   getCreate2Address,
   keccak256,
   parseAbiParameters,
-  stringToHex,
+  toFunctionSelector,
 } from 'viem';
 import { DecentPaymasterFactoryV1Abi } from '../assets/abi/DecentPaymasterFactoryV1Abi';
 import { DecentPaymasterV1Abi } from '../assets/abi/DecentPaymasterV1Abi';
@@ -288,13 +289,14 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
       paymasterFactory: this.paymasterFactoryAddress,
     });
 
-    const voteSelector = keccak256(
-      stringToHex(
+    const voteAbiItem = getAbiItem({
+      name: 'vote',
+      abi:
         this.daoData.governance === GovernanceType.AZORIUS_ERC20
-          ? 'vote(uint32,uint8)'
-          : 'vote(uint32,uint8,address[],uint256[])',
-      ),
-    ).slice(0, 10) as `0x${string}`;
+          ? abis.LinearERC20Voting
+          : abis.LinearERC721Voting,
+    });
+    const voteSelector = toFunctionSelector(voteAbiItem);
 
     return buildContractCall(
       DecentPaymasterV1Abi,
