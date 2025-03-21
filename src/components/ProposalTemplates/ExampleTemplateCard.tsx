@@ -1,6 +1,7 @@
-import { Flex, Icon, Text } from '@chakra-ui/react';
+import { Box, Flex, Icon, Text } from '@chakra-ui/react';
 import { Icon as PhosphorIcon } from '@phosphor-icons/react';
 import ContentBox from '../ui/containers/ContentBox';
+import Markdown from '../ui/proposal/Markdown';
 
 type ExampleTemplateCardProps = {
   icon: PhosphorIcon;
@@ -24,8 +25,9 @@ export default function ExampleTemplateCard({
         <Icon
           w="50px"
           h="50px"
-          color="#DCC8F0"
+          color="lilac-0"
           borderRadius={0}
+          textStyle="heading-large"
           as={icon}
         />
       </Flex>
@@ -36,13 +38,9 @@ export default function ExampleTemplateCard({
       >
         {title}
       </Text>
-      <Text
-        textStyle="heading-xs"
-        color="gray"
-        my="0.5rem"
-      >
-        {description}
-      </Text>
+      <Box color="neutral-6">
+        <Markdown content={description} />
+      </Box>
     </ContentBox>
   );
 }
