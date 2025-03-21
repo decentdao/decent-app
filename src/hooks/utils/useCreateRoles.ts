@@ -136,15 +136,29 @@ export default function useCreateRoles() {
           return;
         }
 
-        const votingStrategyContract = getContract({
+        const existingAbiAndAddress = {
           abi: abis.LinearERC20Voting,
           address: linearVotingErc20Address,
-          client: publicClient,
-        });
+        };
 
-        const existingVotingPeriod = await votingStrategyContract.read.votingPeriod();
-        const existingQuorumNumerator = await votingStrategyContract.read.quorumNumerator();
-        const existingBasisNumerator = await votingStrategyContract.read.basisNumerator();
+        const [existingVotingPeriod, existingQuorumNumerator, existingBasisNumerator] =
+          await publicClient.multicall({
+            contracts: [
+              {
+                ...existingAbiAndAddress,
+                functionName: 'votingPeriod',
+              },
+              {
+                ...existingAbiAndAddress,
+                functionName: 'quorumNumerator',
+              },
+              {
+                ...existingAbiAndAddress,
+                functionName: 'basisNumerator',
+              },
+            ],
+            allowFailure: false,
+          });
 
         const encodedStrategyInitParams = encodeAbiParameters(
           parseAbiParameters(
@@ -214,15 +228,29 @@ export default function useCreateRoles() {
           return;
         }
 
-        const votingStrategyContract = getContract({
+        const existingAbiAndAddress = {
           abi: abis.LinearERC721Voting,
           address: linearVotingErc721Address,
-          client: publicClient,
-        });
+        };
 
-        const existingVotingPeriod = await votingStrategyContract.read.votingPeriod();
-        const existingQuorumThreshold = await votingStrategyContract.read.quorumThreshold();
-        const existingBasisNumerator = await votingStrategyContract.read.basisNumerator();
+        const [existingVotingPeriod, existingQuorumThreshold, existingBasisNumerator] =
+          await publicClient.multicall({
+            contracts: [
+              {
+                ...existingAbiAndAddress,
+                functionName: 'votingPeriod',
+              },
+              {
+                ...existingAbiAndAddress,
+                functionName: 'quorumThreshold',
+              },
+              {
+                ...existingAbiAndAddress,
+                functionName: 'basisNumerator',
+              },
+            ],
+            allowFailure: false,
+          });
 
         const encodedStrategyInitParams = encodeAbiParameters(
           parseAbiParameters(
