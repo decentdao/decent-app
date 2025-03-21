@@ -181,7 +181,6 @@ export function DaoHierarchyNode({
 
       loadDao(safeAddress).then(_node => {
         if (!_node) {
-          console.log('🚀 ~ _node:', _node);
           setErrorLoading(true);
           return;
         }
