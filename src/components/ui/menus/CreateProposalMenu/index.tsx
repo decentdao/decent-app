@@ -38,6 +38,10 @@ export function CreateProposalMenu({ safeAddress }: { safeAddress: Address }) {
           onClick: () =>
             navigate(DAO_ROUTES.proposalTemplates.relative(addressPrefix, safeAddress)),
         },
+        {
+          optionKey: t('useDapps'),
+          onClick: () => {},
+        },
       ]}
       namespace="proposal"
       buttonAs={Button}
