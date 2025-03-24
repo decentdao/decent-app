@@ -43,7 +43,6 @@ export enum ModalType {
   SEND_ASSETS,
   AIRDROP,
   REFILL_GAS,
-  CREATE_SMART_WALLET,
   GASLESS_VOTE_SUCCESS,
   IFRAME,
 }
@@ -105,11 +104,9 @@ export type ModalPropsTypes = {
     onSubmit: (refillGasData: RefillGasData) => void;
     showNonceInput: boolean;
   };
-  [ModalType.CREATE_SMART_WALLET]: {
-    successCallback: () => void;
-  };
   [ModalType.GASLESS_VOTE_SUCCESS]: {};
   [ModalType.IFRAME]: {};
+  [ModalType.GASLESS_VOTE_SUCCESS]: {};
 };
 
 export interface IModalContext {

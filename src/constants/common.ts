@@ -61,5 +61,3 @@ export const MAX_CONTENT_WIDTH = '80rem';
  */
 export const ERC6551_REGISTRY_SALT: Hex =
   '0x5d0e6ce4fd951366cc55da93f6e79d8b81483109d79676a04bcc2bed6a4b5072';
-
-export const ENTRY_POINT_ADDRESS: Hex = '0x0000000071727De22E5E9d8BAf0edAc6f37da032';

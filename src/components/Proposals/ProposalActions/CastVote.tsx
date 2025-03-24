@@ -8,8 +8,8 @@ import { toast } from 'sonner';
 import { getContract, http } from 'viem';
 import { createBundlerClient } from 'viem/account-abstraction';
 import { useAccount } from 'wagmi';
-import { EntryPointAbi } from '../../../assets/abi/EntryPointAbi';
-import { ENTRY_POINT_ADDRESS, TOOLTIP_MAXW } from '../../../constants/common';
+import { EntryPoint07Abi } from '../../../assets/abi/EntryPoint07Abi';
+import { TOOLTIP_MAXW } from '../../../constants/common';
 import useSnapshotProposal from '../../../hooks/DAO/loaders/snapshot/useSnapshotProposal';
 import useCastSnapshotVote from '../../../hooks/DAO/proposal/useCastSnapshotVote';
 import useCastVote from '../../../hooks/DAO/proposal/useCastVote';
@@ -59,7 +59,11 @@ export function CastVote({ proposal }: { proposal: FractalProposal }) {
   } = useCastSnapshotVote(extendedSnapshotProposal);
 
   const publicClient = useNetworkPublicClient();
-  const { rpcEndpoint, chain } = useNetworkConfigStore();
+  const {
+    rpcEndpoint,
+    chain,
+    contracts: { entryPointv07 },
+  } = useNetworkConfigStore();
   const { data: walletClient } = useNetworkWalletClient();
   const { address } = useAccount();
   const { canVoteLoading, hasVoted, hasVotedLoading } = useVoteContext();
@@ -69,8 +73,8 @@ export function CastVote({ proposal }: { proposal: FractalProposal }) {
   const gaslessVoteSuccessModal = useDecentModal(ModalType.GASLESS_VOTE_SUCCESS);
 
   const entryPoint = getContract({
-    address: ENTRY_POINT_ADDRESS,
-    abi: EntryPointAbi,
+    address: entryPointv07,
+    abi: EntryPoint07Abi,
     client: publicClient,
   });
 
@@ -130,7 +134,7 @@ export function CastVote({ proposal }: { proposal: FractalProposal }) {
       toast.error(t('castVoteError'));
 
       // Wait a bit to give the user time to process. Fall back to regular voting.
-      // @todo instead, show a modal to user, give them option to retry, cancel, or pay their own gas to cast vote
+      // @todo: (gv) instead, show a modal to user, give them option to retry, cancel, or pay their own gas to cast vote
       await new Promise(resolve => setTimeout(resolve, 3000));
       await castVote(selectedVoteChoice);
     }
@@ -153,7 +157,7 @@ export function CastVote({ proposal }: { proposal: FractalProposal }) {
   const canVoteForFree = useMemo(() => {
     return (
       gaslessVotingEnabled &&
-      paymasterBalance?.bigintValue &&
+      paymasterBalance?.bigintValue !== undefined &&
       paymasterBalance.bigintValue > minimumPaymasterBalance
     );
   }, [gaslessVotingEnabled, minimumPaymasterBalance, paymasterBalance?.bigintValue]);
