@@ -22,21 +22,21 @@ export interface RefillGasData {
   nonceInput: number | undefined;
 }
 
-function RefillViaProposalForm({
-  onSubmit,
-  onClose,
-  showNonceInput,
-}: {
+interface RefillFormProps {
   onSubmit: (refillData: RefillGasData) => void;
   onClose: () => void;
-  showNonceInput: boolean;
-}) {
-  const { t } = useTranslation('gaslessVoting');
+  isDirectDeposit: boolean;
+  showNonceInput?: boolean;
+}
 
+function RefillForm({ onSubmit, onClose, isDirectDeposit, showNonceInput }: RefillFormProps) {
+  const { t } = useTranslation('gaslessVoting');
+  const { address } = useAccount();
   const { safe } = useDaoInfoStore();
-  const [nonceInput, setNonceInput] = useState<number | undefined>(safe!.nextNonce);
-  const { data: nativeTokenBalance } = useBalance({
-    address: safe?.address,
+  const [nonceInput, setNonceInput] = useState<number | undefined>(safe?.nextNonce);
+
+  const { data: balance } = useBalance({
+    address: isDirectDeposit ? address : safe?.address,
   });
 
   return (
@@ -45,8 +45,8 @@ function RefillViaProposalForm({
       onSubmit={values => {
         onSubmit({
           transferAmount: values.inputAmount?.bigintValue || 0n,
-          isDirectDeposit: false,
-          nonceInput: undefined,
+          isDirectDeposit,
+          nonceInput: isDirectDeposit ? undefined : nonceInput,
         });
       }}
       validationSchema={Yup.object().shape({
@@ -60,11 +60,7 @@ function RefillViaProposalForm({
       {({ values, setFieldValue, handleSubmit }) => {
         const overDraft =
           Number(values.inputAmount?.value || '0') >
-          formatCoinUnits(
-            nativeTokenBalance?.value || 0n,
-            nativeTokenBalance?.decimals || 0,
-            nativeTokenBalance?.symbol || '',
-          );
+          formatCoinUnits(balance?.value || 0n, balance?.decimals || 0, balance?.symbol || '');
 
         const inputBigint = values.inputAmount?.bigintValue;
         const inputBigintIsZero = inputBigint !== undefined ? inputBigint === 0n : undefined;
@@ -85,7 +81,7 @@ function RefillViaProposalForm({
               <Field name="inputAmount">
                 {({ field }: FieldAttributes<FieldProps<BigIntValuePair | undefined>>) => (
                   <LabelWrapper
-                    label={t('sendingHint')}
+                    label={t(isDirectDeposit ? 'sendingHintDirectDeposit' : 'sendingHint')}
                     labelColor="neutral-7"
                   >
                     <BigIntInput
@@ -95,9 +91,9 @@ function RefillViaProposalForm({
                         setFieldValue('inputAmount', value);
                       }}
                       parentFormikValue={values.inputAmount}
-                      decimalPlaces={nativeTokenBalance?.decimals || 0}
+                      decimalPlaces={balance?.decimals || 0}
                       placeholder="0"
-                      maxValue={nativeTokenBalance?.value || 0n}
+                      maxValue={!isDirectDeposit ? balance?.value || 0n : undefined}
                       isInvalid={overDraft}
                       errorBorderColor="red-0"
                       autoFocus
@@ -122,9 +118,9 @@ function RefillViaProposalForm({
                 >
                   {t('balance', {
                     balance: formatCoinUnits(
-                      nativeTokenBalance?.value || 0n,
-                      nativeTokenBalance?.decimals || 0,
-                      nativeTokenBalance?.symbol || '',
+                      balance?.value || 0n,
+                      balance?.decimals || 0,
+                      balance?.symbol || '',
                     ).toFixed(2),
                   })}
                 </Text>
@@ -146,144 +142,16 @@ function RefillViaProposalForm({
                 type="submit"
                 isDisabled={isSubmitDisabled}
               >
-                {t('addGas')}
+                {t(isDirectDeposit ? 'depositGas' : 'addGas')}
               </Button>
             </Flex>
 
-            {showNonceInput && (
+            {showNonceInput && !isDirectDeposit && (
               <CustomNonceInput
                 nonce={nonceInput}
                 onChange={nonce => setNonceInput(nonce ? parseInt(nonce) : undefined)}
               />
             )}
-          </Form>
-        );
-      }}
-    </Formik>
-  );
-}
-
-function DirectDepositForm({
-  onSubmit,
-  onClose,
-}: {
-  onSubmit: (refillData: RefillGasData) => void;
-  onClose: () => void;
-}) {
-  const { t } = useTranslation('gaslessVoting');
-  const { address } = useAccount();
-
-  const { data: accountBalance } = useBalance({ address });
-
-  return (
-    <Formik<RefillGasFormValues>
-      initialValues={{ inputAmount: undefined }}
-      onSubmit={values => {
-        onSubmit({
-          transferAmount: values.inputAmount?.bigintValue || 0n,
-          isDirectDeposit: true,
-          nonceInput: undefined,
-        });
-      }}
-      validationSchema={Yup.object().shape({
-        inputAmount: Yup.object()
-          .shape({
-            value: Yup.string().required(),
-          })
-          .required(),
-      })}
-    >
-      {({ values, setFieldValue, handleSubmit }) => {
-        const overDraft =
-          Number(values.inputAmount?.value || '0') >
-          formatCoinUnits(
-            accountBalance?.value || 0n,
-            accountBalance?.decimals || 0,
-            accountBalance?.symbol || '',
-          );
-
-        const inputBigint = values.inputAmount?.bigintValue;
-        const inputBigintIsZero = inputBigint !== undefined ? inputBigint === 0n : undefined;
-        const isSubmitDisabled = !values.inputAmount || inputBigintIsZero || overDraft;
-
-        return (
-          <Form onSubmit={handleSubmit}>
-            <Flex
-              flexDirection="row"
-              justify="space-between"
-              border="1px solid"
-              borderColor="neutral-3"
-              borderRadius="0.75rem"
-              px={4}
-              py={3}
-              gap={2}
-            >
-              <Field name="inputAmount">
-                {({ field }: FieldAttributes<FieldProps<BigIntValuePair | undefined>>) => (
-                  <LabelWrapper
-                    label={t('sendingHintDirectDeposit')}
-                    labelColor="neutral-7"
-                  >
-                    <BigIntInput
-                      {...field}
-                      value={field.value?.bigintValue}
-                      onChange={value => {
-                        setFieldValue('inputAmount', value);
-                      }}
-                      parentFormikValue={values.inputAmount}
-                      decimalPlaces={accountBalance?.decimals || 0}
-                      placeholder="0"
-                      isInvalid={overDraft}
-                      errorBorderColor="red-0"
-                      autoFocus
-                    />
-                  </LabelWrapper>
-                )}
-              </Field>
-
-              <Flex
-                flexDirection="column"
-                alignItems="flex-end"
-                gap={2}
-                mt={6}
-              >
-                <AssetSelector
-                  onlyNativeToken
-                  disabled
-                />
-                <Text
-                  textStyle="labels-small"
-                  color="neutral-7"
-                >
-                  {t('balance', {
-                    balance: formatCoinUnits(
-                      accountBalance?.value || 0n,
-                      accountBalance?.decimals || 0,
-                      accountBalance?.symbol || '',
-                    ).toFixed(2),
-                  })}
-                </Text>
-              </Flex>
-            </Flex>
-
-            <Flex
-              mt={4}
-              justify="flex-end"
-              gap={2}
-            >
-              <Button
-                variant="secondary"
-                onClick={onClose}
-              >
-                {t('cancel', { ns: 'common' })}
-              </Button>
-              <Button
-                type="submit"
-                isDisabled={isSubmitDisabled}
-              >
-                {t('depositGas')}
-              </Button>
-            </Flex>
           </Form>
         );
       }}
@@ -334,18 +202,12 @@ export function RefillGasTankModal({
         </Checkbox>
       </Flex>
 
-      {isDirectDeposit ? (
-        <DirectDepositForm
-          onClose={close}
-          onSubmit={refillGasData}
-        />
-      ) : (
-        <RefillViaProposalForm
-          showNonceInput={showNonceInput}
-          onSubmit={refillGasData}
-          onClose={close}
-        />
-      )}
+      <RefillForm
+        isDirectDeposit={isDirectDeposit}
+        showNonceInput={showNonceInput}
+        onSubmit={refillGasData}
+        onClose={close}
+      />
     </Box>
   );
 }
