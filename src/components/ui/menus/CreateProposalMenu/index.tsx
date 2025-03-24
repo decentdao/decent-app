@@ -28,7 +28,7 @@ export function CreateProposalMenu({ safeAddress }: { safeAddress: Address }) {
   if (isFeatureEnabled('flag_iframe_template')) {
     options.push({
       optionKey: t('useDapps'),
-      onClick: () => {},
+      onClick: () => navigate(DAO_ROUTES.proposalDapps.relative(addressPrefix, safeAddress)),
     });
   }
 
