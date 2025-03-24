@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { Address } from 'viem';
 import { DAO_ROUTES } from '../../../../constants/routes';
+import { isFeatureEnabled } from '../../../../helpers/featureFlags';
 import { useNetworkConfigStore } from '../../../../providers/NetworkConfig/useNetworkConfigStore';
 import { OptionMenu } from '../OptionMenu';
 
@@ -13,6 +14,23 @@ export function CreateProposalMenu({ safeAddress }: { safeAddress: Address }) {
   const { addressPrefix } = useNetworkConfigStore();
 
   const navigate = useNavigate();
+
+  const options = [
+    {
+      optionKey: t('createFromScratch'),
+      onClick: () => navigate(DAO_ROUTES.proposalNew.relative(addressPrefix, safeAddress)),
+    },
+    {
+      optionKey: t('browseTemplates'),
+      onClick: () => navigate(DAO_ROUTES.proposalTemplates.relative(addressPrefix, safeAddress)),
+    },
+  ];
+  if (isFeatureEnabled('flag_iframe_template')) {
+    options.push({
+      optionKey: t('useDapps'),
+      onClick: () => navigate(DAO_ROUTES.proposalDapps.relative(addressPrefix, safeAddress)),
+    });
+  }
 
   return (
     <OptionMenu
@@ -28,17 +46,7 @@ export function CreateProposalMenu({ safeAddress }: { safeAddress: Address }) {
           />
         </Flex>
       }
-      options={[
-        {
-          optionKey: t('createFromScratch'),
-          onClick: () => navigate(DAO_ROUTES.proposalNew.relative(addressPrefix, safeAddress)),
-        },
-        {
-          optionKey: t('browseTemplates'),
-          onClick: () =>
-            navigate(DAO_ROUTES.proposalTemplates.relative(addressPrefix, safeAddress)),
-        },
-      ]}
+      options={options}
       namespace="proposal"
       buttonAs={Button}
       buttonProps={{

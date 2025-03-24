@@ -1,6 +1,6 @@
 import * as amplitude from '@amplitude/analytics-browser';
 import { Box, Button, Flex, Show, Text } from '@chakra-ui/react';
-import { ArrowsDownUp, HourglassMedium, Parachute } from '@phosphor-icons/react';
+import { AppStoreLogo, ArrowsDownUp, HourglassMedium, Parachute } from '@phosphor-icons/react';
 import { useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
@@ -125,6 +125,7 @@ export function SafeProposalTemplatesPage() {
     ];
     if (isFeatureEnabled('flag_iframe_template')) {
       templates.push({
+        icon: AppStoreLogo,
         title: t('templateIframeTitle', { ns: 'proposalTemplate' }),
         description: t('templateIframeDescription', { ns: 'proposalTemplate' }),
         onProposalTemplateClick: openIframeModal,
