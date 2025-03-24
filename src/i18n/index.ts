@@ -15,6 +15,7 @@ import MENU_EN from './locales/en/menu.json';
 import MODALS_EN from './locales/en/modals.json';
 import NAVIGATION_EN from './locales/en/navigation.json';
 import PROPOSAL_EN from './locales/en/proposal.json';
+import PROPOSAL_DAPPS_EN from './locales/en/proposalDapps.json';
 import PROPOSAL_METADATA_EN from './locales/en/proposalMetadata.json';
 import PROPOSAL_TEMPLATE_EN from './locales/en/proposalTemplate.json';
 import ROLES_EN from './locales/en/roles.json';
@@ -67,6 +68,7 @@ export const supportedLanguages = {
     home: HOME_EN,
     roles: ROLES_EN,
     gaslessVoting: GASLESS_VOTING_EN,
+    proposalDapps: PROPOSAL_DAPPS_EN,
   },
 };
 

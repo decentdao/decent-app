@@ -1,8 +1,10 @@
 import * as amplitude from '@amplitude/analytics-browser';
-import { Flex } from '@chakra-ui/react';
+import { Box, Flex } from '@chakra-ui/react';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import DappCard from '../../../components/ProposalDapps/DappCard';
+import NoDataCard from '../../../components/ui/containers/NoDataCard';
+import { InfoBoxLoader } from '../../../components/ui/loaders/InfoBoxLoader';
 import PageHeader from '../../../components/ui/page/Header/PageHeader';
 import { useSupportedDapps } from '../../../hooks/DAO/loaders/useSupportedDapps';
 import { analyticsEvents } from '../../../insights/analyticsEvents';
@@ -30,20 +32,31 @@ export function SafeProposalDappsPage() {
         ]}
       ></PageHeader>
       <Flex
-        flexDirection={'row'}
+        flexDirection={dapps && dapps.length > 0 ? 'row' : 'column'}
         flexWrap="wrap"
         gap="1rem"
       >
-        {dapps.map((dapp, i) => (
-          <DappCard
-            key={i}
-            title={dapp.name}
-            appUrl={dapp.url}
-            iconUrl={dapp.iconUrl}
-            description={dapp.description}
-            categories={dapp.tags}
+        {!dapps ? (
+          <Box>
+            <InfoBoxLoader />
+          </Box>
+        ) : dapps.length > 0 ? (
+          dapps.map((dapp, i) => (
+            <DappCard
+              key={i}
+              title={dapp.name}
+              appUrl={dapp.url}
+              iconUrl={dapp.iconUrl}
+              description={dapp.description}
+              categories={dapp.tags}
+            />
+          ))
+        ) : (
+          <NoDataCard
+            translationNameSpace="proposalDapps"
+            emptyText="emptyProposalDapps"
           />
-        ))}
+        )}
       </Flex>
     </div>
   );
