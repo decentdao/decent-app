@@ -2,11 +2,11 @@ import * as amplitude from '@amplitude/analytics-browser';
 import { Flex } from '@chakra-ui/react';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import dappsData from '../../../assets/dapps.json';
 import DappCard from '../../../components/ProposalDapps/DappCard';
 import PageHeader from '../../../components/ui/page/Header/PageHeader';
+import { useSupportedDapps } from '../../../hooks/DAO/loaders/useSupportedDapps';
 import { analyticsEvents } from '../../../insights/analyticsEvents';
-import { Dapp } from '../../../types';
+import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
 
 export function SafeProposalDappsPage() {
   useEffect(() => {
@@ -14,8 +14,9 @@ export function SafeProposalDappsPage() {
   }, []);
 
   const { t } = useTranslation();
+  const { chain } = useNetworkConfigStore();
 
-  const dapps: Dapp[] = dappsData as Dapp[];
+  const { dapps } = useSupportedDapps(chain.id);
 
   return (
     <div>
