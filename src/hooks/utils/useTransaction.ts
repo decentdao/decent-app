@@ -56,13 +56,13 @@ const useTransaction = () => {
           }, 2000);
         })
         .catch((error: ProviderRpcError) => {
-          logError(error);
           setPending(false);
 
           if (error.code === 4001) {
             toast.info(t('errorUserDeniedTransaction', { id: toastId }));
             return;
           }
+          logError(error);
           if (error.message === t('wrongNetwork', { ns: 'common' })) {
             toast.error(error.message, { id: toastId });
             return;

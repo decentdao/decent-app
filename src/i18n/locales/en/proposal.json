@@ -151,6 +151,7 @@
   "multisigNonceDuplicateErrorMessage": "Transaction with the same nonce already exists",
   "createFromScratch": "Start from scratch",
   "browseTemplates": "Browse templates",
+  "useDapps": "Use dApps",
   "tranchedStream": "Tranched",
   "streamTitle": "Stream {{index}} ({{type}})",
   "addStream": "Add stream",

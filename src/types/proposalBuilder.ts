@@ -62,6 +62,7 @@ export enum ProposalActionType {
   AIRDROP = 'airdrop',
   WITHDRAW_STREAM = 'withdraw_stream',
   REFILL_PAYMASTER = 'refill_paymaster',
+  DAPP_INTEGRATION = 'dapp_integration',
 }
 
 export type CreateProposalActionData<T = BigIntValuePair> = {

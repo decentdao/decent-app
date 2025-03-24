@@ -59,5 +59,6 @@
   "dragDropCSV": "Drag & drop a .csv file here, or click to select one",
   "dropCSVHere": "Drop CSV here",
   "csvFormat": "address,amount one entry per row",
-  "pasteMultipleRecipients": "You can paste one or multiple recipients (address,amount one entry per row)"
+  "pasteMultipleRecipients": "You can paste one or multiple recipients (address,amount one entry per row)",
+  "confirmTransactionTitle": "Confirm transaction"
 }

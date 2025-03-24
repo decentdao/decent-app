@@ -6,20 +6,46 @@ import { useAppCommunicator } from '../hooks/useAppCommunicator';
 import { InterfaceMessageIds, InterfaceMessageProps, RequestId, TransactionWithId } from '../types';
 import { SafeInjectContext } from './SafeInjectContext';
 
+interface SafeInjectProviderProps {
+  defaultAddress?: string;
+  chainId?: number;
+  /**
+   * Callback function to handle transactions received from the Safe app.
+   */
+  onTransactionsReceived?: (transactions: TransactionWithId[]) => void;
+  /**
+   * Callback function to handle app connection.
+   */
+  onAppConnected?: (appUrl: string) => void;
+}
+
 export function SafeInjectProvider({
   children,
   defaultAddress,
   chainId = 1,
-}: PropsWithChildren<{
-  defaultAddress?: string;
-  chainId?: number;
-}>) {
+  onTransactionsReceived,
+  onAppConnected,
+}: PropsWithChildren<SafeInjectProviderProps>) {
   const [address, setAddress] = useState<string | undefined>(defaultAddress);
   const [appUrl, setAppUrl] = useState<string>();
   const [connecting, setConnecting] = useState(false);
   const [connectedAppUrl, setConnectedAppUrl] = useState<string>('');
+  const receivedConnection = useCallback(
+    (url: string) => {
+      setConnectedAppUrl(url);
+      onAppConnected?.(url);
+    },
+    [onAppConnected],
+  );
   const publicClient = useNetworkPublicClient();
-  const [latestTransactions, setLatestTransactions] = useState<TransactionWithId[]>();
+  const [latestTransactions, setLatestTransactions] = useState<TransactionWithId[]>([]);
+  const receivedTransactions = useCallback(
+    (transactions: TransactionWithId[]) => {
+      setLatestTransactions(transactions);
+      onTransactionsReceived?.(transactions);
+    },
+    [onTransactionsReceived],
+  );
 
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const communicator = useAppCommunicator(iframeRef);
@@ -45,14 +71,13 @@ export function SafeInjectProvider({
   useEffect(() => {
     if (iframeRef) {
       iframeRef.current?.addEventListener('load', () => {
-        console.log('iframe loaded');
         setConnecting(false);
       });
     }
 
     communicator?.on(Methods.getSafeInfo, async msg => {
       if (appUrl?.startsWith(msg.origin)) {
-        setConnectedAppUrl(appUrl);
+        receivedConnection(appUrl);
       }
       const ret = {
         safeAddress: address,
@@ -142,7 +167,7 @@ export function SafeInjectProvider({
         }
       });
       console.debug('Iframe.sendTransactions', transactions);
-      setLatestTransactions(
+      receivedTransactions(
         transactions.map(txn => {
           return {
             id: parseInt(msg.data.id.toString()),
@@ -154,7 +179,15 @@ export function SafeInjectProvider({
       //   and "confirmed" so it can continue
       return true;
     });
-  }, [communicator, address, chainId, publicClient, appUrl]);
+  }, [
+    communicator,
+    address,
+    chainId,
+    publicClient,
+    appUrl,
+    receivedTransactions,
+    receivedConnection,
+  ]);
 
   return (
     <SafeInjectContext.Provider
@@ -165,7 +198,7 @@ export function SafeInjectProvider({
         connectedAppUrl,
         iframeRef,
         latestTransactions,
-        setLatestTransactions,
+        setLatestTransactions: receivedTransactions,
         setAddress,
         setAppUrl: s => {
           setConnecting(true);

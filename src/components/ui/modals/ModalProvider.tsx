@@ -2,7 +2,7 @@ import { Portal, Show, useDisclosure } from '@chakra-ui/react';
 import { createContext, ReactNode, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Address } from 'viem';
-import { ProposalTemplate } from '../../../types';
+import { CreateProposalTransaction, ProposalTemplate } from '../../../types';
 import { SendAssetsData } from '../../../utils/dao/prepareSendAssetsActionData';
 import AddSignerModal from '../../SafeSettings/Signers/modals/AddSignerModal';
 import RemoveSignerModal from '../../SafeSettings/Signers/modals/RemoveSignerModal';
@@ -11,6 +11,7 @@ import AddStrategyPermissionModal from './AddStrategyPermissionModal';
 import { AirdropData, AirdropModal } from './AirdropModal/AirdropModal';
 import { ConfirmDeleteStrategyModal } from './ConfirmDeleteStrategyModal';
 import { ConfirmModifyGovernanceModal } from './ConfirmModifyGovernanceModal';
+import { ConfirmTransactionModal } from './ConfirmTransactionModal';
 import { ConfirmUrlModal } from './ConfirmUrlModal';
 import { DelegateModal } from './DelegateModal';
 import ForkProposalTemplateModal from './ForkProposalTemplateModal';
@@ -45,6 +46,7 @@ export enum ModalType {
   REFILL_GAS,
   GASLESS_VOTE_SUCCESS,
   IFRAME,
+  CONFIRM_TRANSACTION,
 }
 
 export type CurrentModal = {
@@ -106,7 +108,10 @@ export type ModalPropsTypes = {
   };
   [ModalType.GASLESS_VOTE_SUCCESS]: {};
   [ModalType.IFRAME]: {};
-  [ModalType.GASLESS_VOTE_SUCCESS]: {};
+  [ModalType.CONFIRM_TRANSACTION]: {
+    appName: string;
+    transactionArray: CreateProposalTransaction[];
+  };
 };
 
 export interface IModalContext {
@@ -316,6 +321,18 @@ export function ModalProvider({ children }: { children: ReactNode }) {
         break;
       case ModalType.IFRAME:
         modalContent = <IframeModal />;
+        modalSize = 'xl';
+        break;
+      case ModalType.CONFIRM_TRANSACTION:
+        modalTitle = t('confirmTransactionTitle');
+        modalContent = (
+          <ConfirmTransactionModal
+            appName={current.props.appName}
+            transactionArray={current.props.transactionArray}
+            close={closeModal}
+          />
+        );
+        modalSize = 'xl';
         break;
       case ModalType.NONE:
       default:
