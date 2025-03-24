@@ -283,7 +283,7 @@ export function useAddressContractType() {
     [publicClient],
   );
 
-  // @todo: This whole thing is really just to check if the current DAO strategy(s) support gasless voting. Needs more robust logic.
+  // @todo: (gv) This whole thing is really just to check if the current DAO strategy(s) support gasless voting. Needs more robust logic.
   const isIVersionSupport = useCallback(
     async (contractAddress: Address) => {
       const contract = getContract({

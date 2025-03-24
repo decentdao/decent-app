@@ -1,7 +1,6 @@
 import { abis } from '@fractal-framework/fractal-contracts';
 import { useCallback } from 'react';
 import {
-  getContract,
   encodeAbiParameters,
   parseAbiParameters,
   encodeFunctionData,
@@ -34,7 +33,6 @@ export const useInstallVersionedVotingStrategy = () => {
 
   const {
     contracts: {
-      linearVotingErc20MasterCopy,
       linearVotingErc20V1MasterCopy,
       linearVotingErc721V1MasterCopy,
       zodiacModuleProxyFactory,
@@ -90,34 +88,53 @@ export const useInstallVersionedVotingStrategy = () => {
         return;
       }
 
-      const votingStrategyContract = getContract({
+      const existingAbiAndAddress = {
         abi: abis.LinearERC20Voting,
         address: linearVotingErc20Address,
-        client: publicClient,
+      };
+
+      const [
+        existingVotingPeriod,
+        existingQuorumNumerator,
+        existingBasisNumerator,
+        existingRequiredProposerWeight,
+      ] = await publicClient.multicall({
+        contracts: [
+          {
+            ...existingAbiAndAddress,
+            functionName: 'votingPeriod',
+          },
+          {
+            ...existingAbiAndAddress,
+            functionName: 'quorumNumerator',
+          },
+          {
+            ...existingAbiAndAddress,
+            functionName: 'basisNumerator',
+          },
+          {
+            ...existingAbiAndAddress,
+            functionName: 'requiredProposerWeight',
+          },
+        ],
+        allowFailure: false,
       });
 
-      const linearERC20VotingMasterCopyContract = getContract({
-        abi: abis.LinearERC20Voting,
-        address: linearVotingErc20MasterCopy,
-        client: publicClient,
-      });
-      const existingVotingPeriod = await votingStrategyContract.read.votingPeriod();
-      const quorumDenominator = await linearERC20VotingMasterCopyContract.read.QUORUM_DENOMINATOR();
       const encodedStrategyInitParams = encodeAbiParameters(
         parseAbiParameters('address, address, address, uint32, uint256, uint256, uint256'),
         [
-          safeAddress, // owner
-          votesToken.address, // governance token
-          moduleAzoriusAddress, // Azorius module
+          safeAddress,
+          votesToken.address,
+          moduleAzoriusAddress,
           existingVotingPeriod,
-          1n,
-          (votingStrategy.quorumPercentage.value * quorumDenominator) / 100n, // quorom numerator, denominator is 1,000,000, so quorum percentage is quorumNumerator * 100 / quorumDenominator
-          500000n, // basis numerator, denominator is 1,000,000, so basis percentage is 50% (simple majority)
+          existingRequiredProposerWeight,
+          existingQuorumNumerator,
+          existingBasisNumerator,
         ],
       );
 
       const encodedStrategySetupData = encodeFunctionData({
-        abi: LinearERC20VotingV1Abi, // @todo: use the deployed abi
+        abi: LinearERC20VotingV1Abi, // @todo: (gv) use the deployed abi
         functionName: 'setUp',
         args: [encodedStrategyInitParams],
       });
@@ -156,36 +173,61 @@ export const useInstallVersionedVotingStrategy = () => {
         return;
       }
 
-      const strategyNonce = getRandomBytes();
-      const votingStrategyContract = getContract({
+      const existingAbiAndAddress = {
         abi: abis.LinearERC721Voting,
         address: linearVotingErc721Address,
-        client: publicClient,
+      };
+
+      const [
+        existingVotingPeriod,
+        existingQuorumThreshold,
+        existingProposerThreshold,
+        existingBasisNumerator,
+      ] = await publicClient.multicall({
+        contracts: [
+          {
+            ...existingAbiAndAddress,
+            functionName: 'votingPeriod',
+          },
+          {
+            ...existingAbiAndAddress,
+            functionName: 'quorumThreshold',
+          },
+          {
+            ...existingAbiAndAddress,
+            functionName: 'proposerThreshold',
+          },
+          {
+            ...existingAbiAndAddress,
+            functionName: 'basisNumerator',
+          },
+        ],
+        allowFailure: false,
       });
-      const existingVotingPeriod = await votingStrategyContract.read.votingPeriod();
 
       const encodedStrategyInitParams = encodeAbiParameters(
         parseAbiParameters(
           'address, address[], uint256[], address, uint32, uint256, uint256, uint256',
         ),
         [
-          safeAddress, // owner
-          erc721Tokens.map(token => token.address), // governance tokens addresses
-          erc721Tokens.map(token => token.votingWeight), // governance tokens weights
-          moduleAzoriusAddress, // Azorius module
+          safeAddress,
+          erc721Tokens.map(token => token.address),
+          erc721Tokens.map(token => token.votingWeight),
+          moduleAzoriusAddress,
           existingVotingPeriod,
-          votingStrategy.quorumThreshold.value, // quorom threshold, number of yes + abstain votes has to >= threshold
-          1n, // proposer threshold, how much is needed to create a proposal.
-          500000n, // basis numerator, denominator is 1,000,000, so basis percentage is 50% (simple majority)
+          existingProposerThreshold,
+          existingQuorumThreshold,
+          existingBasisNumerator,
         ],
       );
 
       const encodedStrategySetupData = encodeFunctionData({
-        abi: LinearERC721VotingV1Abi, // @todo: use the deployed abi
+        abi: LinearERC721VotingV1Abi, // @todo: (gv) use the deployed abi
         functionName: 'setUp',
         args: [encodedStrategyInitParams],
       });
 
+      const strategyNonce = getRandomBytes();
       const deployERC721VotingStrategyTx = {
         targetAddress: zodiacModuleProxyFactory,
         calldata: encodeFunctionData({
@@ -228,7 +270,6 @@ export const useInstallVersionedVotingStrategy = () => {
     getVotingStrategies,
     governance,
     publicClient,
-    linearVotingErc20MasterCopy,
     zodiacModuleProxyFactory,
     linearVotingErc20V1MasterCopy,
     linearVotingErc721V1MasterCopy,

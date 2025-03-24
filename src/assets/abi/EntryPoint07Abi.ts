@@ -1,4 +1,4 @@
-export const EntryPointAbi = [
+export const EntryPoint07Abi = [
   {
     inputs: [
       { internalType: 'bool', name: 'success', type: 'bool' },

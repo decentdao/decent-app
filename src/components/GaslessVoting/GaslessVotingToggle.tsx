@@ -3,11 +3,12 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { getContract } from 'viem';
-import { EntryPointAbi } from '../../assets/abi/EntryPointAbi';
-import { DETAILS_BOX_SHADOW, ENTRY_POINT_ADDRESS } from '../../constants/common';
+import { EntryPoint07Abi } from '../../assets/abi/EntryPoint07Abi';
+import { DETAILS_BOX_SHADOW } from '../../constants/common';
 import { DAO_ROUTES } from '../../constants/routes';
 import { isFeatureEnabled } from '../../helpers/featureFlags';
 import useNetworkPublicClient from '../../hooks/useNetworkPublicClient';
+import { useNetworkWalletClient } from '../../hooks/useNetworkWalletClient';
 import { useCanUserCreateProposal } from '../../hooks/utils/useCanUserSubmitProposal';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
 import { useProposalActionsStore } from '../../store/actions/useProposalActionsStore';
@@ -115,7 +116,11 @@ export function GaslessVotingToggleDAOCreate(props: GaslessVotingToggleProps) {
 
 export function GaslessVotingToggleDAOSettings(props: GaslessVotingToggleProps) {
   const { t } = useTranslation('gaslessVoting');
-  const { gaslessVotingSupported, addressPrefix } = useNetworkConfigStore();
+  const {
+    gaslessVotingSupported,
+    addressPrefix,
+    contracts: { entryPointv07 },
+  } = useNetworkConfigStore();
 
   const navigate = useNavigate();
   const publicClient = useNetworkPublicClient();
@@ -129,8 +134,8 @@ export function GaslessVotingToggleDAOSettings(props: GaslessVotingToggleProps) 
   useEffect(() => {
     if (!paymasterAddress) return;
     const entryPoint = getContract({
-      address: ENTRY_POINT_ADDRESS,
-      abi: EntryPointAbi,
+      address: entryPointv07,
+      abi: EntryPoint07Abi,
       client: publicClient,
     });
 
@@ -140,13 +145,31 @@ export function GaslessVotingToggleDAOSettings(props: GaslessVotingToggleProps) 
         bigintValue: balance,
       });
     });
-  }, [paymasterAddress, publicClient]);
+  }, [entryPointv07, paymasterAddress, publicClient]);
 
   const { addAction } = useProposalActionsStore();
+  const { data: walletClient } = useNetworkWalletClient();
 
   const refillGas = useDecentModal(ModalType.REFILL_GAS, {
     onSubmit: async (refillGasData: RefillGasData) => {
       if (!safe?.address || !paymasterAddress) {
+        return;
+      }
+
+      if (refillGasData.isDirectDeposit) {
+        if (!walletClient) {
+          throw new Error('Wallet client not found');
+        }
+
+        const entryPoint = getContract({
+          address: entryPointv07,
+          abi: EntryPoint07Abi,
+          client: walletClient,
+        });
+
+        entryPoint.write.depositTo([paymasterAddress], {
+          value: refillGasData.transferAmount,
+        });
         return;
       }
 
@@ -155,6 +178,7 @@ export function GaslessVotingToggleDAOSettings(props: GaslessVotingToggleProps) 
         paymasterAddress,
         nonceInput: refillGasData.nonceInput,
         nativeToken: nativeCurrency,
+        entryPointAddress: entryPointv07,
       });
       const formattedRefillAmount = formatCoin(
         refillGasData.transferAmount,
@@ -229,7 +253,7 @@ export function GaslessVotingToggleDAOSettings(props: GaslessVotingToggleProps) 
             >
               {formattedPaymasterBalance}
               <Image
-                src={'/images/coin-icon-default.svg'} // @todo: Use the correct image for the token.
+                src={'/images/coin-icon-default.svg'} // @todo: (gv) Use the correct image for the token.
                 fallbackSrc={'/images/coin-icon-default.svg'}
                 alt={nativeCurrency.symbol}
                 w="1.25rem"

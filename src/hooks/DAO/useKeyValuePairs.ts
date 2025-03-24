@@ -26,18 +26,6 @@ const getGaslessVotingDaoData = async (
     return { gaslessVotingEnabled: false, paymasterAddress: undefined };
   }
 
-  if (!gaslessVotingEnabledEvent.args.value) {
-    logError({
-      message: "KVPairs 'gaslessVotingEnabledEvent' without a value",
-      network: chainId,
-      args: {
-        transactionHash: gaslessVotingEnabledEvent.transactionHash,
-        logIndex: gaslessVotingEnabledEvent.logIndex,
-      },
-    });
-    return { gaslessVotingEnabled: false, paymasterAddress: undefined };
-  }
-
   try {
     const gaslessVotingEnabled = gaslessVotingEnabledEvent.args.value === 'true';
 
@@ -215,17 +203,13 @@ const useKeyValuePairs = () => {
               hatsTreeId: getHatsTreeId(logs, chain.id),
               streamIdsToHatIds: getHatIdsToStreamIds(logs, sablierV2LockupLinear, chain.id),
             });
-
-            getGaslessVotingDaoData(
-              logs,
-              chain.id,
-              paymasterFactory,
-              safeAddress,
-              publicClient,
-            ).then(gaslessVotingDaoData => {
-              setGaslessVotingDaoData(gaslessVotingDaoData);
-            });
           }, 20_000);
+
+          getGaslessVotingDaoData(logs, chain.id, paymasterFactory, safeAddress, publicClient).then(
+            gaslessVotingDaoData => {
+              setGaslessVotingDaoData(gaslessVotingDaoData);
+            },
+          );
         },
       },
     );

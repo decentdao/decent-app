@@ -1,9 +1,9 @@
 import { Address } from 'viem';
-import { ENTRY_POINT_ADDRESS } from '../../constants/common';
 import { CreateProposalActionData, ProposalActionType } from '../../types';
 import { formatCoin } from '../numberFormats';
 
 export interface RefillPaymasterData {
+  entryPointAddress: Address;
   paymasterAddress: Address;
   refillAmount: bigint;
   nonceInput: number | undefined; // this is only releveant when the caller action results in a proposal
@@ -22,6 +22,7 @@ export const prepareRefillPaymasterAction = ({
   refillAmount,
   paymasterAddress,
   nativeToken,
+  entryPointAddress,
 }: RefillPaymasterData): CreateProposalActionData => {
   const formattedNativeTokenValue = formatCoin(
     refillAmount,
@@ -31,7 +32,7 @@ export const prepareRefillPaymasterAction = ({
     false,
   );
 
-  const targetAddress = ENTRY_POINT_ADDRESS;
+  const targetAddress = entryPointAddress;
   const ethValue = {
     bigintValue: refillAmount,
     value: formattedNativeTokenValue,
