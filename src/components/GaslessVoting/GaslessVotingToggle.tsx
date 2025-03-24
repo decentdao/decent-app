@@ -8,6 +8,7 @@ import { DETAILS_BOX_SHADOW } from '../../constants/common';
 import { DAO_ROUTES } from '../../constants/routes';
 import { isFeatureEnabled } from '../../helpers/featureFlags';
 import useNetworkPublicClient from '../../hooks/useNetworkPublicClient';
+import { useNetworkWalletClient } from '../../hooks/useNetworkWalletClient';
 import { useCanUserCreateProposal } from '../../hooks/utils/useCanUserSubmitProposal';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
 import { useProposalActionsStore } from '../../store/actions/useProposalActionsStore';
@@ -147,10 +148,28 @@ export function GaslessVotingToggleDAOSettings(props: GaslessVotingToggleProps) 
   }, [entryPointv07, paymasterAddress, publicClient]);
 
   const { addAction } = useProposalActionsStore();
+  const { data: walletClient } = useNetworkWalletClient();
 
   const refillGas = useDecentModal(ModalType.REFILL_GAS, {
     onSubmit: async (refillGasData: RefillGasData) => {
       if (!safe?.address || !paymasterAddress) {
+        return;
+      }
+
+      if (refillGasData.isDirectDeposit) {
+        if (!walletClient) {
+          throw new Error('Wallet client not found');
+        }
+
+        const entryPoint = getContract({
+          address: entryPointv07,
+          abi: EntryPoint07Abi,
+          client: walletClient,
+        });
+
+        entryPoint.write.depositTo([paymasterAddress], {
+          value: refillGasData.transferAmount,
+        });
         return;
       }
 
