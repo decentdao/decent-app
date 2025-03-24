@@ -1,25 +1,39 @@
 import { Button, Box, Text, Image, Flex, Radio, RadioGroup, Icon } from '@chakra-ui/react';
-import { Check, CheckCircle } from '@phosphor-icons/react';
-import { useEffect, useState } from 'react';
+import { Check, CheckCircle, Sparkle } from '@phosphor-icons/react';
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { toLightSmartAccount } from 'permissionless/accounts';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { toast } from 'sonner';
+import { getContract, http } from 'viem';
+import { createBundlerClient } from 'viem/account-abstraction';
+import { useAccount } from 'wagmi';
+import { EntryPoint07Abi } from '../../../assets/abi/EntryPoint07Abi';
 import { TOOLTIP_MAXW } from '../../../constants/common';
 import useSnapshotProposal from '../../../hooks/DAO/loaders/snapshot/useSnapshotProposal';
 import useCastSnapshotVote from '../../../hooks/DAO/proposal/useCastSnapshotVote';
 import useCastVote from '../../../hooks/DAO/proposal/useCastVote';
+import useNetworkPublicClient from '../../../hooks/useNetworkPublicClient';
+import { useNetworkWalletClient } from '../../../hooks/useNetworkWalletClient';
 import useCurrentBlockNumber from '../../../hooks/utils/useCurrentBlockNumber';
+import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
+import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
 import {
   AzoriusProposal,
+  BigIntValuePair,
   FractalProposal,
   FractalProposalState,
   VOTE_CHOICES,
 } from '../../../types';
 import { DecentTooltip } from '../../ui/DecentTooltip';
 import WeightedInput from '../../ui/forms/WeightedInput';
+import { ModalType } from '../../ui/modals/ModalProvider';
+import { useDecentModal } from '../../ui/modals/useDecentModal';
 import { useVoteContext } from '../ProposalVotes/context/VoteContext';
 
 export function CastVote({ proposal }: { proposal: FractalProposal }) {
   const [selectedVoteChoice, setVoiceChoice] = useState<number>();
-  const { t } = useTranslation(['common', 'proposal', 'transaction']);
+  const { t } = useTranslation(['proposal', 'transaction', 'gaslessVoting']);
   const { isLoaded: isCurrentBlockLoaded, currentBlockNumber } = useCurrentBlockNumber();
 
   const { snapshotProposal, extendedSnapshotProposal, loadSnapshotProposal } =
@@ -31,7 +45,7 @@ export function CastVote({ proposal }: { proposal: FractalProposal }) {
 
   const azoriusProposal = proposal as AzoriusProposal;
 
-  const { castVote, castVotePending } = useCastVote(
+  const { castVote, castVotePending, prepareCastVoteData } = useCastVote(
     proposal.proposalId,
     azoriusProposal.votingStrategy,
   );
@@ -44,7 +58,109 @@ export function CastVote({ proposal }: { proposal: FractalProposal }) {
     snapshotWeightedChoice,
   } = useCastSnapshotVote(extendedSnapshotProposal);
 
+  const publicClient = useNetworkPublicClient();
+  const {
+    rpcEndpoint,
+    chain,
+    contracts: { entryPointv07 },
+  } = useNetworkConfigStore();
+  const { data: walletClient } = useNetworkWalletClient();
+  const { address } = useAccount();
   const { canVoteLoading, hasVoted, hasVotedLoading } = useVoteContext();
+
+  const { gaslessVotingEnabled, paymasterAddress } = useDaoInfoStore();
+
+  const gaslessVoteSuccessModal = useDecentModal(ModalType.GASLESS_VOTE_SUCCESS);
+
+  const entryPoint = getContract({
+    address: entryPointv07,
+    abi: EntryPoint07Abi,
+    client: publicClient,
+  });
+
+  const castGaslessVote = async () => {
+    if (
+      !chain ||
+      !address ||
+      !paymasterAddress ||
+      !walletClient ||
+      selectedVoteChoice === undefined
+    ) {
+      throw new Error('Invalid state');
+    }
+
+    try {
+      const smartWallet = await toLightSmartAccount({
+        client: publicClient,
+        owner: walletClient,
+        version: '2.0.0',
+      });
+
+      const bundlerClient = createBundlerClient({
+        account: smartWallet,
+        client: publicClient,
+        transport: http(rpcEndpoint),
+      });
+
+      // Get current network conditions
+      const { maxFeePerGas, maxPriorityFeePerGas } = await publicClient.estimateFeesPerGas();
+
+      // Need this to shut typescript up
+      if (!maxFeePerGas || !maxPriorityFeePerGas) {
+        throw new Error('Failed to estimate fees');
+      }
+
+      const castVoteCallData = prepareCastVoteData(selectedVoteChoice);
+
+      // Sign and send UserOperation to bundler
+      const hash = await bundlerClient.sendUserOperation({
+        paymaster: paymasterAddress,
+        calls: [castVoteCallData],
+
+        // i don't really know why we need to do this, but we do
+        maxPriorityFeePerGas: maxPriorityFeePerGas * 100n,
+        maxFeePerGas: maxFeePerGas * 100n,
+      });
+      gaslessVoteSuccessModal();
+      const receipt = await bundlerClient.waitForUserOperationReceipt({ hash });
+
+      console.log({ receipt });
+    } catch (error: any) {
+      if (error.name === 'UserRejectedRequestError') {
+        toast.error(t('userRejectedSignature', { ns: 'gaslessVoting' }));
+        return;
+      }
+      console.error('Gasless voting error:', error);
+      toast.error(t('castVoteError'));
+
+      // Wait a bit to give the user time to process. Fall back to regular voting.
+      // @todo: (gv) instead, show a modal to user, give them option to retry, cancel, or pay their own gas to cast vote
+      await new Promise(resolve => setTimeout(resolve, 3000));
+      await castVote(selectedVoteChoice);
+    }
+  };
+
+  const [paymasterBalance, setPaymasterBalance] = useState<BigIntValuePair>();
+  useEffect(() => {
+    if (!paymasterAddress) return;
+
+    entryPoint.read.balanceOf([paymasterAddress]).then(balance => {
+      setPaymasterBalance({
+        value: balance.toString(),
+        bigintValue: balance,
+      });
+    });
+  }, [entryPoint.read, paymasterAddress, publicClient]);
+
+  // Set a reasonable minimum (slightly higher than the required amount)
+  const minimumPaymasterBalance = 60000000000000000n; // 0.06 ETH in wei
+  const canVoteForFree = useMemo(() => {
+    return (
+      gaslessVotingEnabled &&
+      paymasterBalance?.bigintValue !== undefined &&
+      paymasterBalance.bigintValue > minimumPaymasterBalance
+    );
+  }, [gaslessVotingEnabled, minimumPaymasterBalance, paymasterBalance?.bigintValue]);
 
   // If user is lucky enough - he could create a proposal and proceed to vote on it
   // even before the block, in which proposal was created, was mined.
@@ -64,6 +180,21 @@ export function CastVote({ proposal }: { proposal: FractalProposal }) {
     canVoteLoading ||
     hasVoted ||
     hasVotedLoading;
+
+  const handleVoteClick = async () => {
+    if (selectedVoteChoice !== undefined && address !== undefined) {
+      try {
+        if (canVoteForFree) {
+          await castGaslessVote();
+        } else {
+          await castVote(selectedVoteChoice);
+        }
+      } catch (error: any) {
+        console.error('Cast vote error:', error);
+        toast.error(t('castVoteError'));
+      }
+    }
+  };
 
   if (snapshotProposal && extendedSnapshotProposal) {
     const isWeighted = extendedSnapshotProposal.type === 'weighted';
@@ -199,7 +330,7 @@ export function CastVote({ proposal }: { proposal: FractalProposal }) {
             }}
             mb={2}
           >
-            {t(choice.label, { ns: 'common' })}
+            {t(choice.label)}
           </Radio>
         ))}
         <Button
@@ -207,10 +338,11 @@ export function CastVote({ proposal }: { proposal: FractalProposal }) {
           padding="3"
           height="3.25rem"
           width="full"
+          leftIcon={canVoteForFree ? <Icon as={Sparkle} /> : undefined}
           isDisabled={disabled}
-          onClick={() => selectedVoteChoice !== undefined && castVote(selectedVoteChoice)}
+          onClick={handleVoteClick}
         >
-          {t('vote')}
+          {canVoteForFree ? t('voteForFree') : t('vote')}
         </Button>
       </RadioGroup>
     </DecentTooltip>

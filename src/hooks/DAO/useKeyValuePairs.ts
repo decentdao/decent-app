@@ -2,11 +2,12 @@ import { abis } from '@fractal-framework/fractal-contracts';
 import { hatIdToTreeId } from '@hatsprotocol/sdk-v1-core';
 import { useEffect } from 'react';
 import { Address, GetContractEventsReturnType, PublicClient, getContract } from 'viem';
-import { DecentPaymasterFactoryV1Abi, PAYMASTER_SALT } from '../../constants/common';
+import { DecentPaymasterFactoryV1Abi } from '../../assets/abi/DecentPaymasterFactoryV1Abi';
 import { logError } from '../../helpers/errorLogging';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
 import { useDaoInfoStore } from '../../store/daoInfo/useDaoInfoStore';
 import { useRolesStore } from '../../store/roles/useRolesStore';
+import { getPaymasterSalt } from '../../utils/gaslessVoting';
 import useNetworkPublicClient from '../useNetworkPublicClient';
 
 const getGaslessVotingDaoData = async (
@@ -25,34 +26,21 @@ const getGaslessVotingDaoData = async (
     return { gaslessVotingEnabled: false, paymasterAddress: undefined };
   }
 
-  if (!gaslessVotingEnabledEvent.args.value) {
-    logError({
-      message: "KVPairs 'gaslessVotingEnabledEvent' without a value",
-      network: chainId,
-      args: {
-        transactionHash: gaslessVotingEnabledEvent.transactionHash,
-        logIndex: gaslessVotingEnabledEvent.logIndex,
-      },
-    });
-    return { gaslessVotingEnabled: false, paymasterAddress: undefined };
-  }
-
   try {
-    const gaslessVotingEnabled = Boolean(gaslessVotingEnabledEvent.args.value);
+    const gaslessVotingEnabled = gaslessVotingEnabledEvent.args.value === 'true';
 
     let paymasterAddress: Address | undefined;
-    if (gaslessVotingEnabled) {
-      const paymasterFactoryContract = getContract({
-        abi: DecentPaymasterFactoryV1Abi,
-        address: paymasterFactoryAddress,
-        client: publicClient,
-      });
 
-      paymasterAddress = await paymasterFactoryContract.read.getAddress([
-        safeAddress,
-        BigInt(PAYMASTER_SALT),
-      ]);
-    }
+    const paymasterFactoryContract = getContract({
+      abi: DecentPaymasterFactoryV1Abi,
+      address: paymasterFactoryAddress,
+      client: publicClient,
+    });
+
+    paymasterAddress = (await paymasterFactoryContract.read.getAddress([
+      safeAddress,
+      getPaymasterSalt(safeAddress, chainId),
+    ])) as Address;
 
     return { gaslessVotingEnabled, paymasterAddress };
   } catch (e) {
@@ -215,17 +203,13 @@ const useKeyValuePairs = () => {
               hatsTreeId: getHatsTreeId(logs, chain.id),
               streamIdsToHatIds: getHatIdsToStreamIds(logs, sablierV2LockupLinear, chain.id),
             });
-
-            getGaslessVotingDaoData(
-              logs,
-              chain.id,
-              paymasterFactory,
-              safeAddress,
-              publicClient,
-            ).then(gaslessVotingEnabled => {
-              setGaslessVotingDaoData(gaslessVotingEnabled ?? false);
-            });
           }, 20_000);
+
+          getGaslessVotingDaoData(logs, chain.id, paymasterFactory, safeAddress, publicClient).then(
+            gaslessVotingDaoData => {
+              setGaslessVotingDaoData(gaslessVotingDaoData);
+            },
+          );
         },
       },
     );

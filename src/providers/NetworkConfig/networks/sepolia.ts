@@ -70,9 +70,9 @@ export const sepoliaConfig: NetworkConfig = {
     ),
 
     linearVotingErc20V1MasterCopy: '0xFe3542A836789c1b54B7A1De2ADfceC5F7f0425a',
-    linearVotingErc20V1HatsWhitelistingMasterCopy: '0x0000000000000000000000000000000000000000',
-    linearVotingErc721V1MasterCopy: '0x0000000000000000000000000000000000000000',
-    linearVotingErc721V1HatsWhitelistingMasterCopy: '0x0000000000000000000000000000000000000000',
+    linearVotingErc20V1HatsWhitelistingMasterCopy: '0x7EA0e76FC3c5447912646734595C5AB743415128',
+    linearVotingErc721V1MasterCopy: '0xd0C8E17d512eb8582431fC856DD49E1c3CCE0CDa',
+    linearVotingErc721V1HatsWhitelistingMasterCopy: '0x0aC793E3d815E3bE2acED189019af5C5Cde8E5B2',
 
     moduleAzoriusMasterCopy: getAddress(a.Azorius),
     moduleFractalMasterCopy: getAddress(a.FractalModule),
@@ -105,7 +105,8 @@ export const sepoliaConfig: NetworkConfig = {
     sablierV2LockupTranched: '0x3a1beA13A8C24c0EA2b8fAE91E4b2762A59D7aF5',
     sablierV2LockupLinear: '0x3E435560fd0a03ddF70694b35b673C25c65aBB6C',
     disperse: '0xD152f549545093347A162Dce210e7293f1452150',
-    paymasterFactory: '0xea770928bA2C87d5A213A34b563D92C7607ab936',
+    entryPointv07: '0x0000000071727De22E5E9d8BAf0edAc6f37da032', // https://etherscan.io/address/0x0000000071727de22e5e9d8baf0edac6f37da032#code
+    paymasterFactory: '0xD64b53AEF9E63C54689CDf72C7bcDd6e983EC2B8',
   },
   staking: {},
   moralis: {
