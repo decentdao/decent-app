@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { getContract } from 'viem';
+import { useWalletClient } from 'wagmi';
 import { EntryPoint07Abi } from '../../assets/abi/EntryPoint07Abi';
 import { DETAILS_BOX_SHADOW } from '../../constants/common';
 import { DAO_ROUTES } from '../../constants/routes';
@@ -147,10 +148,28 @@ export function GaslessVotingToggleDAOSettings(props: GaslessVotingToggleProps) 
   }, [entryPointv07, paymasterAddress, publicClient]);
 
   const { addAction } = useProposalActionsStore();
+  const { data: walletClient } = useWalletClient();
 
   const refillGas = useDecentModal(ModalType.REFILL_GAS, {
     onSubmit: async (refillGasData: RefillGasData) => {
       if (!safe?.address || !paymasterAddress) {
+        return;
+      }
+
+      if (refillGasData.isDirectDeposit) {
+        if (!walletClient) {
+          throw new Error('Wallet client not found');
+        }
+
+        const entryPoint = getContract({
+          address: entryPointv07,
+          abi: EntryPoint07Abi,
+          client: walletClient,
+        });
+
+        entryPoint.write.depositTo([paymasterAddress], {
+          value: refillGasData.transferAmount,
+        });
         return;
       }
 

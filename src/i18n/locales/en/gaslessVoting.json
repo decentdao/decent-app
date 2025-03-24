@@ -26,5 +26,10 @@
   "createSmartWalletSuccess": "Your Smart Wallet has been created successfully.",
   "voteIsSponsoredTitle": "Your vote is sponsored.",
   "voteIsSponsoredSubtitle": "Enjoy zero fees for this vote!",
-  "userRejectedSignature": "User declined to sign."
+  "userRejectedSignature": "User declined to sign.",
+  "directDeposit": "Deposit directly",
+  "depositGas": "Deposit",
+  "balance": "{{balance}} Available",
+  "sendingHint": "Proposed refill amount",
+  "sendingHintDirectDeposit": "You're sending"
 }
