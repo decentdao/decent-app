@@ -3,12 +3,12 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { getContract } from 'viem';
-import { useWalletClient } from 'wagmi';
 import { EntryPoint07Abi } from '../../assets/abi/EntryPoint07Abi';
 import { DETAILS_BOX_SHADOW } from '../../constants/common';
 import { DAO_ROUTES } from '../../constants/routes';
 import { isFeatureEnabled } from '../../helpers/featureFlags';
 import useNetworkPublicClient from '../../hooks/useNetworkPublicClient';
+import { useNetworkWalletClient } from '../../hooks/useNetworkWalletClient';
 import { useCanUserCreateProposal } from '../../hooks/utils/useCanUserSubmitProposal';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
 import { useProposalActionsStore } from '../../store/actions/useProposalActionsStore';
@@ -148,7 +148,7 @@ export function GaslessVotingToggleDAOSettings(props: GaslessVotingToggleProps) 
   }, [entryPointv07, paymasterAddress, publicClient]);
 
   const { addAction } = useProposalActionsStore();
-  const { data: walletClient } = useWalletClient();
+  const { data: walletClient } = useNetworkWalletClient();
 
   const refillGas = useDecentModal(ModalType.REFILL_GAS, {
     onSubmit: async (refillGasData: RefillGasData) => {
