@@ -28,6 +28,51 @@ const useCastVote = (proposalId: string, strategy: Address) => {
 
   const { t } = useTranslation('transaction');
 
+  const prepareCastVoteData = useCallback(
+    (vote: number) => {
+      let voteArgs: any[] = [];
+      let abi: any;
+
+      if (
+        strategy === linearVotingErc20Address ||
+        strategy === linearVotingErc20WithHatsWhitelistingAddress
+      ) {
+        abi = abis.LinearERC20Voting;
+        voteArgs = [Number(proposalId), vote];
+      } else if (
+        strategy === linearVotingErc721Address ||
+        strategy === linearVotingErc721WithHatsWhitelistingAddress
+      ) {
+        abi = abis.LinearERC721Voting;
+        voteArgs = [
+          Number(proposalId),
+          vote,
+          remainingTokenAddresses,
+          remainingTokenIds.map(i => BigInt(i)),
+        ];
+      } else {
+        throw new Error('Invalid strategy');
+      }
+
+      return {
+        to: strategy,
+        abi,
+        functionName: 'vote',
+        args: voteArgs,
+      };
+    },
+    [
+      linearVotingErc721Address,
+      linearVotingErc721WithHatsWhitelistingAddress,
+      linearVotingErc20Address,
+      linearVotingErc20WithHatsWhitelistingAddress,
+      proposalId,
+      remainingTokenAddresses,
+      remainingTokenIds,
+      strategy,
+    ],
+  );
+
   const castVote = useCallback(
     async (vote: number) => {
       if (!walletClient) {
@@ -89,6 +134,7 @@ const useCastVote = (proposalId: string, strategy: Address) => {
 
   return {
     castVote,
+    prepareCastVoteData,
     castVotePending: pending,
   };
 };

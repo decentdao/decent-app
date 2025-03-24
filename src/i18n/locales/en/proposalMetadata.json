@@ -8,6 +8,7 @@
   "removeProposalTemplateDescription": "Execution of this proposal will remove the proposal template attached to this Safe.",
   "updatesSafeName": "Update Safe Name",
   "enableGaslessVoting": "Enable Gasless Voting",
+  "disableGaslessVoting": "Disable Gasless Voting",
   "topupGasTank": "Top up Gas Tank",
   "updateSnapshotSpace": "Update Snapshot Space",
   "lidoWithdrawalTitle": "Lido Withdrawal",

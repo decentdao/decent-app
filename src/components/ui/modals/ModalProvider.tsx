@@ -14,12 +14,13 @@ import { ConfirmModifyGovernanceModal } from './ConfirmModifyGovernanceModal';
 import { ConfirmUrlModal } from './ConfirmUrlModal';
 import { DelegateModal } from './DelegateModal';
 import ForkProposalTemplateModal from './ForkProposalTemplateModal';
+import { GaslessVoteSuccessModal } from './GaslessVoting/GaslessVoteSuccessModal';
+import { RefillGasData, RefillGasTankModal } from './GaslessVoting/RefillGasTankModal';
 import { IframeModal } from './IframeModal';
 import { ModalBase, ModalBaseSize } from './ModalBase';
 import PaymentCancelConfirmModal from './PaymentCancelConfirmModal';
 import { PaymentWithdrawModal } from './PaymentWithdrawModal';
 import ProposalTemplateModal from './ProposalTemplateModal';
-import { RefillGasData, RefillGasTankModal } from './RefillGasTankModal';
 import { SendAssetsModal } from './SendAssetsModal';
 import StakeModal from './Stake';
 import { UnsavedChangesWarningContent } from './UnsavedChangesWarningContent';
@@ -42,6 +43,7 @@ export enum ModalType {
   SEND_ASSETS,
   AIRDROP,
   REFILL_GAS,
+  GASLESS_VOTE_SUCCESS,
   IFRAME,
 }
 
@@ -102,7 +104,9 @@ export type ModalPropsTypes = {
     onSubmit: (refillGasData: RefillGasData) => void;
     showNonceInput: boolean;
   };
+  [ModalType.GASLESS_VOTE_SUCCESS]: {};
   [ModalType.IFRAME]: {};
+  [ModalType.GASLESS_VOTE_SUCCESS]: {};
 };
 
 export interface IModalContext {
@@ -291,6 +295,11 @@ export function ModalProvider({ children }: { children: ReactNode }) {
             }}
           />
         );
+        break;
+
+      case ModalType.GASLESS_VOTE_SUCCESS:
+        modalContent = <GaslessVoteSuccessModal close={closeModal} />;
+        modalSize = 'md';
         break;
       case ModalType.AIRDROP:
         modalContent = (

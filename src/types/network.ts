@@ -73,6 +73,7 @@ export type NetworkConfig = {
     sablierV2LockupTranched: Address;
     sablierV2LockupLinear: Address;
     disperse: Address;
+    entryPointv07: Address;
     paymasterFactory: Address;
   };
   staking: {

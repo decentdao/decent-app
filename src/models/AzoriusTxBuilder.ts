@@ -6,23 +6,31 @@ import {
   encodeAbiParameters,
   encodeFunctionData,
   encodePacked,
+  getAbiItem,
   getAddress,
   getContract,
   getCreate2Address,
   keccak256,
   parseAbiParameters,
+  toFunctionSelector,
 } from 'viem';
+import { DecentPaymasterFactoryV1Abi } from '../assets/abi/DecentPaymasterFactoryV1Abi';
+import { DecentPaymasterV1Abi } from '../assets/abi/DecentPaymasterV1Abi';
 import GnosisSafeL2Abi from '../assets/abi/GnosisSafeL2';
+import { LinearERC20VotingV1Abi } from '../assets/abi/LinearERC20VotingV1';
+import { LinearERC721VotingV1Abi } from '../assets/abi/LinearERC721VotingV1';
 import { ZodiacModuleProxyFactoryAbi } from '../assets/abi/ZodiacModuleProxyFactoryAbi';
 import { buildContractCall, getRandomBytes } from '../helpers';
 import {
   AzoriusERC20DAO,
   AzoriusERC721DAO,
   AzoriusGovernanceDAO,
+  GovernanceType,
   SafeTransaction,
   VotingStrategyType,
 } from '../types';
 import { SENTINEL_MODULE } from '../utils/address';
+import { getPaymasterSalt, getPaymasterAddress } from '../utils/gaslessVoting';
 import { BaseTxBuilder } from './BaseTxBuilder';
 import { generateContractByteCodeLinear, generateSalt } from './helpers/utils';
 
@@ -55,6 +63,8 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
   private azoriusNonce: bigint;
   private claimNonce: bigint;
 
+  private paymasterFactoryAddress: Address;
+
   constructor(
     publicClient: PublicClient,
     daoData: AzoriusERC20DAO | AzoriusERC721DAO,
@@ -66,6 +76,7 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
     linearVotingErc20MasterCopy: Address,
     linearVotingErc721MasterCopy: Address,
     moduleAzoriusMasterCopy: Address,
+    paymasterFactoryAddress: Address,
 
     parentAddress?: Address,
     parentTokenAddress?: Address,
@@ -85,6 +96,8 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
     this.linearVotingErc20MasterCopy = linearVotingErc20MasterCopy;
     this.linearVotingErc721MasterCopy = linearVotingErc721MasterCopy;
     this.moduleAzoriusMasterCopy = moduleAzoriusMasterCopy;
+
+    this.paymasterFactoryAddress = paymasterFactoryAddress;
 
     if (daoData.votingStrategyType === VotingStrategyType.LINEAR_ERC20) {
       daoData = daoData as AzoriusERC20DAO;
@@ -253,6 +266,48 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
     );
   }
 
+  public buildDeployPaymasterTx(): SafeTransaction {
+    return buildContractCall(
+      // @todo (gv) replace with the deployed abi
+      DecentPaymasterFactoryV1Abi,
+      this.paymasterFactoryAddress,
+      'createPaymaster',
+      [
+        this.safeContractAddress,
+        getPaymasterSalt(this.safeContractAddress, this.publicClient.chain!.id),
+      ],
+      0,
+      false,
+    );
+  }
+
+  public async buildApproveStrategyOnPaymasterTx(): Promise<SafeTransaction> {
+    const predictedPaymasterAddress = await getPaymasterAddress({
+      address: this.safeContractAddress,
+      chainId: this.publicClient.chain!.id,
+      publicClient: this.publicClient,
+      paymasterFactory: this.paymasterFactoryAddress,
+    });
+
+    const voteAbiItem = getAbiItem({
+      name: 'vote',
+      abi:
+        this.daoData.governance === GovernanceType.AZORIUS_ERC20
+          ? abis.LinearERC20Voting
+          : abis.LinearERC721Voting,
+    });
+    const voteSelector = toFunctionSelector(voteAbiItem);
+
+    return buildContractCall(
+      DecentPaymasterV1Abi,
+      predictedPaymasterAddress,
+      'setStrategyFunctionApproval',
+      [this.predictedStrategyAddress, [voteSelector], [true]],
+      0,
+      false,
+    );
+  }
+
   public buildApproveClaimAllocation() {
     if (!this.votesTokenAddress) {
       return;
@@ -382,7 +437,7 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
       }
 
       const linearERC20VotingMasterCopyContract = getContract({
-        abi: abis.LinearERC20Voting,
+        abi: LinearERC20VotingV1Abi, // @todo: (gv) use the deployed abi
         address: this.linearVotingErc20MasterCopy,
         client: this.publicClient,
       });
@@ -402,7 +457,7 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
       );
 
       const encodedStrategySetupData = encodeFunctionData({
-        abi: abis.LinearERC20Voting,
+        abi: LinearERC20VotingV1Abi, // @todo: (gv) use the deployed abi
         functionName: 'setUp',
         args: [encodedStrategyInitParams],
       });
@@ -445,7 +500,7 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
       );
 
       const encodedStrategySetupData = encodeFunctionData({
-        abi: abis.LinearERC721Voting,
+        abi: LinearERC721VotingV1Abi, // @todo: (gv) use the deployed abi
         functionName: 'setUp',
         args: [encodedStrategyInitParams],
       });
