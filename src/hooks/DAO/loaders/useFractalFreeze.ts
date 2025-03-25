@@ -192,12 +192,28 @@ export const useFractalFreeze = ({
 
   const setFractalFreezeGuard = useCallback(
     async (_guardContracts: FractalGuardContracts) => {
-      const freezeGuard = await loadFractalFreezeGuard(_guardContracts);
-      if (freezeGuard) {
-        action.dispatch({ type: FractalGuardAction.SET_FREEZE_GUARD, payload: freezeGuard });
+      if (parentSafeAddress) {
+        const freezeGuard = await loadFractalFreezeGuard(_guardContracts);
+        if (freezeGuard) {
+          action.dispatch({ type: FractalGuardAction.SET_FREEZE_GUARD, payload: freezeGuard });
+        }
+      } else {
+        action.dispatch({
+          type: FractalGuardAction.SET_FREEZE_GUARD,
+          payload: {
+            freezeVotesThreshold: null,
+            freezeProposalCreatedTime: null,
+            freezeProposalVoteCount: null,
+            freezeProposalPeriod: null,
+            freezePeriod: null,
+            userHasFreezeVoted: false,
+            isFrozen: false,
+            userHasVotes: false,
+          },
+        });
       }
     },
-    [action, loadFractalFreezeGuard],
+    [action, loadFractalFreezeGuard, parentSafeAddress],
   );
 
   useEffect(() => {
