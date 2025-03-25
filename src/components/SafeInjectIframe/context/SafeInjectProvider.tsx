@@ -1,7 +1,8 @@
 import { Methods, RPCPayload } from '@safe-global/safe-apps-sdk';
 import { PropsWithChildren, useState, useRef, useCallback, useEffect } from 'react';
-import { Address, getAddress, Hash } from 'viem';
+import { Address, BlockTag, getAddress, Hash } from 'viem';
 import useNetworkPublicClient from '../../../hooks/useNetworkPublicClient';
+import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
 import { useAppCommunicator } from '../hooks/useAppCommunicator';
 import { InterfaceMessageIds, InterfaceMessageProps, RequestId, TransactionWithId } from '../types';
 import { SafeInjectContext } from './SafeInjectContext';
@@ -51,6 +52,7 @@ export function SafeInjectProvider({
 
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const communicator = useAppCommunicator(iframeRef);
+  const { safe } = useDaoInfoStore();
 
   const sendMessageToIFrame = useCallback(
     function <T extends InterfaceMessageIds>(
@@ -84,10 +86,14 @@ export function SafeInjectProvider({
       const ret = {
         safeAddress: address,
         chainId,
-        owners: [],
+        owners: [] as Address[],
         threshold: 1,
         isReadOnly: false,
       };
+      if (safe) {
+        ret.owners = safe.owners;
+        ret.threshold = safe.threshold;
+      }
       return ret;
     });
 
@@ -120,7 +126,19 @@ export function SafeInjectProvider({
             response = await publicClient.getBlock({ blockHash: params.params[0] as Hash });
             break;
           case 'eth_getBlockByNumber':
-            response = await publicClient.getBlock({ blockNumber: params.params[0] as bigint });
+            const tagOrNumber = params.params[0] as BlockTag | bigint;
+            const includeTransactions = params.params[1] as boolean;
+            if (typeof tagOrNumber === 'string') {
+              response = await publicClient.getBlock({
+                blockTag: tagOrNumber,
+                includeTransactions,
+              });
+            } else {
+              response = await publicClient.getBlock({
+                blockNumber: tagOrNumber,
+                includeTransactions,
+              });
+            }
             break;
           case 'eth_getStorageAt':
             response = await publicClient.getStorageAt({
@@ -189,6 +207,7 @@ export function SafeInjectProvider({
     appUrl,
     receivedTransactions,
     receivedConnection,
+    safe,
   ]);
 
   return (
