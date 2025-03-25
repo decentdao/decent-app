@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { useBalance } from 'wagmi';
 import { DETAILS_BOX_SHADOW } from '../../constants/common';
 import { DAO_ROUTES } from '../../constants/routes';
+import useFeatureFlag from '../../helpers/environmentFeatureFlags';
 import { isFeatureEnabled } from '../../helpers/featureFlags';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
 import { useProposalActionsStore } from '../../store/actions/useProposalActionsStore';
@@ -71,7 +72,8 @@ export function GaslessVotingToggleDAOCreate(props: GaslessVotingToggleProps) {
   const { t } = useTranslation('daoCreate');
   const { chain, gaslessVotingSupported } = useNetworkConfigStore();
 
-  if (!isFeatureEnabled('flag_gasless_voting')) return null;
+  const gaslessVotingEnabled = useFeatureFlag('flag_gasless_voting');
+  if (!gaslessVotingEnabled) return null;
   if (!gaslessVotingSupported) return null;
 
   return (
