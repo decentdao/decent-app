@@ -1,14 +1,17 @@
-import { Avatar, Flex, Text } from '@chakra-ui/react';
+import { Box, Flex, Icon, Text } from '@chakra-ui/react';
+import { Icon as PhosphorIcon } from '@phosphor-icons/react';
 import ContentBox from '../ui/containers/ContentBox';
 import Markdown from '../ui/proposal/Markdown';
 
 type ExampleTemplateCardProps = {
+  icon: PhosphorIcon;
   title: string;
   description: string;
   onProposalTemplateClick: () => void;
 };
 
 export default function ExampleTemplateCard({
+  icon,
   title,
   description,
   onProposalTemplateClick,
@@ -19,15 +22,13 @@ export default function ExampleTemplateCard({
       onClick={onProposalTemplateClick}
     >
       <Flex justifyContent="space-between">
-        <Avatar
-          size="lg"
+        <Icon
           w="50px"
           h="50px"
-          name={title}
+          color="lilac-0"
           borderRadius={0}
-          getInitials={(_title: string) => _title.slice(0, 2)}
           textStyle="heading-large"
-          color="white-0"
+          as={icon}
         />
       </Flex>
       <Text
@@ -37,7 +38,9 @@ export default function ExampleTemplateCard({
       >
         {title}
       </Text>
-      <Markdown content={description} />
+      <Box color="neutral-6">
+        <Markdown content={description} />
+      </Box>
     </ContentBox>
   );
 }

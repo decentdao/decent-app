@@ -5,6 +5,7 @@ export * from './daoGeneral';
 export * from './daoGovernance';
 export * from './daoProposal';
 export * from './daoTreasury';
+export * from './dapp';
 export * from './fractal';
 export * from './proposalBuilder';
 export * from './safeGlobal';
