@@ -24,6 +24,16 @@ interface ImportMetaEnv {
   readonly VITE_APP_SENTRY_DSN_URL: string;
 
   readonly VITE_APP_GIT_HASH: string;
+
+  readonly VITE_APP_FIREBASE_CONFIG: {
+    apiKey: string;
+    authDomain: string;
+    projectId: string;
+    storageBucket: string;
+    messagingSenderId: string;
+    appId: string;
+    measurementId: string;
+  };
 }
 
 interface ImportMeta {
