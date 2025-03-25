@@ -6,6 +6,7 @@ import { DEV_STREAM_DURATION_MINUTES } from './devModeConstants';
 export function DevSet10MinPaymentStream({ formIndex }: { formIndex: number }) {
   const { values, setFieldValue } = useFormikContext<RoleFormValues>();
 
+  // Use local flag only for flag_dev
   return isFeatureEnabled('flag_dev') ? (
     <Button
       size="sm"
