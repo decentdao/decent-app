@@ -107,6 +107,7 @@ export type ModalPropsTypes = {
   [ModalType.IFRAME]: {
     appName: string;
     appUrl: string;
+    safeAddress: string;
   };
   [ModalType.CONFIRM_TRANSACTION]: {
     appName: string;
@@ -319,6 +320,7 @@ export function ModalProvider({ children }: { children: ReactNode }) {
           <IframeModal
             appName={current.props.appName}
             appUrl={current.props.appUrl}
+            safeAddress={current.props.safeAddress}
           />
         );
         modalSize = 'xl';

@@ -11,6 +11,7 @@ type DappCardProps = {
   iconUrl: string;
   description: string;
   categories: string[];
+  safeAddress: string;
 };
 
 export default function DappCard({
@@ -19,10 +20,12 @@ export default function DappCard({
   iconUrl,
   description,
   categories,
+  safeAddress,
 }: DappCardProps) {
   const openIframeModal = useDecentModal(ModalType.IFRAME, {
     appName: title,
     appUrl,
+    safeAddress,
   });
 
   return (

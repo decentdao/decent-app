@@ -1,38 +1,103 @@
 import { Box, VStack, Text } from '@chakra-ui/react';
 import { useContext, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { toast } from 'sonner';
+import { isAddress } from 'viem';
 import { decodeTransactionsWithABI } from '../../../helpers/transactionDecoder';
 import { useABI } from '../../../hooks/utils/useABI';
+import { useDebounce } from '../../../hooks/utils/useDebounce';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
-import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
 import { CreateProposalTransaction } from '../../../types';
 import { SafeInjectContext } from '../../SafeInjectIframe/context/SafeInjectContext';
 import { SafeInjectProvider } from '../../SafeInjectIframe/context/SafeInjectProvider';
+import useWalletConnect from '../../SafeInjectIframe/hooks/useWalletConnect';
+import { InputComponent } from '../forms/InputComponent';
 import { InfoBoxLoader } from '../loaders/InfoBoxLoader';
 import { ModalType } from './ModalProvider';
 import { useDecentModal } from './useDecentModal';
 
 function Iframe({ appUrl }: { appUrl: string }) {
-  const { iframeRef, connecting } = useContext(SafeInjectContext);
+  const { t } = useTranslation(['proposalDapps']);
+  const {
+    address,
+    iframeRef,
+    connecting: iframeConnecting,
+    connectedAppUrl,
+    setLatestTransactions,
+  } = useContext(SafeInjectContext);
+  const [walletConnectUri, setWalletConnectUri] = useState<string>('');
+  const [lastConnectedUri, setLastConnectedUri] = useState<string>('');
+
+  const { connect, disconnect, isConnected, connecting } = useWalletConnect({
+    uri: walletConnectUri,
+    address: address || '',
+    setLatestTransactions,
+    setUrlInput: () => {},
+  });
+  // Delay 300ms before connecting, it's time reserved for user input or state update.
+  useDebounce<string>(walletConnectUri, 300, (k: string) => {
+    if (k !== lastConnectedUri) {
+      setLastConnectedUri(k);
+      toast.promise(
+        async () => {
+          if (isConnected) {
+            await disconnect();
+          }
+          await connect();
+        },
+        {
+          loading: t('connectingWalletConnect'),
+          success: t('successConnectingWalletConnect'),
+          error: t('failConnectingWalletConnect'),
+        },
+      );
+    }
+  });
+
+  const appNotSupported = !iframeConnecting && connectedAppUrl !== appUrl;
 
   return (
-    <Box overflowY="auto">
-      {connecting && <InfoBoxLoader />}
-      <Box
-        as="iframe"
-        ref={iframeRef}
-        hidden={connecting}
-        src={appUrl}
-        height="80vh"
-        width="full"
-        p={2}
-        allow="clipboard-write"
-      />
+    <Box>
+      {appNotSupported && (
+        <Box>
+          <InputComponent
+            label={t('labelIframeWalletConnectUri')}
+            helper={t('helperIframeWalletConnectUri')}
+            placeholder="uri"
+            isRequired={false}
+            value={walletConnectUri}
+            onChange={e => setWalletConnectUri(e.target.value)}
+            disabled={!isAddress(address || '') || connecting}
+            testId="iframe.walletConnectUri"
+          />
+        </Box>
+      )}
+      <Box overflowY="auto">
+        {iframeConnecting && <InfoBoxLoader />}
+        <Box
+          as="iframe"
+          ref={iframeRef}
+          hidden={iframeConnecting}
+          src={appUrl}
+          height="80vh"
+          width="full"
+          p={2}
+          allow="clipboard-write"
+        />
+      </Box>
     </Box>
   );
 }
 
-export function IframeModal({ appName, appUrl }: { appName: string; appUrl: string }) {
-  const { safe } = useDaoInfoStore();
+export function IframeModal({
+  appName,
+  appUrl,
+  safeAddress,
+}: {
+  appName: string;
+  appUrl: string;
+  safeAddress: string;
+}) {
   const { chain } = useNetworkConfigStore();
   const { loadABI } = useABI();
 
@@ -50,7 +115,7 @@ export function IframeModal({ appName, appUrl }: { appName: string; appUrl: stri
 
   return (
     <SafeInjectProvider
-      defaultAddress={safe?.address}
+      defaultAddress={safeAddress}
       defaultAppUrl={appUrl}
       chainId={chain.id}
       onTransactionsReceived={transactions => {
