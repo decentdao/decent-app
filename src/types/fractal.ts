@@ -213,7 +213,19 @@ export interface Fractal {
   guardContracts: FractalGuardContracts;
 }
 
-export interface FractalGovernanceContracts {
+export enum FractalTokenType {
+  erc20 = 'ERC20',
+  erc721 = 'ERC721',
+}
+
+export type FractalVotingStrategy = {
+  address: Address;
+  type: FractalTokenType;
+  withWhitelist: boolean;
+  version?: number;
+};
+
+export type FractalGovernanceContracts = {
   linearVotingErc20Address?: Address;
   linearVotingErc20WithHatsWhitelistingAddress?: Address;
   linearVotingErc721Address?: Address;
@@ -222,7 +234,8 @@ export interface FractalGovernanceContracts {
   votesTokenAddress?: Address;
   lockReleaseAddress?: Address;
   isLoaded: boolean;
-}
+  strategies: FractalVotingStrategy[];
+};
 
 export type SafeWithNextNonce = SafeInfoResponseWithGuard & { nextNonce: number };
 
