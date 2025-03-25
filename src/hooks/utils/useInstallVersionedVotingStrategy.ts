@@ -44,6 +44,8 @@ export const useInstallVersionedVotingStrategy = () => {
     contracts: {
       linearVotingErc20V1MasterCopy,
       linearVotingErc721V1MasterCopy,
+      linearVotingErc20V1HatsWhitelistingMasterCopy,
+      linearVotingErc721V1HatsWhitelistingMasterCopy,
       zodiacModuleProxyFactory,
     },
   } = useNetworkConfigStore();
@@ -378,19 +380,24 @@ export const useInstallVersionedVotingStrategy = () => {
     (removal: FractalVotingStrategy): Address => {
       if (removal.type == FractalTokenType.erc20) {
         if (removal.withWhitelist) {
-          return linearVotingErc20V1MasterCopy; // TODO: Use release version of linearVotingErc20WithHatsProposalV1MasterCopy
+          return linearVotingErc20V1HatsWhitelistingMasterCopy;
         } else {
           return linearVotingErc20V1MasterCopy;
         }
       } else {
         if (removal.withWhitelist) {
-          return linearVotingErc721V1MasterCopy; // TODO: Use release version of linearVotingErc721WithHatsProposalV1MasterCopy
+          return linearVotingErc721V1HatsWhitelistingMasterCopy;
         } else {
           return linearVotingErc721V1MasterCopy;
         }
       }
     },
-    [linearVotingErc20V1MasterCopy, linearVotingErc721V1MasterCopy],
+    [
+      linearVotingErc20V1HatsWhitelistingMasterCopy,
+      linearVotingErc20V1MasterCopy,
+      linearVotingErc721V1HatsWhitelistingMasterCopy,
+      linearVotingErc721V1MasterCopy,
+    ],
   );
 
   const addAndEnableActions = useCallback(
