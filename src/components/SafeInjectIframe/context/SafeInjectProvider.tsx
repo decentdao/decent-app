@@ -30,7 +30,7 @@ export function SafeInjectProvider({
 }: PropsWithChildren<SafeInjectProviderProps>) {
   const [address, setAddress] = useState<string | undefined>(defaultAddress);
   const [appUrl, setAppUrl] = useState<string | undefined>(defaultAppUrl);
-  const [connecting, setConnecting] = useState(false);
+  const [connecting, setConnecting] = useState(true);
   const [connectedAppUrl, setConnectedAppUrl] = useState<string>('');
   const receivedConnection = useCallback(
     (url: string) => {

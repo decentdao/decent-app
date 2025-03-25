@@ -7,36 +7,27 @@ import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
 import { CreateProposalTransaction } from '../../../types';
 import { SafeInjectContext } from '../../SafeInjectIframe/context/SafeInjectContext';
 import { SafeInjectProvider } from '../../SafeInjectIframe/context/SafeInjectProvider';
+import { InfoBoxLoader } from '../loaders/InfoBoxLoader';
 import { ModalType } from './ModalProvider';
 import { useDecentModal } from './useDecentModal';
 
-function Iframe({ appName, appUrl }: { appName: string; appUrl: string }) {
-  const { iframeRef } = useContext(SafeInjectContext);
+function Iframe({ appUrl }: { appUrl: string }) {
+  const { iframeRef, connecting } = useContext(SafeInjectContext);
 
   return (
-    <VStack
-      align="left"
-      px="1rem"
-      mt={3}
-    >
-      <Text
-        textStyle="heading-large"
-        color="white-0"
-      >
-        {appName}
-      </Text>
-      <Box overflowY="auto">
-        <Box
-          as="iframe"
-          ref={iframeRef}
-          src={appUrl}
-          height="60vh"
-          width="full"
-          p={2}
-          allow="clipboard-write"
-        />
-      </Box>
-    </VStack>
+    <Box overflowY="auto">
+      {connecting && <InfoBoxLoader />}
+      <Box
+        as="iframe"
+        ref={iframeRef}
+        hidden={connecting}
+        src={appUrl}
+        height="80vh"
+        width="full"
+        p={2}
+        allow="clipboard-write"
+      />
+    </Box>
   );
 }
 
@@ -74,10 +65,20 @@ export function IframeModal({ appName, appUrl }: { appName: string; appUrl: stri
         })();
       }}
     >
-      <Iframe
-        appName={appName}
-        appUrl={appUrl}
-      />
+      <VStack
+        align="left"
+        px="1rem"
+        mt={3}
+      >
+        <Text
+          textStyle="heading-large"
+          color="white-0"
+        >
+          {appName}
+        </Text>
+
+        <Iframe appUrl={appUrl} />
+      </VStack>
     </SafeInjectProvider>
   );
 }
