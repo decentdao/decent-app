@@ -8,6 +8,7 @@ import { SafeInjectContext } from './SafeInjectContext';
 
 interface SafeInjectProviderProps {
   defaultAddress?: string;
+  defaultAppUrl?: string;
   chainId?: number;
   /**
    * Callback function to handle transactions received from the Safe app.
@@ -22,12 +23,13 @@ interface SafeInjectProviderProps {
 export function SafeInjectProvider({
   children,
   defaultAddress,
+  defaultAppUrl,
   chainId = 1,
   onTransactionsReceived,
   onAppConnected,
 }: PropsWithChildren<SafeInjectProviderProps>) {
   const [address, setAddress] = useState<string | undefined>(defaultAddress);
-  const [appUrl, setAppUrl] = useState<string>();
+  const [appUrl, setAppUrl] = useState<string | undefined>(defaultAppUrl);
   const [connecting, setConnecting] = useState(false);
   const [connectedAppUrl, setConnectedAppUrl] = useState<string>('');
   const receivedConnection = useCallback(

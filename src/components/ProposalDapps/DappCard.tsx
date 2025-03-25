@@ -1,6 +1,8 @@
 import { Avatar, Box, Flex, Tag, TagLabel, Text } from '@chakra-ui/react';
 import { Dot } from '@phosphor-icons/react';
 import ContentBox from '../ui/containers/ContentBox';
+import { ModalType } from '../ui/modals/ModalProvider';
+import { useDecentModal } from '../ui/modals/useDecentModal';
 import Markdown from '../ui/proposal/Markdown';
 
 type DappCardProps = {
@@ -18,10 +20,15 @@ export default function DappCard({
   description,
   categories,
 }: DappCardProps) {
+  const openIframeModal = useDecentModal(ModalType.IFRAME, {
+    appName: title,
+    appUrl,
+  });
+
   return (
     <ContentBox
       containerBoxProps={{ flex: '0 0 calc(33.333333% - 0.6666666rem)', my: '0' }}
-      onClick={() => console.log('DappCard clicked', appUrl)}
+      onClick={openIframeModal}
     >
       <Flex
         justifyContent="center"

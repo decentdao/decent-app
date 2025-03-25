@@ -104,7 +104,10 @@ export type ModalPropsTypes = {
     onSubmit: (refillGasData: RefillGasData) => void;
     showNonceInput: boolean;
   };
-  [ModalType.IFRAME]: {};
+  [ModalType.IFRAME]: {
+    appName: string;
+    appUrl: string;
+  };
   [ModalType.CONFIRM_TRANSACTION]: {
     appName: string;
     transactionArray: CreateProposalTransaction[];
@@ -312,7 +315,12 @@ export function ModalProvider({ children }: { children: ReactNode }) {
         );
         break;
       case ModalType.IFRAME:
-        modalContent = <IframeModal />;
+        modalContent = (
+          <IframeModal
+            appName={current.props.appName}
+            appUrl={current.props.appUrl}
+          />
+        );
         modalSize = 'xl';
         break;
       case ModalType.CONFIRM_TRANSACTION:
