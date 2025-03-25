@@ -42,6 +42,7 @@ export const useInstallVersionedVotingStrategy = () => {
 
   const {
     contracts: {
+      hatsProtocol,
       linearVotingErc20V1MasterCopy,
       linearVotingErc721V1MasterCopy,
       linearVotingErc20V1HatsWhitelistingMasterCopy,
@@ -182,7 +183,7 @@ export const useInstallVersionedVotingStrategy = () => {
 
       const encodedStrategyInitParams = encodeAbiParameters(
         parseAbiParameters(
-          'address, address, address, uint32, uint256, uint256, uint256, unit256[]',
+          'address, address, address, uint32, uint256, uint256, uint256, address, unit256[]',
         ),
         [
           safeAddress!,
@@ -192,17 +193,18 @@ export const useInstallVersionedVotingStrategy = () => {
           existingRequiredProposerWeight,
           existingQuorumNumerator,
           existingBasisNumerator,
+          hatsProtocol,
           existingWhitelistedHatIds,
         ],
       );
 
       return encodeFunctionData({
-        abi: LinearERC20VotingV1Abi, // TODO: Use release version of LinearERC20VotingWithHatsProposalV1Creation
+        abi: abis.LinearERC20VotingWithHatsProposalCreation, // TODO: Use release version of LinearERC20VotingWithHatsProposalV1Creation
         functionName: 'setUp',
         args: [encodedStrategyInitParams],
       });
     },
-    [publicClient, safeAddress],
+    [hatsProtocol, publicClient, safeAddress],
   );
 
   const linearErc721SetupParams = useCallback(
@@ -313,7 +315,7 @@ export const useInstallVersionedVotingStrategy = () => {
 
       const encodedStrategyInitParams = encodeAbiParameters(
         parseAbiParameters(
-          'address, address[], uint256[], address, uint32, uint256, uint256, uint256, uint256[]',
+          'address, address[], uint256[], address, uint32, uint256, uint256, uint256, address, uint256[]',
         ),
         [
           safeAddress!,
@@ -324,17 +326,18 @@ export const useInstallVersionedVotingStrategy = () => {
           existingProposerThreshold,
           existingQuorumThreshold,
           existingBasisNumerator,
+          hatsProtocol,
           existingWhitelistedHatIds,
         ],
       );
 
       return encodeFunctionData({
-        abi: LinearERC721VotingV1Abi, // TODO: Use release version of LinearERC721VotingWithHatsProposalV1Creation
+        abi: abis.LinearERC721VotingWithHatsProposalCreation, // TODO: Use release version of LinearERC721VotingWithHatsProposalV1Creation
         functionName: 'setUp',
         args: [encodedStrategyInitParams],
       });
     },
-    [publicClient, safeAddress],
+    [hatsProtocol, publicClient, safeAddress],
   );
 
   const setupParams = useCallback(
