@@ -29,18 +29,16 @@ const getGaslessVotingDaoData = async (
   try {
     const gaslessVotingEnabled = gaslessVotingEnabledEvent.args.value === 'true';
 
-    let paymasterAddress: Address | undefined;
-
     const paymasterFactoryContract = getContract({
       abi: DecentPaymasterFactoryV1Abi,
       address: paymasterFactoryAddress,
       client: publicClient,
     });
 
-    paymasterAddress = (await paymasterFactoryContract.read.getAddress([
+    const paymasterAddress = await paymasterFactoryContract.read.getAddress([
       safeAddress,
       getPaymasterSalt(safeAddress, chainId),
-    ])) as Address;
+    ]);
 
     return { gaslessVotingEnabled, paymasterAddress };
   } catch (e) {
