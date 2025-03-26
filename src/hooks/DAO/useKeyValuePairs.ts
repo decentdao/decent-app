@@ -27,8 +27,6 @@ const getGaslessVotingDaoData = async (
   }
 
   try {
-    const gaslessVotingEnabled = gaslessVotingEnabledEvent.args.value === 'true';
-
     const paymasterFactoryContract = getContract({
       abi: DecentPaymasterFactoryV1Abi,
       address: paymasterFactoryAddress,
@@ -46,10 +44,11 @@ const getGaslessVotingDaoData = async (
 
     const paymasterExists = !paymasterCode || paymasterCode !== '0x';
 
+    const gaslessVotingEnabled = gaslessVotingEnabledEvent.args.value === 'true';
     return { gaslessVotingEnabled, paymasterAddress: paymasterExists ? paymasterAddress : null };
   } catch (e) {
     logError({
-      message: "KVPairs 'gaslessVotingEnabledEvent' value not a boolean",
+      message: 'Error getting gasless voting dao data',
       network: chainId,
       args: {
         transactionHash: gaslessVotingEnabledEvent.transactionHash,
