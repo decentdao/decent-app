@@ -65,8 +65,7 @@ function RefillForm({ onSubmit, onClose, isDirectDeposit, showNonceInput }: Refi
     >
       {({ values, setFieldValue, handleSubmit }) => {
         const overDraft =
-          Number(values.inputAmount?.value || '0') >
-          formatCoinUnits(balance?.value || 0n, balance?.decimals || 0, balance?.symbol || '');
+          Number(values.inputAmount?.value || '0') > formatCoinUnits(balance?.value || 0n);
 
         const inputBigint = values.inputAmount?.bigintValue;
         const inputBigintIsZero = inputBigint !== undefined ? inputBigint === 0n : undefined;
@@ -133,11 +132,7 @@ function RefillForm({ onSubmit, onClose, isDirectDeposit, showNonceInput }: Refi
                   color="neutral-7"
                 >
                   {t('balance', {
-                    balance: formatCoinUnits(
-                      balance?.value || 0n,
-                      balance?.decimals || 0,
-                      balance?.symbol || '',
-                    ).toFixed(2),
+                    balance: formatCoinUnits(balance?.value || 0n).toFixed(2),
                   })}
                 </Text>
               </Flex>
