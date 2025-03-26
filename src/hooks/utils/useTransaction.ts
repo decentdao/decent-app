@@ -55,16 +55,16 @@ const useTransaction = () => {
             setPending(false);
           }, 2000);
         })
-        .catch((error: ContractFunctionExecutionError | ProviderRpcError) => {
+        .catch((error: any) => {
           setPending(false);
 
           // @dev we do not want to log user denied transaction
           if (
             // viem error
-            (error as ContractFunctionExecutionError).shortMessage ===
+            (error as ContractFunctionExecutionError)?.shortMessage ===
               'User rejected the request.' ||
             // metamask code error
-            (error as ProviderRpcError).code === 4001
+            (error as ProviderRpcError)?.code === 4001
           ) {
             toast.dismiss(toastId);
             toast.info(t('errorUserDeniedTransaction', { ns: 'transaction', id: toastId }));

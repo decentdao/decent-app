@@ -209,11 +209,12 @@ export default function useSubmitProposal() {
         toast.success(successToastMessage, { id: toastId });
       } catch (e: any) {
         // @dev we do not want to log user denied transaction
+        // @dev we do not want to log user denied transaction
         if (
           // viem error
-          (e as ContractFunctionExecutionError).shortMessage === 'User rejected the request.' ||
+          (e as ContractFunctionExecutionError)?.shortMessage === 'User rejected the request.' ||
           // metamask code error
-          (e as ProviderRpcError).code === 4001
+          (e as ProviderRpcError)?.code === 4001
         ) {
           toast.dismiss(toastId);
           toast.info(t('errorUserDeniedTransaction', { ns: 'transaction', id: toastId }));
