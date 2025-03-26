@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAccount, useBalance } from 'wagmi';
 import * as Yup from 'yup';
+import { useCanUserCreateProposal } from '../../../../hooks/utils/useCanUserSubmitProposal';
 import { useDaoInfoStore } from '../../../../store/daoInfo/useDaoInfoStore';
 import { BigIntValuePair } from '../../../../types';
 import { formatCoinUnits } from '../../../../utils/numberFormats';
@@ -35,6 +36,8 @@ function RefillForm({ onSubmit, onClose, isDirectDeposit, showNonceInput }: Refi
   const { safe } = useDaoInfoStore();
   const [nonceInput, setNonceInput] = useState<number | undefined>(safe?.nextNonce);
 
+  const { canUserCreateProposal } = useCanUserCreateProposal();
+
   const { data: balance } = useBalance({
     address: isDirectDeposit ? address : safe?.address,
   });
@@ -64,7 +67,17 @@ function RefillForm({ onSubmit, onClose, isDirectDeposit, showNonceInput }: Refi
 
         const inputBigint = values.inputAmount?.bigintValue;
         const inputBigintIsZero = inputBigint !== undefined ? inputBigint === 0n : undefined;
-        const isSubmitDisabled = !values.inputAmount || inputBigintIsZero || overDraft;
+
+        // Submit button is disabled if:
+        // 1. For non-direct deposits, user cannot create proposals
+        // 2. No amount has been input
+        // 3. Input amount is zero
+        // 4. Input amount exceeds available balance
+        const isSubmitDisabled =
+          (!isDirectDeposit && !canUserCreateProposal) ||
+          !values.inputAmount ||
+          inputBigintIsZero ||
+          overDraft;
 
         return (
           <Form onSubmit={handleSubmit}>

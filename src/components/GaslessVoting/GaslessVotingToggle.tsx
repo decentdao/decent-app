@@ -124,8 +124,6 @@ export function GaslessVotingToggleDAOSettings(props: GaslessVotingToggleProps) 
 
   const { safe, gaslessVotingEnabled, paymasterAddress } = useDaoInfoStore();
 
-  const { canUserCreateProposal } = useCanUserCreateProposal();
-
   const [paymasterBalance, setPaymasterBalance] = useState<BigIntValuePair>();
   useEffect(() => {
     if (!paymasterAddress || !entryPointv07) return;
@@ -263,7 +261,6 @@ export function GaslessVotingToggleDAOSettings(props: GaslessVotingToggleProps) 
           <Button
             variant="secondary"
             size="sm"
-            isDisabled={!canUserCreateProposal}
             onClick={() => {
               refillGas();
             }}
