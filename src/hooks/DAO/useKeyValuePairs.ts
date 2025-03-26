@@ -23,7 +23,7 @@ const getGaslessVotingDaoData = async (
     .pop();
 
   if (!gaslessVotingEnabledEvent) {
-    return { gaslessVotingEnabled: false, paymasterAddress: undefined };
+    return;
   }
 
   try {
@@ -40,7 +40,13 @@ const getGaslessVotingDaoData = async (
       getPaymasterSalt(safeAddress, chainId),
     ]);
 
-    return { gaslessVotingEnabled, paymasterAddress };
+    const paymasterCode = await publicClient.getCode({
+      address: paymasterAddress,
+    });
+
+    const paymasterExists = !paymasterCode || paymasterCode !== '0x';
+
+    return { gaslessVotingEnabled, paymasterAddress: paymasterExists ? paymasterAddress : null };
   } catch (e) {
     logError({
       message: "KVPairs 'gaslessVotingEnabledEvent' value not a boolean",
@@ -51,7 +57,7 @@ const getGaslessVotingDaoData = async (
       },
     });
 
-    return { gaslessVotingEnabled: false, paymasterAddress: undefined };
+    return;
   }
 };
 
@@ -174,7 +180,9 @@ const useKeyValuePairs = () => {
           safeAddress,
           publicClient,
         ).then(gaslessVotingDaoData => {
-          setGaslessVotingDaoData(gaslessVotingDaoData);
+          if (gaslessVotingDaoData) {
+            setGaslessVotingDaoData(gaslessVotingDaoData);
+          }
         });
       })
       .catch(error => {
@@ -205,7 +213,9 @@ const useKeyValuePairs = () => {
 
           getGaslessVotingDaoData(logs, chain.id, paymasterFactory, safeAddress, publicClient).then(
             gaslessVotingDaoData => {
-              setGaslessVotingDaoData(gaslessVotingDaoData);
+              if (gaslessVotingDaoData) {
+                setGaslessVotingDaoData(gaslessVotingDaoData);
+              }
             },
           );
         },

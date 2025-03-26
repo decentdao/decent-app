@@ -7,7 +7,7 @@ export const initialDaoInfoStore: IDAO = {
   subgraphInfo: null,
   modules: null,
   gaslessVotingEnabled: false,
-  paymasterAddress: null,
+  paymasterAddress: undefined,
 };
 
 interface UpdateDAOInfoParams {
@@ -17,7 +17,7 @@ interface UpdateDAOInfoParams {
 
 interface GaslessVotingDaoData {
   gaslessVotingEnabled: boolean;
-  paymasterAddress?: Address;
+  paymasterAddress: Address | null;
 }
 
 export interface DaoInfoStore extends IDAO {

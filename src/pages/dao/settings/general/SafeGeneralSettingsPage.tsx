@@ -3,7 +3,7 @@ import { abis } from '@fractal-framework/fractal-contracts';
 import { ChangeEventHandler, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { Address, encodeFunctionData, getAbiItem, toFunctionSelector, zeroAddress } from 'viem';
+import { encodeFunctionData, getAbiItem, toFunctionSelector, zeroAddress } from 'viem';
 import { DecentPaymasterFactoryV1Abi } from '../../../../assets/abi/DecentPaymasterFactoryV1Abi';
 import { DecentPaymasterV1Abi } from '../../../../assets/abi/DecentPaymasterV1Abi';
 import { GaslessVotingToggleDAOSettings } from '../../../../components/GaslessVoting/GaslessVotingToggle';
@@ -154,24 +154,7 @@ export function SafeGeneralSettingsPage() {
         linearVotingErc721WithHatsWhitelistingAddress,
       ].filter(addr => addr !== undefined);
 
-      let predictedPaymasterAddress: Address;
-
-      if (paymasterAddress) {
-        predictedPaymasterAddress = paymasterAddress;
-      } else {
-        predictedPaymasterAddress = await getPaymasterAddress({
-          address: safeAddress,
-          chainId,
-          publicClient,
-          paymasterFactory,
-        });
-      }
-
-      const paymasterCode = await publicClient.getCode({
-        address: predictedPaymasterAddress,
-      });
-
-      if (!paymasterCode || paymasterCode === '0x') {
+      if (paymasterAddress === null) {
         // Paymaster does not exist, deploy a new one
         targets.push(paymasterFactory);
         calldatas.push(
@@ -198,6 +181,13 @@ export function SafeGeneralSettingsPage() {
               : abis.LinearERC721Voting,
         });
         const voteSelector = toFunctionSelector(voteAbiItem);
+
+        const predictedPaymasterAddress = await getPaymasterAddress({
+          address: safeAddress,
+          chainId,
+          publicClient,
+          paymasterFactory,
+        });
 
         strategyAddresses.forEach(strategyAddress => {
           targets.push(predictedPaymasterAddress);

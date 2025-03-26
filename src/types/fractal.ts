@@ -161,7 +161,10 @@ export interface IDAO {
 
   // @todo: Preferrably should live in governance store. Using here fore convenience till we refactor governance store for zustand.
   gaslessVotingEnabled: boolean;
-  paymasterAddress: Address | null;
+
+  // null -- Defined: paymaster does not exist.
+  // undefined -- Unset. Should not be taken to mean anything. Does not equate to a "loading" state.
+  paymasterAddress: Address | null | undefined;
 }
 
 export interface GovernanceActivity extends ActivityBase {
