@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { useAccount, useBalance } from 'wagmi';
 import * as Yup from 'yup';
 import { useCanUserCreateProposal } from '../../../../hooks/utils/useCanUserSubmitProposal';
+import { useNetworkConfigStore } from '../../../../providers/NetworkConfig/useNetworkConfigStore';
 import { useDaoInfoStore } from '../../../../store/daoInfo/useDaoInfoStore';
 import { BigIntValuePair } from '../../../../types';
 import { formatCoinUnits } from '../../../../utils/numberFormats';
@@ -35,11 +36,13 @@ function RefillForm({ onSubmit, onClose, isDirectDeposit, showNonceInput }: Refi
   const { address } = useAccount();
   const { safe } = useDaoInfoStore();
   const [nonceInput, setNonceInput] = useState<number | undefined>(safe?.nextNonce);
+  const { chain } = useNetworkConfigStore();
 
   const { canUserCreateProposal } = useCanUserCreateProposal();
 
   const { data: balance } = useBalance({
     address: isDirectDeposit ? address : safe?.address,
+    chainId: chain?.id,
   });
 
   return (
