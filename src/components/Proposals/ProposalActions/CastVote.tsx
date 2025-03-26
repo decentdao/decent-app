@@ -1,6 +1,5 @@
 import { Button, Box, Text, Image, Flex, Radio, RadioGroup, Icon } from '@chakra-ui/react';
 import { Check, CheckCircle, Sparkle } from '@phosphor-icons/react';
-// eslint-disable-next-line import/no-extraneous-dependencies
 import { toLightSmartAccount } from 'permissionless/accounts';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -10,6 +9,7 @@ import { createBundlerClient } from 'viem/account-abstraction';
 import { useAccount } from 'wagmi';
 import { EntryPoint07Abi } from '../../../assets/abi/EntryPoint07Abi';
 import { TOOLTIP_MAXW } from '../../../constants/common';
+import { isFeatureEnabled } from '../../../helpers/featureFlags';
 import useSnapshotProposal from '../../../hooks/DAO/loaders/snapshot/useSnapshotProposal';
 import useCastSnapshotVote from '../../../hooks/DAO/proposal/useCastSnapshotVote';
 import useCastVote from '../../../hooks/DAO/proposal/useCastVote';
@@ -156,6 +156,7 @@ export function CastVote({ proposal }: { proposal: FractalProposal }) {
   const minimumPaymasterBalance = 60000000000000000n; // 0.06 ETH in wei
   const canVoteForFree = useMemo(() => {
     return (
+      isFeatureEnabled('flag_gasless_voting') &&
       gaslessVotingEnabled &&
       paymasterBalance?.bigintValue !== undefined &&
       paymasterBalance.bigintValue > minimumPaymasterBalance
