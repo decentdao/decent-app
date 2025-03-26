@@ -28,6 +28,10 @@ export function ERCO20Claim() {
     if (!tokenClaimContractAddress || !type || !account) {
       return;
     }
+    if (!tokenClaimContractAddress) {
+      setUserClaimable(0n);
+      return;
+    }
     const tokenClaimContract = getContract({
       abi: abis.ERC20Claim,
       address: tokenClaimContractAddress,
