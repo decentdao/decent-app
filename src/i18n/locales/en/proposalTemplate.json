@@ -38,16 +38,5 @@
   "templateSablierTitle": "Stream",
   "templateSablierDescription": "Stream funds to a recipient over time",
   "templateAirdropTitle": "Airdrop",
-  "templateAirdropDescription": "Send tokens to multiple recipients",
-  "templateIframeTitle": "Swap Tokens",
-  "templateIframeDescription": "with Cow swap",
-  "labelIframeUrlInput": "dApp URL",
-  "helperIframUrlInput": "Which dApp you want to open?",
-  "labelIframeWalletConnectUri": "WalletConnect URI",
-  "helperIframeWalletConnectUri": "Paste to connect",
-  "buttonConnectWalletConnect": "Connect",
-  "buttonConnectingWalletConnect": "Connecting...",
-  "buttonDisconnectWalletConnect": "Disconnect",
-  "toastIframedAppNotSupported": "Use Wallet Connect to connect to Decent",
-  "toastIframedAppNotSupportedButtonLabel": "Open in new Tab"
+  "templateAirdropDescription": "Send tokens to multiple recipients"
 }
