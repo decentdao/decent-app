@@ -4,12 +4,14 @@ import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import {
   Address,
+  ContractFunctionExecutionError,
   encodeAbiParameters,
   encodeFunctionData,
   getContract,
   isAddress,
   isHex,
   parseAbiParameters,
+  ProviderRpcError,
 } from 'viem';
 import { useAccount } from 'wagmi';
 import MultiSendCallOnlyAbi from '../../../assets/abi/MultiSendCallOnly';
@@ -59,7 +61,7 @@ interface ISubmitAzoriusProposal extends ISubmitProposal {
 }
 
 export default function useSubmitProposal() {
-  const { t } = useTranslation('proposal');
+  const { t } = useTranslation(['proposal', 'transaction']);
   const [pendingCreateTx, setPendingCreateTx] = useState(false);
   const loadDAOProposals = useLoadDAOProposals();
   const { data: walletClient } = useNetworkWalletClient();
@@ -206,6 +208,18 @@ export default function useSubmitProposal() {
         }
         toast.success(successToastMessage, { id: toastId });
       } catch (e: any) {
+        // @dev we do not want to log user denied transaction
+        if (
+          // viem error
+          (e as ContractFunctionExecutionError).shortMessage === 'User rejected the request.' ||
+          // metamask code error
+          (e as ProviderRpcError).code === 4001
+        ) {
+          toast.dismiss(toastId);
+          toast.info(t('errorUserDeniedTransaction', { ns: 'transaction', id: toastId }));
+          return;
+        }
+
         toast.error(failedToastMessage, { id: toastId });
 
         e.response?.data?.nonFieldErrors?.forEach((error: string) => {
@@ -286,13 +300,22 @@ export default function useSubmitProposal() {
           successCallback(addressPrefix, safeAddress!);
         }
       } catch (e) {
+        toast.dismiss(toastId);
+        // @dev we do not want to log user denied transaction
+        if (
+          (e as ContractFunctionExecutionError).shortMessage === 'User rejected the request.' ||
+          (e as ProviderRpcError).code === 4001
+        ) {
+          toast.info(t('errorUserDeniedTransaction', { ns: 'transaction', id: toastId }));
+          return;
+        }
         toast.error(failedToastMessage, { id: toastId });
         logError(e, 'Error during Azorius proposal creation');
       } finally {
         setPendingCreateTx(false);
       }
     },
-    [addressPrefix, pendingProposalAdd, publicClient, walletClient],
+    [addressPrefix, pendingProposalAdd, publicClient, t, walletClient],
   );
 
   const submitProposal: SubmitProposalFunction = useCallback(
@@ -386,13 +409,17 @@ export default function useSubmitProposal() {
                 if (!votingStrategy) {
                   return { isProposer: false, votingStrategy };
                 }
-                const votingContract = getContract({
-                  abi: abis.LinearERC20Voting,
-                  client: publicClient,
-                  address: votingStrategy,
-                });
-                const isProposer = await votingContract.read.isProposer([userAddress]);
-                return { isProposer, votingStrategy };
+                try {
+                  const votingContract = getContract({
+                    abi: abis.LinearERC20Voting,
+                    client: publicClient,
+                    address: votingStrategy,
+                  });
+                  const isProposer = await votingContract.read.isProposer([userAddress]);
+                  return { isProposer, votingStrategy };
+                } catch (e) {
+                  return { isProposer: false, votingStrategy };
+                }
               }),
             )
           ).find(votingStrategy => votingStrategy.isProposer);

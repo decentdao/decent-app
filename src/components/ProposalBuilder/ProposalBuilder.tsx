@@ -127,7 +127,6 @@ export function ProposalBuilder({
     <Formik<CreateProposalForm>
       validationSchema={createProposalValidation}
       initialValues={initialValues}
-      enableReinitialize
       onSubmit={async values => {
         if (!canUserCreateProposal) {
           toast.error(t('errorNotProposer', { ns: 'common' }));
@@ -169,10 +168,7 @@ export function ProposalBuilder({
         const trimmedTitle = title.trim();
 
         const createProposalButtonDisabled =
-          !canUserCreateProposal ||
-          !!formikProps.errors.transactions ||
-          !!formikProps.errors.nonce ||
-          pendingCreateTx;
+          !canUserCreateProposal || Object.keys(formikProps.errors).length > 0 || pendingCreateTx;
 
         const renderButtons = (step: CreateProposalSteps) => {
           const buttons = stepButtons({
