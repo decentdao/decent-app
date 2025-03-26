@@ -1,9 +1,10 @@
-import { Button, Card, Flex, Icon, Text } from '@chakra-ui/react';
+import { Button, Flex, Icon, Text } from '@chakra-ui/react';
 import { ArrowsDownUp, Trash } from '@phosphor-icons/react';
 import { useTranslation } from 'react-i18next';
 import { formatUnits } from 'viem';
 import { useGetAccountName } from '../../../hooks/utils/useGetAccountName';
 import { SendAssetsData } from '../../../utils/dao/prepareSendAssetsActionData';
+import { Card } from './Card';
 
 export function SendAssetsActionCard({
   action,
