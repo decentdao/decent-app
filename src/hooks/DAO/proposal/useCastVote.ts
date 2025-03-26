@@ -37,19 +37,28 @@ const useCastVote = (proposalId: string, strategy: Address) => {
 
   const prepareCastVoteData = useCallback(
     (vote: number) => {
-      let voteArgs: any[] = [];
-      let abi: any;
+      type Erc20VoteArgs = [proposalId: number, vote: number];
+      type Erc721VoteArgs = [
+        proposalId: number,
+        vote: number,
+        tokenAddresses: Address[],
+        tokenIds: bigint[],
+      ];
 
-      if (
+      let voteArgs: Erc20VoteArgs | Erc721VoteArgs;
+      let abi: typeof abis.LinearERC20Voting | typeof abis.LinearERC721Voting;
+
+      const isErc20 =
         strategy === linearVotingErc20Address ||
-        strategy === linearVotingErc20WithHatsWhitelistingAddress
-      ) {
+        strategy === linearVotingErc20WithHatsWhitelistingAddress;
+      const isErc721 =
+        strategy === linearVotingErc721Address ||
+        strategy === linearVotingErc721WithHatsWhitelistingAddress;
+
+      if (isErc20) {
         abi = abis.LinearERC20Voting;
         voteArgs = [Number(proposalId), vote];
-      } else if (
-        strategy === linearVotingErc721Address ||
-        strategy === linearVotingErc721WithHatsWhitelistingAddress
-      ) {
+      } else if (isErc721) {
         abi = abis.LinearERC721Voting;
         voteArgs = [
           Number(proposalId),
@@ -66,7 +75,7 @@ const useCastVote = (proposalId: string, strategy: Address) => {
         abi,
         functionName: 'vote',
         args: voteArgs,
-      };
+      } as const;
     },
     [
       linearVotingErc721Address,
