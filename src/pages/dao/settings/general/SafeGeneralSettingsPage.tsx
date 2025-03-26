@@ -3,7 +3,7 @@ import { abis } from '@fractal-framework/fractal-contracts';
 import { ChangeEventHandler, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { encodeFunctionData, getAbiItem, toFunctionSelector, zeroAddress } from 'viem';
+import { AbiItem, encodeFunctionData, getAbiItem, toFunctionSelector, zeroAddress } from 'viem';
 import { DecentPaymasterFactoryV1Abi } from '../../../../assets/abi/DecentPaymasterFactoryV1Abi';
 import { DecentPaymasterV1Abi } from '../../../../assets/abi/DecentPaymasterV1Abi';
 import { GaslessVotingToggleDAOSettings } from '../../../../components/GaslessVoting/GaslessVotingToggle';
@@ -173,13 +173,22 @@ export function SafeGeneralSettingsPage() {
           throw new Error('No strategy addresses defined');
         }
 
-        const voteAbiItem = getAbiItem({
-          name: 'vote',
-          abi:
-            votingStrategyType === GovernanceType.AZORIUS_ERC20
-              ? abis.LinearERC20Voting
-              : abis.LinearERC721Voting,
-        });
+        let voteAbiItem: AbiItem;
+
+        if (votingStrategyType === GovernanceType.AZORIUS_ERC20) {
+          voteAbiItem = getAbiItem({
+            name: 'vote',
+            abi: abis.LinearERC20Voting,
+          });
+        } else if (votingStrategyType === GovernanceType.AZORIUS_ERC721) {
+          voteAbiItem = getAbiItem({
+            name: 'vote',
+            abi: abis.LinearERC721Voting,
+          });
+        } else {
+          throw new Error('Invalid voting strategy type');
+        }
+
         const voteSelector = toFunctionSelector(voteAbiItem);
 
         const predictedPaymasterAddress = await getPaymasterAddress({
