@@ -1,8 +1,14 @@
 import { abis } from '@fractal-framework/fractal-contracts';
-import { useCallback } from 'react';
+import { toLightSmartAccount } from 'permissionless/accounts';
+import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Address, getContract } from 'viem';
+import { toast } from 'sonner';
+import { Address, getContract, http } from 'viem';
+import { createBundlerClient } from 'viem/account-abstraction';
+import { useAccount, usePublicClient } from 'wagmi';
 import { useFractal } from '../../../providers/App/AppProvider';
+import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
+import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
 import { useNetworkWalletClient } from '../../useNetworkWalletClient';
 import { useTransaction } from '../../utils/useTransaction';
 import useUserERC721VotingTokens from './useUserERC721VotingTokens';
@@ -17,7 +23,8 @@ const useCastVote = (proposalId: string, strategy: Address) => {
     },
   } = useFractal();
 
-  const [contractCall, pending] = useTransaction();
+  const [contractCall, castVotePending] = useTransaction();
+  const [castGaslessVotePending, setCastGaslessVotePending] = useState(false);
 
   const { remainingTokenIds, remainingTokenAddresses } = useUserERC721VotingTokens(
     null,
@@ -132,10 +139,75 @@ const useCastVote = (proposalId: string, strategy: Address) => {
     ],
   );
 
+  const { address } = useAccount();
+  const { paymasterAddress } = useDaoInfoStore();
+  const publicClient = usePublicClient();
+  const { rpcEndpoint } = useNetworkConfigStore();
+
+  const castGaslessVote = useCallback(
+    async ({
+      selectedVoteChoice,
+      onError,
+      onSuccess,
+    }: {
+      selectedVoteChoice: number;
+      onError: (error: any) => void;
+      onSuccess: () => void;
+    }) => {
+      if (!address || !paymasterAddress || !walletClient || !publicClient) {
+        throw new Error('Invalid state');
+      }
+
+      try {
+        setCastGaslessVotePending(true);
+        const smartWallet = await toLightSmartAccount({
+          client: publicClient,
+          owner: walletClient,
+          version: '2.0.0',
+        });
+
+        const bundlerClient = createBundlerClient({
+          account: smartWallet,
+          client: publicClient,
+          transport: http(rpcEndpoint),
+        });
+
+        // Get current network conditions
+        const { maxFeePerGas, maxPriorityFeePerGas } = await publicClient.estimateFeesPerGas();
+
+        const castVoteCallData = prepareCastVoteData(selectedVoteChoice);
+
+        // Sign and send UserOperation to bundler
+        const hash = await bundlerClient.sendUserOperation({
+          paymaster: paymasterAddress,
+          calls: [castVoteCallData],
+
+          // i don't really know why we need to do this, but we do
+          maxPriorityFeePerGas: maxPriorityFeePerGas * 100n,
+          maxFeePerGas: maxFeePerGas * 100n,
+        });
+
+        bundlerClient.waitForUserOperationReceipt({ hash }).then(() => {
+          setCastGaslessVotePending(false);
+          onSuccess();
+        });
+      } catch (error: any) {
+        if (error.name === 'UserRejectedRequestError') {
+          toast.error(t('userRejectedSignature', { ns: 'gaslessVoting' }));
+          return;
+        }
+
+        onError(error);
+      }
+    },
+    [address, paymasterAddress, prepareCastVoteData, publicClient, rpcEndpoint, t, walletClient],
+  );
+
   return {
     castVote,
-    prepareCastVoteData,
-    castVotePending: pending,
+    castGaslessVote,
+    castVotePending,
+    castGaslessVotePending,
   };
 };
 
