@@ -120,14 +120,14 @@ export function SafeGeneralSettingsPage() {
     }
 
     if (gaslessVotingChanged) {
+      keyArgs.push('gaslessVotingEnabled');
       if (isGaslessVotingEnabledToggled) {
         changeTitles.push(t('enableGaslessVoting', { ns: 'proposalMetadata' }));
+        valueArgs.push('true');
       } else {
         changeTitles.push(t('disableGaslessVoting', { ns: 'proposalMetadata' }));
+        valueArgs.push('false');
       }
-
-      keyArgs.push('gaslessVotingEnabled');
-      valueArgs.push(`${isGaslessVotingEnabledToggled}`);
     }
 
     const title = changeTitles.join(`; `);
