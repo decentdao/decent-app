@@ -53,6 +53,7 @@ export function SafeProposalDappsPage() {
               iconUrl={dapp.iconUrl}
               description={dapp.description}
               categories={dapp.tags}
+              enableWalletConnect={!!dapp.enableWalletConnect}
               safeAddress={safeAddress}
             />
           ))

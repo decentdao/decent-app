@@ -16,7 +16,7 @@ import { InfoBoxLoader } from '../loaders/InfoBoxLoader';
 import { ModalType } from './ModalProvider';
 import { useDecentModal } from './useDecentModal';
 
-function Iframe({ appUrl }: { appUrl: string }) {
+function Iframe({ appUrl, enableWalletConnect }: { appUrl: string; enableWalletConnect: boolean }) {
   const { t } = useTranslation(['proposalDapps']);
   const {
     address,
@@ -55,10 +55,11 @@ function Iframe({ appUrl }: { appUrl: string }) {
   });
 
   const appNotSupported = !iframeConnecting && connectedAppUrl !== appUrl;
+  const displayWalletConnectURIInput = enableWalletConnect || appNotSupported;
 
   return (
     <Box>
-      {appNotSupported && (
+      {displayWalletConnectURIInput && (
         <Box>
           <InputComponent
             label={t('labelIframeWalletConnectUri')}
@@ -92,10 +93,12 @@ function Iframe({ appUrl }: { appUrl: string }) {
 export function IframeModal({
   appName,
   appUrl,
+  enableWalletConnect,
   safeAddress,
 }: {
   appName: string;
   appUrl: string;
+  enableWalletConnect: boolean;
   safeAddress: string;
 }) {
   const { chain } = useNetworkConfigStore();
@@ -142,7 +145,10 @@ export function IframeModal({
           {appName}
         </Text>
 
-        <Iframe appUrl={appUrl} />
+        <Iframe
+          appUrl={appUrl}
+          enableWalletConnect={enableWalletConnect}
+        />
       </VStack>
     </SafeInjectProvider>
   );

@@ -107,6 +107,7 @@ export type ModalPropsTypes = {
   [ModalType.IFRAME]: {
     appName: string;
     appUrl: string;
+    enableWalletConnect: boolean;
     safeAddress: string;
   };
   [ModalType.CONFIRM_TRANSACTION]: {
@@ -321,6 +322,7 @@ export function ModalProvider({ children }: { children: ReactNode }) {
             appName={current.props.appName}
             appUrl={current.props.appUrl}
             safeAddress={current.props.safeAddress}
+            enableWalletConnect={current.props.enableWalletConnect}
           />
         );
         modalSize = 'xl';

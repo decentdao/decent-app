@@ -11,6 +11,8 @@ type DappCardProps = {
   iconUrl: string;
   description: string;
   categories: string[];
+
+  enableWalletConnect: boolean;
   safeAddress: string;
 };
 
@@ -20,11 +22,13 @@ export default function DappCard({
   iconUrl,
   description,
   categories,
+  enableWalletConnect,
   safeAddress,
 }: DappCardProps) {
   const openIframeModal = useDecentModal(ModalType.IFRAME, {
     appName: title,
     appUrl,
+    enableWalletConnect,
     safeAddress,
   });
 

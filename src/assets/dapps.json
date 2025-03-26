@@ -30,7 +30,8 @@
     "chainIds": ["42161", "1", "56", "100", "43114", "10", "8453", "137"],
     "tags": ["Accounting", "DAO Tooling", "Payments"],
     "features": ["BATCHED_TRANSACTIONS"],
-    "featured": false
+    "featured": false,
+    "enableWalletConnect": true
   },
   {
     "id": 4,
