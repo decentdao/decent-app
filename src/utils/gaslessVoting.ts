@@ -2,7 +2,7 @@ import { Address, getContract, keccak256, PublicClient, stringToHex } from 'viem
 import { DecentPaymasterFactoryV1Abi } from '../assets/abi/DecentPaymasterFactoryV1Abi';
 
 export const getPaymasterSalt = (safeAddress: Address, chainId: number) => {
-  const salt = `DECENT_GASLESS_VOTING_PAYMASTER_SALT-${safeAddress}-${chainId}`;
+  const salt = `${safeAddress}-${chainId}`;
   const saltHash = keccak256(stringToHex(salt));
   const paymasterSaltBigInt = BigInt(saltHash);
   return paymasterSaltBigInt;
