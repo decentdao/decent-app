@@ -75,7 +75,10 @@ function GaslessVotingToggleContent({
 }
 
 export function GaslessVotingToggleDAOCreate(props: GaslessVotingToggleProps) {
-  const { gaslessVotingSupported } = useNetworkConfigStore();
+  const {
+    contracts: { entryPointv07 },
+  } = useNetworkConfigStore();
+  const gaslessVotingSupported = entryPointv07 !== undefined;
 
   if (!isFeatureEnabled('flag_gasless_voting')) return null;
   if (!gaslessVotingSupported) return null;
@@ -117,10 +120,11 @@ export function GaslessVotingToggleDAOCreate(props: GaslessVotingToggleProps) {
 export function GaslessVotingToggleDAOSettings(props: GaslessVotingToggleProps) {
   const { t } = useTranslation('gaslessVoting');
   const {
-    gaslessVotingSupported,
     addressPrefix,
     contracts: { entryPointv07 },
   } = useNetworkConfigStore();
+
+  const gaslessVotingSupported = entryPointv07 !== undefined;
 
   const navigate = useNavigate();
   const publicClient = useNetworkPublicClient();
@@ -132,7 +136,7 @@ export function GaslessVotingToggleDAOSettings(props: GaslessVotingToggleProps) 
 
   const [paymasterBalance, setPaymasterBalance] = useState<BigIntValuePair>();
   useEffect(() => {
-    if (!paymasterAddress) return;
+    if (!paymasterAddress || !entryPointv07) return;
     const entryPoint = getContract({
       address: entryPointv07,
       abi: EntryPoint07Abi,
@@ -152,7 +156,7 @@ export function GaslessVotingToggleDAOSettings(props: GaslessVotingToggleProps) 
 
   const refillGas = useDecentModal(ModalType.REFILL_GAS, {
     onSubmit: async (refillGasData: RefillGasData) => {
-      if (!safe?.address || !paymasterAddress) {
+      if (!safe?.address || !paymasterAddress || !entryPointv07) {
         return;
       }
 

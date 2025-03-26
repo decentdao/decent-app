@@ -72,12 +72,6 @@ export function CastVote({ proposal }: { proposal: FractalProposal }) {
 
   const gaslessVoteSuccessModal = useDecentModal(ModalType.GASLESS_VOTE_SUCCESS);
 
-  const entryPoint = getContract({
-    address: entryPointv07,
-    abi: EntryPoint07Abi,
-    client: publicClient,
-  });
-
   const castGaslessVote = async () => {
     if (
       !chain ||
@@ -142,7 +136,13 @@ export function CastVote({ proposal }: { proposal: FractalProposal }) {
 
   const [paymasterBalance, setPaymasterBalance] = useState<BigIntValuePair>();
   useEffect(() => {
-    if (!paymasterAddress) return;
+    if (!paymasterAddress || !entryPointv07) return;
+
+    const entryPoint = getContract({
+      address: entryPointv07,
+      abi: EntryPoint07Abi,
+      client: publicClient,
+    });
 
     entryPoint.read.balanceOf([paymasterAddress]).then(balance => {
       setPaymasterBalance({
@@ -150,7 +150,7 @@ export function CastVote({ proposal }: { proposal: FractalProposal }) {
         bigintValue: balance,
       });
     });
-  }, [entryPoint.read, paymasterAddress, publicClient]);
+  }, [entryPointv07, paymasterAddress, publicClient]);
 
   // Set a reasonable minimum (slightly higher than the required amount)
   const minimumPaymasterBalance = 60000000000000000n; // 0.06 ETH in wei
