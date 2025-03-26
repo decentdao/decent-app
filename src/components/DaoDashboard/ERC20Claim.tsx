@@ -25,7 +25,7 @@ export function ERCO20Claim() {
   const { data: walletClient } = useNetworkWalletClient();
 
   const loadClaim = useCallback(async () => {
-    if (!tokenClaimContractAddress || !type || !account) {
+    if (!type || !account) {
       return;
     }
     if (!tokenClaimContractAddress) {
