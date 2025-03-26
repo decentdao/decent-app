@@ -127,7 +127,6 @@ export function ProposalBuilder({
     <Formik<CreateProposalForm>
       validationSchema={createProposalValidation}
       initialValues={initialValues}
-      enableReinitialize
       onSubmit={async values => {
         if (!canUserCreateProposal) {
           toast.error(t('errorNotProposer', { ns: 'common' }));
