@@ -141,7 +141,6 @@ export interface DAOSubgraph {
   childAddresses: Address[];
   daoSnapshotENS: string | null;
   proposalTemplatesHash: string | null;
-  gaslessVotingEnabled?: boolean;
   gasTankAddress?: Address;
 }
 

@@ -12,7 +12,6 @@ export const initialDaoInfoStore: IDAO = {
 
 interface UpdateDAOInfoParams {
   daoName?: string;
-  gaslessVotingEnabled?: boolean;
   gasTankAddress?: Address;
 }
 
@@ -55,7 +54,7 @@ export const useDaoInfoStore = create<DaoInfoStore>()(set => ({
   setDecentModules: (modules: DecentModule[]) => {
     set({ modules });
   },
-  updateDAOInfo: ({ daoName, gaslessVotingEnabled, gasTankAddress }: UpdateDAOInfoParams) => {
+  updateDAOInfo: ({ daoName, gasTankAddress }: UpdateDAOInfoParams) => {
     set(state => {
       if (!state.subgraphInfo) {
         throw new Error('Subgraph info is not set');
@@ -65,7 +64,6 @@ export const useDaoInfoStore = create<DaoInfoStore>()(set => ({
         subgraphInfo: {
           ...state.subgraphInfo,
           ...(daoName !== undefined && { daoName }),
-          ...(gaslessVotingEnabled !== undefined && { gaslessVotingEnabled }),
           ...(gasTankAddress !== undefined && { gasTankAddress }),
         },
       };
