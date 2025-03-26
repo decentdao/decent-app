@@ -130,39 +130,22 @@ export function DaoHierarchyNode({
           throw new Error('Query failed');
         }
 
-        if (!queryResult.data) {
-          return {
-            parentAddress: null,
-            childAddresses: [],
-            daoName: null,
-            daoSnapshotENS: null,
-            proposalTemplatesHash: null,
-            modules: [],
-            votingStrategies: [],
-            safeAddress: _safeAddress,
-          };
-        }
-
         const modules = await lookupModules(safe.modules);
-        const graphDAOData = queryResult.data.daos[0];
+        const graphDAOData = queryResult.data?.daos[0];
         const azoriusModule = getAzoriusModuleFromModules(modules ?? []);
         const votingStrategies: DaoHierarchyStrategyType[] = azoriusModule
           ? await getGovernanceTypes(azoriusModule)
           : ['MULTISIG'];
 
-        if (!graphDAOData) {
-          throw new Error('No data found');
-        }
-
         return {
-          daoName: graphDAOData.name ?? null,
+          daoName: graphDAOData?.name ?? null,
           safeAddress: _safeAddress,
-          parentAddress: graphDAOData.parentAddress as Address | null,
-          childAddresses: graphDAOData.hierarchy.map(
+          parentAddress: graphDAOData?.parentAddress as Address | null,
+          childAddresses: (graphDAOData?.hierarchy ?? []).map(
             (child: { address: string }) => child.address as Address,
           ),
-          daoSnapshotENS: graphDAOData.snapshotENS ?? null,
-          proposalTemplatesHash: graphDAOData.proposalTemplatesHash ?? null,
+          daoSnapshotENS: graphDAOData?.snapshotENS ?? null,
+          proposalTemplatesHash: graphDAOData?.proposalTemplatesHash ?? null,
           modules,
           votingStrategies,
         };
