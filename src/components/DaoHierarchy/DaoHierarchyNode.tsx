@@ -159,22 +159,58 @@ export function DaoHierarchyNode({
 
   // Effect to handle query result changes
   useEffect(() => {
-    if (safeAddress) {
-      const cachedNode = getValue({
-        cacheName: CacheKeys.HIERARCHY_DAO_INFO,
-        chainId: chain.id,
-        daoAddress: safeAddress,
-      });
-      if (cachedNode) {
-        setHierarchyNode(cachedNode);
-        return;
-      }
+    if (!safeAddress) return;
 
+    // First check if we have cached data to show immediately
+    const cachedNode = getValue({
+      cacheName: CacheKeys.HIERARCHY_DAO_INFO,
+      chainId: chain.id,
+      daoAddress: safeAddress,
+    });
+
+    if (cachedNode) {
+      // Show cached data immediately
+      setHierarchyNode(cachedNode);
+
+      // Always query subgraph for latest hierarchy data
+      const client = createDecentSubgraphClient(getConfigByChainId(chain.id));
+      client.query<DAOQueryResponse>(DAOQuery, { safeAddress }).then(queryResult => {
+        if (queryResult.error) return;
+
+        const graphDAOData = queryResult.data?.daos[0];
+
+        // Update only the subgraph-related properties
+        const updatedNode = {
+          ...cachedNode,
+          daoName: graphDAOData?.name ?? cachedNode.daoName,
+          daoSnapshotENS: graphDAOData?.snapshotENS ?? cachedNode.daoSnapshotENS,
+          proposalTemplatesHash:
+            graphDAOData?.proposalTemplatesHash ?? cachedNode.proposalTemplatesHash,
+          parentAddress: graphDAOData?.parentAddress as Address | null,
+          childAddresses: (graphDAOData?.hierarchy ?? []).map(
+            (child: { address: string }) => child.address as Address,
+          ),
+        };
+
+        setValue(
+          {
+            cacheName: CacheKeys.HIERARCHY_DAO_INFO,
+            chainId: chain.id,
+            daoAddress: safeAddress,
+          },
+          updatedNode,
+        );
+
+        setHierarchyNode(updatedNode);
+      });
+    } else {
+      // No cache available, load everything
       loadDao(safeAddress).then(_node => {
         if (!_node) {
           setErrorLoading(true);
           return;
         }
+
         setValue(
           {
             cacheName: CacheKeys.HIERARCHY_DAO_INFO,
@@ -183,10 +219,11 @@ export function DaoHierarchyNode({
           },
           _node,
         );
+
         setHierarchyNode(_node);
       });
     }
-  }, [chain.id, loadDao, safeAddress]);
+  }, [chain.id, getConfigByChainId, loadDao, safeAddress]);
 
   if (hasErrorLoading) {
     return (
