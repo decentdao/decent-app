@@ -16,11 +16,11 @@ export const getPaymasterAddress = async (args: {
 }) => {
   const { address, chainId, publicClient, paymasterFactory } = args;
   const paymasterSalt = getPaymasterSalt(address, chainId);
-  const paymasterContract = getContract({
+  const paymasterFactoryContract = getContract({
     address: paymasterFactory,
     abi: DecentPaymasterFactoryV1Abi,
     client: publicClient,
   });
-  const paymasterAddress = await paymasterContract.read.getAddress([address, paymasterSalt]);
+  const paymasterAddress = await paymasterFactoryContract.read.getAddress([address, paymasterSalt]);
   return paymasterAddress;
 };
