@@ -75,13 +75,7 @@ function GaslessVotingToggleContent({
 }
 
 export function GaslessVotingToggleDAOCreate(props: GaslessVotingToggleProps) {
-  const {
-    contracts: { entryPointv07 },
-  } = useNetworkConfigStore();
-  const gaslessVotingSupported = entryPointv07 !== undefined;
-
   if (!isFeatureEnabled('flag_gasless_voting')) return null;
-  if (!gaslessVotingSupported) return null;
 
   return (
     <Flex
@@ -123,8 +117,6 @@ export function GaslessVotingToggleDAOSettings(props: GaslessVotingToggleProps) 
     addressPrefix,
     contracts: { entryPointv07 },
   } = useNetworkConfigStore();
-
-  const gaslessVotingSupported = entryPointv07 !== undefined;
 
   const navigate = useNavigate();
   const publicClient = useNetworkPublicClient();
@@ -212,7 +204,6 @@ export function GaslessVotingToggleDAOSettings(props: GaslessVotingToggleProps) 
   });
 
   if (!isFeatureEnabled('flag_gasless_voting')) return null;
-  if (!gaslessVotingSupported) return null;
 
   const formattedPaymasterBalance =
     paymasterBalance &&

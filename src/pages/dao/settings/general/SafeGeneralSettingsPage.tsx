@@ -59,8 +59,9 @@ export function SafeGeneralSettingsPage() {
   const {
     addressPrefix,
     chain: { id: chainId },
-    contracts: { keyValuePairs, paymasterFactory },
+    contracts: { keyValuePairs, paymasterFactory, entryPointv07 },
   } = useNetworkConfigStore();
+  const gaslessVotingSupported = entryPointv07 !== undefined;
 
   const publicClient = useNetworkPublicClient();
 
@@ -333,12 +334,14 @@ export function SafeGeneralSettingsPage() {
             />
           </Flex>
 
-          <GaslessVotingToggleDAOSettings
-            isEnabled={isGaslessVotingEnabledToggled}
-            onToggle={() => {
-              setIsGaslessVotingEnabledToggled(!isGaslessVotingEnabledToggled);
-            }}
-          />
+          {gaslessVotingSupported && (
+            <GaslessVotingToggleDAOSettings
+              isEnabled={isGaslessVotingEnabledToggled}
+              onToggle={() => {
+                setIsGaslessVotingEnabledToggled(!isGaslessVotingEnabledToggled);
+              }}
+            />
+          )}
           {canUserCreateProposal && (
             <>
               <Divider
