@@ -17,7 +17,7 @@ export default function useSendAssetsActionModal() {
   const { safe } = useDaoInfoStore();
   const { addressPrefix } = useNetworkConfigStore();
   const { t } = useTranslation(['modals']);
-  const { addAction } = useProposalActionsStore();
+  const { addAction, resetActions } = useProposalActionsStore();
   const navigate = useNavigate();
   const {
     governance: { isAzorius },
@@ -28,6 +28,7 @@ export default function useSendAssetsActionModal() {
     }
 
     const { action } = prepareSendAssetsActionData(sendAssetsData);
+    resetActions();
     addAction({ ...action, content: <></> });
 
     navigate(DAO_ROUTES.proposalWithActionsNew.relative(addressPrefix, safe.address));
