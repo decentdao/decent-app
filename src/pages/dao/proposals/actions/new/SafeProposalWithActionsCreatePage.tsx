@@ -8,7 +8,7 @@ import { ProposalBuilder } from '../../../../../components/ProposalBuilder/Propo
 import { TransactionsDetails } from '../../../../../components/ProposalBuilder/ProposalDetails';
 import { DEFAULT_PROPOSAL_METADATA_TYPE_PROPS } from '../../../../../components/ProposalBuilder/ProposalMetadata';
 import ProposalTransactionsForm from '../../../../../components/ProposalBuilder/ProposalTransactionsForm';
-import { CreateProposalButton } from '../../../../../components/ProposalBuilder/StepButtons';
+import { GoToTransactionsStepButton } from '../../../../../components/ProposalBuilder/StepButtons';
 import { DEFAULT_PROPOSAL } from '../../../../../components/ProposalBuilder/constants';
 import { BarLoader } from '../../../../../components/ui/loaders/BarLoader';
 import { AddActions } from '../../../../../components/ui/modals/AddActions';
@@ -115,11 +115,18 @@ export function SafeProposalWithActionsCreatePage() {
   };
 
   const stepButtons = ({
-    createProposalBlocked,
+    formErrors,
+    onStepChange,
   }: {
+    formErrors: boolean;
     createProposalBlocked: boolean;
     onStepChange: (step: CreateProposalSteps) => void;
-  }) => <CreateProposalButton isDisabled={createProposalBlocked} />;
+  }) => (
+    <GoToTransactionsStepButton
+      isDisabled={formErrors}
+      onStepChange={onStepChange}
+    />
+  );
 
   return (
     <ProposalBuilder
