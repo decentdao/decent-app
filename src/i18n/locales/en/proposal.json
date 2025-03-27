@@ -14,6 +14,7 @@
   "labelEthValue": "ETH Value",
   "helperEthValue": "Amount of ETH to send with the transaction (from your treasury)",
   "ownerApproved": "Approved",
+  "ownerRejected": "Rejected",
   "stateModule": "Module",
   "stateModuleTip": "This transaction was executed by a Safe{Wallet} module.",
   "stateActive": "Active",

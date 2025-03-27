@@ -12,7 +12,10 @@ type BadgeType = {
   textColor: string;
 };
 
-const BADGE_MAPPING: Record<FractalProposalState | DAOState | 'ownerApproved', BadgeType> = {
+const BADGE_MAPPING: Record<
+  FractalProposalState | DAOState | 'ownerApproved' | 'ownerRejected',
+  BadgeType
+> = {
   [FractalProposalState.ACTIVE]: {
     tooltipKey: 'stateActiveTip',
     bg: 'lilac-0',
@@ -95,6 +98,11 @@ const BADGE_MAPPING: Record<FractalProposalState | DAOState | 'ownerApproved', B
     bg: 'neutral-4',
     textColor: 'neutral-7',
     _hover: { bg: 'neutral-2', textColor: 'neutral-7' },
+  },
+  ownerRejected: {
+    bg: 'red-0',
+    textColor: 'red-4',
+    _hover: { bg: 'red--1', textColor: 'red-4' },
   },
 };
 

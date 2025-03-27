@@ -1,8 +1,10 @@
 import { Box, Grid, GridItem, Text } from '@chakra-ui/react';
-import { format } from 'date-fns';
+import { format, max } from 'date-fns';
 import { useTranslation } from 'react-i18next';
 import { Address, getAddress } from 'viem';
 import { useAccount } from 'wagmi';
+import { findMostConfirmedMultisigRejectionProposal } from '../../../helpers/multisigProposal';
+import { useFractal } from '../../../providers/App/AppProvider';
 import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
 import { MultisigProposal } from '../../../types';
 import { DEFAULT_DATE_TIME_FORMAT } from '../../../utils/numberFormats';
@@ -14,13 +16,25 @@ import Divider from '../../ui/utils/Divider';
 function OwnerInfoRow({
   owner,
   proposal,
+  rejectProposal,
   isMe,
 }: {
   owner: Address;
   proposal: MultisigProposal;
+  rejectProposal: MultisigProposal | undefined;
   isMe: boolean;
 }) {
-  const ownerConfirmed = proposal.confirmations?.find(confirmInfo => confirmInfo.owner === owner);
+  const ownerApproved = proposal.confirmations?.find(confirmInfo => confirmInfo.owner === owner);
+  const ownerRejected = rejectProposal?.confirmations?.find(
+    confirmInfo => confirmInfo.owner === owner,
+  );
+  const confirmedOnce = ownerApproved || ownerRejected;
+  const lastConfirmationDate = confirmedOnce
+    ? max([
+        new Date(ownerApproved?.submissionDate ?? 0),
+        new Date(ownerRejected?.submissionDate ?? 0),
+      ])
+    : undefined;
 
   return (
     <>
@@ -31,18 +45,22 @@ function OwnerInfoRow({
         />
       </GridItem>
       <GridItem my="auto">
-        {ownerConfirmed && (
+        {ownerApproved && (
           <Badge
             labelKey={'ownerApproved'}
             size="sm"
           />
         )}
+        {ownerRejected && (
+          <Badge
+            labelKey={'ownerRejected'}
+            size="sm"
+          />
+        )}
       </GridItem>
       <GridItem my="auto">
-        {ownerConfirmed && (
-          <Text color="neutral-7">
-            {format(new Date(ownerConfirmed.submissionDate), DEFAULT_DATE_TIME_FORMAT)}
-          </Text>
+        {lastConfirmationDate && (
+          <Text color="neutral-7">{format(lastConfirmationDate, DEFAULT_DATE_TIME_FORMAT)}</Text>
         )}
       </GridItem>
     </>
@@ -50,9 +68,19 @@ function OwnerInfoRow({
 }
 
 export function SignerDetails({ proposal }: { proposal: MultisigProposal }) {
+  const { t } = useTranslation('proposal');
   const user = useAccount();
   const { safe } = useDaoInfoStore();
-  const { t } = useTranslation('proposal');
+  const {
+    governance: { proposals },
+  } = useFractal();
+
+  const rejectionProposal = findMostConfirmedMultisigRejectionProposal(
+    safe?.address,
+    proposal.nonce,
+    proposals,
+  );
+
   if (!safe?.owners) {
     return null;
   }
@@ -83,6 +111,7 @@ export function SignerDetails({ proposal }: { proposal: MultisigProposal }) {
               key={owner}
               owner={getAddress(owner)}
               proposal={proposal}
+              rejectProposal={rejectionProposal}
               isMe={user.address === owner}
             />
           ))}
