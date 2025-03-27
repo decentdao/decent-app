@@ -277,25 +277,7 @@ export function TxActions({ proposal }: { proposal: MultisigProposal }) {
     };
   };
 
-  const activeButtonProps = [
-    {
-      action: () => signTransaction(proposal.transaction),
-      text: 'approve',
-      pageTitle: 'signTitle',
-    },
-    {
-      action: () => signTransaction(rejectionProposal?.transaction),
-      text: 'reject',
-      pageTitle: 'rejectTitle',
-    },
-  ];
-
   const buttonProps: ButtonProps = {
-    [FractalProposalState.ACTIVE]: {
-      action: () => signTransaction(proposal.transaction),
-      text: 'approve',
-      pageTitle: 'signTitle',
-    },
     [FractalProposalState.EXECUTABLE]: {
       action: executeTransaction,
       text: 'execute',
@@ -320,6 +302,49 @@ export function TxActions({ proposal }: { proposal: MultisigProposal }) {
     proposal.state === FractalProposalState.TIMELOCKED ||
     !isActiveNonce;
 
+  if (proposal.state === FractalProposalState.ACTIVE) {
+    return (
+      <ContentBox containerBoxProps={{ bg: BACKGROUND_SEMI_TRANSPARENT }}>
+        <Flex justifyContent="space-between">
+          <Text>{t('signTitle')}</Text>
+          <ProposalCountdown proposal={proposal} />
+        </Flex>
+
+        <Box marginTop={4}>
+          <DecentTooltip
+            placement="top-start"
+            label={!isActiveNonce ? t('notActiveNonceTooltip') : t('signedAlready')}
+            isDisabled={isActiveNonce && !hasApproved}
+          >
+            <Button
+              w="full"
+              isDisabled={isButtonDisabled || hasApproved}
+              onClick={() => signTransaction(proposal.transaction)}
+            >
+              {t('approve', { ns: 'common' })}
+            </Button>
+          </DecentTooltip>
+        </Box>
+
+        <Box marginTop={4}>
+          <DecentTooltip
+            placement="top-start"
+            label={!isActiveNonce ? t('notActiveNonceTooltip') : t('signedAlready')}
+            isDisabled={isActiveNonce && !hasRejected}
+          >
+            <Button
+              w="full"
+              isDisabled={isButtonDisabled || hasRejected}
+              onClick={() => signTransaction(rejectionProposal?.transaction)}
+            >
+              {t('reject', { ns: 'common' })}
+            </Button>
+          </DecentTooltip>
+        </Box>
+      </ContentBox>
+    );
+  }
+
   return (
     <ContentBox containerBoxProps={{ bg: BACKGROUND_SEMI_TRANSPARENT }}>
       <Flex justifyContent="space-between">
@@ -327,46 +352,22 @@ export function TxActions({ proposal }: { proposal: MultisigProposal }) {
         <ProposalCountdown proposal={proposal} />
       </Flex>
 
-      {proposal.state === FractalProposalState.ACTIVE &&
-        activeButtonProps.map((prop, index) => (
-          <Box
-            key={index}
-            marginTop={4}
+      <Box marginTop={4}>
+        <DecentTooltip
+          placement="top-start"
+          label={t('notActiveNonceTooltip')}
+          isDisabled={isActiveNonce}
+        >
+          <Button
+            w="full"
+            rightIcon={buttonProps[proposal.state!].icon}
+            isDisabled={isButtonDisabled}
+            onClick={buttonProps[proposal.state!].action}
           >
-            <DecentTooltip
-              placement="top-start"
-              label={t('notActiveNonceTooltip')}
-              isDisabled={isActiveNonce}
-            >
-              <Button
-                w="full"
-                isDisabled={isButtonDisabled}
-                onClick={prop.action}
-              >
-                {t(prop.text, { ns: 'common' })}
-              </Button>
-            </DecentTooltip>
-          </Box>
-        ))}
-
-      {proposal.state !== FractalProposalState.ACTIVE && (
-        <Box marginTop={4}>
-          <DecentTooltip
-            placement="top-start"
-            label={t('notActiveNonceTooltip')}
-            isDisabled={isActiveNonce}
-          >
-            <Button
-              w="full"
-              rightIcon={buttonProps[proposal.state!].icon}
-              isDisabled={isButtonDisabled}
-              onClick={buttonProps[proposal.state!].action}
-            >
-              {t(buttonProps[proposal.state!].text, { ns: 'common' })}
-            </Button>
-          </DecentTooltip>
-        </Box>
-      )}
+            {t(buttonProps[proposal.state!].text, { ns: 'common' })}
+          </Button>
+        </DecentTooltip>
+      </Box>
     </ContentBox>
   );
 }
