@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { ModalType } from '../../components/ui/modals/ModalProvider';
 import { useDecentModal } from '../../components/ui/modals/useDecentModal';
 import { DAO_ROUTES } from '../../constants/routes';
-import { useFractal } from '../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
 import { useProposalActionsStore } from '../../store/actions/useProposalActionsStore';
 import { useDaoInfoStore } from '../../store/daoInfo/useDaoInfoStore';
@@ -19,9 +18,7 @@ export default function useSendAssetsActionModal() {
   const { t } = useTranslation(['modals']);
   const { addAction, resetActions } = useProposalActionsStore();
   const navigate = useNavigate();
-  const {
-    governance: { isAzorius },
-  } = useFractal();
+
   const sendAssetsAction = async (sendAssetsData: SendAssetsData) => {
     if (!safe?.address) {
       return;
@@ -37,7 +34,6 @@ export default function useSendAssetsActionModal() {
   const openSendAssetsModal = useDecentModal(ModalType.SEND_ASSETS, {
     onSubmit: sendAssetsAction,
     submitButtonText: t('submitProposal', { ns: 'modals' }),
-    showNonceInput: !isAzorius,
   });
 
   return {
