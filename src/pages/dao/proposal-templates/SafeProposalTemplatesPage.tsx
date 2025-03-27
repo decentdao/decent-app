@@ -1,6 +1,6 @@
 import * as amplitude from '@amplitude/analytics-browser';
 import { Box, Button, Flex, Show, Text } from '@chakra-ui/react';
-import { ArrowsDownUp, HourglassMedium, Parachute } from '@phosphor-icons/react';
+import { AppStoreLogo, ArrowsDownUp, HourglassMedium, Parachute } from '@phosphor-icons/react';
 import { useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
@@ -15,6 +15,8 @@ import { useDecentModal } from '../../../components/ui/modals/useDecentModal';
 import PageHeader from '../../../components/ui/page/Header/PageHeader';
 import Divider from '../../../components/ui/utils/Divider';
 import { DAO_ROUTES } from '../../../constants/routes';
+import { isFeatureEnabled } from '../../../helpers/featureFlags';
+import useIframeActionModal from '../../../hooks/DAO/useIframeActionModal';
 import useSendAssetsActionModal from '../../../hooks/DAO/useSendAssetsActionModal';
 import { useCanUserCreateProposal } from '../../../hooks/utils/useCanUserSubmitProposal';
 import { analyticsEvents } from '../../../insights/analyticsEvents';
@@ -44,6 +46,7 @@ export function SafeProposalTemplatesPage() {
 
   const safeAddress = safe?.address;
   const { openSendAssetsModal } = useSendAssetsActionModal();
+  const { openIframeModal } = useIframeActionModal();
 
   const handleAirdropSubmit = (data: AirdropData) => {
     if (!safeAddress) return;
@@ -99,7 +102,7 @@ export function SafeProposalTemplatesPage() {
 
   const EXAMPLE_TEMPLATES = useMemo(() => {
     if (!safeAddress) return [];
-    return [
+    const templates = [
       {
         icon: Parachute,
         title: t('templateAirdropTitle', { ns: 'proposalTemplate' }),
@@ -120,7 +123,25 @@ export function SafeProposalTemplatesPage() {
         onProposalTemplateClick: openSendAssetsModal,
       },
     ];
-  }, [t, openSendAssetsModal, navigate, safeAddress, addressPrefix, openAirdropModal]);
+    if (isFeatureEnabled('flag_iframe_template')) {
+      templates.push({
+        icon: AppStoreLogo,
+        title: t('templateIframeTitle', { ns: 'proposalTemplate' }),
+        description: t('templateIframeDescription', { ns: 'proposalTemplate' }),
+        onProposalTemplateClick: openIframeModal,
+      });
+    }
+
+    return templates;
+  }, [
+    safeAddress,
+    t,
+    openAirdropModal,
+    openSendAssetsModal,
+    navigate,
+    addressPrefix,
+    openIframeModal,
+  ]);
 
   return (
     <div>

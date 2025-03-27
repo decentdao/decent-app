@@ -1,7 +1,7 @@
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
-import { Hash, TransactionReceipt } from 'viem';
+import { ContractFunctionExecutionError, Hash, TransactionReceipt } from 'viem';
 import { logError } from '../../helpers/errorLogging';
 import useNetworkPublicClient from '../useNetworkPublicClient';
 
@@ -55,14 +55,22 @@ const useTransaction = () => {
             setPending(false);
           }, 2000);
         })
-        .catch((error: ProviderRpcError) => {
-          logError(error);
+        .catch((error: any) => {
           setPending(false);
 
-          if (error.code === 4001) {
-            toast.info(t('errorUserDeniedTransaction', { id: toastId }));
+          // @dev we do not want to log user denied transaction
+          if (
+            // viem error
+            (error as ContractFunctionExecutionError)?.shortMessage ===
+              'User rejected the request.' ||
+            // metamask code error
+            (error as ProviderRpcError)?.code === 4001
+          ) {
+            toast.dismiss(toastId);
+            toast.info(t('errorUserDeniedTransaction', { ns: 'transaction', id: toastId }));
             return;
           }
+          logError(error);
           if (error.message === t('wrongNetwork', { ns: 'common' })) {
             toast.error(error.message, { id: toastId });
             return;

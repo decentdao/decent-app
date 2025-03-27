@@ -2,7 +2,7 @@ import { Portal, Show, useDisclosure } from '@chakra-ui/react';
 import { createContext, ReactNode, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Address } from 'viem';
-import { ProposalTemplate } from '../../../types';
+import { CreateProposalTransaction, ProposalTemplate } from '../../../types';
 import { SendAssetsData } from '../../../utils/dao/prepareSendAssetsActionData';
 import AddSignerModal from '../../SafeSettings/Signers/modals/AddSignerModal';
 import RemoveSignerModal from '../../SafeSettings/Signers/modals/RemoveSignerModal';
@@ -11,9 +11,11 @@ import AddStrategyPermissionModal from './AddStrategyPermissionModal';
 import { AirdropData, AirdropModal } from './AirdropModal/AirdropModal';
 import { ConfirmDeleteStrategyModal } from './ConfirmDeleteStrategyModal';
 import { ConfirmModifyGovernanceModal } from './ConfirmModifyGovernanceModal';
+import { ConfirmTransactionModal } from './ConfirmTransactionModal';
 import { ConfirmUrlModal } from './ConfirmUrlModal';
 import { DelegateModal } from './DelegateModal';
 import ForkProposalTemplateModal from './ForkProposalTemplateModal';
+import { IframeModal } from './IframeModal';
 import { ModalBase, ModalBaseSize } from './ModalBase';
 import PaymentCancelConfirmModal from './PaymentCancelConfirmModal';
 import { PaymentWithdrawModal } from './PaymentWithdrawModal';
@@ -41,6 +43,8 @@ export enum ModalType {
   SEND_ASSETS,
   AIRDROP,
   REFILL_GAS,
+  IFRAME,
+  CONFIRM_TRANSACTION,
 }
 
 export type CurrentModal = {
@@ -99,6 +103,11 @@ export type ModalPropsTypes = {
   [ModalType.REFILL_GAS]: {
     onSubmit: (refillGasData: RefillGasData) => void;
     showNonceInput: boolean;
+  };
+  [ModalType.IFRAME]: {};
+  [ModalType.CONFIRM_TRANSACTION]: {
+    appName: string;
+    transactionArray: CreateProposalTransaction[];
   };
 };
 
@@ -301,6 +310,21 @@ export function ModalProvider({ children }: { children: ReactNode }) {
             }}
           />
         );
+        break;
+      case ModalType.IFRAME:
+        modalContent = <IframeModal />;
+        modalSize = 'xl';
+        break;
+      case ModalType.CONFIRM_TRANSACTION:
+        modalTitle = t('confirmTransactionTitle');
+        modalContent = (
+          <ConfirmTransactionModal
+            appName={current.props.appName}
+            transactionArray={current.props.transactionArray}
+            close={closeModal}
+          />
+        );
+        modalSize = 'xl';
         break;
       case ModalType.NONE:
       default:
