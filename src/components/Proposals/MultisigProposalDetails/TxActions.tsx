@@ -25,6 +25,83 @@ import { DecentTooltip } from '../../ui/DecentTooltip';
 import ContentBox from '../../ui/containers/ContentBox';
 import { ProposalCountdown } from '../../ui/proposal/ProposalCountdown';
 
+function VoterActions({
+  proposal,
+  isActiveNonce,
+  hasApproved,
+  hasRejected,
+  isButtonDisabled,
+  onApproval,
+  onReject,
+  isRejectedProposalPassThreshold,
+}: {
+  proposal: MultisigProposal;
+  isActiveNonce: boolean;
+  hasApproved: boolean;
+  hasRejected: boolean;
+  isButtonDisabled: boolean;
+  isRejectedProposalPassThreshold: boolean;
+  onReject: () => Promise<void>;
+  onApproval: () => Promise<void>;
+}) {
+  const { t } = useTranslation(['proposal', 'common']);
+  if (
+    proposal.state !== FractalProposalState.EXECUTABLE &&
+    proposal.state !== FractalProposalState.ACTIVE
+  ) {
+    return null;
+  }
+
+  // if both thresholds are passed, don't show sign area
+  if (isRejectedProposalPassThreshold && proposal.state === FractalProposalState.EXECUTABLE) {
+    return null;
+  }
+
+  return (
+    <ContentBox containerBoxProps={{ bg: BACKGROUND_SEMI_TRANSPARENT }}>
+      <Flex justifyContent="space-between">
+        <Text>{t('signTitle')}</Text>
+        <ProposalCountdown proposal={proposal} />
+      </Flex>
+      {proposal.state !== FractalProposalState.EXECUTABLE && (
+        <Box marginTop={4}>
+          <DecentTooltip
+            placement="top-start"
+            label={!isActiveNonce ? t('notActiveNonceTooltip') : t('signedAlready')}
+            isDisabled={isActiveNonce && !hasApproved}
+          >
+            <Button
+              w="full"
+              isDisabled={isButtonDisabled || hasApproved}
+              onClick={onApproval}
+            >
+              {t('approve', { ns: 'common' })}
+            </Button>
+          </DecentTooltip>
+        </Box>
+      )}
+      {!isRejectedProposalPassThreshold && (
+        <Box marginTop={4}>
+          <DecentTooltip
+            placement="top-start"
+            label={!isActiveNonce ? t('notActiveNonceTooltip') : t('signedAlready')}
+            isDisabled={isActiveNonce && !hasRejected}
+          >
+            <Button
+              w="full"
+              variant="danger"
+              isDisabled={isButtonDisabled || hasRejected}
+              onClick={onReject}
+            >
+              {t('reject', { ns: 'common' })}
+            </Button>
+          </DecentTooltip>
+        </Box>
+      )}
+    </ContentBox>
+  );
+}
+
 export function TxActions({ proposal }: { proposal: MultisigProposal }) {
   const {
     guardContracts: { freezeGuardContractAddress },
@@ -401,93 +478,61 @@ export function TxActions({ proposal }: { proposal: MultisigProposal }) {
     );
   }
 
-  if (proposal.state === FractalProposalState.ACTIVE) {
-    return (
+  return (
+    <>
+      <VoterActions
+        proposal={proposal}
+        isActiveNonce={isActiveNonce}
+        hasApproved={hasApproved}
+        hasRejected={hasRejected}
+        isButtonDisabled={isButtonDisabled}
+        isRejectedProposalPassThreshold={isRejectedProposalPassThreshold}
+        onApproval={() => signTransaction(proposal.transaction, proposal.proposalId)}
+        onReject={() =>
+          rejectionProposal
+            ? signTransaction(rejectionProposal.transaction, rejectionProposal.proposalId)
+            : // if no rejection proposal exists, create a new one
+              submitRejectionMultisigProposal({
+                safeAddress: safe?.address,
+                nonce: proposal.nonce,
+                pendingToastMessage: t('proposalRejectionCreatePendingToastMessage', {
+                  ns: 'proposal',
+                }),
+                successToastMessage: t('proposalRejectionCreateSuccessToastMessage', {
+                  ns: 'proposal',
+                }),
+                failedToastMessage: t('proposalRejectionCreateFailureToastMessage', {
+                  ns: 'proposal',
+                }),
+                successCallback: async () => {
+                  setIsSubmitDisabled(true);
+                },
+              })
+        }
+      />
       <ContentBox containerBoxProps={{ bg: BACKGROUND_SEMI_TRANSPARENT }}>
         <Flex justifyContent="space-between">
-          <Text>{t('signTitle')}</Text>
+          <Text>{t(buttonProps[proposal.state!].pageTitle)}</Text>
           <ProposalCountdown proposal={proposal} />
         </Flex>
 
         <Box marginTop={4}>
           <DecentTooltip
             placement="top-start"
-            label={!isActiveNonce ? t('notActiveNonceTooltip') : t('signedAlready')}
-            isDisabled={isActiveNonce && !hasApproved}
+            label={t('notActiveNonceTooltip')}
+            isDisabled={isActiveNonce}
           >
             <Button
               w="full"
-              isDisabled={isButtonDisabled || hasApproved}
-              onClick={() => signTransaction(proposal.transaction, proposal.proposalId)}
+              rightIcon={buttonProps[proposal.state!].icon}
+              isDisabled={isButtonDisabled}
+              onClick={buttonProps[proposal.state!].action}
             >
-              {t('approve', { ns: 'common' })}
-            </Button>
-          </DecentTooltip>
-        </Box>
-
-        <Box marginTop={4}>
-          <DecentTooltip
-            placement="top-start"
-            label={!isActiveNonce ? t('notActiveNonceTooltip') : t('signedAlready')}
-            isDisabled={isActiveNonce && !hasRejected}
-          >
-            <Button
-              w="full"
-              variant="danger"
-              isDisabled={isButtonDisabled || hasRejected}
-              onClick={() =>
-                rejectionProposal
-                  ? signTransaction(rejectionProposal.transaction, rejectionProposal.proposalId)
-                  : // if no rejection proposal exists, create a new one
-                    submitRejectionMultisigProposal({
-                      safeAddress: safe?.address,
-                      nonce: proposal.nonce,
-                      pendingToastMessage: t('proposalRejectionCreatePendingToastMessage', {
-                        ns: 'proposal',
-                      }),
-                      successToastMessage: t('proposalRejectionCreateSuccessToastMessage', {
-                        ns: 'proposal',
-                      }),
-                      failedToastMessage: t('proposalRejectionCreateFailureToastMessage', {
-                        ns: 'proposal',
-                      }),
-                      successCallback: async () => {
-                        setIsSubmitDisabled(true);
-                      },
-                    })
-              }
-            >
-              {t('reject', { ns: 'common' })}
+              {t(buttonProps[proposal.state!].text, { ns: 'common' })}
             </Button>
           </DecentTooltip>
         </Box>
       </ContentBox>
-    );
-  }
-
-  return (
-    <ContentBox containerBoxProps={{ bg: BACKGROUND_SEMI_TRANSPARENT }}>
-      <Flex justifyContent="space-between">
-        <Text>{t(buttonProps[proposal.state!].pageTitle)}</Text>
-        <ProposalCountdown proposal={proposal} />
-      </Flex>
-
-      <Box marginTop={4}>
-        <DecentTooltip
-          placement="top-start"
-          label={t('notActiveNonceTooltip')}
-          isDisabled={isActiveNonce}
-        >
-          <Button
-            w="full"
-            rightIcon={buttonProps[proposal.state!].icon}
-            isDisabled={isButtonDisabled}
-            onClick={buttonProps[proposal.state!].action}
-          >
-            {t(buttonProps[proposal.state!].text, { ns: 'common' })}
-          </Button>
-        </DecentTooltip>
-      </Box>
-    </ContentBox>
+    </>
   );
 }
