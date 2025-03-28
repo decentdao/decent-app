@@ -30,7 +30,7 @@ function VoterActions({
   isActiveNonce,
   hasApproved,
   hasRejected,
-  isApprovalDisabled,
+  isButtonDisabled,
   onApproval,
   onReject,
   isRejectedProposalPassThreshold,
@@ -39,7 +39,7 @@ function VoterActions({
   isActiveNonce: boolean;
   hasApproved: boolean;
   hasRejected: boolean;
-  isApprovalDisabled: boolean;
+  isButtonDisabled: boolean;
   isRejectedProposalPassThreshold: boolean;
   onReject: () => Promise<void>;
   onApproval: () => Promise<void>;
@@ -72,7 +72,7 @@ function VoterActions({
           >
             <Button
               w="full"
-              isDisabled={isApprovalDisabled || hasApproved}
+              isDisabled={isButtonDisabled || hasApproved}
               onClick={onApproval}
             >
               {t('approve', { ns: 'common' })}
@@ -90,7 +90,7 @@ function VoterActions({
             <Button
               w="full"
               variant="danger"
-              isDisabled={isApprovalDisabled || hasRejected}
+              isDisabled={isButtonDisabled || hasRejected}
               onClick={onReject}
             >
               {t('reject', { ns: 'common' })}
@@ -485,7 +485,7 @@ export function TxActions({ proposal }: { proposal: MultisigProposal }) {
         isActiveNonce={isActiveNonce}
         hasApproved={hasApproved}
         hasRejected={hasRejected}
-        isApprovalDisabled={isApprovalDisabled}
+        isButtonDisabled={isApprovalDisabled}
         isRejectedProposalPassThreshold={isRejectedProposalPassThreshold}
         onApproval={() => signTransaction(proposal.transaction, proposal.proposalId)}
         onReject={() =>
