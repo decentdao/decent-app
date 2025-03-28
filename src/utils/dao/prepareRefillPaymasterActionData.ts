@@ -5,7 +5,6 @@ import { formatCoin } from '../numberFormats';
 export interface RefillPaymasterData {
   paymasterAddress: Address;
   refillAmount: bigint;
-  nonceInput: number | undefined; // this is only releveant when the caller action results in a proposal
   nativeToken: {
     decimals: number;
     symbol: string;

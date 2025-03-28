@@ -91,7 +91,6 @@ export function SafeProposalCreatePage() {
         return (
           <ProposalTransactionsForm
             pendingTransaction={pendingCreateTx}
-            safeNonce={safe?.nextNonce}
             isProposalMode={true}
             {...formikProps}
           />

@@ -1,15 +1,18 @@
 import { Box, Button, Text, Flex } from '@chakra-ui/react';
 import { abis } from '@fractal-framework/fractal-contracts';
+import { SafeMultisigTransactionResponse } from '@safe-global/safe-core-sdk-types';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { getAddress, getContract, isHex, zeroAddress } from 'viem';
+import { getAddress, getContract, Hex, isHex, zeroAddress } from 'viem';
 import { useAccount } from 'wagmi';
 import GnosisSafeL2Abi from '../../../assets/abi/GnosisSafeL2';
 import { Check } from '../../../assets/theme/custom/icons/Check';
 import { BACKGROUND_SEMI_TRANSPARENT } from '../../../constants/common';
 import { buildSafeTransaction, buildSignatureBytes, EIP712_SAFE_TX_TYPE } from '../../../helpers';
 import { logError } from '../../../helpers/errorLogging';
+import { findMostConfirmedMultisigRejectionProposal } from '../../../helpers/multisigProposal';
 import { useSafeMultisigProposals } from '../../../hooks/DAO/loaders/governance/useSafeMultisigProposals';
+import useSubmitProposal from '../../../hooks/DAO/proposal/useSubmitProposal';
 import { useNetworkWalletClient } from '../../../hooks/useNetworkWalletClient';
 import { useAsyncRequest } from '../../../hooks/utils/useAsyncRequest';
 import { useTransaction } from '../../../hooks/utils/useTransaction';
@@ -22,13 +25,92 @@ import { DecentTooltip } from '../../ui/DecentTooltip';
 import ContentBox from '../../ui/containers/ContentBox';
 import { ProposalCountdown } from '../../ui/proposal/ProposalCountdown';
 
+function VoterActions({
+  proposal,
+  isActiveNonce,
+  hasApproved,
+  hasRejected,
+  isButtonDisabled,
+  onApproval,
+  onReject,
+  isRejectedProposalPassThreshold,
+}: {
+  proposal: MultisigProposal;
+  isActiveNonce: boolean;
+  hasApproved: boolean;
+  hasRejected: boolean;
+  isButtonDisabled: boolean;
+  isRejectedProposalPassThreshold: boolean;
+  onReject: () => Promise<void>;
+  onApproval: () => Promise<void>;
+}) {
+  const { t } = useTranslation(['proposal', 'common']);
+  if (
+    proposal.state !== FractalProposalState.EXECUTABLE &&
+    proposal.state !== FractalProposalState.ACTIVE
+  ) {
+    return null;
+  }
+
+  // if both thresholds are passed, don't show sign area
+  if (isRejectedProposalPassThreshold && proposal.state === FractalProposalState.EXECUTABLE) {
+    return null;
+  }
+
+  return (
+    <ContentBox containerBoxProps={{ bg: BACKGROUND_SEMI_TRANSPARENT }}>
+      <Flex justifyContent="space-between">
+        <Text>{t('signTitle')}</Text>
+        <ProposalCountdown proposal={proposal} />
+      </Flex>
+      {proposal.state !== FractalProposalState.EXECUTABLE && (
+        <Box marginTop={4}>
+          <DecentTooltip
+            placement="top-start"
+            label={!isActiveNonce ? t('notActiveNonceTooltip') : t('signedAlready')}
+            isDisabled={isActiveNonce && !hasApproved}
+          >
+            <Button
+              w="full"
+              isDisabled={isButtonDisabled || hasApproved}
+              onClick={onApproval}
+            >
+              {t('approve', { ns: 'common' })}
+            </Button>
+          </DecentTooltip>
+        </Box>
+      )}
+      {!isRejectedProposalPassThreshold && (
+        <Box marginTop={4}>
+          <DecentTooltip
+            placement="top-start"
+            label={!isActiveNonce ? t('notActiveNonceTooltip') : t('signedAlready')}
+            isDisabled={isActiveNonce && !hasRejected}
+          >
+            <Button
+              w="full"
+              variant="danger"
+              isDisabled={isButtonDisabled || hasRejected}
+              onClick={onReject}
+            >
+              {t('reject', { ns: 'common' })}
+            </Button>
+          </DecentTooltip>
+        </Box>
+      )}
+    </ContentBox>
+  );
+}
+
 export function TxActions({ proposal }: { proposal: MultisigProposal }) {
   const {
     guardContracts: { freezeGuardContractAddress },
+    governance: { proposals },
   } = useFractal();
   const userAccount = useAccount();
   const safeAPI = useSafeAPI();
   const { safe } = useDaoInfoStore();
+  const { submitRejectionMultisigProposal } = useSubmitProposal();
 
   const [isSubmitDisabled, setIsSubmitDisabled] = useState(false);
 
@@ -51,15 +133,29 @@ export function TxActions({ proposal }: { proposal: MultisigProposal }) {
   const { loadSafeMultisigProposals } = useSafeMultisigProposals();
   const { data: walletClient } = useNetworkWalletClient();
 
+  const rejectionProposal = findMostConfirmedMultisigRejectionProposal(
+    safe?.address,
+    proposal.nonce,
+    proposals,
+  );
+
+  const isRejectedProposalPassThreshold =
+    !!rejectionProposal &&
+    !!rejectionProposal.confirmations &&
+    !!rejectionProposal.signersThreshold &&
+    rejectionProposal.confirmations.length >= rejectionProposal.signersThreshold;
+
   const isOwner = safe?.owners?.includes(userAccount.address ?? zeroAddress);
 
   if (!isOwner) return null;
 
   if (!proposal.transaction) return null;
 
-  const signTransaction = async () => {
-    const proposalTx = proposal.transaction;
-    if (!walletClient || !safe?.address || !proposalTx || !isHex(proposalTx.data) || !safeAPI) {
+  const signTransaction = async (
+    proposalTx: SafeMultisigTransactionResponse | undefined,
+    proposalId: string,
+  ) => {
+    if (!walletClient || !safe?.address || !proposalTx || !safeAPI) {
       return;
     }
     try {
@@ -71,7 +167,7 @@ export function TxActions({ proposal }: { proposal: MultisigProposal }) {
           : undefined,
         to: getAddress(proposalTx.to),
         value: BigInt(proposalTx.value),
-        data: proposalTx.data,
+        data: proposalTx.data as Hex,
         operation: proposalTx.operation as 0 | 1,
       });
 
@@ -99,7 +195,7 @@ export function TxActions({ proposal }: { proposal: MultisigProposal }) {
         pendingMessage: t('pendingSign'),
         successMessage: t('successSign'),
         successCallback: async (signature: string) => {
-          await safeAPI.confirmTransaction(proposal.proposalId, signature);
+          await safeAPI.confirmTransaction(proposalId, signature);
           await loadSafeMultisigProposals();
         },
       });
@@ -185,7 +281,6 @@ export function TxActions({ proposal }: { proposal: MultisigProposal }) {
       ) {
         return;
       }
-
       const safeContract = getContract({
         abi: GnosisSafeL2Abi,
         address: safe.address,
@@ -243,13 +338,83 @@ export function TxActions({ proposal }: { proposal: MultisigProposal }) {
     }
   };
 
-  const hasSigned = !!proposal.confirmations?.find(
+  const executeRejectedProposal = async () => {
+    try {
+      if (
+        !walletClient ||
+        !safe?.address ||
+        !rejectionProposal?.transaction ||
+        !rejectionProposal?.transaction.confirmations
+      ) {
+        return;
+      }
+      const safeContract = getContract({
+        abi: GnosisSafeL2Abi,
+        address: safe.address,
+        client: walletClient,
+      });
+
+      const safeTx = buildSafeTransaction({
+        ...rejectionProposal.transaction,
+        gasToken: getAddress(rejectionProposal.transaction.gasToken),
+        refundReceiver: rejectionProposal.transaction.refundReceiver
+          ? getAddress(rejectionProposal.transaction.refundReceiver)
+          : undefined,
+        to: getAddress(rejectionProposal.transaction.to),
+        value: BigInt(rejectionProposal.transaction.value),
+        data: rejectionProposal.transaction.data as Hex | undefined,
+        operation: rejectionProposal.transaction.operation as 0 | 1,
+      });
+
+      const signatures = buildSignatureBytes(
+        rejectionProposal.transaction.confirmations.map(confirmation => {
+          if (!isHex(confirmation.signature)) {
+            throw new Error('Confirmation signature is malfunctioned');
+          }
+          return {
+            signer: confirmation.owner,
+            data: confirmation.signature,
+          };
+        }),
+      );
+
+      contractCall({
+        contractFn: () =>
+          safeContract.write.execTransaction([
+            safeTx.to,
+            safeTx.value,
+            safeTx.data,
+            safeTx.operation,
+            BigInt(safeTx.safeTxGas),
+            BigInt(safeTx.baseGas),
+            BigInt(safeTx.gasPrice),
+            safeTx.gasToken,
+            safeTx.refundReceiver,
+            signatures,
+          ]),
+        failedMessage: t('failedExecute', { ns: 'transaction' }),
+        pendingMessage: t('pendingRejectionExecution', { ns: 'transaction' }),
+        successMessage: t('successRejectionExecution', { ns: 'transaction' }),
+        successCallback: async () => {
+          setIsSubmitDisabled(true);
+          await loadSafeMultisigProposals();
+        },
+      });
+    } catch (e) {
+      logError(e, 'Error occurred during transaction execution');
+    }
+  };
+
+  const hasApproved = !!proposal.confirmations?.find(
+    confirm => confirm.owner === userAccount.address,
+  );
+  const hasRejected = !!(rejectionProposal as MultisigProposal)?.confirmations?.find(
     confirm => confirm.owner === userAccount.address,
   );
 
   const isPending = asyncRequestPending || contractCallPending;
   if (
-    (proposal.state === FractalProposalState.ACTIVE && (hasSigned || !isOwner)) ||
+    (proposal.state === FractalProposalState.ACTIVE && !isOwner) ||
     proposal.state === FractalProposalState.REJECTED ||
     proposal.state === FractalProposalState.EXECUTED ||
     proposal.state === FractalProposalState.EXPIRED
@@ -266,12 +431,8 @@ export function TxActions({ proposal }: { proposal: MultisigProposal }) {
     };
   };
 
+  // @TODO Typing is actually ButtonProps | undefined. Component needs some TLC. https://linear.app/decent-labs/issue/ENG-461/refactor-txactionstsx
   const buttonProps: ButtonProps = {
-    [FractalProposalState.ACTIVE]: {
-      action: signTransaction,
-      text: 'approve',
-      pageTitle: 'signTitle',
-    },
     [FractalProposalState.EXECUTABLE]: {
       action: executeTransaction,
       text: 'execute',
@@ -289,6 +450,7 @@ export function TxActions({ proposal }: { proposal: MultisigProposal }) {
       pageTitle: 'executeTitle',
     },
   };
+
   const isActiveNonce = !!safe && proposal.transaction.nonce === safe.nonce;
   const isButtonDisabled =
     isSubmitDisabled ||
@@ -296,28 +458,85 @@ export function TxActions({ proposal }: { proposal: MultisigProposal }) {
     proposal.state === FractalProposalState.TIMELOCKED ||
     !isActiveNonce;
 
-  return (
-    <ContentBox containerBoxProps={{ bg: BACKGROUND_SEMI_TRANSPARENT }}>
-      <Flex justifyContent="space-between">
-        <Text>{t(buttonProps[proposal.state!].pageTitle)}</Text>
-        <ProposalCountdown proposal={proposal} />
-      </Flex>
-      <Box marginTop={4}>
-        <DecentTooltip
-          placement="top-start"
-          label={t('notActiveNonceTooltip')}
-          isDisabled={isActiveNonce}
-        >
+  if (isRejectedProposalPassThreshold) {
+    return (
+      <ContentBox containerBoxProps={{ bg: BACKGROUND_SEMI_TRANSPARENT }}>
+        <Flex justifyContent="space-between">
+          <Text>{t('executeRejectedProposal')}</Text>
+          <ProposalCountdown proposal={proposal} />
+        </Flex>
+
+        <Box marginTop={4}>
           <Button
             w="full"
-            rightIcon={buttonProps[proposal.state!].icon}
+            rightIcon={buttonProps[FractalProposalState.EXECUTABLE].icon}
             isDisabled={isButtonDisabled}
-            onClick={buttonProps[proposal.state!].action}
+            onClick={executeRejectedProposal}
           >
-            {t(buttonProps[proposal.state!].text, { ns: 'common' })}
+            {t(buttonProps[FractalProposalState.EXECUTABLE].text, { ns: 'common' })}
           </Button>
-        </DecentTooltip>
-      </Box>
-    </ContentBox>
+        </Box>
+      </ContentBox>
+    );
+  }
+
+  return (
+    <>
+      <VoterActions
+        proposal={proposal}
+        isActiveNonce={isActiveNonce}
+        hasApproved={hasApproved}
+        hasRejected={hasRejected}
+        isButtonDisabled={isButtonDisabled}
+        isRejectedProposalPassThreshold={isRejectedProposalPassThreshold}
+        onApproval={() => signTransaction(proposal.transaction, proposal.proposalId)}
+        onReject={() =>
+          rejectionProposal
+            ? signTransaction(rejectionProposal.transaction, rejectionProposal.proposalId)
+            : // if no rejection proposal exists, create a new one
+              submitRejectionMultisigProposal({
+                safeAddress: safe?.address,
+                nonce: proposal.nonce,
+                pendingToastMessage: t('proposalRejectionCreatePendingToastMessage', {
+                  ns: 'proposal',
+                }),
+                successToastMessage: t('proposalRejectionCreateSuccessToastMessage', {
+                  ns: 'proposal',
+                }),
+                failedToastMessage: t('proposalRejectionCreateFailureToastMessage', {
+                  ns: 'proposal',
+                }),
+                successCallback: async () => {
+                  setIsSubmitDisabled(true);
+                },
+              })
+        }
+      />
+      {proposal.state !== FractalProposalState.ACTIVE && (
+        <ContentBox containerBoxProps={{ bg: BACKGROUND_SEMI_TRANSPARENT }}>
+          <Flex justifyContent="space-between">
+            <Text>{t(buttonProps[proposal.state!].pageTitle)}</Text>
+            <ProposalCountdown proposal={proposal} />
+          </Flex>
+
+          <Box marginTop={4}>
+            <DecentTooltip
+              placement="top-start"
+              label={t('notActiveNonceTooltip')}
+              isDisabled={isActiveNonce}
+            >
+              <Button
+                w="full"
+                rightIcon={buttonProps[proposal.state!].icon}
+                isDisabled={isButtonDisabled}
+                onClick={buttonProps[proposal.state!].action}
+              >
+                {t(buttonProps[proposal.state!].text, { ns: 'common' })}
+              </Button>
+            </DecentTooltip>
+          </Box>
+        </ContentBox>
+      )}
+    </>
   );
 }

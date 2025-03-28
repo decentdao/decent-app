@@ -97,7 +97,6 @@ export function SafeProposalTemplatesPage() {
   const openAirdropModal = useDecentModal(ModalType.AIRDROP, {
     onSubmit: handleAirdropSubmit,
     submitButtonText: t('submitProposal', { ns: 'modals' }),
-    showNonceInput: false,
   });
 
   const EXAMPLE_TEMPLATES = useMemo(() => {

@@ -63,7 +63,6 @@ function SendAssetsAction({
         recipientAddress,
         transferAmount,
         asset,
-        nonceInput: undefined,
       }}
       onRemove={onRemove}
     />

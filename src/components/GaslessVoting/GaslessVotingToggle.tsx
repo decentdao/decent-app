@@ -143,7 +143,6 @@ export function GaslessVotingToggleDAOSettings(
       const action = prepareRefillPaymasterActionData({
         refillAmount: refillGasData.transferAmount,
         paymasterAddress,
-        nonceInput: refillGasData.nonceInput,
         nativeToken: {
           decimals: nativeTokenBalance?.decimals ?? 18,
           symbol: nativeTokenBalance?.symbol ?? 'Native Token',
@@ -154,7 +153,6 @@ export function GaslessVotingToggleDAOSettings(
 
       navigate(DAO_ROUTES.proposalWithActionsNew.relative(addressPrefix, safe.address));
     },
-    showNonceInput: true,
   });
 
   const { data: balance } = useBalance({ address: paymasterAddress, chainId: chain.id });

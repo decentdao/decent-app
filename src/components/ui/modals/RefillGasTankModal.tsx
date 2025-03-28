@@ -1,6 +1,5 @@
 import { Box, Button, CloseButton, Flex, Text } from '@chakra-ui/react';
 import { Field, FieldAttributes, FieldProps, Form, Formik } from 'formik';
-import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useBalance } from 'wagmi';
 import * as Yup from 'yup';
@@ -9,7 +8,6 @@ import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
 import { BigIntValuePair } from '../../../types';
 import { formatCoinUnits } from '../../../utils/numberFormats';
 import { BigIntInput } from '../forms/BigIntInput';
-import { CustomNonceInput } from '../forms/CustomNonceInput';
 import LabelWrapper from '../forms/LabelWrapper';
 import { AssetSelector } from '../utils/AssetSelector';
 
@@ -19,15 +17,12 @@ interface RefillGasFormValues {
 
 export interface RefillGasData {
   transferAmount: bigint;
-  nonceInput: number | undefined;
 }
 
 export function RefillGasTankModal({
-  showNonceInput,
   close,
   refillGasData,
 }: {
-  showNonceInput: boolean;
   close: () => void;
   refillGasData: (refillData: RefillGasData) => void;
 }) {
@@ -37,8 +32,6 @@ export function RefillGasTankModal({
   });
 
   const { t } = useTranslation('gaslessVoting');
-
-  const [nonceInput, setNonceInput] = useState<number | undefined>(safe!.nextNonce);
 
   const { isValidating } = useValidationAddress();
 
@@ -53,7 +46,6 @@ export function RefillGasTankModal({
   const handleRefillGasSubmit = async (values: RefillGasFormValues) => {
     refillGasData({
       transferAmount: values.inputAmount?.bigintValue || 0n,
-      nonceInput,
     });
 
     close();
@@ -158,13 +150,6 @@ export function RefillGasTankModal({
                   </Flex>
                 </Flex>
               </Flex>
-
-              {showNonceInput && (
-                <CustomNonceInput
-                  nonce={nonceInput}
-                  onChange={nonce => setNonceInput(nonce ? parseInt(nonce) : undefined)}
-                />
-              )}
 
               <Flex
                 marginTop="2rem"

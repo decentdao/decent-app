@@ -6,7 +6,6 @@ export interface SendAssetsData {
   recipientAddress: Address;
   transferAmount: bigint;
   asset: TokenBalance;
-  nonceInput: number | undefined; // this is only releveant when the caller action results in a proposal
 }
 
 interface ActionData {
