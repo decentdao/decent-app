@@ -12,6 +12,7 @@ import { buildSafeTransaction, buildSignatureBytes, EIP712_SAFE_TX_TYPE } from '
 import { logError } from '../../../helpers/errorLogging';
 import { findMostConfirmedMultisigRejectionProposal } from '../../../helpers/multisigProposal';
 import { useSafeMultisigProposals } from '../../../hooks/DAO/loaders/governance/useSafeMultisigProposals';
+import useSubmitProposal from '../../../hooks/DAO/proposal/useSubmitProposal';
 import { useNetworkWalletClient } from '../../../hooks/useNetworkWalletClient';
 import { useAsyncRequest } from '../../../hooks/utils/useAsyncRequest';
 import { useTransaction } from '../../../hooks/utils/useTransaction';
@@ -32,6 +33,7 @@ export function TxActions({ proposal }: { proposal: MultisigProposal }) {
   const userAccount = useAccount();
   const safeAPI = useSafeAPI();
   const { safe } = useDaoInfoStore();
+  const { submitRejectionMultisigProposal } = useSubmitProposal();
 
   const [isSubmitDisabled, setIsSubmitDisabled] = useState(false);
 
@@ -53,6 +55,18 @@ export function TxActions({ proposal }: { proposal: MultisigProposal }) {
   const [contractCall, contractCallPending] = useTransaction();
   const { loadSafeMultisigProposals } = useSafeMultisigProposals();
   const { data: walletClient } = useNetworkWalletClient();
+
+  const rejectionProposal = findMostConfirmedMultisigRejectionProposal(
+    safe?.address,
+    proposal.nonce,
+    proposals,
+  );
+
+  const isRejectedProposalPassThreshold =
+    rejectionProposal &&
+    rejectionProposal.confirmations &&
+    rejectionProposal.signersThreshold &&
+    rejectionProposal.confirmations.length >= rejectionProposal.signersThreshold;
 
   const isOwner = safe?.owners?.includes(userAccount.address ?? zeroAddress);
 
@@ -335,7 +349,27 @@ export function TxActions({ proposal }: { proposal: MultisigProposal }) {
             <Button
               w="full"
               isDisabled={isButtonDisabled || hasRejected}
-              onClick={() => signTransaction(rejectionProposal?.transaction)}
+              onClick={() =>
+                rejectionProposal
+                  ? signTransaction(rejectionProposal.transaction)
+                  : // if no rejection proposal exists, create a new one
+                    submitRejectionMultisigProposal({
+                      safeAddress: safe?.address,
+                      nonce: proposal.nonce,
+                      pendingToastMessage: t('proposalRejectionCreatePendingToastMessage', {
+                        ns: 'proposal',
+                      }),
+                      successToastMessage: t('proposalRejectionCreateSuccessToastMessage', {
+                        ns: 'proposal',
+                      }),
+                      failedToastMessage: t('proposalRejectionCreateFailureToastMessage', {
+                        ns: 'proposal',
+                      }),
+                      successCallback: async () => {
+                        setIsSubmitDisabled(true);
+                      },
+                    })
+              }
             >
               {t('reject', { ns: 'common' })}
             </Button>
