@@ -15,7 +15,6 @@ import { ConfirmTransactionModal } from './ConfirmTransactionModal';
 import { ConfirmUrlModal } from './ConfirmUrlModal';
 import { DelegateModal } from './DelegateModal';
 import ForkProposalTemplateModal from './ForkProposalTemplateModal';
-import { IframeModal } from './IframeModal';
 import { ModalBase, ModalBaseSize } from './ModalBase';
 import PaymentCancelConfirmModal from './PaymentCancelConfirmModal';
 import { PaymentWithdrawModal } from './PaymentWithdrawModal';
@@ -43,7 +42,6 @@ export enum ModalType {
   SEND_ASSETS,
   AIRDROP,
   REFILL_GAS,
-  IFRAME,
   CONFIRM_TRANSACTION,
 }
 
@@ -103,12 +101,6 @@ export type ModalPropsTypes = {
   [ModalType.REFILL_GAS]: {
     onSubmit: (refillGasData: RefillGasData) => void;
     showNonceInput: boolean;
-  };
-  [ModalType.IFRAME]: {
-    appName: string;
-    appUrl: string;
-    enableWalletConnect: boolean;
-    safeAddress: string;
   };
   [ModalType.CONFIRM_TRANSACTION]: {
     appName: string;
@@ -315,17 +307,6 @@ export function ModalProvider({ children }: { children: ReactNode }) {
             }}
           />
         );
-        break;
-      case ModalType.IFRAME:
-        modalContent = (
-          <IframeModal
-            appName={current.props.appName}
-            appUrl={current.props.appUrl}
-            safeAddress={current.props.safeAddress}
-            enableWalletConnect={current.props.enableWalletConnect}
-          />
-        );
-        modalSize = 'xl';
         break;
       case ModalType.CONFIRM_TRANSACTION:
         modalTitle = t('confirmTransactionTitle');
