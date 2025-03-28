@@ -1,4 +1,4 @@
-import { FractalProposal } from '../types';
+import { FractalProposal, MultisigProposal } from '../types';
 
 export function isMultisigRejectionProposal(
   safeAddress: string | undefined,
@@ -21,7 +21,7 @@ export function findMostConfirmedMultisigRejectionProposal(
   safeAddress: string | undefined,
   nonce: number | undefined,
   proposals: FractalProposal[] | null,
-) {
+): MultisigProposal | undefined {
   const multisigRejectionProposals = proposals?.filter(p =>
     isMultisigRejectionProposal(safeAddress, nonce, p),
   );
