@@ -433,6 +433,7 @@ export function TxActions({ proposal }: { proposal: MultisigProposal }) {
           >
             <Button
               w="full"
+              variant="danger"
               isDisabled={isButtonDisabled || hasRejected}
               onClick={() =>
                 rejectionProposal
