@@ -16,7 +16,7 @@ import { ConfirmUrlModal } from './ConfirmUrlModal';
 import { DelegateModal } from './DelegateModal';
 import ForkProposalTemplateModal from './ForkProposalTemplateModal';
 import { GaslessVoteSuccessModal } from './GaslessVoting/GaslessVoteSuccessModal';
-import { RefillGasData, RefillGasTankModal } from './GaslessVoting/RefillGasTankModal';^_^
+import { RefillGasData, RefillGasTankModal } from './GaslessVoting/RefillGasTankModal';
 import { ModalBase, ModalBaseSize } from './ModalBase';
 import PaymentCancelConfirmModal from './PaymentCancelConfirmModal';
 import { PaymentWithdrawModal } from './PaymentWithdrawModal';
