@@ -80,6 +80,7 @@ export function AzoriusGovernance(props: ICreationStepProps) {
 
   useStepRedirect({ values });
 
+  // Use local flag only for flag_dev
   const isDevMode = isFeatureEnabled('flag_dev');
   const devModeVotingPeriodDays = DEV_VOTING_PERIOD_MINUTES / 24 / 60;
   const defaultVotingPeriodDays = isDevMode ? devModeVotingPeriodDays : 7;

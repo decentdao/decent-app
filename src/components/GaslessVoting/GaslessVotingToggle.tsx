@@ -6,6 +6,7 @@ import { getContract } from 'viem';
 import { EntryPoint07Abi } from '../../assets/abi/EntryPoint07Abi';
 import { DETAILS_BOX_SHADOW } from '../../constants/common';
 import { DAO_ROUTES } from '../../constants/routes';
+import useFeatureFlag from '../../helpers/environmentFeatureFlags';
 import { isFeatureEnabled } from '../../helpers/featureFlags';
 import useNetworkPublicClient from '../../hooks/useNetworkPublicClient';
 import { useNetworkWalletClient } from '../../hooks/useNetworkWalletClient';
@@ -77,7 +78,8 @@ function GaslessVotingToggleContent({
 export function GaslessVotingToggleDAOCreate(props: GaslessVotingToggleProps) {
   const { gaslessVotingSupported } = useNetworkConfigStore();
 
-  if (!isFeatureEnabled('flag_gasless_voting')) return null;
+  const gaslessVotingEnabled = useFeatureFlag('flag_gasless_voting');
+  if (!gaslessVotingEnabled) return null;
   if (!gaslessVotingSupported) return null;
 
   return (

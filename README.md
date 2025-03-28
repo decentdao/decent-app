@@ -60,16 +60,22 @@ Start with adding a new Feature Flag to the app. In https://github.com/decentdao
 export const FEATURE_FLAGS = ['flag_dev', 'flag_feature_a'] as const;
 ```
 
+### Remote Configuration
+
+Two Firebase projects were set up. "DecentDAO" for production, and "DecentDAO Develop" for development.
+
+During develop, set the feature flag to "on" on "DecentDAO Develop".
+
+After the feature is completed, tested, and ready to release, set the flag to "on" on "DecentDAO".
+
 ### Usage
 
-In consumer of the flag, use the convenience function
+In consumer of the flag, use the useFeatureFlag hook
 
 ```typescript
-import { isFeatureEnabled } from '@/helpers/featureFlags';
+import useFeatureFlag from '../../helpers/environmentFeatureFlags';
 
-if (isFeatureEnabled('flag_feature_a')) {
-  // code here
-}
+const featureAEnabled = useFeatureFlag('flag_feature_a');
 ```
 
 ### Injecting flags via your environment
