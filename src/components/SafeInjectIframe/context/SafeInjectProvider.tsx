@@ -1,4 +1,4 @@
-import { Methods, RPCPayload } from '@safe-global/safe-apps-sdk';
+import { getSDKVersion, Methods, RPCPayload } from '@safe-global/safe-apps-sdk';
 import { PropsWithChildren, useState, useRef, useCallback, useEffect } from 'react';
 import { Address, BlockTag, getAddress, Hash } from 'viem';
 import useNetworkPublicClient from '../../../hooks/useNetworkPublicClient';
@@ -62,7 +62,7 @@ export function SafeInjectProvider({
       const requestWithMessage = {
         ...message,
         requestId: requestId || Math.trunc(window.performance.now()),
-        version: '0.4.2',
+        version: getSDKVersion(),
       };
 
       if (iframeRef) {
@@ -186,7 +186,6 @@ export function SafeInjectProvider({
           return { ...rest };
         }
       });
-      console.debug('Iframe.sendTransactions', transactions);
       receivedTransactions(
         transactions.map(txn => {
           return {
@@ -195,9 +194,6 @@ export function SafeInjectProvider({
           };
         }),
       );
-      // tell the iframe that we received the transactions
-      //   and "confirmed" so it can continue
-      return true;
     });
   }, [
     communicator,
