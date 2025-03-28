@@ -1,8 +1,9 @@
 import { Avatar, Box, Flex, Tag, TagLabel, Text } from '@chakra-ui/react';
 import { Dot } from '@phosphor-icons/react';
+import { useNavigate } from 'react-router-dom';
+import { DAO_ROUTES } from '../../constants/routes';
+import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
 import ContentBox from '../ui/containers/ContentBox';
-import { ModalType } from '../ui/modals/ModalProvider';
-import { useDecentModal } from '../ui/modals/useDecentModal';
 import Markdown from '../ui/proposal/Markdown';
 
 type DappCardProps = {
@@ -11,8 +12,6 @@ type DappCardProps = {
   iconUrl: string;
   description: string;
   categories: string[];
-
-  enableWalletConnect: boolean;
   safeAddress: string;
 };
 
@@ -22,20 +21,15 @@ export default function DappCard({
   iconUrl,
   description,
   categories,
-  enableWalletConnect,
   safeAddress,
 }: DappCardProps) {
-  const openIframeModal = useDecentModal(ModalType.IFRAME, {
-    appName: title,
-    appUrl,
-    enableWalletConnect,
-    safeAddress,
-  });
+  const navigate = useNavigate();
+  const { addressPrefix } = useNetworkConfigStore();
 
   return (
     <ContentBox
       containerBoxProps={{ flex: '0 0 calc(33.333333% - 0.6666666rem)', my: '0' }}
-      onClick={openIframeModal}
+      onClick={() => navigate(DAO_ROUTES.proposalDapp.relative(addressPrefix, safeAddress, appUrl))}
     >
       <Flex
         justifyContent="center"
