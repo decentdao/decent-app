@@ -142,6 +142,7 @@ export function ProposalBuilder({
               successToastMessage: t('proposalCreateSuccessToastMessage', { ns: 'proposal' }),
               failedToastMessage: t('proposalCreateFailureToastMessage', { ns: 'proposal' }),
               successCallback,
+              safeAddress,
             });
           }
         } catch (e) {
