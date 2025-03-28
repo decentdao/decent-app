@@ -124,6 +124,7 @@ export function SafeProposalDappDetailPage() {
   useEffect(() => {
     if (decodedTransactions.length > 0) {
       openConfirmTransactionModal();
+      setDecodedTransactions([]);
     }
   }, [decodedTransactions, openConfirmTransactionModal]);
 
