@@ -63,9 +63,9 @@ export function TxActions({ proposal }: { proposal: MultisigProposal }) {
   );
 
   const isRejectedProposalPassThreshold =
-    rejectionProposal &&
-    rejectionProposal.confirmations &&
-    rejectionProposal.signersThreshold &&
+    !!rejectionProposal &&
+    !!rejectionProposal.confirmations &&
+    !!rejectionProposal.signersThreshold &&
     rejectionProposal.confirmations.length >= rejectionProposal.signersThreshold;
 
   const isOwner = safe?.owners?.includes(userAccount.address ?? zeroAddress);
