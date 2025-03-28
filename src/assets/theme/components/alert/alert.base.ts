@@ -11,7 +11,7 @@ const baseStyle = definePartsStyle({
   },
   container: {
     border: '1px solid',
-    borderRadius: '4px',
+    borderRadius: '12px',
     p: '1rem',
   },
   description: {

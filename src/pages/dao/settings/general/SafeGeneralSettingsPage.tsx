@@ -3,7 +3,9 @@ import { abis } from '@fractal-framework/fractal-contracts';
 import { ChangeEventHandler, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { encodeFunctionData, zeroAddress } from 'viem';
+import { Address, encodeFunctionData, getAbiItem, toFunctionSelector, zeroAddress } from 'viem';
+import { DecentPaymasterFactoryV1Abi } from '../../../../assets/abi/DecentPaymasterFactoryV1Abi';
+import { DecentPaymasterV1Abi } from '../../../../assets/abi/DecentPaymasterV1Abi';
 import { GaslessVotingToggleDAOSettings } from '../../../../components/GaslessVoting/GaslessVotingToggle';
 import { SettingsContentBox } from '../../../../components/SafeSettings/SettingsContentBox';
 import { InputComponent } from '../../../../components/ui/forms/InputComponent';
@@ -12,20 +14,42 @@ import NestedPageHeader from '../../../../components/ui/page/Header/NestedPageHe
 import Divider from '../../../../components/ui/utils/Divider';
 import { DAO_ROUTES } from '../../../../constants/routes';
 import useSubmitProposal from '../../../../hooks/DAO/proposal/useSubmitProposal';
+import useNetworkPublicClient from '../../../../hooks/useNetworkPublicClient';
+import { useAddressContractType } from '../../../../hooks/utils/useAddressContractType';
 import { useCanUserCreateProposal } from '../../../../hooks/utils/useCanUserSubmitProposal';
 import { createAccountSubstring } from '../../../../hooks/utils/useGetAccountName';
+import { useInstallVersionedVotingStrategy } from '../../../../hooks/utils/useInstallVersionedVotingStrategy';
+import { useFractal } from '../../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../../providers/NetworkConfig/useNetworkConfigStore';
 import { useDaoInfoStore } from '../../../../store/daoInfo/useDaoInfoStore';
-import { BigIntValuePair, ProposalExecuteData } from '../../../../types';
+import { GovernanceType, ProposalExecuteData } from '../../../../types';
+import { getPaymasterAddress, getPaymasterSalt } from '../../../../utils/gaslessVoting';
 import { validateENSName } from '../../../../utils/url';
+
 export function SafeGeneralSettingsPage() {
   const { t } = useTranslation(['settings', 'settingsMetadata']);
   const [name, setName] = useState('');
   const [snapshotENS, setSnapshotENS] = useState('');
   const [snapshotENSValid, setSnapshotENSValid] = useState<boolean>();
 
-  const [isGaslessVotingEnabled, setIsGaslessVotingEnabled] = useState<boolean>(false);
-  const [gasTankTopupAmount, setGasTankTopupAmount] = useState<BigIntValuePair>();
+  const { gaslessVotingEnabled, paymasterAddress } = useDaoInfoStore();
+
+  const [isGaslessVotingEnabledToggled, setIsGaslessVotingEnabledToggled] =
+    useState(gaslessVotingEnabled);
+
+  useEffect(() => {
+    setIsGaslessVotingEnabledToggled(gaslessVotingEnabled);
+  }, [gaslessVotingEnabled]);
+
+  const {
+    governanceContracts: {
+      linearVotingErc20Address,
+      linearVotingErc721Address,
+      linearVotingErc20WithHatsWhitelistingAddress,
+      linearVotingErc721WithHatsWhitelistingAddress,
+    },
+    governance: { type: votingStrategyType },
+  } = useFractal();
 
   const navigate = useNavigate();
 
@@ -34,12 +58,15 @@ export function SafeGeneralSettingsPage() {
   const { subgraphInfo, safe } = useDaoInfoStore();
   const {
     addressPrefix,
-    contracts: { keyValuePairs },
+    chain: { id: chainId },
+    contracts: { keyValuePairs, paymasterFactory },
   } = useNetworkConfigStore();
 
-  const safeAddress = safe?.address;
+  const publicClient = useNetworkPublicClient();
 
-  const currentIsGaslessVotingEnabled = subgraphInfo?.gaslessVotingEnabled ?? false;
+  const { isIVersionSupport } = useAddressContractType();
+
+  const safeAddress = safe?.address;
 
   useEffect(() => {
     if (
@@ -68,19 +95,13 @@ export function SafeGeneralSettingsPage() {
     }
   };
 
-  const submitProposalSuccessCallback = () => {
-    if (safeAddress) {
-      navigate(DAO_ROUTES.proposals.relative(addressPrefix, safeAddress));
-    }
-  };
-
   const nameChanged = name !== subgraphInfo?.daoName;
   const snapshotChanged = snapshotENSValid && snapshotENS !== subgraphInfo?.daoSnapshotENS;
-  const gaslessVotingChanged = isGaslessVotingEnabled !== currentIsGaslessVotingEnabled;
-  const gasTankTopupAmountSet =
-    gasTankTopupAmount?.bigintValue !== undefined && gasTankTopupAmount.bigintValue > 0n;
+  const gaslessVotingChanged = isGaslessVotingEnabledToggled !== gaslessVotingEnabled;
 
-  const handleEditGeneralGovernance = () => {
+  const { buildInstallVersionedVotingStrategy } = useInstallVersionedVotingStrategy();
+
+  const handleEditGeneralGovernance = async () => {
     const changeTitles = [];
     const keyArgs = [];
     const valueArgs = [];
@@ -98,20 +119,124 @@ export function SafeGeneralSettingsPage() {
     }
 
     if (gaslessVotingChanged) {
-      changeTitles.push(t('enableGaslessVoting', { ns: 'proposalMetadata' }));
+      if (isGaslessVotingEnabledToggled) {
+        changeTitles.push(t('enableGaslessVoting', { ns: 'proposalMetadata' }));
+      } else {
+        changeTitles.push(t('disableGaslessVoting', { ns: 'proposalMetadata' }));
+      }
 
-      // @todo Is KV pairs the place we're storing this flag?
       keyArgs.push('gaslessVotingEnabled');
-      valueArgs.push(`${isGaslessVotingEnabled}`);
-    }
-
-    if (gasTankTopupAmountSet) {
-      changeTitles.push(t('topupGasTank', { ns: 'proposalMetadata' }));
-
-      // @todo add tx to send `gasTankTopupAmount` to gas tank address
+      valueArgs.push(`${isGaslessVotingEnabledToggled}`);
     }
 
     const title = changeTitles.join(`; `);
+
+    const targets = [keyValuePairs];
+    const calldatas = [
+      encodeFunctionData({
+        abi: abis.KeyValuePairs,
+        functionName: 'updateValues',
+        args: [keyArgs, valueArgs],
+      }),
+    ];
+    const values = [0n];
+
+    if (gaslessVotingChanged && isGaslessVotingEnabledToggled) {
+      if (!safeAddress) {
+        throw new Error('Safe address is not set');
+      }
+
+      const strategyAddresses = [
+        linearVotingErc20Address,
+        linearVotingErc721Address,
+        linearVotingErc20WithHatsWhitelistingAddress,
+        linearVotingErc721WithHatsWhitelistingAddress,
+      ].filter(addr => addr !== undefined);
+
+      let predictedPaymasterAddress: Address;
+
+      if (paymasterAddress) {
+        predictedPaymasterAddress = paymasterAddress;
+      } else {
+        predictedPaymasterAddress = await getPaymasterAddress({
+          address: safeAddress,
+          chainId,
+          publicClient,
+          paymasterFactory,
+        });
+      }
+
+      const paymasterCode = await publicClient.getCode({
+        address: predictedPaymasterAddress,
+      });
+
+      if (!paymasterCode || paymasterCode === '0x') {
+        // Paymaster does not exist, deploy a new one
+        targets.push(paymasterFactory);
+        calldatas.push(
+          encodeFunctionData({
+            // @todo (gv) replace with the deployed abi
+            abi: DecentPaymasterFactoryV1Abi,
+            functionName: 'createPaymaster',
+            args: [safeAddress, getPaymasterSalt(safeAddress, chainId)],
+          }),
+        );
+        values.push(0n);
+
+        // Approve the `vote` function call on the Paymaster
+        // // // // // // // // // // // // // // // // // // //
+        if (strategyAddresses.length === 0 || !votingStrategyType) {
+          throw new Error('No strategy addresses defined');
+        }
+
+        const voteAbiItem = getAbiItem({
+          name: 'vote',
+          abi:
+            votingStrategyType === GovernanceType.AZORIUS_ERC20
+              ? abis.LinearERC20Voting
+              : abis.LinearERC721Voting,
+        });
+        const voteSelector = toFunctionSelector(voteAbiItem);
+
+        strategyAddresses.forEach(strategyAddress => {
+          targets.push(predictedPaymasterAddress);
+          calldatas.push(
+            encodeFunctionData({
+              abi: DecentPaymasterV1Abi,
+              functionName: 'setStrategyFunctionApproval',
+              args: [strategyAddress, [voteSelector], [true]],
+            }),
+          );
+          values.push(0n);
+        });
+      }
+
+      if (strategyAddresses.length) {
+        // Check if all strategy contracts support the latest version
+        let allStrategiesAreUpdated = true;
+
+        for (const strategyAddress of strategyAddresses) {
+          const supportsLatestVersion = await isIVersionSupport(strategyAddress);
+          if (!supportsLatestVersion) {
+            allStrategiesAreUpdated = false;
+            break;
+          }
+        }
+
+        if (!allStrategiesAreUpdated) {
+          // The safe is using the old modules.
+          // Include txs to disable the old voting strategy and enable the new one.
+          const installVersionedStrategyTxData = await buildInstallVersionedVotingStrategy();
+          if (!installVersionedStrategyTxData) {
+            throw new Error('Error encoding transaction for installing versioned voting strategy');
+          }
+
+          targets.push(...installVersionedStrategyTxData.map(tx => tx.targetAddress));
+          calldatas.push(...installVersionedStrategyTxData.map(tx => tx.calldata));
+          values.push(...installVersionedStrategyTxData.map(() => 0n));
+        }
+      }
+    }
 
     const proposalData: ProposalExecuteData = {
       metaData: {
@@ -119,15 +244,9 @@ export function SafeGeneralSettingsPage() {
         description: '',
         documentationUrl: '',
       },
-      targets: [keyValuePairs],
-      values: [0n],
-      calldatas: [
-        encodeFunctionData({
-          abi: abis.KeyValuePairs,
-          functionName: 'updateValues',
-          args: [keyArgs, valueArgs],
-        }),
-      ],
+      targets,
+      values,
+      calldatas,
     };
 
     submitProposal({
@@ -137,7 +256,11 @@ export function SafeGeneralSettingsPage() {
       pendingToastMessage: t('proposalCreatePendingToastMessage', { ns: 'proposal' }),
       successToastMessage: t('proposalCreateSuccessToastMessage', { ns: 'proposal' }),
       failedToastMessage: t('proposalCreateFailureToastMessage', { ns: 'proposal' }),
-      successCallback: submitProposalSuccessCallback,
+      successCallback: () => {
+        if (safeAddress) {
+          navigate(DAO_ROUTES.proposals.relative(addressPrefix, safeAddress));
+        }
+      },
     });
   };
 
@@ -211,14 +334,10 @@ export function SafeGeneralSettingsPage() {
           </Flex>
 
           <GaslessVotingToggleDAOSettings
-            isEnabled={isGaslessVotingEnabled}
+            isEnabled={isGaslessVotingEnabledToggled}
             onToggle={() => {
-              console.log(
-                'onToggle. Add this action to the proposal, to be submitted via propose changes button.',
-              );
-              setIsGaslessVotingEnabled(!isGaslessVotingEnabled);
+              setIsGaslessVotingEnabledToggled(!isGaslessVotingEnabledToggled);
             }}
-            onGasTankTopupAmountChange={setGasTankTopupAmount}
           />
           {canUserCreateProposal && (
             <>
@@ -231,7 +350,7 @@ export function SafeGeneralSettingsPage() {
                 variant="secondary"
                 size="sm"
                 marginLeft="auto"
-                isDisabled={!nameChanged && !snapshotChanged}
+                isDisabled={!nameChanged && !snapshotChanged && !gaslessVotingChanged}
                 onClick={handleEditGeneralGovernance}
               >
                 {t('proposeChanges')}

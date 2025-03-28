@@ -60,6 +60,7 @@ export function SafeEditGovernancePage() {
     deployAzorius(daoData as AzoriusERC20DAO | AzoriusERC721DAO | SubDAO, customNonce, {
       shouldSetName,
       shouldSetSnapshot,
+      enableGaslessVoting: daoData.gaslessVoting,
     });
   };
 

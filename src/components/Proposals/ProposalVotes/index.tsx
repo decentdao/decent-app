@@ -41,7 +41,7 @@ function ProposalVotes({
   const { governance } = useFractal();
 
   const azoriusGovernance = governance as AzoriusGovernance;
-  const { t } = useTranslation(['common', 'proposal']);
+  const { t } = useTranslation('proposal');
   const totalVotesCasted = useMemo(() => yes + no + abstain, [yes, no, abstain]);
 
   const isERC20 = useMemo(
