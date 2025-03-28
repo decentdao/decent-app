@@ -1,8 +1,5 @@
 {
   "advanced": "Advanced",
-  "no": "No",
-  "yes": "Yes",
-  "abstain": "Abstain",
   "skip": "Skip",
   "next": "Next",
   "back": "Back",
@@ -16,7 +13,6 @@
   "view": "View",
   "details": "Details",
   "delete": "Delete",
-  "vote": "Vote",
   "sign": "Sign",
   "snapshot": "Snapshot",
   "shutter": "Shutter",

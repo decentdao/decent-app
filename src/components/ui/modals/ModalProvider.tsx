@@ -15,11 +15,12 @@ import { ConfirmTransactionModal } from './ConfirmTransactionModal';
 import { ConfirmUrlModal } from './ConfirmUrlModal';
 import { DelegateModal } from './DelegateModal';
 import ForkProposalTemplateModal from './ForkProposalTemplateModal';
+import { GaslessVoteSuccessModal } from './GaslessVoting/GaslessVoteSuccessModal';
+import { RefillGasData, RefillGasTankModal } from './GaslessVoting/RefillGasTankModal';^_^
 import { ModalBase, ModalBaseSize } from './ModalBase';
 import PaymentCancelConfirmModal from './PaymentCancelConfirmModal';
 import { PaymentWithdrawModal } from './PaymentWithdrawModal';
 import ProposalTemplateModal from './ProposalTemplateModal';
-import { RefillGasData, RefillGasTankModal } from './RefillGasTankModal';
 import { SendAssetsModal } from './SendAssetsModal';
 import StakeModal from './Stake';
 import { UnsavedChangesWarningContent } from './UnsavedChangesWarningContent';
@@ -42,6 +43,7 @@ export enum ModalType {
   SEND_ASSETS,
   AIRDROP,
   REFILL_GAS,
+  GASLESS_VOTE_SUCCESS,
   CONFIRM_TRANSACTION,
 }
 
@@ -102,6 +104,7 @@ export type ModalPropsTypes = {
     onSubmit: (refillGasData: RefillGasData) => void;
     showNonceInput: boolean;
   };
+  [ModalType.GASLESS_VOTE_SUCCESS]: {};
   [ModalType.CONFIRM_TRANSACTION]: {
     appName: string;
     transactionArray: CreateProposalTransaction[];
@@ -294,6 +297,11 @@ export function ModalProvider({ children }: { children: ReactNode }) {
             }}
           />
         );
+        break;
+
+      case ModalType.GASLESS_VOTE_SUCCESS:
+        modalContent = <GaslessVoteSuccessModal close={closeModal} />;
+        modalSize = 'md';
         break;
       case ModalType.AIRDROP:
         modalContent = (

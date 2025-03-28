@@ -37,6 +37,11 @@ export type NetworkConfig = {
     linearVotingErc721MasterCopy: Address;
     linearVotingErc721HatsWhitelistingMasterCopy: Address;
 
+    linearVotingErc20V1MasterCopy: Address;
+    linearVotingErc20V1HatsWhitelistingMasterCopy: Address;
+    linearVotingErc721V1MasterCopy: Address;
+    linearVotingErc721V1HatsWhitelistingMasterCopy: Address;
+
     moduleAzoriusMasterCopy: Address;
     moduleFractalMasterCopy: Address;
 
@@ -68,6 +73,8 @@ export type NetworkConfig = {
     sablierV2LockupTranched: Address;
     sablierV2LockupLinear: Address;
     disperse: Address;
+    entryPointv07: Address;
+    paymasterFactory: Address;
   };
   staking: {
     lido?: {
