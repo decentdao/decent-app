@@ -75,10 +75,7 @@ function GaslessVotingToggleContent({
 }
 
 export function GaslessVotingToggleDAOCreate(props: GaslessVotingToggleProps) {
-  const { gaslessVotingSupported } = useNetworkConfigStore();
-
   if (!isFeatureEnabled('flag_gasless_voting')) return null;
-  if (!gaslessVotingSupported) return null;
 
   return (
     <Flex
@@ -117,7 +114,6 @@ export function GaslessVotingToggleDAOCreate(props: GaslessVotingToggleProps) {
 export function GaslessVotingToggleDAOSettings(props: GaslessVotingToggleProps) {
   const { t } = useTranslation('gaslessVoting');
   const {
-    gaslessVotingSupported,
     addressPrefix,
     contracts: { entryPointv07 },
   } = useNetworkConfigStore();
@@ -128,11 +124,9 @@ export function GaslessVotingToggleDAOSettings(props: GaslessVotingToggleProps) 
 
   const { safe, gaslessVotingEnabled, paymasterAddress } = useDaoInfoStore();
 
-  const { canUserCreateProposal } = useCanUserCreateProposal();
-
   const [paymasterBalance, setPaymasterBalance] = useState<BigIntValuePair>();
   useEffect(() => {
-    if (!paymasterAddress) return;
+    if (!paymasterAddress || !entryPointv07) return;
     const entryPoint = getContract({
       address: entryPointv07,
       abi: EntryPoint07Abi,
@@ -152,7 +146,7 @@ export function GaslessVotingToggleDAOSettings(props: GaslessVotingToggleProps) 
 
   const refillGas = useDecentModal(ModalType.REFILL_GAS, {
     onSubmit: async (refillGasData: RefillGasData) => {
-      if (!safe?.address || !paymasterAddress) {
+      if (!safe?.address || !paymasterAddress || !entryPointv07) {
         return;
       }
 
@@ -208,7 +202,6 @@ export function GaslessVotingToggleDAOSettings(props: GaslessVotingToggleProps) 
   });
 
   if (!isFeatureEnabled('flag_gasless_voting')) return null;
-  if (!gaslessVotingSupported) return null;
 
   const formattedPaymasterBalance =
     paymasterBalance &&
@@ -268,7 +261,6 @@ export function GaslessVotingToggleDAOSettings(props: GaslessVotingToggleProps) 
           <Button
             variant="secondary"
             size="sm"
-            isDisabled={!canUserCreateProposal}
             onClick={() => {
               refillGas();
             }}

@@ -105,7 +105,7 @@ export const mainnetConfig: NetworkConfig = {
     sablierV2LockupTranched: '0xf86B359035208e4529686A1825F2D5BeE38c28A8',
     sablierV2LockupLinear: '0x3962f6585946823440d274aD7C719B02b49DE51E',
     disperse: '0xD152f549545093347A162Dce210e7293f1452150',
-    entryPointv07: '0x0000000071727De22E5E9d8BAf0edAc6f37da032', // https://etherscan.io/address/0x0000000071727de22e5e9d8baf0edac6f37da032#code
+    entryPointv07: '0x0000000071727De22E5E9d8BAf0edAc6f37da032',
     paymasterFactory: '0x0000000000000000000000000000000000000000',
   },
   staking: {
@@ -124,7 +124,6 @@ export const mainnetConfig: NetworkConfig = {
     GovernanceType.AZORIUS_ERC20,
     GovernanceType.AZORIUS_ERC721,
   ],
-  gaslessVotingSupported: true,
 };
 
 export default mainnetConfig;

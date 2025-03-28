@@ -196,7 +196,6 @@ function ProposalVotingSection({
   );
 }
 
-// @todo: (gv) QuorumProgressBarSection has been redesigned and moved to the Breakdown section. Need to circle back to this.
 function QuorumProgressBarSection({
   proposal,
   azoriusGovernance,

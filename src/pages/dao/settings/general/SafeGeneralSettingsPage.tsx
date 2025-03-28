@@ -3,7 +3,7 @@ import { abis } from '@fractal-framework/fractal-contracts';
 import { ChangeEventHandler, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { Address, encodeFunctionData, getAbiItem, toFunctionSelector, zeroAddress } from 'viem';
+import { AbiItem, encodeFunctionData, getAbiItem, toFunctionSelector, zeroAddress } from 'viem';
 import { DecentPaymasterFactoryV1Abi } from '../../../../assets/abi/DecentPaymasterFactoryV1Abi';
 import { DecentPaymasterV1Abi } from '../../../../assets/abi/DecentPaymasterV1Abi';
 import { GaslessVotingToggleDAOSettings } from '../../../../components/GaslessVoting/GaslessVotingToggle';
@@ -59,8 +59,11 @@ export function SafeGeneralSettingsPage() {
   const {
     addressPrefix,
     chain: { id: chainId },
-    contracts: { keyValuePairs, paymasterFactory },
+    contracts: { keyValuePairs, paymasterFactory, entryPointv07 },
   } = useNetworkConfigStore();
+
+  const isMultisigGovernance = votingStrategyType === GovernanceType.MULTISIG;
+  const gaslessVotingSupported = !isMultisigGovernance && entryPointv07 !== undefined;
 
   const publicClient = useNetworkPublicClient();
 
@@ -119,14 +122,14 @@ export function SafeGeneralSettingsPage() {
     }
 
     if (gaslessVotingChanged) {
+      keyArgs.push('gaslessVotingEnabled');
       if (isGaslessVotingEnabledToggled) {
         changeTitles.push(t('enableGaslessVoting', { ns: 'proposalMetadata' }));
+        valueArgs.push('true');
       } else {
         changeTitles.push(t('disableGaslessVoting', { ns: 'proposalMetadata' }));
+        valueArgs.push('false');
       }
-
-      keyArgs.push('gaslessVotingEnabled');
-      valueArgs.push(`${isGaslessVotingEnabledToggled}`);
     }
 
     const title = changeTitles.join(`; `);
@@ -153,24 +156,7 @@ export function SafeGeneralSettingsPage() {
         linearVotingErc721WithHatsWhitelistingAddress,
       ].filter(addr => addr !== undefined);
 
-      let predictedPaymasterAddress: Address;
-
-      if (paymasterAddress) {
-        predictedPaymasterAddress = paymasterAddress;
-      } else {
-        predictedPaymasterAddress = await getPaymasterAddress({
-          address: safeAddress,
-          chainId,
-          publicClient,
-          paymasterFactory,
-        });
-      }
-
-      const paymasterCode = await publicClient.getCode({
-        address: predictedPaymasterAddress,
-      });
-
-      if (!paymasterCode || paymasterCode === '0x') {
+      if (paymasterAddress === null) {
         // Paymaster does not exist, deploy a new one
         targets.push(paymasterFactory);
         calldatas.push(
@@ -189,14 +175,30 @@ export function SafeGeneralSettingsPage() {
           throw new Error('No strategy addresses defined');
         }
 
-        const voteAbiItem = getAbiItem({
-          name: 'vote',
-          abi:
-            votingStrategyType === GovernanceType.AZORIUS_ERC20
-              ? abis.LinearERC20Voting
-              : abis.LinearERC721Voting,
-        });
+        let voteAbiItem: AbiItem;
+
+        if (votingStrategyType === GovernanceType.AZORIUS_ERC20) {
+          voteAbiItem = getAbiItem({
+            name: 'vote',
+            abi: abis.LinearERC20Voting,
+          });
+        } else if (votingStrategyType === GovernanceType.AZORIUS_ERC721) {
+          voteAbiItem = getAbiItem({
+            name: 'vote',
+            abi: abis.LinearERC721Voting,
+          });
+        } else {
+          throw new Error('Invalid voting strategy type');
+        }
+
         const voteSelector = toFunctionSelector(voteAbiItem);
+
+        const predictedPaymasterAddress = await getPaymasterAddress({
+          address: safeAddress,
+          chainId,
+          publicClient,
+          paymasterFactory,
+        });
 
         strategyAddresses.forEach(strategyAddress => {
           targets.push(predictedPaymasterAddress);
@@ -333,12 +335,14 @@ export function SafeGeneralSettingsPage() {
             />
           </Flex>
 
-          <GaslessVotingToggleDAOSettings
-            isEnabled={isGaslessVotingEnabledToggled}
-            onToggle={() => {
-              setIsGaslessVotingEnabledToggled(!isGaslessVotingEnabledToggled);
-            }}
-          />
+          {gaslessVotingSupported && (
+            <GaslessVotingToggleDAOSettings
+              isEnabled={isGaslessVotingEnabledToggled}
+              onToggle={() => {
+                setIsGaslessVotingEnabledToggled(!isGaslessVotingEnabledToggled);
+              }}
+            />
+          )}
           {canUserCreateProposal && (
             <>
               <Divider

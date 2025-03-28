@@ -4,6 +4,8 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAccount, useBalance } from 'wagmi';
 import * as Yup from 'yup';
+import { useCanUserCreateProposal } from '../../../../hooks/utils/useCanUserSubmitProposal';
+import { useNetworkConfigStore } from '../../../../providers/NetworkConfig/useNetworkConfigStore';
 import { useDaoInfoStore } from '../../../../store/daoInfo/useDaoInfoStore';
 import { BigIntValuePair } from '../../../../types';
 import { formatCoinUnits } from '../../../../utils/numberFormats';
@@ -34,9 +36,13 @@ function RefillForm({ onSubmit, onClose, isDirectDeposit, showNonceInput }: Refi
   const { address } = useAccount();
   const { safe } = useDaoInfoStore();
   const [nonceInput, setNonceInput] = useState<number | undefined>(safe?.nextNonce);
+  const { chain } = useNetworkConfigStore();
+
+  const { canUserCreateProposal } = useCanUserCreateProposal();
 
   const { data: balance } = useBalance({
     address: isDirectDeposit ? address : safe?.address,
+    chainId: chain?.id,
   });
 
   return (
@@ -59,12 +65,21 @@ function RefillForm({ onSubmit, onClose, isDirectDeposit, showNonceInput }: Refi
     >
       {({ values, setFieldValue, handleSubmit }) => {
         const overDraft =
-          Number(values.inputAmount?.value || '0') >
-          formatCoinUnits(balance?.value || 0n, balance?.decimals || 0, balance?.symbol || '');
+          Number(values.inputAmount?.value || '0') > formatCoinUnits(balance?.value || 0n);
 
         const inputBigint = values.inputAmount?.bigintValue;
         const inputBigintIsZero = inputBigint !== undefined ? inputBigint === 0n : undefined;
-        const isSubmitDisabled = !values.inputAmount || inputBigintIsZero || overDraft;
+
+        // Submit button is disabled if:
+        // 1. For non-direct deposits, user cannot create proposals
+        // 2. No amount has been input
+        // 3. Input amount is zero
+        // 4. Input amount exceeds available balance
+        const isSubmitDisabled =
+          (!isDirectDeposit && !canUserCreateProposal) ||
+          !values.inputAmount ||
+          inputBigintIsZero ||
+          overDraft;
 
         return (
           <Form onSubmit={handleSubmit}>
@@ -117,11 +132,7 @@ function RefillForm({ onSubmit, onClose, isDirectDeposit, showNonceInput }: Refi
                   color="neutral-7"
                 >
                   {t('balance', {
-                    balance: formatCoinUnits(
-                      balance?.value || 0n,
-                      balance?.decimals || 0,
-                      balance?.symbol || '',
-                    ).toFixed(2),
+                    balance: formatCoinUnits(balance?.value || 0n).toFixed(2),
                   })}
                 </Text>
               </Flex>
