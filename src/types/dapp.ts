@@ -11,6 +11,7 @@ export interface Dapp {
   tags: string[];
   features: string[];
   featured?: boolean | undefined;
+  enableWalletConnect?: boolean | undefined;
 }
 
 export const dappSchema = yup.object().shape({
@@ -23,6 +24,7 @@ export const dappSchema = yup.object().shape({
   tags: yup.array().of(yup.string().required()).required(),
   features: yup.array().of(yup.string().required()).required(),
   featured: yup.boolean(),
+  enableWalletConnect: yup.boolean(),
 });
 
 export const dappsSchema = yup.array().of(dappSchema).required();

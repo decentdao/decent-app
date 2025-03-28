@@ -11,6 +11,9 @@ const getDaoQueryParam = (addressPrefix: string, safeAddress: string) =>
 const getRoleQueryParam = (addressPrefix: string, safeAddress: string, hatId: Hex) =>
   `${getDaoQueryParam(addressPrefix, safeAddress)}&hatId=${hatId}`;
 
+const getDappQueryParam = (addressPrefix: string, safeAddress: string, appUrl: string) =>
+  `${getDaoQueryParam(addressPrefix, safeAddress)}&appUrl=${appUrl}`;
+
 export const DAO_ROUTES = {
   dao: {
     relative: (addressPrefix: string, safeAddress: string) =>
@@ -136,5 +139,10 @@ export const DAO_ROUTES = {
     relative: (addressPrefix: string, safeAddress: string) =>
       `/proposal-dapps${getDaoQueryParam(addressPrefix, safeAddress)}`,
     path: 'proposal-dapps',
+  },
+  proposalDapp: {
+    relative: (addressPrefix: string, safeAddress: string, appUrl: string) =>
+      `/proposal-dapps/details${getDappQueryParam(addressPrefix, safeAddress, appUrl)}`,
+    path: 'proposal-dapps/details',
   },
 };

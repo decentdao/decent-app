@@ -61,23 +61,20 @@ class AppCommunicator {
     const msg = error
       ? MessageFormatter.makeErrorResponse(requestId, data as string, sdkVersion)
       : MessageFormatter.makeResponse(requestId, data, sdkVersion);
-    // console.debug("iframe.send", { msg, iframe: this.iframeRef.current });
+    //console.debug('[SafeApp] 👉', requestId, { data });
     this.iframeRef.current?.contentWindow?.postMessage(msg, '*');
   };
 
   handleIncomingMessage = async (msg: SDKMessageEvent): Promise<void> => {
+    //console.debug('[SafeApp] 👈🏻', msg.data.id, msg.data.method + '()', msg.data.params);
     const validMessage = this.isValidMessage(msg);
     const hasHandler = this.canHandleMessage(msg);
-    // console.debug('incoming message', msg);
 
     if (validMessage && hasHandler) {
-      // console.debug("iframe.receive", { msg: msg.data });
-
       const handler = this.handlers.get(msg.data.method);
       try {
         // @ts-expect-error Handler existence is checked in this.canHandleMessage
         const response = await handler(msg);
-        // console.debug("iframe.receive.handler", { response });
 
         // If response is not returned, it means the response will be send somewhere else
         if (typeof response !== 'undefined') {
