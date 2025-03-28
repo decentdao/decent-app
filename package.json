@@ -1,6 +1,6 @@
 {
   "name": "decent-interface",
-  "version": "0.9.1",
+  "version": "0.10.0",
   "private": true,
   "dependencies": {
     "@amplitude/analytics-browser": "^2.11.1",
@@ -32,6 +32,7 @@
     "date-fns": "^2.29.3",
     "date-fns-tz": "^2.0.1",
     "evm-proxy-detection": "^1.1.0",
+    "firebase": "^11.5.0",
     "formik": "^2.2.9",
     "framer-motion": "^6.5.1",
     "graphql": "^16.10.0",
