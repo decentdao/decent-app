@@ -154,8 +154,7 @@ export const useSafeTransactions = () => {
             eventDate,
             confirmations,
             signersThreshold: transaction.confirmationsRequired,
-            multisigRejectedProposalNumber:
-              isMultisigRejectionTx && !!noncePair ? noncePair.safeTxHash : undefined,
+            isMultisigRejectionTx,
             proposalId: eventSafeTxHash,
             targets,
             // @todo typing for `multiSigTransaction.transactionHash` is misleading, as ` multiSigTransaction.transactionHash` is not always defined (if ever). Need to tighten up the typing here.
