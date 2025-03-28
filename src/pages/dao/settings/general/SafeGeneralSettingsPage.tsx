@@ -61,7 +61,9 @@ export function SafeGeneralSettingsPage() {
     chain: { id: chainId },
     contracts: { keyValuePairs, paymasterFactory, entryPointv07 },
   } = useNetworkConfigStore();
-  const gaslessVotingSupported = entryPointv07 !== undefined;
+
+  const isMultisigGovernance = votingStrategyType === GovernanceType.MULTISIG;
+  const gaslessVotingSupported = !isMultisigGovernance && entryPointv07 !== undefined;
 
   const publicClient = useNetworkPublicClient();
 
