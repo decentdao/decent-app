@@ -449,6 +449,7 @@ export function TxActions({ proposal }: { proposal: MultisigProposal }) {
       pageTitle: 'executeTitle',
     },
   };
+
   const isActiveNonce = !!safe && proposal.transaction.nonce === safe.nonce;
   const isButtonDisabled =
     isSubmitDisabled ||
@@ -510,29 +511,31 @@ export function TxActions({ proposal }: { proposal: MultisigProposal }) {
               })
         }
       />
-      <ContentBox containerBoxProps={{ bg: BACKGROUND_SEMI_TRANSPARENT }}>
-        <Flex justifyContent="space-between">
-          <Text>{t(buttonProps[proposal.state!].pageTitle)}</Text>
-          <ProposalCountdown proposal={proposal} />
-        </Flex>
+      {proposal.state !== FractalProposalState.ACTIVE && (
+        <ContentBox containerBoxProps={{ bg: BACKGROUND_SEMI_TRANSPARENT }}>
+          <Flex justifyContent="space-between">
+            <Text>{t(buttonProps[proposal.state!].pageTitle)}</Text>
+            <ProposalCountdown proposal={proposal} />
+          </Flex>
 
-        <Box marginTop={4}>
-          <DecentTooltip
-            placement="top-start"
-            label={t('notActiveNonceTooltip')}
-            isDisabled={isActiveNonce}
-          >
-            <Button
-              w="full"
-              rightIcon={buttonProps[proposal.state!].icon}
-              isDisabled={isButtonDisabled}
-              onClick={buttonProps[proposal.state!].action}
+          <Box marginTop={4}>
+            <DecentTooltip
+              placement="top-start"
+              label={t('notActiveNonceTooltip')}
+              isDisabled={isActiveNonce}
             >
-              {t(buttonProps[proposal.state!].text, { ns: 'common' })}
-            </Button>
-          </DecentTooltip>
-        </Box>
-      </ContentBox>
+              <Button
+                w="full"
+                rightIcon={buttonProps[proposal.state!].icon}
+                isDisabled={isButtonDisabled}
+                onClick={buttonProps[proposal.state!].action}
+              >
+                {t(buttonProps[proposal.state!].text, { ns: 'common' })}
+              </Button>
+            </DecentTooltip>
+          </Box>
+        </ContentBox>
+      )}
     </>
   );
 }
