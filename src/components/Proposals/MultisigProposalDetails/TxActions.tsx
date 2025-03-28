@@ -431,6 +431,7 @@ export function TxActions({ proposal }: { proposal: MultisigProposal }) {
     };
   };
 
+  // @TODO Typing is actually ButtonProps | undefined. Component needs some TLC. https://linear.app/decent-labs/issue/ENG-461/refactor-txactionstsx
   const buttonProps: ButtonProps = {
     [FractalProposalState.EXECUTABLE]: {
       action: executeTransaction,
