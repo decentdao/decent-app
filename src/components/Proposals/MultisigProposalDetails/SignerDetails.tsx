@@ -1,5 +1,5 @@
 import { Box, Grid, GridItem, Text } from '@chakra-ui/react';
-import { format, max } from 'date-fns';
+import { format } from 'date-fns';
 import { useTranslation } from 'react-i18next';
 import { Address, getAddress } from 'viem';
 import { useAccount } from 'wagmi';
@@ -24,17 +24,18 @@ function OwnerInfoRow({
   rejectProposal: MultisigProposal | undefined;
   isMe: boolean;
 }) {
-  const ownerApproved = proposal.confirmations?.find(confirmInfo => confirmInfo.owner === owner);
-  const ownerRejected = rejectProposal?.confirmations?.find(
-    confirmInfo => confirmInfo.owner === owner,
+  const ownerApproved = proposal.confirmations?.find(c => c.owner === owner);
+  const ownerRejected = rejectProposal?.confirmations?.find(c => c.owner === owner);
+
+  const confirmations = [
+    ownerApproved && { type: 'approved', date: new Date(ownerApproved.submissionDate) },
+    ownerRejected && { type: 'rejected', date: new Date(ownerRejected.submissionDate) },
+  ].filter(Boolean) as { type: 'approved' | 'rejected'; date: Date }[];
+
+  const latestConfirmation = confirmations.reduce(
+    (prev, curr) => (curr.date > prev.date ? curr : prev),
+    confirmations[0],
   );
-  const confirmedOnce = ownerApproved || ownerRejected;
-  const lastConfirmationDate = confirmedOnce
-    ? max([
-        new Date(ownerApproved?.submissionDate ?? 0),
-        new Date(ownerRejected?.submissionDate ?? 0),
-      ])
-    : undefined;
 
   return (
     <>
@@ -45,22 +46,22 @@ function OwnerInfoRow({
         />
       </GridItem>
       <GridItem my="auto">
-        {ownerApproved && (
+        {latestConfirmation?.type === 'approved' && (
           <Badge
-            labelKey={'ownerApproved'}
+            labelKey="ownerApproved"
             size="sm"
           />
         )}
-        {ownerRejected && (
+        {latestConfirmation?.type === 'rejected' && (
           <Badge
-            labelKey={'ownerRejected'}
+            labelKey="ownerRejected"
             size="sm"
           />
         )}
       </GridItem>
       <GridItem my="auto">
-        {lastConfirmationDate && (
-          <Text color="neutral-7">{format(lastConfirmationDate, DEFAULT_DATE_TIME_FORMAT)}</Text>
+        {latestConfirmation && (
+          <Text color="neutral-7">{format(latestConfirmation.date, DEFAULT_DATE_TIME_FORMAT)}</Text>
         )}
       </GridItem>
     </>
