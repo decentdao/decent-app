@@ -55,7 +55,6 @@ export default function HomePage() {
           </Box>
         </Flex>
       </Show>
-
       <Flex
         direction="column"
         w="full"

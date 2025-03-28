@@ -3,6 +3,7 @@ import { CreateProposalActionData, ProposalActionType } from '../../types';
 import { formatCoin } from '../numberFormats';
 
 export interface RefillPaymasterData {
+  entryPointAddress: Address;
   paymasterAddress: Address;
   refillAmount: bigint;
   nonceInput: number | undefined; // this is only releveant when the caller action results in a proposal
@@ -15,15 +16,13 @@ export interface RefillPaymasterData {
 /**
  * Prepare the data for a paymaster refill action.
  *
- * @returns Returns a `RefillPaymasterActionData` object.
- * `.tokenAddress` is `null` if this is a native token transfer.
- * `.transferAmount` is the amount of tokens being transferred.
- * `.calldata` is the calldata for the transfer function. `0x` if this is a native token transfer.
+ * @returns Returns a `CreateProposalActionData` object.
  */
-export const prepareRefillPaymasterActionData = ({
+export const prepareRefillPaymasterAction = ({
   refillAmount,
   paymasterAddress,
   nativeToken,
+  entryPointAddress,
 }: RefillPaymasterData): CreateProposalActionData => {
   const formattedNativeTokenValue = formatCoin(
     refillAmount,
@@ -33,21 +32,20 @@ export const prepareRefillPaymasterActionData = ({
     false,
   );
 
-  const targetAddress = paymasterAddress;
-
+  const targetAddress = entryPointAddress;
   const ethValue = {
     bigintValue: refillAmount,
     value: formattedNativeTokenValue,
   };
 
   const action: CreateProposalActionData = {
-    actionType: ProposalActionType.NATIVE_TRANSFER,
+    actionType: ProposalActionType.REFILL_PAYMASTER,
     transactions: [
       {
         targetAddress,
         ethValue,
-        functionName: '',
-        parameters: [],
+        functionName: 'depositTo',
+        parameters: [{ signature: 'address', value: paymasterAddress }],
       },
     ],
   };

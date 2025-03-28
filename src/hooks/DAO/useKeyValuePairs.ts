@@ -1,12 +1,61 @@
 import { abis } from '@fractal-framework/fractal-contracts';
 import { hatIdToTreeId } from '@hatsprotocol/sdk-v1-core';
 import { useEffect } from 'react';
-import { Address, GetContractEventsReturnType, getContract } from 'viem';
+import { Address, GetContractEventsReturnType, PublicClient, getContract } from 'viem';
+import { DecentPaymasterFactoryV1Abi } from '../../assets/abi/DecentPaymasterFactoryV1Abi';
 import { logError } from '../../helpers/errorLogging';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
 import { useDaoInfoStore } from '../../store/daoInfo/useDaoInfoStore';
 import { useRolesStore } from '../../store/roles/useRolesStore';
+import { getPaymasterSalt } from '../../utils/gaslessVoting';
 import useNetworkPublicClient from '../useNetworkPublicClient';
+
+const getGaslessVotingDaoData = async (
+  events: GetContractEventsReturnType<typeof abis.KeyValuePairs>,
+  chainId: number,
+  paymasterFactoryAddress: Address,
+  safeAddress: Address,
+  publicClient: PublicClient,
+) => {
+  // get most recent event where `gaslessVotingEnabled` was set
+  const gaslessVotingEnabledEvent = events
+    .filter(event => event.args.key && event.args.key === 'gaslessVotingEnabled')
+    .pop();
+
+  if (!gaslessVotingEnabledEvent) {
+    return { gaslessVotingEnabled: false, paymasterAddress: undefined };
+  }
+
+  try {
+    const gaslessVotingEnabled = gaslessVotingEnabledEvent.args.value === 'true';
+
+    let paymasterAddress: Address | undefined;
+
+    const paymasterFactoryContract = getContract({
+      abi: DecentPaymasterFactoryV1Abi,
+      address: paymasterFactoryAddress,
+      client: publicClient,
+    });
+
+    paymasterAddress = (await paymasterFactoryContract.read.getAddress([
+      safeAddress,
+      getPaymasterSalt(safeAddress, chainId),
+    ])) as Address;
+
+    return { gaslessVotingEnabled, paymasterAddress };
+  } catch (e) {
+    logError({
+      message: "KVPairs 'gaslessVotingEnabledEvent' value not a boolean",
+      network: chainId,
+      args: {
+        transactionHash: gaslessVotingEnabledEvent.transactionHash,
+        logIndex: gaslessVotingEnabledEvent.logIndex,
+      },
+    });
+
+    return { gaslessVotingEnabled: false, paymasterAddress: undefined };
+  }
+};
 
 const getHatsTreeId = (
   events: GetContractEventsReturnType<typeof abis.KeyValuePairs> | undefined,
@@ -95,10 +144,10 @@ const useKeyValuePairs = () => {
   const node = useDaoInfoStore();
   const {
     chain,
-    contracts: { keyValuePairs, sablierV2LockupLinear },
+    contracts: { keyValuePairs, sablierV2LockupLinear, paymasterFactory },
   } = useNetworkConfigStore();
   const { setHatKeyValuePairData, resetHatsStore } = useRolesStore();
-
+  const { setGaslessVotingDaoData } = useDaoInfoStore();
   const safeAddress = node.safe?.address;
 
   useEffect(() => {
@@ -118,6 +167,16 @@ const useKeyValuePairs = () => {
           contextChainId: chain.id,
           hatsTreeId: getHatsTreeId(safeEvents, chain.id),
           streamIdsToHatIds: getHatIdsToStreamIds(safeEvents, sablierV2LockupLinear, chain.id),
+        });
+
+        getGaslessVotingDaoData(
+          safeEvents,
+          chain.id,
+          paymasterFactory,
+          safeAddress,
+          publicClient,
+        ).then(gaslessVotingDaoData => {
+          setGaslessVotingDaoData(gaslessVotingDaoData);
         });
       })
       .catch(error => {
@@ -145,6 +204,12 @@ const useKeyValuePairs = () => {
               streamIdsToHatIds: getHatIdsToStreamIds(logs, sablierV2LockupLinear, chain.id),
             });
           }, 20_000);
+
+          getGaslessVotingDaoData(logs, chain.id, paymasterFactory, safeAddress, publicClient).then(
+            gaslessVotingDaoData => {
+              setGaslessVotingDaoData(gaslessVotingDaoData);
+            },
+          );
         },
       },
     );
@@ -158,6 +223,8 @@ const useKeyValuePairs = () => {
     publicClient,
     setHatKeyValuePairData,
     sablierV2LockupLinear,
+    setGaslessVotingDaoData,
+    paymasterFactory,
   ]);
 
   useEffect(() => {

@@ -1,20 +1,24 @@
-import { Box, Text, HStack, Switch, Flex, Icon, Button, Image } from '@chakra-ui/react';
-import { WarningCircle } from '@phosphor-icons/react';
+import { Box, Text, HStack, Switch, Flex, Button, Image } from '@chakra-ui/react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { useBalance } from 'wagmi';
+import { getContract } from 'viem';
+import { EntryPoint07Abi } from '../../assets/abi/EntryPoint07Abi';
 import { DETAILS_BOX_SHADOW } from '../../constants/common';
 import { DAO_ROUTES } from '../../constants/routes';
 import useFeatureFlag from '../../helpers/environmentFeatureFlags';
 import { isFeatureEnabled } from '../../helpers/featureFlags';
+import useNetworkPublicClient from '../../hooks/useNetworkPublicClient';
+import { useNetworkWalletClient } from '../../hooks/useNetworkWalletClient';
+import { useCanUserCreateProposal } from '../../hooks/utils/useCanUserSubmitProposal';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
 import { useProposalActionsStore } from '../../store/actions/useProposalActionsStore';
 import { useDaoInfoStore } from '../../store/daoInfo/useDaoInfoStore';
 import { BigIntValuePair } from '../../types';
 import { formatCoin } from '../../utils';
-import { prepareRefillPaymasterActionData } from '../../utils/dao/prepareRefillPaymasterActionData';
+import { prepareRefillPaymasterAction } from '../../utils/dao/prepareRefillPaymasterActionData';
+import { RefillGasData } from '../ui/modals/GaslessVoting/RefillGasTankModal';
 import { ModalType } from '../ui/modals/ModalProvider';
-import { RefillGasData } from '../ui/modals/RefillGasTankModal';
 import { useDecentModal } from '../ui/modals/useDecentModal';
 import Divider from '../ui/utils/Divider';
 import { StarterPromoBanner } from './StarterPromoBanner';
@@ -30,6 +34,8 @@ function GaslessVotingToggleContent({
   isSettings,
 }: GaslessVotingToggleProps & { isSettings?: boolean }) {
   const { t } = useTranslation('gaslessVoting');
+
+  const { canUserCreateProposal } = useCanUserCreateProposal();
 
   return (
     <Box
@@ -59,6 +65,7 @@ function GaslessVotingToggleContent({
         </Flex>
         <Switch
           size="md"
+          isDisabled={isSettings && !canUserCreateProposal}
           isChecked={isEnabled}
           onChange={() => onToggle()}
           variant="secondary"
@@ -69,72 +76,81 @@ function GaslessVotingToggleContent({
 }
 
 export function GaslessVotingToggleDAOCreate(props: GaslessVotingToggleProps) {
-  const { t } = useTranslation('daoCreate');
-  const { chain, gaslessVotingSupported } = useNetworkConfigStore();
+  const { gaslessVotingSupported } = useNetworkConfigStore();
 
   const gaslessVotingEnabled = useFeatureFlag('flag_gasless_voting');
   if (!gaslessVotingEnabled) return null;
   if (!gaslessVotingSupported) return null;
 
   return (
-    <Box
-      borderRadius="0.75rem"
-      bg="neutral-2"
-      p="1.5rem"
-      display="flex"
-      flexDirection="column"
-      alignItems="flex-start"
-      gap="1.5rem"
-      boxShadow={DETAILS_BOX_SHADOW}
-      mt={2}
+    <Flex
+      direction="column"
+      gap="0.5rem"
     >
-      <GaslessVotingToggleContent {...props} />
-
       <Box
-        p="1rem"
-        bg="neutral-3"
         borderRadius="0.75rem"
+        bg="neutral-2"
+        p="1.5rem"
+        display="flex"
+        flexDirection="column"
+        gap="1.5rem"
+        boxShadow={DETAILS_BOX_SHADOW}
+        mt={2}
       >
-        <Flex alignItems="center">
-          <Icon
-            as={WarningCircle}
-            color="lilac-0"
-            width="1.5rem"
-            height="1.5rem"
-          />
-          <Text
-            color="lilac-0"
-            marginLeft="1rem"
-          >
-            {t('gaslessVotingGettingStarted', {
-              symbol: chain.nativeCurrency.symbol,
-            })}
-          </Text>
-        </Flex>
+        <Box
+          borderRadius="0.5rem"
+          border="1px solid"
+          borderColor="neutral-3"
+          px="1.5rem"
+          py="1rem"
+          display="flex"
+          flexDirection="column"
+          alignItems="flex-start"
+          mt={2}
+        >
+          <GaslessVotingToggleContent {...props} />
+        </Box>
       </Box>
-    </Box>
+      <StarterPromoBanner />
+    </Flex>
   );
 }
 
-export function GaslessVotingToggleDAOSettings(
-  props: GaslessVotingToggleProps & {
-    onGasTankTopupAmountChange: (amount: BigIntValuePair) => void;
-  },
-) {
+export function GaslessVotingToggleDAOSettings(props: GaslessVotingToggleProps) {
   const { t } = useTranslation('gaslessVoting');
-  const { chain, gaslessVotingSupported, addressPrefix } = useNetworkConfigStore();
+  const {
+    gaslessVotingSupported,
+    addressPrefix,
+    contracts: { entryPointv07 },
+  } = useNetworkConfigStore();
 
   const navigate = useNavigate();
+  const publicClient = useNetworkPublicClient();
+  const nativeCurrency = publicClient.chain.nativeCurrency;
 
-  // @todo: Retrieve and use the paymaster address here for `gasTankAddress`. Replace safe.address with the paymaster address.
-  const { safe } = useDaoInfoStore();
-  const paymasterAddress = safe?.address;
+  const { safe, gaslessVotingEnabled, paymasterAddress } = useDaoInfoStore();
 
-  const { data: nativeTokenBalance } = useBalance({
-    address: safe?.address,
-  });
+  const { canUserCreateProposal } = useCanUserCreateProposal();
+
+  const [paymasterBalance, setPaymasterBalance] = useState<BigIntValuePair>();
+  useEffect(() => {
+    if (!paymasterAddress) return;
+    const entryPoint = getContract({
+      address: entryPointv07,
+      abi: EntryPoint07Abi,
+      client: publicClient,
+    });
+
+    entryPoint.read.balanceOf([paymasterAddress]).then(balance => {
+      setPaymasterBalance({
+        value: balance.toString(),
+        bigintValue: balance,
+      });
+    });
+  }, [entryPointv07, paymasterAddress, publicClient]);
 
   const { addAction } = useProposalActionsStore();
+  const { data: walletClient } = useNetworkWalletClient();
 
   const refillGas = useDecentModal(ModalType.REFILL_GAS, {
     onSubmit: async (refillGasData: RefillGasData) => {
@@ -142,32 +158,63 @@ export function GaslessVotingToggleDAOSettings(
         return;
       }
 
-      const action = prepareRefillPaymasterActionData({
+      if (refillGasData.isDirectDeposit) {
+        if (!walletClient) {
+          throw new Error('Wallet client not found');
+        }
+
+        const entryPoint = getContract({
+          address: entryPointv07,
+          abi: EntryPoint07Abi,
+          client: walletClient,
+        });
+
+        entryPoint.write.depositTo([paymasterAddress], {
+          value: refillGasData.transferAmount,
+        });
+        return;
+      }
+
+      const action = prepareRefillPaymasterAction({
         refillAmount: refillGasData.transferAmount,
         paymasterAddress,
         nonceInput: refillGasData.nonceInput,
-        nativeToken: {
-          decimals: nativeTokenBalance?.decimals ?? 18,
-          symbol: nativeTokenBalance?.symbol ?? 'Native Token',
-        },
+        nativeToken: nativeCurrency,
+        entryPointAddress: entryPointv07,
       });
+      const formattedRefillAmount = formatCoin(
+        refillGasData.transferAmount,
+        true,
+        nativeCurrency.decimals,
+        nativeCurrency.symbol,
+        false,
+      );
 
-      addAction({ ...action, content: <></> });
+      addAction({
+        ...action,
+        content: (
+          <Box>
+            <Text>
+              {t('refillPaymasterAction', {
+                amount: formattedRefillAmount,
+                symbol: nativeCurrency.symbol,
+              })}
+            </Text>
+          </Box>
+        ),
+      });
 
       navigate(DAO_ROUTES.proposalWithActionsNew.relative(addressPrefix, safe.address));
     },
     showNonceInput: true,
   });
 
-  const { data: balance } = useBalance({ address: paymasterAddress, chainId: chain.id });
-
   if (!isFeatureEnabled('flag_gasless_voting')) return null;
   if (!gaslessVotingSupported) return null;
 
-  const formattedNativeTokenBalance =
-    balance && formatCoin(balance.value, true, balance.decimals, balance.symbol, false);
-
-  const { isEnabled } = props;
+  const formattedPaymasterBalance =
+    paymasterBalance &&
+    formatCoin(paymasterBalance.value, true, nativeCurrency.decimals, nativeCurrency.symbol, false);
 
   return (
     <Box
@@ -186,27 +233,9 @@ export function GaslessVotingToggleDAOSettings(
         isSettings
       />
 
-      {!isEnabled && <StarterPromoBanner />}
+      {!gaslessVotingEnabled && <StarterPromoBanner />}
 
-      {/* {isEnabled && gasTankAddress && (
-        <Box
-          borderRadius="0.75rem"
-          border="1px solid"
-          borderColor="neutral-3"
-          p="1rem 0.5rem"
-          w="100%"
-        >
-          <EtherscanLink
-            type="address"
-            value={gasTankAddress}
-            isTextLink
-          >
-            <Text as="span">{gasTankAddress}</Text>
-          </EtherscanLink>
-        </Box>
-      )} */}
-
-      {isEnabled && (
+      {gaslessVotingEnabled && (
         <Flex justifyContent="space-between">
           <Flex
             direction="column"
@@ -215,6 +244,7 @@ export function GaslessVotingToggleDAOSettings(
             <Text
               textStyle="labels-small"
               color="neutral-7"
+              mb="0.25rem"
             >
               {t('paymasterBalance')}
             </Text>
@@ -223,34 +253,26 @@ export function GaslessVotingToggleDAOSettings(
               display="flex"
               alignItems="center"
             >
-              {formattedNativeTokenBalance}
+              {formattedPaymasterBalance}
               <Image
-                src={'/images/coin-icon-default.svg'} // @todo: Use the correct image for the token.
+                src={'/images/coin-icon-default.svg'} // @todo: (gv) Use the correct image for the token.
                 fallbackSrc={'/images/coin-icon-default.svg'}
-                alt={balance?.symbol}
+                alt={nativeCurrency.symbol}
                 w="1.25rem"
                 h="1.25rem"
                 ml="0.5rem"
                 mr="0.25rem"
               />
-              {balance?.symbol}
+              {nativeCurrency.symbol}
             </Text>
           </Flex>
 
           <Button
             variant="secondary"
             size="sm"
+            isDisabled={!canUserCreateProposal}
             onClick={() => {
-              console.log(
-                'addGas. Add this action to the proposal, to be submitted via propose changes button.',
-              );
               refillGas();
-
-              // @todo: Add UI to set the amount, then call onGasTankTopupAmountChange.
-              props.onGasTankTopupAmountChange({
-                value: '1',
-                bigintValue: 1n,
-              });
             }}
           >
             {t('addGas')}

@@ -234,7 +234,7 @@ export function RoleFormPaymentStream({ formIndex }: { formIndex: number }) {
               variant="tertiary"
               onClick={() => {
                 setFieldValue('roleEditing.roleEditingPaymentIndex', undefined);
-                // @todo: fix this doesn't work
+                // @todo: (cancel editing payment) fix this doesn't work
                 const paymentIndex = values.roleEditing?.roleEditingPaymentIndex;
                 if (paymentIndex !== undefined) {
                   setFieldValue(`roleEditing.payments.${paymentIndex}`, undefined);
