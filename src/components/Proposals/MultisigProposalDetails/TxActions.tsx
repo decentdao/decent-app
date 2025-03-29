@@ -27,7 +27,6 @@ import { ProposalCountdown } from '../../ui/proposal/ProposalCountdown';
 
 function VoterActions({
   proposal,
-  isActiveNonce,
   hasApproved,
   hasRejected,
   isButtonDisabled,
@@ -36,7 +35,6 @@ function VoterActions({
   isRejectedProposalPassThreshold,
 }: {
   proposal: MultisigProposal;
-  isActiveNonce: boolean;
   hasApproved: boolean;
   hasRejected: boolean;
   isButtonDisabled: boolean;
@@ -67,8 +65,8 @@ function VoterActions({
         <Box marginTop={4}>
           <DecentTooltip
             placement="top-start"
-            label={!isActiveNonce ? t('notActiveNonceTooltip') : t('signedAlready')}
-            isDisabled={isActiveNonce && !hasApproved}
+            label={t('signedAlready')}
+            isDisabled={!hasApproved}
           >
             <Button
               w="full"
@@ -84,8 +82,8 @@ function VoterActions({
         <Box marginTop={4}>
           <DecentTooltip
             placement="top-start"
-            label={!isActiveNonce ? t('notActiveNonceTooltip') : t('signedAlready')}
-            isDisabled={isActiveNonce && !hasRejected}
+            label={t('signedAlready')}
+            isDisabled={!hasRejected}
           >
             <Button
               w="full"
@@ -482,7 +480,6 @@ export function TxActions({ proposal }: { proposal: MultisigProposal }) {
     <>
       <VoterActions
         proposal={proposal}
-        isActiveNonce={isActiveNonce}
         hasApproved={hasApproved}
         hasRejected={hasRejected}
         isButtonDisabled={isApprovalDisabled}
