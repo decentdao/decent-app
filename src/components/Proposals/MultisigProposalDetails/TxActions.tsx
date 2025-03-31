@@ -27,7 +27,6 @@ import { ProposalCountdown } from '../../ui/proposal/ProposalCountdown';
 
 function VoterActions({
   proposal,
-  isActiveNonce,
   hasApproved,
   hasRejected,
   isButtonDisabled,
@@ -36,7 +35,6 @@ function VoterActions({
   isRejectedProposalPassThreshold,
 }: {
   proposal: MultisigProposal;
-  isActiveNonce: boolean;
   hasApproved: boolean;
   hasRejected: boolean;
   isButtonDisabled: boolean;
@@ -67,8 +65,8 @@ function VoterActions({
         <Box marginTop={4}>
           <DecentTooltip
             placement="top-start"
-            label={!isActiveNonce ? t('notActiveNonceTooltip') : t('signedAlready')}
-            isDisabled={isActiveNonce && !hasApproved}
+            label={t('signedAlready')}
+            isDisabled={!hasApproved}
           >
             <Button
               w="full"
@@ -84,8 +82,8 @@ function VoterActions({
         <Box marginTop={4}>
           <DecentTooltip
             placement="top-start"
-            label={!isActiveNonce ? t('notActiveNonceTooltip') : t('signedAlready')}
-            isDisabled={isActiveNonce && !hasRejected}
+            label={t('signedAlready')}
+            isDisabled={!hasRejected}
           >
             <Button
               w="full"
@@ -452,11 +450,9 @@ export function TxActions({ proposal }: { proposal: MultisigProposal }) {
   };
 
   const isActiveNonce = !!safe && proposal.transaction.nonce === safe.nonce;
-  const isButtonDisabled =
-    isSubmitDisabled ||
-    isPending ||
-    proposal.state === FractalProposalState.TIMELOCKED ||
-    !isActiveNonce;
+  const isApprovalDisabled =
+    isSubmitDisabled || isPending || proposal.state === FractalProposalState.TIMELOCKED;
+  const isExecutionDisabled = isApprovalDisabled || !isActiveNonce;
 
   if (isRejectedProposalPassThreshold) {
     return (
@@ -470,7 +466,7 @@ export function TxActions({ proposal }: { proposal: MultisigProposal }) {
           <Button
             w="full"
             rightIcon={buttonProps[FractalProposalState.EXECUTABLE].icon}
-            isDisabled={isButtonDisabled}
+            isDisabled={isExecutionDisabled}
             onClick={executeRejectedProposal}
           >
             {t(buttonProps[FractalProposalState.EXECUTABLE].text, { ns: 'common' })}
@@ -484,10 +480,9 @@ export function TxActions({ proposal }: { proposal: MultisigProposal }) {
     <>
       <VoterActions
         proposal={proposal}
-        isActiveNonce={isActiveNonce}
         hasApproved={hasApproved}
         hasRejected={hasRejected}
-        isButtonDisabled={isButtonDisabled}
+        isButtonDisabled={isApprovalDisabled}
         isRejectedProposalPassThreshold={isRejectedProposalPassThreshold}
         onApproval={() => signTransaction(proposal.transaction, proposal.proposalId)}
         onReject={() =>
@@ -528,7 +523,7 @@ export function TxActions({ proposal }: { proposal: MultisigProposal }) {
               <Button
                 w="full"
                 rightIcon={buttonProps[proposal.state!].icon}
-                isDisabled={isButtonDisabled}
+                isDisabled={isExecutionDisabled}
                 onClick={buttonProps[proposal.state!].action}
               >
                 {t(buttonProps[proposal.state!].text, { ns: 'common' })}
