@@ -105,8 +105,8 @@ export default function useCreateRoles() {
       erc6551Registry,
       keyValuePairs,
       sablierV2LockupLinear,
-      linearVotingErc20V1HatsWhitelistingMasterCopy,
-      linearVotingErc721V1HatsWhitelistingMasterCopy,
+      linearVotingErc20HatsWhitelistingV1MasterCopy,
+      linearVotingErc721HatsWhitelistingV1MasterCopy,
       zodiacModuleProxyFactory,
       decentAutonomousAdminV1MasterCopy,
       hatsElectionsEligibilityMasterCopy,
@@ -188,7 +188,7 @@ export default function useCreateRoles() {
             abi: ZodiacModuleProxyFactoryAbi,
             functionName: 'deployModule',
             args: [
-              linearVotingErc20V1HatsWhitelistingMasterCopy,
+              linearVotingErc20HatsWhitelistingV1MasterCopy,
               encodedStrategySetupData,
               strategyNonce,
             ],
@@ -197,7 +197,7 @@ export default function useCreateRoles() {
         };
 
         const strategyByteCodeLinear = generateContractByteCodeLinear(
-          linearVotingErc20V1HatsWhitelistingMasterCopy,
+          linearVotingErc20HatsWhitelistingV1MasterCopy,
         );
 
         const strategySalt = keccak256(
@@ -281,7 +281,7 @@ export default function useCreateRoles() {
             abi: ZodiacModuleProxyFactoryAbi,
             functionName: 'deployModule',
             args: [
-              linearVotingErc721V1HatsWhitelistingMasterCopy,
+              linearVotingErc721HatsWhitelistingV1MasterCopy,
               encodedStrategySetupData,
               strategyNonce,
             ],
@@ -290,7 +290,7 @@ export default function useCreateRoles() {
         };
 
         const strategyByteCodeLinear = generateContractByteCodeLinear(
-          linearVotingErc721V1HatsWhitelistingMasterCopy,
+          linearVotingErc721HatsWhitelistingV1MasterCopy,
         );
 
         const strategySalt = keccak256(
@@ -326,8 +326,8 @@ export default function useCreateRoles() {
       safeAddress,
       governance,
       hatsProtocol,
-      linearVotingErc20V1HatsWhitelistingMasterCopy,
-      linearVotingErc721V1HatsWhitelistingMasterCopy,
+      linearVotingErc20HatsWhitelistingV1MasterCopy,
+      linearVotingErc721HatsWhitelistingV1MasterCopy,
       moduleAzoriusAddress,
       publicClient,
       zodiacModuleProxyFactory,

@@ -1,21 +1,18 @@
 import { Box, Button, Flex, HStack, Select, Text } from '@chakra-ui/react';
 import { CaretDown } from '@phosphor-icons/react';
 import { Field, FieldAttributes, FieldProps, Form, Formik } from 'formik';
-import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { getAddress } from 'viem';
 import * as Yup from 'yup';
 import { useValidationAddress } from '../../../hooks/schemas/common/useValidationAddress';
 import { useNetworkEnsAddressAsync } from '../../../hooks/useNetworkEnsAddress';
 import { useFractal } from '../../../providers/App/AppProvider';
-import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
 import { BigIntValuePair, TokenBalance } from '../../../types';
 import { SendAssetsData } from '../../../utils/dao/prepareSendAssetsActionData';
 import { formatCoinFromAsset, formatCoinUnits } from '../../../utils/numberFormats';
 import { validateENSName } from '../../../utils/url';
 import NoDataCard from '../containers/NoDataCard';
 import { BigIntInput } from '../forms/BigIntInput';
-import { CustomNonceInput } from '../forms/CustomNonceInput';
 import { AddressInput } from '../forms/EthAddressInput';
 import LabelWrapper from '../forms/LabelWrapper';
 import Divider from '../utils/Divider';
@@ -28,25 +25,21 @@ interface SendAssetsFormValues {
 
 export function SendAssetsModal({
   submitButtonText,
-  showNonceInput,
   close,
   sendAssetsData,
 }: {
   submitButtonText: string;
-  showNonceInput: boolean;
   close: () => void;
   sendAssetsData: (sendAssetData: SendAssetsData) => void;
 }) {
   const {
     treasury: { assetsFungible },
   } = useFractal();
-  const { safe } = useDaoInfoStore();
 
   const { getEnsAddress } = useNetworkEnsAddressAsync();
   const { t } = useTranslation(['modals', 'common']);
 
   const fungibleAssetsWithBalance = assetsFungible.filter(asset => parseFloat(asset.balance) > 0);
-  const [nonceInput, setNonceInput] = useState<number | undefined>(safe!.nextNonce);
 
   const { addressValidationTest, isValidating } = useValidationAddress();
 
@@ -82,7 +75,6 @@ export function SendAssetsModal({
       transferAmount: values.inputAmount?.bigintValue || 0n,
       asset: values.selectedAsset,
       recipientAddress: getAddress(destAddress),
-      nonceInput,
     });
 
     close();
@@ -228,13 +220,6 @@ export function SendAssetsModal({
               </Field>
 
               <Divider my="1.5rem" />
-
-              {showNonceInput && (
-                <CustomNonceInput
-                  nonce={nonceInput}
-                  onChange={nonce => setNonceInput(nonce ? parseInt(nonce) : undefined)}
-                />
-              )}
 
               <Button
                 marginTop="2rem"

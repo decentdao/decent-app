@@ -38,7 +38,7 @@ export interface AzoriusProposal extends GovernanceActivity {
 export interface MultisigProposal extends GovernanceActivity {
   confirmations?: SafeMultisigConfirmationResponse[];
   signersThreshold?: number;
-  multisigRejectedProposalNumber?: string;
+  isMultisigRejectionTx?: boolean;
   nonce?: number;
 }
 
