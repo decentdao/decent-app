@@ -204,7 +204,6 @@ export function GaslessVotingToggleDAOSettings(props: GaslessVotingToggleProps) 
 
       navigate(DAO_ROUTES.proposalWithActionsNew.relative(addressPrefix, safe.address));
     },
-    showNonceInput: true,
   });
 
   if (!isFeatureEnabled('flag_gasless_voting')) return null;

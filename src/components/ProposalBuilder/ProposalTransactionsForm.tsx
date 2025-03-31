@@ -1,7 +1,7 @@
 import { Box } from '@chakra-ui/react';
 import { Plus } from '@phosphor-icons/react';
 import { FormikProps } from 'formik';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { CreateProposalForm } from '../../types/proposalBuilder';
 import { scrollToBottom } from '../../utils/ui';
@@ -12,7 +12,6 @@ import { DEFAULT_PROPOSAL_TRANSACTION } from './constants';
 
 interface ProposalTransactionsFormProps extends FormikProps<CreateProposalForm> {
   pendingTransaction: boolean;
-  safeNonce?: number;
   isProposalMode: boolean;
 }
 
@@ -21,16 +20,9 @@ export default function ProposalTransactionsForm(props: ProposalTransactionsForm
     pendingTransaction,
     setFieldValue,
     values: { transactions },
-    safeNonce,
   } = props;
   const { t } = useTranslation(['proposalTemplate', 'proposal', 'common']);
   const [expandedIndecies, setExpandedIndecies] = useState<number[]>([0]);
-
-  useEffect(() => {
-    if (safeNonce) {
-      setFieldValue('nonce', safeNonce);
-    }
-  }, [safeNonce, setFieldValue]);
 
   return (
     <Box py="1.5rem">
