@@ -38,9 +38,9 @@ export type NetworkConfig = {
     linearVotingErc721HatsWhitelistingMasterCopy: Address;
 
     linearVotingErc20V1MasterCopy: Address;
-    linearVotingErc20V1HatsWhitelistingMasterCopy: Address;
+    linearVotingErc20HatsWhitelistingV1MasterCopy: Address;
     linearVotingErc721V1MasterCopy: Address;
-    linearVotingErc721V1HatsWhitelistingMasterCopy: Address;
+    linearVotingErc721HatsWhitelistingV1MasterCopy: Address;
 
     moduleAzoriusMasterCopy: Address;
     moduleFractalMasterCopy: Address;

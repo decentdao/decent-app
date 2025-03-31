@@ -70,9 +70,9 @@ export const mainnetConfig: NetworkConfig = {
     ),
 
     linearVotingErc20V1MasterCopy: '0x0000000000000000000000000000000000000000',
-    linearVotingErc20V1HatsWhitelistingMasterCopy: '0x0000000000000000000000000000000000000000',
+    linearVotingErc20HatsWhitelistingV1MasterCopy: '0x0000000000000000000000000000000000000000',
     linearVotingErc721V1MasterCopy: '0x0000000000000000000000000000000000000000',
-    linearVotingErc721V1HatsWhitelistingMasterCopy: '0x0000000000000000000000000000000000000000',
+    linearVotingErc721HatsWhitelistingV1MasterCopy: '0x0000000000000000000000000000000000000000',
 
     moduleAzoriusMasterCopy: getAddress(a.Azorius),
     moduleFractalMasterCopy: getAddress(a.FractalModule),
