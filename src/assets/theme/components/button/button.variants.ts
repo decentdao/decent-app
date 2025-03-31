@@ -74,10 +74,18 @@ const tertiary = defineStyle({
   _focus: {},
 });
 
+const dangerDisabled = {
+  borderColor: 'red--2',
+  color: 'red--1',
+};
+
 const danger = defineStyle({
   border: '1px solid',
   borderColor: 'red-1',
   color: 'red-1',
+  _disabled: {
+    ...dangerDisabled,
+  },
   _hover: {
     borderColor: 'red-0',
     color: 'red-0',

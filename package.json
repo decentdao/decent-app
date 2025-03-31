@@ -1,6 +1,6 @@
 {
   "name": "decent-interface",
-  "version": "0.10.0",
+  "version": "0.10.2",
   "private": true,
   "dependencies": {
     "@amplitude/analytics-browser": "^2.11.1",

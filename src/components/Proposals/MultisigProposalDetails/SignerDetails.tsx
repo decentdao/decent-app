@@ -3,6 +3,8 @@ import { format } from 'date-fns';
 import { useTranslation } from 'react-i18next';
 import { Address, getAddress } from 'viem';
 import { useAccount } from 'wagmi';
+import { findMostConfirmedMultisigRejectionProposal } from '../../../helpers/multisigProposal';
+import { useFractal } from '../../../providers/App/AppProvider';
 import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
 import { MultisigProposal } from '../../../types';
 import { DEFAULT_DATE_TIME_FORMAT } from '../../../utils/numberFormats';
@@ -14,13 +16,26 @@ import Divider from '../../ui/utils/Divider';
 function OwnerInfoRow({
   owner,
   proposal,
+  rejectProposal,
   isMe,
 }: {
   owner: Address;
   proposal: MultisigProposal;
+  rejectProposal: MultisigProposal | undefined;
   isMe: boolean;
 }) {
-  const ownerConfirmed = proposal.confirmations?.find(confirmInfo => confirmInfo.owner === owner);
+  const ownerApproved = proposal.confirmations?.find(c => c.owner === owner);
+  const ownerRejected = rejectProposal?.confirmations?.find(c => c.owner === owner);
+
+  const confirmations = [
+    ownerApproved && { type: 'approved', date: new Date(ownerApproved.submissionDate) },
+    ownerRejected && { type: 'rejected', date: new Date(ownerRejected.submissionDate) },
+  ].filter(Boolean) as { type: 'approved' | 'rejected'; date: Date }[];
+
+  const latestConfirmation = confirmations.reduce(
+    (prev, curr) => (curr.date > prev.date ? curr : prev),
+    confirmations[0],
+  );
 
   return (
     <>
@@ -31,18 +46,22 @@ function OwnerInfoRow({
         />
       </GridItem>
       <GridItem my="auto">
-        {ownerConfirmed && (
+        {latestConfirmation?.type === 'approved' && (
           <Badge
-            labelKey={'ownerApproved'}
+            labelKey="ownerApproved"
+            size="sm"
+          />
+        )}
+        {latestConfirmation?.type === 'rejected' && (
+          <Badge
+            labelKey="ownerRejected"
             size="sm"
           />
         )}
       </GridItem>
       <GridItem my="auto">
-        {ownerConfirmed && (
-          <Text color="neutral-7">
-            {format(new Date(ownerConfirmed.submissionDate), DEFAULT_DATE_TIME_FORMAT)}
-          </Text>
+        {latestConfirmation && (
+          <Text color="neutral-7">{format(latestConfirmation.date, DEFAULT_DATE_TIME_FORMAT)}</Text>
         )}
       </GridItem>
     </>
@@ -50,9 +69,19 @@ function OwnerInfoRow({
 }
 
 export function SignerDetails({ proposal }: { proposal: MultisigProposal }) {
+  const { t } = useTranslation('proposal');
   const user = useAccount();
   const { safe } = useDaoInfoStore();
-  const { t } = useTranslation('proposal');
+  const {
+    governance: { proposals },
+  } = useFractal();
+
+  const rejectionProposal = findMostConfirmedMultisigRejectionProposal(
+    safe?.address,
+    proposal.nonce,
+    proposals,
+  );
+
   if (!safe?.owners) {
     return null;
   }
@@ -83,6 +112,7 @@ export function SignerDetails({ proposal }: { proposal: MultisigProposal }) {
               key={owner}
               owner={getAddress(owner)}
               proposal={proposal}
+              rejectProposal={rejectionProposal}
               isMe={user.address === owner}
             />
           ))}

@@ -3,6 +3,7 @@ import { SafeMultisigTransactionListResponse } from '@safe-global/api-kit';
 import { useCallback } from 'react';
 import { Address, getAddress, getContract } from 'viem';
 import { isApproved, isRejected } from '../../helpers/activity';
+import { isMultisigRejectionProposal } from '../../helpers/multisigProposal';
 import { useFractal } from '../../providers/App/AppProvider';
 import { FractalProposal, FractalProposalState } from '../../types';
 import { parseDecodedData } from '../../utils';
@@ -113,23 +114,18 @@ export const useSafeTransactions = () => {
       }
 
       const activities = await Promise.all(
-        transactions.results.map(async (transaction, _, transactionArr) => {
+        transactions.results.map(async transaction => {
           const eventDate = new Date(transaction.submissionDate);
 
           const eventSafeTxHash = transaction.safeTxHash;
 
           const eventNonce = transaction.nonce;
 
-          // @note identifies transactions with same nonce. this can be used to identify rejected transactions
-          const noncePair = transactionArr.find(tx => {
-            return tx.nonce === eventNonce && tx.safeTxHash !== transaction.safeTxHash;
-          });
-
-          const isMultisigRejectionTx: boolean | undefined =
-            !transaction.data &&
-            transaction.to === transaction.safe &&
-            noncePair &&
-            BigInt(transaction.value) === 0n;
+          const isMultisigRejectionTx: boolean | undefined = isMultisigRejectionProposal(
+            transaction.safe,
+            transaction.nonce,
+            transaction,
+          );
 
           const confirmations = transaction.confirmations ?? [];
 
@@ -154,8 +150,7 @@ export const useSafeTransactions = () => {
             eventDate,
             confirmations,
             signersThreshold: transaction.confirmationsRequired,
-            multisigRejectedProposalNumber:
-              isMultisigRejectionTx && !!noncePair ? noncePair.safeTxHash : undefined,
+            isMultisigRejectionTx,
             proposalId: eventSafeTxHash,
             targets,
             // @todo typing for `multiSigTransaction.transactionHash` is misleading, as ` multiSigTransaction.transactionHash` is not always defined (if ever). Need to tighten up the typing here.
