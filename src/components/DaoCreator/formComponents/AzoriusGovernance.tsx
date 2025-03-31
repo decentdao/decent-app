@@ -11,7 +11,7 @@ import {
 import { WarningCircle } from '@phosphor-icons/react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { isFeatureEnabled } from '../../../helpers/featureFlags';
+import useFeatureFlag from '../../../helpers/environmentFeatureFlags';
 import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
 import { FractalModuleType, ICreationStepProps, VotingStrategyType } from '../../../types';
 import { DEV_VOTING_PERIOD_MINUTES } from '../../../utils/dev/devModeConstants';
@@ -81,9 +81,9 @@ export function AzoriusGovernance(props: ICreationStepProps) {
   useStepRedirect({ values });
 
   // Use local flag only for flag_dev
-  const isDevMode = isFeatureEnabled('flag_dev');
+  const devFeatureEnabled = useFeatureFlag('flag_dev');
   const devModeVotingPeriodDays = DEV_VOTING_PERIOD_MINUTES / 24 / 60;
-  const defaultVotingPeriodDays = isDevMode ? devModeVotingPeriodDays : 7;
+  const defaultVotingPeriodDays = devFeatureEnabled ? devModeVotingPeriodDays : 7;
 
   const [votingPeriodDays, setVotingPeriodDays] = useState(defaultVotingPeriodDays);
   const [timelockPeriodDays, setTimelockPeriodDays] = useState(1);

@@ -1,3 +1,4 @@
+/* eslint-disable import/no-extraneous-dependencies */
 import { FirebaseApp, initializeApp } from 'firebase/app';
 import { getRemoteConfig } from 'firebase/remote-config';
 import { logError } from '../helpers/errorLogging';
@@ -23,4 +24,4 @@ if (remoteConfig && firebaseTimeIntervals) {
   };
 }
 
-export { firebaseApp, remoteConfig };
+export { remoteConfig };

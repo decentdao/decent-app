@@ -7,7 +7,6 @@ import { EntryPoint07Abi } from '../../assets/abi/EntryPoint07Abi';
 import { DETAILS_BOX_SHADOW } from '../../constants/common';
 import { DAO_ROUTES } from '../../constants/routes';
 import useFeatureFlag from '../../helpers/environmentFeatureFlags';
-import { isFeatureEnabled } from '../../helpers/featureFlags';
 import useNetworkPublicClient from '../../hooks/useNetworkPublicClient';
 import { useNetworkWalletClient } from '../../hooks/useNetworkWalletClient';
 import { useCanUserCreateProposal } from '../../hooks/utils/useCanUserSubmitProposal';
@@ -78,8 +77,8 @@ function GaslessVotingToggleContent({
 export function GaslessVotingToggleDAOCreate(props: GaslessVotingToggleProps) {
   const { gaslessVotingSupported } = useNetworkConfigStore();
 
-  const gaslessVotingEnabled = useFeatureFlag('flag_gasless_voting');
-  if (!gaslessVotingEnabled) return null;
+  const gaslessFeatureEnabled = useFeatureFlag('flag_gasless_voting');
+  if (!gaslessFeatureEnabled) return null;
   if (!gaslessVotingSupported) return null;
 
   return (
@@ -207,7 +206,8 @@ export function GaslessVotingToggleDAOSettings(props: GaslessVotingToggleProps) 
     },
   });
 
-  if (!isFeatureEnabled('flag_gasless_voting')) return null;
+  const gaslessFeatureEnabled = useFeatureFlag('flag_gasless_voting');
+  if (!gaslessFeatureEnabled) return null;
   if (!gaslessVotingSupported) return null;
 
   const formattedPaymasterBalance =

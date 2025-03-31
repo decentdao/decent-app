@@ -1,3 +1,4 @@
+// eslint-disable-next-line import/no-extraneous-dependencies
 import { fetchAndActivate, getValue, Value } from 'firebase/remote-config';
 import { useState, useEffect } from 'react';
 import { remoteConfig } from '../insights/firebase';

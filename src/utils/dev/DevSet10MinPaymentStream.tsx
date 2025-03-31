@@ -1,13 +1,14 @@
 import { Button } from '@chakra-ui/react';
 import { useFormikContext } from 'formik';
-import { isFeatureEnabled } from '../../helpers/featureFlags';
+import useFeatureFlag from '../../helpers/environmentFeatureFlags';
 import { RoleFormValues } from '../../types/roles';
 import { DEV_STREAM_DURATION_MINUTES } from './devModeConstants';
 export function DevSet10MinPaymentStream({ formIndex }: { formIndex: number }) {
   const { values, setFieldValue } = useFormikContext<RoleFormValues>();
 
+  const devFeatureEnabled = useFeatureFlag('flag_dev');
   // Use local flag only for flag_dev
-  return isFeatureEnabled('flag_dev') ? (
+  return devFeatureEnabled ? (
     <Button
       size="sm"
       onClick={() => {

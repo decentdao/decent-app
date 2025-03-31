@@ -99,7 +99,7 @@ export function SafeProposalTemplatesPage() {
     submitButtonText: t('submitProposal', { ns: 'modals' }),
   });
 
-  const iframeEnabled = useFeatureFlag('flag_iframe_template');
+  const iframeFeatureEnabled = useFeatureFlag('flag_iframe_template');
   const EXAMPLE_TEMPLATES = useMemo(() => {
     if (!safeAddress) return [];
     const templates = [
@@ -123,7 +123,7 @@ export function SafeProposalTemplatesPage() {
         onProposalTemplateClick: openSendAssetsModal,
       },
     ];
-    if (iframeEnabled) {
+    if (iframeFeatureEnabled) {
       templates.push({
         icon: AppStoreLogo,
         title: t('templateIframeTitle', { ns: 'proposalTemplate' }),
@@ -138,7 +138,7 @@ export function SafeProposalTemplatesPage() {
     t,
     openAirdropModal,
     openSendAssetsModal,
-    iframeEnabled,
+    iframeFeatureEnabled,
     navigate,
     addressPrefix,
     openIframeModal,
