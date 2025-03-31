@@ -23,7 +23,7 @@ const getGaslessVotingDaoData = async (
     .pop();
 
   if (!gaslessVotingEnabledEvent) {
-    return;
+    return { gaslessVotingEnabled: false, paymasterAddress: null };
   }
 
   try {
