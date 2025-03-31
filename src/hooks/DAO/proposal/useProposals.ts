@@ -1,6 +1,6 @@
 import { useCallback, useMemo } from 'react';
 import { useFractal } from '../../../providers/App/AppProvider';
-import { FractalProposalState, SortBy } from '../../../types';
+import { FractalProposalState, MultisigProposal, SortBy } from '../../../types';
 
 export function useProposalsSortedAndFiltered({
   sortBy,
@@ -24,7 +24,12 @@ export function useProposalsSortedAndFiltered({
 
   const sortedAndFilteredProposals = useMemo(() => {
     return [...(proposals || [])]
-      .filter(proposal => filters.includes(proposal.state!))
+      .filter(
+        proposal =>
+          filters.includes(proposal.state!) &&
+          // filters out "rejection" multisig proposals
+          !(proposal as MultisigProposal)?.isMultisigRejectionTx,
+      )
       .sort((a, b) => {
         const dataA = new Date(a.eventDate).getTime();
         const dataB = new Date(b.eventDate).getTime();

@@ -95,16 +95,13 @@ export type ModalPropsTypes = {
   [ModalType.SEND_ASSETS]: {
     onSubmit: (sendAssetData: SendAssetsData) => void;
     submitButtonText: string;
-    showNonceInput: boolean;
   };
   [ModalType.AIRDROP]: {
     onSubmit: (airdropData: AirdropData) => void;
     submitButtonText: string;
-    showNonceInput: boolean;
   };
   [ModalType.REFILL_GAS]: {
     onSubmit: (refillGasData: RefillGasData) => void;
-    showNonceInput: boolean;
   };
   [ModalType.GASLESS_VOTE_SUCCESS]: {};
   [ModalType.IFRAME]: {};
@@ -280,7 +277,6 @@ export function ModalProvider({ children }: { children: ReactNode }) {
         modalContent = (
           <SendAssetsModal
             submitButtonText={current.props.submitButtonText}
-            showNonceInput={current.props.showNonceInput}
             close={closeModal}
             sendAssetsData={(data: SendAssetsData) => {
               current.props.onSubmit(data);
@@ -292,7 +288,6 @@ export function ModalProvider({ children }: { children: ReactNode }) {
       case ModalType.REFILL_GAS:
         modalContent = (
           <RefillGasTankModal
-            showNonceInput={current.props.showNonceInput}
             close={closeModal}
             refillGasData={(data: RefillGasData) => {
               current.props.onSubmit(data);
@@ -310,7 +305,6 @@ export function ModalProvider({ children }: { children: ReactNode }) {
         modalContent = (
           <AirdropModal
             submitButtonText={current.props.submitButtonText}
-            showNonceInput={current.props.showNonceInput}
             close={closeModal}
             airdropData={(data: AirdropData) => {
               current.props.onSubmit(data);
