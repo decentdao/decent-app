@@ -123,8 +123,8 @@ export const useGovernanceContracts = () => {
           if (type != undefined && whitelist != undefined) {
             const strategy = {
               address: votingStrategy.strategyAddress,
-              type: FractalTokenType.erc20,
-              withWhitelist: false,
+              type: type,
+              withWhitelist: whitelist,
               version: votingStrategy.version,
             };
             strategies.push(strategy);

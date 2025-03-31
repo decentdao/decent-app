@@ -45,8 +45,8 @@ export const useInstallVersionedVotingStrategy = () => {
       hatsProtocol,
       linearVotingErc20V1MasterCopy,
       linearVotingErc721V1MasterCopy,
-      linearVotingErc20V1HatsWhitelistingMasterCopy,
-      linearVotingErc721V1HatsWhitelistingMasterCopy,
+      linearVotingErc20HatsWhitelistingV1MasterCopy,
+      linearVotingErc721HatsWhitelistingV1MasterCopy,
       zodiacModuleProxyFactory,
     },
   } = useNetworkConfigStore();
@@ -383,22 +383,22 @@ export const useInstallVersionedVotingStrategy = () => {
     (removal: FractalVotingStrategy): Address => {
       if (removal.type == FractalTokenType.erc20) {
         if (removal.withWhitelist) {
-          return linearVotingErc20V1HatsWhitelistingMasterCopy;
+          return linearVotingErc20HatsWhitelistingV1MasterCopy;
         } else {
           return linearVotingErc20V1MasterCopy;
         }
       } else {
         if (removal.withWhitelist) {
-          return linearVotingErc721V1HatsWhitelistingMasterCopy;
+          return linearVotingErc721HatsWhitelistingV1MasterCopy;
         } else {
           return linearVotingErc721V1MasterCopy;
         }
       }
     },
     [
-      linearVotingErc20V1HatsWhitelistingMasterCopy,
+      linearVotingErc20HatsWhitelistingV1MasterCopy,
       linearVotingErc20V1MasterCopy,
-      linearVotingErc721V1HatsWhitelistingMasterCopy,
+      linearVotingErc721HatsWhitelistingV1MasterCopy,
       linearVotingErc721V1MasterCopy,
     ],
   );

@@ -1,3 +1,4 @@
+/* eslint-disable import/no-extraneous-dependencies */
 import { FirebaseApp, initializeApp } from 'firebase/app';
 import { logError } from '../helpers/errorLogging';
 
