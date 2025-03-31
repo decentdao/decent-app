@@ -126,7 +126,6 @@ export function AddActions({
       >
         <SendAssetsModal
           submitButtonText={t('add', { ns: 'modals' })}
-          showNonceInput={false}
           close={onCloseAssets}
           sendAssetsData={addSendAssetsAction}
         />

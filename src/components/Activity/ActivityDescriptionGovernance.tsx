@@ -1,5 +1,4 @@
 import { Box, Flex, Text } from '@chakra-ui/react';
-import { useTranslation } from 'react-i18next';
 import { getAddress } from 'viem';
 import { useGetMetadata } from '../../hooks/DAO/proposal/useGetMetadata';
 import { useNetworkEnsAvatar } from '../../hooks/useNetworkEnsAvatar';
@@ -22,21 +21,6 @@ const formatId = (proposalId: string) => {
     return `#${proposalId}`;
   }
 };
-
-function OnChainRejectionMessage({ activity }: { activity: FractalProposal }) {
-  const { t } = useTranslation('dashboard');
-  const governanceActivity = activity as MultisigProposal;
-  if (!governanceActivity.multisigRejectedProposalNumber) {
-    return null;
-  }
-  return (
-    <Text>
-      {t('proposalOnChainRejection', {
-        proposalId: formatId(governanceActivity.multisigRejectedProposalNumber),
-      })}
-    </Text>
-  );
-}
 
 function ProposalAuthor({ activity }: { activity: FractalProposal }) {
   const snapshotProposal = activity as SnapshotProposal;
@@ -116,9 +100,6 @@ export function ProposalTitle({
         </Text>
         {showAuthor && <ProposalAuthor activity={activity} />}
       </Flex>
-      <Box mt={2}>
-        <OnChainRejectionMessage activity={activity} />
-      </Box>
     </Box>
   );
 }
