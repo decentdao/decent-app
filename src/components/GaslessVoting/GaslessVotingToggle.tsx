@@ -176,7 +176,6 @@ export function GaslessVotingToggleDAOSettings(props: GaslessVotingToggleProps) 
       const action = prepareRefillPaymasterAction({
         refillAmount: refillGasData.transferAmount,
         paymasterAddress,
-        nonceInput: refillGasData.nonceInput,
         nativeToken: nativeCurrency,
         entryPointAddress: entryPointv07,
       });

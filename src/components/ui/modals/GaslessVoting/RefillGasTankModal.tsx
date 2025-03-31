@@ -160,11 +160,9 @@ function RefillForm({ onSubmit, onClose, isDirectDeposit, showNonceInput }: Refi
 }
 
 export function RefillGasTankModal({
-  showNonceInput,
   close,
   refillGasData,
 }: {
-  showNonceInput: boolean;
   close: () => void;
   refillGasData: (refillData: RefillGasData) => void;
 }) {
@@ -204,7 +202,7 @@ export function RefillGasTankModal({
 
       <RefillForm
         isDirectDeposit={isDirectDeposit}
-        showNonceInput={showNonceInput}
+        showNonceInput={false}
         onSubmit={refillGasData}
         onClose={close}
       />
