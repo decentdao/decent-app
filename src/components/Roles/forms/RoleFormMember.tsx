@@ -289,6 +289,8 @@ function RoleFormMemberTermToggle() {
             <RoleMemberConfirmationPortal
               onConfirmClick={() => {
                 setSeenConfirmation(true);
+                setFieldValue('roleEditing.wearer', undefined);
+                setFieldValue('roleEditing.resolvedWearer', undefined);
                 setFieldValue('roleEditing.isTermed', true);
                 onClose();
               }}
