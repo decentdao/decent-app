@@ -121,7 +121,6 @@ export const baseConfig: NetworkConfig = {
     GovernanceType.AZORIUS_ERC20,
     GovernanceType.AZORIUS_ERC721,
   ],
-  gaslessVotingSupported: false,
 };
 
 export default baseConfig;

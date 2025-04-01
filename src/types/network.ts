@@ -76,7 +76,7 @@ export type NetworkConfig = {
     sablierV2LockupTranched: Address;
     sablierV2LockupLinear: Address;
     disperse: Address;
-    entryPointv07: Address;
+    entryPointv07?: Address; // only set on networks for which we support account abstraction functionality
     paymasterFactory: Address;
   };
   staking: {
@@ -87,5 +87,4 @@ export type NetworkConfig = {
     };
   };
   createOptions: GovernanceType[];
-  gaslessVotingSupported: boolean;
 };
