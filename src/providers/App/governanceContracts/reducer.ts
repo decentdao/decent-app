@@ -10,6 +10,7 @@ export const initialGovernanceContractsState: FractalGovernanceContracts = {
   votesTokenAddress: undefined,
   lockReleaseAddress: undefined,
   isLoaded: false,
+  strategies: [],
 };
 
 export const governanceContractsReducer = (

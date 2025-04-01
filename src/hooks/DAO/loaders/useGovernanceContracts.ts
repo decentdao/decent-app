@@ -5,10 +5,13 @@ import LockReleaseAbi from '../../../assets/abi/LockRelease';
 import { useFractal } from '../../../providers/App/AppProvider';
 import { GovernanceContractAction } from '../../../providers/App/governanceContracts/action';
 import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
-import { DecentModule } from '../../../types';
+import { DecentModule, FractalTokenType, FractalVotingStrategy } from '../../../types';
 import { getAzoriusModuleFromModules } from '../../../utils';
 import useNetworkPublicClient from '../../useNetworkPublicClient';
-import { useAddressContractType } from '../../utils/useAddressContractType';
+import {
+  ContractTypeWithVersion,
+  useAddressContractType,
+} from '../../utils/useAddressContractType';
 import useVotingStrategyAddress from '../../utils/useVotingStrategiesAddresses';
 
 export const useGovernanceContracts = () => {
@@ -32,15 +35,17 @@ export const useGovernanceContracts = () => {
       if (!azoriusModule || !votingStrategies) {
         action.dispatch({
           type: GovernanceContractAction.SET_GOVERNANCE_CONTRACT_ADDRESSES,
-          payload: {},
+          payload: {
+            linearVotingErc20Address: undefined,
+            linearVotingErc721Address: undefined,
+            linearVotingErc20WithHatsWhitelistingAddress: undefined,
+            linearVotingErc721WithHatsWhitelistingAddress: undefined,
+            strategies: [],
+          },
         });
         return;
       }
 
-      let linearVotingErc20Address: Address | undefined;
-      let linearVotingErc721Address: Address | undefined;
-      let linearVotingErc20WithHatsWhitelistingAddress: Address | undefined;
-      let linearVotingErc721WithHatsWhitelistingAddress: Address | undefined;
       let votesTokenAddress: Address | undefined;
       let lockReleaseAddress: Address | undefined;
 
@@ -80,45 +85,81 @@ export const useGovernanceContracts = () => {
         }
       };
 
+      let strategies: FractalVotingStrategy[] = [];
+
+      const tokenType = (votingStrategy: ContractTypeWithVersion): FractalTokenType | undefined => {
+        if (
+          votingStrategy.isLinearVotingErc20 ||
+          votingStrategy.isLinearVotingErc20WithHatsProposalCreation
+        ) {
+          return FractalTokenType.erc20;
+        } else if (
+          votingStrategy.isLinearVotingErc721 ||
+          votingStrategy.isLinearVotingErc721WithHatsProposalCreation
+        ) {
+          return FractalTokenType.erc721;
+        } else {
+          return undefined;
+        }
+      };
+
+      const hasWhitelist = (votingStrategy: ContractTypeWithVersion): boolean | undefined => {
+        if (
+          votingStrategy.isLinearVotingErc20WithHatsProposalCreation ||
+          votingStrategy.isLinearVotingErc721WithHatsProposalCreation
+        ) {
+          return true;
+        } else if (votingStrategy.isLinearVotingErc20 || votingStrategy.isLinearVotingErc721) {
+          return false;
+        } else {
+          return undefined;
+        }
+      };
+
       await Promise.all(
         votingStrategies.map(async votingStrategy => {
-          const {
-            strategyAddress,
-            isLinearVotingErc20,
-            isLinearVotingErc721,
-            isLinearVotingErc20WithHatsProposalCreation,
-            isLinearVotingErc721WithHatsProposalCreation,
-          } = votingStrategy;
-          if (isLinearVotingErc20) {
-            linearVotingErc20Address = strategyAddress;
-            await setGovTokenAddress(strategyAddress);
-          } else if (isLinearVotingErc721) {
-            linearVotingErc721Address = strategyAddress;
-          } else if (isLinearVotingErc20WithHatsProposalCreation) {
-            linearVotingErc20WithHatsWhitelistingAddress = strategyAddress;
-            await setGovTokenAddress(strategyAddress);
-          } else if (isLinearVotingErc721WithHatsProposalCreation) {
-            linearVotingErc721WithHatsWhitelistingAddress = strategyAddress;
+          const type = tokenType(votingStrategy);
+          const whitelist = hasWhitelist(votingStrategy);
+          if (type != undefined && whitelist != undefined) {
+            const strategy = {
+              address: votingStrategy.strategyAddress,
+              type: type,
+              withWhitelist: whitelist,
+              version: votingStrategy.version,
+            };
+            strategies.push(strategy);
+          }
+          if (type == FractalTokenType.erc20) {
+            await setGovTokenAddress(votingStrategy.strategyAddress);
           }
         }),
       );
 
-      if (
-        linearVotingErc20Address ||
-        linearVotingErc20WithHatsWhitelistingAddress ||
-        linearVotingErc721Address ||
-        linearVotingErc721WithHatsWhitelistingAddress
-      ) {
+      if (strategies.length > 0) {
+        let linearVotingErc20Address = strategies.find(strategy => {
+          return strategy.type == FractalTokenType.erc20 && strategy.withWhitelist == false;
+        })?.address;
+        let linearVotingErc20WithHatsWhitelistingAddress = strategies.find(strategy => {
+          return strategy.type == FractalTokenType.erc20 && strategy.withWhitelist == true;
+        })?.address;
+        let linearVotingErc721Address = strategies.find(strategy => {
+          return strategy.type == FractalTokenType.erc721 && strategy.withWhitelist == false;
+        })?.address;
+        let linearVotingErc721WithHatsWhitelistingAddress = strategies.find(strategy => {
+          return strategy.type == FractalTokenType.erc721 && strategy.withWhitelist == true;
+        })?.address;
+
         action.dispatch({
           type: GovernanceContractAction.SET_GOVERNANCE_CONTRACT_ADDRESSES,
           payload: {
             linearVotingErc20Address,
-            linearVotingErc20WithHatsWhitelistingAddress,
             linearVotingErc721Address,
+            linearVotingErc20WithHatsWhitelistingAddress,
             linearVotingErc721WithHatsWhitelistingAddress,
             votesTokenAddress,
             lockReleaseAddress,
             moduleAzoriusAddress: azoriusModule.moduleAddress,
+            strategies: strategies,
           },
         });
       }
