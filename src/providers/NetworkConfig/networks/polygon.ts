@@ -5,7 +5,7 @@ import {
   getProxyFactoryDeployment,
   getSafeL2SingletonDeployment,
 } from '@safe-global/safe-deployments';
-import { getAddress } from 'viem';
+import { getAddress, zeroAddress } from 'viem';
 import { polygon } from 'wagmi/chains';
 import { GovernanceType } from '../../../types';
 import { NetworkConfig } from '../../../types/network';
@@ -59,6 +59,7 @@ export const polygonConfig: NetworkConfig = {
     ),
 
     zodiacModuleProxyFactory: '0x000000000000aDdB49795b0f9bA5BC298cDda236',
+    proxyFactory: zeroAddress,
 
     linearVotingErc20MasterCopy: getAddress(a.LinearERC20Voting),
     linearVotingErc20HatsWhitelistingMasterCopy: getAddress(
@@ -69,10 +70,10 @@ export const polygonConfig: NetworkConfig = {
       a.LinearERC721VotingWithHatsProposalCreation,
     ),
 
-    linearVotingErc20V1MasterCopy: '0x0000000000000000000000000000000000000000',
-    linearVotingErc20HatsWhitelistingV1MasterCopy: '0x0000000000000000000000000000000000000000',
-    linearVotingErc721V1MasterCopy: '0x0000000000000000000000000000000000000000',
-    linearVotingErc721HatsWhitelistingV1MasterCopy: '0x0000000000000000000000000000000000000000',
+    linearVotingErc20V1MasterCopy: zeroAddress,
+    linearVotingErc20HatsWhitelistingV1MasterCopy: zeroAddress,
+    linearVotingErc721V1MasterCopy: zeroAddress,
+    linearVotingErc721HatsWhitelistingV1MasterCopy: zeroAddress,
 
     moduleAzoriusMasterCopy: getAddress(a.Azorius),
     moduleFractalMasterCopy: getAddress(a.FractalModule),
@@ -90,6 +91,8 @@ export const polygonConfig: NetworkConfig = {
 
     decentAutonomousAdminV1MasterCopy: getAddress(a.DecentAutonomousAdminV1),
 
+    decentPaymasterV1MasterCopy: zeroAddress,
+
     keyValuePairs: getAddress(a.KeyValuePairs),
 
     decentHatsCreationModule: getAddress(a.DecentHatsCreationModule),
@@ -105,8 +108,8 @@ export const polygonConfig: NetworkConfig = {
     sablierV2LockupTranched: '0xBF67f0A1E847564D0eFAD475782236D3Fa7e9Ec2',
     sablierV2LockupLinear: '0x8D4dDc187a73017a5d7Cef733841f55115B13762',
     disperse: '0xD152f549545093347A162Dce210e7293f1452150',
-    entryPointv07: '0x0000000000000000000000000000000000000000',
-    paymasterFactory: '0x0000000000000000000000000000000000000000',
+    entryPointv07: zeroAddress,
+    paymasterFactory: zeroAddress,
   },
   staking: {},
   moralis: {
