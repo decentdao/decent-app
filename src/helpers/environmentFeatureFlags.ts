@@ -1,4 +1,8 @@
-import { IFeatureFlags, FeatureFlagKeys, FeatureFlagKey } from './featureFlags';
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { fetchAndActivate, getValue, Value } from 'firebase/remote-config';
+import { useState, useEffect } from 'react';
+import { remoteConfig } from '../insights/firebase';
+import { IFeatureFlags, FeatureFlagKeys, FeatureFlagKey, FeatureFlags } from './featureFlags';
 
 export class EnvironmentFeatureFlags implements IFeatureFlags {
   urlParams: { [key: string]: string | null } = {};
@@ -55,3 +59,40 @@ export class EnvironmentFeatureFlags implements IFeatureFlags {
     return false;
   }
 }
+
+interface RemoteConfigData {
+  [key: string]: Value | undefined;
+}
+
+const useFeatureFlag = (key: FeatureFlagKey) => {
+  const [remoteConfigData, setRemoteConfigData] = useState<RemoteConfigData>({});
+
+  useEffect(() => {
+    const fetchConfig = async () => {
+      if (remoteConfig) {
+        try {
+          // Firebase uses browser cache, and uses the remoteConfig settings to refresh
+          await fetchAndActivate(remoteConfig);
+          const value = getValue(remoteConfig, key);
+          remoteConfigData[key] = value;
+          setRemoteConfigData(remoteConfigData);
+        } catch (error) {
+          console.error('Failed to fetch Remote Config', error);
+        }
+      }
+    };
+
+    fetchConfig();
+  }, [key, remoteConfigData]);
+
+  // Get from local first, either the URL params, or .env settings
+  let value = FeatureFlags.instance?.isFeatureEnabled(key);
+  if (value != true) {
+    const remoteValue = remoteConfigData[key];
+    value = remoteValue?.asString()?.toLowerCase() == 'on' || remoteValue?.asBoolean() == true;
+  }
+
+  return value;
+};
+
+export default useFeatureFlag;
