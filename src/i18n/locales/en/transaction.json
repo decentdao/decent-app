@@ -8,6 +8,8 @@
   "pendingExecute": "Executing transaction",
   "failedExecute": "Execution failed",
   "successExecute": "Execution successful",
+  "pendingRejectionExecution": "Rejecting transaction",
+  "successRejectionExecution": "Rejection Executed.",
   "errorTransactionUnknown": "An unknown error occurred and the transaction did not succeed. Please try again later.",
   "pendingDeploySafe": "Deploying your Safe",
   "failedDeploySafe": "Deployment failed",

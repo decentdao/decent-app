@@ -6,7 +6,7 @@ import { toast } from 'sonner';
 import { getContract } from 'viem';
 import { EntryPoint07Abi } from '../../../assets/abi/EntryPoint07Abi';
 import { TOOLTIP_MAXW } from '../../../constants/common';
-import { isFeatureEnabled } from '../../../helpers/featureFlags';
+import useFeatureFlag from '../../../helpers/environmentFeatureFlags';
 import useSnapshotProposal from '../../../hooks/DAO/loaders/snapshot/useSnapshotProposal';
 import useCastSnapshotVote from '../../../hooks/DAO/proposal/useCastSnapshotVote';
 import useCastVote from '../../../hooks/DAO/proposal/useCastVote';
@@ -85,14 +85,20 @@ export function CastVote({ proposal }: { proposal: FractalProposal }) {
 
   // Set a reasonable minimum (slightly higher than the required amount)
   const minimumPaymasterBalance = 60000000000000000n; // 0.06 ETH in wei
+  const gaslessFeatureEnabled = useFeatureFlag('flag_gasless_voting');
   const canVoteForFree = useMemo(() => {
     return (
-      isFeatureEnabled('flag_gasless_voting') &&
+      gaslessFeatureEnabled &&
       gaslessVotingEnabled &&
       paymasterBalance?.bigintValue !== undefined &&
       paymasterBalance.bigintValue > minimumPaymasterBalance
     );
-  }, [gaslessVotingEnabled, minimumPaymasterBalance, paymasterBalance?.bigintValue]);
+  }, [
+    gaslessFeatureEnabled,
+    gaslessVotingEnabled,
+    minimumPaymasterBalance,
+    paymasterBalance?.bigintValue,
+  ]);
 
   // If user is lucky enough - he could create a proposal and proceed to vote on it
   // even before the block, in which proposal was created, was mined.

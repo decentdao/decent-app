@@ -1,19 +1,16 @@
 import { Box, Button, Flex, HStack, IconButton, Select, Text } from '@chakra-ui/react';
 import { CaretDown, MinusCircle, Plus } from '@phosphor-icons/react';
 import { Field, FieldAttributes, FieldProps, Form, Formik } from 'formik';
-import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Address, getAddress, isAddress } from 'viem';
 import { usePublicClient } from 'wagmi';
 import * as Yup from 'yup';
 import { useFractal } from '../../../../providers/App/AppProvider';
-import { useDaoInfoStore } from '../../../../store/daoInfo/useDaoInfoStore';
 import { BigIntValuePair, TokenBalance } from '../../../../types';
 import { formatCoinFromAsset } from '../../../../utils';
 import { validateENSName } from '../../../../utils/url';
 import NoDataCard from '../../containers/NoDataCard';
 import { BigIntInput } from '../../forms/BigIntInput';
-import { CustomNonceInput } from '../../forms/CustomNonceInput';
 import { AddressInput } from '../../forms/EthAddressInput';
 import LabelWrapper from '../../forms/LabelWrapper';
 import Divider from '../../utils/Divider';
@@ -33,30 +30,25 @@ export interface AirdropData {
     amount: bigint;
   }[];
   asset: TokenBalance;
-  nonceInput: number | undefined; // this is only releveant when the caller action results in a proposal
 }
 
 export function AirdropModal({
   submitButtonText,
-  showNonceInput,
   close,
   airdropData,
 }: {
   submitButtonText: string;
-  showNonceInput: boolean;
   close: () => void;
   airdropData: (airdropData: AirdropData) => void;
 }) {
   const {
     treasury: { assetsFungible },
   } = useFractal();
-  const { safe } = useDaoInfoStore();
 
   const publicClient = usePublicClient();
   const { t } = useTranslation(['modals', 'common']);
 
   const fungibleAssetsWithBalance = assetsFungible.filter(asset => parseFloat(asset.balance) > 0);
-  const [nonceInput, setNonceInput] = useState<number | undefined>(safe!.nextNonce);
 
   const airdropValidationSchema = Yup.object().shape({
     selectedAsset: Yup.object()
@@ -103,7 +95,6 @@ export function AirdropModal({
         }),
       ),
       asset: values.selectedAsset,
-      nonceInput,
     });
 
     close();
@@ -366,13 +357,6 @@ export function AirdropModal({
               </Box>
 
               <Divider my="1.5rem" />
-
-              {showNonceInput && (
-                <CustomNonceInput
-                  nonce={nonceInput}
-                  onChange={nonce => setNonceInput(nonce ? parseInt(nonce) : undefined)}
-                />
-              )}
 
               <Button
                 marginTop="2rem"

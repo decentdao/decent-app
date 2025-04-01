@@ -6,7 +6,7 @@ import { getContract } from 'viem';
 import { EntryPoint07Abi } from '../../assets/abi/EntryPoint07Abi';
 import { DETAILS_BOX_SHADOW } from '../../constants/common';
 import { DAO_ROUTES } from '../../constants/routes';
-import { isFeatureEnabled } from '../../helpers/featureFlags';
+import useFeatureFlag from '../../helpers/environmentFeatureFlags';
 import useNetworkPublicClient from '../../hooks/useNetworkPublicClient';
 import { useNetworkWalletClient } from '../../hooks/useNetworkWalletClient';
 import { useCanUserCreateProposal } from '../../hooks/utils/useCanUserSubmitProposal';
@@ -75,7 +75,8 @@ function GaslessVotingToggleContent({
 }
 
 export function GaslessVotingToggleDAOCreate(props: GaslessVotingToggleProps) {
-  if (!isFeatureEnabled('flag_gasless_voting')) return null;
+  const gaslessFeatureEnabled = useFeatureFlag('flag_gasless_voting');
+  if (!gaslessFeatureEnabled) return null;
 
   return (
     <Flex
@@ -170,7 +171,6 @@ export function GaslessVotingToggleDAOSettings(props: GaslessVotingToggleProps) 
       const action = prepareRefillPaymasterAction({
         refillAmount: refillGasData.transferAmount,
         paymasterAddress,
-        nonceInput: refillGasData.nonceInput,
         nativeToken: nativeCurrency,
         entryPointAddress: entryPointv07,
       });
@@ -198,10 +198,10 @@ export function GaslessVotingToggleDAOSettings(props: GaslessVotingToggleProps) 
 
       navigate(DAO_ROUTES.proposalWithActionsNew.relative(addressPrefix, safe.address));
     },
-    showNonceInput: true,
   });
 
-  if (!isFeatureEnabled('flag_gasless_voting')) return null;
+  const gaslessFeatureEnabled = useFeatureFlag('flag_gasless_voting');
+  if (!gaslessFeatureEnabled) return null;
 
   const formattedPaymasterBalance =
     paymasterBalance &&

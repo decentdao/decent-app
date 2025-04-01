@@ -117,6 +117,76 @@ export default function useSubmitProposal() {
     [action],
   );
 
+  const submitRejectionMultisigProposal = useCallback(
+    async ({
+      pendingToastMessage,
+      successToastMessage,
+      failedToastMessage,
+      nonce,
+      successCallback,
+      safeAddress,
+    }: Omit<ISubmitProposal, 'proposalData'>) => {
+      if (!walletClient || !safeAddress) {
+        throw new Error('Wallet client and Safe address is not available');
+      }
+
+      if (nonce === undefined) {
+        throw new Error('Nonce is not available');
+      }
+
+      const toastId = toast.loading(pendingToastMessage, {
+        duration: Infinity,
+      });
+
+      setPendingCreateTx(true);
+      try {
+        const safeTransaction = await buildSafeAPIPost(safeAddress, walletClient, chain.id, {
+          to: safeAddress,
+          value: 0n,
+          data: '0x',
+          operation: 0,
+          nonce,
+        });
+        await safeAPI.proposeTransaction(safeTransaction);
+
+        const txHash = safeTransaction.safeTxHash;
+        pendingProposalAdd(txHash);
+
+        await loadDAOProposals();
+
+        if (successCallback) {
+          successCallback(addressPrefix, safeAddress);
+        }
+        toast.success(successToastMessage, { id: toastId });
+      } catch (e: any) {
+        // @dev we do not want to log user denied transaction
+        if (
+          // viem error
+          (e as ContractFunctionExecutionError)?.shortMessage === 'User rejected the request.' ||
+          // metamask code error
+          (e as ProviderRpcError)?.code === 4001
+        ) {
+          toast.dismiss(toastId);
+          toast.info(t('errorUserDeniedTransaction', { ns: 'transaction', id: toastId }));
+          return;
+        }
+
+        toast.error(failedToastMessage, { id: toastId });
+
+        e.response?.data?.nonFieldErrors?.forEach((error: string) => {
+          if (error.includes('Tx with nonce') && error.includes('already executed')) {
+            toast.error(t('multisigNonceDuplicateErrorMessage'));
+          }
+        });
+        logError(e, 'Error during Multi-sig rejection proposal creation');
+      } finally {
+        setPendingCreateTx(false);
+        return;
+      }
+    },
+    [walletClient, chain.id, safeAPI, pendingProposalAdd, loadDAOProposals, addressPrefix, t],
+  );
+
   const submitMultisigProposal = useCallback(
     async ({
       pendingToastMessage,
@@ -211,9 +281,9 @@ export default function useSubmitProposal() {
         // @dev we do not want to log user denied transaction
         if (
           // viem error
-          (e as ContractFunctionExecutionError).shortMessage === 'User rejected the request.' ||
+          (e as ContractFunctionExecutionError)?.shortMessage === 'User rejected the request.' ||
           // metamask code error
-          (e as ProviderRpcError).code === 4001
+          (e as ProviderRpcError)?.code === 4001
         ) {
           toast.dismiss(toastId);
           toast.info(t('errorUserDeniedTransaction', { ns: 'transaction', id: toastId }));
@@ -459,5 +529,5 @@ export default function useSubmitProposal() {
     ],
   );
 
-  return { submitProposal, pendingCreateTx };
+  return { submitProposal, submitRejectionMultisigProposal, pendingCreateTx };
 }

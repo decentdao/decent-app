@@ -1,6 +1,6 @@
 {
   "name": "decent-interface",
-  "version": "0.9.1",
+  "version": "0.10.2",
   "private": true,
   "dependencies": {
     "@amplitude/analytics-browser": "^2.11.1",
@@ -32,9 +32,9 @@
     "date-fns": "^2.29.3",
     "date-fns-tz": "^2.0.1",
     "evm-proxy-detection": "^1.1.0",
+    "firebase": "^11.5.0",
     "formik": "^2.2.9",
     "framer-motion": "^6.5.1",
-    "graphql": "^16.10.0",
     "hono": "^4.6.16",
     "i18next": "^23.10.1",
     "i18next-browser-languagedetector": "^6.1.5",
@@ -95,12 +95,12 @@
     "@types/lodash.camelcase": "^4.3.9",
     "@types/lodash.debounce": "^4.0.9",
     "@types/lodash.groupby": "^4.6.9",
-    "@types/lodash.isequal": "^4.5.8",
     "@types/react": "^18.0.17",
     "@types/react-dom": "^18.0.6",
     "@typescript-eslint/eslint-plugin": "^7.0.0",
     "@typescript-eslint/parser": "^7.0.0",
     "@vitejs/plugin-react": "^4.2.1",
+    "@walletconnect/types": "^2.19.2",
     "eslint": "^8.22.0",
     "eslint-config-airbnb-typescript": "^18.0.0",
     "eslint-config-prettier": "^9.1.0",
@@ -110,7 +110,6 @@
     "jsdom": "^24.0.0",
     "prettier": "^3.3.3",
     "typescript": "^5.6.3",
-    "vitest": "^1.2.2",
-    "wrangler": "^3.102.0"
+    "vitest": "^1.2.2"
   }
 }

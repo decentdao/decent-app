@@ -20,7 +20,6 @@
   "freezeVotedButton": "Vote cast",
   "noVotesButton": "User has no votes",
   "tipFreeze": "{{amount}} required freeze votes",
-  "proposalOnChainRejection": "that rejects transaction {{proposalId}}",
   "proposalDescriptionCont": "that will",
   "alertTokenClaim": "You have {{amount}} tokens to claim.",
   "claim": "Claim"

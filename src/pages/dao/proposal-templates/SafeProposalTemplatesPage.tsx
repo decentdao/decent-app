@@ -15,7 +15,7 @@ import { useDecentModal } from '../../../components/ui/modals/useDecentModal';
 import PageHeader from '../../../components/ui/page/Header/PageHeader';
 import Divider from '../../../components/ui/utils/Divider';
 import { DAO_ROUTES } from '../../../constants/routes';
-import { isFeatureEnabled } from '../../../helpers/featureFlags';
+import useFeatureFlag from '../../../helpers/environmentFeatureFlags';
 import useIframeActionModal from '../../../hooks/DAO/useIframeActionModal';
 import useSendAssetsActionModal from '../../../hooks/DAO/useSendAssetsActionModal';
 import { useCanUserCreateProposal } from '../../../hooks/utils/useCanUserSubmitProposal';
@@ -97,9 +97,9 @@ export function SafeProposalTemplatesPage() {
   const openAirdropModal = useDecentModal(ModalType.AIRDROP, {
     onSubmit: handleAirdropSubmit,
     submitButtonText: t('submitProposal', { ns: 'modals' }),
-    showNonceInput: false,
   });
 
+  const iframeFeatureEnabled = useFeatureFlag('flag_iframe_template');
   const EXAMPLE_TEMPLATES = useMemo(() => {
     if (!safeAddress) return [];
     const templates = [
@@ -123,7 +123,7 @@ export function SafeProposalTemplatesPage() {
         onProposalTemplateClick: openSendAssetsModal,
       },
     ];
-    if (isFeatureEnabled('flag_iframe_template')) {
+    if (iframeFeatureEnabled) {
       templates.push({
         icon: AppStoreLogo,
         title: t('templateIframeTitle', { ns: 'proposalTemplate' }),
@@ -138,6 +138,7 @@ export function SafeProposalTemplatesPage() {
     t,
     openAirdropModal,
     openSendAssetsModal,
+    iframeFeatureEnabled,
     navigate,
     addressPrefix,
     openIframeModal,
