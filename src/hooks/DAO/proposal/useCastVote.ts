@@ -1,6 +1,6 @@
 import { abis } from '@fractal-framework/fractal-contracts';
 import { toLightSmartAccount } from 'permissionless/accounts';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { Address, getContract, http } from 'viem';
@@ -26,6 +26,7 @@ const useCastVote = (proposalId: string, strategy: Address) => {
 
   const [contractCall, castVotePending] = useTransaction();
   const [castGaslessVotePending, setCastGaslessVotePending] = useState(false);
+  const [gaslessVoteEstimateGas, setGaslessVoteEstimateGas] = useState(0n);
 
   const { remainingTokenIds, remainingTokenAddresses } = useUserERC721VotingTokens(
     null,
@@ -154,6 +155,51 @@ const useCastVote = (proposalId: string, strategy: Address) => {
   const publicClient = useNetworkPublicClient();
   const { rpcEndpoint } = useNetworkConfigStore();
 
+  useEffect(() => {
+    const estimateGaslessVoteGas = async () => {
+      if (!address || !paymasterAddress || !walletClient || !publicClient) {
+        throw new Error('Invalid state');
+      }
+
+      const smartWallet = await toLightSmartAccount({
+        client: publicClient,
+        owner: walletClient,
+        version: '2.0.0',
+      });
+
+      const bundlerClient = createBundlerClient({
+        account: smartWallet,
+        client: publicClient,
+        transport: http(rpcEndpoint),
+      });
+
+      const { maxFeePerGas, maxPriorityFeePerGas } = await publicClient.estimateFeesPerGas();
+
+      const castVoteCallData = prepareCastVoteData(0);
+
+      // Sign and send UserOperation to bundler
+      const { preVerificationGas, verificationGasLimit, callGasLimit } =
+        await bundlerClient.estimateUserOperationGas({
+          paymaster: paymasterAddress,
+          calls: [castVoteCallData],
+
+          // i don't really know why we need to do this, but we do
+          maxPriorityFeePerGas: maxPriorityFeePerGas * 100n,
+          maxFeePerGas: maxFeePerGas * 100n,
+        });
+
+      const block = await publicClient.getBlock();
+      const gasFee = maxPriorityFeePerGas + (block.baseFeePerGas || 0n);
+      const gasUsed = preVerificationGas + verificationGasLimit + callGasLimit;
+      const gasCost = gasFee * gasUsed;
+      console.debug('estimate!', { gasFee, gasUsed, gasCost });
+
+      setGaslessVoteEstimateGas(gasCost);
+    };
+
+    estimateGaslessVoteGas().catch(console.error);
+  }, [address, paymasterAddress, prepareCastVoteData, publicClient, rpcEndpoint, walletClient]);
+
   const castGaslessVote = useCallback(
     async ({
       selectedVoteChoice,
@@ -220,6 +266,7 @@ const useCastVote = (proposalId: string, strategy: Address) => {
     castGaslessVote,
     castVotePending,
     castGaslessVotePending,
+    gaslessVoteEstimateGas,
   };
 };
 

@@ -43,10 +43,13 @@ export function CastVote({ proposal }: { proposal: FractalProposal }) {
 
   const publicClient = useNetworkPublicClient();
   // @todo: (gv) Build better UX around castGaslessVotePending (and probably castVotePending)
-  const { castVote, castVotePending, castGaslessVote, castGaslessVotePending } = useCastVote(
-    proposal.proposalId,
-    azoriusProposal.votingStrategy,
-  );
+  const {
+    castVote,
+    castVotePending,
+    castGaslessVote,
+    castGaslessVotePending,
+    gaslessVoteEstimateGas,
+  } = useCastVote(proposal.proposalId, azoriusProposal.votingStrategy);
 
   const {
     castSnapshotVote,
@@ -84,7 +87,7 @@ export function CastVote({ proposal }: { proposal: FractalProposal }) {
   }, [entryPointv07, paymasterAddress, publicClient]);
 
   // Set a reasonable minimum (slightly higher than the required amount)
-  const minimumPaymasterBalance = 60000000000000000n; // 0.06 ETH in wei
+  const minimumPaymasterBalance = gaslessVoteEstimateGas; //60000000000000000n; // 0.06 ETH in wei
   const gaslessFeatureEnabled = useFeatureFlag('flag_gasless_voting');
   const canVoteForFree = useMemo(() => {
     return (
