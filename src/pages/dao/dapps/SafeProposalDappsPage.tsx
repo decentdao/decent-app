@@ -9,6 +9,7 @@ import PageHeader from '../../../components/ui/page/Header/PageHeader';
 import { useSupportedDapps } from '../../../hooks/DAO/loaders/useSupportedDapps';
 import { analyticsEvents } from '../../../insights/analyticsEvents';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
+import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
 
 export function SafeProposalDappsPage() {
   useEffect(() => {
@@ -17,8 +18,11 @@ export function SafeProposalDappsPage() {
 
   const { t } = useTranslation();
   const { chain } = useNetworkConfigStore();
-
+  const { safe } = useDaoInfoStore();
   const { dapps } = useSupportedDapps(chain.id);
+
+  const safeAddress = safe?.address;
+  const loading = !dapps || !safeAddress;
 
   return (
     <div>
@@ -32,11 +36,11 @@ export function SafeProposalDappsPage() {
         ]}
       ></PageHeader>
       <Flex
-        flexDirection={dapps && dapps.length > 0 ? 'row' : 'column'}
+        flexDirection={!loading && dapps.length > 0 ? 'row' : 'column'}
         flexWrap="wrap"
         gap="1rem"
       >
-        {!dapps ? (
+        {loading ? (
           <Box>
             <InfoBoxLoader />
           </Box>
@@ -49,6 +53,7 @@ export function SafeProposalDappsPage() {
               iconUrl={dapp.iconUrl}
               description={dapp.description}
               categories={dapp.tags}
+              safeAddress={safeAddress}
             />
           ))
         ) : (

@@ -1,13 +1,15 @@
-import { Methods, RPCPayload } from '@safe-global/safe-apps-sdk';
+import { getSDKVersion, Methods, RPCPayload } from '@safe-global/safe-apps-sdk';
 import { PropsWithChildren, useState, useRef, useCallback, useEffect } from 'react';
-import { Address, getAddress, Hash } from 'viem';
+import { Address, BlockTag, getAddress, Hash } from 'viem';
 import useNetworkPublicClient from '../../../hooks/useNetworkPublicClient';
+import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
 import { useAppCommunicator } from '../hooks/useAppCommunicator';
 import { InterfaceMessageIds, InterfaceMessageProps, RequestId, TransactionWithId } from '../types';
 import { SafeInjectContext } from './SafeInjectContext';
 
 interface SafeInjectProviderProps {
   defaultAddress?: string;
+  defaultAppUrl?: string;
   chainId?: number;
   /**
    * Callback function to handle transactions received from the Safe app.
@@ -22,13 +24,14 @@ interface SafeInjectProviderProps {
 export function SafeInjectProvider({
   children,
   defaultAddress,
+  defaultAppUrl,
   chainId = 1,
   onTransactionsReceived,
   onAppConnected,
 }: PropsWithChildren<SafeInjectProviderProps>) {
   const [address, setAddress] = useState<string | undefined>(defaultAddress);
-  const [appUrl, setAppUrl] = useState<string>();
-  const [connecting, setConnecting] = useState(false);
+  const [appUrl, setAppUrl] = useState<string | undefined>(defaultAppUrl);
+  const [connecting, setConnecting] = useState(true);
   const [connectedAppUrl, setConnectedAppUrl] = useState<string>('');
   const receivedConnection = useCallback(
     (url: string) => {
@@ -49,6 +52,7 @@ export function SafeInjectProvider({
 
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const communicator = useAppCommunicator(iframeRef);
+  const { safe } = useDaoInfoStore();
 
   const sendMessageToIFrame = useCallback(
     function <T extends InterfaceMessageIds>(
@@ -58,7 +62,7 @@ export function SafeInjectProvider({
       const requestWithMessage = {
         ...message,
         requestId: requestId || Math.trunc(window.performance.now()),
-        version: '0.4.2',
+        version: getSDKVersion(),
       };
 
       if (iframeRef) {
@@ -82,10 +86,14 @@ export function SafeInjectProvider({
       const ret = {
         safeAddress: address,
         chainId,
-        owners: [],
+        owners: [] as Address[],
         threshold: 1,
         isReadOnly: false,
       };
+      if (safe) {
+        ret.owners = safe.owners;
+        ret.threshold = safe.threshold;
+      }
       return ret;
     });
 
@@ -118,7 +126,22 @@ export function SafeInjectProvider({
             response = await publicClient.getBlock({ blockHash: params.params[0] as Hash });
             break;
           case 'eth_getBlockByNumber':
-            response = await publicClient.getBlock({ blockNumber: params.params[0] as bigint });
+            const tagOrNumber = params.params[0] as BlockTag | bigint;
+            const includeTransactions = params.params[1] as boolean;
+            if (typeof tagOrNumber === 'string') {
+              // so it's a BlockTag type.
+              //   type BlockTag = 'latest' | 'earliest' | 'pending' | 'safe' | 'finalized'
+              response = await publicClient.getBlock({
+                blockTag: tagOrNumber,
+                includeTransactions,
+              });
+            } else {
+              // so it's a bigint type.
+              response = await publicClient.getBlock({
+                blockNumber: tagOrNumber,
+                includeTransactions,
+              });
+            }
             break;
           case 'eth_getStorageAt':
             response = await publicClient.getStorageAt({
@@ -166,7 +189,6 @@ export function SafeInjectProvider({
           return { ...rest };
         }
       });
-      console.debug('Iframe.sendTransactions', transactions);
       receivedTransactions(
         transactions.map(txn => {
           return {
@@ -175,9 +197,6 @@ export function SafeInjectProvider({
           };
         }),
       );
-      // tell the iframe that we received the transactions
-      //   and "confirmed" so it can continue
-      return true;
     });
   }, [
     communicator,
@@ -187,6 +206,7 @@ export function SafeInjectProvider({
     appUrl,
     receivedTransactions,
     receivedConnection,
+    safe,
   ]);
 
   return (
