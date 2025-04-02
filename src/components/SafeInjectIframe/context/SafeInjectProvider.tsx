@@ -129,11 +129,14 @@ export function SafeInjectProvider({
             const tagOrNumber = params.params[0] as BlockTag | bigint;
             const includeTransactions = params.params[1] as boolean;
             if (typeof tagOrNumber === 'string') {
+              // so it's a BlockTag type.
+              //   type BlockTag = 'latest' | 'earliest' | 'pending' | 'safe' | 'finalized'
               response = await publicClient.getBlock({
                 blockTag: tagOrNumber,
                 includeTransactions,
               });
             } else {
+              // so it's a bigint type.
               response = await publicClient.getBlock({
                 blockNumber: tagOrNumber,
                 includeTransactions,
