@@ -9,6 +9,7 @@ import { SafeCreatePage } from './pages/create/SafeCreatePage';
 import { SafeController } from './pages/dao/SafeController';
 import { SafeDashboardPage } from './pages/dao/SafeDashboardPage';
 import { SafeProposalDappsPage } from './pages/dao/dapps/SafeProposalDappsPage';
+import { SafeProposalDappDetailPage } from './pages/dao/dapps/details/SafeProposalDappDetailPage';
 import { SafeEditGovernancePage } from './pages/dao/edit/governance/SafeEditGovernancePage';
 import { SafeHierarchyPage } from './pages/dao/hierarchy/SafeHierarchyPage';
 import { SafeSubDaoCreatePage } from './pages/dao/new/SafeSubDaoCreatePage';
@@ -159,6 +160,10 @@ export const router = (addressPrefix: string, daoAddress: string | undefined) =>
                 {
                   index: true,
                   element: <SafeProposalDappsPage />,
+                },
+                {
+                  path: ':appUrl',
+                  element: <SafeProposalDappDetailPage />,
                 },
               ],
             },

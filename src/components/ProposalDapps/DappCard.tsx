@@ -1,5 +1,8 @@
 import { Avatar, Box, Flex, Tag, TagLabel, Text } from '@chakra-ui/react';
 import { Dot } from '@phosphor-icons/react';
+import { useNavigate } from 'react-router-dom';
+import { DAO_ROUTES } from '../../constants/routes';
+import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
 import ContentBox from '../ui/containers/ContentBox';
 import Markdown from '../ui/proposal/Markdown';
 
@@ -9,6 +12,7 @@ type DappCardProps = {
   iconUrl: string;
   description: string;
   categories: string[];
+  safeAddress: string;
 };
 
 export default function DappCard({
@@ -17,11 +21,15 @@ export default function DappCard({
   iconUrl,
   description,
   categories,
+  safeAddress,
 }: DappCardProps) {
+  const navigate = useNavigate();
+  const { addressPrefix } = useNetworkConfigStore();
+
   return (
     <ContentBox
       containerBoxProps={{ flex: '0 0 calc(33.333333% - 0.6666666rem)', my: '0' }}
-      onClick={() => console.log('DappCard clicked', appUrl)}
+      onClick={() => navigate(DAO_ROUTES.proposalDapp.relative(addressPrefix, safeAddress, appUrl))}
     >
       <Flex
         justifyContent="center"
