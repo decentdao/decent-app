@@ -27,7 +27,7 @@ import {
   VotingStrategyType,
 } from '../types';
 import { SENTINEL_MODULE } from '../utils/address';
-import { getPaymasterAddress, getPaymasterSaltHash } from '../utils/gaslessVoting';
+import { getPaymasterAddress, getPaymasterSaltNonce } from '../utils/gaslessVoting';
 import { BaseTxBuilder } from './BaseTxBuilder';
 import { generateContractByteCodeLinear, generateSalt } from './helpers/utils';
 
@@ -61,8 +61,6 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
   private azoriusNonce: bigint;
   private claimNonce: bigint;
 
-  private proxyFactoryAddress: Address;
-
   constructor(
     publicClient: PublicClient,
     daoData: AzoriusERC20DAO | AzoriusERC721DAO,
@@ -74,7 +72,6 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
     linearVotingErc20MasterCopy: Address,
     linearVotingErc721MasterCopy: Address,
     moduleAzoriusMasterCopy: Address,
-    proxyFactoryAddress: Address,
     paymasterMasterCopy: Address,
     entryPointAddress?: Address,
 
@@ -96,7 +93,6 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
     this.linearVotingErc20MasterCopy = linearVotingErc20MasterCopy;
     this.linearVotingErc721MasterCopy = linearVotingErc721MasterCopy;
     this.moduleAzoriusMasterCopy = moduleAzoriusMasterCopy;
-    this.proxyFactoryAddress = proxyFactoryAddress;
     this.paymasterMasterCopy = paymasterMasterCopy;
     this.entryPointAddress = entryPointAddress;
 
@@ -275,17 +271,22 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
     const paymasterInitData = encodeFunctionData({
       abi: abis.DecentPaymasterV1,
       functionName: 'initialize',
-      args: [this.safeContractAddress, this.entryPointAddress],
+      args: [
+        encodeAbiParameters(parseAbiParameters('address, address'), [
+          this.safeContractAddress,
+          this.entryPointAddress,
+        ]),
+      ],
     });
 
     return buildContractCall(
-      abis.ProxyFactory,
-      this.proxyFactoryAddress,
-      'deployProxy',
+      ZodiacModuleProxyFactoryAbi,
+      this.zodiacModuleProxyFactory,
+      'deployModule',
       [
         this.paymasterMasterCopy,
         paymasterInitData,
-        getPaymasterSaltHash(this.safeContractAddress, this.publicClient.chain!.id),
+        getPaymasterSaltNonce(this.safeContractAddress, this.publicClient.chain!.id),
       ],
       0,
       false,
@@ -299,10 +300,10 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
 
     const predictedPaymasterAddress = await getPaymasterAddress({
       safeAddress: this.safeContractAddress,
-      publicClient: this.publicClient,
-      proxyFactory: this.proxyFactoryAddress,
+      zodiacModuleProxyFactory: this.zodiacModuleProxyFactory,
       paymasterMastercopy: this.paymasterMasterCopy,
       entryPoint: this.entryPointAddress,
+      chainId: this.publicClient.chain!.id,
     });
 
     let voteAbiItem: AbiItem;

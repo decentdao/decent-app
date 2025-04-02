@@ -41,7 +41,6 @@ export class TxBuilderFactory extends BaseTxBuilder {
   private linearVotingErc20MasterCopy: Address;
   private linearVotingErc721MasterCopy: Address;
   private moduleAzoriusMasterCopy: Address;
-  private proxyFactoryAddress: Address;
   private paymasterMasterCopy: Address;
   private entryPointAddress: Address | undefined;
 
@@ -66,7 +65,6 @@ export class TxBuilderFactory extends BaseTxBuilder {
     linearVotingErc20MasterCopy: Address,
     linearVotingErc721MasterCopy: Address,
     moduleAzoriusMasterCopy: Address,
-    proxyFactoryAddress: Address,
     paymasterMasterCopy: Address,
     entryPointAddress?: Address,
     parentAddress?: Address,
@@ -92,7 +90,6 @@ export class TxBuilderFactory extends BaseTxBuilder {
     this.linearVotingErc20MasterCopy = linearVotingErc20MasterCopy;
     this.linearVotingErc721MasterCopy = linearVotingErc721MasterCopy;
     this.moduleAzoriusMasterCopy = moduleAzoriusMasterCopy;
-    this.proxyFactoryAddress = proxyFactoryAddress;
     this.paymasterMasterCopy = paymasterMasterCopy;
     this.entryPointAddress = entryPointAddress;
   }
@@ -204,7 +201,6 @@ export class TxBuilderFactory extends BaseTxBuilder {
       this.linearVotingErc20MasterCopy,
       this.linearVotingErc721MasterCopy,
       this.moduleAzoriusMasterCopy,
-      this.proxyFactoryAddress,
       this.paymasterMasterCopy,
       this.entryPointAddress,
       this.parentAddress,

@@ -3,7 +3,16 @@ import { abis } from '@fractal-framework/fractal-contracts';
 import { ChangeEventHandler, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { AbiItem, encodeFunctionData, getAbiItem, toFunctionSelector, zeroAddress } from 'viem';
+import {
+  AbiItem,
+  encodeAbiParameters,
+  encodeFunctionData,
+  getAbiItem,
+  parseAbiParameters,
+  toFunctionSelector,
+  zeroAddress,
+} from 'viem';
+import { ZodiacModuleProxyFactoryAbi } from '../../../../assets/abi/ZodiacModuleProxyFactoryAbi';
 import { GaslessVotingToggleDAOSettings } from '../../../../components/GaslessVoting/GaslessVotingToggle';
 import { SettingsContentBox } from '../../../../components/SafeSettings/SettingsContentBox';
 import { InputComponent } from '../../../../components/ui/forms/InputComponent';
@@ -12,7 +21,6 @@ import NestedPageHeader from '../../../../components/ui/page/Header/NestedPageHe
 import Divider from '../../../../components/ui/utils/Divider';
 import { DAO_ROUTES } from '../../../../constants/routes';
 import useSubmitProposal from '../../../../hooks/DAO/proposal/useSubmitProposal';
-import useNetworkPublicClient from '../../../../hooks/useNetworkPublicClient';
 import { useAddressContractType } from '../../../../hooks/utils/useAddressContractType';
 import { useCanUserCreateProposal } from '../../../../hooks/utils/useCanUserSubmitProposal';
 import { createAccountSubstring } from '../../../../hooks/utils/useGetAccountName';
@@ -21,7 +29,7 @@ import { useFractal } from '../../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../../providers/NetworkConfig/useNetworkConfigStore';
 import { useDaoInfoStore } from '../../../../store/daoInfo/useDaoInfoStore';
 import { GovernanceType, ProposalExecuteData } from '../../../../types';
-import { getPaymasterAddress, getPaymasterSaltHash } from '../../../../utils/gaslessVoting';
+import { getPaymasterAddress, getPaymasterSaltNonce } from '../../../../utils/gaslessVoting';
 import { validateENSName } from '../../../../utils/url';
 
 export function SafeGeneralSettingsPage() {
@@ -57,13 +65,16 @@ export function SafeGeneralSettingsPage() {
   const {
     addressPrefix,
     chain: { id: chainId },
-    contracts: { keyValuePairs, entryPointv07, proxyFactory, decentPaymasterV1MasterCopy },
+    contracts: {
+      keyValuePairs,
+      entryPointv07,
+      decentPaymasterV1MasterCopy,
+      zodiacModuleProxyFactory,
+    },
   } = useNetworkConfigStore();
 
   const isMultisigGovernance = votingStrategyType === GovernanceType.MULTISIG;
   const gaslessVotingSupported = !isMultisigGovernance && entryPointv07 !== undefined;
-
-  const publicClient = useNetworkPublicClient();
 
   const { isIVersionSupport } = useAddressContractType();
 
@@ -163,15 +174,20 @@ export function SafeGeneralSettingsPage() {
         const paymasterInitData = encodeFunctionData({
           abi: abis.DecentPaymasterV1,
           functionName: 'initialize',
-          args: [safeAddress, entryPointv07],
+          args: [
+            encodeAbiParameters(parseAbiParameters(['address', 'address']), [
+              safeAddress,
+              entryPointv07,
+            ]),
+          ],
         });
 
-        targets.push(proxyFactory);
+        targets.push(zodiacModuleProxyFactory);
         calldatas.push(
           encodeFunctionData({
-            abi: abis.ProxyFactory,
-            functionName: 'deployProxy',
-            args: [safeAddress, paymasterInitData, getPaymasterSaltHash(safeAddress, chainId)],
+            abi: ZodiacModuleProxyFactoryAbi,
+            functionName: 'deployModule',
+            args: [safeAddress, paymasterInitData, getPaymasterSaltNonce(safeAddress, chainId)],
           }),
         );
         values.push(0n);
@@ -202,10 +218,10 @@ export function SafeGeneralSettingsPage() {
 
         const predictedPaymasterAddress = await getPaymasterAddress({
           safeAddress,
-          publicClient,
-          proxyFactory,
+          zodiacModuleProxyFactory,
           paymasterMastercopy: decentPaymasterV1MasterCopy,
           entryPoint: entryPointv07,
+          chainId,
         });
 
         strategyAddresses.forEach(strategyAddress => {
