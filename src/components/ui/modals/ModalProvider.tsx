@@ -17,7 +17,6 @@ import { DelegateModal } from './DelegateModal';
 import ForkProposalTemplateModal from './ForkProposalTemplateModal';
 import { GaslessVoteSuccessModal } from './GaslessVoting/GaslessVoteSuccessModal';
 import { RefillGasData, RefillGasTankModal } from './GaslessVoting/RefillGasTankModal';
-import { IframeModal } from './IframeModal';
 import { ModalBase, ModalBaseSize } from './ModalBase';
 import PaymentCancelConfirmModal from './PaymentCancelConfirmModal';
 import { PaymentWithdrawModal } from './PaymentWithdrawModal';
@@ -45,7 +44,6 @@ export enum ModalType {
   AIRDROP,
   REFILL_GAS,
   GASLESS_VOTE_SUCCESS,
-  IFRAME,
   CONFIRM_TRANSACTION,
 }
 
@@ -104,7 +102,6 @@ export type ModalPropsTypes = {
     onSubmit: (refillGasData: RefillGasData) => void;
   };
   [ModalType.GASLESS_VOTE_SUCCESS]: {};
-  [ModalType.IFRAME]: {};
   [ModalType.CONFIRM_TRANSACTION]: {
     appName: string;
     transactionArray: CreateProposalTransaction[];
@@ -312,10 +309,6 @@ export function ModalProvider({ children }: { children: ReactNode }) {
             }}
           />
         );
-        break;
-      case ModalType.IFRAME:
-        modalContent = <IframeModal />;
-        modalSize = 'xl';
         break;
       case ModalType.CONFIRM_TRANSACTION:
         modalTitle = t('confirmTransactionTitle');
