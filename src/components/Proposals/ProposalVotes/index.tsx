@@ -80,21 +80,14 @@ function QuorumProgressBarSection({
 
   return (
     <QuorumProgressBar
-      helperText={t(
-        isERC20
-          ? 'proposalSupportERC20SummaryHelper'
-          : isERC721
-            ? 'proposalSupportERC721SummaryHelper'
-            : '',
-        {
-          quorum: strategyQuorum,
-          total: isERC721
-            ? totalERC721VotingWeight?.toLocaleString()
-            : votesToken
-              ? (votesToken.totalSupply / votesTokenDecimalsDenominator).toLocaleString()
-              : undefined,
-        },
-      )}
+      helperText={t('proposalQuorumHelperText', {
+        quorum: strategyQuorum,
+        total: isERC721
+          ? totalERC721VotingWeight?.toLocaleString()
+          : votesToken
+            ? (votesToken.totalSupply / votesTokenDecimalsDenominator).toLocaleString()
+            : undefined,
+      })}
       reachedQuorum={Number(reachedQuorum)}
       totalQuorum={totalQuorum}
       unit={isERC20 ? '%' : ''}
