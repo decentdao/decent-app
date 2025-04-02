@@ -17,7 +17,6 @@ import {
   toFunctionSelector,
 } from 'viem';
 import { DecentPaymasterFactoryV1Abi } from '../assets/abi/DecentPaymasterFactoryV1Abi';
-import { DecentPaymasterV1Abi } from '../assets/abi/DecentPaymasterV1Abi';
 import GnosisSafeL2Abi from '../assets/abi/GnosisSafeL2';
 import { ZodiacModuleProxyFactoryAbi } from '../assets/abi/ZodiacModuleProxyFactoryAbi';
 import { buildContractCall, getRandomBytes } from '../helpers';
@@ -305,12 +304,12 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
       throw new Error('Invalid voting strategy type');
     }
 
-    const voteSelector = toFunctionSelector(voteAbiItem as AbiFunction);
+    const voteSelector = toFunctionSelector(voteAbiItem);
 
     return buildContractCall(
-      DecentPaymasterV1Abi,
+      abis.DecentPaymasterV1,
       predictedPaymasterAddress,
-      'setStrategyFunctionApproval',
+      'whitelistFunctions',
       [this.predictedStrategyAddress, [voteSelector], [true]],
       0,
       false,

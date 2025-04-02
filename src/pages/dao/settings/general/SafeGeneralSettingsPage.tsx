@@ -5,7 +5,6 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { AbiItem, encodeFunctionData, getAbiItem, toFunctionSelector, zeroAddress } from 'viem';
 import { DecentPaymasterFactoryV1Abi } from '../../../../assets/abi/DecentPaymasterFactoryV1Abi';
-import { DecentPaymasterV1Abi } from '../../../../assets/abi/DecentPaymasterV1Abi';
 import { GaslessVotingToggleDAOSettings } from '../../../../components/GaslessVoting/GaslessVotingToggle';
 import { SettingsContentBox } from '../../../../components/SafeSettings/SettingsContentBox';
 import { InputComponent } from '../../../../components/ui/forms/InputComponent';
@@ -204,8 +203,8 @@ export function SafeGeneralSettingsPage() {
           targets.push(predictedPaymasterAddress);
           calldatas.push(
             encodeFunctionData({
-              abi: DecentPaymasterV1Abi,
-              functionName: 'setStrategyFunctionApproval',
+              abi: abis.DecentPaymasterV1,
+              functionName: 'whitelistFunctions',
               args: [strategyAddress, [voteSelector], [true]],
             }),
           );
