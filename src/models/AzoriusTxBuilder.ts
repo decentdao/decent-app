@@ -299,7 +299,6 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
 
     const predictedPaymasterAddress = await getPaymasterAddress({
       safeAddress: this.safeContractAddress,
-      chainId: this.publicClient.chain!.id,
       publicClient: this.publicClient,
       proxyFactory: this.proxyFactoryAddress,
       paymasterMastercopy: this.paymasterMasterCopy,

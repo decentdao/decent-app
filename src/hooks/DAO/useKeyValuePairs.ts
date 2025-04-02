@@ -11,7 +11,6 @@ import useNetworkPublicClient from '../useNetworkPublicClient';
 
 const getGaslessVotingDaoData = async (
   events: GetContractEventsReturnType<typeof abis.KeyValuePairs>,
-  chainId: number,
   safeAddress: Address,
   publicClient: PublicClient,
   proxyFactory: Address,
@@ -30,7 +29,6 @@ const getGaslessVotingDaoData = async (
   try {
     const paymasterAddress = await getPaymasterAddress({
       safeAddress,
-      chainId,
       publicClient,
       proxyFactory,
       paymasterMastercopy,
@@ -48,7 +46,7 @@ const getGaslessVotingDaoData = async (
   } catch (e) {
     logError({
       message: 'Error getting gasless voting dao data',
-      network: chainId,
+      network: publicClient.chain!.id,
       args: {
         transactionHash: gaslessVotingEnabledEvent.transactionHash,
         logIndex: gaslessVotingEnabledEvent.logIndex,
@@ -179,7 +177,6 @@ const useKeyValuePairs = () => {
 
         getGaslessVotingDaoData(
           safeEvents,
-          chain.id,
           safeAddress,
           publicClient,
           proxyFactory,
@@ -219,7 +216,6 @@ const useKeyValuePairs = () => {
 
           getGaslessVotingDaoData(
             logs,
-            chain.id,
             safeAddress,
             publicClient,
             proxyFactory,

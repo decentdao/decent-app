@@ -202,7 +202,6 @@ export function SafeGeneralSettingsPage() {
 
         const predictedPaymasterAddress = await getPaymasterAddress({
           safeAddress,
-          chainId,
           publicClient,
           proxyFactory,
           paymasterMastercopy: decentPaymasterV1MasterCopy,

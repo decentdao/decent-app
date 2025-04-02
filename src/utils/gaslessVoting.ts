@@ -15,14 +15,12 @@ export const getPaymasterSaltHash = (safeAddress: Address, chainId: number) => {
 
 export const getPaymasterAddress = async (args: {
   safeAddress: Address;
-  chainId: number;
   publicClient: PublicClient;
   proxyFactory: Address;
   paymasterMastercopy: Address;
   entryPoint: Address;
 }) => {
-  const { safeAddress, chainId, publicClient, proxyFactory, paymasterMastercopy, entryPoint } =
-    args;
+  const { safeAddress, publicClient, proxyFactory, paymasterMastercopy, entryPoint } = args;
 
   const proxyFactoryContract = getContract({
     address: proxyFactory,
@@ -39,7 +37,7 @@ export const getPaymasterAddress = async (args: {
   const paymasterAddress = await proxyFactoryContract.read.predictProxyAddress([
     paymasterMastercopy,
     paymasterInitData,
-    getPaymasterSaltHash(safeAddress, chainId),
+    getPaymasterSaltHash(safeAddress, publicClient.chain!.id),
     safeAddress,
   ]);
 
