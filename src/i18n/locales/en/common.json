@@ -104,6 +104,8 @@
   "wrongNetwork2": "Please switch to the correct network for your Safe.",
   "badQueryParam1": "The Safe address in the URL isn't formatted correctly.",
   "badQueryParam2": "Please confirm the address and try again.",
+  "badQueryParamAppUrl1": "The App url in the URL isn't formatted correctly.",
+  "badQueryParamAppUrl2": "Please confirm the App url and try again.",
   "showMore": "Show More",
   "showLess": "Show Less",
   "show": "Show",

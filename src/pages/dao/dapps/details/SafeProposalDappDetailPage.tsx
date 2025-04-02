@@ -22,6 +22,7 @@ import { analyticsEvents } from '../../../../insights/analyticsEvents';
 import { useNetworkConfigStore } from '../../../../providers/NetworkConfig/useNetworkConfigStore';
 import { useDaoInfoStore } from '../../../../store/daoInfo/useDaoInfoStore';
 import { CreateProposalTransaction } from '../../../../types';
+import LoadingProblem from '../../../LoadingProblem';
 
 function Iframe({ appUrl, enableWalletConnect }: { appUrl: string; enableWalletConnect: boolean }) {
   const { t } = useTranslation(['proposalDapps']);
@@ -113,7 +114,7 @@ export function SafeProposalDappDetailPage() {
   const appUrl = searchParams.get('appUrl') || '';
   const safeAddress = safe?.address;
   const dapp = dapps.find(d => d.url === appUrl);
-  const appName = dapp?.name || appUrl || 'Unknown dApp';
+  const appName = dapp?.name || appUrl;
 
   const [decodedTransactions, setDecodedTransactions] = useState<CreateProposalTransaction[]>([]);
   const openConfirmTransactionModal = useDecentModal(ModalType.CONFIRM_TRANSACTION, {
@@ -130,6 +131,9 @@ export function SafeProposalDappDetailPage() {
 
   if (!safeAddress) {
     return null;
+  }
+  if (!appUrl) {
+    return <LoadingProblem type="badQueryParamAppUrl" />;
   }
 
   return (
