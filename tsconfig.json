@@ -16,7 +16,8 @@
     "noEmit": true,
     "jsx": "react-jsx",
     "incremental": true,
-    "allowImportingTsExtensions": true
+    "allowImportingTsExtensions": true,
+    "noErrorTruncation": true
   },
   "include": ["src", "tests", "test", "app", "functions", "vite.config.mts"]
 }
