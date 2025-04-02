@@ -27,7 +27,7 @@ import {
   VotingStrategyType,
 } from '../types';
 import { SENTINEL_MODULE } from '../utils/address';
-import { getPaymasterAddress, getPaymasterSaltHex } from '../utils/gaslessVoting';
+import { getPaymasterAddress, getPaymasterSaltHash } from '../utils/gaslessVoting';
 import { BaseTxBuilder } from './BaseTxBuilder';
 import { generateContractByteCodeLinear, generateSalt } from './helpers/utils';
 
@@ -285,7 +285,7 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
       [
         this.paymasterMasterCopy,
         paymasterInitData,
-        getPaymasterSaltHex(this.safeContractAddress, this.publicClient.chain!.id),
+        getPaymasterSaltHash(this.safeContractAddress, this.publicClient.chain!.id),
       ],
       0,
       false,
@@ -293,10 +293,17 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
   }
 
   public async buildApproveStrategyOnPaymasterTx(): Promise<SafeTransaction> {
+    if (!this.entryPointAddress) {
+      throw new Error('Entry point address is not set');
+    }
+
     const predictedPaymasterAddress = await getPaymasterAddress({
-      address: this.safeContractAddress,
+      safeAddress: this.safeContractAddress,
       chainId: this.publicClient.chain!.id,
       publicClient: this.publicClient,
+      proxyFactory: this.proxyFactoryAddress,
+      paymasterMastercopy: this.paymasterMasterCopy,
+      entryPoint: this.entryPointAddress,
     });
 
     let voteAbiItem: AbiItem;

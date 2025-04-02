@@ -21,7 +21,7 @@ import { useFractal } from '../../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../../providers/NetworkConfig/useNetworkConfigStore';
 import { useDaoInfoStore } from '../../../../store/daoInfo/useDaoInfoStore';
 import { GovernanceType, ProposalExecuteData } from '../../../../types';
-import { getPaymasterAddress, getPaymasterSaltHex } from '../../../../utils/gaslessVoting';
+import { getPaymasterAddress, getPaymasterSaltHash } from '../../../../utils/gaslessVoting';
 import { validateENSName } from '../../../../utils/url';
 
 export function SafeGeneralSettingsPage() {
@@ -57,7 +57,7 @@ export function SafeGeneralSettingsPage() {
   const {
     addressPrefix,
     chain: { id: chainId },
-    contracts: { keyValuePairs, entryPointv07, proxyFactory },
+    contracts: { keyValuePairs, entryPointv07, proxyFactory, decentPaymasterV1MasterCopy },
   } = useNetworkConfigStore();
 
   const isMultisigGovernance = votingStrategyType === GovernanceType.MULTISIG;
@@ -147,6 +147,10 @@ export function SafeGeneralSettingsPage() {
         throw new Error('Safe address is not set');
       }
 
+      if (!entryPointv07) {
+        throw new Error('Entry point is not set');
+      }
+
       const strategyAddresses = [
         linearVotingErc20Address,
         linearVotingErc721Address,
@@ -159,7 +163,7 @@ export function SafeGeneralSettingsPage() {
         const paymasterInitData = encodeFunctionData({
           abi: abis.DecentPaymasterV1,
           functionName: 'initialize',
-          args: [safeAddress, getPaymasterSaltHex(safeAddress, chainId)],
+          args: [safeAddress, entryPointv07],
         });
 
         targets.push(proxyFactory);
@@ -167,7 +171,7 @@ export function SafeGeneralSettingsPage() {
           encodeFunctionData({
             abi: abis.ProxyFactory,
             functionName: 'deployProxy',
-            args: [safeAddress, paymasterInitData, getPaymasterSaltHex(safeAddress, chainId)],
+            args: [safeAddress, paymasterInitData, getPaymasterSaltHash(safeAddress, chainId)],
           }),
         );
         values.push(0n);
@@ -197,9 +201,12 @@ export function SafeGeneralSettingsPage() {
         const voteSelector = toFunctionSelector(voteAbiItem);
 
         const predictedPaymasterAddress = await getPaymasterAddress({
-          address: safeAddress,
+          safeAddress,
           chainId,
           publicClient,
+          proxyFactory,
+          paymasterMastercopy: decentPaymasterV1MasterCopy,
+          entryPoint: entryPointv07,
         });
 
         strategyAddresses.forEach(strategyAddress => {
