@@ -1,6 +1,5 @@
 import { abis } from '@fractal-framework/fractal-contracts';
 import {
-  AbiFunction,
   AbiItem,
   Address,
   Hex,
