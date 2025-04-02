@@ -59,6 +59,7 @@ export const sepoliaConfig: NetworkConfig = {
     ),
 
     zodiacModuleProxyFactory: '0x000000000000aDdB49795b0f9bA5BC298cDda236',
+    proxyFactory: getAddress(a.ProxyFactory),
 
     linearVotingErc20MasterCopy: getAddress(a.LinearERC20Voting),
     linearVotingErc20HatsWhitelistingMasterCopy: getAddress(
@@ -69,10 +70,14 @@ export const sepoliaConfig: NetworkConfig = {
       a.LinearERC721VotingWithHatsProposalCreation,
     ),
 
-    linearVotingErc20V1MasterCopy: '0xFe3542A836789c1b54B7A1De2ADfceC5F7f0425a',
-    linearVotingErc20HatsWhitelistingV1MasterCopy: '0x7EA0e76FC3c5447912646734595C5AB743415128',
-    linearVotingErc721V1MasterCopy: '0xd0C8E17d512eb8582431fC856DD49E1c3CCE0CDa',
-    linearVotingErc721HatsWhitelistingV1MasterCopy: '0x0aC793E3d815E3bE2acED189019af5C5Cde8E5B2',
+    linearVotingErc20V1MasterCopy: getAddress(a.LinearERC20VotingV1),
+    linearVotingErc20HatsWhitelistingV1MasterCopy: getAddress(
+      a.LinearERC20VotingWithHatsProposalCreationV1,
+    ),
+    linearVotingErc721V1MasterCopy: getAddress(a.LinearERC721VotingV1),
+    linearVotingErc721HatsWhitelistingV1MasterCopy: getAddress(
+      a.LinearERC721VotingWithHatsProposalCreationV1,
+    ),
 
     moduleAzoriusMasterCopy: getAddress(a.Azorius),
     moduleFractalMasterCopy: getAddress(a.FractalModule),
@@ -90,6 +95,8 @@ export const sepoliaConfig: NetworkConfig = {
 
     decentAutonomousAdminV1MasterCopy: getAddress(a.DecentAutonomousAdminV1),
 
+    decentPaymasterV1MasterCopy: getAddress(a.DecentPaymasterV1),
+
     keyValuePairs: getAddress(a.KeyValuePairs),
 
     decentHatsCreationModule: getAddress(a.DecentHatsCreationModule),
@@ -105,7 +112,7 @@ export const sepoliaConfig: NetworkConfig = {
     sablierV2LockupTranched: '0x3a1beA13A8C24c0EA2b8fAE91E4b2762A59D7aF5',
     sablierV2LockupLinear: '0x3E435560fd0a03ddF70694b35b673C25c65aBB6C',
     disperse: '0xD152f549545093347A162Dce210e7293f1452150',
-    entryPointv07: '0x0000000071727De22E5E9d8BAf0edAc6f37da032', // https://etherscan.io/address/0x0000000071727de22e5e9d8baf0edac6f37da032#code
+    entryPointv07: '0x0000000071727De22E5E9d8BAf0edAc6f37da032',
     paymasterFactory: '0xD64b53AEF9E63C54689CDf72C7bcDd6e983EC2B8',
   },
   staking: {},
@@ -118,7 +125,6 @@ export const sepoliaConfig: NetworkConfig = {
     GovernanceType.AZORIUS_ERC20,
     GovernanceType.AZORIUS_ERC721,
   ],
-  gaslessVotingSupported: true,
 };
 
 export default sepoliaConfig;

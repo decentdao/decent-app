@@ -6,7 +6,7 @@ import { getContract } from 'viem';
 import { EntryPoint07Abi } from '../../assets/abi/EntryPoint07Abi';
 import { DETAILS_BOX_SHADOW } from '../../constants/common';
 import { DAO_ROUTES } from '../../constants/routes';
-import { isFeatureEnabled } from '../../helpers/featureFlags';
+import useFeatureFlag from '../../helpers/environmentFeatureFlags';
 import useNetworkPublicClient from '../../hooks/useNetworkPublicClient';
 import { useNetworkWalletClient } from '../../hooks/useNetworkWalletClient';
 import { useCanUserCreateProposal } from '../../hooks/utils/useCanUserSubmitProposal';
@@ -75,10 +75,8 @@ function GaslessVotingToggleContent({
 }
 
 export function GaslessVotingToggleDAOCreate(props: GaslessVotingToggleProps) {
-  const { gaslessVotingSupported } = useNetworkConfigStore();
-
-  if (!isFeatureEnabled('flag_gasless_voting')) return null;
-  if (!gaslessVotingSupported) return null;
+  const gaslessFeatureEnabled = useFeatureFlag('flag_gasless_voting');
+  if (!gaslessFeatureEnabled) return null;
 
   return (
     <Flex
@@ -117,7 +115,6 @@ export function GaslessVotingToggleDAOCreate(props: GaslessVotingToggleProps) {
 export function GaslessVotingToggleDAOSettings(props: GaslessVotingToggleProps) {
   const { t } = useTranslation('gaslessVoting');
   const {
-    gaslessVotingSupported,
     addressPrefix,
     contracts: { entryPointv07 },
   } = useNetworkConfigStore();
@@ -128,11 +125,9 @@ export function GaslessVotingToggleDAOSettings(props: GaslessVotingToggleProps) 
 
   const { safe, gaslessVotingEnabled, paymasterAddress } = useDaoInfoStore();
 
-  const { canUserCreateProposal } = useCanUserCreateProposal();
-
   const [paymasterBalance, setPaymasterBalance] = useState<BigIntValuePair>();
   useEffect(() => {
-    if (!paymasterAddress) return;
+    if (!paymasterAddress || !entryPointv07) return;
     const entryPoint = getContract({
       address: entryPointv07,
       abi: EntryPoint07Abi,
@@ -152,7 +147,7 @@ export function GaslessVotingToggleDAOSettings(props: GaslessVotingToggleProps) 
 
   const refillGas = useDecentModal(ModalType.REFILL_GAS, {
     onSubmit: async (refillGasData: RefillGasData) => {
-      if (!safe?.address || !paymasterAddress) {
+      if (!safe?.address || !paymasterAddress || !entryPointv07) {
         return;
       }
 
@@ -205,8 +200,8 @@ export function GaslessVotingToggleDAOSettings(props: GaslessVotingToggleProps) 
     },
   });
 
-  if (!isFeatureEnabled('flag_gasless_voting')) return null;
-  if (!gaslessVotingSupported) return null;
+  const gaslessFeatureEnabled = useFeatureFlag('flag_gasless_voting');
+  if (!gaslessFeatureEnabled) return null;
 
   const formattedPaymasterBalance =
     paymasterBalance &&
@@ -266,7 +261,6 @@ export function GaslessVotingToggleDAOSettings(props: GaslessVotingToggleProps) 
           <Button
             variant="secondary"
             size="sm"
-            isDisabled={!canUserCreateProposal}
             onClick={() => {
               refillGas();
             }}

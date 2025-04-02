@@ -31,6 +31,7 @@ export type NetworkConfig = {
     multiSendCallOnly: Address;
 
     zodiacModuleProxyFactory: Address;
+    proxyFactory: Address;
 
     linearVotingErc20MasterCopy: Address;
     linearVotingErc20HatsWhitelistingMasterCopy: Address;
@@ -58,6 +59,8 @@ export type NetworkConfig = {
 
     decentAutonomousAdminV1MasterCopy: Address;
 
+    decentPaymasterV1MasterCopy: Address;
+
     keyValuePairs: Address;
 
     decentHatsCreationModule: Address;
@@ -73,7 +76,7 @@ export type NetworkConfig = {
     sablierV2LockupTranched: Address;
     sablierV2LockupLinear: Address;
     disperse: Address;
-    entryPointv07: Address;
+    entryPointv07?: Address; // only set on networks for which we support account abstraction functionality
     paymasterFactory: Address;
   };
   staking: {
@@ -84,5 +87,4 @@ export type NetworkConfig = {
     };
   };
   createOptions: GovernanceType[];
-  gaslessVotingSupported: boolean;
 };

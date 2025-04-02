@@ -22,6 +22,10 @@ type ContractType = {
   isVotesErc20: boolean;
 };
 
+export type ContractTypeWithVersion = ContractType & {
+  version?: number;
+};
+
 const defaultContractType: ContractType = {
   isClaimErc20: false,
   isFreezeGuardAzorius: false,
@@ -223,8 +227,26 @@ const contractTests: ContractFunctionTest[] = [
 export function useAddressContractType() {
   const publicClient = useNetworkPublicClient();
 
+  const getVersion = useCallback(
+    async (contractAddress: Address) => {
+      const contract = getContract({
+        abi: DecentPaymasterV1Abi,
+        address: contractAddress,
+        client: publicClient,
+      });
+
+      try {
+        const version = await contract.read.getVersion();
+        return version;
+      } catch (error) {
+        return undefined;
+      }
+    },
+    [publicClient],
+  );
+
   const getAddressContractType = useCallback(
-    async (address: Address): Promise<ContractType> => {
+    async (address: Address): Promise<ContractTypeWithVersion> => {
       const result = { ...defaultContractType };
 
       const allCalls = contractTests.flatMap(test => [
@@ -277,10 +299,11 @@ export function useAddressContractType() {
           }
         }
       }
+      const version = await getVersion(address);
 
-      return result;
+      return { ...result, version: version };
     },
-    [publicClient],
+    [getVersion, publicClient],
   );
 
   // @todo: (gv) This whole thing is really just to check if the current DAO strategy(s) support gasless voting. Needs more robust logic.

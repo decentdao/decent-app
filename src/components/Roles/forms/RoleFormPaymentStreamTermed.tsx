@@ -326,20 +326,22 @@ function TermSelectorMenu({ paymentIndex }: { paymentIndex: number }) {
             </Hide>
             <Hide below="lg">
               <MenuList
-                borderBottomRadius="0.75rem"
-                boxShadow={DETAILS_BOX_SHADOW}
-                _hover={{ bg: 'neutral-3' }}
-                _active={{ bg: 'neutral-2' }}
                 transition="all ease-out 300ms"
+                zIndex={2}
               >
-                {eligibleTerms.map((term, index) => (
+                {eligibleTerms.map((term, index, arr) => (
                   <MenuItem
                     key={index}
+                    boxShadow={DETAILS_BOX_SHADOW}
+                    _hover={{ bg: 'neutral-3' }}
+                    _active={{ bg: 'neutral-3' }}
+                    bg="neutral-2"
                     p="1rem"
                     onClick={() => {
                       setSelectedTerm(term);
                       onClose();
                     }}
+                    borderBottomRadius={index === arr.length - 1 ? '0.75rem' : undefined}
                   >
                     <TermSelection
                       selectedTermNumber={term.termNumber}

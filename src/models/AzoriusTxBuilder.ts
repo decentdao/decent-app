@@ -1,5 +1,7 @@
 import { abis } from '@fractal-framework/fractal-contracts';
 import {
+  AbiFunction,
+  AbiItem,
   Address,
   Hex,
   PublicClient,
@@ -289,14 +291,23 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
       paymasterFactory: this.paymasterFactoryAddress,
     });
 
-    const voteAbiItem = getAbiItem({
-      name: 'vote',
-      abi:
-        this.daoData.governance === GovernanceType.AZORIUS_ERC20
-          ? abis.LinearERC20Voting
-          : abis.LinearERC721Voting,
-    });
-    const voteSelector = toFunctionSelector(voteAbiItem);
+    let voteAbiItem: AbiItem;
+
+    if (this.daoData.governance === GovernanceType.AZORIUS_ERC20) {
+      voteAbiItem = getAbiItem({
+        name: 'vote',
+        abi: abis.LinearERC20Voting,
+      });
+    } else if (this.daoData.governance === GovernanceType.AZORIUS_ERC721) {
+      voteAbiItem = getAbiItem({
+        name: 'vote',
+        abi: abis.LinearERC721Voting,
+      });
+    } else {
+      throw new Error('Invalid voting strategy type');
+    }
+
+    const voteSelector = toFunctionSelector(voteAbiItem as AbiFunction);
 
     return buildContractCall(
       DecentPaymasterV1Abi,

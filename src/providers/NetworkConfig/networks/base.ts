@@ -5,7 +5,7 @@ import {
   getProxyFactoryDeployment,
   getSafeL2SingletonDeployment,
 } from '@safe-global/safe-deployments';
-import { getAddress } from 'viem';
+import { getAddress, zeroAddress } from 'viem';
 import { base } from 'wagmi/chains';
 import { GovernanceType } from '../../../types';
 import { NetworkConfig } from '../../../types/network';
@@ -59,6 +59,7 @@ export const baseConfig: NetworkConfig = {
     ),
 
     zodiacModuleProxyFactory: '0x000000000000aDdB49795b0f9bA5BC298cDda236',
+    proxyFactory: zeroAddress,
 
     linearVotingErc20MasterCopy: getAddress(a.LinearERC20Voting),
     linearVotingErc20HatsWhitelistingMasterCopy: getAddress(
@@ -69,10 +70,10 @@ export const baseConfig: NetworkConfig = {
       a.LinearERC721VotingWithHatsProposalCreation,
     ),
 
-    linearVotingErc20V1MasterCopy: '0x0000000000000000000000000000000000000000',
-    linearVotingErc20HatsWhitelistingV1MasterCopy: '0x0000000000000000000000000000000000000000',
-    linearVotingErc721V1MasterCopy: '0x0000000000000000000000000000000000000000',
-    linearVotingErc721HatsWhitelistingV1MasterCopy: '0x0000000000000000000000000000000000000000',
+    linearVotingErc20V1MasterCopy: zeroAddress,
+    linearVotingErc20HatsWhitelistingV1MasterCopy: zeroAddress,
+    linearVotingErc721V1MasterCopy: zeroAddress,
+    linearVotingErc721HatsWhitelistingV1MasterCopy: zeroAddress,
 
     moduleAzoriusMasterCopy: getAddress(a.Azorius),
     moduleFractalMasterCopy: getAddress(a.FractalModule),
@@ -90,6 +91,8 @@ export const baseConfig: NetworkConfig = {
 
     decentAutonomousAdminV1MasterCopy: getAddress(a.DecentAutonomousAdminV1),
 
+    decentPaymasterV1MasterCopy: zeroAddress,
+
     keyValuePairs: getAddress(a.KeyValuePairs),
 
     decentHatsCreationModule: getAddress(a.DecentHatsCreationModule),
@@ -105,8 +108,8 @@ export const baseConfig: NetworkConfig = {
     sablierV2LockupTranched: '0xf4937657Ed8B3f3cB379Eed47b8818eE947BEb1e',
     sablierV2LockupLinear: '0x4CB16D4153123A74Bc724d161050959754f378D8',
     disperse: '0xD152f549545093347A162Dce210e7293f1452150',
-    entryPointv07: '0x0000000000000000000000000000000000000000',
-    paymasterFactory: '0x0000000000000000000000000000000000000000',
+    entryPointv07: zeroAddress,
+    paymasterFactory: zeroAddress,
   },
   staking: {},
   moralis: {
@@ -118,7 +121,6 @@ export const baseConfig: NetworkConfig = {
     GovernanceType.AZORIUS_ERC20,
     GovernanceType.AZORIUS_ERC721,
   ],
-  gaslessVotingSupported: false,
 };
 
 export default baseConfig;

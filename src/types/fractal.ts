@@ -141,7 +141,6 @@ export interface DAOSubgraph {
   childAddresses: Address[];
   daoSnapshotENS: string | null;
   proposalTemplatesHash: string | null;
-  gaslessVotingEnabled?: boolean;
   gasTankAddress?: Address;
 }
 
@@ -162,7 +161,10 @@ export interface IDAO {
 
   // @todo: Preferrably should live in governance store. Using here fore convenience till we refactor governance store for zustand.
   gaslessVotingEnabled: boolean;
-  paymasterAddress: Address | null;
+
+  // null -- Defined: paymaster does not exist.
+  // undefined -- Unset. Should not be taken to mean anything. Does not equate to a "loading" state.
+  paymasterAddress: Address | null | undefined;
 }
 
 export interface GovernanceActivity extends ActivityBase {
@@ -213,7 +215,19 @@ export interface Fractal {
   guardContracts: FractalGuardContracts;
 }
 
-export interface FractalGovernanceContracts {
+export enum FractalTokenType {
+  erc20 = 'ERC20',
+  erc721 = 'ERC721',
+}
+
+export type FractalVotingStrategy = {
+  address: Address;
+  type: FractalTokenType;
+  withWhitelist: boolean;
+  version?: number;
+};
+
+export type FractalGovernanceContracts = {
   linearVotingErc20Address?: Address;
   linearVotingErc20WithHatsWhitelistingAddress?: Address;
   linearVotingErc721Address?: Address;
@@ -222,7 +236,8 @@ export interface FractalGovernanceContracts {
   votesTokenAddress?: Address;
   lockReleaseAddress?: Address;
   isLoaded: boolean;
-}
+  strategies: FractalVotingStrategy[];
+};
 
 export type SafeWithNextNonce = SafeInfoResponseWithGuard & { nextNonce: number };
 

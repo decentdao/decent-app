@@ -23,29 +23,32 @@ const getGaslessVotingDaoData = async (
     .pop();
 
   if (!gaslessVotingEnabledEvent) {
-    return { gaslessVotingEnabled: false, paymasterAddress: undefined };
+    return { gaslessVotingEnabled: false, paymasterAddress: null };
   }
 
   try {
-    const gaslessVotingEnabled = gaslessVotingEnabledEvent.args.value === 'true';
-
-    let paymasterAddress: Address | undefined;
-
     const paymasterFactoryContract = getContract({
       abi: DecentPaymasterFactoryV1Abi,
       address: paymasterFactoryAddress,
       client: publicClient,
     });
 
-    paymasterAddress = (await paymasterFactoryContract.read.getAddress([
+    const paymasterAddress = await paymasterFactoryContract.read.getAddress([
       safeAddress,
       getPaymasterSalt(safeAddress, chainId),
-    ])) as Address;
+    ]);
 
-    return { gaslessVotingEnabled, paymasterAddress };
+    const paymasterCode = await publicClient.getCode({
+      address: paymasterAddress,
+    });
+
+    const paymasterExists = !paymasterCode || paymasterCode !== '0x';
+
+    const gaslessVotingEnabled = gaslessVotingEnabledEvent.args.value === 'true';
+    return { gaslessVotingEnabled, paymasterAddress: paymasterExists ? paymasterAddress : null };
   } catch (e) {
     logError({
-      message: "KVPairs 'gaslessVotingEnabledEvent' value not a boolean",
+      message: 'Error getting gasless voting dao data',
       network: chainId,
       args: {
         transactionHash: gaslessVotingEnabledEvent.transactionHash,
@@ -53,7 +56,7 @@ const getGaslessVotingDaoData = async (
       },
     });
 
-    return { gaslessVotingEnabled: false, paymasterAddress: undefined };
+    return;
   }
 };
 
@@ -176,7 +179,9 @@ const useKeyValuePairs = () => {
           safeAddress,
           publicClient,
         ).then(gaslessVotingDaoData => {
-          setGaslessVotingDaoData(gaslessVotingDaoData);
+          if (gaslessVotingDaoData) {
+            setGaslessVotingDaoData(gaslessVotingDaoData);
+          }
         });
       })
       .catch(error => {
@@ -207,7 +212,9 @@ const useKeyValuePairs = () => {
 
           getGaslessVotingDaoData(logs, chain.id, paymasterFactory, safeAddress, publicClient).then(
             gaslessVotingDaoData => {
-              setGaslessVotingDaoData(gaslessVotingDaoData);
+              if (gaslessVotingDaoData) {
+                setGaslessVotingDaoData(gaslessVotingDaoData);
+              }
             },
           );
         },
