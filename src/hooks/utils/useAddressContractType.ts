@@ -1,7 +1,6 @@
 import { abis } from '@fractal-framework/fractal-contracts';
 import { useCallback } from 'react';
 import { Abi, Address, getContract } from 'viem';
-import { DecentPaymasterV1Abi } from '../../assets/abi/DecentPaymasterV1Abi';
 import useNetworkPublicClient from '../useNetworkPublicClient';
 
 // https://github.com/adamgall/fractal-contract-identification/blob/229fc398661c5d684600feeb98a4eb767f728632/src/identify-contracts.ts
@@ -230,7 +229,7 @@ export function useAddressContractType() {
   const getVersion = useCallback(
     async (contractAddress: Address) => {
       const contract = getContract({
-        abi: DecentPaymasterV1Abi,
+        abi: abis.DecentPaymasterV1,
         address: contractAddress,
         client: publicClient,
       });
@@ -310,7 +309,7 @@ export function useAddressContractType() {
   const isIVersionSupport = useCallback(
     async (contractAddress: Address) => {
       const contract = getContract({
-        abi: DecentPaymasterV1Abi,
+        abi: abis.DecentPaymasterV1,
         address: contractAddress,
         client: publicClient,
       });

@@ -1,6 +1,5 @@
 import { abis } from '@fractal-framework/fractal-contracts';
 import {
-  AbiFunction,
   AbiItem,
   Address,
   Hex,
@@ -17,10 +16,7 @@ import {
   toFunctionSelector,
 } from 'viem';
 import { DecentPaymasterFactoryV1Abi } from '../assets/abi/DecentPaymasterFactoryV1Abi';
-import { DecentPaymasterV1Abi } from '../assets/abi/DecentPaymasterV1Abi';
 import GnosisSafeL2Abi from '../assets/abi/GnosisSafeL2';
-import { LinearERC20VotingV1Abi } from '../assets/abi/LinearERC20VotingV1';
-import { LinearERC721VotingV1Abi } from '../assets/abi/LinearERC721VotingV1';
 import { ZodiacModuleProxyFactoryAbi } from '../assets/abi/ZodiacModuleProxyFactoryAbi';
 import { buildContractCall, getRandomBytes } from '../helpers';
 import {
@@ -307,12 +303,12 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
       throw new Error('Invalid voting strategy type');
     }
 
-    const voteSelector = toFunctionSelector(voteAbiItem as AbiFunction);
+    const voteSelector = toFunctionSelector(voteAbiItem);
 
     return buildContractCall(
-      DecentPaymasterV1Abi,
+      abis.DecentPaymasterV1,
       predictedPaymasterAddress,
-      'setStrategyFunctionApproval',
+      'whitelistFunctions',
       [this.predictedStrategyAddress, [voteSelector], [true]],
       0,
       false,
@@ -448,7 +444,7 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
       }
 
       const linearERC20VotingMasterCopyContract = getContract({
-        abi: LinearERC20VotingV1Abi, // @todo: (gv) use the deployed abi
+        abi: abis.LinearERC20VotingV1,
         address: this.linearVotingErc20MasterCopy,
         client: this.publicClient,
       });
@@ -468,7 +464,7 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
       );
 
       const encodedStrategySetupData = encodeFunctionData({
-        abi: LinearERC20VotingV1Abi, // @todo: (gv) use the deployed abi
+        abi: abis.LinearERC20VotingV1,
         functionName: 'setUp',
         args: [encodedStrategyInitParams],
       });
@@ -511,7 +507,7 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
       );
 
       const encodedStrategySetupData = encodeFunctionData({
-        abi: LinearERC721VotingV1Abi, // @todo: (gv) use the deployed abi
+        abi: abis.LinearERC721VotingV1,
         functionName: 'setUp',
         args: [encodedStrategyInitParams],
       });

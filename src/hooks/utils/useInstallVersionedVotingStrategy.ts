@@ -10,8 +10,6 @@ import {
   Address,
   EncodeAbiParametersReturnType,
 } from 'viem';
-import { LinearERC20VotingV1Abi } from '../../assets/abi/LinearERC20VotingV1';
-import { LinearERC721VotingV1Abi } from '../../assets/abi/LinearERC721VotingV1';
 import { ZodiacModuleProxyFactoryAbi } from '../../assets/abi/ZodiacModuleProxyFactoryAbi';
 import { getRandomBytes } from '../../helpers';
 import { generateSalt, generateContractByteCodeLinear } from '../../models/helpers/utils';
@@ -130,7 +128,7 @@ export const useInstallVersionedVotingStrategy = () => {
       );
 
       return encodeFunctionData({
-        abi: LinearERC20VotingV1Abi, // @todo: (gv) use the deployed abi
+        abi: abis.LinearERC20VotingV1,
         functionName: 'setUp',
         args: [encodedStrategyInitParams],
       });
@@ -262,7 +260,7 @@ export const useInstallVersionedVotingStrategy = () => {
       );
 
       return encodeFunctionData({
-        abi: LinearERC721VotingV1Abi, // @todo: (gv) use the deployed abi
+        abi: abis.LinearERC721VotingV1,
         functionName: 'setUp',
         args: [encodedStrategyInitParams],
       });
