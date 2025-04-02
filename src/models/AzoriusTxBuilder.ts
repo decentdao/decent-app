@@ -1,6 +1,5 @@
 import { abis } from '@fractal-framework/fractal-contracts';
 import {
-  AbiFunction,
   AbiItem,
   Address,
   Hex,
@@ -16,7 +15,6 @@ import {
   parseAbiParameters,
   toFunctionSelector,
 } from 'viem';
-import { DecentPaymasterFactoryV1Abi } from '../assets/abi/DecentPaymasterFactoryV1Abi';
 import GnosisSafeL2Abi from '../assets/abi/GnosisSafeL2';
 import { ZodiacModuleProxyFactoryAbi } from '../assets/abi/ZodiacModuleProxyFactoryAbi';
 import { buildContractCall, getRandomBytes } from '../helpers';
@@ -29,7 +27,7 @@ import {
   VotingStrategyType,
 } from '../types';
 import { SENTINEL_MODULE } from '../utils/address';
-import { getPaymasterSalt, getPaymasterAddress } from '../utils/gaslessVoting';
+import { getPaymasterAddress, getPaymasterSaltHex } from '../utils/gaslessVoting';
 import { BaseTxBuilder } from './BaseTxBuilder';
 import { generateContractByteCodeLinear, generateSalt } from './helpers/utils';
 
@@ -56,13 +54,14 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
   private linearVotingErc20MasterCopy: Address;
   private linearVotingErc721MasterCopy: Address;
   private moduleAzoriusMasterCopy: Address;
-
+  private paymasterMasterCopy: Address;
+  private entryPointAddress: Address | undefined;
   private tokenNonce: bigint;
   private strategyNonce: bigint;
   private azoriusNonce: bigint;
   private claimNonce: bigint;
 
-  private paymasterFactoryAddress: Address;
+  private proxyFactoryAddress: Address;
 
   constructor(
     publicClient: PublicClient,
@@ -75,7 +74,9 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
     linearVotingErc20MasterCopy: Address,
     linearVotingErc721MasterCopy: Address,
     moduleAzoriusMasterCopy: Address,
-    paymasterFactoryAddress: Address,
+    proxyFactoryAddress: Address,
+    paymasterMasterCopy: Address,
+    entryPointAddress?: Address,
 
     parentAddress?: Address,
     parentTokenAddress?: Address,
@@ -95,8 +96,9 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
     this.linearVotingErc20MasterCopy = linearVotingErc20MasterCopy;
     this.linearVotingErc721MasterCopy = linearVotingErc721MasterCopy;
     this.moduleAzoriusMasterCopy = moduleAzoriusMasterCopy;
-
-    this.paymasterFactoryAddress = paymasterFactoryAddress;
+    this.proxyFactoryAddress = proxyFactoryAddress;
+    this.paymasterMasterCopy = paymasterMasterCopy;
+    this.entryPointAddress = entryPointAddress;
 
     if (daoData.votingStrategyType === VotingStrategyType.LINEAR_ERC20) {
       daoData = daoData as AzoriusERC20DAO;
@@ -266,14 +268,24 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
   }
 
   public buildDeployPaymasterTx(): SafeTransaction {
+    if (!this.entryPointAddress) {
+      throw new Error('Entry point address is not set');
+    }
+
+    const paymasterInitData = encodeFunctionData({
+      abi: abis.DecentPaymasterV1,
+      functionName: 'initialize',
+      args: [this.safeContractAddress, this.entryPointAddress],
+    });
+
     return buildContractCall(
-      // @todo (gv) replace with the deployed abi
-      DecentPaymasterFactoryV1Abi,
-      this.paymasterFactoryAddress,
-      'createPaymaster',
+      abis.ProxyFactory,
+      this.proxyFactoryAddress,
+      'deployProxy',
       [
-        this.safeContractAddress,
-        getPaymasterSalt(this.safeContractAddress, this.publicClient.chain!.id),
+        this.paymasterMasterCopy,
+        paymasterInitData,
+        getPaymasterSaltHex(this.safeContractAddress, this.publicClient.chain!.id),
       ],
       0,
       false,
@@ -285,7 +297,6 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
       address: this.safeContractAddress,
       chainId: this.publicClient.chain!.id,
       publicClient: this.publicClient,
-      paymasterFactory: this.paymasterFactoryAddress,
     });
 
     let voteAbiItem: AbiItem;

@@ -1,5 +1,4 @@
-import { Address, getContract, keccak256, PublicClient, stringToHex } from 'viem';
-import { DecentPaymasterFactoryV1Abi } from '../assets/abi/DecentPaymasterFactoryV1Abi';
+import { Address, getContract, keccak256, PublicClient, stringToHex, zeroAddress } from 'viem';
 
 export const getPaymasterSalt = (safeAddress: Address, chainId: number) => {
   const salt = `${safeAddress}-${chainId}`;
@@ -8,19 +7,23 @@ export const getPaymasterSalt = (safeAddress: Address, chainId: number) => {
   return paymasterSaltBigInt;
 };
 
+export const getPaymasterSaltHex = (safeAddress: Address, chainId: number) => {
+  const salt = `${safeAddress}-${chainId}`;
+  return keccak256(stringToHex(salt));
+};
+
 export const getPaymasterAddress = async (args: {
   address: Address;
   chainId: number;
   publicClient: PublicClient;
-  paymasterFactory: Address;
 }) => {
-  const { address, chainId, publicClient, paymasterFactory } = args;
+  const { address, chainId, publicClient } = args;
   const paymasterSalt = getPaymasterSalt(address, chainId);
   const paymasterFactoryContract = getContract({
-    address: paymasterFactory,
-    abi: DecentPaymasterFactoryV1Abi,
+    address: zeroAddress,
+    abi: 'remove this whole thing and predict address locally' as any,
     client: publicClient,
   });
   const paymasterAddress = await paymasterFactoryContract.read.getAddress([address, paymasterSalt]);
-  return paymasterAddress;
+  return paymasterAddress as Address;
 };

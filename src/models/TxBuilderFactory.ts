@@ -41,7 +41,9 @@ export class TxBuilderFactory extends BaseTxBuilder {
   private linearVotingErc20MasterCopy: Address;
   private linearVotingErc721MasterCopy: Address;
   private moduleAzoriusMasterCopy: Address;
-  private paymasterFactoryAddress: Address;
+  private proxyFactoryAddress: Address;
+  private paymasterMasterCopy: Address;
+  private entryPointAddress: Address | undefined;
 
   constructor(
     publicClient: PublicClient,
@@ -64,7 +66,9 @@ export class TxBuilderFactory extends BaseTxBuilder {
     linearVotingErc20MasterCopy: Address,
     linearVotingErc721MasterCopy: Address,
     moduleAzoriusMasterCopy: Address,
-    paymasterFactoryAddress: Address,
+    proxyFactoryAddress: Address,
+    paymasterMasterCopy: Address,
+    entryPointAddress?: Address,
     parentAddress?: Address,
     parentTokenAddress?: Address,
   ) {
@@ -88,7 +92,9 @@ export class TxBuilderFactory extends BaseTxBuilder {
     this.linearVotingErc20MasterCopy = linearVotingErc20MasterCopy;
     this.linearVotingErc721MasterCopy = linearVotingErc721MasterCopy;
     this.moduleAzoriusMasterCopy = moduleAzoriusMasterCopy;
-    this.paymasterFactoryAddress = paymasterFactoryAddress;
+    this.proxyFactoryAddress = proxyFactoryAddress;
+    this.paymasterMasterCopy = paymasterMasterCopy;
+    this.entryPointAddress = entryPointAddress;
   }
 
   public setSafeContract(safeAddress: Address) {
@@ -198,7 +204,9 @@ export class TxBuilderFactory extends BaseTxBuilder {
       this.linearVotingErc20MasterCopy,
       this.linearVotingErc721MasterCopy,
       this.moduleAzoriusMasterCopy,
-      this.paymasterFactoryAddress,
+      this.proxyFactoryAddress,
+      this.paymasterMasterCopy,
+      this.entryPointAddress,
       this.parentAddress,
       this.parentTokenAddress,
     );

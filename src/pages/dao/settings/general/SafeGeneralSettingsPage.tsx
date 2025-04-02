@@ -4,7 +4,6 @@ import { ChangeEventHandler, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { AbiItem, encodeFunctionData, getAbiItem, toFunctionSelector, zeroAddress } from 'viem';
-import { DecentPaymasterFactoryV1Abi } from '../../../../assets/abi/DecentPaymasterFactoryV1Abi';
 import { GaslessVotingToggleDAOSettings } from '../../../../components/GaslessVoting/GaslessVotingToggle';
 import { SettingsContentBox } from '../../../../components/SafeSettings/SettingsContentBox';
 import { InputComponent } from '../../../../components/ui/forms/InputComponent';
@@ -22,7 +21,7 @@ import { useFractal } from '../../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../../providers/NetworkConfig/useNetworkConfigStore';
 import { useDaoInfoStore } from '../../../../store/daoInfo/useDaoInfoStore';
 import { GovernanceType, ProposalExecuteData } from '../../../../types';
-import { getPaymasterAddress, getPaymasterSalt } from '../../../../utils/gaslessVoting';
+import { getPaymasterAddress, getPaymasterSaltHex } from '../../../../utils/gaslessVoting';
 import { validateENSName } from '../../../../utils/url';
 
 export function SafeGeneralSettingsPage() {
@@ -58,7 +57,7 @@ export function SafeGeneralSettingsPage() {
   const {
     addressPrefix,
     chain: { id: chainId },
-    contracts: { keyValuePairs, paymasterFactory, entryPointv07 },
+    contracts: { keyValuePairs, entryPointv07, proxyFactory },
   } = useNetworkConfigStore();
 
   const isMultisigGovernance = votingStrategyType === GovernanceType.MULTISIG;
@@ -157,13 +156,18 @@ export function SafeGeneralSettingsPage() {
 
       if (paymasterAddress === null) {
         // Paymaster does not exist, deploy a new one
-        targets.push(paymasterFactory);
+        const paymasterInitData = encodeFunctionData({
+          abi: abis.DecentPaymasterV1,
+          functionName: 'initialize',
+          args: [safeAddress, getPaymasterSaltHex(safeAddress, chainId)],
+        });
+
+        targets.push(proxyFactory);
         calldatas.push(
           encodeFunctionData({
-            // @todo (gv) replace with the deployed abi
-            abi: DecentPaymasterFactoryV1Abi,
-            functionName: 'createPaymaster',
-            args: [safeAddress, getPaymasterSalt(safeAddress, chainId)],
+            abi: abis.ProxyFactory,
+            functionName: 'deployProxy',
+            args: [safeAddress, paymasterInitData, getPaymasterSaltHex(safeAddress, chainId)],
           }),
         );
         values.push(0n);
@@ -196,7 +200,6 @@ export function SafeGeneralSettingsPage() {
           address: safeAddress,
           chainId,
           publicClient,
-          paymasterFactory,
         });
 
         strategyAddresses.forEach(strategyAddress => {
