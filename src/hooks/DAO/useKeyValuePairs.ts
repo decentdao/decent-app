@@ -13,7 +13,7 @@ const getGaslessVotingDaoData = async (
   events: GetContractEventsReturnType<typeof abis.KeyValuePairs>,
   safeAddress: Address,
   publicClient: PublicClient,
-  proxyFactory: Address,
+  zodiacModuleProxyFactory: Address,
   paymasterMastercopy: Address,
   entryPoint?: Address,
 ) => {
@@ -22,24 +22,24 @@ const getGaslessVotingDaoData = async (
     .filter(event => event.args.key && event.args.key === 'gaslessVotingEnabled')
     .pop();
 
-  if (!gaslessVotingEnabledEvent || !entryPoint) {
+  if (!gaslessVotingEnabledEvent || !entryPoint || !publicClient.chain) {
     return { gaslessVotingEnabled: false, paymasterAddress: null };
   }
 
   try {
     const paymasterAddress = await getPaymasterAddress({
       safeAddress,
-      publicClient,
-      proxyFactory,
+      zodiacModuleProxyFactory,
       paymasterMastercopy,
       entryPoint,
+      chainId: publicClient.chain.id,
     });
 
     const paymasterCode = await publicClient.getCode({
       address: paymasterAddress,
     });
 
-    const paymasterExists = !paymasterCode || paymasterCode !== '0x';
+    const paymasterExists = !!paymasterCode && paymasterCode !== '0x';
 
     const gaslessVotingEnabled = gaslessVotingEnabledEvent.args.value === 'true';
     return { gaslessVotingEnabled, paymasterAddress: paymasterExists ? paymasterAddress : null };
@@ -143,11 +143,10 @@ const useKeyValuePairs = () => {
   const publicClient = useNetworkPublicClient();
   const node = useDaoInfoStore();
   const {
-    chain,
     contracts: {
       keyValuePairs,
       sablierV2LockupLinear,
-      proxyFactory,
+      zodiacModuleProxyFactory,
       decentPaymasterV1MasterCopy,
       entryPointv07,
     },
@@ -157,7 +156,7 @@ const useKeyValuePairs = () => {
   const safeAddress = node.safe?.address;
 
   useEffect(() => {
-    if (!safeAddress) {
+    if (!safeAddress || !publicClient.chain) {
       return;
     }
 
@@ -170,16 +169,20 @@ const useKeyValuePairs = () => {
       .ValueUpdated({ theAddress: safeAddress }, { fromBlock: 0n })
       .then(safeEvents => {
         setHatKeyValuePairData({
-          contextChainId: chain.id,
-          hatsTreeId: getHatsTreeId(safeEvents, chain.id),
-          streamIdsToHatIds: getHatIdsToStreamIds(safeEvents, sablierV2LockupLinear, chain.id),
+          contextChainId: publicClient.chain.id,
+          hatsTreeId: getHatsTreeId(safeEvents, publicClient.chain.id),
+          streamIdsToHatIds: getHatIdsToStreamIds(
+            safeEvents,
+            sablierV2LockupLinear,
+            publicClient.chain.id,
+          ),
         });
 
         getGaslessVotingDaoData(
           safeEvents,
           safeAddress,
           publicClient,
-          proxyFactory,
+          zodiacModuleProxyFactory,
           decentPaymasterV1MasterCopy,
           entryPointv07,
         ).then(gaslessVotingDaoData => {
@@ -191,7 +194,7 @@ const useKeyValuePairs = () => {
       .catch(error => {
         setHatKeyValuePairData({
           hatsTreeId: null,
-          contextChainId: chain.id,
+          contextChainId: publicClient.chain.id,
           streamIdsToHatIds: [],
         });
         logError(error);
@@ -208,9 +211,13 @@ const useKeyValuePairs = () => {
           // of our code that we have the hats tree id until some time has passed.
           setTimeout(() => {
             setHatKeyValuePairData({
-              contextChainId: chain.id,
-              hatsTreeId: getHatsTreeId(logs, chain.id),
-              streamIdsToHatIds: getHatIdsToStreamIds(logs, sablierV2LockupLinear, chain.id),
+              contextChainId: publicClient.chain.id,
+              hatsTreeId: getHatsTreeId(logs, publicClient.chain.id),
+              streamIdsToHatIds: getHatIdsToStreamIds(
+                logs,
+                sablierV2LockupLinear,
+                publicClient.chain.id,
+              ),
             });
           }, 20_000);
 
@@ -218,7 +225,7 @@ const useKeyValuePairs = () => {
             logs,
             safeAddress,
             publicClient,
-            proxyFactory,
+            zodiacModuleProxyFactory,
             decentPaymasterV1MasterCopy,
             entryPointv07,
           ).then(gaslessVotingDaoData => {
@@ -233,7 +240,6 @@ const useKeyValuePairs = () => {
       unwatch();
     };
   }, [
-    chain.id,
     keyValuePairs,
     safeAddress,
     publicClient,
@@ -242,7 +248,7 @@ const useKeyValuePairs = () => {
     setGaslessVotingDaoData,
     entryPointv07,
     decentPaymasterV1MasterCopy,
-    proxyFactory,
+    zodiacModuleProxyFactory,
   ]);
 
   useEffect(() => {

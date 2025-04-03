@@ -59,7 +59,6 @@ export const baseConfig: NetworkConfig = {
     ),
 
     zodiacModuleProxyFactory: '0x000000000000aDdB49795b0f9bA5BC298cDda236',
-    proxyFactory: zeroAddress,
 
     linearVotingErc20MasterCopy: getAddress(a.LinearERC20Voting),
     linearVotingErc20HatsWhitelistingMasterCopy: getAddress(

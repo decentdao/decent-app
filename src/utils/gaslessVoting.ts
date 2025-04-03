@@ -1,45 +1,60 @@
 import { abis } from '@fractal-framework/fractal-contracts';
 import {
   Address,
+  encodeAbiParameters,
   encodeFunctionData,
-  getContract,
+  encodePacked,
+  getCreate2Address,
   keccak256,
-  PublicClient,
+  parseAbiParameters,
   stringToHex,
 } from 'viem';
+import { generateContractByteCodeLinear } from '../models/helpers/utils';
 
-export const getPaymasterSaltHash = (safeAddress: Address, chainId: number) => {
+export const getPaymasterSaltNonce = (safeAddress: Address, chainId: number) => {
   const salt = `${safeAddress}-${chainId}`;
-  return keccak256(stringToHex(salt));
+  const saltHash = keccak256(stringToHex(salt));
+  const saltNonce = BigInt(saltHash);
+  return saltNonce;
 };
 
-export const getPaymasterAddress = async (args: {
+export const getPaymasterAddress = (args: {
   safeAddress: Address;
-  publicClient: PublicClient;
-  proxyFactory: Address;
+  zodiacModuleProxyFactory: Address;
   paymasterMastercopy: Address;
   entryPoint: Address;
+  chainId: number;
 }) => {
-  const { safeAddress, publicClient, proxyFactory, paymasterMastercopy, entryPoint } = args;
+  const { safeAddress, zodiacModuleProxyFactory, paymasterMastercopy, entryPoint, chainId } = args;
 
-  const proxyFactoryContract = getContract({
-    address: proxyFactory,
-    abi: abis.ProxyFactory,
-    client: publicClient,
-  });
+  const encodedPaymasterInitializationParams = encodeAbiParameters(
+    parseAbiParameters('address, address'),
+    [safeAddress, entryPoint],
+  );
 
-  const paymasterInitData = encodeFunctionData({
+  const encodedPaymasterInitializationData = encodeFunctionData({
     abi: abis.DecentPaymasterV1,
     functionName: 'initialize',
-    args: [safeAddress, entryPoint],
+    args: [encodedPaymasterInitializationParams],
   });
 
-  const paymasterAddress = await proxyFactoryContract.read.predictProxyAddress([
-    paymasterMastercopy,
-    paymasterInitData,
-    getPaymasterSaltHash(safeAddress, publicClient.chain!.id),
-    safeAddress,
-  ]);
+  const salt = keccak256(
+    encodePacked(
+      ['bytes32', 'uint256'],
+      [
+        keccak256(encodePacked(['bytes'], [encodedPaymasterInitializationData])),
+        getPaymasterSaltNonce(safeAddress, chainId),
+      ],
+    ),
+  );
 
-  return paymasterAddress;
+  const predictedPaymasterAddress = getCreate2Address({
+    from: zodiacModuleProxyFactory,
+    salt: salt,
+    bytecodeHash: keccak256(
+      encodePacked(['bytes'], [generateContractByteCodeLinear(paymasterMastercopy)]),
+    ),
+  });
+
+  return predictedPaymasterAddress;
 };

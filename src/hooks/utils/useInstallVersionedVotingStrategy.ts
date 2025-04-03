@@ -38,6 +38,11 @@ export const useInstallVersionedVotingStrategy = () => {
   const azoriusGovernance = governance as AzoriusGovernance;
   const { votesToken, erc721Tokens } = azoriusGovernance;
 
+  type TargetAddressAndCalldata = {
+    targetAddress: `0x${string}`;
+    calldata: `0x${string}`;
+  };
+
   const {
     contracts: {
       hatsProtocol,
@@ -49,42 +54,15 @@ export const useInstallVersionedVotingStrategy = () => {
     },
   } = useNetworkConfigStore();
 
-  const removalAction = (
-    removal: FractalVotingStrategy,
-    strategies: FractalVotingStrategy[],
-    moduleAzoriusAddress: Address,
-  ): {
-    targetAddress: `0x${string}`;
-    calldata: `0x${string}`;
-  } => {
-    let prevStrategy: Address = SENTINEL_MODULE;
-    for (let j = 0; j < strategies.length; j++) {
-      if (strategies[j].address === removal.address) {
-        break;
-      }
-      prevStrategy = strategies[j].address;
-    }
-
-    // Disable the old strategy
-    return {
-      targetAddress: moduleAzoriusAddress,
-      calldata: encodeFunctionData({
-        abi: abis.Azorius,
-        functionName: 'disableStrategy',
-        args: [prevStrategy, removal.address],
-      }),
-    };
-  };
-
   const linearErc20SetupParams = useCallback(
     async (
-      removal: FractalVotingStrategy,
+      strategyToRemove: FractalVotingStrategy,
       tokenAddress: Address,
       moduleAzoriusAddress: Address,
     ): Promise<EncodeAbiParametersReturnType> => {
       const existingAbiAndAddress = {
         abi: abis.LinearERC20Voting,
-        address: removal.address,
+        address: strategyToRemove.address,
       };
 
       const [
@@ -138,13 +116,13 @@ export const useInstallVersionedVotingStrategy = () => {
 
   const linearErc20WithWhitelistSetupParams = useCallback(
     async (
-      removal: FractalVotingStrategy,
+      strategyToRemove: FractalVotingStrategy,
       tokenAddress: Address,
       moduleAzoriusAddress: Address,
     ): Promise<EncodeAbiParametersReturnType> => {
       const existingAbiAndAddress = {
         abi: abis.LinearERC20VotingWithHatsProposalCreation,
-        address: removal.address,
+        address: strategyToRemove.address,
       };
 
       const [
@@ -181,7 +159,7 @@ export const useInstallVersionedVotingStrategy = () => {
 
       const encodedStrategyInitParams = encodeAbiParameters(
         parseAbiParameters(
-          'address, address, address, uint32, uint256, uint256, uint256, address, unit256[]',
+          'address, address, address, uint32, uint256, uint256, uint256, address, uint256[]',
         ),
         [
           safeAddress!,
@@ -197,7 +175,7 @@ export const useInstallVersionedVotingStrategy = () => {
       );
 
       return encodeFunctionData({
-        abi: abis.LinearERC20VotingWithHatsProposalCreation, // TODO: Use release version of LinearERC20VotingWithHatsProposalV1Creation
+        abi: abis.LinearERC20VotingWithHatsProposalCreationV1,
         functionName: 'setUp',
         args: [encodedStrategyInitParams],
       });
@@ -207,13 +185,13 @@ export const useInstallVersionedVotingStrategy = () => {
 
   const linearErc721SetupParams = useCallback(
     async (
-      removal: FractalVotingStrategy,
+      strategyToRemove: FractalVotingStrategy,
       erc721TokenAddresses: ERC721TokenData[],
       moduleAzoriusAddress: Address,
     ): Promise<EncodeAbiParametersReturnType> => {
       const existingAbiAndAddress = {
         abi: abis.LinearERC721Voting,
-        address: removal.address,
+        address: strategyToRemove.address,
       };
 
       const [
@@ -270,13 +248,13 @@ export const useInstallVersionedVotingStrategy = () => {
 
   const linearErc721WithWhitelistSetupParams = useCallback(
     async (
-      removal: FractalVotingStrategy,
+      strategyToRemove: FractalVotingStrategy,
       erc721TokenAddresses: ERC721TokenData[],
       moduleAzoriusAddress: Address,
     ): Promise<EncodeAbiParametersReturnType> => {
       const existingAbiAndAddress = {
         abi: abis.LinearERC721VotingWithHatsProposalCreation,
-        address: removal.address,
+        address: strategyToRemove.address,
       };
 
       const [
@@ -330,7 +308,7 @@ export const useInstallVersionedVotingStrategy = () => {
       );
 
       return encodeFunctionData({
-        abi: abis.LinearERC721VotingWithHatsProposalCreation, // TODO: Use release version of LinearERC721VotingWithHatsProposalV1Creation
+        abi: abis.LinearERC721VotingWithHatsProposalCreationV1,
         functionName: 'setUp',
         args: [encodedStrategyInitParams],
       });
@@ -340,32 +318,40 @@ export const useInstallVersionedVotingStrategy = () => {
 
   const setupParams = useCallback(
     async (
-      removal: FractalVotingStrategy,
+      strategyToRemove: FractalVotingStrategy,
       moduleAzoriusAddress: Address,
       tokenAddress?: Address,
       erc721TokenAddresses?: ERC721TokenData[],
     ): Promise<EncodeAbiParametersReturnType> => {
-      if (removal.type == FractalTokenType.erc20) {
+      if (strategyToRemove.type === FractalTokenType.erc20) {
         if (!tokenAddress) {
           throw new Error('Expected token address');
         }
-        if (removal.withWhitelist) {
-          return linearErc20WithWhitelistSetupParams(removal, tokenAddress, moduleAzoriusAddress);
+        if (strategyToRemove.withWhitelist) {
+          return linearErc20WithWhitelistSetupParams(
+            strategyToRemove,
+            tokenAddress,
+            moduleAzoriusAddress,
+          );
         } else {
-          return linearErc20SetupParams(removal, tokenAddress, moduleAzoriusAddress);
+          return linearErc20SetupParams(strategyToRemove, tokenAddress, moduleAzoriusAddress);
         }
       } else {
         if (!erc721TokenAddresses) {
           throw new Error('Expected ERC721 tokens');
         }
-        if (removal.withWhitelist) {
+        if (strategyToRemove.withWhitelist) {
           return linearErc721WithWhitelistSetupParams(
-            removal,
+            strategyToRemove,
             erc721TokenAddresses,
             moduleAzoriusAddress,
           );
         } else {
-          return linearErc721SetupParams(removal, erc721TokenAddresses, moduleAzoriusAddress);
+          return linearErc721SetupParams(
+            strategyToRemove,
+            erc721TokenAddresses,
+            moduleAzoriusAddress,
+          );
         }
       }
     },
@@ -377,16 +363,16 @@ export const useInstallVersionedVotingStrategy = () => {
     ],
   );
 
-  const getMasterAddress = useCallback(
-    (removal: FractalVotingStrategy): Address => {
-      if (removal.type == FractalTokenType.erc20) {
-        if (removal.withWhitelist) {
+  const getMasterCopyAddress = useCallback(
+    (strategyToRemove: FractalVotingStrategy): Address => {
+      if (strategyToRemove.type === FractalTokenType.erc20) {
+        if (strategyToRemove.withWhitelist) {
           return linearVotingErc20HatsWhitelistingV1MasterCopy;
         } else {
           return linearVotingErc20V1MasterCopy;
         }
       } else {
-        if (removal.withWhitelist) {
+        if (strategyToRemove.withWhitelist) {
           return linearVotingErc721HatsWhitelistingV1MasterCopy;
         } else {
           return linearVotingErc721V1MasterCopy;
@@ -401,26 +387,25 @@ export const useInstallVersionedVotingStrategy = () => {
     ],
   );
 
-  const addAndEnableActions = useCallback(
+  const getAddAndEnableStrategyTxs = useCallback(
     async (
-      removal: FractalVotingStrategy,
+      strategyToRemove: FractalVotingStrategy,
       moduleAzoriusAddress: Address,
       tokenAddress?: Address,
       erc721TokenAddresses?: ERC721TokenData[],
-    ): Promise<
-      {
-        targetAddress: `0x${string}`;
-        calldata: `0x${string}`;
-      }[]
-    > => {
+    ): Promise<{
+      deployTx: TargetAddressAndCalldata;
+      enableTx: TargetAddressAndCalldata;
+      newStrategy: FractalVotingStrategy;
+    }> => {
       const encodedStrategySetupData = await setupParams(
-        removal,
+        strategyToRemove,
         moduleAzoriusAddress,
         tokenAddress,
         erc721TokenAddresses,
       );
 
-      const masterAddress = getMasterAddress(removal);
+      const masterAddress = getMasterCopyAddress(strategyToRemove);
 
       const strategyNonce = getRandomBytes();
       const deployVotingStrategyTx = {
@@ -450,12 +435,22 @@ export const useInstallVersionedVotingStrategy = () => {
         }),
       };
 
-      return [deployVotingStrategyTx, enableDeployedVotingStrategyTx];
+      return {
+        deployTx: deployVotingStrategyTx,
+        enableTx: enableDeployedVotingStrategyTx,
+        newStrategy: {
+          ...strategyToRemove,
+          address: predictedStrategyAddress,
+        },
+      };
     },
-    [setupParams, getMasterAddress, zodiacModuleProxyFactory],
+    [setupParams, getMasterCopyAddress, zodiacModuleProxyFactory],
   );
 
-  const buildInstallVersionedVotingStrategy = useCallback(async () => {
+  const buildInstallVersionedVotingStrategies = useCallback(async (): Promise<{
+    installVersionedStrategyTxDatas: TargetAddressAndCalldata[];
+    newStrategies: FractalVotingStrategy[];
+  }> => {
     const { moduleAzoriusAddress, strategies } = governanceContracts;
     if (!safeAddress) {
       throw new Error('No safe address');
@@ -469,54 +464,75 @@ export const useInstallVersionedVotingStrategy = () => {
       throw new Error('No strategies found');
     }
 
-    const removals = strategies.filter(strategy => {
-      // unversioned strategies do not support gasless voting
-      return strategy.version == undefined;
-    });
+    // Remove unversioned strategies. These do not support gasless voting
+    const strategiesToRemove = strategies.filter(strategy => strategy.version === undefined);
 
-    if (removals.length > 0) {
-      // Could be 1 or many
-      let actions: {
-        targetAddress: `0x${string}`;
-        calldata: `0x${string}`;
-      }[] = [];
+    if (strategiesToRemove.length > 0) {
+      let installVersionedStrategyTxDatas: TargetAddressAndCalldata[] = [];
 
-      // Handle all the removal first
+      const getDisableStrategyTx = (strategy: FractalVotingStrategy): TargetAddressAndCalldata => {
+        // Find the previous strategy for the one to disable
+        let prevStrategy: Address = SENTINEL_MODULE;
+        for (let j = 0; j < strategies.length; j++) {
+          if (strategies[j].address === strategy.address) {
+            break;
+          }
+          prevStrategy = strategies[j].address;
+        }
+
+        // Disable the old strategy
+        return {
+          targetAddress: moduleAzoriusAddress,
+          calldata: encodeFunctionData({
+            abi: abis.Azorius,
+            functionName: 'disableStrategy',
+            args: [prevStrategy, strategy.address],
+          }),
+        };
+      };
+
+      // Handle all the removals first
       // There can be multiple strategies to replace. Use reverse so we can get prevStrategy correctly
-      // Find the previous strategy for the one to disable
-      const removalActions: {
-        targetAddress: `0x${string}`;
-        calldata: `0x${string}`;
-      }[] = removals
+      const disableStrategyTxs: TargetAddressAndCalldata[] = strategiesToRemove
         .reverse()
-        .map(removal => removalAction(removal, strategies, moduleAzoriusAddress));
+        .map(getDisableStrategyTx);
 
-      const addAndEnablePromises = removals.map(removal =>
-        addAndEnableActions(removal, moduleAzoriusAddress, votesToken?.address, erc721Tokens),
+      const deployAndEnablePromises = strategiesToRemove.map(oldStrategy =>
+        getAddAndEnableStrategyTxs(
+          oldStrategy,
+          moduleAzoriusAddress,
+          votesToken?.address,
+          erc721Tokens,
+        ),
       );
-      const addActions = await Promise.all(addAndEnablePromises);
+      const deployAndEnableNewStrategyTxs = await Promise.all(deployAndEnablePromises);
 
-      if (removalActions.length == addActions.length) {
-        actions.push(...removalActions);
-        actions.push(...addActions.flat());
-        return actions;
+      if (disableStrategyTxs.length === deployAndEnableNewStrategyTxs.length) {
+        installVersionedStrategyTxDatas.push(...disableStrategyTxs);
+        installVersionedStrategyTxDatas.push(
+          ...deployAndEnableNewStrategyTxs.flatMap(tx => [tx.deployTx, tx.enableTx]),
+        );
+        return {
+          installVersionedStrategyTxDatas,
+          newStrategies: deployAndEnableNewStrategyTxs.map(tx => tx.newStrategy),
+        };
       } else {
-        throw new Error('Additions and removals should match');
+        throw new Error('Number of disabled strategies does not match number of new strategies');
       }
     } else {
       // The installed strategies already support gasless voting, so no need to replace with new ones
-      return [];
+      return { installVersionedStrategyTxDatas: [], newStrategies: [] };
     }
   }, [
     governanceContracts,
     safeAddress,
     getVotingStrategies,
-    addAndEnableActions,
+    getAddAndEnableStrategyTxs,
     votesToken?.address,
     erc721Tokens,
   ]);
 
   return {
-    buildInstallVersionedVotingStrategy,
+    buildInstallVersionedVotingStrategies,
   };
 };

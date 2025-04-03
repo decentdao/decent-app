@@ -3,7 +3,16 @@ import { abis } from '@fractal-framework/fractal-contracts';
 import { ChangeEventHandler, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { AbiItem, encodeFunctionData, getAbiItem, toFunctionSelector, zeroAddress } from 'viem';
+import {
+  AbiItem,
+  encodeAbiParameters,
+  encodeFunctionData,
+  getAbiItem,
+  parseAbiParameters,
+  toFunctionSelector,
+  zeroAddress,
+} from 'viem';
+import { ZodiacModuleProxyFactoryAbi } from '../../../../assets/abi/ZodiacModuleProxyFactoryAbi';
 import { GaslessVotingToggleDAOSettings } from '../../../../components/GaslessVoting/GaslessVotingToggle';
 import { SettingsContentBox } from '../../../../components/SafeSettings/SettingsContentBox';
 import { InputComponent } from '../../../../components/ui/forms/InputComponent';
@@ -12,16 +21,19 @@ import NestedPageHeader from '../../../../components/ui/page/Header/NestedPageHe
 import Divider from '../../../../components/ui/utils/Divider';
 import { DAO_ROUTES } from '../../../../constants/routes';
 import useSubmitProposal from '../../../../hooks/DAO/proposal/useSubmitProposal';
-import useNetworkPublicClient from '../../../../hooks/useNetworkPublicClient';
-import { useAddressContractType } from '../../../../hooks/utils/useAddressContractType';
 import { useCanUserCreateProposal } from '../../../../hooks/utils/useCanUserSubmitProposal';
 import { createAccountSubstring } from '../../../../hooks/utils/useGetAccountName';
 import { useInstallVersionedVotingStrategy } from '../../../../hooks/utils/useInstallVersionedVotingStrategy';
 import { useFractal } from '../../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../../providers/NetworkConfig/useNetworkConfigStore';
 import { useDaoInfoStore } from '../../../../store/daoInfo/useDaoInfoStore';
-import { GovernanceType, ProposalExecuteData } from '../../../../types';
-import { getPaymasterAddress, getPaymasterSaltHash } from '../../../../utils/gaslessVoting';
+import {
+  FractalTokenType,
+  FractalVotingStrategy,
+  GovernanceType,
+  ProposalExecuteData,
+} from '../../../../types';
+import { getPaymasterAddress, getPaymasterSaltNonce } from '../../../../utils/gaslessVoting';
 import { validateENSName } from '../../../../utils/url';
 
 export function SafeGeneralSettingsPage() {
@@ -40,12 +52,7 @@ export function SafeGeneralSettingsPage() {
   }, [gaslessVotingEnabled]);
 
   const {
-    governanceContracts: {
-      linearVotingErc20Address,
-      linearVotingErc721Address,
-      linearVotingErc20WithHatsWhitelistingAddress,
-      linearVotingErc721WithHatsWhitelistingAddress,
-    },
+    governanceContracts: { strategies },
     governance: { type: votingStrategyType },
   } = useFractal();
 
@@ -57,15 +64,16 @@ export function SafeGeneralSettingsPage() {
   const {
     addressPrefix,
     chain: { id: chainId },
-    contracts: { keyValuePairs, entryPointv07, proxyFactory, decentPaymasterV1MasterCopy },
+    contracts: {
+      keyValuePairs,
+      entryPointv07,
+      decentPaymasterV1MasterCopy,
+      zodiacModuleProxyFactory,
+    },
   } = useNetworkConfigStore();
 
   const isMultisigGovernance = votingStrategyType === GovernanceType.MULTISIG;
   const gaslessVotingSupported = !isMultisigGovernance && entryPointv07 !== undefined;
-
-  const publicClient = useNetworkPublicClient();
-
-  const { isIVersionSupport } = useAddressContractType();
 
   const safeAddress = safe?.address;
 
@@ -100,7 +108,7 @@ export function SafeGeneralSettingsPage() {
   const snapshotChanged = snapshotENSValid && snapshotENS !== subgraphInfo?.daoSnapshotENS;
   const gaslessVotingChanged = isGaslessVotingEnabledToggled !== gaslessVotingEnabled;
 
-  const { buildInstallVersionedVotingStrategy } = useInstallVersionedVotingStrategy();
+  const { buildInstallVersionedVotingStrategies } = useInstallVersionedVotingStrategy();
 
   const handleEditGeneralGovernance = async () => {
     const changeTitles = [];
@@ -151,100 +159,103 @@ export function SafeGeneralSettingsPage() {
         throw new Error('Entry point is not set');
       }
 
-      const strategyAddresses = [
-        linearVotingErc20Address,
-        linearVotingErc721Address,
-        linearVotingErc20WithHatsWhitelistingAddress,
-        linearVotingErc721WithHatsWhitelistingAddress,
-      ].filter(addr => addr !== undefined);
-
       if (paymasterAddress === null) {
         // Paymaster does not exist, deploy a new one
         const paymasterInitData = encodeFunctionData({
           abi: abis.DecentPaymasterV1,
           functionName: 'initialize',
-          args: [safeAddress, entryPointv07],
+          args: [
+            encodeAbiParameters(parseAbiParameters(['address', 'address']), [
+              safeAddress,
+              entryPointv07,
+            ]),
+          ],
         });
 
-        targets.push(proxyFactory);
+        targets.push(zodiacModuleProxyFactory);
         calldatas.push(
           encodeFunctionData({
-            abi: abis.ProxyFactory,
-            functionName: 'deployProxy',
-            args: [safeAddress, paymasterInitData, getPaymasterSaltHash(safeAddress, chainId)],
+            abi: ZodiacModuleProxyFactoryAbi,
+            functionName: 'deployModule',
+            args: [
+              decentPaymasterV1MasterCopy,
+              paymasterInitData,
+              getPaymasterSaltNonce(safeAddress, chainId),
+            ],
           }),
         );
         values.push(0n);
+      }
 
-        // Approve the `vote` function call on the Paymaster
-        // // // // // // // // // // // // // // // // // // //
-        if (strategyAddresses.length === 0 || !votingStrategyType) {
-          throw new Error('No strategy addresses defined');
-        }
+      // The safe is using the old modules.
+      // Include txs to disable the old voting strategy and enable the new one.
+      const { installVersionedStrategyTxDatas, newStrategies } =
+        await buildInstallVersionedVotingStrategies();
+      if (!installVersionedStrategyTxDatas) {
+        throw new Error('Error encoding transaction for installing versioned voting strategy');
+      }
 
+      targets.push(...installVersionedStrategyTxDatas.map(tx => tx.targetAddress));
+      calldatas.push(...installVersionedStrategyTxDatas.map(tx => tx.calldata));
+      values.push(...installVersionedStrategyTxDatas.map(() => 0n));
+
+      const predictedPaymasterAddress = getPaymasterAddress({
+        safeAddress,
+        zodiacModuleProxyFactory,
+        paymasterMastercopy: decentPaymasterV1MasterCopy,
+        entryPoint: entryPointv07,
+        chainId,
+      });
+
+      const getVoteSelector = (strategy: FractalVotingStrategy) => {
         let voteAbiItem: AbiItem;
-
-        if (votingStrategyType === GovernanceType.AZORIUS_ERC20) {
+        if (strategy.type === FractalTokenType.erc20) {
           voteAbiItem = getAbiItem({
             name: 'vote',
-            abi: abis.LinearERC20Voting,
+            abi: abis.LinearERC20VotingV1,
           });
-        } else if (votingStrategyType === GovernanceType.AZORIUS_ERC721) {
+        } else if (strategy.type === FractalTokenType.erc721) {
           voteAbiItem = getAbiItem({
             name: 'vote',
-            abi: abis.LinearERC721Voting,
+            abi: abis.LinearERC721VotingV1,
           });
         } else {
           throw new Error('Invalid voting strategy type');
         }
-
         const voteSelector = toFunctionSelector(voteAbiItem);
+        return voteSelector;
+      };
 
-        const predictedPaymasterAddress = await getPaymasterAddress({
-          safeAddress,
-          publicClient,
-          proxyFactory,
-          paymasterMastercopy: decentPaymasterV1MasterCopy,
-          entryPoint: entryPointv07,
-        });
+      newStrategies.forEach(strategy => {
+        // Whitelist the new strategy's `vote` function call on the Paymaster
+        // // // // // // // // // // // // // // // // // // // // // // //
+        targets.push(predictedPaymasterAddress);
+        calldatas.push(
+          encodeFunctionData({
+            abi: abis.DecentPaymasterV1,
+            functionName: 'whitelistFunctions',
+            args: [strategy.address, [getVoteSelector(strategy)], [true]],
+          }),
+        );
+        values.push(0n);
+      });
 
-        strategyAddresses.forEach(strategyAddress => {
-          targets.push(predictedPaymasterAddress);
-          calldatas.push(
-            encodeFunctionData({
-              abi: abis.DecentPaymasterV1,
-              functionName: 'whitelistFunctions',
-              args: [strategyAddress, [voteSelector], [true]],
-            }),
-          );
-          values.push(0n);
-        });
-      }
-
-      if (strategyAddresses.length) {
-        // Check if all strategy contracts support the latest version
-        let allStrategiesAreUpdated = true;
-
-        for (const strategyAddress of strategyAddresses) {
-          const supportsLatestVersion = await isIVersionSupport(strategyAddress);
-          if (!supportsLatestVersion) {
-            allStrategiesAreUpdated = false;
-            break;
-          }
-        }
-
-        if (!allStrategiesAreUpdated) {
-          // The safe is using the old modules.
-          // Include txs to disable the old voting strategy and enable the new one.
-          const installVersionedStrategyTxData = await buildInstallVersionedVotingStrategy();
-          if (!installVersionedStrategyTxData) {
-            throw new Error('Error encoding transaction for installing versioned voting strategy');
-          }
-
-          targets.push(...installVersionedStrategyTxData.map(tx => tx.targetAddress));
-          calldatas.push(...installVersionedStrategyTxData.map(tx => tx.calldata));
-          values.push(...installVersionedStrategyTxData.map(() => 0n));
-        }
+      // Also whitelist existing versioned strategies that have not already been whitelisted.
+      // This will be the case for DAOs deployed after this feature, but did not enable gasless voting on creation.
+      if (paymasterAddress === null) {
+        strategies
+          .filter(strategy => strategy.version !== undefined)
+          .forEach(strategy => {
+            targets.push(predictedPaymasterAddress);
+            calldatas.push(
+              encodeFunctionData({
+                abi: abis.DecentPaymasterV1,
+                functionName: 'whitelistFunctions',
+                args: [strategy.address, [getVoteSelector(strategy)], [true]],
+              }),
+            );
+            values.push(0n);
+          });
       }
     }
 
