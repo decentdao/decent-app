@@ -128,9 +128,11 @@ export function CastVote({ proposal }: { proposal: FractalProposal }) {
           onSuccess: gaslessVoteSuccessModal,
           onError: (error: any) => {
             console.error('Gasless voting error:', error);
-            toast.error(t('castVoteError'));
+            toast.error(`${t('castVoteError')}${t('castVoteErrorTempAutoFallback')}`);
 
-            // @todo: (gv) Show a modal to user, give them option to retry, cancel, or pay their own gas to cast vote
+            setTimeout(() => {
+              castVote(selectedVoteChoice);
+            }, 5000);
           },
         });
       } else {

@@ -87,7 +87,7 @@ export const useSafeDecoder = () => {
               value,
               function: decodedData.functionName,
               parameterTypes: functionAbi.inputs.map((input: any) => input.type),
-              parameterValues: decodedData.args,
+              parameterValues: decodedData.args ?? [],
               decodingFailed: false,
             },
           ];
