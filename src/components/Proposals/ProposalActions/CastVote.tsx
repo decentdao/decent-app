@@ -3,20 +3,15 @@ import { Check, CheckCircle, Sparkle } from '@phosphor-icons/react';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
-import { getContract } from 'viem';
-import { EntryPoint07Abi } from '../../../assets/abi/EntryPoint07Abi';
 import { TOOLTIP_MAXW } from '../../../constants/common';
 import useFeatureFlag from '../../../helpers/environmentFeatureFlags';
 import useSnapshotProposal from '../../../hooks/DAO/loaders/snapshot/useSnapshotProposal';
 import useCastSnapshotVote from '../../../hooks/DAO/proposal/useCastSnapshotVote';
 import useCastVote from '../../../hooks/DAO/proposal/useCastVote';
-import useNetworkPublicClient from '../../../hooks/useNetworkPublicClient';
 import useCurrentBlockNumber from '../../../hooks/utils/useCurrentBlockNumber';
-import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
 import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
 import {
   AzoriusProposal,
-  BigIntValuePair,
   FractalProposal,
   FractalProposalState,
   VOTE_CHOICES,
@@ -41,12 +36,9 @@ export function CastVote({ proposal }: { proposal: FractalProposal }) {
 
   const azoriusProposal = proposal as AzoriusProposal;
 
-  const publicClient = useNetworkPublicClient();
   // @todo: (gv) Build better UX around castGaslessVotePending (and probably castVotePending)
-  const { castVote, castVotePending, castGaslessVote, castGaslessVotePending } = useCastVote(
-    proposal.proposalId,
-    azoriusProposal.votingStrategy,
-  );
+  const { castVote, castVotePending, castGaslessVote, castGaslessVotePending, canCastGaslessVote } =
+    useCastVote(proposal.proposalId, azoriusProposal.votingStrategy);
 
   const {
     castSnapshotVote,
@@ -56,49 +48,17 @@ export function CastVote({ proposal }: { proposal: FractalProposal }) {
     snapshotWeightedChoice,
   } = useCastSnapshotVote(extendedSnapshotProposal);
 
-  const {
-    contracts: { entryPointv07 },
-  } = useNetworkConfigStore();
   const { canVoteLoading, hasVoted, hasVotedLoading } = useVoteContext();
 
-  const { gaslessVotingEnabled, paymasterAddress } = useDaoInfoStore();
+  const { gaslessVotingEnabled } = useDaoInfoStore();
 
   const gaslessVoteSuccessModal = useDecentModal(ModalType.GASLESS_VOTE_SUCCESS);
 
-  const [paymasterBalance, setPaymasterBalance] = useState<BigIntValuePair>();
-  useEffect(() => {
-    if (!paymasterAddress || !entryPointv07) return;
-
-    const entryPoint = getContract({
-      address: entryPointv07,
-      abi: EntryPoint07Abi,
-      client: publicClient,
-    });
-
-    entryPoint.read.balanceOf([paymasterAddress]).then(balance => {
-      setPaymasterBalance({
-        value: balance.toString(),
-        bigintValue: balance,
-      });
-    });
-  }, [entryPointv07, paymasterAddress, publicClient]);
-
   // Set a reasonable minimum (slightly higher than the required amount)
-  const minimumPaymasterBalance = 60000000000000000n; // 0.06 ETH in wei
   const gaslessFeatureEnabled = useFeatureFlag('flag_gasless_voting');
   const canVoteForFree = useMemo(() => {
-    return (
-      gaslessFeatureEnabled &&
-      gaslessVotingEnabled &&
-      paymasterBalance?.bigintValue !== undefined &&
-      paymasterBalance.bigintValue > minimumPaymasterBalance
-    );
-  }, [
-    gaslessFeatureEnabled,
-    gaslessVotingEnabled,
-    minimumPaymasterBalance,
-    paymasterBalance?.bigintValue,
-  ]);
+    return gaslessFeatureEnabled && gaslessVotingEnabled && canCastGaslessVote;
+  }, [canCastGaslessVote, gaslessFeatureEnabled, gaslessVotingEnabled]);
 
   // If user is lucky enough - he could create a proposal and proceed to vote on it
   // even before the block, in which proposal was created, was mined.
