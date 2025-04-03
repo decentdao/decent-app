@@ -5,7 +5,7 @@ import {
   getProxyFactoryDeployment,
   getSafeL2SingletonDeployment,
 } from '@safe-global/safe-deployments';
-import { getAddress, zeroAddress } from 'viem';
+import { getAddress } from 'viem';
 import { mainnet } from 'wagmi/chains';
 import { GovernanceType } from '../../../types';
 import { NetworkConfig } from '../../../types/network';
@@ -69,10 +69,14 @@ export const mainnetConfig: NetworkConfig = {
       a.LinearERC721VotingWithHatsProposalCreation,
     ),
 
-    linearVotingErc20V1MasterCopy: zeroAddress,
-    linearVotingErc20HatsWhitelistingV1MasterCopy: zeroAddress,
-    linearVotingErc721V1MasterCopy: zeroAddress,
-    linearVotingErc721HatsWhitelistingV1MasterCopy: zeroAddress,
+    linearVotingErc20V1MasterCopy: getAddress(a.LinearERC20VotingV1),
+    linearVotingErc20HatsWhitelistingV1MasterCopy: getAddress(
+      a.LinearERC20VotingWithHatsProposalCreationV1,
+    ),
+    linearVotingErc721V1MasterCopy: getAddress(a.LinearERC721VotingV1),
+    linearVotingErc721HatsWhitelistingV1MasterCopy: getAddress(
+      a.LinearERC721VotingWithHatsProposalCreationV1,
+    ),
 
     moduleAzoriusMasterCopy: getAddress(a.Azorius),
     moduleFractalMasterCopy: getAddress(a.FractalModule),
@@ -90,7 +94,7 @@ export const mainnetConfig: NetworkConfig = {
 
     decentAutonomousAdminV1MasterCopy: getAddress(a.DecentAutonomousAdminV1),
 
-    decentPaymasterV1MasterCopy: zeroAddress,
+    decentPaymasterV1MasterCopy: getAddress(a.DecentPaymasterV1),
 
     keyValuePairs: getAddress(a.KeyValuePairs),
 
