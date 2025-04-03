@@ -187,7 +187,11 @@ export function SafeGeneralSettingsPage() {
           encodeFunctionData({
             abi: ZodiacModuleProxyFactoryAbi,
             functionName: 'deployModule',
-            args: [safeAddress, paymasterInitData, getPaymasterSaltNonce(safeAddress, chainId)],
+            args: [
+              decentPaymasterV1MasterCopy,
+              paymasterInitData,
+              getPaymasterSaltNonce(safeAddress, chainId),
+            ],
           }),
         );
         values.push(0n);
