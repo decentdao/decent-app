@@ -181,7 +181,7 @@ export const useInstallVersionedVotingStrategy = () => {
 
       const encodedStrategyInitParams = encodeAbiParameters(
         parseAbiParameters(
-          'address, address, address, uint32, uint256, uint256, uint256, address, unit256[]',
+          'address, address, address, uint32, uint256, uint256, uint256, address, uint256[]',
         ),
         [
           safeAddress!,

@@ -27,7 +27,7 @@ const getGaslessVotingDaoData = async (
   }
 
   try {
-    const paymasterAddress = getPaymasterAddress({
+    const paymasterAddress = await getPaymasterAddress({
       safeAddress,
       zodiacModuleProxyFactory,
       paymasterMastercopy,
