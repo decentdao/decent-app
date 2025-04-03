@@ -455,7 +455,7 @@ export const useInstallVersionedVotingStrategy = () => {
     [setupParams, getMasterAddress, zodiacModuleProxyFactory],
   );
 
-  const buildInstallVersionedVotingStrategy = useCallback(async () => {
+  const buildInstallVersionedVotingStrategies = useCallback(async () => {
     const { moduleAzoriusAddress, strategies } = governanceContracts;
     if (!safeAddress) {
       throw new Error('No safe address');
@@ -499,13 +499,13 @@ export const useInstallVersionedVotingStrategy = () => {
       if (removalActions.length == addActions.length) {
         actions.push(...removalActions);
         actions.push(...addActions.flat());
-        return actions;
+        return { installVersionedStrategyTxDatas: actions, newStrategies: [] };
       } else {
         throw new Error('Additions and removals should match');
       }
     } else {
       // The installed strategies already support gasless voting, so no need to replace with new ones
-      return [];
+      return { installVersionedStrategyTxDatas: [], newStrategies: [] };
     }
   }, [
     governanceContracts,
@@ -517,6 +517,6 @@ export const useInstallVersionedVotingStrategy = () => {
   ]);
 
   return {
-    buildInstallVersionedVotingStrategy,
+    buildInstallVersionedVotingStrategies,
   };
 };

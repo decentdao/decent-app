@@ -111,7 +111,7 @@ export function SafeGeneralSettingsPage() {
   const snapshotChanged = snapshotENSValid && snapshotENS !== subgraphInfo?.daoSnapshotENS;
   const gaslessVotingChanged = isGaslessVotingEnabledToggled !== gaslessVotingEnabled;
 
-  const { buildInstallVersionedVotingStrategy } = useInstallVersionedVotingStrategy();
+  const { buildInstallVersionedVotingStrategies } = useInstallVersionedVotingStrategy();
 
   const handleEditGeneralGovernance = async () => {
     const changeTitles = [];
@@ -256,14 +256,15 @@ export function SafeGeneralSettingsPage() {
         if (!allStrategiesAreUpdated) {
           // The safe is using the old modules.
           // Include txs to disable the old voting strategy and enable the new one.
-          const installVersionedStrategyTxData = await buildInstallVersionedVotingStrategy();
-          if (!installVersionedStrategyTxData) {
+          const { installVersionedStrategyTxDatas, newStrategies } =
+            await buildInstallVersionedVotingStrategies();
+          if (!installVersionedStrategyTxDatas) {
             throw new Error('Error encoding transaction for installing versioned voting strategy');
           }
 
-          targets.push(...installVersionedStrategyTxData.map(tx => tx.targetAddress));
-          calldatas.push(...installVersionedStrategyTxData.map(tx => tx.calldata));
-          values.push(...installVersionedStrategyTxData.map(() => 0n));
+          targets.push(...installVersionedStrategyTxDatas.map(tx => tx.targetAddress));
+          calldatas.push(...installVersionedStrategyTxDatas.map(tx => tx.calldata));
+          values.push(...installVersionedStrategyTxDatas.map(() => 0n));
         }
       }
     }
