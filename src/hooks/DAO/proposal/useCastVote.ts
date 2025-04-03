@@ -201,6 +201,8 @@ const useCastVote = (proposalId: string, strategy: Address) => {
           onSuccess();
         });
       } catch (error: any) {
+        setCastGaslessVotePending(false);
+
         if (error.name === 'UserRejectedRequestError') {
           toast.error(t('userRejectedSignature', { ns: 'gaslessVoting' }));
           return;
