@@ -39,7 +39,7 @@ const getGaslessVotingDaoData = async (
       address: paymasterAddress,
     });
 
-    const paymasterExists = !paymasterCode || paymasterCode !== '0x';
+    const paymasterExists = !!paymasterCode && paymasterCode !== '0x';
 
     const gaslessVotingEnabled = gaslessVotingEnabledEvent.args.value === 'true';
     return { gaslessVotingEnabled, paymasterAddress: paymasterExists ? paymasterAddress : null };
