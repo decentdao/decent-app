@@ -1,9 +1,9 @@
 import { abis } from '@fractal-framework/fractal-contracts';
 import { toLightSmartAccount } from 'permissionless/accounts';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
-import { Address, getContract, http } from 'viem';
+import { Address, createPublicClient, getContract, http } from 'viem';
 import { createBundlerClient } from 'viem/account-abstraction';
 import { useAccount, usePublicClient } from 'wagmi';
 import { useFractal } from '../../../providers/App/AppProvider';
@@ -12,6 +12,8 @@ import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
 import { useNetworkWalletClient } from '../../useNetworkWalletClient';
 import { useTransaction } from '../../utils/useTransaction';
 import useUserERC721VotingTokens from './useUserERC721VotingTokens';
+import useNetworkPublicClient from '../../useNetworkPublicClient';
+import { mainnet } from 'viem/chains';
 
 const useCastVote = (proposalId: string, strategy: Address) => {
   const {
@@ -150,7 +152,7 @@ const useCastVote = (proposalId: string, strategy: Address) => {
 
   const { address } = useAccount();
   const { paymasterAddress } = useDaoInfoStore();
-  const publicClient = usePublicClient();
+  const publicClient = useNetworkPublicClient();
   const { rpcEndpoint } = useNetworkConfigStore();
 
   const castGaslessVote = useCallback(
@@ -193,7 +195,10 @@ const useCastVote = (proposalId: string, strategy: Address) => {
 
           // i don't really know why we need to do this, but we do
           maxPriorityFeePerGas: maxPriorityFeePerGas * 100n,
-          maxFeePerGas: maxFeePerGas * 100n,
+
+          // Using `maxFeePerGas` directly takes too long (on Sepolia at least).
+          // Here we're multiplying by 1.1 to make it more likely to be accepted by the bundler.
+          maxFeePerGas: (maxFeePerGas * 11n) / 10n,
         });
 
         bundlerClient.waitForUserOperationReceipt({ hash }).then(() => {
