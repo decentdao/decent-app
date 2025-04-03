@@ -18,7 +18,7 @@ export const getPaymasterSaltNonce = (safeAddress: Address, chainId: number) => 
   return saltNonce;
 };
 
-export const getPaymasterAddress = async (args: {
+export const getPaymasterAddress = (args: {
   safeAddress: Address;
   zodiacModuleProxyFactory: Address;
   paymasterMastercopy: Address;

@@ -28,7 +28,7 @@ import { useInstallVersionedVotingStrategy } from '../../../../hooks/utils/useIn
 import { useFractal } from '../../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../../providers/NetworkConfig/useNetworkConfigStore';
 import { useDaoInfoStore } from '../../../../store/daoInfo/useDaoInfoStore';
-import { GovernanceType, ProposalExecuteData } from '../../../../types';
+import { FractalTokenType, GovernanceType, ProposalExecuteData } from '../../../../types';
 import { getPaymasterAddress, getPaymasterSaltNonce } from '../../../../utils/gaslessVoting';
 import { validateENSName } from '../../../../utils/url';
 
@@ -195,50 +195,6 @@ export function SafeGeneralSettingsPage() {
           }),
         );
         values.push(0n);
-
-        // Approve the `vote` function call on the Paymaster
-        // // // // // // // // // // // // // // // // // // //
-        if (strategyAddresses.length === 0 || !votingStrategyType) {
-          throw new Error('No strategy addresses defined');
-        }
-
-        let voteAbiItem: AbiItem;
-
-        if (votingStrategyType === GovernanceType.AZORIUS_ERC20) {
-          voteAbiItem = getAbiItem({
-            name: 'vote',
-            abi: abis.LinearERC20Voting,
-          });
-        } else if (votingStrategyType === GovernanceType.AZORIUS_ERC721) {
-          voteAbiItem = getAbiItem({
-            name: 'vote',
-            abi: abis.LinearERC721Voting,
-          });
-        } else {
-          throw new Error('Invalid voting strategy type');
-        }
-
-        const voteSelector = toFunctionSelector(voteAbiItem);
-
-        const predictedPaymasterAddress = await getPaymasterAddress({
-          safeAddress,
-          zodiacModuleProxyFactory,
-          paymasterMastercopy: decentPaymasterV1MasterCopy,
-          entryPoint: entryPointv07,
-          chainId,
-        });
-
-        strategyAddresses.forEach(strategyAddress => {
-          targets.push(predictedPaymasterAddress);
-          calldatas.push(
-            encodeFunctionData({
-              abi: abis.DecentPaymasterV1,
-              functionName: 'whitelistFunctions',
-              args: [strategyAddress, [voteSelector], [true]],
-            }),
-          );
-          values.push(0n);
-        });
       }
 
       if (strategyAddresses.length) {
@@ -265,6 +221,44 @@ export function SafeGeneralSettingsPage() {
           targets.push(...installVersionedStrategyTxDatas.map(tx => tx.targetAddress));
           calldatas.push(...installVersionedStrategyTxDatas.map(tx => tx.calldata));
           values.push(...installVersionedStrategyTxDatas.map(() => 0n));
+
+          newStrategies.forEach(strategy => {
+            // Whitelist the new strategy's `vote` function call on the Paymaster
+            // // // // // // // // // // // // // // // // // // // // // // //
+            let voteAbiItem: AbiItem;
+            if (strategy.type === FractalTokenType.erc20) {
+              voteAbiItem = getAbiItem({
+                name: 'vote',
+                abi: abis.LinearERC20VotingV1,
+              });
+            } else if (strategy.type === FractalTokenType.erc721) {
+              voteAbiItem = getAbiItem({
+                name: 'vote',
+                abi: abis.LinearERC721VotingV1,
+              });
+            } else {
+              throw new Error('Invalid voting strategy type');
+            }
+            const voteSelector = toFunctionSelector(voteAbiItem);
+
+            const predictedPaymasterAddress = getPaymasterAddress({
+              safeAddress,
+              zodiacModuleProxyFactory,
+              paymasterMastercopy: decentPaymasterV1MasterCopy,
+              entryPoint: entryPointv07,
+              chainId,
+            });
+
+            targets.push(predictedPaymasterAddress);
+            calldatas.push(
+              encodeFunctionData({
+                abi: abis.DecentPaymasterV1,
+                functionName: 'whitelistFunctions',
+                args: [strategy.address, [voteSelector], [true]],
+              }),
+            );
+            values.push(0n);
+          });
         }
       }
     }

@@ -455,7 +455,13 @@ export const useInstallVersionedVotingStrategy = () => {
     [setupParams, getMasterAddress, zodiacModuleProxyFactory],
   );
 
-  const buildInstallVersionedVotingStrategies = useCallback(async () => {
+  const buildInstallVersionedVotingStrategies = useCallback(async (): Promise<{
+    installVersionedStrategyTxDatas: {
+      targetAddress: `0x${string}`;
+      calldata: `0x${string}`;
+    }[];
+    newStrategies: FractalVotingStrategy[];
+  }> => {
     const { moduleAzoriusAddress, strategies } = governanceContracts;
     if (!safeAddress) {
       throw new Error('No safe address');
