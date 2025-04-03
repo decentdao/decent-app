@@ -187,13 +187,9 @@ export function SafeGeneralSettingsPage() {
         values.push(0n);
       }
 
-      // The safe is using the old modules.
-      // Include txs to disable the old voting strategy and enable the new one.
+      // Include txs to disable any old voting strategies and enable the new ones.
       const { installVersionedStrategyTxDatas, newStrategies } =
         await buildInstallVersionedVotingStrategies();
-      if (!installVersionedStrategyTxDatas) {
-        throw new Error('Error encoding transaction for installing versioned voting strategy');
-      }
 
       targets.push(...installVersionedStrategyTxDatas.map(tx => tx.targetAddress));
       calldatas.push(...installVersionedStrategyTxDatas.map(tx => tx.calldata));

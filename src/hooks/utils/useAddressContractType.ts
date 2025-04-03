@@ -226,10 +226,19 @@ const contractTests: ContractFunctionTest[] = [
 export function useAddressContractType() {
   const publicClient = useNetworkPublicClient();
 
-  const getVersion = useCallback(
+  const getContractVersion = useCallback(
     async (contractAddress: Address) => {
       const contract = getContract({
-        abi: abis.DecentPaymasterV1,
+        abi: [
+          // function getVersion() external view returns (uint16);
+          {
+            inputs: [],
+            name: 'getVersion',
+            outputs: [{ internalType: 'uint16', name: '', type: 'uint16' }],
+            stateMutability: 'view',
+            type: 'function',
+          },
+        ],
         address: contractAddress,
         client: publicClient,
       });
@@ -298,31 +307,13 @@ export function useAddressContractType() {
           }
         }
       }
-      const version = await getVersion(address);
 
-      return { ...result, version: version };
+      const version = await getContractVersion(address);
+
+      return { ...result, version };
     },
-    [getVersion, publicClient],
+    [getContractVersion, publicClient],
   );
 
-  // @todo: (gv) This whole thing is really just to check if the current DAO strategy(s) support gasless voting. Needs more robust logic.
-  const isIVersionSupport = useCallback(
-    async (contractAddress: Address) => {
-      const contract = getContract({
-        abi: abis.DecentPaymasterV1,
-        address: contractAddress,
-        client: publicClient,
-      });
-
-      try {
-        const version = await contract.read.getVersion();
-        return version === 1;
-      } catch (error) {
-        return false;
-      }
-    },
-    [publicClient],
-  );
-
-  return { getAddressContractType, isIVersionSupport };
+  return { getAddressContractType };
 }

@@ -5,10 +5,11 @@ import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { Address, getContract, http } from 'viem';
 import { createBundlerClient } from 'viem/account-abstraction';
-import { useAccount, usePublicClient } from 'wagmi';
+import { useAccount } from 'wagmi';
 import { useFractal } from '../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
 import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
+import useNetworkPublicClient from '../../useNetworkPublicClient';
 import { useNetworkWalletClient } from '../../useNetworkWalletClient';
 import { useTransaction } from '../../utils/useTransaction';
 import useUserERC721VotingTokens from './useUserERC721VotingTokens';
@@ -150,7 +151,7 @@ const useCastVote = (proposalId: string, strategy: Address) => {
 
   const { address } = useAccount();
   const { paymasterAddress } = useDaoInfoStore();
-  const publicClient = usePublicClient();
+  const publicClient = useNetworkPublicClient();
   const { rpcEndpoint } = useNetworkConfigStore();
 
   const castGaslessVote = useCallback(
@@ -201,6 +202,8 @@ const useCastVote = (proposalId: string, strategy: Address) => {
           onSuccess();
         });
       } catch (error: any) {
+        setCastGaslessVotePending(false);
+
         if (error.name === 'UserRejectedRequestError') {
           toast.error(t('userRejectedSignature', { ns: 'gaslessVoting' }));
           return;
