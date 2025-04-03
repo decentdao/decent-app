@@ -77,7 +77,6 @@ export type NetworkConfig = {
     sablierV2LockupLinear: Address;
     disperse: Address;
     entryPointv07?: Address; // only set on networks for which we support account abstraction functionality
-    paymasterFactory: Address;
   };
   staking: {
     lido?: {

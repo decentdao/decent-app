@@ -2,41 +2,38 @@ import { abis } from '@fractal-framework/fractal-contracts';
 import { hatIdToTreeId } from '@hatsprotocol/sdk-v1-core';
 import { useEffect } from 'react';
 import { Address, GetContractEventsReturnType, PublicClient, getContract } from 'viem';
-import { DecentPaymasterFactoryV1Abi } from '../../assets/abi/DecentPaymasterFactoryV1Abi';
 import { logError } from '../../helpers/errorLogging';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
 import { useDaoInfoStore } from '../../store/daoInfo/useDaoInfoStore';
 import { useRolesStore } from '../../store/roles/useRolesStore';
-import { getPaymasterSalt } from '../../utils/gaslessVoting';
+import { getPaymasterAddress } from '../../utils/gaslessVoting';
 import useNetworkPublicClient from '../useNetworkPublicClient';
 
 const getGaslessVotingDaoData = async (
   events: GetContractEventsReturnType<typeof abis.KeyValuePairs>,
-  chainId: number,
-  paymasterFactoryAddress: Address,
   safeAddress: Address,
   publicClient: PublicClient,
+  proxyFactory: Address,
+  paymasterMastercopy: Address,
+  entryPoint?: Address,
 ) => {
   // get most recent event where `gaslessVotingEnabled` was set
   const gaslessVotingEnabledEvent = events
     .filter(event => event.args.key && event.args.key === 'gaslessVotingEnabled')
     .pop();
 
-  if (!gaslessVotingEnabledEvent) {
+  if (!gaslessVotingEnabledEvent || !entryPoint) {
     return { gaslessVotingEnabled: false, paymasterAddress: null };
   }
 
   try {
-    const paymasterFactoryContract = getContract({
-      abi: DecentPaymasterFactoryV1Abi,
-      address: paymasterFactoryAddress,
-      client: publicClient,
-    });
-
-    const paymasterAddress = await paymasterFactoryContract.read.getAddress([
+    const paymasterAddress = await getPaymasterAddress({
       safeAddress,
-      getPaymasterSalt(safeAddress, chainId),
-    ]);
+      publicClient,
+      proxyFactory,
+      paymasterMastercopy,
+      entryPoint,
+    });
 
     const paymasterCode = await publicClient.getCode({
       address: paymasterAddress,
@@ -49,7 +46,7 @@ const getGaslessVotingDaoData = async (
   } catch (e) {
     logError({
       message: 'Error getting gasless voting dao data',
-      network: chainId,
+      network: publicClient.chain!.id,
       args: {
         transactionHash: gaslessVotingEnabledEvent.transactionHash,
         logIndex: gaslessVotingEnabledEvent.logIndex,
@@ -147,7 +144,13 @@ const useKeyValuePairs = () => {
   const node = useDaoInfoStore();
   const {
     chain,
-    contracts: { keyValuePairs, sablierV2LockupLinear, paymasterFactory },
+    contracts: {
+      keyValuePairs,
+      sablierV2LockupLinear,
+      proxyFactory,
+      decentPaymasterV1MasterCopy,
+      entryPointv07,
+    },
   } = useNetworkConfigStore();
   const { setHatKeyValuePairData, resetHatsStore } = useRolesStore();
   const { setGaslessVotingDaoData } = useDaoInfoStore();
@@ -174,10 +177,11 @@ const useKeyValuePairs = () => {
 
         getGaslessVotingDaoData(
           safeEvents,
-          chain.id,
-          paymasterFactory,
           safeAddress,
           publicClient,
+          proxyFactory,
+          decentPaymasterV1MasterCopy,
+          entryPointv07,
         ).then(gaslessVotingDaoData => {
           if (gaslessVotingDaoData) {
             setGaslessVotingDaoData(gaslessVotingDaoData);
@@ -210,13 +214,18 @@ const useKeyValuePairs = () => {
             });
           }, 20_000);
 
-          getGaslessVotingDaoData(logs, chain.id, paymasterFactory, safeAddress, publicClient).then(
-            gaslessVotingDaoData => {
-              if (gaslessVotingDaoData) {
-                setGaslessVotingDaoData(gaslessVotingDaoData);
-              }
-            },
-          );
+          getGaslessVotingDaoData(
+            logs,
+            safeAddress,
+            publicClient,
+            proxyFactory,
+            decentPaymasterV1MasterCopy,
+            entryPointv07,
+          ).then(gaslessVotingDaoData => {
+            if (gaslessVotingDaoData) {
+              setGaslessVotingDaoData(gaslessVotingDaoData);
+            }
+          });
         },
       },
     );
@@ -231,7 +240,9 @@ const useKeyValuePairs = () => {
     setHatKeyValuePairData,
     sablierV2LockupLinear,
     setGaslessVotingDaoData,
-    paymasterFactory,
+    entryPointv07,
+    decentPaymasterV1MasterCopy,
+    proxyFactory,
   ]);
 
   useEffect(() => {

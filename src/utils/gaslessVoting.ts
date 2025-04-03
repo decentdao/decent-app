@@ -1,26 +1,45 @@
-import { Address, getContract, keccak256, PublicClient, stringToHex } from 'viem';
-import { DecentPaymasterFactoryV1Abi } from '../assets/abi/DecentPaymasterFactoryV1Abi';
+import { abis } from '@fractal-framework/fractal-contracts';
+import {
+  Address,
+  encodeFunctionData,
+  getContract,
+  keccak256,
+  PublicClient,
+  stringToHex,
+} from 'viem';
 
-export const getPaymasterSalt = (safeAddress: Address, chainId: number) => {
+export const getPaymasterSaltHash = (safeAddress: Address, chainId: number) => {
   const salt = `${safeAddress}-${chainId}`;
-  const saltHash = keccak256(stringToHex(salt));
-  const paymasterSaltBigInt = BigInt(saltHash);
-  return paymasterSaltBigInt;
+  return keccak256(stringToHex(salt));
 };
 
 export const getPaymasterAddress = async (args: {
-  address: Address;
-  chainId: number;
+  safeAddress: Address;
   publicClient: PublicClient;
-  paymasterFactory: Address;
+  proxyFactory: Address;
+  paymasterMastercopy: Address;
+  entryPoint: Address;
 }) => {
-  const { address, chainId, publicClient, paymasterFactory } = args;
-  const paymasterSalt = getPaymasterSalt(address, chainId);
-  const paymasterFactoryContract = getContract({
-    address: paymasterFactory,
-    abi: DecentPaymasterFactoryV1Abi,
+  const { safeAddress, publicClient, proxyFactory, paymasterMastercopy, entryPoint } = args;
+
+  const proxyFactoryContract = getContract({
+    address: proxyFactory,
+    abi: abis.ProxyFactory,
     client: publicClient,
   });
-  const paymasterAddress = await paymasterFactoryContract.read.getAddress([address, paymasterSalt]);
+
+  const paymasterInitData = encodeFunctionData({
+    abi: abis.DecentPaymasterV1,
+    functionName: 'initialize',
+    args: [safeAddress, entryPoint],
+  });
+
+  const paymasterAddress = await proxyFactoryContract.read.predictProxyAddress([
+    paymasterMastercopy,
+    paymasterInitData,
+    getPaymasterSaltHash(safeAddress, publicClient.chain!.id),
+    safeAddress,
+  ]);
+
   return paymasterAddress;
 };
