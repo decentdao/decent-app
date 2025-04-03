@@ -11,9 +11,89 @@ import {
 import ContentBox from '../../ui/containers/ContentBox';
 import { InfoBoxLoader } from '../../ui/loaders/InfoBoxLoader';
 import Divider from '../../ui/utils/Divider';
-import ProgressBar from '../../ui/utils/ProgressBar';
+import ProgressBar, { QuorumProgressBar } from '../../ui/utils/ProgressBar';
 import ProposalERC20VoteItem from './ProposalERC20VoteItem';
 import ProposalERC721VoteItem from './ProposalERC721VoteItem';
+
+function QuorumProgressBarSection({
+  proposal,
+  azoriusGovernance,
+}: {
+  proposal: AzoriusProposal;
+  azoriusGovernance: AzoriusGovernance;
+}) {
+  const { t } = useTranslation(['proposal']);
+  const { votesToken, type, erc721Tokens, votingStrategy } = azoriusGovernance;
+  const {
+    votesSummary: { yes, no, abstain },
+  } = proposal;
+
+  const totalVotesCasted = useMemo(() => yes + no + abstain, [yes, no, abstain]);
+
+  const isERC20 = type === GovernanceType.AZORIUS_ERC20;
+  const isERC721 = type === GovernanceType.AZORIUS_ERC721;
+
+  const totalERC721VotingWeight = useMemo(
+    () =>
+      erc721Tokens?.reduce(
+        (prev, curr) => prev + (curr.totalSupply ? curr.totalSupply * curr.votingWeight : 0n),
+        0n,
+      ),
+    [erc721Tokens],
+  );
+
+  const votesTokenDecimalsDenominator = useMemo(
+    () => 10n ** BigInt(votesToken?.decimals || 0),
+    [votesToken?.decimals],
+  );
+
+  if (
+    (isERC20 && (!votesToken || !votesToken.totalSupply || !votingStrategy?.quorumPercentage)) ||
+    (isERC721 && (!erc721Tokens || !votingStrategy?.quorumThreshold))
+  ) {
+    return (
+      <Box mt={4}>
+        <InfoBoxLoader />
+      </Box>
+    );
+  }
+
+  const strategyQuorum =
+    isERC20 && votesToken && votingStrategy
+      ? votingStrategy.quorumPercentage!.value
+      : isERC721 && votingStrategy
+        ? votingStrategy.quorumThreshold!.value
+        : 1n;
+
+  const reachedQuorum = isERC721
+    ? totalVotesCasted - no
+    : votesToken
+      ? (totalVotesCasted - no) / votesTokenDecimalsDenominator
+      : 0n;
+
+  const totalQuorum = isERC721
+    ? Number(strategyQuorum)
+    : votesToken
+      ? (Number(votesToken.totalSupply / votesTokenDecimalsDenominator) * Number(strategyQuorum)) /
+        100
+      : undefined;
+
+  return (
+    <QuorumProgressBar
+      helperText={t('proposalQuorumHelperText', {
+        quorum: strategyQuorum,
+        total: isERC721
+          ? totalERC721VotingWeight?.toLocaleString()
+          : votesToken
+            ? (votesToken.totalSupply / votesTokenDecimalsDenominator).toLocaleString()
+            : undefined,
+      })}
+      reachedQuorum={Number(reachedQuorum)}
+      totalQuorum={totalQuorum}
+      unit={isERC20 ? '%' : ''}
+    />
+  );
+}
 
 export function VotesPercentage({ label, percentage }: { label: string; percentage: number }) {
   return (
@@ -29,15 +109,12 @@ export function VotesPercentage({ label, percentage }: { label: string; percenta
   );
 }
 
-function ProposalVotes({
-  proposal: {
+function ProposalVotes({ proposal }: { proposal: AzoriusProposal }) {
+  const {
     proposalId,
     votesSummary: { yes, no, abstain },
     votes,
-  },
-}: {
-  proposal: AzoriusProposal;
-}) {
+  } = proposal;
   const { governance } = useFractal();
 
   const azoriusGovernance = governance as AzoriusGovernance;
@@ -97,6 +174,12 @@ function ProposalVotes({
           label={t('abstain')}
           percentage={abstainVotesPercentage}
         />
+        <Box mt={8}>
+          <QuorumProgressBarSection
+            proposal={proposal}
+            azoriusGovernance={azoriusGovernance}
+          />
+        </Box>
       </ContentBox>
       {votes.length !== 0 && (
         <ContentBox containerBoxProps={{ bg: 'transparent', width: '100%', my: 0, paddingTop: 0 }}>
