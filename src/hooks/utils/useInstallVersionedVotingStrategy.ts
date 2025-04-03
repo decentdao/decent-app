@@ -197,7 +197,7 @@ export const useInstallVersionedVotingStrategy = () => {
       );
 
       return encodeFunctionData({
-        abi: abis.LinearERC20VotingWithHatsProposalCreation, // TODO: Use release version of LinearERC20VotingWithHatsProposalV1Creation
+        abi: abis.LinearERC20VotingWithHatsProposalCreationV1,
         functionName: 'setUp',
         args: [encodedStrategyInitParams],
       });
@@ -330,7 +330,7 @@ export const useInstallVersionedVotingStrategy = () => {
       );
 
       return encodeFunctionData({
-        abi: abis.LinearERC721VotingWithHatsProposalCreation, // TODO: Use release version of LinearERC721VotingWithHatsProposalV1Creation
+        abi: abis.LinearERC721VotingWithHatsProposalCreationV1,
         functionName: 'setUp',
         args: [encodedStrategyInitParams],
       });
