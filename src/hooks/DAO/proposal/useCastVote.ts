@@ -9,10 +9,10 @@ import { useAccount } from 'wagmi';
 import { useFractal } from '../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
 import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
+import useNetworkPublicClient from '../../useNetworkPublicClient';
 import { useNetworkWalletClient } from '../../useNetworkWalletClient';
 import { useTransaction } from '../../utils/useTransaction';
 import useUserERC721VotingTokens from './useUserERC721VotingTokens';
-import useNetworkPublicClient from '../../useNetworkPublicClient';
 
 const useCastVote = (proposalId: string, strategy: Address) => {
   const {
@@ -194,10 +194,7 @@ const useCastVote = (proposalId: string, strategy: Address) => {
 
           // i don't really know why we need to do this, but we do
           maxPriorityFeePerGas: maxPriorityFeePerGas * 100n,
-
-          // Using `maxFeePerGas` directly takes too long (on Sepolia at least).
-          // Here we're multiplying by 1.1 to make it more likely to be accepted by the bundler.
-          maxFeePerGas: (maxFeePerGas * 11n) / 10n,
+          maxFeePerGas: maxFeePerGas * 100n,
         });
 
         bundlerClient.waitForUserOperationReceipt({ hash }).then(() => {
