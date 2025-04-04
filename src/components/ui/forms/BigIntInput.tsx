@@ -49,10 +49,6 @@ export function BigIntInput({
   const [inputValue, setInputValue] = useState<string>(
     value && value !== 0n ? formatUnits(value, decimalPlaces) : '',
   );
-  if (inputValue === '9991.20') {
-    const x = formatUnits(value!, decimalPlaces);
-    console.log('x', x);
-  }
 
   // this will insure the caret in the input component does not shift to the end of the input when the value is changed
   const resetCaretPositionForInput = (event: React.ChangeEvent<HTMLInputElement>) => {
