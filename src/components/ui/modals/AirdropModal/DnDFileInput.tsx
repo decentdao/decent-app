@@ -1,4 +1,5 @@
 import { Box, Flex, Text } from '@chakra-ui/react';
+import csv from 'csvtojson';
 import { useFormikContext } from 'formik';
 import { useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
@@ -6,26 +7,47 @@ import { useTranslation } from 'react-i18next';
 import { isAddress } from 'viem';
 import { AirdropFormValues } from './AirdropModal';
 
-export const parseRecipients = (csvText: string, decimals: number) => {
-  const rows = csvText
-    .split('\n')
-    .map(row => row.trim())
-    .filter(row => {
-      if (!row) return false;
-      const [address, amount] = row.split(',').map(cell => cell.trim());
-      return isAddress(address) && parseFloat(amount) > 0;
-    });
+function floatStringToBigInt(str: string, decimals: number): bigint {
+  // Step 1: Split integer and fraction
+  const [intPart, fracPart = ''] = str.split('.');
 
-  return rows.map(row => {
-    const [address, amount] = row.split(',').map(cell => cell.trim());
-    return {
-      address,
-      amount: {
-        value: amount,
-        bigintValue: BigInt(parseFloat(amount) * 10 ** decimals),
-      },
-    };
+  // Step 2: Normalize fractional part to desired decimals
+  const normalizedFrac = (fracPart + '0'.repeat(decimals)).slice(0, decimals);
+
+  // Step 3: Combine parts and convert to BigInt
+  const combined = intPart + normalizedFrac;
+
+  return BigInt(combined);
+}
+
+const zeroBigInt = BigInt(0);
+
+export const parseRecipients = async (csvText: string, decimals: number) => {
+  const converter = csv({
+    noheader: true,
+    trim: true,
+    output: 'csv', // Output as array of arrays
   });
+  const jsonArray = await converter.fromString(csvText);
+
+  return jsonArray
+    .map((row: any) => {
+      const [address, amount] = row;
+      const trimmedAmount = amount.replace(/,/g, '').trim(); // Remove commas
+      const parsed = floatStringToBigInt(trimmedAmount, decimals);
+      if (isAddress(address) && parsed > zeroBigInt) {
+        return {
+          address,
+          amount: {
+            value: trimmedAmount,
+            bigintValue: parsed,
+          },
+        };
+      } else {
+        return null;
+      }
+    })
+    .filter(row => row != null);
 };
 
 export function DnDFileInput() {
@@ -39,12 +61,13 @@ export function DnDFileInput() {
 
       reader.onload = e => {
         const text = e.target?.result as string;
-        try {
-          const recipients = parseRecipients(text, values.selectedAsset.decimals);
-          setFieldValue('recipients', recipients);
-        } catch (error) {
-          console.error('Error processing CSV:', error);
-        }
+        parseRecipients(text, values.selectedAsset.decimals)
+          .then(recipients => {
+            setFieldValue('recipients', recipients);
+          })
+          .catch(error => {
+            console.error('Error processing CSV:', error);
+          });
       };
 
       reader.readAsText(file);
