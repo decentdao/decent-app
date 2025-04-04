@@ -36,7 +36,7 @@ const parseRecipientLines = (text: string[][], decimals: number) => {
   return text
     .map((row: any) => {
       const [address, amount] = row;
-      const trimmedAmount = amount.replace(/,/g, '').replace('$', '').trim(); // Remove commas
+      const trimmedAmount = amount.replace(/[^\d.]/g, ''); // Remove commas
       const parsed = floatStringToBigInt(trimmedAmount, decimals);
       if (isAddress(address) && parsed > zeroBigInt) {
         return {
