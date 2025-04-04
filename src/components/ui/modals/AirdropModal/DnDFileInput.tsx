@@ -22,15 +22,21 @@ function floatStringToBigInt(str: string, decimals: number): bigint {
 
 const zeroBigInt = BigInt(0);
 
-export const parseRecipients = async (csvText: string, decimals: number) => {
+const parseTsvRecipients = (text: string) => {
+  return text.split('\n').map(row => row.split('\t'));
+};
+
+const parseCsvRecipients = async (text: string) => {
   const converter = csv({
     noheader: true,
     trim: true,
     output: 'csv', // Output as array of arrays
   });
-  const jsonArray = await converter.fromString(csvText);
+  return converter.fromString(text);
+};
 
-  return jsonArray
+const parseRecipientLines = async (text: string[][], decimals: number) => {
+  return text
     .map((row: any) => {
       const [address, amount] = row;
       const trimmedAmount = amount.replace(/,/g, '').trim(); // Remove commas
@@ -48,6 +54,14 @@ export const parseRecipients = async (csvText: string, decimals: number) => {
       }
     })
     .filter(row => row != null);
+};
+
+export const parseRecipients = async (text: string, decimals: number) => {
+  if (text.includes('\t')) {
+    return parseRecipientLines(parseTsvRecipients(text), decimals);
+  } else {
+    return parseRecipientLines(await parseCsvRecipients(text), decimals);
+  }
 };
 
 export function DnDFileInput() {
@@ -79,6 +93,7 @@ export function DnDFileInput() {
     onDrop,
     accept: {
       'text/csv': ['.csv'],
+      'text/tsv': ['.tsv'],
     },
     multiple: false,
   });
