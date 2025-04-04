@@ -125,7 +125,7 @@ export const useInstallVersionedVotingStrategy = () => {
       }
 
       const existingAbiAndAddress = {
-        abi: abis.LinearERC20VotingWithHatsProposalCreationV1,
+        abi: abis.LinearERC20VotingWithHatsProposalCreation,
         address: strategyToRemove.address,
       };
 
@@ -251,7 +251,7 @@ export const useInstallVersionedVotingStrategy = () => {
       moduleAzoriusAddress: Address,
     ): Promise<EncodeAbiParametersReturnType> => {
       const existingAbiAndAddress = {
-        abi: abis.LinearERC721VotingWithHatsProposalCreationV1,
+        abi: abis.LinearERC721VotingWithHatsProposalCreation,
         address: strategyToRemove.address,
       };
 
