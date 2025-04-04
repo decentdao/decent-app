@@ -11,16 +11,19 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import {
+  AbiItem,
   Address,
   encodeAbiParameters,
   encodeFunctionData,
   encodePacked,
+  getAbiItem,
   getAddress,
   getContract,
   getCreate2Address,
   Hex,
   keccak256,
   parseAbiParameters,
+  toFunctionSelector,
   zeroAddress,
 } from 'viem';
 import GnosisSafeL2 from '../../assets/abi/GnosisSafeL2';
@@ -92,7 +95,7 @@ export default function useCreateRoles() {
       moduleAzoriusAddress,
     },
   } = useFractal();
-  const { safe, subgraphInfo } = useDaoInfoStore();
+  const { safe, subgraphInfo, gaslessVotingEnabled, paymasterAddress } = useDaoInfoStore();
   const { hatsTree, hatsTreeId, getHat } = useRolesStore();
   const {
     addressPrefix,
@@ -124,6 +127,25 @@ export default function useCreateRoles() {
   const publicClient = useNetworkPublicClient();
   const navigate = useNavigate();
 
+  const getVoteSelector = (strategyType: 'erc20' | 'erc721') => {
+    let voteAbiItem: AbiItem;
+    if (strategyType === 'erc20') {
+      voteAbiItem = getAbiItem({
+        name: 'vote',
+        abi: abis.LinearERC20VotingV1,
+      });
+    } else if (strategyType === 'erc721') {
+      voteAbiItem = getAbiItem({
+        name: 'vote',
+        abi: abis.LinearERC721VotingV1,
+      });
+    } else {
+      throw new Error('Invalid voting strategy type');
+    }
+    const voteSelector = toFunctionSelector(voteAbiItem);
+    return voteSelector;
+  };
+
   const buildDeployWhitelistingStrategy = useCallback(
     async (whitelistedHatsIds: bigint[]) => {
       if (!safeAddress || !moduleAzoriusAddress) {
@@ -131,6 +153,7 @@ export default function useCreateRoles() {
       }
       const azoriusGovernance = governance as AzoriusGovernance;
       const { votingStrategy, votesToken, erc721Tokens } = azoriusGovernance;
+
       if (azoriusGovernance.type === GovernanceType.AZORIUS_ERC20) {
         if (!votesToken || !votingStrategy?.quorumPercentage || !linearVotingErc20Address) {
           return;
@@ -222,7 +245,22 @@ export default function useCreateRoles() {
           }),
         };
 
-        return [deployWhitelistingVotingStrategyTx, enableDeployedVotingStrategyTx];
+        const optionallyWhitelistWhitelistingStrategyOnPaymaster = [];
+        if (gaslessVotingEnabled && paymasterAddress) {
+          optionallyWhitelistWhitelistingStrategyOnPaymaster.push({
+            calldata: encodeFunctionData({
+              abi: abis.DecentPaymasterV1,
+              functionName: 'whitelistFunctions',
+              args: [predictedStrategyAddress, [getVoteSelector('erc20')], [true]],
+            }),
+            targetAddress: paymasterAddress,
+          });
+        }
+        return [
+          deployWhitelistingVotingStrategyTx,
+          enableDeployedVotingStrategyTx,
+          ...optionallyWhitelistWhitelistingStrategyOnPaymaster,
+        ];
       } else if (azoriusGovernance.type === GovernanceType.AZORIUS_ERC721) {
         if (!erc721Tokens || !votingStrategy?.quorumThreshold || !linearVotingErc721Address) {
           return;
@@ -315,7 +353,23 @@ export default function useCreateRoles() {
           }),
         };
 
-        return [deployWhitelistingVotingStrategyTx, enableDeployedVotingStrategyTx];
+        const optionallyWhitelistWhitelistingStrategyOnPaymaster = [];
+        if (gaslessVotingEnabled && paymasterAddress) {
+          optionallyWhitelistWhitelistingStrategyOnPaymaster.push({
+            calldata: encodeFunctionData({
+              abi: abis.DecentPaymasterV1,
+              functionName: 'whitelistFunctions',
+              args: [predictedStrategyAddress, [getVoteSelector('erc721')], [true]],
+            }),
+            targetAddress: paymasterAddress,
+          });
+        }
+
+        return [
+          deployWhitelistingVotingStrategyTx,
+          enableDeployedVotingStrategyTx,
+          ...optionallyWhitelistWhitelistingStrategyOnPaymaster,
+        ];
       } else {
         throw new Error(
           'Can not deploy Whitelisting Voting Strategy - unsupported governance type!',
@@ -324,15 +378,17 @@ export default function useCreateRoles() {
     },
     [
       safeAddress,
+      moduleAzoriusAddress,
       governance,
+      linearVotingErc20Address,
+      publicClient,
       hatsProtocol,
       linearVotingErc20HatsWhitelistingV1MasterCopy,
-      linearVotingErc721HatsWhitelistingV1MasterCopy,
-      moduleAzoriusAddress,
-      publicClient,
       zodiacModuleProxyFactory,
-      linearVotingErc20Address,
+      gaslessVotingEnabled,
+      paymasterAddress,
       linearVotingErc721Address,
+      linearVotingErc721HatsWhitelistingV1MasterCopy,
     ],
   );
 
