@@ -35,7 +35,7 @@ const parseCsvRecipients = async (text: string) => {
   return converter.fromString(text);
 };
 
-const parseRecipientLines = async (text: string[][], decimals: number) => {
+const parseRecipientLines = (text: string[][], decimals: number) => {
   return text
     .map((row: any) => {
       const [address, amount] = row;
