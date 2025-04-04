@@ -4,7 +4,7 @@ import { useFormikContext } from 'formik';
 import { useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { useTranslation } from 'react-i18next';
-import { isAddress } from 'viem';
+import { formatUnits, isAddress } from 'viem';
 import { AirdropFormValues } from './AirdropModal';
 
 function floatStringToBigInt(str: string, decimals: number): bigint {
@@ -22,12 +22,9 @@ function floatStringToBigInt(str: string, decimals: number): bigint {
 
 const zeroBigInt = BigInt(0);
 
-const parseTsvRecipients = (text: string) => {
-  return text.split('\n').map(row => row.split('\t'));
-};
-
-const parseCsvRecipients = async (text: string) => {
+const parseCsvText = async (text: string, tabDelimited: boolean) => {
   const converter = csv({
+    delimiter: tabDelimited ? '\t' : 'auto',
     noheader: true,
     trim: true,
     output: 'csv', // Output as array of arrays
@@ -39,13 +36,13 @@ const parseRecipientLines = (text: string[][], decimals: number) => {
   return text
     .map((row: any) => {
       const [address, amount] = row;
-      const trimmedAmount = amount.replace(/,/g, '').trim(); // Remove commas
+      const trimmedAmount = amount.replace(/,/g, '').replace('$', '').trim(); // Remove commas
       const parsed = floatStringToBigInt(trimmedAmount, decimals);
       if (isAddress(address) && parsed > zeroBigInt) {
         return {
           address,
           amount: {
-            value: trimmedAmount,
+            value: formatUnits(parsed, decimals),
             bigintValue: parsed,
           },
         };
@@ -57,11 +54,7 @@ const parseRecipientLines = (text: string[][], decimals: number) => {
 };
 
 export const parseRecipients = async (text: string, decimals: number) => {
-  if (text.includes('\t')) {
-    return parseRecipientLines(parseTsvRecipients(text), decimals);
-  } else {
-    return parseRecipientLines(await parseCsvRecipients(text), decimals);
-  }
+  return parseRecipientLines(await parseCsvText(text, text.includes('\t')), decimals);
 };
 
 export function DnDFileInput() {
