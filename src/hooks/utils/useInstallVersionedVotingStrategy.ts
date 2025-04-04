@@ -120,6 +120,10 @@ export const useInstallVersionedVotingStrategy = () => {
       tokenAddress: Address,
       moduleAzoriusAddress: Address,
     ): Promise<EncodeAbiParametersReturnType> => {
+      if (!safeAddress) {
+        throw new Error('No safe address');
+      }
+
       const existingAbiAndAddress = {
         abi: abis.LinearERC20VotingWithHatsProposalCreation,
         address: strategyToRemove.address,
@@ -129,7 +133,6 @@ export const useInstallVersionedVotingStrategy = () => {
         existingVotingPeriod,
         existingQuorumNumerator,
         existingBasisNumerator,
-        existingRequiredProposerWeight,
         existingWhitelistedHatIds,
       ] = await publicClient.multicall({
         contracts: [
@@ -147,10 +150,6 @@ export const useInstallVersionedVotingStrategy = () => {
           },
           {
             ...existingAbiAndAddress,
-            functionName: 'requiredProposerWeight',
-          },
-          {
-            ...existingAbiAndAddress,
             functionName: 'getWhitelistedHatIds',
           },
         ],
@@ -159,14 +158,13 @@ export const useInstallVersionedVotingStrategy = () => {
 
       const encodedStrategyInitParams = encodeAbiParameters(
         parseAbiParameters(
-          'address, address, address, uint32, uint256, uint256, uint256, address, uint256[]',
+          'address, address, address, uint32, uint256, uint256, address, uint256[]',
         ),
         [
-          safeAddress!,
+          safeAddress,
           tokenAddress,
           moduleAzoriusAddress,
           existingVotingPeriod,
-          existingRequiredProposerWeight,
           existingQuorumNumerator,
           existingBasisNumerator,
           hatsProtocol,
@@ -260,7 +258,6 @@ export const useInstallVersionedVotingStrategy = () => {
       const [
         existingVotingPeriod,
         existingQuorumThreshold,
-        existingProposerThreshold,
         existingBasisNumerator,
         existingWhitelistedHatIds,
       ] = await publicClient.multicall({
@@ -272,10 +269,6 @@ export const useInstallVersionedVotingStrategy = () => {
           {
             ...existingAbiAndAddress,
             functionName: 'quorumThreshold',
-          },
-          {
-            ...existingAbiAndAddress,
-            functionName: 'proposerThreshold',
           },
           {
             ...existingAbiAndAddress,
@@ -291,7 +284,7 @@ export const useInstallVersionedVotingStrategy = () => {
 
       const encodedStrategyInitParams = encodeAbiParameters(
         parseAbiParameters(
-          'address, address[], uint256[], address, uint32, uint256, uint256, uint256, address, uint256[]',
+          'address, address[], uint256[], address, uint32, uint256, uint256, address, uint256[]',
         ),
         [
           safeAddress!,
@@ -299,7 +292,6 @@ export const useInstallVersionedVotingStrategy = () => {
           erc721TokenAddresses.map(token => token.votingWeight),
           moduleAzoriusAddress,
           existingVotingPeriod,
-          existingProposerThreshold,
           existingQuorumThreshold,
           existingBasisNumerator,
           hatsProtocol,
