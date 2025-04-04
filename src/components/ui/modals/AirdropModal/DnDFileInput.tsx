@@ -22,7 +22,7 @@ function floatStringToBigInt(str: string, decimals: number): bigint {
 
 const zeroBigInt = BigInt(0);
 
-const parseCsvText = async (text: string, tabDelimited: boolean) => {
+const parseCsvText = (text: string, tabDelimited: boolean) => {
   const converter = csv({
     delimiter: tabDelimited ? '\t' : 'auto',
     noheader: true,
