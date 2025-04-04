@@ -6,6 +6,7 @@ import { Address, getAddress, isAddress } from 'viem';
 import { usePublicClient } from 'wagmi';
 import * as Yup from 'yup';
 import { useFractal } from '../../../../providers/App/AppProvider';
+import { useProposalActionsStore } from '../../../../store/actions/useProposalActionsStore';
 import { BigIntValuePair, TokenBalance } from '../../../../types';
 import { formatCoinFromAsset } from '../../../../utils';
 import { validateENSName } from '../../../../utils/url';
@@ -76,7 +77,9 @@ export function AirdropModal({
       .required(),
   });
 
+  const { resetActions } = useProposalActionsStore();
   const handleAirdropSubmit = async (values: AirdropFormValues) => {
+    resetActions();
     airdropData({
       recipients: await Promise.all(
         values.recipients.map(async recipient => {
