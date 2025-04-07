@@ -180,7 +180,7 @@ const useCastVote = (proposalId: string, strategy: Address) => {
     const maxPriorityFeePerGasMultiplier = networkConfig.maxPriorityFeePerGasMultiplier;
 
     // Adds buffer to maxFeePerGasEstimate to ensure transaction gets included
-    const maxFeePerGasMultiplier = 15n / 10n;
+    const maxFeePerGasMultiplier = 50n;
 
     const maxPriorityFeePerGas = maxPriorityFeePerGasEstimate * maxPriorityFeePerGasMultiplier;
     const maxFeePerGas = maxFeePerGasEstimate * maxFeePerGasMultiplier;
