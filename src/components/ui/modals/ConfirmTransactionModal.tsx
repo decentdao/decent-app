@@ -1,5 +1,5 @@
 import { Box, Button, Text } from '@chakra-ui/react';
-import { Formik, FormikProps } from 'formik';
+import { Formik, FormikErrors, FormikProps } from 'formik';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { DAO_ROUTES } from '../../../constants/routes';
@@ -8,6 +8,7 @@ import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetwo
 import { useProposalActionsStore } from '../../../store/actions/useProposalActionsStore';
 import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
 import {
+  BigIntValuePair,
   CreateProposalActionData,
   CreateProposalForm,
   CreateProposalTransaction,
@@ -71,7 +72,7 @@ export function ConfirmTransactionModal({
     >
       {(formikProps: FormikProps<CreateProposalForm>) => {
         const createProposalButtonDisabled = Object.keys(formikProps.errors).length > 0;
-
+        const { setFieldValue, errors, values } = formikProps;
         return (
           <form onSubmit={formikProps.handleSubmit}>
             <Box>
@@ -79,7 +80,13 @@ export function ConfirmTransactionModal({
                 <ProposalTransactionsForm
                   pendingTransaction={false}
                   isProposalMode={true}
-                  {...formikProps}
+                  values={values.transactions}
+                  setFieldValue={setFieldValue}
+                  errors={
+                    errors?.transactions as FormikErrors<
+                      CreateProposalTransaction<BigIntValuePair>
+                    >[]
+                  }
                 />
                 <Divider marginBottom="1rem" />
                 <Text marginBottom="1rem">{t('confirmAction')}</Text>

@@ -13,6 +13,9 @@ import { DEFAULT_PROPOSAL_TRANSACTION } from './constants';
 interface ProposalTransactionsFormProps extends FormikProps<CreateProposalForm> {
   pendingTransaction: boolean;
   isProposalMode: boolean;
+  setFieldValue: FormikProps<CreateProposalTransaction[]>['setFieldValue'];
+  values: FormikProps<CreateProposalTransaction[]>['values'];
+  errors?: FormikProps<CreateProposalTransaction[]>['errors']; // for validation errors
 }
 
 export default function ProposalTransactionsForm(props: ProposalTransactionsFormProps) {

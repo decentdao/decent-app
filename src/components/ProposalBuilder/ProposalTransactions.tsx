@@ -14,10 +14,13 @@ import { FormikErrors, FormikProps } from 'formik';
 import { Dispatch, SetStateAction } from 'react';
 import { useTranslation } from 'react-i18next';
 import { BigIntValuePair } from '../../types';
-import { CreateProposalForm, CreateProposalTransaction } from '../../types/proposalBuilder';
+import { CreateProposalTransaction } from '../../types/proposalBuilder';
 import ProposalTransaction from './ProposalTransaction';
 
-interface ProposalTransactionsProps extends FormikProps<CreateProposalForm> {
+interface ProposalTransactionsProps {
+  values: FormikProps<CreateProposalTransaction[]>['values'];
+  errors?: FormikProps<CreateProposalTransaction[]>['errors'];
+  setFieldValue: FormikProps<CreateProposalTransaction[]>['setFieldValue'];
   pendingTransaction: boolean;
   expandedIndecies: number[];
   setExpandedIndecies: Dispatch<SetStateAction<number[]>>;
@@ -46,7 +49,7 @@ export default function ProposalTransactions({
       index={expandedIndecies}
     >
       {transactions.map((_, index) => {
-        const txErrors = errors?.transactions?.[index] as
+        const txErrors = errors?.[index] as
           | FormikErrors<CreateProposalTransaction<BigIntValuePair>>
           | undefined;
         const txAddressError = txErrors?.targetAddress;
