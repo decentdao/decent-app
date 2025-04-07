@@ -5,6 +5,7 @@ import { zeroAddress } from 'viem';
 import { DAOSearch } from '../../components/ui/menus/DAOSearch';
 import { ModalType } from '../../components/ui/modals/ModalProvider';
 import { useDecentModal } from '../../components/ui/modals/useDecentModal';
+import useFeatureFlag from '../../helpers/environmentFeatureFlags';
 import { useFractal } from '../../providers/App/AppProvider';
 import { useDaoInfoStore } from '../../store/daoInfo/useDaoInfoStore';
 import { GettingStarted } from './GettingStarted';
@@ -39,13 +40,14 @@ export default function HomePage() {
     setFieldValue: () => {},
   });
 
+  const isDevMode = useFeatureFlag('flag_dev');
   return (
     <Flex
       direction="column"
       mt="2.5rem"
     >
       {/* Mobile */}
-      <Button onClick={openTransactionBuilderModal}>Open Modal</Button>
+      {isDevMode && <Button onClick={openTransactionBuilderModal}>Open Modal</Button>}
       <Hide above="md">
         <Flex
           direction="column"
