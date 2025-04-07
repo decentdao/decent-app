@@ -26,6 +26,8 @@ const useCastVote = (proposalId: string, strategy: Address) => {
   } = useFractal();
   const {
     contracts: { entryPointv07 },
+    rpcEndpoint,
+    getConfigByChainId,
   } = useNetworkConfigStore();
 
   const [contractCall, castVotePending] = useTransaction();
@@ -157,7 +159,6 @@ const useCastVote = (proposalId: string, strategy: Address) => {
   const { address } = useAccount();
   const { paymasterAddress } = useDaoInfoStore();
   const publicClient = useNetworkPublicClient();
-  const { rpcEndpoint } = useNetworkConfigStore();
 
   const prepareGaslessVoteOperation = useCallback(async () => {
     if (!publicClient || !paymasterAddress || !walletClient || !entryPointv07) {
@@ -170,20 +171,19 @@ const useCastVote = (proposalId: string, strategy: Address) => {
     } = await publicClient.estimateFeesPerGas();
     const castVoteCallData = prepareCastVoteData(0);
 
-    // multiply 100 to pass precheck on https://github.com/alchemyplatform/rundler/blob/fae8909b34e5874c0cae2d06aa841a8a112d22a0/crates/sim/src/precheck.rs#L336-L356
-    const maxPriorityFeePerGasMultiplier = 100n;
+    const networkConfig = getConfigByChainId(publicClient.chain.id);
+    if (!networkConfig.maxPriorityFeePerGasMultiplier) {
+      return;
+    }
 
-    // Adds 10% buffer to maxFeePerGas to ensure transaction gets included
-    const maxFeePerGasMultiplier = 11n / 10n;
+    // `maxPriorityFeePerGas` returned from `estimateFeesPerGas` needs to be multiplied by this value to match minimum requirement here https://docs.alchemy.com/reference/rundler-maxpriorityfeepergas
+    const maxPriorityFeePerGasMultiplier = networkConfig.maxPriorityFeePerGasMultiplier;
+
+    // Adds buffer to maxFeePerGasEstimate to ensure transaction gets included
+    const maxFeePerGasMultiplier = 15n / 10n;
 
     const maxPriorityFeePerGas = maxPriorityFeePerGasEstimate * maxPriorityFeePerGasMultiplier;
     const maxFeePerGas = maxFeePerGasEstimate * maxFeePerGasMultiplier;
-
-    const userOpWithoutCallData = {
-      paymaster: paymasterAddress,
-      maxPriorityFeePerGas,
-      maxFeePerGas,
-    };
 
     const smartWallet = await toLightSmartAccount({
       client: publicClient,
@@ -195,6 +195,12 @@ const useCastVote = (proposalId: string, strategy: Address) => {
       client: publicClient,
       transport: http(rpcEndpoint),
     });
+
+    const userOpWithoutCallData = {
+      paymaster: paymasterAddress,
+      maxPriorityFeePerGas,
+      maxFeePerGas,
+    };
 
     const {
       preVerificationGas,
@@ -224,6 +230,7 @@ const useCastVote = (proposalId: string, strategy: Address) => {
     };
   }, [
     entryPointv07,
+    getConfigByChainId,
     paymasterAddress,
     prepareCastVoteData,
     publicClient,
