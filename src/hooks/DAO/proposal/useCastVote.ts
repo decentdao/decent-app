@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { Address, getContract, http } from 'viem';
-import { createBundlerClient, EstimateUserOperationGasErrorType } from 'viem/account-abstraction';
+import { createBundlerClient } from 'viem/account-abstraction';
 import { useAccount } from 'wagmi';
 import { EntryPoint07Abi } from '../../../assets/abi/EntryPoint07Abi';
 import { useFractal } from '../../../providers/App/AppProvider';
@@ -197,8 +197,8 @@ const useCastVote = (proposalId: string, strategy: Address) => {
       } = await bundlerClient.estimateUserOperationGas({
         paymaster: paymasterAddress,
         calls: [castVoteCallData],
-        maxPriorityFeePerGas: multipliedMaxFeePerGas,
-        maxFeePerGas: multipliedMaxPriorityFeePerGas,
+        maxPriorityFeePerGas: multipliedMaxPriorityFeePerGas,
+        maxFeePerGas: multipliedMaxFeePerGas,
       });
 
       // Calculate gas
@@ -214,9 +214,9 @@ const useCastVote = (proposalId: string, strategy: Address) => {
       setCanCastGaslessVote(paymasterBalance >= gasCost);
     };
 
-    estimateGaslessVoteGas().catch(e => {
-      const error = e as EstimateUserOperationGasErrorType;
-      console.warn('error', error.message);
+    estimateGaslessVoteGas().catch(() => {
+      //const error = e as EstimateUserOperationGasErrorType;
+      //console.warn('error', error.message);
       setCanCastGaslessVote(false);
     });
     // walletClient object is constantly changing,
