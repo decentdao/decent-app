@@ -3,7 +3,7 @@ import { toLightSmartAccount } from 'permissionless/accounts';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
-import { Address, getContract, http } from 'viem';
+import { Address, formatEther, getContract, http } from 'viem';
 import { createBundlerClient } from 'viem/account-abstraction';
 import { useAccount } from 'wagmi';
 import { EntryPoint07Abi } from '../../../assets/abi/EntryPoint07Abi';
@@ -160,6 +160,81 @@ const useCastVote = (proposalId: string, strategy: Address) => {
   const publicClient = useNetworkPublicClient();
   const { rpcEndpoint } = useNetworkConfigStore();
 
+  const getEstimatedFees = useCallback(async () => {
+    if (!publicClient) {
+      return;
+    }
+
+    if (!address || !paymasterAddress || !walletClient || !publicClient || !entryPointv07) {
+      return;
+    }
+
+    const smartWallet = await toLightSmartAccount({
+      client: publicClient,
+      owner: walletClient,
+      version: '2.0.0',
+    });
+    const bundlerClient = createBundlerClient({
+      account: smartWallet,
+      client: publicClient,
+      transport: http(rpcEndpoint),
+    });
+
+    const {
+      maxFeePerGas: maxFeePerGasEstimate,
+      maxPriorityFeePerGas: maxPriorityFeePerGasEstimate,
+    } = await publicClient.estimateFeesPerGas();
+    const castVoteCallData = prepareCastVoteData(0);
+
+    const maxPriorityFeePerGasMultiplier = 100n;
+    const maxFeePerGasMultiplier = 3n / 2n;
+
+    const maxPriorityFeePerGas = maxPriorityFeePerGasEstimate * maxPriorityFeePerGasMultiplier;
+    const maxFeePerGas = maxFeePerGasEstimate * maxFeePerGasMultiplier;
+
+    const userOpWithoutCallData = {
+      paymaster: paymasterAddress,
+      maxPriorityFeePerGas,
+      maxFeePerGas,
+    };
+
+    const {
+      preVerificationGas,
+      verificationGasLimit,
+      callGasLimit,
+      paymasterVerificationGasLimit,
+      paymasterPostOpGasLimit,
+    } = await bundlerClient.estimateUserOperationGas({
+      ...userOpWithoutCallData,
+      calls: [castVoteCallData],
+    });
+
+    // Calculate gas
+    // check algorithm at https://github.com/alchemyplatform/rundler/blob/fae8909b34e5874c0cae2d06aa841a8a112d22a0/crates/types/src/user_operation/v0_7.rs#L206-L215
+    const gasUsed =
+      preVerificationGas +
+      verificationGasLimit +
+      callGasLimit +
+      (paymasterVerificationGasLimit ?? 0n) +
+      (paymasterPostOpGasLimit ?? 0n);
+    const gasCost = maxFeePerGas * gasUsed;
+
+    return {
+      gasCost,
+      userOpWithoutCallData,
+      bundlerClient,
+    };
+  }, [
+    address,
+    entryPointv07,
+    paymasterAddress,
+    prepareCastVoteData,
+    publicClient,
+    rpcEndpoint,
+    walletClient,
+  ]);
+
+  // Check if the paymaster has enough balance to cover the gas cost of the vote
   useEffect(() => {
     const estimateGaslessVoteGas = async () => {
       if (!address || !paymasterAddress || !walletClient || !publicClient || !entryPointv07) {
@@ -173,43 +248,14 @@ const useCastVote = (proposalId: string, strategy: Address) => {
       });
       const paymasterBalance = await entryPoint.read.balanceOf([paymasterAddress]);
 
-      const smartWallet = await toLightSmartAccount({
-        client: publicClient,
-        owner: walletClient,
-        version: '2.0.0',
-      });
-      const bundlerClient = createBundlerClient({
-        account: smartWallet,
-        client: publicClient,
-        transport: http(rpcEndpoint),
-      });
-      const { maxFeePerGas, maxPriorityFeePerGas } = await publicClient.estimateFeesPerGas();
-      const multipliedMaxFeePerGas = maxFeePerGas * 100n;
-      const multipliedMaxPriorityFeePerGas = maxPriorityFeePerGas * 100n;
-      const castVoteCallData = prepareCastVoteData(0);
+      const estimatedFees = await getEstimatedFees();
+      if (!estimatedFees) {
+        return;
+      }
+      const { gasCost } = estimatedFees;
 
-      const {
-        preVerificationGas,
-        verificationGasLimit,
-        callGasLimit,
-        paymasterVerificationGasLimit,
-        paymasterPostOpGasLimit,
-      } = await bundlerClient.estimateUserOperationGas({
-        paymaster: paymasterAddress,
-        calls: [castVoteCallData],
-        maxPriorityFeePerGas: multipliedMaxPriorityFeePerGas,
-        maxFeePerGas: multipliedMaxFeePerGas,
-      });
-
-      // Calculate gas
-      // check algorithm at https://github.com/alchemyplatform/rundler/blob/fae8909b34e5874c0cae2d06aa841a8a112d22a0/crates/types/src/user_operation/v0_7.rs#L206-L215
-      const gasUsed =
-        preVerificationGas +
-        verificationGasLimit +
-        callGasLimit +
-        (paymasterVerificationGasLimit ?? 0n) +
-        (paymasterPostOpGasLimit ?? 0n);
-      const gasCost = multipliedMaxFeePerGas * gasUsed;
+      console.log('paymasterBalance', formatEther(paymasterBalance));
+      console.log('gasCost', formatEther(gasCost));
 
       setCanCastGaslessVote(paymasterBalance >= gasCost);
     };
@@ -248,31 +294,19 @@ const useCastVote = (proposalId: string, strategy: Address) => {
 
       try {
         setCastGaslessVotePending(true);
-        const smartWallet = await toLightSmartAccount({
-          client: publicClient,
-          owner: walletClient,
-          version: '2.0.0',
-        });
 
-        const bundlerClient = createBundlerClient({
-          account: smartWallet,
-          client: publicClient,
-          transport: http(rpcEndpoint),
-        });
-
-        // Get current network conditions
-        const { maxFeePerGas, maxPriorityFeePerGas } = await publicClient.estimateFeesPerGas();
+        const estimatedFees = await getEstimatedFees();
+        if (!estimatedFees) {
+          return;
+        }
+        const { userOpWithoutCallData, bundlerClient } = estimatedFees;
 
         const castVoteCallData = prepareCastVoteData(selectedVoteChoice);
 
         // Sign and send UserOperation to bundler
         const hash = await bundlerClient.sendUserOperation({
-          paymaster: paymasterAddress,
+          ...userOpWithoutCallData,
           calls: [castVoteCallData],
-
-          // multiply 100 to pass precheck on https://github.com/alchemyplatform/rundler/blob/fae8909b34e5874c0cae2d06aa841a8a112d22a0/crates/sim/src/precheck.rs#L336-L356
-          maxPriorityFeePerGas: maxPriorityFeePerGas * 100n,
-          maxFeePerGas: maxFeePerGas * 100n,
         });
 
         bundlerClient.waitForUserOperationReceipt({ hash }).then(() => {
@@ -290,7 +324,15 @@ const useCastVote = (proposalId: string, strategy: Address) => {
         onError(error);
       }
     },
-    [address, paymasterAddress, prepareCastVoteData, publicClient, rpcEndpoint, t, walletClient],
+    [
+      address,
+      getEstimatedFees,
+      paymasterAddress,
+      prepareCastVoteData,
+      publicClient,
+      t,
+      walletClient,
+    ],
   );
 
   return {
