@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { Address, getContract, http } from 'viem';
 import { createBundlerClient, EstimateUserOperationGasErrorType } from 'viem/account-abstraction';
-import { useAccount, usePublicClient } from 'wagmi';
+import { useAccount } from 'wagmi';
 import { EntryPoint07Abi } from '../../../assets/abi/EntryPoint07Abi';
 import { useFractal } from '../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
@@ -270,7 +270,7 @@ const useCastVote = (proposalId: string, strategy: Address) => {
           paymaster: paymasterAddress,
           calls: [castVoteCallData],
 
-          // i don't really know why we need to do this, but we do
+          // multiply 100 to pass precheck on https://github.com/alchemyplatform/rundler/blob/fae8909b34e5874c0cae2d06aa841a8a112d22a0/crates/sim/src/precheck.rs#L336-L356
           maxPriorityFeePerGas: maxPriorityFeePerGas * 100n,
           maxFeePerGas: maxFeePerGas * 100n,
         });
