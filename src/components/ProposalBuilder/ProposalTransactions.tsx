@@ -25,24 +25,20 @@ interface ProposalTransactionsProps {
   expandedIndecies: number[];
   setExpandedIndecies: Dispatch<SetStateAction<number[]>>;
   isProposalMode: boolean;
+  removeTransaction: (index: number) => void;
 }
 export default function ProposalTransactions({
-  values: { transactions },
+  values: transactions,
   errors,
   setFieldValue,
   pendingTransaction,
   expandedIndecies,
   setExpandedIndecies,
   isProposalMode,
+  removeTransaction,
 }: ProposalTransactionsProps) {
   const { t } = useTranslation(['proposal', 'proposalTemplate', 'common']);
 
-  const removeTransaction = (transactionIndex: number) => {
-    setFieldValue(
-      'transactions',
-      transactions.filter((_, i) => i !== transactionIndex),
-    );
-  };
   return (
     <Accordion
       allowMultiple

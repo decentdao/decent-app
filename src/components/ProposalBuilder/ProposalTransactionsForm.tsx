@@ -19,31 +19,35 @@ interface ProposalTransactionsFormProps extends FormikProps<CreateProposalForm> 
 }
 
 export default function ProposalTransactionsForm(props: ProposalTransactionsFormProps) {
-  const {
-    pendingTransaction,
-    setFieldValue,
-    values: { transactions },
-  } = props;
-  const { t } = useTranslation(['proposalTemplate', 'proposal', 'common']);
+  const { pendingTransaction, setFieldValue, values } = props;
+  const { t } = useTranslation(['proposal']);
   const [expandedIndecies, setExpandedIndecies] = useState<number[]>([0]);
+
+  const removeTransaction = (index: number) => {
+    const allTxs = [...values];
+    allTxs.splice(index, 1);
+    setFieldValue('transactions', allTxs);
+    setExpandedIndecies(prev => prev.filter(i => i !== index));
+  };
 
   return (
     <Box py="1.5rem">
       <ProposalTransactions
         expandedIndecies={expandedIndecies}
         setExpandedIndecies={setExpandedIndecies}
+        removeTransaction={removeTransaction}
         {...props}
       />
       <Divider my="1.5rem" />
       <CeleryButtonWithIcon
         onClick={() => {
-          setFieldValue('transactions', [...transactions, DEFAULT_PROPOSAL_TRANSACTION]);
-          setExpandedIndecies([transactions.length]);
+          setFieldValue('transactions', [...values, DEFAULT_PROPOSAL_TRANSACTION]);
+          setExpandedIndecies([values.length]);
           scrollToBottom(100, 'smooth');
         }}
         isDisabled={pendingTransaction}
         icon={Plus}
-        text={t('labelAddTransaction', { ns: 'proposal' })}
+        text={t('labelAddTransaction')}
       />
     </Box>
   );
