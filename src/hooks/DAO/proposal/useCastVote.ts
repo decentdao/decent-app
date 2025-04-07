@@ -38,6 +38,7 @@ const useCastVote = (proposalId: string, strategy: Address) => {
   );
 
   const { data: walletClient } = useNetworkWalletClient();
+  const walletClientReady = walletClient !== undefined;
 
   const { t } = useTranslation('transaction');
 
@@ -183,6 +184,8 @@ const useCastVote = (proposalId: string, strategy: Address) => {
         transport: http(rpcEndpoint),
       });
       const { maxFeePerGas, maxPriorityFeePerGas } = await publicClient.estimateFeesPerGas();
+      const multipliedMaxFeePerGas = maxFeePerGas * 100n;
+      const multipliedMaxPriorityFeePerGas = maxPriorityFeePerGas * 100n;
       const castVoteCallData = prepareCastVoteData(0);
 
       const {
@@ -194,25 +197,19 @@ const useCastVote = (proposalId: string, strategy: Address) => {
       } = await bundlerClient.estimateUserOperationGas({
         paymaster: paymasterAddress,
         calls: [castVoteCallData],
-        maxPriorityFeePerGas,
-        maxFeePerGas,
+        maxPriorityFeePerGas: multipliedMaxFeePerGas,
+        maxFeePerGas: multipliedMaxPriorityFeePerGas,
       });
 
       // Calculate gas
-      const block = await publicClient.getBlock();
-      let gasPrice = maxPriorityFeePerGas + (block.baseFeePerGas || 0n);
-      if (gasPrice > maxFeePerGas) {
-        gasPrice = maxFeePerGas;
-      }
-      gasPrice = gasPrice;
+      // check algorithm at https://github.com/alchemyplatform/rundler/blob/fae8909b34e5874c0cae2d06aa841a8a112d22a0/crates/types/src/user_operation/v0_7.rs#L206-L215
       const gasUsed =
         preVerificationGas +
         verificationGasLimit +
         callGasLimit +
         (paymasterVerificationGasLimit ?? 0n) +
         (paymasterPostOpGasLimit ?? 0n);
-      const gasCost = gasPrice * gasUsed;
-      console.debug('[estimateUserOperationGas]', { paymasterBalance, gasCost });
+      const gasCost = multipliedMaxFeePerGas * gasUsed;
 
       setCanCastGaslessVote(paymasterBalance >= gasCost);
     };
@@ -222,6 +219,9 @@ const useCastVote = (proposalId: string, strategy: Address) => {
       console.warn('error', error.message);
       setCanCastGaslessVote(false);
     });
+    // walletClient object is constantly changing,
+    //   we only need to trigger when it turn from undefined
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     address,
     entryPointv07,
@@ -229,7 +229,7 @@ const useCastVote = (proposalId: string, strategy: Address) => {
     prepareCastVoteData,
     publicClient,
     rpcEndpoint,
-    walletClient,
+    walletClientReady,
   ]);
 
   const castGaslessVote = useCallback(
@@ -271,8 +271,8 @@ const useCastVote = (proposalId: string, strategy: Address) => {
           calls: [castVoteCallData],
 
           // i don't really know why we need to do this, but we do
-          maxPriorityFeePerGas,
-          maxFeePerGas,
+          maxPriorityFeePerGas: maxPriorityFeePerGas * 100n,
+          maxFeePerGas: maxFeePerGas * 100n,
         });
 
         bundlerClient.waitForUserOperationReceipt({ hash }).then(() => {
