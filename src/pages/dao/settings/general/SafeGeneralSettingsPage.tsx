@@ -13,7 +13,6 @@ import {
   toFunctionSelector,
   zeroAddress,
 } from 'viem';
-import { EntryPoint07Abi } from '../../../../assets/abi/EntryPoint07Abi';
 import { ZodiacModuleProxyFactoryAbi } from '../../../../assets/abi/ZodiacModuleProxyFactoryAbi';
 import { GaslessVotingToggleDAOSettings } from '../../../../components/GaslessVoting/GaslessVotingToggle';
 import { SettingsContentBox } from '../../../../components/SafeSettings/SettingsContentBox';
@@ -193,24 +192,6 @@ export function SafeGeneralSettingsPage() {
         values.push(0n);
       }
 
-      if (depositInfo?.stake !== undefined && depositInfo?.stake < parseEther('1')) {
-        // Add stake for Paymaster if not enough
-        if (gaslessStakingFeatureEnabled) {
-          const delta = parseEther('1') - depositInfo.stake;
-
-          targets.push(entryPointv07);
-          calldatas.push(
-            encodeFunctionData({
-              abi: EntryPoint07Abi,
-              functionName: 'addStake',
-              // one day in seconds, defined on https://github.com/alchemyplatform/rundler/blob/c17fd3dbc24d2af93fd68310031d445d5440794f/crates/sim/src/simulation/mod.rs#L170
-              args: [86400],
-            }),
-          );
-          values.push(delta);
-        }
-      }
-
       // Include txs to disable any old voting strategies and enable the new ones.
       const { installVersionedStrategyTxDatas, newStrategies } =
         await buildInstallVersionedVotingStrategies();
@@ -226,6 +207,26 @@ export function SafeGeneralSettingsPage() {
         entryPoint: entryPointv07,
         chainId,
       });
+
+      const minStakeAmount = parseEther('0.1');
+      const stakedAmount = depositInfo?.stake || 0n;
+      if (paymasterAddress === null || stakedAmount < minStakeAmount) {
+        // Add stake for Paymaster if not enough
+        if (gaslessStakingFeatureEnabled) {
+          const delta = minStakeAmount - stakedAmount;
+
+          targets.push(predictedPaymasterAddress);
+          calldatas.push(
+            encodeFunctionData({
+              abi: abis.DecentPaymasterV1,
+              functionName: 'addStake',
+              // one day in seconds, defined on https://github.com/alchemyplatform/rundler/blob/c17fd3dbc24d2af93fd68310031d445d5440794f/crates/sim/src/simulation/mod.rs#L170
+              args: [86400],
+            }),
+          );
+          values.push(delta);
+        }
+      }
 
       const getVoteSelector = (strategy: FractalVotingStrategy) => {
         let voteAbiItem: AbiItem;
