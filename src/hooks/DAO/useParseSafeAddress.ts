@@ -1,7 +1,7 @@
 import { isAddress } from 'viem';
 import { validPrefixes } from '../../providers/NetworkConfig/networks';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
-import useCurrentDAOKey from '../useCurrentDaoKey';
+import useCurrentDAOKey from '../useCurrentDAOKey';
 
 export const useParseSafeAddress = () => {
   const { addressPrefix: queryAddressPrefix, daoAddress: queryDaoAddress } = useCurrentDAOKey();

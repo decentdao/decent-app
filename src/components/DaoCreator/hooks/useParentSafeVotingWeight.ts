@@ -1,9 +1,12 @@
 import { useEffect, useState } from 'react';
 import { formatUnits } from 'viem';
+import useCurrentDAOKey from '../../../hooks/useCurrentDAOKey';
+import { useDecentStore } from '../../../providers/App/AppProvider';
 import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
 import { AzoriusGovernance, GovernanceType } from '../../../types/fractal';
 
 export const useParentSafeVotingWeight = () => {
+  const { daoKey } = useCurrentDAOKey();
   const { governance } = useDecentStore({ daoKey });
   const { safe } = useDaoInfoStore();
 

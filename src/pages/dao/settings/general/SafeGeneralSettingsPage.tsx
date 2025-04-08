@@ -21,9 +21,11 @@ import NestedPageHeader from '../../../../components/ui/page/Header/NestedPageHe
 import Divider from '../../../../components/ui/utils/Divider';
 import { DAO_ROUTES } from '../../../../constants/routes';
 import useSubmitProposal from '../../../../hooks/DAO/proposal/useSubmitProposal';
+import useCurrentDAOKey from '../../../../hooks/useCurrentDAOKey';
 import { useCanUserCreateProposal } from '../../../../hooks/utils/useCanUserSubmitProposal';
 import { createAccountSubstring } from '../../../../hooks/utils/useGetAccountName';
 import { useInstallVersionedVotingStrategy } from '../../../../hooks/utils/useInstallVersionedVotingStrategy';
+import { useDecentStore } from '../../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../../providers/NetworkConfig/useNetworkConfigStore';
 import { useDaoInfoStore } from '../../../../store/daoInfo/useDaoInfoStore';
 import {
@@ -49,6 +51,8 @@ export function SafeGeneralSettingsPage() {
   useEffect(() => {
     setIsGaslessVotingEnabledToggled(gaslessVotingEnabled);
   }, [gaslessVotingEnabled]);
+
+  const { daoKey } = useCurrentDAOKey();
 
   const {
     governanceContracts: { strategies },

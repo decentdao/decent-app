@@ -10,6 +10,8 @@ import {
 } from 'formik';
 import { useTranslation } from 'react-i18next';
 import { getAddress } from 'viem';
+import useCurrentDAOKey from '../../../hooks/useCurrentDAOKey';
+import { useDecentStore } from '../../../providers/App/AppProvider';
 import { BigIntValuePair } from '../../../types';
 import { RoleFormValues } from '../../../types/roles';
 import { formatCoin, formatUSD } from '../../../utils';
@@ -20,6 +22,7 @@ import { DropdownMenu } from '../../ui/menus/DropdownMenu';
 export function AssetSelector({ formIndex, disabled }: { formIndex: number; disabled?: boolean }) {
   const { t } = useTranslation(['roles', 'treasury', 'modals']);
   const { values, setFieldValue } = useFormikContext<RoleFormValues>();
+  const { daoKey } = useCurrentDAOKey();
   const {
     treasury: { assetsFungible },
   } = useDecentStore({ daoKey });

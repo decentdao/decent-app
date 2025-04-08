@@ -13,9 +13,11 @@ import { logError } from '../../../helpers/errorLogging';
 import { findMostConfirmedMultisigRejectionProposal } from '../../../helpers/multisigProposal';
 import { useSafeMultisigProposals } from '../../../hooks/DAO/loaders/governance/useSafeMultisigProposals';
 import useSubmitProposal from '../../../hooks/DAO/proposal/useSubmitProposal';
+import useCurrentDAOKey from '../../../hooks/useCurrentDAOKey';
 import { useNetworkWalletClient } from '../../../hooks/useNetworkWalletClient';
 import { useAsyncRequest } from '../../../hooks/utils/useAsyncRequest';
 import { useTransaction } from '../../../hooks/utils/useTransaction';
+import { useDecentStore } from '../../../providers/App/AppProvider';
 import { useSafeAPI } from '../../../providers/App/hooks/useSafeAPI';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
 import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
@@ -102,6 +104,7 @@ function VoterActions({
 }
 
 export function TxActions({ proposal }: { proposal: MultisigProposal }) {
+  const { daoKey } = useCurrentDAOKey();
   const {
     guardContracts: { freezeGuardContractAddress },
     governance: { proposals },

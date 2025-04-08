@@ -15,7 +15,9 @@ import { AddActions } from '../../../../../components/ui/modals/AddActions';
 import { useHeaderHeight } from '../../../../../constants/common';
 import { DAO_ROUTES } from '../../../../../constants/routes';
 import { usePrepareProposal } from '../../../../../hooks/DAO/proposal/usePrepareProposal';
+import useCurrentDAOKey from '../../../../../hooks/useCurrentDAOKey';
 import { analyticsEvents } from '../../../../../insights/analyticsEvents';
+import { useDecentStore } from '../../../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../../../providers/NetworkConfig/useNetworkConfigStore';
 import { useProposalActionsStore } from '../../../../../store/actions/useProposalActionsStore';
 import { useDaoInfoStore } from '../../../../../store/daoInfo/useDaoInfoStore';
@@ -72,6 +74,8 @@ export function SafeProposalWithActionsCreatePage() {
   useEffect(() => {
     amplitude.track(analyticsEvents.SafeProposalWithActionsCreatePageOpened);
   }, []);
+
+  const { daoKey } = useCurrentDAOKey();
   const {
     governance: { type },
   } = useDecentStore({ daoKey });
@@ -144,7 +148,7 @@ export function SafeProposalWithActionsCreatePage() {
       streamsDetails={null}
       proposalMetadataTypeProps={DEFAULT_PROPOSAL_METADATA_TYPE_PROPS(t)}
       prepareProposalData={prepareProposal}
-      mainContent={(formikProps, pendingCreateTx, nonce, currentStep) => {
+      mainContent={(formikProps, pendingCreateTx, _nonce, currentStep) => {
         if (currentStep !== CreateProposalSteps.TRANSACTIONS) return null;
         return (
           <ProposalTransactionsForm

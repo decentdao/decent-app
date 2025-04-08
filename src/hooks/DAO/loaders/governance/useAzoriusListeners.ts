@@ -2,6 +2,7 @@ import { abis } from '@fractal-framework/fractal-contracts';
 import { useEffect, useMemo } from 'react';
 import { getContract } from 'viem';
 import { logError } from '../../../../helpers/errorLogging';
+import { useDecentStore } from '../../../../providers/App/AppProvider';
 import { FractalGovernanceAction } from '../../../../providers/App/governance/action';
 import { CreateProposalMetadata, VotingStrategyType } from '../../../../types';
 import {
@@ -10,11 +11,13 @@ import {
   mapProposalCreatedEventToProposal,
 } from '../../../../utils';
 import { getAverageBlockTime } from '../../../../utils/contract';
+import useCurrentDAOKey from '../../../useCurrentDAOKey';
 import useNetworkPublicClient from '../../../useNetworkPublicClient';
 import { useAddressContractType } from '../../../utils/useAddressContractType';
 import { useSafeDecoder } from '../../../utils/useSafeDecoder';
 
 export const useAzoriusListeners = () => {
+  const { daoKey } = useCurrentDAOKey();
   const {
     action,
     governanceContracts: {

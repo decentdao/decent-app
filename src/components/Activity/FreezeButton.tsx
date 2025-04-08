@@ -1,7 +1,7 @@
 import { Button } from '@chakra-ui/react';
 import { useTranslation } from 'react-i18next';
 import { useCastFreezeVote } from '../../hooks/DAO/useCastFreezeVote';
-import useCurrentDAOKey from '../../hooks/useCurrentDaoKey';
+import useCurrentDAOKey from '../../hooks/useCurrentDAOKey';
 import { useDecentStore } from '../../providers/App/AppProvider';
 
 export function FreezeButton() {

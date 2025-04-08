@@ -5,8 +5,10 @@ import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { DAO_ROUTES } from '../../../constants/routes';
 import { useProposalsSortedAndFiltered } from '../../../hooks/DAO/proposal/useProposals';
+import useCurrentDAOKey from '../../../hooks/useCurrentDAOKey';
 import { useCanUserCreateProposal } from '../../../hooks/utils/useCanUserSubmitProposal';
 import { usePagination } from '../../../hooks/utils/usePagination';
+import { useDecentStore } from '../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
 import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
 import {
@@ -26,6 +28,7 @@ import { Sort } from '../../ui/utils/Sort';
 import { ActivityFreeze } from './ActivityFreeze';
 
 export function ProposalsHome() {
+  const { daoKey } = useCurrentDAOKey();
   const {
     guardContracts: { freezeVotingContractAddress },
     guard,

@@ -5,7 +5,9 @@ import { logError } from '../../../helpers/errorLogging';
 import useSnapshotProposal from '../../../hooks/DAO/loaders/snapshot/useSnapshotProposal';
 import { useLoadDAOProposals } from '../../../hooks/DAO/loaders/useLoadDAOProposals';
 import useUpdateProposalState from '../../../hooks/DAO/proposal/useUpdateProposalState';
+import useCurrentDAOKey from '../../../hooks/useCurrentDAOKey';
 import useNetworkPublicClient from '../../../hooks/useNetworkPublicClient';
+import { useDecentStore } from '../../../providers/App/AppProvider';
 import {
   AzoriusGovernance,
   AzoriusProposal,
@@ -17,6 +19,7 @@ import { blocksToSeconds } from '../../../utils/contract';
 import { getTxTimelockedTimestamp } from '../../../utils/guard';
 
 export function useProposalCountdown(proposal: FractalProposal) {
+  const { daoKey } = useCurrentDAOKey();
   const {
     governance,
     guardContracts: { freezeGuardContractAddress, freezeGuardType },

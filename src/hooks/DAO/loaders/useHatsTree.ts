@@ -3,11 +3,13 @@ import { useCallback, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { createSablierSubgraphClient } from '../../../graphql';
+import { useDecentStore } from '../../../providers/App/AppProvider';
 import useIPFSClient from '../../../providers/App/hooks/useIPFSClient';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
 import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
 import { DecentHatsError } from '../../../store/roles/rolesStoreUtils';
 import { useRolesStore } from '../../../store/roles/useRolesStore';
+import useCurrentDAOKey from '../../useCurrentDAOKey';
 import useNetworkPublicClient from '../../useNetworkPublicClient';
 import { CacheExpiry, CacheKeys } from '../../utils/cache/cacheDefaults';
 import { getValue, setValue } from '../../utils/cache/useLocalStorage';
@@ -16,6 +18,7 @@ const hatsSubgraphClient = new HatsSubgraphClient({});
 
 const useHatsTree = () => {
   const { t } = useTranslation('roles');
+  const { daoKey } = useCurrentDAOKey();
   const {
     governanceContracts: {
       linearVotingErc20WithHatsWhitelistingAddress,

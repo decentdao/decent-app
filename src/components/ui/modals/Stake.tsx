@@ -4,12 +4,15 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { DAO_ROUTES } from '../../../constants/routes';
 import useLidoStaking from '../../../hooks/stake/lido/useLidoStaking';
+import useCurrentDAOKey from '../../../hooks/useCurrentDAOKey';
+import { useDecentStore } from '../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
 import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
 import { BigIntValuePair, TokenBalance } from '../../../types';
 import { BigIntInput } from '../forms/BigIntInput';
 
 export default function StakeModal({ close }: { close: () => void }) {
+  const { daoKey } = useCurrentDAOKey();
   const {
     treasury: { assetsFungible },
   } = useDecentStore({ daoKey });

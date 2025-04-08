@@ -1,11 +1,14 @@
 import { Box, Flex, Grid, GridItem, Text } from '@chakra-ui/react';
 import { useTranslation } from 'react-i18next';
+import useCurrentDAOKey from '../../hooks/useCurrentDAOKey';
+import { useDecentStore } from '../../providers/App/AppProvider';
 import { AzoriusGovernance } from '../../types';
 import { DisplayAddress } from '../ui/links/DisplayAddress';
 import { BarLoader } from '../ui/loaders/BarLoader';
 
 export function ERC721TokensContainer() {
   const { t } = useTranslation(['settings']);
+  const { daoKey } = useCurrentDAOKey();
   const { governance } = useDecentStore({ daoKey });
 
   const azoriusGovernance = governance as AzoriusGovernance;

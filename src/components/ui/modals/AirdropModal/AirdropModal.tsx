@@ -5,6 +5,8 @@ import { useTranslation } from 'react-i18next';
 import { Address, getAddress, isAddress } from 'viem';
 import { usePublicClient } from 'wagmi';
 import * as Yup from 'yup';
+import useCurrentDAOKey from '../../../../hooks/useCurrentDAOKey';
+import { useDecentStore } from '../../../../providers/App/AppProvider';
 import { BigIntValuePair, TokenBalance } from '../../../../types';
 import { formatCoinFromAsset } from '../../../../utils';
 import { validateENSName } from '../../../../utils/url';
@@ -40,6 +42,7 @@ export function AirdropModal({
   close: () => void;
   airdropData: (airdropData: AirdropData) => void;
 }) {
+  const { daoKey } = useCurrentDAOKey();
   const {
     treasury: { assetsFungible },
   } = useDecentStore({ daoKey });

@@ -1,11 +1,14 @@
 import { abis } from '@fractal-framework/fractal-contracts';
 import { useCallback } from 'react';
 import { erc721Abi, getContract, zeroAddress } from 'viem';
+import { useDecentStore } from '../../../../providers/App/AppProvider';
 import { FractalGovernanceAction } from '../../../../providers/App/governance/action';
 import { ERC721TokenData } from '../../../../types';
+import useCurrentDAOKey from '../../../useCurrentDAOKey';
 import useNetworkPublicClient from '../../../useNetworkPublicClient';
 
 export default function useERC721Tokens() {
+  const { daoKey } = useCurrentDAOKey();
   const {
     governanceContracts: {
       linearVotingErc721Address,

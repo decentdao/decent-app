@@ -1,5 +1,7 @@
 import { useCallback, useMemo } from 'react';
+import { useDecentStore } from '../../../providers/App/AppProvider';
 import { FractalProposalState, MultisigProposal, SortBy } from '../../../types';
+import useCurrentDAOKey from '../../useCurrentDAOKey';
 
 export function useProposalsSortedAndFiltered({
   sortBy,
@@ -8,6 +10,7 @@ export function useProposalsSortedAndFiltered({
   sortBy: SortBy;
   filters: FractalProposalState[];
 }) {
+  const { daoKey } = useCurrentDAOKey();
   const {
     governance: { proposals },
   } = useDecentStore({ daoKey });

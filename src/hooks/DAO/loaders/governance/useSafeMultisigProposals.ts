@@ -1,11 +1,14 @@
 import { useCallback } from 'react';
 import { logError } from '../../../../helpers/errorLogging';
+import { useDecentStore } from '../../../../providers/App/AppProvider';
 import { FractalGovernanceAction } from '../../../../providers/App/governance/action';
 import { useSafeAPI } from '../../../../providers/App/hooks/useSafeAPI';
 import { useDaoInfoStore } from '../../../../store/daoInfo/useDaoInfoStore';
+import useCurrentDAOKey from '../../../useCurrentDAOKey';
 import { useSafeTransactions } from '../../../utils/useSafeTransactions';
 
 export const useSafeMultisigProposals = () => {
+  const { daoKey } = useCurrentDAOKey();
   const { action } = useDecentStore({ daoKey });
   const { safe } = useDaoInfoStore();
   const safeAPI = useSafeAPI();

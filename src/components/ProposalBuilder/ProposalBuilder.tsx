@@ -9,7 +9,9 @@ import { DAO_ROUTES } from '../../constants/routes';
 import { logError } from '../../helpers/errorLogging';
 import useSubmitProposal from '../../hooks/DAO/proposal/useSubmitProposal';
 import useCreateProposalSchema from '../../hooks/schemas/proposalBuilder/useCreateProposalSchema';
+import useCurrentDAOKey from '../../hooks/useCurrentDAOKey';
 import { useCanUserCreateProposal } from '../../hooks/utils/useCanUserSubmitProposal';
+import { useDecentStore } from '../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
 import { useDaoInfoStore } from '../../store/daoInfo/useDaoInfoStore';
 import { BigIntValuePair, CreateProposalSteps, ProposalExecuteData } from '../../types';
@@ -33,6 +35,7 @@ export function ShowNonceInputOnMultisig({
   nonce: number | undefined;
   nonceOnChange: (nonce?: string) => void;
 }) {
+  const { daoKey } = useCurrentDAOKey();
   const {
     governance: { isAzorius },
   } = useDecentStore({ daoKey });

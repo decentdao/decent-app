@@ -2,13 +2,15 @@ import { abis } from '@fractal-framework/fractal-contracts';
 import { useCallback, useEffect, useRef } from 'react';
 import { getContract } from 'viem';
 import { useAccount } from 'wagmi';
+import { useDecentStore } from '../../../../providers/App/AppProvider';
 import { FractalGovernanceAction } from '../../../../providers/App/governance/action';
+import useCurrentDAOKey from '../../../useCurrentDAOKey';
 import useNetworkPublicClient from '../../../useNetworkPublicClient';
 
 export const useERC20LinearToken = ({ onMount = true }: { onMount?: boolean }) => {
   const isTokenLoaded = useRef(false);
   const tokenAccount = useRef<string>();
-
+  const { daoKey } = useCurrentDAOKey();
   const {
     governanceContracts: { votesTokenAddress },
     action,

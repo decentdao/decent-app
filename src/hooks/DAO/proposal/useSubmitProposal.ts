@@ -18,6 +18,7 @@ import MultiSendCallOnlyAbi from '../../../assets/abi/MultiSendCallOnly';
 import { ADDRESS_MULTISIG_METADATA } from '../../../constants/common';
 import { buildSafeAPIPost, encodeMultiSend } from '../../../helpers';
 import { logError } from '../../../helpers/errorLogging';
+import { useDecentStore } from '../../../providers/App/AppProvider';
 import { FractalGovernanceAction } from '../../../providers/App/governance/action';
 import useIPFSClient from '../../../providers/App/hooks/useIPFSClient';
 import { useSafeAPI } from '../../../providers/App/hooks/useSafeAPI';
@@ -25,6 +26,7 @@ import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetwo
 import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
 import { CreateProposalMetadata, MetaTransaction, ProposalExecuteData } from '../../../types';
 import { getAzoriusModuleFromModules } from '../../../utils';
+import useCurrentDAOKey from '../../useCurrentDAOKey';
 import useNetworkPublicClient from '../../useNetworkPublicClient';
 import { useNetworkWalletClient } from '../../useNetworkWalletClient';
 import useVotingStrategiesAddresses from '../../utils/useVotingStrategiesAddresses';
@@ -69,6 +71,7 @@ export default function useSubmitProposal() {
   const { getVotingStrategies } = useVotingStrategiesAddresses();
   const { address: userAddress } = useAccount();
 
+  const { daoKey } = useCurrentDAOKey();
   const {
     guardContracts: { freezeVotingContractAddress },
     governanceContracts: {

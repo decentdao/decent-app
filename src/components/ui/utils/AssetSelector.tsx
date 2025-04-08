@@ -4,6 +4,8 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Address, getAddress } from 'viem';
 import { useBalance } from 'wagmi';
+import useCurrentDAOKey from '../../../hooks/useCurrentDAOKey';
+import { useDecentStore } from '../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
 import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
 import { formatCoin, formatUSD } from '../../../utils';
@@ -31,6 +33,7 @@ export function AssetSelector({
 }: AssetSelectorProps) {
   const { t } = useTranslation(['roles', 'treasury', 'modals']);
   const { safe } = useDaoInfoStore();
+  const { daoKey } = useCurrentDAOKey();
 
   const { data: nativeTokenBalance } = useBalance({
     address: safe?.address,

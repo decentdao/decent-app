@@ -11,7 +11,9 @@ import NoDataCard from '../../../../components/ui/containers/NoDataCard';
 import PageHeader from '../../../../components/ui/page/Header/PageHeader';
 import { DAO_ROUTES } from '../../../../constants/routes';
 import useDeployAzorius from '../../../../hooks/DAO/useDeployAzorius';
+import useCurrentDAOKey from '../../../../hooks/useCurrentDAOKey';
 import { analyticsEvents } from '../../../../insights/analyticsEvents';
+import { useDecentStore } from '../../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../../providers/NetworkConfig/useNetworkConfigStore';
 import { useDaoInfoStore } from '../../../../store/daoInfo/useDaoInfoStore';
 import {
@@ -27,6 +29,7 @@ export function SafeEditGovernancePage() {
     amplitude.track(analyticsEvents.ModifyGovernancePageOpened);
   }, []);
 
+  const { daoKey } = useCurrentDAOKey();
   const {
     governance: { type },
   } = useDecentStore({ daoKey });

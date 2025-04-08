@@ -5,7 +5,9 @@ import { useTranslation } from 'react-i18next';
 import { getAddress } from 'viem';
 import * as Yup from 'yup';
 import { useValidationAddress } from '../../../hooks/schemas/common/useValidationAddress';
+import useCurrentDAOKey from '../../../hooks/useCurrentDAOKey';
 import { useNetworkEnsAddressAsync } from '../../../hooks/useNetworkEnsAddress';
+import { useDecentStore } from '../../../providers/App/AppProvider';
 import { BigIntValuePair, TokenBalance } from '../../../types';
 import { SendAssetsData } from '../../../utils/dao/prepareSendAssetsActionData';
 import { formatCoinFromAsset, formatCoinUnits } from '../../../utils/numberFormats';
@@ -31,6 +33,7 @@ export function SendAssetsModal({
   close: () => void;
   sendAssetsData: (sendAssetData: SendAssetsData) => void;
 }) {
+  const { daoKey } = useCurrentDAOKey();
   const {
     treasury: { assetsFungible },
   } = useDecentStore({ daoKey });

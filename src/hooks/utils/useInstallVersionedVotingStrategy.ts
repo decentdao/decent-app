@@ -7,12 +7,14 @@ import {
   encodeFunctionData,
   encodePacked,
   getCreate2Address,
+  Hex,
   keccak256,
   parseAbiParameters,
 } from 'viem';
 import { ZodiacModuleProxyFactoryAbi } from '../../assets/abi/ZodiacModuleProxyFactoryAbi';
 import { getRandomBytes } from '../../helpers';
 import { generateContractByteCodeLinear, generateSalt } from '../../models/helpers/utils';
+import { useDecentStore } from '../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
 import { useDaoInfoStore } from '../../store/daoInfo/useDaoInfoStore';
 import {
@@ -22,13 +24,16 @@ import {
   FractalVotingStrategy,
 } from '../../types';
 import { SENTINEL_MODULE } from '../../utils/address';
+import useCurrentDAOKey from '../useCurrentDAOKey';
 import useNetworkPublicClient from '../useNetworkPublicClient';
 import useVotingStrategiesAddresses from './useVotingStrategiesAddresses';
 
 export const useInstallVersionedVotingStrategy = () => {
   const { safe } = useDaoInfoStore();
 
+  // TODO: Remove this safeAddress reference - we should be using the DAO key
   const safeAddress = safe?.address;
+  const { daoKey } = useCurrentDAOKey();
   const { governance, governanceContracts } = useDecentStore({ daoKey });
 
   const publicClient = useNetworkPublicClient();
@@ -38,8 +43,8 @@ export const useInstallVersionedVotingStrategy = () => {
   const { votesToken, erc721Tokens } = azoriusGovernance;
 
   type TargetAddressAndCalldata = {
-    targetAddress: `0x${string}`;
-    calldata: `0x${string}`;
+    targetAddress: Address;
+    calldata: Hex;
   };
 
   const {

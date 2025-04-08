@@ -11,14 +11,18 @@ import {
 import { TitledInfoBox } from '../../../components/ui/containers/TitledInfoBox';
 import PageHeader from '../../../components/ui/page/Header/PageHeader';
 import useSendAssetsActionModal from '../../../hooks/DAO/useSendAssetsActionModal';
+import useCurrentDAOKey from '../../../hooks/useCurrentDAOKey';
 import { useCanUserCreateProposal } from '../../../hooks/utils/useCanUserSubmitProposal';
 import { analyticsEvents } from '../../../insights/analyticsEvents';
+import { useDecentStore } from '../../../providers/App/AppProvider';
 import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
 
 export function SafeTreasuryPage() {
   useEffect(() => {
     amplitude.track(analyticsEvents.TreasuryPageOpened);
   }, []);
+
+  const { daoKey } = useCurrentDAOKey();
   const {
     treasury: { assetsFungible, transfers },
   } = useDecentStore({ daoKey });

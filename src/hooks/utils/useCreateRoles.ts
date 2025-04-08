@@ -35,6 +35,7 @@ import { ERC6551_REGISTRY_SALT } from '../../constants/common';
 import { DAO_ROUTES } from '../../constants/routes';
 import { getRandomBytes } from '../../helpers';
 import { generateContractByteCodeLinear } from '../../models/helpers/utils';
+import { useDecentStore } from '../../providers/App/AppProvider';
 import useIPFSClient from '../../providers/App/hooks/useIPFSClient';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
 import { useDaoInfoStore } from '../../store/daoInfo/useDaoInfoStore';
@@ -58,6 +59,7 @@ import { SENTINEL_MODULE } from '../../utils/address';
 import { prepareSendAssetsActionData } from '../../utils/dao/prepareSendAssetsActionData';
 import useSubmitProposal from '../DAO/proposal/useSubmitProposal';
 import useCreateSablierStream from '../streams/useCreateSablierStream';
+import useCurrentDAOKey from '../useCurrentDAOKey';
 import useNetworkPublicClient from '../useNetworkPublicClient';
 import {
   isElectionEligibilityModule,
@@ -84,6 +86,7 @@ async function uploadHatDescription(
 }
 
 export default function useCreateRoles() {
+  const { daoKey } = useCurrentDAOKey();
   const {
     governance,
     governanceContracts: {

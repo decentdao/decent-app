@@ -6,7 +6,7 @@ import { useDecentStore } from '../../../providers/App/AppProvider';
 import { useSafeAPI } from '../../../providers/App/hooks/useSafeAPI';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
 import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
-import useCurrentDAOKey from '../../useCurrentDaoKey';
+import useCurrentDAOKey from '../../useCurrentDAOKey';
 import { useDecentModules } from './useDecentModules';
 
 export const useDecentNode = ({

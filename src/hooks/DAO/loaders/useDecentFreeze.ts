@@ -11,7 +11,7 @@ import { useDecentStore } from '../../../providers/App/AppProvider';
 import { FractalGuardAction } from '../../../providers/App/guard/action';
 import { FractalGuardContracts, FreezeVotingType } from '../../../types';
 import { blocksToSeconds, getTimeStamp } from '../../../utils/contract';
-import useCurrentDAOKey from '../../useCurrentDaoKey';
+import useCurrentDAOKey from '../../useCurrentDAOKey';
 import useNetworkPublicClient from '../../useNetworkPublicClient';
 import { useAddressContractType } from '../../utils/useAddressContractType';
 import useUserERC721VotingTokens from '../proposal/useUserERC721VotingTokens';

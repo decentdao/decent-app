@@ -2,6 +2,8 @@ import { Button, Flex, Icon, Text, useDisclosure } from '@chakra-ui/react';
 import { ArrowsDownUp, Plus, SquaresFour } from '@phosphor-icons/react';
 import { useTranslation } from 'react-i18next';
 import { DETAILS_BOX_SHADOW } from '../../../constants/common';
+import useCurrentDAOKey from '../../../hooks/useCurrentDAOKey';
+import { useDecentStore } from '../../../providers/App/AppProvider';
 import { SendAssetsData } from '../../../utils/dao/prepareSendAssetsActionData';
 import { ModalBase } from './ModalBase';
 import { SendAssetsModal } from './SendAssetsModal';
@@ -63,6 +65,7 @@ export function AddActions({
 }: {
   addSendAssetsAction: (data: SendAssetsData) => void;
 }) {
+  const { daoKey } = useCurrentDAOKey();
   const {
     treasury: { assetsFungible },
   } = useDecentStore({ daoKey });

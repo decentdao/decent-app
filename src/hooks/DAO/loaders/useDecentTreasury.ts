@@ -2,6 +2,7 @@ import { TokenInfoResponse } from '@safe-global/api-kit';
 import { useCallback, useEffect, useRef } from 'react';
 import { toast } from 'sonner';
 import { Address, getAddress, zeroAddress } from 'viem';
+import { useDecentStore } from '../../../providers/App/AppProvider';
 import useBalancesAPI from '../../../providers/App/hooks/useBalancesAPI';
 import { useSafeAPI } from '../../../providers/App/hooks/useSafeAPI';
 import { TreasuryAction } from '../../../providers/App/treasury/action';
@@ -14,6 +15,7 @@ import {
   TransferWithTokenInfo,
 } from '../../../types';
 import { formatCoin } from '../../../utils';
+import useCurrentDAOKey from '../../useCurrentDAOKey';
 import { CacheExpiry, CacheKeys } from '../../utils/cache/cacheDefaults';
 import { setValue } from '../../utils/cache/useLocalStorage';
 
@@ -30,6 +32,7 @@ function getTransferEventType(transferFrom: string, safeAddress: Address | undef
 export const useDecentTreasury = () => {
   // tracks the current valid DAO address / chain; helps prevent unnecessary calls
   const loadKey = useRef<string | null>();
+  const { daoKey } = useCurrentDAOKey();
   const { action } = useDecentStore({ daoKey });
   const { safe } = useDaoInfoStore();
   const safeAPI = useSafeAPI();

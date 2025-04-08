@@ -1,12 +1,15 @@
 import { useCallback } from 'react';
+import { useDecentStore } from '../../../providers/App/AppProvider';
 import { FractalGovernanceAction } from '../../../providers/App/governance/action';
 import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
 import { GovernanceType } from '../../../types';
+import useCurrentDAOKey from '../../useCurrentDAOKey';
 import { useUpdateTimer } from '../../utils/useUpdateTimer';
 import { useAzoriusProposals } from './governance/useAzoriusProposals';
 import { useSafeMultisigProposals } from './governance/useSafeMultisigProposals';
 
 export const useLoadDAOProposals = () => {
+  const { daoKey } = useCurrentDAOKey();
   const {
     governance: { type },
     action,

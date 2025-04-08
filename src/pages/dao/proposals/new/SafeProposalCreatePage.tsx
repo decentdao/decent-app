@@ -13,7 +13,9 @@ import { BarLoader } from '../../../../components/ui/loaders/BarLoader';
 import { useHeaderHeight } from '../../../../constants/common';
 import { DAO_ROUTES } from '../../../../constants/routes';
 import { usePrepareProposal } from '../../../../hooks/DAO/proposal/usePrepareProposal';
+import useCurrentDAOKey from '../../../../hooks/useCurrentDAOKey';
 import { analyticsEvents } from '../../../../insights/analyticsEvents';
+import { useDecentStore } from '../../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../../providers/NetworkConfig/useNetworkConfigStore';
 import { useDaoInfoStore } from '../../../../store/daoInfo/useDaoInfoStore';
 import { CreateProposalSteps } from '../../../../types';
@@ -23,6 +25,7 @@ export function SafeProposalCreatePage() {
     amplitude.track(analyticsEvents.CreateProposalPageOpened);
   }, []);
 
+  const { daoKey } = useCurrentDAOKey();
   const {
     governance: { type },
   } = useDecentStore({ daoKey });
@@ -85,7 +88,7 @@ export function SafeProposalCreatePage() {
       templateDetails={null}
       streamsDetails={null}
       prepareProposalData={prepareProposal}
-      mainContent={(formikProps, pendingCreateTx, nonce, currentStep) => {
+      mainContent={(formikProps, pendingCreateTx, _nonce, currentStep) => {
         if (currentStep !== CreateProposalSteps.TRANSACTIONS) return null;
         return (
           <ProposalTransactionsForm

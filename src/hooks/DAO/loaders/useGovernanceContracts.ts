@@ -2,10 +2,12 @@ import { abis } from '@fractal-framework/fractal-contracts';
 import { useCallback, useEffect, useRef } from 'react';
 import { Address, getContract } from 'viem';
 import LockReleaseAbi from '../../../assets/abi/LockRelease';
+import { useDecentStore } from '../../../providers/App/AppProvider';
 import { GovernanceContractAction } from '../../../providers/App/governanceContracts/action';
 import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
 import { DecentModule, FractalTokenType, FractalVotingStrategy } from '../../../types';
 import { getAzoriusModuleFromModules } from '../../../utils';
+import useCurrentDAOKey from '../../useCurrentDAOKey';
 import useNetworkPublicClient from '../../useNetworkPublicClient';
 import {
   ContractTypeWithVersion,
@@ -16,6 +18,7 @@ import useVotingStrategyAddress from '../../utils/useVotingStrategiesAddresses';
 export const useGovernanceContracts = () => {
   // tracks the current valid DAO address; helps prevent unnecessary calls
   const currentValidAddress = useRef<string | null>();
+  const { daoKey } = useCurrentDAOKey();
   const { action } = useDecentStore({ daoKey });
   const node = useDaoInfoStore();
   const publicClient = useNetworkPublicClient();

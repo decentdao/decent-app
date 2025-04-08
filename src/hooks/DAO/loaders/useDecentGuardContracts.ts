@@ -6,7 +6,7 @@ import { GuardContractAction } from '../../../providers/App/guardContracts/actio
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
 import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
 import { FreezeGuardType, FreezeVotingType } from '../../../types';
-import useCurrentDAOKey from '../../useCurrentDaoKey';
+import useCurrentDAOKey from '../../useCurrentDAOKey';
 import useNetworkPublicClient from '../../useNetworkPublicClient';
 import { useAddressContractType } from '../../utils/useAddressContractType';
 import { DecentModule, FractalModuleType, GnosisSafe } from './../../../types/fractal';

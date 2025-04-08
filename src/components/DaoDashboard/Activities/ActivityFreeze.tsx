@@ -1,6 +1,8 @@
 import { Flex, Text } from '@chakra-ui/react';
 import { useTranslation } from 'react-i18next';
 import { useDateTimeDisplay } from '../../../helpers/dateTime';
+import useCurrentDAOKey from '../../../hooks/useCurrentDAOKey';
+import { useDecentStore } from '../../../providers/App/AppProvider';
 import { DAOState } from '../../../types';
 import { ActivityCard } from '../../Activity/ActivityCard';
 import { FreezeButton } from '../../Activity/FreezeButton';
@@ -20,6 +22,7 @@ export function FreezeDescription({ isFrozen }: { isFrozen: boolean }) {
 }
 
 export function ActivityFreeze() {
+  const { daoKey } = useCurrentDAOKey();
   const {
     guard: {
       isFrozen,

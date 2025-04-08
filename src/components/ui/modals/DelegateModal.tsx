@@ -7,11 +7,12 @@ import { useAccount } from 'wagmi';
 import * as Yup from 'yup';
 import LockReleaseAbi from '../../../assets/abi/LockRelease';
 import { useValidationAddress } from '../../../hooks/schemas/common/useValidationAddress';
+import useCurrentDAOKey from '../../../hooks/useCurrentDAOKey';
 import { useNetworkEnsAddressAsync } from '../../../hooks/useNetworkEnsAddress';
 import { useNetworkWalletClient } from '../../../hooks/useNetworkWalletClient';
-
 import { useGetAccountName } from '../../../hooks/utils/useGetAccountName';
 import { useTransaction } from '../../../hooks/utils/useTransaction';
+import { useDecentStore } from '../../../providers/App/AppProvider';
 import { AzoriusGovernance, DecentGovernance } from '../../../types';
 import { formatCoin } from '../../../utils/numberFormats';
 import { validateENSName } from '../../../utils/url';
@@ -22,7 +23,7 @@ import Divider from '../utils/Divider';
 
 export function DelegateModal({ close }: { close: Function }) {
   const { t } = useTranslation(['modals', 'common']);
-
+  const { daoKey } = useCurrentDAOKey();
   const {
     governance,
     governanceContracts: { votesTokenAddress, lockReleaseAddress },

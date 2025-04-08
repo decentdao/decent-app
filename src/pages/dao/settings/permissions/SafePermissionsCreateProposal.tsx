@@ -24,8 +24,10 @@ import NestedPageHeader from '../../../../components/ui/page/Header/NestedPageHe
 import Divider from '../../../../components/ui/utils/Divider';
 import { DAO_ROUTES } from '../../../../constants/routes';
 import { getRandomBytes } from '../../../../helpers';
+import useCurrentDAOKey from '../../../../hooks/useCurrentDAOKey';
 import useNetworkPublicClient from '../../../../hooks/useNetworkPublicClient';
 import { generateContractByteCodeLinear } from '../../../../models/helpers/utils';
+import { useDecentStore } from '../../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../../providers/NetworkConfig/useNetworkConfigStore';
 import { useProposalActionsStore } from '../../../../store/actions/useProposalActionsStore';
 import { useDaoInfoStore } from '../../../../store/daoInfo/useDaoInfoStore';
@@ -50,6 +52,7 @@ export function SafePermissionsCreateProposal() {
   const [searchParams] = useSearchParams();
   const votingStrategyAddress = searchParams.get('votingStrategy');
   const navigate = useNavigate();
+  const { daoKey } = useCurrentDAOKey();
   const {
     governance,
     governanceContracts: {

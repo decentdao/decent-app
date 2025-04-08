@@ -3,11 +3,13 @@ import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { encodeFunctionData } from 'viem';
 import { normalize } from 'viem/ens';
+import { useDecentStore } from '../../../providers/App/AppProvider';
 import useIPFSClient from '../../../providers/App/hooks/useIPFSClient';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
 import { ProposalExecuteData } from '../../../types';
 import { CreateProposalForm } from '../../../types/proposalBuilder';
 import { validateENSName } from '../../../utils/url';
+import useCurrentDAOKey from '../../useCurrentDAOKey';
 import { useNetworkEnsAddressAsync } from '../../useNetworkEnsAddress';
 
 const customSerializer = (_: string, value: any) => {
@@ -20,6 +22,7 @@ const customSerializer = (_: string, value: any) => {
 
 export default function useCreateProposalTemplate() {
   const { getEnsAddress } = useNetworkEnsAddressAsync();
+  const { daoKey } = useCurrentDAOKey();
   const client = useIPFSClient();
   const {
     governance: { proposalTemplates },

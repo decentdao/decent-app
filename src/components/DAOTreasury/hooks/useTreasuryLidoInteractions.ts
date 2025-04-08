@@ -2,13 +2,16 @@ import { useEffect, useState } from 'react';
 import { getContract } from 'viem';
 import LidoWithdrawalQueueAbi from '../../../assets/abi/LidoWithdrawalQueueAbi';
 import useLidoStaking from '../../../hooks/stake/lido/useLidoStaking';
+import useCurrentDAOKey from '../../../hooks/useCurrentDAOKey';
 import useNetworkPublicClient from '../../../hooks/useNetworkPublicClient';
 import { useCanUserCreateProposal } from '../../../hooks/utils/useCanUserSubmitProposal';
+import { useDecentStore } from '../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
 import { ModalType } from '../../ui/modals/ModalProvider';
 import { useDecentModal } from '../../ui/modals/useDecentModal';
 
 export default function useTreasuryLidoInteractions() {
+  const { daoKey } = useCurrentDAOKey();
   const {
     treasury: { assetsFungible, assetsNonFungible },
   } = useDecentStore({ daoKey });

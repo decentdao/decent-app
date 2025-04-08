@@ -3,6 +3,7 @@ import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { encodeFunctionData, isHex } from 'viem';
 import MultiSendCallOnlyAbi from '../../assets/abi/MultiSendCallOnly';
+import { useDecentStore } from '../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
 import { useDaoInfoStore } from '../../store/daoInfo/useDaoInfoStore';
 import {
@@ -13,6 +14,7 @@ import {
   SubDAO,
 } from '../../types';
 import { ProposalExecuteData } from '../../types/daoProposal';
+import useCurrentDAOKey from '../useCurrentDAOKey';
 import { useCanUserCreateProposal } from '../utils/useCanUserSubmitProposal';
 import useSubmitProposal from './proposal/useSubmitProposal';
 import useBuildDAOTx from './useBuildDAOTx';
@@ -23,6 +25,7 @@ export const useCreateSubDAOProposal = () => {
   const { submitProposal, pendingCreateTx } = useSubmitProposal();
   const { canUserCreateProposal } = useCanUserCreateProposal();
   const [build] = useBuildDAOTx();
+  const { daoKey } = useCurrentDAOKey();
   const { governance } = useDecentStore({ daoKey });
   const { safe } = useDaoInfoStore();
   const {

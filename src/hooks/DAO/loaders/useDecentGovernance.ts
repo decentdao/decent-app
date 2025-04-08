@@ -7,7 +7,7 @@ import useIPFSClient from '../../../providers/App/hooks/useIPFSClient';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
 import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
 import { GovernanceType, ProposalTemplate } from '../../../types';
-import useCurrentDAOKey from '../../useCurrentDaoKey';
+import useCurrentDAOKey from '../../useCurrentDAOKey';
 import { useERC20LinearStrategy } from './governance/useERC20LinearStrategy';
 import { useERC20LinearToken } from './governance/useERC20LinearToken';
 import { useERC721LinearStrategy } from './governance/useERC721LinearStrategy';

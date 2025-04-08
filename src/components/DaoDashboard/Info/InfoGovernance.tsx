@@ -4,15 +4,17 @@ import { Bank } from '@phosphor-icons/react';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { getContract } from 'viem';
-
+import useCurrentDAOKey from '../../../hooks/useCurrentDAOKey';
 import useNetworkPublicClient from '../../../hooks/useNetworkPublicClient';
 import { useTimeHelpers } from '../../../hooks/utils/useTimeHelpers';
+import { useDecentStore } from '../../../providers/App/AppProvider';
 import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
 import { AzoriusGovernance, FreezeGuardType } from '../../../types';
 import { blocksToSeconds } from '../../../utils/contract';
 import { BarLoader } from '../../ui/loaders/BarLoader';
 
 export function InfoGovernance({ showTitle = true }: { showTitle?: boolean }) {
+  const { daoKey } = useCurrentDAOKey();
   const { t } = useTranslation(['dashboard', 'daoCreate', 'common']);
   const {
     governance,

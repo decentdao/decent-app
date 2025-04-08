@@ -8,9 +8,11 @@ import { useTranslation } from 'react-i18next';
 import { erc721Abi, getContract } from 'viem';
 import { useAccount } from 'wagmi';
 import { TOOLTIP_MAXW } from '../../constants/common';
+import useCurrentDAOKey from '../../hooks/useCurrentDAOKey';
 import useNetworkPublicClient from '../../hooks/useNetworkPublicClient';
 import useBlockTimestamp from '../../hooks/utils/useBlockTimestamp';
 import { useCanUserCreateProposal } from '../../hooks/utils/useCanUserSubmitProposal';
+import { useDecentStore } from '../../providers/App/AppProvider';
 import { AzoriusGovernance, AzoriusProposal, GovernanceType } from '../../types';
 import { DEFAULT_DATE_TIME_FORMAT, formatCoin } from '../../utils/numberFormats';
 import { AlertBanner } from '../ui/AlertBanner';
@@ -194,6 +196,7 @@ function ProposalVotingSection({
   );
 }
 export function AzoriusProposalSummary({ proposal }: { proposal: AzoriusProposal }) {
+  const { daoKey } = useCurrentDAOKey();
   const { governance } = useDecentStore({ daoKey });
   const azoriusGovernance = governance as AzoriusGovernance;
   const startBlockTimeStamp = useBlockTimestamp(Number(proposal.startBlock));

@@ -6,7 +6,7 @@ import { combinedReducer, initialState } from './combinedReducer';
 export const DecentContext = createContext<DecentStore | null>(null);
 
 interface IUseStoreOptions {
-  daoKey: DAOKey | undefined
+  daoKey: DAOKey | undefined;
 }
 export const useDecentStore = ({ daoKey }: IUseStoreOptions): DecentStore => {
   const context = useContext(DecentContext as Context<DecentStore>);

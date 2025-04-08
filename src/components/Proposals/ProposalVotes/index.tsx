@@ -1,6 +1,8 @@
 import { Box, Flex, Grid, Text } from '@chakra-ui/react';
 import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import useCurrentDAOKey from '../../../hooks/useCurrentDAOKey';
+import { useDecentStore } from '../../../providers/App/AppProvider';
 import {
   AzoriusGovernance,
   AzoriusProposal,
@@ -114,6 +116,7 @@ function ProposalVotes({ proposal }: { proposal: AzoriusProposal }) {
     votesSummary: { yes, no, abstain },
     votes,
   } = proposal;
+  const { daoKey } = useCurrentDAOKey();
   const { governance } = useDecentStore({ daoKey });
 
   const azoriusGovernance = governance as AzoriusGovernance;

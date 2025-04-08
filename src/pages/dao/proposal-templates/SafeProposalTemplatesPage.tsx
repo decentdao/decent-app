@@ -16,8 +16,10 @@ import PageHeader from '../../../components/ui/page/Header/PageHeader';
 import Divider from '../../../components/ui/utils/Divider';
 import { DAO_ROUTES } from '../../../constants/routes';
 import useSendAssetsActionModal from '../../../hooks/DAO/useSendAssetsActionModal';
+import useCurrentDAOKey from '../../../hooks/useCurrentDAOKey';
 import { useCanUserCreateProposal } from '../../../hooks/utils/useCanUserSubmitProposal';
 import { analyticsEvents } from '../../../insights/analyticsEvents';
+import { useDecentStore } from '../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
 import { useProposalActionsStore } from '../../../store/actions/useProposalActionsStore';
 import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
@@ -29,6 +31,7 @@ export function SafeProposalTemplatesPage() {
   }, []);
 
   const { t } = useTranslation();
+  const { daoKey } = useCurrentDAOKey();
   const {
     governance: { proposalTemplates },
   } = useDecentStore({ daoKey });

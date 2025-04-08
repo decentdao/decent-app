@@ -9,6 +9,7 @@ import {
   getContract,
 } from 'viem';
 import { logError } from '../../../../helpers/errorLogging';
+import { useDecentStore } from '../../../../providers/App/AppProvider';
 import { FractalGovernanceAction } from '../../../../providers/App/governance/action';
 import {
   CreateProposalMetadata,
@@ -18,6 +19,7 @@ import {
 } from '../../../../types';
 import { AzoriusProposal } from '../../../../types/daoProposal';
 import { decodeTransactions, mapProposalCreatedEventToProposal } from '../../../../utils';
+import useCurrentDAOKey from '../../../useCurrentDAOKey';
 import useNetworkPublicClient from '../../../useNetworkPublicClient';
 import { CacheExpiry, CacheKeys } from '../../../utils/cache/cacheDefaults';
 import { getValue, setValue } from '../../../utils/cache/useLocalStorage';
@@ -28,6 +30,7 @@ type OnProposalLoaded = (proposal: AzoriusProposal) => void;
 
 export const useAzoriusProposals = () => {
   const currentAzoriusAddress = useRef<string>();
+  const { daoKey } = useCurrentDAOKey();
 
   const {
     governanceContracts: {

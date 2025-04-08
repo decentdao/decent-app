@@ -2,6 +2,7 @@ import { useCallback } from 'react';
 import { Address } from 'viem';
 import { useAccount } from 'wagmi';
 import { TxBuilderFactory } from '../../models/TxBuilderFactory';
+import { useDecentStore } from '../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
 import {
   AzoriusERC20DAO,
@@ -12,6 +13,7 @@ import {
   SubDAO,
   VotingStrategyType,
 } from '../../types';
+import useCurrentDAOKey from '../useCurrentDAOKey';
 import useNetworkPublicClient from '../useNetworkPublicClient';
 
 const useBuildDAOTx = () => {
@@ -39,6 +41,7 @@ const useBuildDAOTx = () => {
     },
   } = useNetworkConfigStore();
 
+  const { daoKey } = useCurrentDAOKey();
   const {
     governance,
     governanceContracts: { linearVotingErc721Address },

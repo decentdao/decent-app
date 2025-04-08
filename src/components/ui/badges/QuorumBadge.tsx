@@ -2,9 +2,12 @@ import { Box, Flex } from '@chakra-ui/react';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Check } from '../../../assets/theme/custom/icons/Check';
+import useCurrentDAOKey from '../../../hooks/useCurrentDAOKey';
+import { useDecentStore } from '../../../providers/App/AppProvider';
 import { AzoriusGovernance, AzoriusProposal } from '../../../types';
 
 export default function QuorumBadge({ proposal }: { proposal: AzoriusProposal }) {
+  const { daoKey } = useCurrentDAOKey();
   const { governance } = useDecentStore({ daoKey });
   const { t } = useTranslation('common');
 
