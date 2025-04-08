@@ -9,9 +9,11 @@ import {
   encodeFunctionData,
   getAbiItem,
   parseAbiParameters,
+  parseEther,
   toFunctionSelector,
   zeroAddress,
 } from 'viem';
+import { EntryPoint07Abi } from '../../../../assets/abi/EntryPoint07Abi';
 import { ZodiacModuleProxyFactoryAbi } from '../../../../assets/abi/ZodiacModuleProxyFactoryAbi';
 import { GaslessVotingToggleDAOSettings } from '../../../../components/GaslessVoting/GaslessVotingToggle';
 import { SettingsContentBox } from '../../../../components/SafeSettings/SettingsContentBox';
@@ -20,6 +22,8 @@ import { BarLoader } from '../../../../components/ui/loaders/BarLoader';
 import NestedPageHeader from '../../../../components/ui/page/Header/NestedPageHeader';
 import Divider from '../../../../components/ui/utils/Divider';
 import { DAO_ROUTES } from '../../../../constants/routes';
+import useFeatureFlag from '../../../../helpers/environmentFeatureFlags';
+import { useDepositInfo } from '../../../../hooks/DAO/loaders/accountAbstraction/useDepositInfo';
 import useSubmitProposal from '../../../../hooks/DAO/proposal/useSubmitProposal';
 import { useCanUserCreateProposal } from '../../../../hooks/utils/useCanUserSubmitProposal';
 import { createAccountSubstring } from '../../../../hooks/utils/useGetAccountName';
@@ -71,6 +75,8 @@ export function SafeGeneralSettingsPage() {
       zodiacModuleProxyFactory,
     },
   } = useNetworkConfigStore();
+  const { depositInfo } = useDepositInfo(paymasterAddress);
+  const gaslessStakingFeatureEnabled = useFeatureFlag('flag_gasless_staking');
 
   const isMultisigGovernance = votingStrategyType === GovernanceType.MULTISIG;
   const gaslessVotingSupported = !isMultisigGovernance && entryPointv07 !== undefined;
@@ -185,6 +191,24 @@ export function SafeGeneralSettingsPage() {
           }),
         );
         values.push(0n);
+      }
+
+      if (depositInfo?.stake !== undefined && depositInfo?.stake < parseEther('1')) {
+        // Add stake for Paymaster if not enough
+        if (gaslessStakingFeatureEnabled) {
+          const delta = parseEther('1') - depositInfo.stake;
+
+          targets.push(entryPointv07);
+          calldatas.push(
+            encodeFunctionData({
+              abi: EntryPoint07Abi,
+              functionName: 'addStake',
+              // one day in seconds, defined on https://github.com/alchemyplatform/rundler/blob/c17fd3dbc24d2af93fd68310031d445d5440794f/crates/sim/src/simulation/mod.rs#L170
+              args: [86400],
+            }),
+          );
+          values.push(delta);
+        }
       }
 
       // Include txs to disable any old voting strategies and enable the new ones.

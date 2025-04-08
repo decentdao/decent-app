@@ -36,6 +36,10 @@ function GaslessVotingToggleContent({
 
   const { canUserCreateProposal } = useCanUserCreateProposal();
 
+  const gaslessStakingFeatureEnabled = useFeatureFlag('flag_gasless_staking');
+  const publicClient = useNetworkPublicClient();
+  const nativeCurrency = publicClient.chain.nativeCurrency;
+
   return (
     <Box
       display="flex"
@@ -61,6 +65,14 @@ function GaslessVotingToggleContent({
           >
             {isSettings ? t('gaslessVotingDescriptionSettings') : t('gaslessVotingDescription')}
           </Text>
+          {gaslessStakingFeatureEnabled && (
+            <Text
+              textStyle={isSettings ? 'labels-large' : 'helper-text'}
+              color="neutral-7"
+            >
+              {t('gaslessStakingDescription', { symbol: nativeCurrency.symbol })}
+            </Text>
+          )}
         </Flex>
         <Switch
           size="md"
