@@ -141,7 +141,7 @@ export class DaoTxBuilder extends BaseTxBuilder {
       txs.push(azoriusTxBuilder.buildCreateTokenTx());
     }
 
-    txs.push(azoriusTxBuilder.buildDeployStrategyTx());
+    txs.push(azoriusTxBuilder.buildDeployStrategyTx(enableGaslessVoting));
     txs.push(azoriusTxBuilder.buildDeployAzoriusTx());
 
     // Deploy paymaster and set gasless voting enabled

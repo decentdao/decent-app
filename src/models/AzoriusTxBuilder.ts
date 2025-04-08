@@ -53,6 +53,8 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
   private claimErc20MasterCopy: Address;
   private linearVotingErc20MasterCopy: Address;
   private linearVotingErc721MasterCopy: Address;
+  private linearVotingErc20V1MasterCopy: Address;
+  private linearVotingErc721V1MasterCopy: Address;
   private moduleAzoriusMasterCopy: Address;
   private paymasterMasterCopy: Address;
   private entryPointAddress: Address | undefined;
@@ -71,6 +73,8 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
     claimErc20MasterCopy: Address,
     linearVotingErc20MasterCopy: Address,
     linearVotingErc721MasterCopy: Address,
+    linearVotingErc20V1MasterCopy: Address,
+    linearVotingErc721V1MasterCopy: Address,
     moduleAzoriusMasterCopy: Address,
     paymasterMasterCopy: Address,
     entryPointAddress?: Address,
@@ -92,6 +96,8 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
     this.claimErc20MasterCopy = claimErc20MasterCopy;
     this.linearVotingErc20MasterCopy = linearVotingErc20MasterCopy;
     this.linearVotingErc721MasterCopy = linearVotingErc721MasterCopy;
+    this.linearVotingErc20V1MasterCopy = linearVotingErc20V1MasterCopy;
+    this.linearVotingErc721V1MasterCopy = linearVotingErc721V1MasterCopy;
     this.moduleAzoriusMasterCopy = moduleAzoriusMasterCopy;
     this.paymasterMasterCopy = paymasterMasterCopy;
     this.entryPointAddress = entryPointAddress;
@@ -222,20 +228,27 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
     );
   }
 
-  public buildDeployStrategyTx(): SafeTransaction {
+  public buildDeployStrategyTx(enableGaslessVoting: boolean): SafeTransaction {
     const daoData = this.daoData as AzoriusGovernanceDAO;
+
+    let votingStrategyMasterCopy: Address;
+    if (enableGaslessVoting) {
+      votingStrategyMasterCopy =
+        daoData.votingStrategyType === VotingStrategyType.LINEAR_ERC20
+          ? this.linearVotingErc20V1MasterCopy
+          : this.linearVotingErc721V1MasterCopy;
+    } else {
+      votingStrategyMasterCopy =
+        daoData.votingStrategyType === VotingStrategyType.LINEAR_ERC20
+          ? this.linearVotingErc20MasterCopy
+          : this.linearVotingErc721MasterCopy;
+    }
 
     return buildContractCall(
       ZodiacModuleProxyFactoryAbi,
       this.zodiacModuleProxyFactory,
       'deployModule',
-      [
-        daoData.votingStrategyType === VotingStrategyType.LINEAR_ERC20
-          ? this.linearVotingErc20MasterCopy
-          : this.linearVotingErc721MasterCopy,
-        this.encodedStrategySetupData,
-        this.strategyNonce,
-      ],
+      [votingStrategyMasterCopy, this.encodedStrategySetupData, this.strategyNonce],
       0,
       false,
     );
