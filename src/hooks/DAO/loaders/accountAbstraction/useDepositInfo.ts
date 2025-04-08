@@ -5,7 +5,9 @@ import { useNetworkConfigStore } from '../../../../providers/NetworkConfig/useNe
 import useNetworkPublicClient from '../../../useNetworkPublicClient';
 
 interface DepositInfo {
-  // balance
+  /**
+   * Deposited balance on EntryPoint
+   */
   deposit: bigint;
   stake: bigint;
   staked: boolean;
