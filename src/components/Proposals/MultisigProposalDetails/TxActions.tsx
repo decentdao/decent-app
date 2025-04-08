@@ -1,4 +1,4 @@
-import { Box, Button, Text, Flex } from '@chakra-ui/react';
+import { Box, Button, Flex, Text } from '@chakra-ui/react';
 import { abis } from '@fractal-framework/fractal-contracts';
 import { SafeMultisigTransactionResponse } from '@safe-global/safe-core-sdk-types';
 import { useEffect, useRef, useState } from 'react';
@@ -16,11 +16,10 @@ import useSubmitProposal from '../../../hooks/DAO/proposal/useSubmitProposal';
 import { useNetworkWalletClient } from '../../../hooks/useNetworkWalletClient';
 import { useAsyncRequest } from '../../../hooks/utils/useAsyncRequest';
 import { useTransaction } from '../../../hooks/utils/useTransaction';
-import { useFractal } from '../../../providers/App/AppProvider';
 import { useSafeAPI } from '../../../providers/App/hooks/useSafeAPI';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
 import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
-import { MultisigProposal, FractalProposalState } from '../../../types';
+import { FractalProposalState, MultisigProposal } from '../../../types';
 import { DecentTooltip } from '../../ui/DecentTooltip';
 import ContentBox from '../../ui/containers/ContentBox';
 import { ProposalCountdown } from '../../ui/proposal/ProposalCountdown';
@@ -106,7 +105,7 @@ export function TxActions({ proposal }: { proposal: MultisigProposal }) {
   const {
     guardContracts: { freezeGuardContractAddress },
     governance: { proposals },
-  } = useFractal();
+  } = useDecentStore({ daoKey });
   const userAccount = useAccount();
   const safeAPI = useSafeAPI();
   const { safe } = useDaoInfoStore();

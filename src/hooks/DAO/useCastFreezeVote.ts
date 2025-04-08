@@ -2,7 +2,6 @@ import { abis } from '@fractal-framework/fractal-contracts';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { getContract } from 'viem';
-import { useFractal } from '../../providers/App/AppProvider';
 import { useDaoInfoStore } from '../../store/daoInfo/useDaoInfoStore';
 import { FreezeVotingType } from '../../types';
 import { useNetworkWalletClient } from '../useNetworkWalletClient';
@@ -13,7 +12,7 @@ export const useCastFreezeVote = () => {
   const [contractCall, pending] = useTransaction();
   const {
     guardContracts: { freezeVotingContractAddress, freezeVotingType },
-  } = useFractal();
+  } = useDecentStore({ daoKey });
   const { subgraphInfo } = useDaoInfoStore();
   const { getUserERC721VotingTokens } = useUserERC721VotingTokens(null, null, false);
 

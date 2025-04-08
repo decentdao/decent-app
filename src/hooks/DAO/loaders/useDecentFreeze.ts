@@ -4,19 +4,20 @@ import { Address, GetContractReturnType, PublicClient, getContract, zeroAddress 
 import { useAccount } from 'wagmi';
 import GnosisSafeL2Abi from '../../../assets/abi/GnosisSafeL2';
 import {
-  isWithinFreezeProposalPeriod,
   isWithinFreezePeriod,
+  isWithinFreezeProposalPeriod,
 } from '../../../helpers/freezePeriodHelpers';
-import { useFractal } from '../../../providers/App/AppProvider';
+import { useDecentStore } from '../../../providers/App/AppProvider';
 import { FractalGuardAction } from '../../../providers/App/guard/action';
 import { FractalGuardContracts, FreezeVotingType } from '../../../types';
 import { blocksToSeconds, getTimeStamp } from '../../../utils/contract';
+import useCurrentDAOKey from '../../useCurrentDaoKey';
 import useNetworkPublicClient from '../../useNetworkPublicClient';
 import { useAddressContractType } from '../../utils/useAddressContractType';
 import useUserERC721VotingTokens from '../proposal/useUserERC721VotingTokens';
 import { FreezeGuard } from './../../../types/fractal';
 
-export const useFractalFreeze = ({
+export const useDecentFreeze = ({
   loadOnMount = true,
   parentSafeAddress,
 }: {
@@ -27,7 +28,8 @@ export const useFractalFreeze = ({
   const loadKey = useRef<string>();
   const isFreezeSet = useRef(false);
 
-  const { guardContracts, action } = useFractal();
+  const { daoKey } = useCurrentDAOKey();
+  const { guardContracts, action } = useDecentStore({ daoKey });
   const { address: account } = useAccount();
   const { getUserERC721VotingTokens } = useUserERC721VotingTokens(
     parentSafeAddress,
@@ -38,7 +40,7 @@ export const useFractalFreeze = ({
   const publicClient = useNetworkPublicClient();
   const { getAddressContractType } = useAddressContractType();
 
-  const loadFractalFreezeGuard = useCallback(
+  const loadDecentFreezeGuard = useCallback(
     async ({
       freezeVotingContractAddress,
       freezeVotingType: freezeVotingType,
@@ -190,10 +192,10 @@ export const useFractalFreeze = ({
     [account, publicClient, getAddressContractType, getUserERC721VotingTokens, parentSafeAddress],
   );
 
-  const setFractalFreezeGuard = useCallback(
+  const setDecentFreezeGuard = useCallback(
     async (_guardContracts: FractalGuardContracts) => {
       if (parentSafeAddress) {
-        const freezeGuard = await loadFractalFreezeGuard(_guardContracts);
+        const freezeGuard = await loadDecentFreezeGuard(_guardContracts);
         if (freezeGuard) {
           action.dispatch({ type: FractalGuardAction.SET_FREEZE_GUARD, payload: freezeGuard });
         }
@@ -213,7 +215,7 @@ export const useFractalFreeze = ({
         });
       }
     },
-    [action, loadFractalFreezeGuard, parentSafeAddress],
+    [action, loadDecentFreezeGuard, parentSafeAddress],
   );
 
   useEffect(() => {
@@ -223,13 +225,13 @@ export const useFractalFreeze = ({
       loadOnMount &&
       guardContracts.freezeVotingContractAddress + parentSafeAddress + account !== loadKey.current
     ) {
-      setFractalFreezeGuard(guardContracts);
+      setDecentFreezeGuard(guardContracts);
       loadKey.current = guardContracts.freezeVotingContractAddress + parentSafeAddress + account;
     }
     if (!parentSafeAddress) {
       loadKey.current = undefined;
     }
-  }, [setFractalFreezeGuard, guardContracts, parentSafeAddress, loadOnMount, account]);
+  }, [setDecentFreezeGuard, guardContracts, parentSafeAddress, loadOnMount, account]);
 
   useEffect(() => {
     const { freezeVotingContractAddress, freezeVotingType: freezeVotingType } = guardContracts;
@@ -378,5 +380,5 @@ export const useFractalFreeze = ({
     };
   }, [account, action, guardContracts, loadOnMount, publicClient]);
 
-  return loadFractalFreezeGuard;
+  return loadDecentFreezeGuard;
 };

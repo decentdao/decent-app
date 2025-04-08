@@ -1,5 +1,4 @@
 import { useCallback } from 'react';
-import { useFractal } from '../../../providers/App/AppProvider';
 import { FractalGovernanceAction } from '../../../providers/App/governance/action';
 import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
 import { GovernanceType } from '../../../types';
@@ -11,7 +10,7 @@ export const useLoadDAOProposals = () => {
   const {
     governance: { type },
     action,
-  } = useFractal();
+  } = useDecentStore({ daoKey });
   const { safe } = useDaoInfoStore();
 
   const { setMethodOnInterval, clearIntervals } = useUpdateTimer(safe?.address);

@@ -7,10 +7,9 @@ import {
   Grid,
   Text,
 } from '@chakra-ui/react';
-import { Plus, CaretDown, CaretRight } from '@phosphor-icons/react';
+import { CaretDown, CaretRight, Plus } from '@phosphor-icons/react';
 import { FieldArray, FormikErrors } from 'formik';
 import { useTranslation } from 'react-i18next';
-import { useFractal } from '../../../providers/App/AppProvider';
 import {
   AzoriusGovernance,
   BigIntValuePair,
@@ -27,7 +26,7 @@ import { AzoriusTokenAllocation } from './AzoriusTokenAllocation';
 export function AzoriusTokenAllocations(props: ICreationStepProps) {
   const { values, errors, setFieldValue, isSubDAO } = props;
   const { t } = useTranslation('daoCreate');
-  const { governance } = useFractal();
+  const { governance } = useDecentStore({ daoKey });
   const azoriusGovernance = governance as AzoriusGovernance;
   const canReceiveParentAllocations = isSubDAO && azoriusGovernance.votesToken?.address;
 

@@ -5,7 +5,6 @@ import { useTranslation } from 'react-i18next';
 import { Address, getAddress, isAddress } from 'viem';
 import { usePublicClient } from 'wagmi';
 import * as Yup from 'yup';
-import { useFractal } from '../../../../providers/App/AppProvider';
 import { BigIntValuePair, TokenBalance } from '../../../../types';
 import { formatCoinFromAsset } from '../../../../utils';
 import { validateENSName } from '../../../../utils/url';
@@ -43,7 +42,7 @@ export function AirdropModal({
 }) {
   const {
     treasury: { assetsFungible },
-  } = useFractal();
+  } = useDecentStore({ daoKey });
 
   const publicClient = usePublicClient();
   const { t } = useTranslation(['modals', 'common']);

@@ -14,7 +14,6 @@ import useClawBack from '../../../../hooks/DAO/useClawBack';
 import { useNetworkWalletClient } from '../../../../hooks/useNetworkWalletClient';
 import useBlockTimestamp from '../../../../hooks/utils/useBlockTimestamp';
 import { useCanUserCreateProposal } from '../../../../hooks/utils/useCanUserSubmitProposal';
-import { useFractal } from '../../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../../providers/NetworkConfig/useNetworkConfigStore';
 import { useDaoInfoStore } from '../../../../store/daoInfo/useDaoInfoStore';
 import { FractalModuleType, FreezeVotingType, GovernanceType } from '../../../../types';
@@ -27,7 +26,7 @@ export function ManageDAOMenu() {
     governance: { type },
     guard,
     guardContracts,
-  } = useFractal();
+  } = useDecentStore({ daoKey });
   const dao = useDaoInfoStore();
   const currentTime = BigInt(useBlockTimestamp());
   const navigate = useNavigate();

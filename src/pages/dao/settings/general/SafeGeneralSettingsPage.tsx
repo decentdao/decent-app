@@ -24,7 +24,6 @@ import useSubmitProposal from '../../../../hooks/DAO/proposal/useSubmitProposal'
 import { useCanUserCreateProposal } from '../../../../hooks/utils/useCanUserSubmitProposal';
 import { createAccountSubstring } from '../../../../hooks/utils/useGetAccountName';
 import { useInstallVersionedVotingStrategy } from '../../../../hooks/utils/useInstallVersionedVotingStrategy';
-import { useFractal } from '../../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../../providers/NetworkConfig/useNetworkConfigStore';
 import { useDaoInfoStore } from '../../../../store/daoInfo/useDaoInfoStore';
 import {
@@ -54,7 +53,7 @@ export function SafeGeneralSettingsPage() {
   const {
     governanceContracts: { strategies },
     governance: { type: votingStrategyType },
-  } = useFractal();
+  } = useDecentStore({ daoKey });
 
   const navigate = useNavigate();
 

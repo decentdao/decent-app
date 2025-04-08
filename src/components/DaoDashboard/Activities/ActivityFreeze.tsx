@@ -1,7 +1,6 @@
 import { Flex, Text } from '@chakra-ui/react';
 import { useTranslation } from 'react-i18next';
 import { useDateTimeDisplay } from '../../../helpers/dateTime';
-import { useFractal } from '../../../providers/App/AppProvider';
 import { DAOState } from '../../../types';
 import { ActivityCard } from '../../Activity/ActivityCard';
 import { FreezeButton } from '../../Activity/FreezeButton';
@@ -30,7 +29,7 @@ export function ActivityFreeze() {
       freezeVotesThreshold,
       freezeProposalVoteCount,
     },
-  } = useFractal();
+  } = useDecentStore({ daoKey });
   const { t } = useTranslation('dashboard');
   const freezeProposalDeadlineDate = new Date(
     Number(((freezeProposalCreatedTime || 0n) + (freezeProposalPeriod || 0n)) * 1000n),

@@ -2,13 +2,14 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { Address, getAddress, isAddress } from 'viem';
 import { createDecentSubgraphClient } from '../../../graphql';
 import { DAOQuery, DAOQueryResponse } from '../../../graphql/DAOQueries';
-import { useFractal } from '../../../providers/App/AppProvider';
+import { useDecentStore } from '../../../providers/App/AppProvider';
 import { useSafeAPI } from '../../../providers/App/hooks/useSafeAPI';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
 import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
+import useCurrentDAOKey from '../../useCurrentDaoKey';
 import { useDecentModules } from './useDecentModules';
 
-export const useFractalNode = ({
+export const useDecentNode = ({
   addressPrefix,
   safeAddress,
   wrongNetwork,
@@ -19,6 +20,7 @@ export const useFractalNode = ({
   wrongNetwork?: boolean;
   invalidQuery?: boolean;
 }) => {
+  const { daoKey } = useCurrentDAOKey();
   const safeApi = useSafeAPI();
   const lookupModules = useDecentModules();
   // tracks the current valid Safe address and chain id; helps prevent unnecessary calls
@@ -26,7 +28,7 @@ export const useFractalNode = ({
   const [errorLoading, setErrorLoading] = useState<boolean>(false);
   const { getConfigByChainId, chain } = useNetworkConfigStore();
 
-  const { action } = useFractal();
+  const { action } = useDecentStore({ daoKey });
 
   const { setDaoInfo, setSafeInfo, setDecentModules } = useDaoInfoStore();
 

@@ -1,4 +1,4 @@
-import { Flex, Box, Text, VStack } from '@chakra-ui/react';
+import { Box, Flex, Text, VStack } from '@chakra-ui/react';
 import { Address } from 'viem';
 import { useAccountFavorites } from '../../../hooks/DAO/loaders/useFavorites';
 import { DaoHierarchyStrategyType } from '../../../types';
@@ -16,7 +16,7 @@ export const NODE_MARGIN_TOP_REM = 1.25;
  * this component, as this card is independent of your current DAO context, since
  * it is used in the hierarchy, where there are multiple DAO nodes being displayed.
  *
- * Simply using the useFractal() hook to get info will end up with the current DAO's
+ * Simply using the useDecentStore({ daoKey }) hook to get info will end up with the current DAO's
  * context being displayed in ALL the node cards in a hierarchy, which is incorrect.
  */
 export function DAONodeInfoCard(props: {

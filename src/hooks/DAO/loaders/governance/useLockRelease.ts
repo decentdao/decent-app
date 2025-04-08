@@ -2,7 +2,6 @@ import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { getContract } from 'viem';
 import { useAccount } from 'wagmi';
 import LockReleaseAbi from '../../../../assets/abi/LockRelease';
-import { useFractal } from '../../../../providers/App/AppProvider';
 import { DecentGovernanceAction } from '../../../../providers/App/governance/action';
 import useNetworkPublicClient from '../../../useNetworkPublicClient';
 
@@ -17,7 +16,7 @@ export const useLockRelease = ({ onMount = true }: { onMount?: boolean }) => {
   const {
     governanceContracts: { lockReleaseAddress },
     action,
-  } = useFractal();
+  } = useDecentStore({ daoKey });
   const user = useAccount();
   const publicClient = useNetworkPublicClient();
 

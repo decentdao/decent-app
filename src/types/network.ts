@@ -1,4 +1,5 @@
 import { Address, Chain } from 'viem';
+import { NetworkPrefix } from './daoGeneral';
 import { GovernanceType } from './fractal';
 
 export type TheGraphConfig = {
@@ -14,7 +15,7 @@ export type NetworkConfig = {
   safeBaseURL: string;
   etherscanBaseURL: string;
   etherscanAPIUrl: string;
-  addressPrefix: string; // copy whatever Safe uses
+  addressPrefix: NetworkPrefix; // copy whatever Safe uses
   nativeTokenIcon: string;
   isENSSupported: boolean;
   decentSubgraph: TheGraphConfig;

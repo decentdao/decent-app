@@ -191,7 +191,7 @@ export interface ITokenAccount {
   votingWeightString: string | undefined;
 }
 
-export interface FractalStore extends Fractal {
+export interface DecentStore extends Fractal {
   action: {
     dispatch: Dispatch<FractalActions>;
     resetSafeState: () => Promise<void>;

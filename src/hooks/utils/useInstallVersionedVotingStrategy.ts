@@ -1,19 +1,18 @@
 import { abis } from '@fractal-framework/fractal-contracts';
 import { useCallback } from 'react';
 import {
+  Address,
   encodeAbiParameters,
-  parseAbiParameters,
+  EncodeAbiParametersReturnType,
   encodeFunctionData,
+  encodePacked,
   getCreate2Address,
   keccak256,
-  encodePacked,
-  Address,
-  EncodeAbiParametersReturnType,
+  parseAbiParameters,
 } from 'viem';
 import { ZodiacModuleProxyFactoryAbi } from '../../assets/abi/ZodiacModuleProxyFactoryAbi';
 import { getRandomBytes } from '../../helpers';
-import { generateSalt, generateContractByteCodeLinear } from '../../models/helpers/utils';
-import { useFractal } from '../../providers/App/AppProvider';
+import { generateContractByteCodeLinear, generateSalt } from '../../models/helpers/utils';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
 import { useDaoInfoStore } from '../../store/daoInfo/useDaoInfoStore';
 import {
@@ -30,7 +29,7 @@ export const useInstallVersionedVotingStrategy = () => {
   const { safe } = useDaoInfoStore();
 
   const safeAddress = safe?.address;
-  const { governance, governanceContracts } = useFractal();
+  const { governance, governanceContracts } = useDecentStore({ daoKey });
 
   const publicClient = useNetworkPublicClient();
   const { getVotingStrategies } = useVotingStrategiesAddresses();

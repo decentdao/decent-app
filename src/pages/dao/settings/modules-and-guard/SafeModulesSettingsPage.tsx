@@ -8,7 +8,6 @@ import NestedPageHeader from '../../../../components/ui/page/Header/NestedPageHe
 import Divider from '../../../../components/ui/utils/Divider';
 import { DAO_ROUTES } from '../../../../constants/routes';
 import { createAccountSubstring } from '../../../../hooks/utils/useGetAccountName';
-import { useFractal } from '../../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../../providers/NetworkConfig/useNetworkConfigStore';
 import { useDaoInfoStore } from '../../../../store/daoInfo/useDaoInfoStore';
 import { FractalModuleType } from '../../../../types';
@@ -18,7 +17,7 @@ export function SafeModulesSettingsPage() {
   const { addressPrefix } = useNetworkConfigStore();
   const {
     guardContracts: { freezeGuardContractAddress, freezeVotingContractAddress },
-  } = useFractal();
+  } = useDecentStore({ daoKey });
   const { modules, safe } = useDaoInfoStore();
 
   return (

@@ -4,7 +4,6 @@ import { PropsWithChildren, ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useLocation, useMatch } from 'react-router-dom';
 import { DAO_ROUTES } from '../../constants/routes';
-import { useFractal } from '../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
 import { useDaoInfoStore } from '../../store/daoInfo/useDaoInfoStore';
 import { AzoriusGovernance } from '../../types';
@@ -82,7 +81,7 @@ function SettingsLink({
 export default function SettingsNavigation() {
   const { t } = useTranslation('settings');
   const { addressPrefix } = useNetworkConfigStore();
-  const { governance } = useFractal();
+  const { governance } = useDecentStore({ daoKey });
   const { safe, modules } = useDaoInfoStore();
   const azoriusGovernance = governance as AzoriusGovernance;
 

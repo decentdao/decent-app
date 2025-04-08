@@ -1,14 +1,10 @@
-import { useSearchParams } from 'react-router-dom';
 import { isAddress } from 'viem';
 import { validPrefixes } from '../../providers/NetworkConfig/networks';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
+import useCurrentDAOKey from '../useCurrentDaoKey';
 
 export const useParseSafeAddress = () => {
-  const [searchParams] = useSearchParams();
-  const addressWithPrefix = searchParams.get('dao');
-  const queryPrefixAndAddress = addressWithPrefix?.split(':');
-  const queryAddressPrefix = queryPrefixAndAddress?.[0];
-  const queryDaoAddress = queryPrefixAndAddress?.[1];
+  const { addressPrefix: queryAddressPrefix, daoAddress: queryDaoAddress } = useCurrentDAOKey();
 
   const { addressPrefix } = useNetworkConfigStore();
 

@@ -16,7 +16,6 @@ import { BarLoader } from '../../../../../components/ui/loaders/BarLoader';
 import { useHeaderHeight } from '../../../../../constants/common';
 import { DAO_ROUTES } from '../../../../../constants/routes';
 import { analyticsEvents } from '../../../../../insights/analyticsEvents';
-import { useFractal } from '../../../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../../../providers/NetworkConfig/useNetworkConfigStore';
 import { useDaoInfoStore } from '../../../../../store/daoInfo/useDaoInfoStore';
 import {
@@ -31,7 +30,7 @@ export function SafeSablierProposalCreatePage() {
   }, []);
   const {
     governance: { type },
-  } = useFractal();
+  } = useDecentStore({ daoKey });
   const {
     addressPrefix,
     contracts: { sablierV2Batch, sablierV2LockupTranched },

@@ -12,7 +12,6 @@ import PageHeader from '../../../../components/ui/page/Header/PageHeader';
 import { DAO_ROUTES } from '../../../../constants/routes';
 import useDeployAzorius from '../../../../hooks/DAO/useDeployAzorius';
 import { analyticsEvents } from '../../../../insights/analyticsEvents';
-import { useFractal } from '../../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../../providers/NetworkConfig/useNetworkConfigStore';
 import { useDaoInfoStore } from '../../../../store/daoInfo/useDaoInfoStore';
 import {
@@ -30,7 +29,7 @@ export function SafeEditGovernancePage() {
 
   const {
     governance: { type },
-  } = useFractal();
+  } = useDecentStore({ daoKey });
   const user = useAccount();
   const { safe, subgraphInfo } = useDaoInfoStore();
   const { addressPrefix } = useNetworkConfigStore();

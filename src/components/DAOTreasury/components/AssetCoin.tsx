@@ -1,6 +1,5 @@
 import { Box, Divider, Flex, HStack, Image, Text } from '@chakra-ui/react';
 import { useTranslation } from 'react-i18next';
-import { useFractal } from '../../../providers/App/AppProvider';
 import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
 import { TokenBalance } from '../../../types';
 import { formatCoin, formatPercentage, formatUSD } from '../../../utils';
@@ -48,7 +47,7 @@ export function CoinHeader() {
 export function CoinRow({ asset }: { asset: TokenBalance }) {
   const {
     treasury: { totalUsdValue },
-  } = useFractal();
+  } = useDecentStore({ daoKey });
 
   const { safe } = useDaoInfoStore();
 

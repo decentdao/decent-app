@@ -1,7 +1,6 @@
 import { Box, Flex, Text } from '@chakra-ui/react';
 import { Scroll } from '@phosphor-icons/react';
 import { useTranslation } from 'react-i18next';
-import { useFractal } from '../../../providers/App/AppProvider';
 import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
 import {
   FractalProposal,
@@ -124,7 +123,7 @@ export function InfoProposals() {
   const { t } = useTranslation('dashboard');
   const {
     governance: { proposals, type },
-  } = useFractal();
+  } = useDecentStore({ daoKey });
   const { safe } = useDaoInfoStore();
 
   if (!safe?.address || !type) {

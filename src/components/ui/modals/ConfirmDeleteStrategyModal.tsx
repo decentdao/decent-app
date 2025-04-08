@@ -5,7 +5,6 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { DAO_ROUTES } from '../../../constants/routes';
 import useVotingStrategiesAddresses from '../../../hooks/utils/useVotingStrategiesAddresses';
-import { useFractal } from '../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
 import { useProposalActionsStore } from '../../../store/actions/useProposalActionsStore';
 import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
@@ -17,7 +16,7 @@ export function ConfirmDeleteStrategyModal({ onClose }: { onClose: () => void })
   const navigate = useNavigate();
   const { t } = useTranslation('settings');
   const { addressPrefix } = useNetworkConfigStore();
-  const { governance, governanceContracts } = useFractal();
+  const { governance, governanceContracts } = useDecentStore({ daoKey });
   const { safe } = useDaoInfoStore();
   const { addAction } = useProposalActionsStore();
 

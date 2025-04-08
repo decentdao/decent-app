@@ -7,7 +7,6 @@ import { getContract } from 'viem';
 
 import useNetworkPublicClient from '../../../hooks/useNetworkPublicClient';
 import { useTimeHelpers } from '../../../hooks/utils/useTimeHelpers';
-import { useFractal } from '../../../providers/App/AppProvider';
 import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
 import { AzoriusGovernance, FreezeGuardType } from '../../../types';
 import { blocksToSeconds } from '../../../utils/contract';
@@ -18,7 +17,7 @@ export function InfoGovernance({ showTitle = true }: { showTitle?: boolean }) {
   const {
     governance,
     guardContracts: { freezeGuardType, freezeGuardContractAddress },
-  } = useFractal();
+  } = useDecentStore({ daoKey });
   const { safe } = useDaoInfoStore();
   const publicClient = useNetworkPublicClient();
   const { getTimeDuration } = useTimeHelpers();

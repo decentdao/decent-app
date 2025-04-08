@@ -1,13 +1,12 @@
-import { Box, Flex, Icon, Show, Button } from '@chakra-ui/react';
+import { Box, Button, Flex, Icon, Show } from '@chakra-ui/react';
 import { CaretDown, Funnel } from '@phosphor-icons/react';
-import { useEffect, useMemo, useState, Dispatch, SetStateAction } from 'react';
+import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { DAO_ROUTES } from '../../../constants/routes';
 import { useProposalsSortedAndFiltered } from '../../../hooks/DAO/proposal/useProposals';
 import { useCanUserCreateProposal } from '../../../hooks/utils/useCanUserSubmitProposal';
 import { usePagination } from '../../../hooks/utils/usePagination';
-import { useFractal } from '../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
 import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
 import {
@@ -31,7 +30,7 @@ export function ProposalsHome() {
     guardContracts: { freezeVotingContractAddress },
     guard,
     governance: { type },
-  } = useFractal();
+  } = useDecentStore({ daoKey });
 
   const [sortBy, setSortBy] = useState<SortBy>(SortBy.Newest);
   const [filters, setFilters] = useState<FractalProposalState[]>([]);
@@ -49,7 +48,7 @@ export function ProposalsHome() {
     [proposals, getPaginatedItems],
   );
 
-  const { governance, guardContracts } = useFractal();
+  const { governance, guardContracts } = useDecentStore({ daoKey });
   const { safe } = useDaoInfoStore();
 
   const { addressPrefix } = useNetworkConfigStore();

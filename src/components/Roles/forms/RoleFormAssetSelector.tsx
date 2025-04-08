@@ -1,4 +1,4 @@
-import { Flex, FormControl, Image, Text, Icon } from '@chakra-ui/react';
+import { Flex, FormControl, Icon, Image, Text } from '@chakra-ui/react';
 import { CheckCircle } from '@phosphor-icons/react';
 import {
   Field,
@@ -10,7 +10,6 @@ import {
 } from 'formik';
 import { useTranslation } from 'react-i18next';
 import { getAddress } from 'viem';
-import { useFractal } from '../../../providers/App/AppProvider';
 import { BigIntValuePair } from '../../../types';
 import { RoleFormValues } from '../../../types/roles';
 import { formatCoin, formatUSD } from '../../../utils';
@@ -23,7 +22,7 @@ export function AssetSelector({ formIndex, disabled }: { formIndex: number; disa
   const { values, setFieldValue } = useFormikContext<RoleFormValues>();
   const {
     treasury: { assetsFungible },
-  } = useFractal();
+  } = useDecentStore({ daoKey });
 
   const fungibleAssetsWithBalance = assetsFungible.filter(
     asset => parseFloat(asset.balance) > 0 && !asset.nativeToken,

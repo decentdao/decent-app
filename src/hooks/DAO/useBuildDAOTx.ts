@@ -2,7 +2,6 @@ import { useCallback } from 'react';
 import { Address } from 'viem';
 import { useAccount } from 'wagmi';
 import { TxBuilderFactory } from '../../models/TxBuilderFactory';
-import { useFractal } from '../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
 import {
   AzoriusERC20DAO,
@@ -43,7 +42,7 @@ const useBuildDAOTx = () => {
   const {
     governance,
     governanceContracts: { linearVotingErc721Address },
-  } = useFractal();
+  } = useDecentStore({ daoKey });
   const user = useAccount();
 
   const publicClient = useNetworkPublicClient();

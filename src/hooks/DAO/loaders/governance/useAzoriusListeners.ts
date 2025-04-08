@@ -2,7 +2,6 @@ import { abis } from '@fractal-framework/fractal-contracts';
 import { useEffect, useMemo } from 'react';
 import { getContract } from 'viem';
 import { logError } from '../../../../helpers/errorLogging';
-import { useFractal } from '../../../../providers/App/AppProvider';
 import { FractalGovernanceAction } from '../../../../providers/App/governance/action';
 import { CreateProposalMetadata, VotingStrategyType } from '../../../../types';
 import {
@@ -25,7 +24,7 @@ export const useAzoriusListeners = () => {
       linearVotingErc721Address,
       linearVotingErc721WithHatsWhitelistingAddress,
     },
-  } = useFractal();
+  } = useDecentStore({ daoKey });
   const decode = useSafeDecoder();
   const publicClient = useNetworkPublicClient();
   const { getAddressContractType } = useAddressContractType();

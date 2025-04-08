@@ -8,13 +8,12 @@ import { Alert as AlertIcon } from '../../assets/theme/custom/icons/Alert';
 import useNetworkPublicClient from '../../hooks/useNetworkPublicClient';
 import { useNetworkWalletClient } from '../../hooks/useNetworkWalletClient';
 import { useTransaction } from '../../hooks/utils/useTransaction';
-import { useFractal } from '../../providers/App/AppProvider';
 import { AzoriusGovernance } from '../../types';
 import { formatCoin } from '../../utils';
 
 export function ERCO20Claim() {
   const [userClaimable, setUserClaimable] = useState(0n);
-  const { governance } = useFractal();
+  const { governance } = useDecentStore({ daoKey });
   const user = useAccount();
   const account = user.address;
   const { tokenClaimContractAddress, type } = governance;

@@ -2,11 +2,10 @@ import { Box, Flex } from '@chakra-ui/react';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Check } from '../../../assets/theme/custom/icons/Check';
-import { useFractal } from '../../../providers/App/AppProvider';
 import { AzoriusGovernance, AzoriusProposal } from '../../../types';
 
 export default function QuorumBadge({ proposal }: { proposal: AzoriusProposal }) {
-  const { governance } = useFractal();
+  const { governance } = useDecentStore({ daoKey });
   const { t } = useTranslation('common');
 
   const azoriusGovernance = governance as AzoriusGovernance;

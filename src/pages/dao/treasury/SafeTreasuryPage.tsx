@@ -13,7 +13,6 @@ import PageHeader from '../../../components/ui/page/Header/PageHeader';
 import useSendAssetsActionModal from '../../../hooks/DAO/useSendAssetsActionModal';
 import { useCanUserCreateProposal } from '../../../hooks/utils/useCanUserSubmitProposal';
 import { analyticsEvents } from '../../../insights/analyticsEvents';
-import { useFractal } from '../../../providers/App/AppProvider';
 import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
 
 export function SafeTreasuryPage() {
@@ -22,7 +21,7 @@ export function SafeTreasuryPage() {
   }, []);
   const {
     treasury: { assetsFungible, transfers },
-  } = useFractal();
+  } = useDecentStore({ daoKey });
   const { subgraphInfo } = useDaoInfoStore();
   const [shownTransactions, setShownTransactions] = useState(20);
   const { t } = useTranslation(['treasury', 'modals']);

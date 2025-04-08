@@ -2,7 +2,6 @@ import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { getAddress } from 'viem';
 import * as Yup from 'yup';
-import { useFractal } from '../../../providers/App/AppProvider';
 import { RoleFormValues, RoleHatFormValue, SablierPaymentFormValues } from '../../../types/roles';
 import { useValidationAddress } from '../common/useValidationAddress';
 
@@ -30,7 +29,7 @@ export const useRolesSchema = () => {
   const { t } = useTranslation(['roles']);
   const {
     treasury: { assetsFungible },
-  } = useFractal();
+  } = useDecentStore({ daoKey });
   const { addressValidationTest } = useValidationAddress();
 
   const paymentValidationSchema = Yup.object().shape({

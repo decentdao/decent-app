@@ -18,7 +18,6 @@ import { DAO_ROUTES } from '../../../constants/routes';
 import useSendAssetsActionModal from '../../../hooks/DAO/useSendAssetsActionModal';
 import { useCanUserCreateProposal } from '../../../hooks/utils/useCanUserSubmitProposal';
 import { analyticsEvents } from '../../../insights/analyticsEvents';
-import { useFractal } from '../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
 import { useProposalActionsStore } from '../../../store/actions/useProposalActionsStore';
 import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
@@ -32,7 +31,7 @@ export function SafeProposalTemplatesPage() {
   const { t } = useTranslation();
   const {
     governance: { proposalTemplates },
-  } = useFractal();
+  } = useDecentStore({ daoKey });
   const { safe } = useDaoInfoStore();
   const { canUserCreateProposal } = useCanUserCreateProposal();
   const {

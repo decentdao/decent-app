@@ -2,11 +2,11 @@ import { Outlet } from 'react-router-dom';
 import { useAzoriusListeners } from '../../hooks/DAO/loaders/governance/useAzoriusListeners';
 import { useERC20Claim } from '../../hooks/DAO/loaders/governance/useERC20Claim';
 import { useSnapshotProposals } from '../../hooks/DAO/loaders/snapshot/useSnapshotProposals';
+import { useDecentFreeze } from '../../hooks/DAO/loaders/useDecentFreeze';
+import { useDecentGovernance } from '../../hooks/DAO/loaders/useDecentGovernance';
+import { useDecentGuardContracts } from '../../hooks/DAO/loaders/useDecentGuardContracts';
+import { useDecentNode } from '../../hooks/DAO/loaders/useDecentNode';
 import { useDecentTreasury } from '../../hooks/DAO/loaders/useDecentTreasury';
-import { useFractalFreeze } from '../../hooks/DAO/loaders/useFractalFreeze';
-import { useFractalGovernance } from '../../hooks/DAO/loaders/useFractalGovernance';
-import { useFractalGuardContracts } from '../../hooks/DAO/loaders/useFractalGuardContracts';
-import { useFractalNode } from '../../hooks/DAO/loaders/useFractalNode';
 import { useGovernanceContracts } from '../../hooks/DAO/loaders/useGovernanceContracts';
 import { useHatsTree } from '../../hooks/DAO/loaders/useHatsTree';
 import { useKeyValuePairs } from '../../hooks/DAO/useKeyValuePairs';
@@ -28,7 +28,7 @@ export function SafeController() {
 
   const { subgraphInfo } = useDaoInfoStore();
 
-  const { errorLoading } = useFractalNode({
+  const { errorLoading } = useDecentNode({
     addressPrefix,
     safeAddress,
     wrongNetwork,
@@ -36,9 +36,9 @@ export function SafeController() {
   });
 
   useGovernanceContracts();
-  useFractalGuardContracts({});
-  useFractalFreeze({ parentSafeAddress: subgraphInfo?.parentAddress ?? null });
-  useFractalGovernance();
+  useDecentGuardContracts({});
+  useDecentFreeze({ parentSafeAddress: subgraphInfo?.parentAddress ?? null });
+  useDecentGovernance();
   useDecentTreasury();
   useERC20Claim();
   useSnapshotProposals();

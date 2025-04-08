@@ -1,5 +1,4 @@
 import { useCallback, useMemo } from 'react';
-import { useFractal } from '../../../providers/App/AppProvider';
 import { FractalProposalState, MultisigProposal, SortBy } from '../../../types';
 
 export function useProposalsSortedAndFiltered({
@@ -11,7 +10,7 @@ export function useProposalsSortedAndFiltered({
 }) {
   const {
     governance: { proposals },
-  } = useFractal();
+  } = useDecentStore({ daoKey });
 
   const getProposalsTotal = useCallback(
     (state: FractalProposalState) => {

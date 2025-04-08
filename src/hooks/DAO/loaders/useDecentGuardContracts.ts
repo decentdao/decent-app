@@ -1,19 +1,21 @@
 import { abis } from '@fractal-framework/fractal-contracts';
 import { useCallback, useEffect, useRef } from 'react';
 import { getContract, zeroAddress } from 'viem';
-import { useFractal } from '../../../providers/App/AppProvider';
+import { useDecentStore } from '../../../providers/App/AppProvider';
 import { GuardContractAction } from '../../../providers/App/guardContracts/action';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
 import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
 import { FreezeGuardType, FreezeVotingType } from '../../../types';
+import useCurrentDAOKey from '../../useCurrentDaoKey';
 import useNetworkPublicClient from '../../useNetworkPublicClient';
 import { useAddressContractType } from '../../utils/useAddressContractType';
 import { DecentModule, FractalModuleType, GnosisSafe } from './../../../types/fractal';
 
-export const useFractalGuardContracts = ({ loadOnMount = true }: { loadOnMount?: boolean }) => {
+export const useDecentGuardContracts = ({ loadOnMount = true }: { loadOnMount?: boolean }) => {
   // load key for component; helps prevent unnecessary calls
   const loadKey = useRef<string>();
-  const { action } = useFractal();
+  const { daoKey } = useCurrentDAOKey();
+  const { action } = useDecentStore({ daoKey });
 
   const { modules, safe, subgraphInfo } = useDaoInfoStore();
 

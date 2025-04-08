@@ -2,8 +2,7 @@ import { abis } from '@fractal-framework/fractal-contracts';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Address, Hex, getContract } from 'viem';
-import { useFractal } from '../../../providers/App/AppProvider';
-import { MetaTransaction, FractalProposal, AzoriusProposal } from '../../../types';
+import { AzoriusProposal, FractalProposal, MetaTransaction } from '../../../types';
 import { useNetworkWalletClient } from '../../useNetworkWalletClient';
 import { useTransaction } from '../../utils/useTransaction';
 import useUpdateProposalState from './useUpdateProposalState';
@@ -11,7 +10,7 @@ import useUpdateProposalState from './useUpdateProposalState';
 export default function useExecuteProposal() {
   const { t } = useTranslation('transaction');
 
-  const { governanceContracts, action } = useFractal();
+  const { governanceContracts, action } = useDecentStore({ daoKey });
   const { moduleAzoriusAddress } = governanceContracts;
   const updateProposalState = useUpdateProposalState({
     governanceContracts,

@@ -1,12 +1,11 @@
 import { Box, Flex, Grid, Text } from '@chakra-ui/react';
 import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useFractal } from '../../../providers/App/AppProvider';
 import {
   AzoriusGovernance,
   AzoriusProposal,
-  GovernanceType,
   ERC721ProposalVote,
+  GovernanceType,
 } from '../../../types';
 import ContentBox from '../../ui/containers/ContentBox';
 import { InfoBoxLoader } from '../../ui/loaders/InfoBoxLoader';
@@ -115,7 +114,7 @@ function ProposalVotes({ proposal }: { proposal: AzoriusProposal }) {
     votesSummary: { yes, no, abstain },
     votes,
   } = proposal;
-  const { governance } = useFractal();
+  const { governance } = useDecentStore({ daoKey });
 
   const azoriusGovernance = governance as AzoriusGovernance;
   const { t } = useTranslation('proposal');

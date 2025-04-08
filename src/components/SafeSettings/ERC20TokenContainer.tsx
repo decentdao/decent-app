@@ -1,6 +1,5 @@
 import { Box, Flex, Text } from '@chakra-ui/react';
 import { useTranslation } from 'react-i18next';
-import { useFractal } from '../../providers/App/AppProvider';
 import { AzoriusGovernance } from '../../types';
 import { formatCoin } from '../../utils';
 import { DisplayAddress } from '../ui/links/DisplayAddress';
@@ -8,7 +7,7 @@ import { BarLoader } from '../ui/loaders/BarLoader';
 
 export function ERC20TokenContainer() {
   const { t } = useTranslation(['settings']);
-  const { governance } = useFractal();
+  const { governance } = useDecentStore({ daoKey });
 
   const azoriusGovernance = governance as AzoriusGovernance;
   const { votesToken } = azoriusGovernance;

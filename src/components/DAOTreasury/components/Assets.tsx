@@ -12,7 +12,6 @@ import {
 import { CaretDown, CaretRight } from '@phosphor-icons/react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useFractal } from '../../../providers/App/AppProvider';
 import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
 import { formatUSD } from '../../../utils';
 import Divider from '../../ui/utils/Divider';
@@ -24,7 +23,7 @@ import LidoButtons from './LidoButtons';
 export function Assets() {
   const {
     treasury: { assetsFungible, assetsNonFungible, assetsDeFi, totalUsdValue },
-  } = useFractal();
+  } = useDecentStore({ daoKey });
   const { safe } = useDaoInfoStore();
   const { t } = useTranslation('treasury');
   const [expandedIndecies, setExpandedIndecies] = useState<number[]>([]);
