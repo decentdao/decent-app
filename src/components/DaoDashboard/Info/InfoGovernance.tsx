@@ -113,7 +113,11 @@ export function InfoGovernance({ showTitle = true }: { showTitle?: boolean }) {
         <Text color="neutral-7">{t('titleType')}</Text>
         <Text textAlign="right">
           {governance.type
-            ? t(governance.type.toString(), { ns: 'daoCreate' })
+            ? t(governance.type.toString(), {
+                ns: 'daoCreate',
+                threshold: safe.threshold,
+                totalSigners: safe.owners.length,
+              })
             : t('loading', { ns: 'common' })}
         </Text>
       </Flex>
