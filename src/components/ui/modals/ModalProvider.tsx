@@ -4,6 +4,10 @@ import { useTranslation } from 'react-i18next';
 import { Address } from 'viem';
 import { CreateProposalTransaction, ProposalTemplate } from '../../../types';
 import { SendAssetsData } from '../../../utils/dao/prepareSendAssetsActionData';
+import {
+  ProposalTransactionsFormModal,
+  ProposalTransactionsFormProps,
+} from '../../ProposalBuilder/ProposalTransactionsForm';
 import AddSignerModal from '../../SafeSettings/Signers/modals/AddSignerModal';
 import RemoveSignerModal from '../../SafeSettings/Signers/modals/RemoveSignerModal';
 import DraggableDrawer from '../containers/DraggableDrawer';
@@ -45,6 +49,7 @@ export enum ModalType {
   REFILL_GAS,
   GASLESS_VOTE_SUCCESS,
   CONFIRM_TRANSACTION,
+  TRANSACTION_BUILDER,
 }
 
 export type CurrentModal = {
@@ -106,6 +111,7 @@ export type ModalPropsTypes = {
     appName: string;
     transactionArray: CreateProposalTransaction[];
   };
+  [ModalType.TRANSACTION_BUILDER]: ProposalTransactionsFormProps;
 };
 
 export interface IModalContext {
@@ -317,6 +323,19 @@ export function ModalProvider({ children }: { children: ReactNode }) {
             appName={current.props.appName}
             transactionArray={current.props.transactionArray}
             close={closeModal}
+          />
+        );
+        modalSize = 'xl';
+        break;
+      case ModalType.TRANSACTION_BUILDER:
+        modalTitle = t('transactionBuilderTitle');
+        modalContent = (
+          <ProposalTransactionsFormModal
+            pendingTransaction={current.props.pendingTransaction}
+            isProposalMode={current.props.isProposalMode}
+            values={current.props.values}
+            errors={current.props.errors}
+            setFieldValue={current.props.setFieldValue}
           />
         );
         modalSize = 'xl';

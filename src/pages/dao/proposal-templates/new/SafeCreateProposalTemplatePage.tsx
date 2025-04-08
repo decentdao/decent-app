@@ -1,4 +1,5 @@
 import * as amplitude from '@amplitude/analytics-browser';
+import { FormikErrors } from 'formik';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useSearchParams } from 'react-router-dom';
@@ -18,7 +19,12 @@ import { analyticsEvents } from '../../../../insights/analyticsEvents';
 import useIPFSClient from '../../../../providers/App/hooks/useIPFSClient';
 import { useNetworkConfigStore } from '../../../../providers/NetworkConfig/useNetworkConfigStore';
 import { useDaoInfoStore } from '../../../../store/daoInfo/useDaoInfoStore';
-import { CreateProposalSteps, ProposalTemplate } from '../../../../types/proposalBuilder';
+import { BigIntValuePair } from '../../../../types';
+import {
+  CreateProposalSteps,
+  CreateProposalTransaction,
+  ProposalTemplate,
+} from '../../../../types/proposalBuilder';
 
 export function SafeCreateProposalTemplatePage() {
   useEffect(() => {
@@ -118,11 +124,16 @@ export function SafeCreateProposalTemplatePage() {
       prepareProposalData={prepareProposalTemplateProposal}
       mainContent={(formikProps, pendingCreateTx, nonce, currentStep) => {
         if (currentStep !== CreateProposalSteps.TRANSACTIONS) return null;
+        const { setFieldValue, errors, values } = formikProps;
         return (
           <ProposalTransactionsForm
             pendingTransaction={pendingCreateTx}
             isProposalMode={true}
-            {...formikProps}
+            values={values.transactions}
+            setFieldValue={setFieldValue}
+            errors={
+              errors?.transactions as FormikErrors<CreateProposalTransaction<BigIntValuePair>>[]
+            }
           />
         );
       }}

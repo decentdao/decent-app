@@ -1,5 +1,6 @@
 import * as amplitude from '@amplitude/analytics-browser';
 import { Center, Flex, Text } from '@chakra-ui/react';
+import { FormikErrors } from 'formik';
 import { useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
@@ -21,7 +22,11 @@ import { useDecentStore } from '../../../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../../../providers/NetworkConfig/useNetworkConfigStore';
 import { useProposalActionsStore } from '../../../../../store/actions/useProposalActionsStore';
 import { useDaoInfoStore } from '../../../../../store/daoInfo/useDaoInfoStore';
-import { CreateProposalSteps } from '../../../../../types';
+import {
+  BigIntValuePair,
+  CreateProposalSteps,
+  CreateProposalTransaction,
+} from '../../../../../types';
 import {
   prepareSendAssetsActionData,
   SendAssetsData,
@@ -150,11 +155,16 @@ export function SafeProposalWithActionsCreatePage() {
       prepareProposalData={prepareProposal}
       mainContent={(formikProps, pendingCreateTx, _nonce, currentStep) => {
         if (currentStep !== CreateProposalSteps.TRANSACTIONS) return null;
+        const { setFieldValue, errors, values } = formikProps;
         return (
           <ProposalTransactionsForm
             pendingTransaction={pendingCreateTx}
             isProposalMode={true}
-            {...formikProps}
+            values={values.transactions}
+            setFieldValue={setFieldValue}
+            errors={
+              errors?.transactions as FormikErrors<CreateProposalTransaction<BigIntValuePair>>[]
+            }
           />
         );
       }}

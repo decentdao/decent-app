@@ -199,7 +199,7 @@ export function EstablishEssentials(props: ICreationStepProps) {
               )}
               {createOptions.includes(GovernanceType.MULTISIG) && (
                 <RadioWithText
-                  label={t('labelMultisigGov')}
+                  label={t('labelMultisigGov', { threshold: 'm', totalSigners: 'n' })}
                   description={t('descMultisigGov')}
                   testId="choose-multisig"
                   value={GovernanceType.MULTISIG}
