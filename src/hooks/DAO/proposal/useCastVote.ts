@@ -1,11 +1,12 @@
 import { abis } from '@fractal-framework/fractal-contracts';
 import { toLightSmartAccount } from 'permissionless/accounts';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { Address, getContract, http } from 'viem';
 import { createBundlerClient } from 'viem/account-abstraction';
 import { useAccount } from 'wagmi';
+import { EntryPoint07Abi } from '../../../assets/abi/EntryPoint07Abi';
 import { useDecentStore } from '../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
 import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
@@ -25,9 +26,13 @@ const useCastVote = (proposalId: string, strategy: Address) => {
       linearVotingErc721WithHatsWhitelistingAddress,
     },
   } = useDecentStore({ daoKey });
+  const {
+    contracts: { entryPointv07 },
+  } = useNetworkConfigStore();
 
   const [contractCall, castVotePending] = useTransaction();
   const [castGaslessVotePending, setCastGaslessVotePending] = useState(false);
+  const [canCastGaslessVote, setCanCastGaslessVote] = useState(false);
 
   const { remainingTokenIds, remainingTokenAddresses } = useUserERC721VotingTokens(
     null,
@@ -35,6 +40,7 @@ const useCastVote = (proposalId: string, strategy: Address) => {
   );
 
   const { data: walletClient } = useNetworkWalletClient();
+  const walletClientReady = walletClient !== undefined;
 
   const { t } = useTranslation('transaction');
 
@@ -156,6 +162,78 @@ const useCastVote = (proposalId: string, strategy: Address) => {
   const publicClient = useNetworkPublicClient();
   const { rpcEndpoint } = useNetworkConfigStore();
 
+  useEffect(() => {
+    const estimateGaslessVoteGas = async () => {
+      if (!address || !paymasterAddress || !walletClient || !publicClient || !entryPointv07) {
+        return;
+      }
+
+      const entryPoint = getContract({
+        address: entryPointv07,
+        abi: EntryPoint07Abi,
+        client: publicClient,
+      });
+      const paymasterBalance = await entryPoint.read.balanceOf([paymasterAddress]);
+
+      const smartWallet = await toLightSmartAccount({
+        client: publicClient,
+        owner: walletClient,
+        version: '2.0.0',
+      });
+      const bundlerClient = createBundlerClient({
+        account: smartWallet,
+        client: publicClient,
+        transport: http(rpcEndpoint),
+      });
+      const { maxFeePerGas, maxPriorityFeePerGas } = await publicClient.estimateFeesPerGas();
+      const multipliedMaxFeePerGas = maxFeePerGas * 100n;
+      const multipliedMaxPriorityFeePerGas = maxPriorityFeePerGas * 100n;
+      const castVoteCallData = prepareCastVoteData(0);
+
+      const {
+        preVerificationGas,
+        verificationGasLimit,
+        callGasLimit,
+        paymasterVerificationGasLimit,
+        paymasterPostOpGasLimit,
+      } = await bundlerClient.estimateUserOperationGas({
+        paymaster: paymasterAddress,
+        calls: [castVoteCallData],
+        maxPriorityFeePerGas: multipliedMaxPriorityFeePerGas,
+        maxFeePerGas: multipliedMaxFeePerGas,
+      });
+
+      // Calculate gas
+      // check algorithm at https://github.com/alchemyplatform/rundler/blob/fae8909b34e5874c0cae2d06aa841a8a112d22a0/crates/types/src/user_operation/v0_7.rs#L206-L215
+      const gasUsed =
+        preVerificationGas +
+        verificationGasLimit +
+        callGasLimit +
+        (paymasterVerificationGasLimit ?? 0n) +
+        (paymasterPostOpGasLimit ?? 0n);
+      const gasCost = multipliedMaxFeePerGas * gasUsed;
+
+      setCanCastGaslessVote(paymasterBalance >= gasCost);
+    };
+
+    estimateGaslessVoteGas().catch(() => {
+      //const error = e as EstimateUserOperationGasErrorType;
+      //console.warn('error', error.message);
+      setCanCastGaslessVote(false);
+    });
+    // walletClient object is constantly changing,
+    //   we only need to trigger when it turn from undefined
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    address,
+    entryPointv07,
+    paymasterAddress,
+    prepareCastVoteData,
+    publicClient,
+    rpcEndpoint,
+    walletClientReady,
+  ]);
+
   const castGaslessVote = useCallback(
     async ({
       selectedVoteChoice,
@@ -194,7 +272,7 @@ const useCastVote = (proposalId: string, strategy: Address) => {
           paymaster: paymasterAddress,
           calls: [castVoteCallData],
 
-          // i don't really know why we need to do this, but we do
+          // multiply 100 to pass precheck on https://github.com/alchemyplatform/rundler/blob/fae8909b34e5874c0cae2d06aa841a8a112d22a0/crates/sim/src/precheck.rs#L336-L356
           maxPriorityFeePerGas: maxPriorityFeePerGas * 100n,
           maxFeePerGas: maxFeePerGas * 100n,
         });
@@ -222,6 +300,7 @@ const useCastVote = (proposalId: string, strategy: Address) => {
     castGaslessVote,
     castVotePending,
     castGaslessVotePending,
+    canCastGaslessVote,
   };
 };
 

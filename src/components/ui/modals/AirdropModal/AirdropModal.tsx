@@ -7,6 +7,7 @@ import { usePublicClient } from 'wagmi';
 import * as Yup from 'yup';
 import useCurrentDAOKey from '../../../../hooks/useCurrentDAOKey';
 import { useDecentStore } from '../../../../providers/App/AppProvider';
+import { useProposalActionsStore } from '../../../../store/actions/useProposalActionsStore';
 import { BigIntValuePair, TokenBalance } from '../../../../types';
 import { formatCoinFromAsset } from '../../../../utils';
 import { validateENSName } from '../../../../utils/url';
@@ -78,7 +79,9 @@ export function AirdropModal({
       .required(),
   });
 
+  const { resetActions } = useProposalActionsStore();
   const handleAirdropSubmit = async (values: AirdropFormValues) => {
+    resetActions();
     airdropData({
       recipients: await Promise.all(
         values.recipients.map(async recipient => {
@@ -153,26 +156,26 @@ export function AirdropModal({
               );
             }
 
-            try {
-              const newRecipients = parseRecipients(pastedText, values.selectedAsset.decimals);
+            parseRecipients(pastedText, values.selectedAsset.decimals)
+              .then(newRecipients => {
+                if (newRecipients.length > 0) {
+                  // Replace the current empty recipient and add the rest
+                  const updatedRecipients = [...currentRecipients];
 
-              if (newRecipients.length > 0) {
-                // Replace the current empty recipient and add the rest
-                const updatedRecipients = [...currentRecipients];
+                  // Replace the current recipient with the first new one
+                  updatedRecipients[index] = newRecipients[0];
 
-                // Replace the current recipient with the first new one
-                updatedRecipients[index] = newRecipients[0];
+                  // Add the rest of the recipients
+                  if (newRecipients.length > 1) {
+                    updatedRecipients.push(...newRecipients.slice(1));
+                  }
 
-                // Add the rest of the recipients
-                if (newRecipients.length > 1) {
-                  updatedRecipients.push(...newRecipients.slice(1));
+                  setFieldValue('recipients', updatedRecipients);
                 }
-
-                setFieldValue('recipients', updatedRecipients);
-              }
-            } catch (error) {
-              console.error('Error processing pasted text:', error);
-            }
+              })
+              .catch(error => {
+                console.error('Error processing pasted text:', error);
+              });
           };
 
           return (
@@ -290,6 +293,9 @@ export function AirdropModal({
                             {...field}
                             value={recipient.amount.bigintValue}
                             onChange={value => {
+                              if (value === null) {
+                                console.error('Invalid value');
+                              }
                               setFieldValue(
                                 'recipients',
                                 field.value.map((r, i) => {
