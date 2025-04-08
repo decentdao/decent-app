@@ -74,8 +74,7 @@ const useFeatureFlag = (key: FeatureFlagKey) => {
           // Firebase uses browser cache, and uses the remoteConfig settings to refresh
           await fetchAndActivate(remoteConfig);
           const value = getValue(remoteConfig, key);
-          remoteConfigData[key] = value;
-          setRemoteConfigData(remoteConfigData);
+          setRemoteConfigData(prev => ({ ...prev, [key]: value }));
         } catch (error) {
           console.error('Failed to fetch Remote Config', error);
         }
