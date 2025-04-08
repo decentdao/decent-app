@@ -13,11 +13,12 @@ import {
   getCreate2Address,
   keccak256,
   parseAbiParameters,
+  parseEther,
   toFunctionSelector,
 } from 'viem';
 import GnosisSafeL2Abi from '../assets/abi/GnosisSafeL2';
 import { ZodiacModuleProxyFactoryAbi } from '../assets/abi/ZodiacModuleProxyFactoryAbi';
-import { buildContractCall, getRandomBytes } from '../helpers';
+import { buildContractCall, buildSafeTransaction, getRandomBytes } from '../helpers';
 import {
   AzoriusERC20DAO,
   AzoriusERC721DAO,
@@ -291,6 +292,46 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
       0,
       false,
     );
+  }
+
+  /**
+   * Transfer stake amount to Safe before adding stake on Paymaster.
+   */
+  public buildTransferStakeAmountToSafe(): SafeTransaction {
+    return buildSafeTransaction({
+      to: this.safeContractAddress,
+      value: parseEther('0.1'),
+      nonce: 0,
+    });
+  }
+
+  public async buildAddStakeOnPaymasterTx(): Promise<SafeTransaction> {
+    if (!this.entryPointAddress) {
+      throw new Error('Entry point address is not set');
+    }
+
+    const predictedPaymasterAddress = getPaymasterAddress({
+      safeAddress: this.safeContractAddress,
+      zodiacModuleProxyFactory: this.zodiacModuleProxyFactory,
+      paymasterMastercopy: this.paymasterMasterCopy,
+      entryPoint: this.entryPointAddress,
+      chainId: this.publicClient.chain!.id,
+    });
+
+    const minStakeAmount = parseEther('0.1');
+    // Add stake for Paymaster
+    const tx = buildContractCall(
+      abis.DecentPaymasterV1,
+      predictedPaymasterAddress,
+      'addStake',
+      [86400],
+      0,
+      false,
+      { value: minStakeAmount },
+    );
+    console.debug('AzoriusTxBuilder.addStake', { tx });
+
+    return tx;
   }
 
   public async buildApproveStrategyOnPaymasterTx(): Promise<SafeTransaction> {
