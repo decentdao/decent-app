@@ -51,12 +51,14 @@ export class EnvironmentFeatureFlags implements IFeatureFlags {
   }
 
   isFeatureEnabled(key: FeatureFlagKey) {
-    const envVar = this.getEnvVar(key);
     const urlParam = this.getUrlParam(key);
-
     if (urlParam === 'on') return true;
-    if (envVar === 'on' && urlParam !== 'off') return true;
-    return false;
+    if (urlParam === 'off') return false;
+
+    const envVar = this.getEnvVar(key);
+    if (envVar === 'on') return true;
+    if (envVar === 'off') return false;
+    return undefined;
   }
 }
 
@@ -86,7 +88,8 @@ const useFeatureFlag = (key: FeatureFlagKey) => {
 
   // Get from local first, either the URL params, or .env settings
   let value = FeatureFlags.instance?.isFeatureEnabled(key);
-  if (value != true) {
+  if (value === undefined) {
+    // If not found in local, use remote config
     const remoteValue = remoteConfigData[key];
     value = remoteValue?.asString()?.toLowerCase() == 'on' || remoteValue?.asBoolean() == true;
   }
