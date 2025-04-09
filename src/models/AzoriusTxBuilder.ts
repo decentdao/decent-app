@@ -493,7 +493,7 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
 
       const quorumDenominator = await linearERC20VotingMasterCopyContract.read.QUORUM_DENOMINATOR();
       const encodedStrategyInitParams = encodeAbiParameters(
-        parseAbiParameters('address, address, address, uint32, uint256, uint256, uint256'),
+        parseAbiParameters('address, address, address, uint32, uint256, uint256, uint256, address'),
         [
           this.safeContractAddress, // owner
           this.predictedTokenAddress, // governance token
@@ -534,7 +534,7 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
 
       const encodedStrategyInitParams = encodeAbiParameters(
         parseAbiParameters(
-          'address, address[], uint256[], address, uint32, uint256, uint256, uint256',
+          'address, address[], uint256[], address, uint32, uint256, uint256, uint256, address',
         ),
         [
           this.safeContractAddress, // owner

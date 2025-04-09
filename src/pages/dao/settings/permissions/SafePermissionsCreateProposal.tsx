@@ -155,7 +155,9 @@ export function SafePermissionsCreateProposal() {
         const quorumDenominator =
           await linearERC20VotingMasterCopyContract.read.QUORUM_DENOMINATOR();
         const encodedStrategyInitParams = encodeAbiParameters(
-          parseAbiParameters('address, address, address, uint32, uint256, uint256, uint256'),
+          parseAbiParameters(
+            'address, address, address, uint32, uint256, uint256, uint256, address',
+          ),
           [
             safe.address, // owner
             votesToken.address, // governance token
@@ -221,7 +223,7 @@ export function SafePermissionsCreateProposal() {
 
         const encodedStrategyInitParams = encodeAbiParameters(
           parseAbiParameters(
-            'address, address[], uint256[], address, uint32, uint256, uint256, uint256',
+            'address, address[], uint256[], address, uint32, uint256, uint256, uint256, address',
           ),
           [
             safe.address, // owner
