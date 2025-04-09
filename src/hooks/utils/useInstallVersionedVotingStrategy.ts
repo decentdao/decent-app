@@ -1,18 +1,24 @@
 import { abis } from '@fractal-framework/fractal-contracts';
 import { useCallback } from 'react';
 import {
+  Address,
   encodeAbiParameters,
-  parseAbiParameters,
+  EncodeAbiParametersReturnType,
   encodeFunctionData,
+  encodePacked,
   getCreate2Address,
   keccak256,
-  encodePacked,
-  Address,
-  EncodeAbiParametersReturnType,
+  parseAbiParameters,
 } from 'viem';
 import { ZodiacModuleProxyFactoryAbi } from '../../assets/abi/ZodiacModuleProxyFactoryAbi';
+import {
+  linearERC20VotingV1SetupParams,
+  linearERC20VotingWithWhitelistV1SetupParams,
+  linearERC721VotingV1SetupParams,
+  linearERC721VotingWithWhitelistV1SetupParams,
+} from '../../constants/params';
 import { getRandomBytes } from '../../helpers';
-import { generateSalt, generateContractByteCodeLinear } from '../../models/helpers/utils';
+import { generateContractByteCodeLinear, generateSalt } from '../../models/helpers/utils';
 import { useFractal } from '../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
 import { useDaoInfoStore } from '../../store/daoInfo/useDaoInfoStore';
@@ -51,6 +57,7 @@ export const useInstallVersionedVotingStrategy = () => {
       linearVotingErc20HatsWhitelistingV1MasterCopy,
       linearVotingErc721HatsWhitelistingV1MasterCopy,
       zodiacModuleProxyFactory,
+      accountAbstraction,
     },
   } = useNetworkConfigStore();
 
@@ -60,6 +67,10 @@ export const useInstallVersionedVotingStrategy = () => {
       tokenAddress: Address,
       moduleAzoriusAddress: Address,
     ): Promise<EncodeAbiParametersReturnType> => {
+      if (!accountAbstraction) {
+        throw new Error('Account Abstraction addresses are not set');
+      }
+
       const existingAbiAndAddress = {
         abi: abis.LinearERC20Voting,
         address: strategyToRemove.address,
@@ -93,7 +104,7 @@ export const useInstallVersionedVotingStrategy = () => {
       });
 
       const encodedStrategyInitParams = encodeAbiParameters(
-        parseAbiParameters('address, address, address, uint32, uint256, uint256, uint256'),
+        parseAbiParameters(linearERC20VotingV1SetupParams),
         [
           safeAddress!,
           tokenAddress,
@@ -102,6 +113,7 @@ export const useInstallVersionedVotingStrategy = () => {
           existingRequiredProposerWeight,
           existingQuorumNumerator,
           existingBasisNumerator,
+          accountAbstraction.lightAccountFactory,
         ],
       );
 
@@ -111,7 +123,7 @@ export const useInstallVersionedVotingStrategy = () => {
         args: [encodedStrategyInitParams],
       });
     },
-    [publicClient, safeAddress],
+    [publicClient, safeAddress, accountAbstraction],
   );
 
   const linearErc20WithWhitelistSetupParams = useCallback(
@@ -122,6 +134,10 @@ export const useInstallVersionedVotingStrategy = () => {
     ): Promise<EncodeAbiParametersReturnType> => {
       if (!safeAddress) {
         throw new Error('No safe address');
+      }
+
+      if (!accountAbstraction) {
+        throw new Error('Account Abstraction addresses are not set');
       }
 
       const existingAbiAndAddress = {
@@ -157,9 +173,7 @@ export const useInstallVersionedVotingStrategy = () => {
       });
 
       const encodedStrategyInitParams = encodeAbiParameters(
-        parseAbiParameters(
-          'address, address, address, uint32, uint256, uint256, address, uint256[]',
-        ),
+        parseAbiParameters(linearERC20VotingWithWhitelistV1SetupParams),
         [
           safeAddress,
           tokenAddress,
@@ -169,6 +183,7 @@ export const useInstallVersionedVotingStrategy = () => {
           existingBasisNumerator,
           hatsProtocol,
           existingWhitelistedHatIds,
+          accountAbstraction.lightAccountFactory,
         ],
       );
 
@@ -178,7 +193,7 @@ export const useInstallVersionedVotingStrategy = () => {
         args: [encodedStrategyInitParams],
       });
     },
-    [hatsProtocol, publicClient, safeAddress],
+    [hatsProtocol, publicClient, safeAddress, accountAbstraction],
   );
 
   const linearErc721SetupParams = useCallback(
@@ -187,6 +202,10 @@ export const useInstallVersionedVotingStrategy = () => {
       erc721TokenAddresses: ERC721TokenData[],
       moduleAzoriusAddress: Address,
     ): Promise<EncodeAbiParametersReturnType> => {
+      if (!accountAbstraction) {
+        throw new Error('Account Abstraction addresses are not set');
+      }
+
       const existingAbiAndAddress = {
         abi: abis.LinearERC721Voting,
         address: strategyToRemove.address,
@@ -220,9 +239,7 @@ export const useInstallVersionedVotingStrategy = () => {
       });
 
       const encodedStrategyInitParams = encodeAbiParameters(
-        parseAbiParameters(
-          'address, address[], uint256[], address, uint32, uint256, uint256, uint256',
-        ),
+        parseAbiParameters(linearERC721VotingV1SetupParams),
         [
           safeAddress!,
           erc721TokenAddresses.map(token => token.address),
@@ -232,6 +249,7 @@ export const useInstallVersionedVotingStrategy = () => {
           existingProposerThreshold,
           existingQuorumThreshold,
           existingBasisNumerator,
+          accountAbstraction.lightAccountFactory,
         ],
       );
 
@@ -241,7 +259,7 @@ export const useInstallVersionedVotingStrategy = () => {
         args: [encodedStrategyInitParams],
       });
     },
-    [publicClient, safeAddress],
+    [publicClient, safeAddress, accountAbstraction],
   );
 
   const linearErc721WithWhitelistSetupParams = useCallback(
@@ -250,6 +268,10 @@ export const useInstallVersionedVotingStrategy = () => {
       erc721TokenAddresses: ERC721TokenData[],
       moduleAzoriusAddress: Address,
     ): Promise<EncodeAbiParametersReturnType> => {
+      if (!accountAbstraction) {
+        throw new Error('Account Abstraction addresses are not set');
+      }
+
       const existingAbiAndAddress = {
         abi: abis.LinearERC721VotingWithHatsProposalCreation,
         address: strategyToRemove.address,
@@ -283,9 +305,7 @@ export const useInstallVersionedVotingStrategy = () => {
       });
 
       const encodedStrategyInitParams = encodeAbiParameters(
-        parseAbiParameters(
-          'address, address[], uint256[], address, uint32, uint256, uint256, address, uint256[]',
-        ),
+        parseAbiParameters(linearERC721VotingWithWhitelistV1SetupParams),
         [
           safeAddress!,
           erc721TokenAddresses.map(token => token.address),
@@ -296,6 +316,7 @@ export const useInstallVersionedVotingStrategy = () => {
           existingBasisNumerator,
           hatsProtocol,
           existingWhitelistedHatIds,
+          accountAbstraction.lightAccountFactory,
         ],
       );
 
@@ -305,7 +326,7 @@ export const useInstallVersionedVotingStrategy = () => {
         args: [encodedStrategyInitParams],
       });
     },
-    [hatsProtocol, publicClient, safeAddress],
+    [hatsProtocol, publicClient, safeAddress, accountAbstraction],
   );
 
   const setupParams = useCallback(

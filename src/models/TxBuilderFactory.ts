@@ -44,7 +44,10 @@ export class TxBuilderFactory extends BaseTxBuilder {
   private linearVotingErc721V1MasterCopy: Address;
   private moduleAzoriusMasterCopy: Address;
   private paymasterMasterCopy: Address;
-  private entryPointAddress: Address | undefined;
+  private accountAbstraction?: {
+    entryPointv07: Address;
+    lightAccountFactory: Address;
+  };
 
   constructor(
     publicClient: PublicClient,
@@ -70,7 +73,10 @@ export class TxBuilderFactory extends BaseTxBuilder {
     linearVotingErc721V1MasterCopy: Address,
     moduleAzoriusMasterCopy: Address,
     paymasterMasterCopy: Address,
-    entryPointAddress?: Address,
+    accountAbstraction?: {
+      entryPointv07: Address;
+      lightAccountFactory: Address;
+    },
     parentAddress?: Address,
     parentTokenAddress?: Address,
   ) {
@@ -97,7 +103,7 @@ export class TxBuilderFactory extends BaseTxBuilder {
     this.linearVotingErc721V1MasterCopy = linearVotingErc721V1MasterCopy;
     this.moduleAzoriusMasterCopy = moduleAzoriusMasterCopy;
     this.paymasterMasterCopy = paymasterMasterCopy;
-    this.entryPointAddress = entryPointAddress;
+    this.accountAbstraction = accountAbstraction;
   }
 
   public setSafeContract(safeAddress: Address) {
@@ -195,7 +201,7 @@ export class TxBuilderFactory extends BaseTxBuilder {
     );
   }
 
-  public async createAzoriusTxBuilder() {
+  public async createAzoriusTxBuilder(gaslessVotingEnabled: boolean) {
     const azoriusTxBuilder = new AzoriusTxBuilder(
       this.publicClient,
       this.daoData as AzoriusERC20DAO,
@@ -210,7 +216,8 @@ export class TxBuilderFactory extends BaseTxBuilder {
       this.linearVotingErc721V1MasterCopy,
       this.moduleAzoriusMasterCopy,
       this.paymasterMasterCopy,
-      this.entryPointAddress,
+      gaslessVotingEnabled,
+      this.accountAbstraction,
       this.parentAddress,
       this.parentTokenAddress,
     );

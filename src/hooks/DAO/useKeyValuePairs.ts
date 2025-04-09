@@ -15,23 +15,27 @@ const getGaslessVotingDaoData = async (
   publicClient: PublicClient,
   zodiacModuleProxyFactory: Address,
   paymasterMastercopy: Address,
-  entryPoint?: Address,
+  accountAbstraction?: {
+    entryPointv07: Address;
+    lightAccountFactory: Address;
+  },
 ) => {
   // get most recent event where `gaslessVotingEnabled` was set
   const gaslessVotingEnabledEvent = events
     .filter(event => event.args.key && event.args.key === 'gaslessVotingEnabled')
     .pop();
 
-  if (!gaslessVotingEnabledEvent || !entryPoint || !publicClient.chain) {
+  if (!gaslessVotingEnabledEvent || !accountAbstraction || !publicClient.chain) {
     return { gaslessVotingEnabled: false, paymasterAddress: null };
   }
 
   try {
-    const paymasterAddress = await getPaymasterAddress({
+    const paymasterAddress = getPaymasterAddress({
       safeAddress,
       zodiacModuleProxyFactory,
       paymasterMastercopy,
-      entryPoint,
+      entryPoint: accountAbstraction.entryPointv07,
+      lightAccountFactory: accountAbstraction.lightAccountFactory,
       chainId: publicClient.chain.id,
     });
 
@@ -148,7 +152,7 @@ const useKeyValuePairs = () => {
       sablierV2LockupLinear,
       zodiacModuleProxyFactory,
       decentPaymasterV1MasterCopy,
-      entryPointv07,
+      accountAbstraction,
     },
   } = useNetworkConfigStore();
   const { setHatKeyValuePairData, resetHatsStore } = useRolesStore();
@@ -184,7 +188,7 @@ const useKeyValuePairs = () => {
           publicClient,
           zodiacModuleProxyFactory,
           decentPaymasterV1MasterCopy,
-          entryPointv07,
+          accountAbstraction,
         ).then(gaslessVotingDaoData => {
           if (gaslessVotingDaoData) {
             setGaslessVotingDaoData(gaslessVotingDaoData);
@@ -227,7 +231,7 @@ const useKeyValuePairs = () => {
             publicClient,
             zodiacModuleProxyFactory,
             decentPaymasterV1MasterCopy,
-            entryPointv07,
+            accountAbstraction,
           ).then(gaslessVotingDaoData => {
             if (gaslessVotingDaoData) {
               setGaslessVotingDaoData(gaslessVotingDaoData);
@@ -246,7 +250,7 @@ const useKeyValuePairs = () => {
     setHatKeyValuePairData,
     sablierV2LockupLinear,
     setGaslessVotingDaoData,
-    entryPointv07,
+    accountAbstraction,
     decentPaymasterV1MasterCopy,
     zodiacModuleProxyFactory,
   ]);

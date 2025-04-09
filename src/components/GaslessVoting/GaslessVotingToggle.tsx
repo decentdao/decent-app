@@ -1,4 +1,4 @@
-import { Box, Text, HStack, Switch, Flex, Button, Image } from '@chakra-ui/react';
+import { Box, Button, Flex, HStack, Image, Switch, Text } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
@@ -116,7 +116,7 @@ export function GaslessVotingToggleDAOSettings(props: GaslessVotingToggleProps) 
   const { t } = useTranslation('gaslessVoting');
   const {
     addressPrefix,
-    contracts: { entryPointv07 },
+    contracts: { accountAbstraction },
   } = useNetworkConfigStore();
 
   const navigate = useNavigate();
@@ -127,9 +127,9 @@ export function GaslessVotingToggleDAOSettings(props: GaslessVotingToggleProps) 
 
   const [paymasterBalance, setPaymasterBalance] = useState<BigIntValuePair>();
   useEffect(() => {
-    if (!paymasterAddress || !entryPointv07) return;
+    if (!paymasterAddress || !accountAbstraction) return;
     const entryPoint = getContract({
-      address: entryPointv07,
+      address: accountAbstraction.entryPointv07,
       abi: EntryPoint07Abi,
       client: publicClient,
     });
@@ -140,14 +140,14 @@ export function GaslessVotingToggleDAOSettings(props: GaslessVotingToggleProps) 
         bigintValue: balance,
       });
     });
-  }, [entryPointv07, paymasterAddress, publicClient]);
+  }, [accountAbstraction, paymasterAddress, publicClient]);
 
   const { addAction } = useProposalActionsStore();
   const { data: walletClient } = useNetworkWalletClient();
 
   const refillGas = useDecentModal(ModalType.REFILL_GAS, {
     onSubmit: async (refillGasData: RefillGasData) => {
-      if (!safe?.address || !paymasterAddress || !entryPointv07) {
+      if (!safe?.address || !paymasterAddress || !accountAbstraction) {
         return;
       }
 
@@ -157,7 +157,7 @@ export function GaslessVotingToggleDAOSettings(props: GaslessVotingToggleProps) 
         }
 
         const entryPoint = getContract({
-          address: entryPointv07,
+          address: accountAbstraction.entryPointv07,
           abi: EntryPoint07Abi,
           client: walletClient,
         });
@@ -172,7 +172,7 @@ export function GaslessVotingToggleDAOSettings(props: GaslessVotingToggleProps) 
         refillAmount: refillGasData.transferAmount,
         paymasterAddress,
         nativeToken: nativeCurrency,
-        entryPointAddress: entryPointv07,
+        entryPointAddress: accountAbstraction.entryPointv07,
       });
       const formattedRefillAmount = formatCoin(
         refillGasData.transferAmount,
