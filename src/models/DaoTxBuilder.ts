@@ -87,7 +87,8 @@ export class DaoTxBuilder extends BaseTxBuilder {
     existingSafeOwners?: string[];
   }): Promise<string> {
     const { shouldSetName, shouldSetSnapshot, existingSafeOwners, enableGaslessVoting } = params;
-    const azoriusTxBuilder = await this.txBuilderFactory.createAzoriusTxBuilder();
+    const azoriusTxBuilder =
+      await this.txBuilderFactory.createAzoriusTxBuilder(enableGaslessVoting);
 
     // transactions that must be called by safe
     this.internalTxs = [];
@@ -141,7 +142,7 @@ export class DaoTxBuilder extends BaseTxBuilder {
       txs.push(azoriusTxBuilder.buildCreateTokenTx());
     }
 
-    txs.push(azoriusTxBuilder.buildDeployStrategyTx(enableGaslessVoting));
+    txs.push(azoriusTxBuilder.buildDeployStrategyTx());
     txs.push(azoriusTxBuilder.buildDeployAzoriusTx());
 
     // Deploy paymaster and set gasless voting enabled

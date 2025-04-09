@@ -201,7 +201,7 @@ export class TxBuilderFactory extends BaseTxBuilder {
     );
   }
 
-  public async createAzoriusTxBuilder() {
+  public async createAzoriusTxBuilder(gaslessVotingEnabled: boolean) {
     const azoriusTxBuilder = new AzoriusTxBuilder(
       this.publicClient,
       this.daoData as AzoriusERC20DAO,
@@ -216,6 +216,7 @@ export class TxBuilderFactory extends BaseTxBuilder {
       this.linearVotingErc721V1MasterCopy,
       this.moduleAzoriusMasterCopy,
       this.paymasterMasterCopy,
+      gaslessVotingEnabled,
       this.accountAbstraction,
       this.parentAddress,
       this.parentTokenAddress,

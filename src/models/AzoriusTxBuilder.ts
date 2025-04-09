@@ -17,6 +17,12 @@ import {
 } from 'viem';
 import GnosisSafeL2Abi from '../assets/abi/GnosisSafeL2';
 import { ZodiacModuleProxyFactoryAbi } from '../assets/abi/ZodiacModuleProxyFactoryAbi';
+import {
+  linearERC20VotingSetupParams,
+  linearERC20VotingV1SetupParams,
+  linearERC721VotingSetupParams,
+  linearERC721VotingV1SetupParams,
+} from '../constants/params';
 import { buildContractCall, getRandomBytes } from '../helpers';
 import {
   AzoriusERC20DAO,
@@ -68,6 +74,8 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
   private azoriusNonce: bigint;
   private claimNonce: bigint;
 
+  private gaslessVotingEnabled: boolean;
+
   constructor(
     publicClient: PublicClient,
     daoData: AzoriusERC20DAO | AzoriusERC721DAO,
@@ -82,6 +90,7 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
     linearVotingErc721V1MasterCopy: Address,
     moduleAzoriusMasterCopy: Address,
     paymasterMasterCopy: Address,
+    gaslessVotingEnabled: boolean,
     accountAbstraction?: {
       entryPointv07: Address;
       lightAccountFactory: Address;
@@ -109,6 +118,7 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
     this.moduleAzoriusMasterCopy = moduleAzoriusMasterCopy;
     this.paymasterMasterCopy = paymasterMasterCopy;
     this.accountAbstraction = accountAbstraction;
+    this.gaslessVotingEnabled = gaslessVotingEnabled;
 
     if (daoData.votingStrategyType === VotingStrategyType.LINEAR_ERC20) {
       daoData = daoData as AzoriusERC20DAO;
@@ -236,11 +246,11 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
     );
   }
 
-  public buildDeployStrategyTx(enableGaslessVoting: boolean): SafeTransaction {
+  public buildDeployStrategyTx(): SafeTransaction {
     const daoData = this.daoData as AzoriusGovernanceDAO;
 
     let votingStrategyMasterCopy: Address;
-    if (enableGaslessVoting) {
+    if (this.gaslessVotingEnabled) {
       votingStrategyMasterCopy =
         daoData.votingStrategyType === VotingStrategyType.LINEAR_ERC20
           ? this.linearVotingErc20V1MasterCopy
@@ -476,7 +486,151 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
     });
   }
 
-  private async setPredictedStrategyAddress() {
+  private setupLinearERC20VotingStrategy(
+    safeContractAddress: Address,
+    predictedTokenAddress: Address,
+    lightAccountFactory: Address,
+    votingPeriod: number,
+    quorumPercentage: bigint,
+    quorumDenominator: bigint,
+  ): {
+    encodedStrategySetupData: Hex;
+    strategyByteCodeLinear: Hex;
+  } {
+    if (this.gaslessVotingEnabled) {
+      const encodedStrategyInitParams = encodeAbiParameters(
+        parseAbiParameters(linearERC20VotingV1SetupParams),
+        [
+          safeContractAddress, // owner
+          predictedTokenAddress, // governance token
+          SENTINEL_MODULE, // Azorius module
+          Number(votingPeriod),
+          1n, // proposer weight, how much is needed to create a proposal.
+          (quorumPercentage * quorumDenominator) / 100n, // quorom numerator, denominator is 1,000,000, so quorum percentage is quorumNumerator * 100 / quorumDenominator
+          500000n, // basis numerator, denominator is 1,000,000, so basis percentage is 50% (simple majority)
+          lightAccountFactory,
+        ],
+      );
+
+      const encodedStrategySetupData = encodeFunctionData({
+        abi: abis.LinearERC20VotingV1,
+        functionName: 'setUp',
+        args: [encodedStrategyInitParams],
+      });
+
+      const strategyByteCodeLinear = generateContractByteCodeLinear(
+        this.linearVotingErc20V1MasterCopy,
+      );
+      return {
+        encodedStrategySetupData,
+        strategyByteCodeLinear,
+      };
+    } else {
+      const encodedStrategyInitParams = encodeAbiParameters(
+        parseAbiParameters(linearERC20VotingSetupParams),
+        [
+          safeContractAddress, // owner
+          predictedTokenAddress, // governance token
+          SENTINEL_MODULE, // Azorius module
+          Number(votingPeriod),
+          1n, // proposer weight, how much is needed to create a proposal.
+          (quorumPercentage * quorumDenominator) / 100n, // quorom numerator, denominator is 1,000,000, so quorum percentage is quorumNumerator * 100 / quorumDenominator
+          500000n, // basis numerator, denominator is 1,000,000, so basis percentage is 50% (simple majority)
+        ],
+      );
+
+      const encodedStrategySetupData = encodeFunctionData({
+        abi: abis.LinearERC20Voting,
+        functionName: 'setUp',
+        args: [encodedStrategyInitParams],
+      });
+
+      const strategyByteCodeLinear = generateContractByteCodeLinear(
+        this.linearVotingErc20MasterCopy,
+      );
+      return {
+        encodedStrategySetupData,
+        strategyByteCodeLinear,
+      };
+    }
+  }
+
+  private setupLinearERC721VotingStrategy(
+    safeContractAddress: Address,
+    daoData: AzoriusERC721DAO,
+    lightAccountFactory: Address,
+    votingPeriod: number,
+  ): {
+    encodedStrategySetupData: Hex;
+    strategyByteCodeLinear: Hex;
+  } {
+    if (this.gaslessVotingEnabled) {
+      const encodedStrategyInitParams = encodeAbiParameters(
+        parseAbiParameters(linearERC721VotingV1SetupParams),
+        [
+          safeContractAddress, // owner
+          daoData.nfts.map(nft => nft.tokenAddress!), // governance tokens addresses
+          daoData.nfts.map(nft => nft.tokenWeight), // governance tokens weights
+          SENTINEL_MODULE, // Azorius module
+          votingPeriod,
+          daoData.quorumThreshold, // quorom threshold. Since smart contract can't know total of NFTs minted - we need to provide it manually
+          1n, // proposer weight, how much is needed to create a proposal.
+          500000n, // basis numerator, denominator is 1,000,000, so basis percentage is 50% (simple majority)
+          lightAccountFactory,
+        ],
+      );
+
+      const encodedStrategySetupData = encodeFunctionData({
+        abi: abis.LinearERC721VotingV1,
+        functionName: 'setUp',
+        args: [encodedStrategyInitParams],
+      });
+
+      const strategyByteCodeLinear = generateContractByteCodeLinear(
+        this.linearVotingErc721V1MasterCopy,
+      );
+      return {
+        encodedStrategySetupData,
+        strategyByteCodeLinear,
+      };
+    } else {
+      const encodedStrategyInitParams = encodeAbiParameters(
+        parseAbiParameters(linearERC721VotingSetupParams),
+        [
+          safeContractAddress, // owner
+          daoData.nfts.map(nft => nft.tokenAddress!), // governance tokens addresses
+          daoData.nfts.map(nft => nft.tokenWeight), // governance tokens weights
+          SENTINEL_MODULE, // Azorius module
+          votingPeriod,
+          daoData.quorumThreshold, // quorom threshold. Since smart contract can't know total of NFTs minted - we need to provide it manually
+          1n, // proposer weight, how much is needed to create a proposal.
+          500000n, // basis numerator, denominator is 1,000,000, so basis percentage is 50% (simple majority)
+        ],
+      );
+
+      const encodedStrategySetupData = encodeFunctionData({
+        abi: abis.LinearERC721Voting,
+        functionName: 'setUp',
+        args: [encodedStrategyInitParams],
+      });
+
+      const strategyByteCodeLinear = generateContractByteCodeLinear(
+        this.linearVotingErc721MasterCopy,
+      );
+      return {
+        encodedStrategySetupData,
+        strategyByteCodeLinear,
+      };
+    }
+  }
+
+  private async setupVotingStrategy(): Promise<
+    | {
+        encodedStrategySetupData: Hex;
+        strategyByteCodeLinear: Hex;
+      }
+    | undefined
+  > {
     const azoriusGovernanceDaoData = this.daoData as AzoriusGovernanceDAO;
     if (azoriusGovernanceDaoData.votingStrategyType === VotingStrategyType.LINEAR_ERC20) {
       if (!this.predictedTokenAddress) {
@@ -492,87 +646,49 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
       });
 
       const quorumDenominator = await linearERC20VotingMasterCopyContract.read.QUORUM_DENOMINATOR();
-      const encodedStrategyInitParams = encodeAbiParameters(
-        parseAbiParameters('address, address, address, uint32, uint256, uint256, uint256, address'),
-        [
-          this.safeContractAddress, // owner
-          this.predictedTokenAddress, // governance token
-          SENTINEL_MODULE, // Azorius module
-          Number(azoriusGovernanceDaoData.votingPeriod),
-          1n, // proposer weight, how much is needed to create a proposal.
-          (azoriusGovernanceDaoData.quorumPercentage * quorumDenominator) / 100n, // quorom numerator, denominator is 1,000,000, so quorum percentage is quorumNumerator * 100 / quorumDenominator
-          500000n, // basis numerator, denominator is 1,000,000, so basis percentage is 50% (simple majority)
-        ],
+      return this.setupLinearERC20VotingStrategy(
+        this.safeContractAddress,
+        this.predictedTokenAddress,
+        this.accountAbstraction?.lightAccountFactory!,
+        Number(azoriusGovernanceDaoData.votingPeriod),
+        azoriusGovernanceDaoData.quorumPercentage,
+        quorumDenominator,
       );
-
-      const encodedStrategySetupData = encodeFunctionData({
-        abi: abis.LinearERC20VotingV1,
-        functionName: 'setUp',
-        args: [encodedStrategyInitParams],
-      });
-
-      const strategyByteCodeLinear = generateContractByteCodeLinear(
-        this.linearVotingErc20MasterCopy,
-      );
-
-      const strategySalt = keccak256(
-        encodePacked(
-          ['bytes32', 'uint256'],
-          [keccak256(encodePacked(['bytes'], [encodedStrategySetupData])), this.strategyNonce],
-        ),
-      );
-
-      this.encodedStrategySetupData = encodedStrategySetupData;
-
-      this.predictedStrategyAddress = getCreate2Address({
-        from: this.zodiacModuleProxyFactory,
-        salt: strategySalt,
-        bytecodeHash: keccak256(encodePacked(['bytes'], [strategyByteCodeLinear])),
-      });
     } else if (azoriusGovernanceDaoData.votingStrategyType === VotingStrategyType.LINEAR_ERC721) {
       const daoData = azoriusGovernanceDaoData as AzoriusERC721DAO;
 
-      const encodedStrategyInitParams = encodeAbiParameters(
-        parseAbiParameters(
-          'address, address[], uint256[], address, uint32, uint256, uint256, uint256, address',
-        ),
-        [
-          this.safeContractAddress, // owner
-          daoData.nfts.map(nft => nft.tokenAddress!), // governance tokens addresses
-          daoData.nfts.map(nft => nft.tokenWeight), // governance tokens weights
-          SENTINEL_MODULE, // Azorius module
-          Number(azoriusGovernanceDaoData.votingPeriod),
-          daoData.quorumThreshold, // quorom threshold. Since smart contract can't know total of NFTs minted - we need to provide it manually
-          1n, // proposer weight, how much is needed to create a proposal.
-          500000n, // basis numerator, denominator is 1,000,000, so basis percentage is 50% (simple majority)
-        ],
+      return this.setupLinearERC721VotingStrategy(
+        this.safeContractAddress,
+        daoData,
+        this.accountAbstraction?.lightAccountFactory!,
+        Number(daoData.votingPeriod),
       );
-
-      const encodedStrategySetupData = encodeFunctionData({
-        abi: abis.LinearERC721VotingV1,
-        functionName: 'setUp',
-        args: [encodedStrategyInitParams],
-      });
-
-      const strategyByteCodeLinear = generateContractByteCodeLinear(
-        this.linearVotingErc721MasterCopy,
-      );
-
-      const strategySalt = keccak256(
-        encodePacked(
-          ['bytes32', 'uint256'],
-          [keccak256(encodePacked(['bytes'], [encodedStrategySetupData])), this.strategyNonce],
-        ),
-      );
-
-      this.encodedStrategySetupData = encodedStrategySetupData;
-
-      this.predictedStrategyAddress = getCreate2Address({
-        from: this.zodiacModuleProxyFactory,
-        salt: strategySalt,
-        bytecodeHash: keccak256(encodePacked(['bytes'], [strategyByteCodeLinear])),
-      });
+    } else {
+      return undefined;
     }
+  }
+
+  private async setPredictedStrategyAddress() {
+    const strategySetup = await this.setupVotingStrategy();
+    if (!strategySetup) {
+      return;
+    }
+    const { encodedStrategySetupData, strategyByteCodeLinear } = strategySetup;
+
+    const strategySalt = keccak256(
+      encodePacked(
+        ['bytes32', 'uint256'],
+        [keccak256(encodePacked(['bytes'], [encodedStrategySetupData])), this.strategyNonce],
+      ),
+    );
+
+    this.encodedStrategySetupData = encodedStrategySetupData;
+
+    this.predictedStrategyAddress = getCreate2Address({
+      from: this.zodiacModuleProxyFactory,
+      salt: strategySalt,
+      bytecodeHash: keccak256(encodePacked(['bytes'], [strategyByteCodeLinear])),
+    });
   }
 
   private setPredictedAzoriusAddress() {

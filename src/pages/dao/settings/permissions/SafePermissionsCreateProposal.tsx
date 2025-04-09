@@ -22,8 +22,15 @@ import { ModalType } from '../../../../components/ui/modals/ModalProvider';
 import { useDecentModal } from '../../../../components/ui/modals/useDecentModal';
 import NestedPageHeader from '../../../../components/ui/page/Header/NestedPageHeader';
 import Divider from '../../../../components/ui/utils/Divider';
+import {
+  linearERC20VotingWithWhitelistSetupParams,
+  linearERC20VotingWithWhitelistV1SetupParams,
+  linearERC721VotingWithWhitelistSetupParams,
+  linearERC721VotingWithWhitelistV1SetupParams,
+} from '../../../../constants/params';
 import { DAO_ROUTES } from '../../../../constants/routes';
 import { getRandomBytes } from '../../../../helpers';
+import useFeatureFlag from '../../../../helpers/environmentFeatureFlags';
 import useNetworkPublicClient from '../../../../hooks/useNetworkPublicClient';
 import { generateContractByteCodeLinear } from '../../../../models/helpers/utils';
 import { useFractal } from '../../../../providers/App/AppProvider';
@@ -45,7 +52,11 @@ export function SafePermissionsCreateProposal() {
     contracts: {
       linearVotingErc20MasterCopy,
       linearVotingErc721MasterCopy,
+      linearVotingErc20V1MasterCopy,
+      linearVotingErc721V1MasterCopy,
       zodiacModuleProxyFactory,
+      hatsProtocol,
+      accountAbstraction,
     },
   } = useNetworkConfigStore();
   const [searchParams] = useSearchParams();
@@ -80,6 +91,8 @@ export function SafePermissionsCreateProposal() {
       });
     }
   }, [azoriusGovernance.votingStrategy?.proposerThreshold]);
+
+  const gaslessVotingFeatureEnabled = useFeatureFlag('flag_gasless_voting');
 
   if (!safe) return null;
 
@@ -154,28 +167,46 @@ export function SafePermissionsCreateProposal() {
 
         const quorumDenominator =
           await linearERC20VotingMasterCopyContract.read.QUORUM_DENOMINATOR();
-        const encodedStrategyInitParams = encodeAbiParameters(
-          parseAbiParameters(
-            'address, address, address, uint32, uint256, uint256, uint256, address',
-          ),
-          [
-            safe.address, // owner
-            votesToken.address, // governance token
-            moduleAzoriusAddress, // Azorius module
-            Number(votingStrategy.votingPeriod.value),
-            proposerThreshold.bigintValue,
-            (votingStrategy.quorumPercentage.value * quorumDenominator) / 100n,
-            500000n,
-          ],
-        );
+
+        if (gaslessVotingFeatureEnabled && !accountAbstraction) {
+          throw new Error('Account abstraction not found');
+        }
+        const encodedStrategyInitParams = gaslessVotingFeatureEnabled
+          ? encodeAbiParameters(parseAbiParameters(linearERC20VotingWithWhitelistV1SetupParams), [
+              safe.address, // owner
+              votesToken.address, // governance token
+              moduleAzoriusAddress, // Azorius module
+              Number(votingStrategy.votingPeriod.value),
+              (votingStrategy.quorumPercentage.value * quorumDenominator) / 100n,
+              500000n,
+              hatsProtocol, // hats protocol
+              [], // whitelisted hat ids
+              accountAbstraction!.lightAccountFactory, // light account factory
+            ])
+          : encodeAbiParameters(parseAbiParameters(linearERC20VotingWithWhitelistSetupParams), [
+              safe.address, // owner
+              votesToken.address, // governance token
+              moduleAzoriusAddress, // Azorius module
+              Number(votingStrategy.votingPeriod.value),
+              (votingStrategy.quorumPercentage.value * quorumDenominator) / 100n,
+              500000n,
+              hatsProtocol, // hats protocol
+              [], // whitelisted hat ids
+            ]);
 
         const encodedStrategySetupData = encodeFunctionData({
-          abi: abis.LinearERC20VotingWithHatsProposalCreation,
+          abi: gaslessVotingFeatureEnabled
+            ? abis.LinearERC20VotingWithHatsProposalCreationV1
+            : abis.LinearERC20VotingWithHatsProposalCreation,
           functionName: 'setUp',
           args: [encodedStrategyInitParams],
         });
 
-        const strategyByteCodeLinear = generateContractByteCodeLinear(linearVotingErc20MasterCopy);
+        const masterCopy = gaslessVotingFeatureEnabled
+          ? linearVotingErc20V1MasterCopy
+          : linearVotingErc20MasterCopy;
+
+        const strategyByteCodeLinear = generateContractByteCodeLinear(masterCopy);
 
         const strategySalt = keccak256(
           encodePacked(
@@ -198,7 +229,7 @@ export function SafePermissionsCreateProposal() {
             parameters: [
               {
                 signature: 'address',
-                value: linearVotingErc20MasterCopy,
+                value: masterCopy,
               },
               { signature: 'bytes', value: encodedStrategySetupData },
               { signature: 'uint256', value: strategyNonce.toString() },
@@ -221,29 +252,47 @@ export function SafePermissionsCreateProposal() {
           throw new Error('Voting strategy or NFT votes tokens not found');
         }
 
-        const encodedStrategyInitParams = encodeAbiParameters(
-          parseAbiParameters(
-            'address, address[], uint256[], address, uint32, uint256, uint256, uint256, address',
-          ),
-          [
-            safe.address, // owner
-            erc721Tokens.map(token => token.address), // governance token
-            erc721Tokens.map(token => token.votingWeight),
-            moduleAzoriusAddress,
-            Number(votingStrategy.votingPeriod.value),
-            votingStrategy.quorumThreshold.value,
-            proposerThreshold.bigintValue,
-            500000n,
-          ],
-        );
+        if (gaslessVotingFeatureEnabled && !accountAbstraction) {
+          throw new Error('Account abstraction not found');
+        }
+        const encodedStrategyInitParams = gaslessVotingFeatureEnabled
+          ? encodeAbiParameters(parseAbiParameters(linearERC721VotingWithWhitelistV1SetupParams), [
+              safe.address, // owner
+              erc721Tokens.map(token => token.address), // governance token
+              erc721Tokens.map(token => token.votingWeight),
+              moduleAzoriusAddress,
+              Number(votingStrategy.votingPeriod.value),
+              proposerThreshold.bigintValue,
+              500000n,
+              hatsProtocol, // hats protocol
+              [], // whitelisted hat ids
+              accountAbstraction!.lightAccountFactory, // light account factory
+            ])
+          : encodeAbiParameters(parseAbiParameters(linearERC721VotingWithWhitelistSetupParams), [
+              safe.address, // owner
+              erc721Tokens.map(token => token.address), // governance token
+              erc721Tokens.map(token => token.votingWeight),
+              moduleAzoriusAddress,
+              Number(votingStrategy.votingPeriod.value),
+              proposerThreshold.bigintValue,
+              500000n,
+              hatsProtocol, // hats protocol
+              [], // whitelisted hat ids
+            ]);
 
         const encodedStrategySetupData = encodeFunctionData({
-          abi: abis.LinearERC20VotingWithHatsProposalCreation,
+          abi: gaslessVotingFeatureEnabled
+            ? abis.LinearERC20VotingWithHatsProposalCreationV1
+            : abis.LinearERC20VotingWithHatsProposalCreation,
           functionName: 'setUp',
           args: [encodedStrategyInitParams],
         });
 
-        const strategyByteCodeLinear = generateContractByteCodeLinear(linearVotingErc20MasterCopy);
+        const masterCopy = gaslessVotingFeatureEnabled
+          ? linearVotingErc721V1MasterCopy
+          : linearVotingErc721MasterCopy;
+
+        const strategyByteCodeLinear = generateContractByteCodeLinear(masterCopy);
 
         const strategySalt = keccak256(
           encodePacked(
@@ -266,7 +315,7 @@ export function SafePermissionsCreateProposal() {
             parameters: [
               {
                 signature: 'address',
-                value: linearVotingErc721MasterCopy,
+                value: masterCopy,
               },
               { signature: 'bytes', value: encodedStrategySetupData },
               { signature: 'uint256', value: strategyNonce.toString() },

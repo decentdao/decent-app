@@ -11,6 +11,12 @@ import {
   parseAbiParameters,
 } from 'viem';
 import { ZodiacModuleProxyFactoryAbi } from '../../assets/abi/ZodiacModuleProxyFactoryAbi';
+import {
+  linearERC20VotingV1SetupParams,
+  linearERC20VotingWithWhitelistV1SetupParams,
+  linearERC721VotingV1SetupParams,
+  linearERC721VotingWithWhitelistV1SetupParams,
+} from '../../constants/params';
 import { getRandomBytes } from '../../helpers';
 import { generateContractByteCodeLinear, generateSalt } from '../../models/helpers/utils';
 import { useFractal } from '../../providers/App/AppProvider';
@@ -98,7 +104,7 @@ export const useInstallVersionedVotingStrategy = () => {
       });
 
       const encodedStrategyInitParams = encodeAbiParameters(
-        parseAbiParameters('address, address, address, uint32, uint256, uint256, uint256, address'),
+        parseAbiParameters(linearERC20VotingV1SetupParams),
         [
           safeAddress!,
           tokenAddress,
@@ -167,9 +173,7 @@ export const useInstallVersionedVotingStrategy = () => {
       });
 
       const encodedStrategyInitParams = encodeAbiParameters(
-        parseAbiParameters(
-          'address, address, address, uint32, uint256, uint256, address, uint256[], address',
-        ),
+        parseAbiParameters(linearERC20VotingWithWhitelistV1SetupParams),
         [
           safeAddress,
           tokenAddress,
@@ -235,9 +239,7 @@ export const useInstallVersionedVotingStrategy = () => {
       });
 
       const encodedStrategyInitParams = encodeAbiParameters(
-        parseAbiParameters(
-          'address, address[], uint256[], address, uint32, uint256, uint256, uint256, address',
-        ),
+        parseAbiParameters(linearERC721VotingV1SetupParams),
         [
           safeAddress!,
           erc721TokenAddresses.map(token => token.address),
@@ -303,9 +305,7 @@ export const useInstallVersionedVotingStrategy = () => {
       });
 
       const encodedStrategyInitParams = encodeAbiParameters(
-        parseAbiParameters(
-          'address, address[], uint256[], address, uint32, uint256, uint256, address, uint256[], address',
-        ),
+        parseAbiParameters(linearERC721VotingWithWhitelistV1SetupParams),
         [
           safeAddress!,
           erc721TokenAddresses.map(token => token.address),
