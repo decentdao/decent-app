@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Address, getContract } from 'viem';
-import { EntryPoint07Abi } from '../../../../assets/abi/EntryPoint07Abi';
-import { useNetworkConfigStore } from '../../../../providers/NetworkConfig/useNetworkConfigStore';
-import useNetworkPublicClient from '../../../useNetworkPublicClient';
+import { EntryPoint07Abi } from '../../../assets/abi/EntryPoint07Abi';
+import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
+import useNetworkPublicClient from '../../useNetworkPublicClient';
 
 interface DepositInfo {
   /**

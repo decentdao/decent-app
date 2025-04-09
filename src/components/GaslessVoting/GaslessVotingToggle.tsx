@@ -6,7 +6,7 @@ import { EntryPoint07Abi } from '../../assets/abi/EntryPoint07Abi';
 import { DETAILS_BOX_SHADOW } from '../../constants/common';
 import { DAO_ROUTES } from '../../constants/routes';
 import useFeatureFlag from '../../helpers/environmentFeatureFlags';
-import { useDepositInfo } from '../../hooks/DAO/loaders/accountAbstraction/useDepositInfo';
+import { useDepositInfo } from '../../hooks/DAO/accountAbstraction/useDepositInfo';
 import useNetworkPublicClient from '../../hooks/useNetworkPublicClient';
 import { useNetworkWalletClient } from '../../hooks/useNetworkWalletClient';
 import { useCanUserCreateProposal } from '../../hooks/utils/useCanUserSubmitProposal';

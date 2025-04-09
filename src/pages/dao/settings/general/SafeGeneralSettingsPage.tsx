@@ -22,7 +22,7 @@ import NestedPageHeader from '../../../../components/ui/page/Header/NestedPageHe
 import Divider from '../../../../components/ui/utils/Divider';
 import { DAO_ROUTES } from '../../../../constants/routes';
 import useFeatureFlag from '../../../../helpers/environmentFeatureFlags';
-import { useDepositInfo } from '../../../../hooks/DAO/loaders/accountAbstraction/useDepositInfo';
+import { useDepositInfo } from '../../../../hooks/DAO/accountAbstraction/useDepositInfo';
 import useSubmitProposal from '../../../../hooks/DAO/proposal/useSubmitProposal';
 import { useCanUserCreateProposal } from '../../../../hooks/utils/useCanUserSubmitProposal';
 import { createAccountSubstring } from '../../../../hooks/utils/useGetAccountName';
