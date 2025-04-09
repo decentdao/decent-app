@@ -161,7 +161,7 @@ const useCastVote = (proposalId: string, strategy: Address) => {
   const publicClient = useNetworkPublicClient();
 
   const prepareGaslessVoteOperation = useCallback(async () => {
-    if (!publicClient || !paymasterAddress || !walletClient || !accountAbstraction?.entryPointv07) {
+    if (!publicClient || !paymasterAddress || !walletClient || !accountAbstraction) {
       return;
     }
 
@@ -229,7 +229,7 @@ const useCastVote = (proposalId: string, strategy: Address) => {
       bundlerClient,
     };
   }, [
-    accountAbstraction?.entryPointv07,
+    accountAbstraction,
     getConfigByChainId,
     paymasterAddress,
     prepareCastVoteData,
@@ -241,7 +241,7 @@ const useCastVote = (proposalId: string, strategy: Address) => {
   // Check if the paymaster has enough balance to cover the gas cost of the vote
   useEffect(() => {
     const estimateGaslessVoteGas = async () => {
-      if (!paymasterAddress || !publicClient || !accountAbstraction?.entryPointv07) {
+      if (!paymasterAddress || !publicClient || !accountAbstraction) {
         return;
       }
 
@@ -267,7 +267,7 @@ const useCastVote = (proposalId: string, strategy: Address) => {
       setCanCastGaslessVote(false);
     });
   }, [
-    accountAbstraction?.entryPointv07,
+    accountAbstraction,
     paymasterAddress,
     prepareCastVoteData,
     prepareGaslessVoteOperation,

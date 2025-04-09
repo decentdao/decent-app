@@ -127,7 +127,7 @@ export function GaslessVotingToggleDAOSettings(props: GaslessVotingToggleProps) 
 
   const [paymasterBalance, setPaymasterBalance] = useState<BigIntValuePair>();
   useEffect(() => {
-    if (!paymasterAddress || !accountAbstraction?.entryPointv07) return;
+    if (!paymasterAddress || !accountAbstraction) return;
     const entryPoint = getContract({
       address: accountAbstraction.entryPointv07,
       abi: EntryPoint07Abi,
@@ -140,14 +140,14 @@ export function GaslessVotingToggleDAOSettings(props: GaslessVotingToggleProps) 
         bigintValue: balance,
       });
     });
-  }, [accountAbstraction?.entryPointv07, paymasterAddress, publicClient]);
+  }, [accountAbstraction, paymasterAddress, publicClient]);
 
   const { addAction } = useProposalActionsStore();
   const { data: walletClient } = useNetworkWalletClient();
 
   const refillGas = useDecentModal(ModalType.REFILL_GAS, {
     onSubmit: async (refillGasData: RefillGasData) => {
-      if (!safe?.address || !paymasterAddress || !accountAbstraction?.entryPointv07) {
+      if (!safe?.address || !paymasterAddress || !accountAbstraction) {
         return;
       }
 
