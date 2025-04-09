@@ -5,6 +5,7 @@
   "gaslessVotingLabelSettings": "Sponsored Votes",
   "gaslessVotingDescriptionSettings": "Create a paymaster to sponsor network fees for proposal votes.",
   "gaslessStakingDescription": "To enable the paymaster, you need to stake 0.1 {{symbol}} into your DAO's paymaster.",
+  "ensureSafeBalanceEnoughForStake": "Please make sure the Safe has at least 0.1 {{symbol}} to cover the stake amount.",
   "addGas": "Refill",
   "refillTank": "Refill Paymaster",
   "refillPaymasterAction": "Refill Paymaster with {{amount}} {{symbol}}",

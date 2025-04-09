@@ -1,6 +1,7 @@
 import { Box, Text, HStack, Switch, Flex, Button, Image } from '@chakra-ui/react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 import { getContract } from 'viem';
 import { EntryPoint07Abi } from '../../assets/abi/EntryPoint07Abi';
 import { DETAILS_BOX_SHADOW } from '../../constants/common';
@@ -77,7 +78,12 @@ function GaslessVotingToggleContent({
           size="md"
           isDisabled={isSettings && !canUserCreateProposal}
           isChecked={isEnabled}
-          onChange={() => onToggle()}
+          onChange={() => {
+            onToggle();
+            if (!isEnabled) {
+              toast.info(t('ensureSafeBalanceEnoughForStake', { symbol: nativeCurrency.symbol }));
+            }
+          }}
           variant="secondary"
         />
       </HStack>
