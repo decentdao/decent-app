@@ -269,7 +269,7 @@ export function GaslessVotingToggleDAOSettings(props: GaslessVotingToggleProps) 
         </Flex>
       )}
 
-      {gaslessStakingEnabled && (
+      {gaslessVotingEnabled && gaslessStakingEnabled && (
         <Flex justifyContent="space-between">
           <Flex
             direction="column"
