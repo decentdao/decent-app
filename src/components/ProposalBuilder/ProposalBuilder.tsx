@@ -216,18 +216,18 @@ export function ProposalBuilder({
                       bg="neutral-2"
                     >
                       {currentStep === CreateProposalSteps.METADATA ? (
-                        <ProposalMetadata
-                          typeProps={proposalMetadataTypeProps}
-                          {...formikProps}
-                        />
-                      ) : (
                         <>
-                          {mainContent(formikProps, pendingCreateTx, nonce, currentStep)}
+                          <ProposalMetadata
+                            typeProps={proposalMetadataTypeProps}
+                            {...formikProps}
+                          />
                           <ShowNonceInputOnMultisig
                             nonce={nonce}
                             nonceOnChange={newNonce => formikProps.setFieldValue('nonce', newNonce)}
                           />
                         </>
+                      ) : (
+                        <>{mainContent(formikProps, pendingCreateTx, nonce, currentStep)}</>
                       )}
                     </Box>
                     {actionsExperience}

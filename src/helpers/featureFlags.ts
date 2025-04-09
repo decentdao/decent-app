@@ -9,7 +9,7 @@ export type FeatureFlagKeys = typeof FEATURE_FLAGS;
 export type FeatureFlagKey = (typeof FEATURE_FLAGS)[number];
 
 export interface IFeatureFlags {
-  isFeatureEnabled(key: FeatureFlagKey): boolean;
+  isFeatureEnabled(key: FeatureFlagKey): boolean | undefined;
 }
 
 export class FeatureFlags {

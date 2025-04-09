@@ -85,4 +85,5 @@ export type NetworkConfig = {
     };
   };
   createOptions: GovernanceType[];
+  maxPriorityFeePerGasMultiplier?: bigint;
 };
