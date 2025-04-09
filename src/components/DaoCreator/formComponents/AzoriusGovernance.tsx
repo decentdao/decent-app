@@ -57,9 +57,9 @@ export function AzoriusGovernance(props: ICreationStepProps) {
 
   const { safe, subgraphInfo, modules } = useDaoInfoStore();
   const {
-    contracts: { entryPointv07 },
+    contracts: { accountAbstraction },
   } = useNetworkConfigStore();
-  const gaslessVotingSupported = entryPointv07 !== undefined;
+  const gaslessVotingSupported = accountAbstraction !== undefined;
 
   const fractalModule = useMemo(() => {
     if (!modules) return null;

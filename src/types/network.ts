@@ -75,7 +75,12 @@ export type NetworkConfig = {
     sablierV2LockupTranched: Address;
     sablierV2LockupLinear: Address;
     disperse: Address;
-    entryPointv07?: Address; // only set on networks for which we support account abstraction functionality
+
+    // only set on networks for which we support account abstraction functionality
+    accountAbstraction?: {
+      entryPointv07: Address;
+      lightAccountFactory: Address;
+    };
   };
   staking: {
     lido?: {

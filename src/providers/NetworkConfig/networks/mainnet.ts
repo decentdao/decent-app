@@ -111,7 +111,11 @@ export const mainnetConfig: NetworkConfig = {
     sablierV2LockupTranched: '0xf86B359035208e4529686A1825F2D5BeE38c28A8',
     sablierV2LockupLinear: '0x3962f6585946823440d274aD7C719B02b49DE51E',
     disperse: '0xD152f549545093347A162Dce210e7293f1452150',
-    entryPointv07: '0x0000000071727De22E5E9d8BAf0edAc6f37da032',
+
+    accountAbstraction: {
+      entryPointv07: '0x0000000071727De22E5E9d8BAf0edAc6f37da032',
+      lightAccountFactory: '0x0000000000400CdFef5E2714E63d8040b700BC24',
+    },
   },
   staking: {
     lido: {

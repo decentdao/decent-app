@@ -12,7 +12,7 @@ import {
 } from '../types';
 import { BaseTxBuilder } from './BaseTxBuilder';
 import { TxBuilderFactory } from './TxBuilderFactory';
-import { fractalModuleData, DecentModule } from './helpers/fractalModuleData';
+import { DecentModule, fractalModuleData } from './helpers/fractalModuleData';
 
 export class DaoTxBuilder extends BaseTxBuilder {
   private readonly saltNum;
@@ -148,7 +148,7 @@ export class DaoTxBuilder extends BaseTxBuilder {
     if (enableGaslessVoting) {
       this.internalTxs.push(azoriusTxBuilder.buildDeployPaymasterTx());
       this.internalTxs.push(this.buildSetGaslessVotingEnabledTx());
-      this.internalTxs.push(await azoriusTxBuilder.buildApproveStrategyOnPaymasterTx());
+      this.internalTxs.push(azoriusTxBuilder.buildApproveStrategyOnPaymasterTx());
     }
 
     // If subDAO and parentAllocation, deploy claim module

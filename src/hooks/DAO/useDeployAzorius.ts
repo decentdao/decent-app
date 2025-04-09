@@ -52,7 +52,7 @@ const useDeployAzorius = () => {
       freezeVotingErc721MasterCopy,
       freezeVotingMultisigMasterCopy,
       decentPaymasterV1MasterCopy,
-      entryPointv07,
+      accountAbstraction,
     },
     addressPrefix,
   } = useNetworkConfigStore();
@@ -166,7 +166,7 @@ const useDeployAzorius = () => {
         linearVotingErc721V1MasterCopy,
         moduleAzoriusMasterCopy,
         decentPaymasterV1MasterCopy,
-        entryPointv07,
+        accountAbstraction,
         subgraphInfo?.parentAddress ?? undefined,
       );
 
@@ -250,7 +250,7 @@ const useDeployAzorius = () => {
       linearVotingErc721V1MasterCopy,
       moduleAzoriusMasterCopy,
       decentPaymasterV1MasterCopy,
-      entryPointv07,
+      accountAbstraction,
       submitProposal,
       t,
       getParentDAOModules,

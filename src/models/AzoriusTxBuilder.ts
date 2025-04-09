@@ -57,7 +57,12 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
   private linearVotingErc721V1MasterCopy: Address;
   private moduleAzoriusMasterCopy: Address;
   private paymasterMasterCopy: Address;
-  private entryPointAddress: Address | undefined;
+  private accountAbstraction?:
+    | {
+        entryPointv07: Address;
+        lightAccountFactory: Address;
+      }
+    | undefined;
   private tokenNonce: bigint;
   private strategyNonce: bigint;
   private azoriusNonce: bigint;
@@ -77,7 +82,10 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
     linearVotingErc721V1MasterCopy: Address,
     moduleAzoriusMasterCopy: Address,
     paymasterMasterCopy: Address,
-    entryPointAddress?: Address,
+    accountAbstraction?: {
+      entryPointv07: Address;
+      lightAccountFactory: Address;
+    },
 
     parentAddress?: Address,
     parentTokenAddress?: Address,
@@ -100,7 +108,7 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
     this.linearVotingErc721V1MasterCopy = linearVotingErc721V1MasterCopy;
     this.moduleAzoriusMasterCopy = moduleAzoriusMasterCopy;
     this.paymasterMasterCopy = paymasterMasterCopy;
-    this.entryPointAddress = entryPointAddress;
+    this.accountAbstraction = accountAbstraction;
 
     if (daoData.votingStrategyType === VotingStrategyType.LINEAR_ERC20) {
       daoData = daoData as AzoriusERC20DAO;
@@ -277,17 +285,18 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
   }
 
   public buildDeployPaymasterTx(): SafeTransaction {
-    if (!this.entryPointAddress) {
-      throw new Error('Entry point address is not set');
+    if (!this.accountAbstraction) {
+      throw new Error('Account Abstraction addresses are not set');
     }
 
     const paymasterInitData = encodeFunctionData({
       abi: abis.DecentPaymasterV1,
       functionName: 'initialize',
       args: [
-        encodeAbiParameters(parseAbiParameters('address, address'), [
+        encodeAbiParameters(parseAbiParameters('address, address, address'), [
           this.safeContractAddress,
-          this.entryPointAddress,
+          this.accountAbstraction.entryPointv07,
+          this.accountAbstraction.lightAccountFactory,
         ]),
       ],
     });
@@ -306,16 +315,17 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
     );
   }
 
-  public async buildApproveStrategyOnPaymasterTx(): Promise<SafeTransaction> {
-    if (!this.entryPointAddress) {
-      throw new Error('Entry point address is not set');
+  public buildApproveStrategyOnPaymasterTx(): SafeTransaction {
+    if (!this.accountAbstraction) {
+      throw new Error('Account Abstraction addresses are not set');
     }
 
-    const predictedPaymasterAddress = await getPaymasterAddress({
+    const predictedPaymasterAddress = getPaymasterAddress({
       safeAddress: this.safeContractAddress,
       zodiacModuleProxyFactory: this.zodiacModuleProxyFactory,
       paymasterMastercopy: this.paymasterMasterCopy,
-      entryPoint: this.entryPointAddress,
+      entryPoint: this.accountAbstraction.entryPointv07,
+      lightAccountFactory: this.accountAbstraction.lightAccountFactory,
       chainId: this.publicClient.chain!.id,
     });
 

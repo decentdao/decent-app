@@ -38,7 +38,7 @@ const useBuildDAOTx = () => {
       freezeVotingErc721MasterCopy,
       freezeVotingMultisigMasterCopy,
       decentPaymasterV1MasterCopy,
-      entryPointv07,
+      accountAbstraction,
     },
   } = useNetworkConfigStore();
 
@@ -93,7 +93,7 @@ const useBuildDAOTx = () => {
         linearVotingErc721V1MasterCopy,
         moduleAzoriusMasterCopy,
         decentPaymasterV1MasterCopy,
-        entryPointv07,
+        accountAbstraction,
         parentAddress,
         parentTokenAddress,
       );
@@ -156,7 +156,7 @@ const useBuildDAOTx = () => {
       linearVotingErc721V1MasterCopy,
       moduleAzoriusMasterCopy,
       decentPaymasterV1MasterCopy,
-      entryPointv07,
+      accountAbstraction,
       governance,
       linearVotingErc721Address,
     ],

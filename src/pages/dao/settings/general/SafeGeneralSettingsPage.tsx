@@ -66,14 +66,15 @@ export function SafeGeneralSettingsPage() {
     chain: { id: chainId },
     contracts: {
       keyValuePairs,
-      entryPointv07,
+      accountAbstraction,
       decentPaymasterV1MasterCopy,
       zodiacModuleProxyFactory,
     },
   } = useNetworkConfigStore();
 
   const isMultisigGovernance = votingStrategyType === GovernanceType.MULTISIG;
-  const gaslessVotingSupported = !isMultisigGovernance && entryPointv07 !== undefined;
+  const gaslessVotingSupported =
+    !isMultisigGovernance && accountAbstraction?.entryPointv07 !== undefined;
 
   const safeAddress = safe?.address;
 
@@ -155,8 +156,8 @@ export function SafeGeneralSettingsPage() {
         throw new Error('Safe address is not set');
       }
 
-      if (!entryPointv07) {
-        throw new Error('Entry point is not set');
+      if (!accountAbstraction) {
+        throw new Error('Account Abstraction addresses are not set');
       }
 
       if (paymasterAddress === null) {
@@ -165,9 +166,10 @@ export function SafeGeneralSettingsPage() {
           abi: abis.DecentPaymasterV1,
           functionName: 'initialize',
           args: [
-            encodeAbiParameters(parseAbiParameters(['address', 'address']), [
+            encodeAbiParameters(parseAbiParameters(['address', 'address', 'address']), [
               safeAddress,
-              entryPointv07,
+              accountAbstraction.entryPointv07,
+              accountAbstraction.lightAccountFactory,
             ]),
           ],
         });
@@ -199,7 +201,8 @@ export function SafeGeneralSettingsPage() {
         safeAddress,
         zodiacModuleProxyFactory,
         paymasterMastercopy: decentPaymasterV1MasterCopy,
-        entryPoint: entryPointv07,
+        entryPoint: accountAbstraction.entryPointv07,
+        lightAccountFactory: accountAbstraction.lightAccountFactory,
         chainId,
       });
 

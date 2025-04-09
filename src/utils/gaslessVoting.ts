@@ -23,13 +23,21 @@ export const getPaymasterAddress = (args: {
   zodiacModuleProxyFactory: Address;
   paymasterMastercopy: Address;
   entryPoint: Address;
+  lightAccountFactory: Address;
   chainId: number;
 }) => {
-  const { safeAddress, zodiacModuleProxyFactory, paymasterMastercopy, entryPoint, chainId } = args;
+  const {
+    safeAddress,
+    zodiacModuleProxyFactory,
+    paymasterMastercopy,
+    entryPoint,
+    chainId,
+    lightAccountFactory,
+  } = args;
 
   const encodedPaymasterInitializationParams = encodeAbiParameters(
-    parseAbiParameters('address, address'),
-    [safeAddress, entryPoint],
+    parseAbiParameters('address, address, address'),
+    [safeAddress, entryPoint, lightAccountFactory],
   );
 
   const encodedPaymasterInitializationData = encodeFunctionData({
