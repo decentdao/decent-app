@@ -11,7 +11,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import { getAddress } from 'viem';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
-import { useFractal } from '../../../providers/App/AppProvider';
+import { useStore } from '../../../providers/App/AppProvider';
 import { BigIntValuePair } from '../../../types';
 import { RoleFormValues } from '../../../types/roles';
 import { formatCoin, formatUSD } from '../../../utils';
@@ -25,7 +25,7 @@ export function AssetSelector({ formIndex, disabled }: { formIndex: number; disa
   const { daoKey } = useCurrentDAOKey();
   const {
     treasury: { assetsFungible },
-  } = useFractal({ daoKey });
+  } = useStore({ daoKey });
 
   const fungibleAssetsWithBalance = assetsFungible.filter(
     asset => parseFloat(asset.balance) > 0 && !asset.nativeToken,

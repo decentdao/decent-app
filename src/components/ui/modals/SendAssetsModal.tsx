@@ -7,7 +7,7 @@ import * as Yup from 'yup';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import { useValidationAddress } from '../../../hooks/schemas/common/useValidationAddress';
 import { useNetworkEnsAddressAsync } from '../../../hooks/useNetworkEnsAddress';
-import { useFractal } from '../../../providers/App/AppProvider';
+import { useStore } from '../../../providers/App/AppProvider';
 import { BigIntValuePair, TokenBalance } from '../../../types';
 import { SendAssetsData } from '../../../utils/dao/prepareSendAssetsActionData';
 import { formatCoinFromAsset, formatCoinUnits } from '../../../utils/numberFormats';
@@ -36,7 +36,7 @@ export function SendAssetsModal({
   const { daoKey } = useCurrentDAOKey();
   const {
     treasury: { assetsFungible },
-  } = useFractal({ daoKey });
+  } = useStore({ daoKey });
 
   const { getEnsAddress } = useNetworkEnsAddressAsync();
   const { t } = useTranslation(['modals', 'common']);

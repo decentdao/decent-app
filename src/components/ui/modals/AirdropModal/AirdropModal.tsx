@@ -6,7 +6,7 @@ import { Address, getAddress, isAddress } from 'viem';
 import { usePublicClient } from 'wagmi';
 import * as Yup from 'yup';
 import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
-import { useFractal } from '../../../../providers/App/AppProvider';
+import { useStore } from '../../../../providers/App/AppProvider';
 import { useProposalActionsStore } from '../../../../store/actions/useProposalActionsStore';
 import { BigIntValuePair, TokenBalance } from '../../../../types';
 import { formatCoinFromAsset } from '../../../../utils';
@@ -46,7 +46,7 @@ export function AirdropModal({
   const { daoKey } = useCurrentDAOKey();
   const {
     treasury: { assetsFungible },
-  } = useFractal({ daoKey });
+  } = useStore({ daoKey });
 
   const publicClient = usePublicClient();
   const { t } = useTranslation(['modals', 'common']);

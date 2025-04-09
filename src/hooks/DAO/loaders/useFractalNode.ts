@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { Address, getAddress, isAddress } from 'viem';
 import { createDecentSubgraphClient } from '../../../graphql';
 import { DAOQuery, DAOQueryResponse } from '../../../graphql/DAOQueries';
-import { useFractal } from '../../../providers/App/AppProvider';
+import { useStore } from '../../../providers/App/AppProvider';
 import { useSafeAPI } from '../../../providers/App/hooks/useSafeAPI';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
 import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
@@ -27,7 +27,7 @@ export const useFractalNode = ({
   const [errorLoading, setErrorLoading] = useState<boolean>(false);
   const { getConfigByChainId, chain } = useNetworkConfigStore();
   const { daoKey } = useCurrentDAOKey();
-  const { action } = useFractal({ daoKey });
+  const { action } = useStore({ daoKey });
 
   const { setDaoInfo, setSafeInfo, setDecentModules } = useDaoInfoStore();
 

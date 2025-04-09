@@ -5,7 +5,7 @@ import { DAOKey, FractalStore, StoreAction } from '../../types';
 import { combinedReducer, initialState } from './combinedReducer';
 export const FractalContext = createContext<FractalStore | null>(null);
 
-export const useFractal = ({ daoKey }: { daoKey: DAOKey | undefined }): FractalStore => {
+export const useStore = ({ daoKey }: { daoKey: DAOKey | undefined }): FractalStore => {
   const storeFeatureEnabled = useFeatureFlag('flag_store_v2');
   const context = useContext(FractalContext as Context<FractalStore>);
   if (storeFeatureEnabled) {

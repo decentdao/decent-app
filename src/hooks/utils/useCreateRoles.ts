@@ -42,7 +42,7 @@ import { DAO_ROUTES } from '../../constants/routes';
 import { getRandomBytes } from '../../helpers';
 import useFeatureFlag from '../../helpers/environmentFeatureFlags';
 import { generateContractByteCodeLinear } from '../../models/helpers/utils';
-import { useFractal } from '../../providers/App/AppProvider';
+import { useStore } from '../../providers/App/AppProvider';
 import useIPFSClient from '../../providers/App/hooks/useIPFSClient';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
 import { useDaoInfoStore } from '../../store/daoInfo/useDaoInfoStore';
@@ -103,7 +103,7 @@ export default function useCreateRoles() {
       linearVotingErc721WithHatsWhitelistingAddress,
       moduleAzoriusAddress,
     },
-  } = useFractal({ daoKey });
+  } = useStore({ daoKey });
   const { safe, subgraphInfo, gaslessVotingEnabled, paymasterAddress } = useDaoInfoStore();
   const { hatsTree, hatsTreeId, getHat } = useRolesStore();
   const {
