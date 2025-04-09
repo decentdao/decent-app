@@ -232,8 +232,8 @@ export function SafeGeneralSettingsPage() {
         calldatas.push(
           encodeFunctionData({
             abi: abis.DecentPaymasterV1,
-            functionName: 'whitelistFunctions',
-            args: [strategy.address, [getVoteSelector(strategy)], [true]],
+            functionName: 'whitelistFunction',
+            args: [strategy.address, getVoteSelector(strategy)],
           }),
         );
         values.push(0n);
@@ -249,8 +249,8 @@ export function SafeGeneralSettingsPage() {
             calldatas.push(
               encodeFunctionData({
                 abi: abis.DecentPaymasterV1,
-                functionName: 'whitelistFunctions',
-                args: [strategy.address, [getVoteSelector(strategy)], [true]],
+                functionName: 'whitelistFunction',
+                args: [strategy.address, getVoteSelector(strategy)],
               }),
             );
             values.push(0n);

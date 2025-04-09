@@ -360,8 +360,8 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
     return buildContractCall(
       abis.DecentPaymasterV1,
       predictedPaymasterAddress,
-      'whitelistFunctions',
-      [this.predictedStrategyAddress, [voteSelector], [true]],
+      'whitelistFunction',
+      [this.predictedStrategyAddress, voteSelector],
       0,
       false,
     );

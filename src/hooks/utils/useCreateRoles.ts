@@ -270,8 +270,8 @@ export default function useCreateRoles() {
           optionallyWhitelistWhitelistingStrategyOnPaymaster.push({
             calldata: encodeFunctionData({
               abi: abis.DecentPaymasterV1,
-              functionName: 'whitelistFunctions',
-              args: [predictedStrategyAddress, [getVoteSelector('erc20')], [true]],
+              functionName: 'whitelistFunction',
+              args: [predictedStrategyAddress, getVoteSelector('erc20')],
             }),
             targetAddress: paymasterAddress,
           });
@@ -313,6 +313,7 @@ export default function useCreateRoles() {
         if (gaslessVotingFeatureEnabled && !accountAbstraction) {
           throw new Error('Account abstraction is not enabled');
         }
+
         const encodedStrategyInitParams = gaslessVotingFeatureEnabled
           ? encodeAbiParameters(parseAbiParameters(linearERC721VotingWithWhitelistV1SetupParams), [
               safeAddress, // owner
@@ -386,8 +387,8 @@ export default function useCreateRoles() {
           optionallyWhitelistWhitelistingStrategyOnPaymaster.push({
             calldata: encodeFunctionData({
               abi: abis.DecentPaymasterV1,
-              functionName: 'whitelistFunctions',
-              args: [predictedStrategyAddress, [getVoteSelector('erc721')], [true]],
+              functionName: 'whitelistFunction',
+              args: [predictedStrategyAddress, getVoteSelector('erc721')],
             }),
             targetAddress: paymasterAddress,
           });
