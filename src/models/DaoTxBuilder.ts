@@ -156,13 +156,9 @@ export class DaoTxBuilder extends BaseTxBuilder {
       this.internalTxs.push(await azoriusTxBuilder.buildApproveStrategyOnPaymasterTx());
     }
 
-    // Transfer stake amount to safe, and then add stake with paymaster
+    // Add stake with paymaster
     if (enableGaslessStaking) {
-      console.debug('addStakeTx.before', { txs, internalTxs: this.internalTxs });
-      txs.push(azoriusTxBuilder.buildTransferStakeAmountToSafe());
-      const addStakeTx = await azoriusTxBuilder.buildAddStakeOnPaymasterTx();
-      this.internalTxs.push(addStakeTx);
-      console.debug('addStakeTx', { addStakeTx, txs, internalTxs: this.internalTxs });
+      this.internalTxs.push(await azoriusTxBuilder.buildAddStakeOnPaymasterTx());
     }
 
     // If subDAO and parentAllocation, deploy claim module

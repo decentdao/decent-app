@@ -1,7 +1,8 @@
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Address, getContract, isHex } from 'viem';
+import { Address, getContract, isHex, parseEther } from 'viem';
 import MultiSendCallOnlyAbi from '../../assets/abi/MultiSendCallOnly';
+import useFeatureFlag from '../../helpers/environmentFeatureFlags';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
 import { AzoriusERC20DAO, AzoriusERC721DAO, SafeMultisigDAO } from '../../types';
 import { useNetworkWalletClient } from '../useNetworkWalletClient';
@@ -11,6 +12,7 @@ import useBuildDAOTx from './useBuildDAOTx';
 const useDeployDAO = () => {
   const [contractCall, pending] = useTransaction();
   const [build] = useBuildDAOTx();
+  const gaslessStakingFeatureEnabled = useFeatureFlag('flag_gasless_staking');
 
   const { t } = useTranslation('transaction');
 
@@ -48,19 +50,48 @@ const useDeployDAO = () => {
           client: walletClient,
         });
 
-        contractCall({
-          contractFn: () => multiSendCallOnlyContract.write.multiSend([safeTx]),
-          pendingMessage: t('pendingDeploySafe'),
-          failedMessage: t('failedDeploySafe'),
-          successMessage: t('successDeploySafe'),
-          successCallback: () =>
-            successCallback(addressPrefix, predictedSafeAddress, daoData.daoName),
-        });
+        const sendDeploymentTransaction = () => {
+          contractCall({
+            contractFn: () => multiSendCallOnlyContract.write.multiSend([safeTx]),
+            pendingMessage: t('pendingDeploySafe'),
+            failedMessage: t('failedDeploySafe'),
+            successMessage: t('successDeploySafe'),
+            successCallback: () =>
+              successCallback(addressPrefix, predictedSafeAddress, daoData.daoName),
+          });
+        };
+
+        // Send ETH to Safe before deployment, these ETH
+        //   will be used to stake for paymaster later in deployment txn.
+        if (daoData.gaslessVoting && gaslessStakingFeatureEnabled) {
+          contractCall({
+            contractFn: () =>
+              walletClient.sendTransaction({
+                to: predictedSafeAddress,
+                value: parseEther('0.1'),
+              }),
+            pendingMessage: t('pendingSendEthToSafe'),
+            failedMessage: t('failedSendEthToSafe'),
+            successMessage: t('successSendEthToSafe'),
+            successCallback: sendDeploymentTransaction,
+          });
+          return;
+        }
+
+        sendDeploymentTransaction();
       };
 
       deploy();
     },
-    [addressPrefix, build, contractCall, multiSendCallOnly, t, walletClient],
+    [
+      addressPrefix,
+      build,
+      contractCall,
+      gaslessStakingFeatureEnabled,
+      multiSendCallOnly,
+      t,
+      walletClient,
+    ],
   );
 
   return [deployDao, pending] as const;
