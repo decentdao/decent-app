@@ -253,6 +253,7 @@ const useDeployAzorius = () => {
       moduleAzoriusMasterCopy,
       decentPaymasterV1MasterCopy,
       entryPointv07,
+      gaslessVoting?.rundlerMinimumStake,
       submitProposal,
       t,
       getParentDAOModules,

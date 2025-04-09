@@ -13,7 +13,6 @@ import {
   getCreate2Address,
   keccak256,
   parseAbiParameters,
-  parseEther,
   toFunctionSelector,
 } from 'viem';
 import GnosisSafeL2Abi from '../assets/abi/GnosisSafeL2';

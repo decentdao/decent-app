@@ -9,7 +9,6 @@ import {
   encodeFunctionData,
   getAbiItem,
   parseAbiParameters,
-  parseEther,
   toFunctionSelector,
   zeroAddress,
 } from 'viem';
