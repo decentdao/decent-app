@@ -34,6 +34,7 @@ import { ZodiacModuleProxyFactoryAbi } from '../../assets/abi/ZodiacModuleProxyF
 import { ERC6551_REGISTRY_SALT } from '../../constants/common';
 import { DAO_ROUTES } from '../../constants/routes';
 import { getRandomBytes } from '../../helpers';
+import useFeatureFlag from '../../helpers/environmentFeatureFlags';
 import { generateContractByteCodeLinear } from '../../models/helpers/utils';
 import { useFractal } from '../../providers/App/AppProvider';
 import useIPFSClient from '../../providers/App/hooks/useIPFSClient';
@@ -108,7 +109,9 @@ export default function useCreateRoles() {
       erc6551Registry,
       keyValuePairs,
       sablierV2LockupLinear,
+      linearVotingErc20HatsWhitelistingMasterCopy,
       linearVotingErc20HatsWhitelistingV1MasterCopy,
+      linearVotingErc721HatsWhitelistingMasterCopy,
       linearVotingErc721HatsWhitelistingV1MasterCopy,
       zodiacModuleProxyFactory,
       decentAutonomousAdminV1MasterCopy,
@@ -126,6 +129,8 @@ export default function useCreateRoles() {
   const ipfsClient = useIPFSClient();
   const publicClient = useNetworkPublicClient();
   const navigate = useNavigate();
+
+  const gaslessVotingFeatureEnabled = useFeatureFlag('flag_gasless_voting');
 
   const getVoteSelector = (strategyType: 'erc20' | 'erc721') => {
     let voteAbiItem: AbiItem;
@@ -205,23 +210,21 @@ export default function useCreateRoles() {
           args: [encodedStrategyInitParams],
         });
 
+        const strategyMasterCopy = gaslessVotingFeatureEnabled
+          ? linearVotingErc20HatsWhitelistingV1MasterCopy
+          : linearVotingErc20HatsWhitelistingMasterCopy;
+
         const strategyNonce = getRandomBytes();
         const deployWhitelistingVotingStrategyTx = {
           calldata: encodeFunctionData({
             abi: ZodiacModuleProxyFactoryAbi,
             functionName: 'deployModule',
-            args: [
-              linearVotingErc20HatsWhitelistingV1MasterCopy,
-              encodedStrategySetupData,
-              strategyNonce,
-            ],
+            args: [strategyMasterCopy, encodedStrategySetupData, strategyNonce],
           }),
           targetAddress: zodiacModuleProxyFactory,
         };
 
-        const strategyByteCodeLinear = generateContractByteCodeLinear(
-          linearVotingErc20HatsWhitelistingV1MasterCopy,
-        );
+        const strategyByteCodeLinear = generateContractByteCodeLinear(strategyMasterCopy);
 
         const strategySalt = keccak256(
           encodePacked(
@@ -313,23 +316,21 @@ export default function useCreateRoles() {
           args: [encodedStrategyInitParams],
         });
 
+        const strategyMasterCopy = gaslessVotingFeatureEnabled
+          ? linearVotingErc721HatsWhitelistingV1MasterCopy
+          : linearVotingErc721HatsWhitelistingMasterCopy;
+
         const strategyNonce = getRandomBytes();
         const deployWhitelistingVotingStrategyTx = {
           calldata: encodeFunctionData({
             abi: ZodiacModuleProxyFactoryAbi,
             functionName: 'deployModule',
-            args: [
-              linearVotingErc721HatsWhitelistingV1MasterCopy,
-              encodedStrategySetupData,
-              strategyNonce,
-            ],
+            args: [strategyMasterCopy, encodedStrategySetupData, strategyNonce],
           }),
           targetAddress: zodiacModuleProxyFactory,
         };
 
-        const strategyByteCodeLinear = generateContractByteCodeLinear(
-          linearVotingErc721HatsWhitelistingV1MasterCopy,
-        );
+        const strategyByteCodeLinear = generateContractByteCodeLinear(strategyMasterCopy);
 
         const strategySalt = keccak256(
           encodePacked(
@@ -383,12 +384,15 @@ export default function useCreateRoles() {
       linearVotingErc20Address,
       publicClient,
       hatsProtocol,
+      gaslessVotingFeatureEnabled,
       linearVotingErc20HatsWhitelistingV1MasterCopy,
+      linearVotingErc20HatsWhitelistingMasterCopy,
       zodiacModuleProxyFactory,
       gaslessVotingEnabled,
       paymasterAddress,
       linearVotingErc721Address,
       linearVotingErc721HatsWhitelistingV1MasterCopy,
+      linearVotingErc721HatsWhitelistingMasterCopy,
     ],
   );
 
