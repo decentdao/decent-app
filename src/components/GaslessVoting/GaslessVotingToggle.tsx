@@ -33,12 +33,20 @@ function GaslessVotingToggleContent({
   isSettings,
 }: GaslessVotingToggleProps & { isSettings?: boolean }) {
   const { t } = useTranslation('gaslessVoting');
-
+  const { gaslessVoting } = useNetworkConfigStore();
   const { canUserCreateProposal } = useCanUserCreateProposal();
 
-  const gaslessStakingFeatureEnabled = useFeatureFlag('flag_gasless_staking');
+  const gaslessStakingFeatureEnabled =
+    useFeatureFlag('flag_gasless_staking') && gaslessVoting?.rundlerMinimumStake !== undefined;
   const publicClient = useNetworkPublicClient();
   const nativeCurrency = publicClient.chain.nativeCurrency;
+  const formattedMinStakeAmount = formatCoin(
+    gaslessVoting?.rundlerMinimumStake || 0n,
+    true,
+    nativeCurrency.decimals,
+    nativeCurrency.symbol,
+    false,
+  );
 
   return (
     <Box
@@ -70,7 +78,10 @@ function GaslessVotingToggleContent({
               textStyle={isSettings ? 'labels-large' : 'helper-text'}
               color="neutral-7"
             >
-              {t('gaslessStakingDescription', { symbol: nativeCurrency.symbol })}
+              {t('gaslessStakingDescription', {
+                amount: formattedMinStakeAmount,
+                symbol: nativeCurrency.symbol,
+              })}
             </Text>
           )}
         </Flex>
@@ -81,7 +92,12 @@ function GaslessVotingToggleContent({
           onChange={() => {
             onToggle();
             if (!isEnabled) {
-              toast.info(t('ensureSafeBalanceEnoughForStake', { symbol: nativeCurrency.symbol }));
+              toast.info(
+                t('ensureSafeBalanceEnoughForStake', {
+                  amount: formattedMinStakeAmount,
+                  symbol: nativeCurrency.symbol,
+                }),
+              );
             }
           }}
           variant="secondary"

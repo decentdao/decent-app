@@ -86,13 +86,20 @@ export class DaoTxBuilder extends BaseTxBuilder {
     shouldSetSnapshot: boolean;
     enableGaslessVoting: boolean;
     existingSafeOwners?: string[];
+    rundlerMinimumStake?: bigint;
   }): Promise<string> {
-    const { shouldSetName, shouldSetSnapshot, existingSafeOwners, enableGaslessVoting } = params;
+    const {
+      shouldSetName,
+      shouldSetSnapshot,
+      existingSafeOwners,
+      enableGaslessVoting,
+      rundlerMinimumStake,
+    } = params;
     const azoriusTxBuilder = await this.txBuilderFactory.createAzoriusTxBuilder();
 
     // Can't use hook here, so only read from local env without Firebase remote config
     const enableGaslessStaking =
-      enableGaslessVoting && FeatureFlags.instance?.isFeatureEnabled('flag_gasless_staking');
+      enableGaslessVoting && !!FeatureFlags.instance?.isFeatureEnabled('flag_gasless_staking');
 
     // transactions that must be called by safe
     this.internalTxs = [];
@@ -157,8 +164,8 @@ export class DaoTxBuilder extends BaseTxBuilder {
     }
 
     // Add stake with paymaster
-    if (enableGaslessStaking) {
-      this.internalTxs.push(await azoriusTxBuilder.buildAddStakeOnPaymasterTx());
+    if (enableGaslessStaking && rundlerMinimumStake !== undefined) {
+      this.internalTxs.push(await azoriusTxBuilder.buildAddStakeOnPaymasterTx(rundlerMinimumStake));
     }
 
     // If subDAO and parentAllocation, deploy claim module

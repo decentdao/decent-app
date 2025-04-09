@@ -55,6 +55,7 @@ const useDeployAzorius = () => {
       entryPointv07,
     },
     addressPrefix,
+    gaslessVoting,
   } = useNetworkConfigStore();
   const { safe, subgraphInfo } = useDaoInfoStore();
 
@@ -182,6 +183,7 @@ const useDeployAzorius = () => {
         shouldSetSnapshot,
         enableGaslessVoting,
         existingSafeOwners: safe.owners,
+        rundlerMinimumStake: gaslessVoting?.rundlerMinimumStake,
       });
 
       if (!isHex(safeTx)) {

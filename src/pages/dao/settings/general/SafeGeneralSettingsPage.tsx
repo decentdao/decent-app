@@ -73,9 +73,11 @@ export function SafeGeneralSettingsPage() {
       decentPaymasterV1MasterCopy,
       zodiacModuleProxyFactory,
     },
+    gaslessVoting,
   } = useNetworkConfigStore();
   const { depositInfo } = useDepositInfo(paymasterAddress);
-  const gaslessStakingFeatureEnabled = useFeatureFlag('flag_gasless_staking');
+  const gaslessStakingFeatureEnabled =
+    useFeatureFlag('flag_gasless_staking') && gaslessVoting?.rundlerMinimumStake !== undefined;
 
   const isMultisigGovernance = votingStrategyType === GovernanceType.MULTISIG;
   const gaslessVotingSupported = !isMultisigGovernance && entryPointv07 !== undefined;
@@ -208,11 +210,12 @@ export function SafeGeneralSettingsPage() {
         chainId,
       });
 
-      const minStakeAmount = parseEther('0.1');
-      const stakedAmount = depositInfo?.stake || 0n;
-      if (paymasterAddress === null || stakedAmount < minStakeAmount) {
-        // Add stake for Paymaster if not enough
-        if (gaslessStakingFeatureEnabled) {
+      // Add stake for Paymaster if not enough
+      if (gaslessStakingFeatureEnabled) {
+        const minStakeAmount = gaslessVoting.rundlerMinimumStake!;
+        const stakedAmount = depositInfo?.stake || 0n;
+
+        if (paymasterAddress === null || stakedAmount < minStakeAmount) {
           const delta = minStakeAmount - stakedAmount;
 
           targets.push(predictedPaymasterAddress);

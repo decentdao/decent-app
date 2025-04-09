@@ -307,7 +307,7 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
     );
   }
 
-  public async buildAddStakeOnPaymasterTx(): Promise<SafeTransaction> {
+  public async buildAddStakeOnPaymasterTx(rundlerMinimumStake: bigint): Promise<SafeTransaction> {
     if (!this.entryPointAddress) {
       throw new Error('Entry point address is not set');
     }
@@ -320,7 +320,6 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
       chainId: this.publicClient.chain!.id,
     });
 
-    const minStakeAmount = parseEther('0.1');
     // Add stake for Paymaster
     const tx = buildContractCall(
       abis.DecentPaymasterV1,
@@ -329,7 +328,7 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
       [86400],
       0,
       false,
-      { value: minStakeAmount },
+      { value: rundlerMinimumStake },
     );
 
     return tx;

@@ -12,14 +12,16 @@ import useBuildDAOTx from './useBuildDAOTx';
 const useDeployDAO = () => {
   const [contractCall, pending] = useTransaction();
   const [build] = useBuildDAOTx();
-  const gaslessStakingFeatureEnabled = useFeatureFlag('flag_gasless_staking');
 
   const { t } = useTranslation('transaction');
 
   const {
     addressPrefix,
     contracts: { multiSendCallOnly },
+    gaslessVoting,
   } = useNetworkConfigStore();
+  const gaslessStakingFeatureEnabled =
+    useFeatureFlag('flag_gasless_staking') && gaslessVoting?.rundlerMinimumStake !== undefined;
 
   const { data: walletClient } = useNetworkWalletClient();
 
@@ -68,7 +70,7 @@ const useDeployDAO = () => {
             contractFn: () =>
               walletClient.sendTransaction({
                 to: predictedSafeAddress,
-                value: parseEther('0.1'),
+                value: gaslessVoting.rundlerMinimumStake,
               }),
             pendingMessage: t('pendingSendEthToSafe'),
             failedMessage: t('failedSendEthToSafe'),

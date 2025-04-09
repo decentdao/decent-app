@@ -85,5 +85,9 @@ export type NetworkConfig = {
     };
   };
   createOptions: GovernanceType[];
-  maxPriorityFeePerGasMultiplier?: bigint;
+  gaslessVoting?: {
+    maxPriorityFeePerGasMultiplier?: bigint;
+    // check https://docs.alchemy.com/docs/bundler-services#minimum-stake
+    rundlerMinimumStake?: bigint;
+  };
 };

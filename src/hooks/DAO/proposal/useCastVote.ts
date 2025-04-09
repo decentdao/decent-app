@@ -27,7 +27,7 @@ const useCastVote = (proposalId: string, strategy: Address) => {
   const {
     contracts: { entryPointv07 },
     rpcEndpoint,
-    getConfigByChainId,
+    gaslessVoting,
   } = useNetworkConfigStore();
 
   const [contractCall, castVotePending] = useTransaction();
@@ -171,13 +171,12 @@ const useCastVote = (proposalId: string, strategy: Address) => {
     } = await publicClient.estimateFeesPerGas();
     const castVoteCallData = prepareCastVoteData(0);
 
-    const networkConfig = getConfigByChainId(publicClient.chain.id);
-    if (!networkConfig.maxPriorityFeePerGasMultiplier) {
+    if (!gaslessVoting?.maxPriorityFeePerGasMultiplier) {
       return;
     }
 
     // `maxPriorityFeePerGas` returned from `estimateFeesPerGas` needs to be multiplied by this value to match minimum requirement here https://docs.alchemy.com/reference/rundler-maxpriorityfeepergas
-    const maxPriorityFeePerGasMultiplier = networkConfig.maxPriorityFeePerGasMultiplier;
+    const maxPriorityFeePerGasMultiplier = gaslessVoting.maxPriorityFeePerGasMultiplier;
 
     // Adds buffer to maxFeePerGasEstimate to ensure transaction gets included
     const maxFeePerGasMultiplier = 50n;
@@ -230,7 +229,7 @@ const useCastVote = (proposalId: string, strategy: Address) => {
     };
   }, [
     entryPointv07,
-    getConfigByChainId,
+    gaslessVoting?.maxPriorityFeePerGasMultiplier,
     paymasterAddress,
     prepareCastVoteData,
     publicClient,
