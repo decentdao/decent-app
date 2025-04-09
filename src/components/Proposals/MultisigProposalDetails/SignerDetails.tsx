@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Address, getAddress } from 'viem';
 import { useAccount } from 'wagmi';
 import { findMostConfirmedMultisigRejectionProposal } from '../../../helpers/multisigProposal';
+import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import { useFractal } from '../../../providers/App/AppProvider';
 import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
 import { MultisigProposal } from '../../../types';
@@ -72,9 +73,10 @@ export function SignerDetails({ proposal }: { proposal: MultisigProposal }) {
   const { t } = useTranslation('proposal');
   const user = useAccount();
   const { safe } = useDaoInfoStore();
+  const { daoKey } = useCurrentDAOKey();
   const {
     governance: { proposals },
-  } = useFractal();
+  } = useFractal({ daoKey });
 
   const rejectionProposal = findMostConfirmedMultisigRejectionProposal(
     safe?.address,

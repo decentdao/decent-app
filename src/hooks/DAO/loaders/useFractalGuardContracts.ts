@@ -8,12 +8,14 @@ import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
 import { FreezeGuardType, FreezeVotingType } from '../../../types';
 import useNetworkPublicClient from '../../useNetworkPublicClient';
 import { useAddressContractType } from '../../utils/useAddressContractType';
+import { useCurrentDAOKey } from '../useCurrentDAOKey';
 import { DecentModule, FractalModuleType, GnosisSafe } from './../../../types/fractal';
 
 export const useFractalGuardContracts = ({ loadOnMount = true }: { loadOnMount?: boolean }) => {
   // load key for component; helps prevent unnecessary calls
   const loadKey = useRef<string>();
-  const { action } = useFractal();
+  const { daoKey } = useCurrentDAOKey();
+  const { action } = useFractal({ daoKey });
 
   const { modules, safe, subgraphInfo } = useDaoInfoStore();
 

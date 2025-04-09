@@ -7,6 +7,7 @@ import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
 import { AzoriusGovernance, ERC721TokenData } from '../../../types';
 import useNetworkPublicClient from '../../useNetworkPublicClient';
 import useVotingStrategiesAddresses from '../../utils/useVotingStrategiesAddresses';
+import { useCurrentDAOKey } from '../useCurrentDAOKey';
 
 const DEFAULT_RETURN = {
   totalVotingTokenAddresses: [],
@@ -37,14 +38,14 @@ export default function useUserERC721VotingTokens(
   const [totalVotingTokenAddresses, setTotalVotingTokenAddresses] = useState<Address[]>([]);
   const [remainingTokenIds, setRemainingTokenIds] = useState<string[]>([]);
   const [remainingTokenAddresses, setRemainingTokenAddresses] = useState<Address[]>([]);
-
+  const { daoKey } = useCurrentDAOKey();
   const {
     governanceContracts: {
       linearVotingErc721Address,
       linearVotingErc721WithHatsWhitelistingAddress,
     },
     governance,
-  } = useFractal();
+  } = useFractal({ daoKey });
   const user = useAccount();
   const { safe } = useDaoInfoStore();
   const publicClient = useNetworkPublicClient();

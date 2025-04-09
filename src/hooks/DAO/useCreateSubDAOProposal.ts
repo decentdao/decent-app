@@ -17,6 +17,7 @@ import { ProposalExecuteData } from '../../types/daoProposal';
 import { useCanUserCreateProposal } from '../utils/useCanUserSubmitProposal';
 import useSubmitProposal from './proposal/useSubmitProposal';
 import useBuildDAOTx from './useBuildDAOTx';
+import { useCurrentDAOKey } from './useCurrentDAOKey';
 
 export const useCreateSubDAOProposal = () => {
   const { t } = useTranslation(['daoCreate', 'proposal', 'proposalMetadata']);
@@ -24,7 +25,8 @@ export const useCreateSubDAOProposal = () => {
   const { submitProposal, pendingCreateTx } = useSubmitProposal();
   const { canUserCreateProposal } = useCanUserCreateProposal();
   const [build] = useBuildDAOTx();
-  const { governance } = useFractal();
+  const { daoKey } = useCurrentDAOKey();
+  const { governance } = useFractal({ daoKey });
   const { safe } = useDaoInfoStore();
   const {
     contracts: { multiSendCallOnly, keyValuePairs },

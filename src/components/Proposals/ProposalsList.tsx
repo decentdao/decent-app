@@ -1,5 +1,6 @@
 import { Box, Flex } from '@chakra-ui/react';
 import { CONTENT_MAXW } from '../../constants/common';
+import { useCurrentDAOKey } from '../../hooks/DAO/useCurrentDAOKey';
 import { useFractal } from '../../providers/App/AppProvider';
 import { FractalProposal } from '../../types';
 import NoDataCard from '../ui/containers/NoDataCard';
@@ -13,9 +14,10 @@ interface ProposalsListProps {
 }
 
 export function ProposalsList({ proposals, currentPage, totalPages }: ProposalsListProps) {
+  const { daoKey } = useCurrentDAOKey();
   const {
     governance: { type, loadingProposals, allProposalsLoaded },
-  } = useFractal();
+  } = useFractal({ daoKey });
 
   const showLoadingMore = currentPage === totalPages && !allProposalsLoaded;
 

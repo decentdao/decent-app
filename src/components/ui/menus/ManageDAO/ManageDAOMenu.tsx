@@ -11,6 +11,7 @@ import {
 } from '../../../../helpers/freezePeriodHelpers';
 import useUserERC721VotingTokens from '../../../../hooks/DAO/proposal/useUserERC721VotingTokens';
 import useClawBack from '../../../../hooks/DAO/useClawBack';
+import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
 import { useNetworkWalletClient } from '../../../../hooks/useNetworkWalletClient';
 import useBlockTimestamp from '../../../../hooks/utils/useBlockTimestamp';
 import { useCanUserCreateProposal } from '../../../../hooks/utils/useCanUserSubmitProposal';
@@ -23,11 +24,12 @@ import { useDecentModal } from '../../modals/useDecentModal';
 import { OptionMenu } from '../OptionMenu';
 
 export function ManageDAOMenu() {
+  const { daoKey } = useCurrentDAOKey();
   const {
     governance: { type },
     guard,
     guardContracts,
-  } = useFractal();
+  } = useFractal({ daoKey });
   const dao = useDaoInfoStore();
   const currentTime = BigInt(useBlockTimestamp());
   const navigate = useNavigate();

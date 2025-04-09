@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { Address, getAddress, isAddress } from 'viem';
 import { usePublicClient } from 'wagmi';
 import * as Yup from 'yup';
+import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
 import { useFractal } from '../../../../providers/App/AppProvider';
 import { useProposalActionsStore } from '../../../../store/actions/useProposalActionsStore';
 import { BigIntValuePair, TokenBalance } from '../../../../types';
@@ -42,9 +43,10 @@ export function AirdropModal({
   close: () => void;
   airdropData: (airdropData: AirdropData) => void;
 }) {
+  const { daoKey } = useCurrentDAOKey();
   const {
     treasury: { assetsFungible },
-  } = useFractal();
+  } = useFractal({ daoKey });
 
   const publicClient = usePublicClient();
   const { t } = useTranslation(['modals', 'common']);

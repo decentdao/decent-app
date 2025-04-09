@@ -1,4 +1,4 @@
-import { Flex, Box, Text, VStack } from '@chakra-ui/react';
+import { Box, Flex, Text, VStack } from '@chakra-ui/react';
 import { Address } from 'viem';
 import { useAccountFavorites } from '../../../hooks/DAO/loaders/useFavorites';
 import { DaoHierarchyStrategyType } from '../../../types';

@@ -12,6 +12,7 @@ import PageHeader from '../../../../components/ui/page/Header/PageHeader';
 import { DAO_ROUTES } from '../../../../constants/routes';
 import useSnapshotProposal from '../../../../hooks/DAO/loaders/snapshot/useSnapshotProposal';
 import { useGetMetadata } from '../../../../hooks/DAO/proposal/useGetMetadata';
+import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
 import { analyticsEvents } from '../../../../insights/analyticsEvents';
 import { useFractal } from '../../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../../providers/NetworkConfig/useNetworkConfigStore';
@@ -24,10 +25,10 @@ export function SafeProposalDetailsPage() {
   }, []);
 
   const { t } = useTranslation(['proposal', 'navigation', 'breadcrumbs', 'dashboard']);
-
+  const { daoKey } = useCurrentDAOKey();
   const {
     governance: { proposals, loadingProposals, allProposalsLoaded, isAzorius },
-  } = useFractal();
+  } = useFractal({ daoKey });
   const { safe } = useDaoInfoStore();
   const { addressPrefix } = useNetworkConfigStore();
   const { proposalId } = useParams();

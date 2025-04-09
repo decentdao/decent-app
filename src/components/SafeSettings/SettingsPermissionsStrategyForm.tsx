@@ -17,7 +17,7 @@ export function SettingsPermissionsStrategyForm({
 }) {
   const { t } = useTranslation('settings');
   const tooltipContainerRef = useRef<HTMLDivElement>(null);
-  const { governance } = useFractal();
+  const { governance } = useFractal({ daoKey });
   const azoriusGovernance = governance as AzoriusGovernance;
   const { votesToken, erc721Tokens } = azoriusGovernance;
 

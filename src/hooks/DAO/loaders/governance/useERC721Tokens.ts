@@ -5,15 +5,17 @@ import { useFractal } from '../../../../providers/App/AppProvider';
 import { FractalGovernanceAction } from '../../../../providers/App/governance/action';
 import { ERC721TokenData } from '../../../../types';
 import useNetworkPublicClient from '../../../useNetworkPublicClient';
+import { useCurrentDAOKey } from '../../useCurrentDAOKey';
 
 export default function useERC721Tokens() {
+  const { daoKey } = useCurrentDAOKey();
   const {
     governanceContracts: {
       linearVotingErc721Address,
       linearVotingErc721WithHatsWhitelistingAddress,
     },
     action,
-  } = useFractal();
+  } = useFractal({ daoKey });
   const publicClient = useNetworkPublicClient();
   const loadERC721Tokens = useCallback(async () => {
     const linear721VotingAddress =
