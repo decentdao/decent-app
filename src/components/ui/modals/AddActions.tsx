@@ -3,9 +3,10 @@ import { ArrowsDownUp, Plus, SquaresFour } from '@phosphor-icons/react';
 import { useTranslation } from 'react-i18next';
 import { DETAILS_BOX_SHADOW } from '../../../constants/common';
 import { useFractal } from '../../../providers/App/AppProvider';
-import { SendAssetsData } from '../../../utils/dao/prepareSendAssetsActionData';
+import { useProposalActionsStore } from '../../../store/actions/useProposalActionsStore';
+import { prepareSendAssetsActionData } from '../../../utils/dao/prepareSendAssetsActionData';
 import { ModalBase } from './ModalBase';
-import { SendAssetsModal } from './SendAssetsModal';
+import { useDecentModal } from './useDecentModal';
 
 function ActionCard({
   title,
@@ -68,10 +69,14 @@ export function AddActions({
     treasury: { assetsFungible },
   } = useFractal();
 
-  const { t } = useTranslation('actions');
-
-  const { isOpen: isOpenAction, onOpen: onOpenAction, onClose: onCloseAction } = useDisclosure();
-  const { isOpen: isOpenAssets, onOpen: onOpenAssets, onClose: onCloseAssets } = useDisclosure();
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const openSendAssetsModal = useDecentModal(ModalType.SEND_ASSETS, {
+    onSubmit: sendAssetsData => {
+      const { action } = prepareSendAssetsActionData(sendAssetsData);
+      addAction({ ...action, content: <></> });
+    },
+    submitButtonText: t('Add Action', { ns: 'modals' }),
+  });
 
   const hasAnyBalanceOfAnyFungibleTokens =
     assetsFungible.reduce((p, c) => p + BigInt(c.balance), 0n) > 0n;
@@ -82,7 +87,7 @@ export function AddActions({
         variant="secondary"
         mt="1rem"
         size="sm"
-        onClick={onOpenAction}
+        onClick={onOpen}
       >
         <Icon as={Plus} />
         {t('addAction')}
@@ -90,8 +95,8 @@ export function AddActions({
 
       <ModalBase
         size="xl"
-        isOpen={isOpenAction}
-        onClose={onCloseAction}
+        isOpen={isOpen}
+        onClose={onClose}
         title={t('actions')}
       >
         <Flex
@@ -103,8 +108,8 @@ export function AddActions({
             subtitle={t('transferAssetsSub')}
             icon={ArrowsDownUp}
             onClick={() => {
-              onCloseAction();
-              onOpenAssets();
+              onClose();
+              openSendAssetsModal();
             }}
             isDisabled={!hasAnyBalanceOfAnyFungibleTokens}
           />
@@ -117,18 +122,6 @@ export function AddActions({
             isDisabled
           />
         </Flex>
-      </ModalBase>
-
-      <ModalBase
-        isOpen={isOpenAssets}
-        onClose={onCloseAssets}
-        title={t('transferAssets')}
-      >
-        <SendAssetsModal
-          submitButtonText={t('add', { ns: 'modals' })}
-          close={onCloseAssets}
-          sendAssetsData={addSendAssetsAction}
-        />
       </ModalBase>
     </>
   );
