@@ -306,33 +306,6 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
     );
   }
 
-  public async buildAddStakeOnPaymasterTx(rundlerMinimumStake: bigint): Promise<SafeTransaction> {
-    if (!this.entryPointAddress) {
-      throw new Error('Entry point address is not set');
-    }
-
-    const predictedPaymasterAddress = getPaymasterAddress({
-      safeAddress: this.safeContractAddress,
-      zodiacModuleProxyFactory: this.zodiacModuleProxyFactory,
-      paymasterMastercopy: this.paymasterMasterCopy,
-      entryPoint: this.entryPointAddress,
-      chainId: this.publicClient.chain!.id,
-    });
-
-    // Add stake for Paymaster
-    const tx = buildContractCall(
-      abis.DecentPaymasterV1,
-      predictedPaymasterAddress,
-      'addStake',
-      [86400],
-      0,
-      false,
-      { value: rundlerMinimumStake },
-    );
-
-    return tx;
-  }
-
   public async buildApproveStrategyOnPaymasterTx(): Promise<SafeTransaction> {
     if (!this.entryPointAddress) {
       throw new Error('Entry point address is not set');

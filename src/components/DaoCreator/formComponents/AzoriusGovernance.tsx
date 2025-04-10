@@ -59,6 +59,7 @@ export function AzoriusGovernance(props: ICreationStepProps) {
   const {
     contracts: { entryPointv07 },
   } = useNetworkConfigStore();
+  const gaslessStakingFeatureEnabled = useFeatureFlag('flag_gasless_staking');
   const gaslessVotingSupported = entryPointv07 !== undefined;
 
   const fractalModule = useMemo(() => {
@@ -263,7 +264,7 @@ export function AzoriusGovernance(props: ICreationStepProps) {
           />
         </Box>
       )}
-      {gaslessVotingSupported && (
+      {gaslessVotingSupported && !gaslessStakingFeatureEnabled && (
         <GaslessVotingToggleDAOCreate
           isEnabled={values.essentials.gaslessVoting}
           onToggle={() =>

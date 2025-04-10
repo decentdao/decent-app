@@ -31,13 +31,12 @@ function GaslessVotingToggleContent({
   isEnabled,
   onToggle,
   isSettings,
-}: GaslessVotingToggleProps & { isSettings?: boolean }) {
+  displayNeedStakingLabel,
+}: GaslessVotingToggleProps & { isSettings?: boolean; displayNeedStakingLabel?: boolean }) {
   const { t } = useTranslation('gaslessVoting');
   const { gaslessVoting } = useNetworkConfigStore();
   const { canUserCreateProposal } = useCanUserCreateProposal();
 
-  const gaslessStakingFeatureEnabled =
-    useFeatureFlag('flag_gasless_staking') && gaslessVoting?.rundlerMinimumStake !== undefined;
   const publicClient = useNetworkPublicClient();
   const nativeCurrency = publicClient.chain.nativeCurrency;
   const formattedMinStakeAmount = formatCoin(
@@ -73,7 +72,7 @@ function GaslessVotingToggleContent({
           >
             {isSettings ? t('gaslessVotingDescriptionSettings') : t('gaslessVotingDescription')}
           </Text>
-          {gaslessStakingFeatureEnabled && (
+          {displayNeedStakingLabel && (
             <Text
               textStyle={isSettings ? 'labels-large' : 'helper-text'}
               color="neutral-7"
@@ -89,17 +88,7 @@ function GaslessVotingToggleContent({
           size="md"
           isDisabled={isSettings && !canUserCreateProposal}
           isChecked={isEnabled}
-          onChange={() => {
-            onToggle();
-            if (!isEnabled) {
-              toast.info(
-                t('ensureSafeBalanceEnoughForStake', {
-                  amount: formattedMinStakeAmount,
-                  symbol: nativeCurrency.symbol,
-                }),
-              );
-            }
-          }}
+          onChange={() => onToggle()}
           variant="secondary"
         />
       </HStack>
@@ -150,6 +139,7 @@ export function GaslessVotingToggleDAOSettings(props: GaslessVotingToggleProps) 
   const {
     addressPrefix,
     contracts: { entryPointv07 },
+    gaslessVoting,
   } = useNetworkConfigStore();
 
   const navigate = useNavigate();
@@ -218,7 +208,11 @@ export function GaslessVotingToggleDAOSettings(props: GaslessVotingToggleProps) 
   });
 
   const gaslessFeatureEnabled = useFeatureFlag('flag_gasless_voting');
-  const gaslessStakingEnabled = useFeatureFlag('flag_gasless_staking');
+  const gaslessStakingFeatureEnabled = useFeatureFlag('flag_gasless_staking');
+  const gaslessStakingEnabled =
+    gaslessFeatureEnabled &&
+    gaslessStakingFeatureEnabled &&
+    gaslessVoting?.rundlerMinimumStake !== undefined;
   if (!gaslessFeatureEnabled) return null;
 
   const formattedPaymasterBalance =
@@ -227,6 +221,8 @@ export function GaslessVotingToggleDAOSettings(props: GaslessVotingToggleProps) 
   const formattedPaymasterStakedAmount =
     depositInfo &&
     formatCoin(depositInfo.stake, true, nativeCurrency.decimals, nativeCurrency.symbol, false);
+  const minStakeAmount = gaslessVoting?.rundlerMinimumStake || 0n;
+  const stakedAmount = depositInfo?.stake || 0n;
 
   return (
     <Box
@@ -243,6 +239,7 @@ export function GaslessVotingToggleDAOSettings(props: GaslessVotingToggleProps) 
       <GaslessVotingToggleContent
         {...props}
         isSettings
+        displayNeedStakingLabel={gaslessStakingEnabled && stakedAmount < minStakeAmount}
       />
 
       {!gaslessVotingEnabled && <StarterPromoBanner />}
@@ -291,7 +288,7 @@ export function GaslessVotingToggleDAOSettings(props: GaslessVotingToggleProps) 
         </Flex>
       )}
 
-      {gaslessVotingEnabled && gaslessStakingEnabled && (
+      {gaslessStakingEnabled && (
         <Flex justifyContent="space-between">
           <Flex
             direction="column"

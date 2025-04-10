@@ -3,7 +3,6 @@ import { Address, encodeFunctionData, PublicClient, zeroAddress } from 'viem';
 import GnosisSafeL2Abi from '../assets/abi/GnosisSafeL2';
 import MultiSendCallOnlyAbi from '../assets/abi/MultiSendCallOnly';
 import { buildContractCall, encodeMultiSend } from '../helpers';
-import { FeatureFlags } from '../helpers/featureFlags';
 import {
   AzoriusERC20DAO,
   AzoriusERC721DAO,
@@ -86,20 +85,9 @@ export class DaoTxBuilder extends BaseTxBuilder {
     shouldSetSnapshot: boolean;
     enableGaslessVoting: boolean;
     existingSafeOwners?: string[];
-    rundlerMinimumStake?: bigint;
   }): Promise<string> {
-    const {
-      shouldSetName,
-      shouldSetSnapshot,
-      existingSafeOwners,
-      enableGaslessVoting,
-      rundlerMinimumStake,
-    } = params;
+    const { shouldSetName, shouldSetSnapshot, existingSafeOwners, enableGaslessVoting } = params;
     const azoriusTxBuilder = await this.txBuilderFactory.createAzoriusTxBuilder();
-
-    // Can't use hook here, so only read from local env without Firebase remote config
-    const enableGaslessStaking =
-      enableGaslessVoting && !!FeatureFlags.instance?.isFeatureEnabled('flag_gasless_staking');
 
     // transactions that must be called by safe
     this.internalTxs = [];
@@ -161,11 +149,6 @@ export class DaoTxBuilder extends BaseTxBuilder {
       this.internalTxs.push(azoriusTxBuilder.buildDeployPaymasterTx());
       this.internalTxs.push(this.buildSetGaslessVotingEnabledTx());
       this.internalTxs.push(await azoriusTxBuilder.buildApproveStrategyOnPaymasterTx());
-    }
-
-    // Add stake with paymaster
-    if (enableGaslessStaking && rundlerMinimumStake !== undefined) {
-      this.internalTxs.push(await azoriusTxBuilder.buildAddStakeOnPaymasterTx(rundlerMinimumStake));
     }
 
     // If subDAO and parentAllocation, deploy claim module
