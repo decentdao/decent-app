@@ -21,22 +21,22 @@ interface DepositInfo {
  */
 export function useDepositInfo(account?: Address | null) {
   const {
-    contracts: { entryPointv07 },
+    contracts: { accountAbstraction },
   } = useNetworkConfigStore();
   const publicClient = useNetworkPublicClient();
 
   const [depositInfo, setDepositInfo] = useState<DepositInfo>();
 
   useEffect(() => {
-    if (!account || !entryPointv07) return;
+    if (!account || !accountAbstraction) return;
     const entryPoint = getContract({
-      address: entryPointv07,
+      address: accountAbstraction.entryPointv07,
       abi: EntryPoint07Abi,
       client: publicClient,
     });
 
     entryPoint.read.getDepositInfo([account]).then(setDepositInfo);
-  }, [entryPointv07, account, publicClient]);
+  }, [account, publicClient, accountAbstraction]);
 
   return {
     depositInfo,
