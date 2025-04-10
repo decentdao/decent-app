@@ -130,6 +130,44 @@ export function AirdropAction({
     </Card>
   );
 }
+export function TransactionBuilderAction({
+  action,
+  onRemove,
+}: {
+  action: CreateProposalAction;
+  onRemove: () => void;
+}) {
+  const { t } = useTranslation('actions');
+
+  return (
+    <Card my="0.5rem">
+      <Flex justifyContent="space-between">
+        <Flex
+          alignItems="center"
+          gap="0.5rem"
+        >
+          <Icon
+            as={ArrowsDownUp}
+            w="1.5rem"
+            h="1.5rem"
+            color="lilac-0"
+          />
+          <Text>
+            {t('proposalBuilderBatch', { numOfTransactions: action.transactions.length })}
+          </Text>
+        </Flex>
+        <Button
+          color="red-0"
+          variant="tertiary"
+          size="sm"
+          onClick={onRemove}
+        >
+          <Icon as={Trash} />
+        </Button>
+      </Flex>
+    </Card>
+  );
+}
 
 export function ProposalActionCard({
   action,
@@ -161,6 +199,13 @@ export function ProposalActionCard({
   } else if (action.actionType === ProposalActionType.DAPP_INTEGRATION) {
     return (
       <DappInteractionActionCard
+        action={action}
+        onRemove={() => removeAction(index)}
+      />
+    );
+  } else if (action.actionType === ProposalActionType.TRANSACTION_BUILDER) {
+    return (
+      <TransactionBuilderAction
         action={action}
         onRemove={() => removeAction(index)}
       />

@@ -2,10 +2,13 @@ import { Button, Flex, Icon, Text, useDisclosure } from '@chakra-ui/react';
 import { ArrowsDownUp, Plus, SquaresFour } from '@phosphor-icons/react';
 import { useTranslation } from 'react-i18next';
 import { DETAILS_BOX_SHADOW } from '../../../constants/common';
+import useFeatureFlag from '../../../helpers/environmentFeatureFlags';
 import { useFractal } from '../../../providers/App/AppProvider';
 import { useProposalActionsStore } from '../../../store/actions/useProposalActionsStore';
+import { ProposalActionType } from '../../../types';
 import { prepareSendAssetsActionData } from '../../../utils/dao/prepareSendAssetsActionData';
 import { ModalBase } from './ModalBase';
+import { ModalType } from './ModalProvider';
 import { useDecentModal } from './useDecentModal';
 
 function ActionCard({
@@ -60,16 +63,15 @@ function ActionCard({
   );
 }
 
-export function AddActions({
-  addSendAssetsAction,
-}: {
-  addSendAssetsAction: (data: SendAssetsData) => void;
-}) {
+export function AddActions() {
   const {
     treasury: { assetsFungible },
   } = useFractal();
 
+  const { t } = useTranslation(['actions', 'modals']);
+  const { addAction } = useProposalActionsStore();
   const { isOpen, onOpen, onClose } = useDisclosure();
+
   const openSendAssetsModal = useDecentModal(ModalType.SEND_ASSETS, {
     onSubmit: sendAssetsData => {
       const { action } = prepareSendAssetsActionData(sendAssetsData);
@@ -78,8 +80,25 @@ export function AddActions({
     submitButtonText: t('Add Action', { ns: 'modals' }),
   });
 
+  const openTransactionBuilderModal = useDecentModal(ModalType.TRANSACTION_BUILDER, {
+    pendingTransaction: false,
+    isProposalMode: false,
+    values: [],
+    errors: undefined,
+    setFieldValue: () => {},
+    onSubmit: transactionBuilderData => {
+      addAction({
+        actionType: ProposalActionType.TRANSACTION_BUILDER,
+        content: <></>,
+        transactions: transactionBuilderData,
+      });
+    },
+  });
+
   const hasAnyBalanceOfAnyFungibleTokens =
     assetsFungible.reduce((p, c) => p + BigInt(c.balance), 0n) > 0n;
+
+  const isDevMode = useFeatureFlag('flag_dev');
 
   return (
     <>
@@ -102,6 +121,7 @@ export function AddActions({
         <Flex
           gap="2"
           justifyContent="space-between"
+          flexWrap="wrap"
         >
           <ActionCard
             title={t('transferAssets')}
@@ -113,6 +133,18 @@ export function AddActions({
             }}
             isDisabled={!hasAnyBalanceOfAnyFungibleTokens}
           />
+          {isDevMode && (
+            <ActionCard
+              title={t('proposalBuilderActionCardTitle', { ns: 'modals' })}
+              subtitle={t('proposalBuilderActionCardSub', { ns: 'modals' })}
+              icon={ArrowsDownUp}
+              onClick={() => {
+                onClose();
+                openTransactionBuilderModal();
+              }}
+              isDisabled={false}
+            />
+          )}
 
           <ActionCard
             title={t('comingSoon')}
