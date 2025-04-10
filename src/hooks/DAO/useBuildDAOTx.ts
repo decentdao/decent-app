@@ -40,7 +40,6 @@ const useBuildDAOTx = () => {
       decentPaymasterV1MasterCopy,
       entryPointv07,
     },
-    gaslessVoting,
   } = useNetworkConfigStore();
 
   const {
