@@ -1,9 +1,10 @@
-import { Flex, Image, Text, Icon } from '@chakra-ui/react';
+import { Flex, Icon, Image, Text } from '@chakra-ui/react';
 import { CheckCircle } from '@phosphor-icons/react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Address, getAddress } from 'viem';
 import { useBalance } from 'wagmi';
+import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import { useFractal } from '../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
 import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
@@ -39,10 +40,10 @@ export function AssetSelector({
 
   const { getConfigByChainId, chain } = useNetworkConfigStore();
   const networkConfig = getConfigByChainId(chain.id);
-
+  const { daoKey } = useCurrentDAOKey();
   const {
     treasury: { assetsFungible },
-  } = useFractal();
+  } = useFractal({ daoKey });
 
   const [selectedAssetIndex, setSelectedAssetIndex] = useState<number | null>(
     onlyNativeToken ? 0 : null,

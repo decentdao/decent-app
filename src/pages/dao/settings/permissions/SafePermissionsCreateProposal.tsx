@@ -31,6 +31,7 @@ import {
 import { DAO_ROUTES } from '../../../../constants/routes';
 import { getRandomBytes } from '../../../../helpers';
 import useFeatureFlag from '../../../../helpers/environmentFeatureFlags';
+import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
 import useNetworkPublicClient from '../../../../hooks/useNetworkPublicClient';
 import { generateContractByteCodeLinear } from '../../../../models/helpers/utils';
 import { useFractal } from '../../../../providers/App/AppProvider';
@@ -62,6 +63,7 @@ export function SafePermissionsCreateProposal() {
   const [searchParams] = useSearchParams();
   const votingStrategyAddress = searchParams.get('votingStrategy');
   const navigate = useNavigate();
+  const { daoKey } = useCurrentDAOKey();
   const {
     governance,
     governanceContracts: {
@@ -71,7 +73,7 @@ export function SafePermissionsCreateProposal() {
       linearVotingErc721WithHatsWhitelistingAddress,
       moduleAzoriusAddress,
     },
-  } = useFractal();
+  } = useFractal({ daoKey });
   const { safe } = useDaoInfoStore();
   const azoriusGovernance = governance as AzoriusGovernance;
   const openSelectAddPermissionModal = useDecentModal(ModalType.ADD_PERMISSION);

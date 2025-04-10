@@ -7,6 +7,7 @@ import { BarLoader } from '../../../../components/ui/loaders/BarLoader';
 import NestedPageHeader from '../../../../components/ui/page/Header/NestedPageHeader';
 import Divider from '../../../../components/ui/utils/Divider';
 import { DAO_ROUTES } from '../../../../constants/routes';
+import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
 import { createAccountSubstring } from '../../../../hooks/utils/useGetAccountName';
 import { useFractal } from '../../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../../providers/NetworkConfig/useNetworkConfigStore';
@@ -16,9 +17,10 @@ import { FractalModuleType } from '../../../../types';
 export function SafeModulesSettingsPage() {
   const { t } = useTranslation('settings');
   const { addressPrefix } = useNetworkConfigStore();
+  const { daoKey } = useCurrentDAOKey();
   const {
     guardContracts: { freezeGuardContractAddress, freezeVotingContractAddress },
-  } = useFractal();
+  } = useFractal({ daoKey });
   const { modules, safe } = useDaoInfoStore();
 
   return (

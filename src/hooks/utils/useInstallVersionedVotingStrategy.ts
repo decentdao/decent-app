@@ -29,6 +29,7 @@ import {
   FractalVotingStrategy,
 } from '../../types';
 import { SENTINEL_MODULE } from '../../utils/address';
+import { useCurrentDAOKey } from '../DAO/useCurrentDAOKey';
 import useNetworkPublicClient from '../useNetworkPublicClient';
 import useVotingStrategiesAddresses from './useVotingStrategiesAddresses';
 
@@ -36,7 +37,8 @@ export const useInstallVersionedVotingStrategy = () => {
   const { safe } = useDaoInfoStore();
 
   const safeAddress = safe?.address;
-  const { governance, governanceContracts } = useFractal();
+  const { daoKey } = useCurrentDAOKey();
+  const { governance, governanceContracts } = useFractal({ daoKey });
 
   const publicClient = useNetworkPublicClient();
   const { getVotingStrategies } = useVotingStrategiesAddresses();

@@ -12,6 +12,7 @@ import {
 import { CaretDown, CaretRight } from '@phosphor-icons/react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import { useFractal } from '../../../providers/App/AppProvider';
 import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
 import { formatUSD } from '../../../utils';
@@ -22,9 +23,10 @@ import { NFTHeader, NFTRow } from './AssetNFT';
 import LidoButtons from './LidoButtons';
 
 export function Assets() {
+  const { daoKey } = useCurrentDAOKey();
   const {
     treasury: { assetsFungible, assetsNonFungible, assetsDeFi, totalUsdValue },
-  } = useFractal();
+  } = useFractal({ daoKey });
   const { safe } = useDaoInfoStore();
   const { t } = useTranslation('treasury');
   const [expandedIndecies, setExpandedIndecies] = useState<number[]>([]);

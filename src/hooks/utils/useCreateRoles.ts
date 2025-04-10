@@ -65,6 +65,7 @@ import {
 import { SENTINEL_MODULE } from '../../utils/address';
 import { prepareSendAssetsActionData } from '../../utils/dao/prepareSendAssetsActionData';
 import useSubmitProposal from '../DAO/proposal/useSubmitProposal';
+import { useCurrentDAOKey } from '../DAO/useCurrentDAOKey';
 import useCreateSablierStream from '../streams/useCreateSablierStream';
 import useNetworkPublicClient from '../useNetworkPublicClient';
 import {
@@ -92,6 +93,7 @@ async function uploadHatDescription(
 }
 
 export default function useCreateRoles() {
+  const { daoKey } = useCurrentDAOKey();
   const {
     governance,
     governanceContracts: {
@@ -101,7 +103,7 @@ export default function useCreateRoles() {
       linearVotingErc721WithHatsWhitelistingAddress,
       moduleAzoriusAddress,
     },
-  } = useFractal();
+  } = useFractal({ daoKey });
   const { safe, subgraphInfo, gaslessVotingEnabled, paymasterAddress } = useDaoInfoStore();
   const { hatsTree, hatsTreeId, getHat } = useRolesStore();
   const {

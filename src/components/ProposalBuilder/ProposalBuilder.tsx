@@ -8,6 +8,7 @@ import { toast } from 'sonner';
 import { DAO_ROUTES } from '../../constants/routes';
 import { logError } from '../../helpers/errorLogging';
 import useSubmitProposal from '../../hooks/DAO/proposal/useSubmitProposal';
+import { useCurrentDAOKey } from '../../hooks/DAO/useCurrentDAOKey';
 import useCreateProposalSchema from '../../hooks/schemas/proposalBuilder/useCreateProposalSchema';
 import { useCanUserCreateProposal } from '../../hooks/utils/useCanUserSubmitProposal';
 import { useFractal } from '../../providers/App/AppProvider';
@@ -34,9 +35,10 @@ export function ShowNonceInputOnMultisig({
   nonce: number | undefined;
   nonceOnChange: (nonce?: string) => void;
 }) {
+  const { daoKey } = useCurrentDAOKey();
   const {
     governance: { isAzorius },
-  } = useFractal();
+  } = useFractal({ daoKey });
 
   if (isAzorius) {
     return null;

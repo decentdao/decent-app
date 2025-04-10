@@ -1,5 +1,5 @@
 import { TokenInfoResponse } from '@safe-global/api-kit';
-import { useEffect, useCallback, useRef } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { toast } from 'sonner';
 import { Address, getAddress, zeroAddress } from 'viem';
 import { useFractal } from '../../../providers/App/AppProvider';
@@ -17,6 +17,7 @@ import {
 import { formatCoin } from '../../../utils';
 import { CacheExpiry, CacheKeys } from '../../utils/cache/cacheDefaults';
 import { setValue } from '../../utils/cache/useLocalStorage';
+import { useCurrentDAOKey } from '../useCurrentDAOKey';
 
 function getTransferEventType(transferFrom: string, safeAddress: Address | undefined) {
   if (transferFrom === zeroAddress) {
@@ -31,7 +32,8 @@ function getTransferEventType(transferFrom: string, safeAddress: Address | undef
 export const useDecentTreasury = () => {
   // tracks the current valid DAO address / chain; helps prevent unnecessary calls
   const loadKey = useRef<string | null>();
-  const { action } = useFractal();
+  const { daoKey } = useCurrentDAOKey();
+  const { action } = useFractal({ daoKey });
   const { safe } = useDaoInfoStore();
   const safeAPI = useSafeAPI();
   const { getTokenBalances, getNFTBalances, getDeFiBalances } = useBalancesAPI();

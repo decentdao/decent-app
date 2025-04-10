@@ -4,6 +4,7 @@ import { Field, FieldAttributes, FieldProps, Form, Formik } from 'formik';
 import { useTranslation } from 'react-i18next';
 import { getAddress } from 'viem';
 import * as Yup from 'yup';
+import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import { useValidationAddress } from '../../../hooks/schemas/common/useValidationAddress';
 import { useNetworkEnsAddressAsync } from '../../../hooks/useNetworkEnsAddress';
 import { useFractal } from '../../../providers/App/AppProvider';
@@ -32,9 +33,10 @@ export function SendAssetsModal({
   close: () => void;
   sendAssetsData: (sendAssetData: SendAssetsData) => void;
 }) {
+  const { daoKey } = useCurrentDAOKey();
   const {
     treasury: { assetsFungible },
-  } = useFractal();
+  } = useFractal({ daoKey });
 
   const { getEnsAddress } = useNetworkEnsAddressAsync();
   const { t } = useTranslation(['modals', 'common']);

@@ -10,6 +10,7 @@ import { ProposalExecuteData } from '../../../types';
 import { CreateProposalForm } from '../../../types/proposalBuilder';
 import { validateENSName } from '../../../utils/url';
 import { useNetworkEnsAddressAsync } from '../../useNetworkEnsAddress';
+import { useCurrentDAOKey } from '../useCurrentDAOKey';
 
 const customSerializer = (_: string, value: any) => {
   if (typeof value === 'bigint') {
@@ -22,9 +23,10 @@ const customSerializer = (_: string, value: any) => {
 export default function useCreateProposalTemplate() {
   const { getEnsAddress } = useNetworkEnsAddressAsync();
   const client = useIPFSClient();
+  const { daoKey } = useCurrentDAOKey();
   const {
     governance: { proposalTemplates },
-  } = useFractal();
+  } = useFractal({ daoKey });
 
   const {
     contracts: { keyValuePairs },

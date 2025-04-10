@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { DAO_ROUTES } from '../../../constants/routes';
+import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import useVotingStrategiesAddresses from '../../../hooks/utils/useVotingStrategiesAddresses';
 import { useFractal } from '../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
@@ -17,7 +18,8 @@ export function ConfirmDeleteStrategyModal({ onClose }: { onClose: () => void })
   const navigate = useNavigate();
   const { t } = useTranslation('settings');
   const { addressPrefix } = useNetworkConfigStore();
-  const { governance, governanceContracts } = useFractal();
+  const { daoKey } = useCurrentDAOKey();
+  const { governance, governanceContracts } = useFractal({ daoKey });
   const { safe } = useDaoInfoStore();
   const { addAction } = useProposalActionsStore();
 
