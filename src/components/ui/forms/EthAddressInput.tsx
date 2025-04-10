@@ -31,10 +31,16 @@ export function AddressInput({ value, onChange, ...rest }: InputProps) {
 
   const handleChange = useCallback(
     (event: ChangeEvent<HTMLInputElement>) => {
-      setLocalValue(event.target.value);
-      debounceValue(event);
+      const inputValue = event.target.value;
+      setLocalValue(inputValue);
+      // @dev assume that if the input is 42 characters long that typing is finished, skip debounce
+      if (inputValue.length === 42) {
+        if (onChange) onChange(event);
+      } else {
+        debounceValue(event);
+      }
     },
-    [debounceValue],
+    [debounceValue, onChange],
   );
 
   return (
