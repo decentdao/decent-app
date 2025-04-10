@@ -3,8 +3,8 @@ import { CaretDown, MinusCircle, Plus } from '@phosphor-icons/react';
 import { Field, FieldAttributes, FieldProps, Form, Formik } from 'formik';
 import { useTranslation } from 'react-i18next';
 import { Address, getAddress, isAddress } from 'viem';
-import { usePublicClient } from 'wagmi';
 import * as Yup from 'yup';
+import useNetworkPublicClient from '../../../../hooks/useNetworkPublicClient';
 import { useFractal } from '../../../../providers/App/AppProvider';
 import { useProposalActionsStore } from '../../../../store/actions/useProposalActionsStore';
 import { BigIntValuePair, TokenBalance } from '../../../../types';
@@ -46,7 +46,7 @@ export function AirdropModal({
     treasury: { assetsFungible },
   } = useFractal();
 
-  const publicClient = usePublicClient();
+  const publicClient = useNetworkPublicClient();
   const { t } = useTranslation(['modals', 'common']);
 
   const fungibleAssetsWithBalance = assetsFungible.filter(asset => parseFloat(asset.balance) > 0);
