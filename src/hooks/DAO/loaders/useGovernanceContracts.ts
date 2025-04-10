@@ -13,11 +13,13 @@ import {
   useAddressContractType,
 } from '../../utils/useAddressContractType';
 import useVotingStrategyAddress from '../../utils/useVotingStrategiesAddresses';
+import { useCurrentDAOKey } from '../useCurrentDAOKey';
 
 export const useGovernanceContracts = () => {
   // tracks the current valid DAO address; helps prevent unnecessary calls
   const currentValidAddress = useRef<string | null>();
-  const { action } = useFractal();
+  const { daoKey } = useCurrentDAOKey();
+  const { action } = useFractal({ daoKey });
   const node = useDaoInfoStore();
   const publicClient = useNetworkPublicClient();
   const { getAddressContractType } = useAddressContractType();

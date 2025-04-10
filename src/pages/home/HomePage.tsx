@@ -6,6 +6,7 @@ import { DAOSearch } from '../../components/ui/menus/DAOSearch';
 import { ModalType } from '../../components/ui/modals/ModalProvider';
 import { useDecentModal } from '../../components/ui/modals/useDecentModal';
 import useFeatureFlag from '../../helpers/environmentFeatureFlags';
+import { useCurrentDAOKey } from '../../hooks/DAO/useCurrentDAOKey';
 import { useFractal } from '../../providers/App/AppProvider';
 import { useDaoInfoStore } from '../../store/daoInfo/useDaoInfoStore';
 import { GettingStarted } from './GettingStarted';
@@ -13,7 +14,8 @@ import { MySafes } from './MySafes';
 
 export default function HomePage() {
   const { safe } = useDaoInfoStore();
-  const { action } = useFractal();
+  const { daoKey } = useCurrentDAOKey();
+  const { action } = useFractal({ daoKey });
   const { t } = useTranslation('home');
 
   useEffect(() => {

@@ -12,18 +12,20 @@ import { useRolesStore } from '../../../store/roles/useRolesStore';
 import useNetworkPublicClient from '../../useNetworkPublicClient';
 import { CacheExpiry, CacheKeys } from '../../utils/cache/cacheDefaults';
 import { getValue, setValue } from '../../utils/cache/useLocalStorage';
+import { useCurrentDAOKey } from '../useCurrentDAOKey';
 
 const hatsSubgraphClient = new HatsSubgraphClient({});
 
 const useHatsTree = () => {
   const { t } = useTranslation('roles');
+  const { daoKey } = useCurrentDAOKey();
   const {
     governanceContracts: {
       linearVotingErc20WithHatsWhitelistingAddress,
       linearVotingErc721WithHatsWhitelistingAddress,
       isLoaded: governanceContractsLoaded,
     },
-  } = useFractal();
+  } = useFractal({ daoKey });
   const { hatsTreeId, contextChainId, setHatsTree } = useRolesStore();
 
   const ipfsClient = useIPFSClient();

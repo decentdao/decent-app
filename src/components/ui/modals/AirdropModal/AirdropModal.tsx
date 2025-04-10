@@ -4,6 +4,7 @@ import { Field, FieldAttributes, FieldProps, Form, Formik } from 'formik';
 import { useTranslation } from 'react-i18next';
 import { Address, getAddress, isAddress } from 'viem';
 import * as Yup from 'yup';
+import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
 import useNetworkPublicClient from '../../../../hooks/useNetworkPublicClient';
 import { useFractal } from '../../../../providers/App/AppProvider';
 import { useProposalActionsStore } from '../../../../store/actions/useProposalActionsStore';
@@ -42,9 +43,10 @@ export function AirdropModal({
   close: () => void;
   airdropData: (airdropData: AirdropData) => void;
 }) {
+  const { daoKey } = useCurrentDAOKey();
   const {
     treasury: { assetsFungible },
-  } = useFractal();
+  } = useFractal({ daoKey });
 
   const publicClient = useNetworkPublicClient();
   const { t } = useTranslation(['modals', 'common']);

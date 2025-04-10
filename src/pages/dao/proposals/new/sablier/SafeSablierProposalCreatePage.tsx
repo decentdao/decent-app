@@ -15,6 +15,7 @@ import { DEFAULT_SABLIER_PROPOSAL } from '../../../../../components/ProposalBuil
 import { BarLoader } from '../../../../../components/ui/loaders/BarLoader';
 import { useHeaderHeight } from '../../../../../constants/common';
 import { DAO_ROUTES } from '../../../../../constants/routes';
+import { useCurrentDAOKey } from '../../../../../hooks/DAO/useCurrentDAOKey';
 import { analyticsEvents } from '../../../../../insights/analyticsEvents';
 import { useFractal } from '../../../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../../../providers/NetworkConfig/useNetworkConfigStore';
@@ -29,9 +30,10 @@ export function SafeSablierProposalCreatePage() {
   useEffect(() => {
     amplitude.track(analyticsEvents.SablierProposalCreatePageOpened);
   }, []);
+  const { daoKey } = useCurrentDAOKey();
   const {
     governance: { type },
-  } = useFractal();
+  } = useFractal({ daoKey });
   const {
     addressPrefix,
     contracts: { sablierV2Batch, sablierV2LockupTranched },

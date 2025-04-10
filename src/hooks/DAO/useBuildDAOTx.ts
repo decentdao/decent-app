@@ -14,6 +14,7 @@ import {
   VotingStrategyType,
 } from '../../types';
 import useNetworkPublicClient from '../useNetworkPublicClient';
+import { useCurrentDAOKey } from './useCurrentDAOKey';
 
 const useBuildDAOTx = () => {
   const {
@@ -41,11 +42,11 @@ const useBuildDAOTx = () => {
       accountAbstraction,
     },
   } = useNetworkConfigStore();
-
+  const { daoKey } = useCurrentDAOKey();
   const {
     governance,
     governanceContracts: { linearVotingErc721Address },
-  } = useFractal();
+  } = useFractal({ daoKey });
   const user = useAccount();
 
   const publicClient = useNetworkPublicClient();

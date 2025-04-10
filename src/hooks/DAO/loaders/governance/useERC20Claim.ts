@@ -6,12 +6,14 @@ import { FractalGovernanceAction } from '../../../../providers/App/governance/ac
 import { useDaoInfoStore } from '../../../../store/daoInfo/useDaoInfoStore';
 import useNetworkPublicClient from '../../../useNetworkPublicClient';
 import { useAddressContractType } from '../../../utils/useAddressContractType';
+import { useCurrentDAOKey } from '../../useCurrentDAOKey';
 
 export function useERC20Claim() {
+  const { daoKey } = useCurrentDAOKey();
   const {
     governanceContracts: { votesTokenAddress },
     action,
-  } = useFractal();
+  } = useFractal({ daoKey });
   const { safe } = useDaoInfoStore();
   const publicClient = useNetworkPublicClient();
   const safeAddress = safe?.address;

@@ -9,6 +9,7 @@ import { FractalProposal, FractalProposalState } from '../../types';
 import { parseDecodedData } from '../../utils';
 import { getAverageBlockTime } from '../../utils/contract';
 import { getTxTimelockedTimestamp } from '../../utils/guard';
+import { useCurrentDAOKey } from '../DAO/useCurrentDAOKey';
 import useNetworkPublicClient from '../useNetworkPublicClient';
 import { useSafeDecoder } from './useSafeDecoder';
 
@@ -19,7 +20,8 @@ type FreezeGuardData = {
 };
 
 export const useSafeTransactions = () => {
-  const { guardContracts } = useFractal();
+  const { daoKey } = useCurrentDAOKey();
+  const { guardContracts } = useFractal({ daoKey });
   const decode = useSafeDecoder();
   const publicClient = useNetworkPublicClient();
 

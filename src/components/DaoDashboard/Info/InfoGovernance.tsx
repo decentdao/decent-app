@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { getContract } from 'viem';
 
+import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import useNetworkPublicClient from '../../../hooks/useNetworkPublicClient';
 import { useTimeHelpers } from '../../../hooks/utils/useTimeHelpers';
 import { useFractal } from '../../../providers/App/AppProvider';
@@ -15,10 +16,11 @@ import { BarLoader } from '../../ui/loaders/BarLoader';
 
 export function InfoGovernance({ showTitle = true }: { showTitle?: boolean }) {
   const { t } = useTranslation(['dashboard', 'daoCreate', 'common']);
+  const { daoKey } = useCurrentDAOKey();
   const {
     governance,
     guardContracts: { freezeGuardType, freezeGuardContractAddress },
-  } = useFractal();
+  } = useFractal({ daoKey });
   const { safe } = useDaoInfoStore();
   const publicClient = useNetworkPublicClient();
   const { getTimeDuration } = useTimeHelpers();

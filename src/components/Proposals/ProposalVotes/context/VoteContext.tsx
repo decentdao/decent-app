@@ -13,6 +13,7 @@ import { erc721Abi, getContract, Hex, toHex } from 'viem';
 import { useAccount } from 'wagmi';
 import useSnapshotProposal from '../../../../hooks/DAO/loaders/snapshot/useSnapshotProposal';
 import useUserERC721VotingTokens from '../../../../hooks/DAO/proposal/useUserERC721VotingTokens';
+import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
 import useNetworkPublicClient from '../../../../hooks/useNetworkPublicClient';
 import { useFractal } from '../../../../providers/App/AppProvider';
 import { useDaoInfoStore } from '../../../../store/daoInfo/useDaoInfoStore';
@@ -57,7 +58,8 @@ export function VoteContextProvider({
   const [canVoteLoading, setCanVoteLoading] = useState(false);
   const [hasVoted, setHasVoted] = useState(false);
   const [hasVotedLoading, setHasVotedLoading] = useState(false);
-  const { governance } = useFractal();
+  const { daoKey } = useCurrentDAOKey();
+  const { governance } = useFractal({ daoKey });
   const userAccount = useAccount();
   const { safe } = useDaoInfoStore();
   const { loadVotingWeight, snapshotProposal } = useSnapshotProposal(proposal);
