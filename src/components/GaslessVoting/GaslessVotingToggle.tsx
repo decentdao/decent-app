@@ -209,19 +209,28 @@ export function GaslessVotingToggleDAOSettings(props: GaslessVotingToggleProps) 
   const gaslessFeatureEnabled = useFeatureFlag('flag_gasless_voting');
   const gaslessStakingFeatureEnabled = useFeatureFlag('flag_gasless_staking');
   const gaslessStakingEnabled =
-    gaslessFeatureEnabled &&
+    gaslessVotingEnabled &&
     gaslessStakingFeatureEnabled &&
     gaslessVoting?.rundlerMinimumStake !== undefined;
   if (!gaslessFeatureEnabled) return null;
 
-  const formattedPaymasterBalance =
-    depositInfo &&
-    formatCoin(depositInfo.deposit, true, nativeCurrency.decimals, nativeCurrency.symbol, false);
-  const formattedPaymasterStakedAmount =
-    depositInfo &&
-    formatCoin(depositInfo.stake, true, nativeCurrency.decimals, nativeCurrency.symbol, false);
-  const minStakeAmount = gaslessVoting?.rundlerMinimumStake || 0n;
+  const paymasterBalance = depositInfo?.deposit || 0n;
   const stakedAmount = depositInfo?.stake || 0n;
+  const minStakeAmount = gaslessVoting?.rundlerMinimumStake || 0n;
+  const formattedPaymasterBalance = formatCoin(
+    paymasterBalance,
+    true,
+    nativeCurrency.decimals,
+    nativeCurrency.symbol,
+    false,
+  );
+  const formattedPaymasterStakedAmount = formatCoin(
+    stakedAmount,
+    true,
+    nativeCurrency.decimals,
+    nativeCurrency.symbol,
+    false,
+  );
 
   return (
     <Box
