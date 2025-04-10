@@ -61,5 +61,7 @@
   "csvFormat": "address,amount one entry per row",
   "pasteMultipleRecipients": "You can paste one or multiple recipients (address,amount one entry per row)",
   "confirmTransactionTitle": "Confirm transaction",
-  "transactionBuilderTitle": "Build transaction(s)"
+  "transactionBuilderTitle": "Build transaction(s)",
+  "proposalBuilderActionCardTitle": "Proposal Builder",
+  "proposalBuilderActionCardSub": "Create  one or multiple transactions using ABIs"
 }

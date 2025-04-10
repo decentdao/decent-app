@@ -26,19 +26,10 @@ import {
   CreateProposalSteps,
   CreateProposalTransaction,
 } from '../../../../../types';
-import {
-  prepareSendAssetsActionData,
-  SendAssetsData,
-} from '../../../../../utils/dao/prepareSendAssetsActionData';
 
 function ActionsExperience() {
   const { t } = useTranslation('actions');
-  const { actions, addAction } = useProposalActionsStore();
-
-  const handleAddSendAssetsAction = (sendAssetsData: SendAssetsData) => {
-    const { action } = prepareSendAssetsActionData(sendAssetsData);
-    addAction({ ...action, content: <></> });
-  };
+  const { actions } = useProposalActionsStore();
 
   return (
     <Flex
@@ -68,7 +59,7 @@ function ActionsExperience() {
         })}
       </Flex>
       <Flex>
-        <AddActions addSendAssetsAction={handleAddSendAssetsAction} />
+        <AddActions />
       </Flex>
     </Flex>
   );

@@ -7,17 +7,22 @@ import { CreateProposalTransaction } from '../../types/proposalBuilder';
 import { scrollToBottom } from '../../utils/ui';
 import CeleryButtonWithIcon from '../ui/utils/CeleryButtonWithIcon';
 import Divider from '../ui/utils/Divider';
-import ProposalTransactions from './ProposalTransactions';
+import ProposalTransactions, { ProposalTransactionsModal } from './ProposalTransactions';
 import { DEFAULT_PROPOSAL_TRANSACTION } from './constants';
 
 export interface ProposalTransactionsFormProps {
+  // @todo remove/replace params for local Formik instance
   pendingTransaction: boolean;
   isProposalMode: boolean;
   setFieldValue: FormikProps<CreateProposalTransaction[]>['setFieldValue'];
   values: FormikProps<CreateProposalTransaction[]>['values'];
-  errors?: FormikProps<CreateProposalTransaction[]>['errors']; // for validation errors
+  errors?: FormikProps<CreateProposalTransaction[]>['errors'];
+  // @todo remove optional when we remove the form from screen step
+  onSubmit?: (txs: CreateProposalTransaction[]) => void;
+  onClose?: () => void;
 }
 
+// @todo remove this component when we remove the form from screen step
 export default function ProposalTransactionsForm(props: ProposalTransactionsFormProps) {
   const { pendingTransaction, setFieldValue, values } = props;
   const { t } = useTranslation(['proposal']);
@@ -56,6 +61,8 @@ export default function ProposalTransactionsForm(props: ProposalTransactionsForm
 export function ProposalTransactionsFormModal({
   pendingTransaction,
   isProposalMode,
+  onSubmit,
+  onClose,
 }: ProposalTransactionsFormProps) {
   const [expandedIndecies, setExpandedIndecies] = useState<number[]>([0]);
   const { t } = useTranslation(['proposal']);
@@ -71,8 +78,9 @@ export function ProposalTransactionsFormModal({
           },
         },
       ]}
-      onSubmit={() => {
-        // @todo should dispatch an action to action store
+      onSubmit={values => {
+        onSubmit?.(values);
+        onClose?.();
       }}
     >
       {({ values, errors, setFieldValue, setValues, handleSubmit }) => {
@@ -85,7 +93,7 @@ export function ProposalTransactionsFormModal({
         return (
           <form onSubmit={handleSubmit}>
             <Box py="1.5rem">
-              <ProposalTransactions
+              <ProposalTransactionsModal
                 removeTransaction={removeTransaction}
                 expandedIndecies={expandedIndecies}
                 setExpandedIndecies={setExpandedIndecies}
@@ -98,7 +106,6 @@ export function ProposalTransactionsFormModal({
               <Divider my="1.5rem" />
               <CeleryButtonWithIcon
                 onClick={() => {
-                  console.log('values', values);
                   setValues([...values, DEFAULT_PROPOSAL_TRANSACTION]);
                   setExpandedIndecies([values.length]);
                   scrollToBottom(100, 'smooth');
@@ -108,7 +115,12 @@ export function ProposalTransactionsFormModal({
                 text={t('labelAddTransaction')}
               />
             </Box>
-            <Button w="full">{t('labelAddTransactionsToProposal')}</Button>
+            <Button
+              w="full"
+              type="submit"
+            >
+              {t('labelAddTransactionsToProposal')}
+            </Button>
           </form>
         );
       }}

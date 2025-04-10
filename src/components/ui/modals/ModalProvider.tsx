@@ -1,4 +1,5 @@
 import { Portal, Show, useDisclosure } from '@chakra-ui/react';
+import { FormikProps } from 'formik';
 import { createContext, ReactNode, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Address } from 'viem';
@@ -111,7 +112,9 @@ export type ModalPropsTypes = {
     appName: string;
     transactionArray: CreateProposalTransaction[];
   };
-  [ModalType.TRANSACTION_BUILDER]: ProposalTransactionsFormProps;
+  [ModalType.TRANSACTION_BUILDER]: ProposalTransactionsFormProps & {
+    onSubmit?: (transactionBuilderData: FormikProps<CreateProposalTransaction[]>['values']) => void;
+  };
 };
 
 export interface IModalContext {
@@ -336,9 +339,11 @@ export function ModalProvider({ children }: { children: ReactNode }) {
             values={current.props.values}
             errors={current.props.errors}
             setFieldValue={current.props.setFieldValue}
+            onSubmit={current.props.onSubmit}
+            onClose={closeModal}
           />
         );
-        modalSize = 'xl';
+        modalSize = '2xl';
         break;
       case ModalType.NONE:
       default:

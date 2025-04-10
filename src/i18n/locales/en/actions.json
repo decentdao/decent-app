@@ -4,5 +4,6 @@
   "transferAssets": "Transfer Assets",
   "transferAssetsSub": "Create one time payments.",
   "comingSoon": "Coming Soon...",
-  "comingSoonSub": "More actions on the way."
+  "comingSoonSub": "More actions on the way.",
+  "proposalBuilderBatch": "Batch: {{ numOfTransactions }} transactions"
 }

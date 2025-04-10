@@ -63,6 +63,7 @@ export enum ProposalActionType {
   WITHDRAW_STREAM = 'withdraw_stream',
   REFILL_PAYMASTER = 'refill_paymaster',
   DAPP_INTEGRATION = 'dapp_integration',
+  TRANSACTION_BUILDER = 'transaction_builder',
 }
 
 export type CreateProposalActionData<T = BigIntValuePair> = {
