@@ -3,7 +3,7 @@ import { Info } from '@phosphor-icons/react';
 import { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useCurrentDAOKey } from '../../hooks/DAO/useCurrentDAOKey';
-import { useFractal } from '../../providers/App/AppProvider';
+import { useStore } from '../../providers/App/AppProvider';
 import { AzoriusGovernance, BigIntValuePair } from '../../types';
 import { BigIntInput } from '../ui/forms/BigIntInput';
 import LabelWrapper from '../ui/forms/LabelWrapper';
@@ -19,7 +19,7 @@ export function SettingsPermissionsStrategyForm({
   const { t } = useTranslation('settings');
   const tooltipContainerRef = useRef<HTMLDivElement>(null);
   const { daoKey } = useCurrentDAOKey();
-  const { governance } = useFractal({ daoKey });
+  const { governance } = useStore({ daoKey });
   const azoriusGovernance = governance as AzoriusGovernance;
   const { votesToken, erc721Tokens } = azoriusGovernance;
 

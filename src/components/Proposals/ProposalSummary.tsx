@@ -12,7 +12,7 @@ import { useCurrentDAOKey } from '../../hooks/DAO/useCurrentDAOKey';
 import useNetworkPublicClient from '../../hooks/useNetworkPublicClient';
 import useBlockTimestamp from '../../hooks/utils/useBlockTimestamp';
 import { useCanUserCreateProposal } from '../../hooks/utils/useCanUserSubmitProposal';
-import { useFractal } from '../../providers/App/AppProvider';
+import { useStore } from '../../providers/App/AppProvider';
 import { AzoriusGovernance, AzoriusProposal, GovernanceType } from '../../types';
 import { DEFAULT_DATE_TIME_FORMAT, formatCoin } from '../../utils/numberFormats';
 import { AlertBanner } from '../ui/AlertBanner';
@@ -197,7 +197,7 @@ function ProposalVotingSection({
 }
 export function AzoriusProposalSummary({ proposal }: { proposal: AzoriusProposal }) {
   const { daoKey } = useCurrentDAOKey();
-  const { governance } = useFractal({ daoKey });
+  const { governance } = useStore({ daoKey });
   const azoriusGovernance = governance as AzoriusGovernance;
   const startBlockTimeStamp = useBlockTimestamp(Number(proposal.startBlock));
 

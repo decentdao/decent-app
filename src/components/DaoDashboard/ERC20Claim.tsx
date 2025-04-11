@@ -9,14 +9,14 @@ import { useCurrentDAOKey } from '../../hooks/DAO/useCurrentDAOKey';
 import useNetworkPublicClient from '../../hooks/useNetworkPublicClient';
 import { useNetworkWalletClient } from '../../hooks/useNetworkWalletClient';
 import { useTransaction } from '../../hooks/utils/useTransaction';
-import { useFractal } from '../../providers/App/AppProvider';
+import { useStore } from '../../providers/App/AppProvider';
 import { AzoriusGovernance } from '../../types';
 import { formatCoin } from '../../utils';
 
 export function ERCO20Claim() {
   const [userClaimable, setUserClaimable] = useState(0n);
   const { daoKey } = useCurrentDAOKey();
-  const { governance } = useFractal({ daoKey });
+  const { governance } = useStore({ daoKey });
   const user = useAccount();
   const account = user.address;
   const { tokenClaimContractAddress, type } = governance;

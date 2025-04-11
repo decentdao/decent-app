@@ -3,7 +3,7 @@ import { ArrowDown, ArrowUp } from '@phosphor-icons/react';
 import { useTranslation } from 'react-i18next';
 import { useDateTimeDisplay } from '../../../helpers/dateTime';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
-import { useFractal } from '../../../providers/App/AppProvider';
+import { useStore } from '../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
 import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
 import { TokenEventType, TransferDisplayData, TransferType } from '../../../types';
@@ -128,7 +128,7 @@ export function Transactions({ shownTransactions }: { shownTransactions: number 
   const { daoKey } = useCurrentDAOKey();
   const {
     treasury: { transfers },
-  } = useFractal({ daoKey });
+  } = useStore({ daoKey });
 
   if (transfers === null) {
     return (
@@ -182,7 +182,7 @@ export function PaginationCount({ shownTransactions }: { shownTransactions: numb
   const { daoKey } = useCurrentDAOKey();
   const {
     treasury: { transfers },
-  } = useFractal({ daoKey });
+  } = useStore({ daoKey });
   const { safe } = useDaoInfoStore();
 
   const totalTransfers = transfers?.length;

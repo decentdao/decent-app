@@ -3,7 +3,7 @@ import { ArrowsDownUp, Plus, SquaresFour } from '@phosphor-icons/react';
 import { useTranslation } from 'react-i18next';
 import { DETAILS_BOX_SHADOW } from '../../../constants/common';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
-import { useFractal } from '../../../providers/App/AppProvider';
+import { useStore } from '../../../providers/App/AppProvider';
 import { SendAssetsData } from '../../../utils/dao/prepareSendAssetsActionData';
 import { ModalBase } from './ModalBase';
 import { SendAssetsModal } from './SendAssetsModal';
@@ -68,7 +68,7 @@ export function AddActions({
   const { daoKey } = useCurrentDAOKey();
   const {
     treasury: { assetsFungible },
-  } = useFractal({ daoKey });
+  } = useStore({ daoKey });
 
   const { t } = useTranslation('actions');
 

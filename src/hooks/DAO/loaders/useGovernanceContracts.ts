@@ -2,7 +2,7 @@ import { abis } from '@fractal-framework/fractal-contracts';
 import { useCallback, useEffect, useRef } from 'react';
 import { Address, getContract } from 'viem';
 import LockReleaseAbi from '../../../assets/abi/LockRelease';
-import { useFractal } from '../../../providers/App/AppProvider';
+import { useStore } from '../../../providers/App/AppProvider';
 import { GovernanceContractAction } from '../../../providers/App/governanceContracts/action';
 import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
 import { DecentModule, FractalTokenType, FractalVotingStrategy } from '../../../types';
@@ -19,7 +19,7 @@ export const useGovernanceContracts = () => {
   // tracks the current valid DAO address; helps prevent unnecessary calls
   const currentValidAddress = useRef<string | null>();
   const { daoKey } = useCurrentDAOKey();
-  const { action } = useFractal({ daoKey });
+  const { action } = useStore({ daoKey });
   const node = useDaoInfoStore();
   const publicClient = useNetworkPublicClient();
   const { getAddressContractType } = useAddressContractType();

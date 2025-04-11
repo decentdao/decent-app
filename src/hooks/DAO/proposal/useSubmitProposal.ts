@@ -18,7 +18,7 @@ import MultiSendCallOnlyAbi from '../../../assets/abi/MultiSendCallOnly';
 import { ADDRESS_MULTISIG_METADATA } from '../../../constants/common';
 import { buildSafeAPIPost, encodeMultiSend } from '../../../helpers';
 import { logError } from '../../../helpers/errorLogging';
-import { useFractal } from '../../../providers/App/AppProvider';
+import { useStore } from '../../../providers/App/AppProvider';
 import { FractalGovernanceAction } from '../../../providers/App/governance/action';
 import useIPFSClient from '../../../providers/App/hooks/useIPFSClient';
 import { useSafeAPI } from '../../../providers/App/hooks/useSafeAPI';
@@ -80,7 +80,7 @@ export default function useSubmitProposal() {
       linearVotingErc721WithHatsWhitelistingAddress,
     },
     action,
-  } = useFractal({ daoKey });
+  } = useStore({ daoKey });
   const { safe, modules } = useDaoInfoStore();
   const safeAPI = useSafeAPI();
 

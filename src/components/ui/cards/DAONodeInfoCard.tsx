@@ -16,7 +16,7 @@ export const NODE_MARGIN_TOP_REM = 1.25;
  * this component, as this card is independent of your current DAO context, since
  * it is used in the hierarchy, where there are multiple DAO nodes being displayed.
  *
- * Simply using the useFractal() hook to get info will end up with the current DAO's
+ * Simply using the useStore() hook to get info will end up with the current DAO's
  * context being displayed in ALL the node cards in a hierarchy, which is incorrect.
  */
 export function DAONodeInfoCard(props: {

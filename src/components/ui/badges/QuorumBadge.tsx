@@ -3,12 +3,12 @@ import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Check } from '../../../assets/theme/custom/icons/Check';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
-import { useFractal } from '../../../providers/App/AppProvider';
+import { useStore } from '../../../providers/App/AppProvider';
 import { AzoriusGovernance, AzoriusProposal } from '../../../types';
 
 export default function QuorumBadge({ proposal }: { proposal: AzoriusProposal }) {
   const { daoKey } = useCurrentDAOKey();
-  const { governance } = useFractal({ daoKey });
+  const { governance } = useStore({ daoKey });
   const { t } = useTranslation('common');
 
   const azoriusGovernance = governance as AzoriusGovernance;
