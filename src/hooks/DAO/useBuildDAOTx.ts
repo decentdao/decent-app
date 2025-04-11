@@ -21,6 +21,7 @@ const useBuildDAOTx = () => {
     contracts: {
       compatibilityFallbackHandler,
       votesErc20MasterCopy,
+      votesErc20LockableMasterCopy,
       keyValuePairs,
       gnosisSafeProxyFactory,
       gnosisSafeL2Singleton,
@@ -76,6 +77,7 @@ const useBuildDAOTx = () => {
         daoData,
         compatibilityFallbackHandler,
         votesErc20MasterCopy,
+        votesErc20LockableMasterCopy,
         keyValuePairs,
         gnosisSafeProxyFactory,
         gnosisSafeL2Singleton,
@@ -139,6 +141,7 @@ const useBuildDAOTx = () => {
       publicClient,
       compatibilityFallbackHandler,
       votesErc20MasterCopy,
+      votesErc20LockableMasterCopy,
       keyValuePairs,
       gnosisSafeProxyFactory,
       gnosisSafeL2Singleton,

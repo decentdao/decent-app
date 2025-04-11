@@ -26,6 +26,7 @@ export class TxBuilderFactory extends BaseTxBuilder {
   private safeContractAddress: Address | undefined;
   private compatibilityFallbackHandler: Address;
   private votesErc20MasterCopy: Address;
+  private votesErc20LockableMasterCopy: Address;
   private keyValuePairs: Address;
   private gnosisSafeProxyFactory: Address;
   private gnosisSafeProxy: Address;
@@ -55,6 +56,7 @@ export class TxBuilderFactory extends BaseTxBuilder {
     daoData: SafeMultisigDAO | AzoriusERC20DAO | AzoriusERC721DAO | SubDAO,
     compatibilityFallbackHandler: Address,
     votesErc20MasterCopy: Address,
+    votesErc20LockableMasterCopy: Address,
     keyValuePairs: Address,
     gnosisSafeProxyFactory: Address,
     gnosisSafeProxy: Address,
@@ -85,6 +87,7 @@ export class TxBuilderFactory extends BaseTxBuilder {
 
     this.compatibilityFallbackHandler = compatibilityFallbackHandler;
     this.votesErc20MasterCopy = votesErc20MasterCopy;
+    this.votesErc20LockableMasterCopy = votesErc20LockableMasterCopy;
     this.keyValuePairs = keyValuePairs;
     this.gnosisSafeProxyFactory = gnosisSafeProxyFactory;
     this.gnosisSafeProxy = gnosisSafeProxy;
@@ -207,6 +210,7 @@ export class TxBuilderFactory extends BaseTxBuilder {
       this.daoData as AzoriusERC20DAO,
       this.safeContractAddress!,
       this.votesErc20MasterCopy,
+      this.votesErc20LockableMasterCopy,
       this.zodiacModuleProxyFactory,
       this.multiSendCallOnly,
       this.claimErc20MasterCopy,

@@ -10,6 +10,7 @@ import {
   GovernanceType,
   SafeMultisigDAO,
   SubDAO,
+  TokenLockType,
 } from '../../types';
 import StepController from './StepController';
 import { initialState } from './constants';
@@ -68,6 +69,7 @@ function DaoCreator({
                 ...values.azorius,
                 ...values.erc20Token,
                 freezeGuard,
+                locked: values.erc20Token.locked,
               });
               break;
 
