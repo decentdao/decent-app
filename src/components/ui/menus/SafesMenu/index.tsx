@@ -39,6 +39,7 @@ export function SafesMenu() {
         <OptionMenu
           trigger={
             <Button
+              as="div"
               variant="tertiary"
               alignItems="center"
               gap={2}
