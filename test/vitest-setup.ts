@@ -22,6 +22,9 @@ Object.defineProperty(window, 'scrollTo', {
   writable: true,
   value: vi.fn(),
 });
+// For WalletConnect functions
+vi.stubEnv('VITE_APP_NAME', 'Decent');
+vi.stubEnv('VITE_APP_WALLET_CONNECT_PROJECT_ID', 'f090fd14ad8cf86ea088d4edb8e0b00a');
 
 afterEach(() => {
   cleanup();
