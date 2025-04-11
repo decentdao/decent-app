@@ -48,6 +48,12 @@ export enum TokenCreationType {
   IMPORTED = 'imported',
   NEW = 'new',
 }
+
+export enum TokenLockType {
+  UNLOCKED = 'unlocked',
+  LOCKED = 'locked',
+}
+
 export interface ICreationStepProps extends Omit<FormikProps<CreatorFormState>, 'handleSubmit'> {
   transactionPending?: boolean;
   isSubDAO?: boolean;
@@ -76,6 +82,7 @@ export type DAOGovernorERC20Token<T = bigint> = {
   tokenImportAddress?: Address;
   tokenName: string;
   tokenSymbol: string;
+  locked: TokenLockType;
   tokenSupply: T;
   tokenAllocations: { amount: T; address: string }[];
   parentAllocationAmount: T;
