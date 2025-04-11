@@ -1,7 +1,9 @@
 import * as amplitude from '@amplitude/analytics-browser';
-import { Box, Divider, Flex, Grid, GridItem, Show } from '@chakra-ui/react';
+import { Box, Button, Divider, Flex, Grid, GridItem, Icon, Show, Text } from '@chakra-ui/react';
+import { CaretDown } from '@phosphor-icons/react';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import { Assets } from '../../../components/DAOTreasury/components/Assets';
 import {
   PaginationButton,
@@ -9,20 +11,25 @@ import {
   Transactions,
 } from '../../../components/DAOTreasury/components/Transactions';
 import { TitledInfoBox } from '../../../components/ui/containers/TitledInfoBox';
+import { OptionMenu } from '../../../components/ui/menus/OptionMenu';
 import PageHeader from '../../../components/ui/page/Header/PageHeader';
+import { DAO_ROUTES } from '../../../constants/routes';
+import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import useSendAssetsActionModal from '../../../hooks/DAO/useSendAssetsActionModal';
 import { useCanUserCreateProposal } from '../../../hooks/utils/useCanUserSubmitProposal';
 import { analyticsEvents } from '../../../insights/analyticsEvents';
-import { useFractal } from '../../../providers/App/AppProvider';
+import { useStore } from '../../../providers/App/AppProvider';
+import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
 import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
 
 export function SafeTreasuryPage() {
   useEffect(() => {
     amplitude.track(analyticsEvents.TreasuryPageOpened);
   }, []);
+  const { daoKey } = useCurrentDAOKey();
   const {
     treasury: { assetsFungible, transfers },
-  } = useFractal();
+  } = useStore({ daoKey });
   const { subgraphInfo } = useDaoInfoStore();
   const [shownTransactions, setShownTransactions] = useState(20);
   const { t } = useTranslation(['treasury', 'modals']);
@@ -36,6 +43,28 @@ export function SafeTreasuryPage() {
   const totalTransfers = transfers?.length || 0;
   const showLoadMoreTransactions = totalTransfers > shownTransactions && shownTransactions < 100;
   const { openSendAssetsModal } = useSendAssetsActionModal();
+
+  const { safe } = useDaoInfoStore();
+  const { addressPrefix } = useNetworkConfigStore();
+  const safeAddress = safe?.address;
+  const navigate = useNavigate();
+
+  const options =
+    safeAddress !== undefined && showSendButton
+      ? [
+          {
+            optionKey: t('limitOrder'),
+            onClick: () =>
+              navigate(
+                DAO_ROUTES.proposalDapp.relative(addressPrefix, safeAddress, 'https://swap.cow.fi'),
+              ),
+          },
+          {
+            optionKey: t('transfer'),
+            onClick: openSendAssetsModal,
+          },
+        ]
+      : undefined;
 
   return (
     <Box>
@@ -52,15 +81,37 @@ export function SafeTreasuryPage() {
             path: '',
           },
         ]}
-        buttonProps={
-          showSendButton
-            ? {
-                children: t('buttonSendAssets'),
-                onClick: openSendAssetsModal,
-              }
-            : undefined
-        }
-      />
+      >
+        {options && (
+          <OptionMenu
+            trigger={
+              <Flex
+                alignItems="center"
+                gap={2}
+              >
+                <Text textStyle="body-base">{t('treasuryActions')}</Text>
+                <Icon
+                  as={CaretDown}
+                  boxSize="1.5rem"
+                />
+              </Flex>
+            }
+            options={options!}
+            namespace="proposal"
+            buttonAs={Button}
+            buttonProps={{
+              variant: 'tertiary',
+              paddingX: '0.5rem',
+              paddingY: '0.25rem',
+              _hover: { bg: 'neutral-2' },
+              _active: {
+                color: 'lilac-0',
+                bg: 'neutral-2',
+              },
+            }}
+          />
+        )}
+      </PageHeader>
       <Grid
         templateAreas={{
           base: `"assets"

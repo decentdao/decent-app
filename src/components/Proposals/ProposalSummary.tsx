@@ -3,15 +3,16 @@ import { abis } from '@fractal-framework/fractal-contracts';
 import { Question } from '@phosphor-icons/react';
 import { format } from 'date-fns';
 import { formatInTimeZone } from 'date-fns-tz';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { erc721Abi, getContract } from 'viem';
 import { useAccount } from 'wagmi';
 import { TOOLTIP_MAXW } from '../../constants/common';
+import { useCurrentDAOKey } from '../../hooks/DAO/useCurrentDAOKey';
 import useNetworkPublicClient from '../../hooks/useNetworkPublicClient';
 import useBlockTimestamp from '../../hooks/utils/useBlockTimestamp';
 import { useCanUserCreateProposal } from '../../hooks/utils/useCanUserSubmitProposal';
-import { useFractal } from '../../providers/App/AppProvider';
+import { useStore } from '../../providers/App/AppProvider';
 import { AzoriusGovernance, AzoriusProposal, GovernanceType } from '../../types';
 import { DEFAULT_DATE_TIME_FORMAT, formatCoin } from '../../utils/numberFormats';
 import { AlertBanner } from '../ui/AlertBanner';
@@ -23,7 +24,6 @@ import { InfoBoxLoader } from '../ui/loaders/InfoBoxLoader';
 import InfoRow from '../ui/proposal/InfoRow';
 import ProposalCreatedBy from '../ui/proposal/ProposalCreatedBy';
 import Divider from '../ui/utils/Divider';
-import { QuorumProgressBar } from '../ui/utils/ProgressBar';
 import { AzoriusOrSnapshotProposalAction } from './ProposalActions/AzoriusOrSnapshotProposalAction';
 import { VoteContextProvider } from './ProposalVotes/context/VoteContext';
 
@@ -195,97 +195,9 @@ function ProposalVotingSection({
     </ContentBox>
   );
 }
-
-// @todo: QuorumProgressBarSection has been redesigned and moved to the Breakdown section. Need to circle back to this.
-function QuorumProgressBarSection({
-  proposal,
-  azoriusGovernance,
-}: {
-  proposal: AzoriusProposal;
-  azoriusGovernance: AzoriusGovernance;
-}) {
-  const { t } = useTranslation(['proposal']);
-  const { votesToken, type, erc721Tokens, votingStrategy } = azoriusGovernance;
-  const {
-    votesSummary: { yes, no, abstain },
-  } = proposal;
-
-  const totalVotesCasted = useMemo(() => yes + no + abstain, [yes, no, abstain]);
-
-  const isERC20 = type === GovernanceType.AZORIUS_ERC20;
-  const isERC721 = type === GovernanceType.AZORIUS_ERC721;
-
-  const totalERC721VotingWeight = useMemo(
-    () =>
-      erc721Tokens?.reduce(
-        (prev, curr) => prev + (curr.totalSupply ? curr.totalSupply * curr.votingWeight : 0n),
-        0n,
-      ),
-    [erc721Tokens],
-  );
-
-  const votesTokenDecimalsDenominator = useMemo(
-    () => 10n ** BigInt(votesToken?.decimals || 0),
-    [votesToken?.decimals],
-  );
-
-  if (
-    (isERC20 && (!votesToken || !votesToken.totalSupply || !votingStrategy?.quorumPercentage)) ||
-    (isERC721 && (!erc721Tokens || !votingStrategy?.quorumThreshold))
-  ) {
-    return (
-      <Box mt={4}>
-        <InfoBoxLoader />
-      </Box>
-    );
-  }
-
-  const strategyQuorum =
-    isERC20 && votesToken && votingStrategy
-      ? votingStrategy.quorumPercentage!.value
-      : isERC721 && votingStrategy
-        ? votingStrategy.quorumThreshold!.value
-        : 1n;
-
-  const reachedQuorum = isERC721
-    ? totalVotesCasted - no
-    : votesToken
-      ? (totalVotesCasted - no) / votesTokenDecimalsDenominator
-      : 0n;
-
-  const totalQuorum = isERC721
-    ? Number(strategyQuorum)
-    : votesToken
-      ? (Number(votesToken.totalSupply / votesTokenDecimalsDenominator) * Number(strategyQuorum)) /
-        100
-      : undefined;
-
-  return (
-    <QuorumProgressBar
-      helperText={t(
-        isERC20
-          ? 'proposalSupportERC20SummaryHelper'
-          : isERC721
-            ? 'proposalSupportERC721SummaryHelper'
-            : '',
-        {
-          quorum: strategyQuorum,
-          total: isERC721
-            ? totalERC721VotingWeight?.toLocaleString()
-            : votesToken
-              ? (votesToken.totalSupply / votesTokenDecimalsDenominator).toLocaleString()
-              : undefined,
-        },
-      )}
-      reachedQuorum={Number(reachedQuorum)}
-      totalQuorum={totalQuorum}
-      unit={isERC20 ? '%' : ''}
-    />
-  );
-}
-
 export function AzoriusProposalSummary({ proposal }: { proposal: AzoriusProposal }) {
-  const { governance } = useFractal();
+  const { daoKey } = useCurrentDAOKey();
+  const { governance } = useStore({ daoKey });
   const azoriusGovernance = governance as AzoriusGovernance;
   const startBlockTimeStamp = useBlockTimestamp(Number(proposal.startBlock));
 
@@ -390,11 +302,6 @@ export function AzoriusProposalSummary({ proposal }: { proposal: AzoriusProposal
           layout="vertical"
         />
       )}
-
-      <QuorumProgressBarSection
-        proposal={proposal}
-        azoriusGovernance={azoriusGovernance}
-      />
     </Flex>
   );
 }

@@ -1,4 +1,6 @@
+/* eslint-disable import/no-extraneous-dependencies */
 import { FirebaseApp, initializeApp } from 'firebase/app';
+import { getRemoteConfig } from 'firebase/remote-config';
 import { logError } from '../helpers/errorLogging';
 
 let firebaseApp: FirebaseApp | undefined;
@@ -12,4 +14,14 @@ try {
   logError('Error in Firebase initialization:', error);
 }
 
-export { firebaseApp };
+const remoteConfig = firebaseApp ? getRemoteConfig(firebaseApp) : undefined;
+// Set a VITE_APP_FIREBASE_TIME_INTERVALS value for testing
+const firebaseTimeIntervals = import.meta.env.VITE_APP_FIREBASE_TIME_INTERVALS;
+if (remoteConfig && firebaseTimeIntervals) {
+  remoteConfig.settings = {
+    minimumFetchIntervalMillis: firebaseTimeIntervals,
+    fetchTimeoutMillis: firebaseTimeIntervals,
+  };
+}
+
+export { remoteConfig };

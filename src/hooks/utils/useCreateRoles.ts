@@ -11,16 +11,19 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import {
+  AbiItem,
   Address,
   encodeAbiParameters,
   encodeFunctionData,
   encodePacked,
+  getAbiItem,
   getAddress,
   getContract,
   getCreate2Address,
   Hex,
   keccak256,
   parseAbiParameters,
+  toFunctionSelector,
   zeroAddress,
 } from 'viem';
 import GnosisSafeL2 from '../../assets/abi/GnosisSafeL2';
@@ -29,10 +32,17 @@ import HatsAccount1ofNAbi from '../../assets/abi/HatsAccount1ofN';
 import { HatsElectionsEligibilityAbi } from '../../assets/abi/HatsElectionsEligibilityAbi';
 import { ZodiacModuleProxyFactoryAbi } from '../../assets/abi/ZodiacModuleProxyFactoryAbi';
 import { ERC6551_REGISTRY_SALT } from '../../constants/common';
+import {
+  linearERC20VotingWithWhitelistSetupParams,
+  linearERC20VotingWithWhitelistV1SetupParams,
+  linearERC721VotingWithWhitelistSetupParams,
+  linearERC721VotingWithWhitelistV1SetupParams,
+} from '../../constants/params';
 import { DAO_ROUTES } from '../../constants/routes';
 import { getRandomBytes } from '../../helpers';
+import useFeatureFlag from '../../helpers/environmentFeatureFlags';
 import { generateContractByteCodeLinear } from '../../models/helpers/utils';
-import { useFractal } from '../../providers/App/AppProvider';
+import { useStore } from '../../providers/App/AppProvider';
 import useIPFSClient from '../../providers/App/hooks/useIPFSClient';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
 import { useDaoInfoStore } from '../../store/daoInfo/useDaoInfoStore';
@@ -55,6 +65,7 @@ import {
 import { SENTINEL_MODULE } from '../../utils/address';
 import { prepareSendAssetsActionData } from '../../utils/dao/prepareSendAssetsActionData';
 import useSubmitProposal from '../DAO/proposal/useSubmitProposal';
+import { useCurrentDAOKey } from '../DAO/useCurrentDAOKey';
 import useCreateSablierStream from '../streams/useCreateSablierStream';
 import useNetworkPublicClient from '../useNetworkPublicClient';
 import {
@@ -82,6 +93,7 @@ async function uploadHatDescription(
 }
 
 export default function useCreateRoles() {
+  const { daoKey } = useCurrentDAOKey();
   const {
     governance,
     governanceContracts: {
@@ -91,8 +103,8 @@ export default function useCreateRoles() {
       linearVotingErc721WithHatsWhitelistingAddress,
       moduleAzoriusAddress,
     },
-  } = useFractal();
-  const { safe, subgraphInfo } = useDaoInfoStore();
+  } = useStore({ daoKey });
+  const { safe, subgraphInfo, gaslessVotingEnabled, paymasterAddress } = useDaoInfoStore();
   const { hatsTree, hatsTreeId, getHat } = useRolesStore();
   const {
     addressPrefix,
@@ -106,10 +118,13 @@ export default function useCreateRoles() {
       keyValuePairs,
       sablierV2LockupLinear,
       linearVotingErc20HatsWhitelistingMasterCopy,
+      linearVotingErc20HatsWhitelistingV1MasterCopy,
       linearVotingErc721HatsWhitelistingMasterCopy,
+      linearVotingErc721HatsWhitelistingV1MasterCopy,
       zodiacModuleProxyFactory,
       decentAutonomousAdminV1MasterCopy,
       hatsElectionsEligibilityMasterCopy,
+      accountAbstraction,
     },
   } = useNetworkConfigStore();
 
@@ -124,6 +139,27 @@ export default function useCreateRoles() {
   const publicClient = useNetworkPublicClient();
   const navigate = useNavigate();
 
+  const gaslessVotingFeatureEnabled = useFeatureFlag('flag_gasless_voting');
+
+  const getVoteSelector = (strategyType: 'erc20' | 'erc721') => {
+    let voteAbiItem: AbiItem;
+    if (strategyType === 'erc20') {
+      voteAbiItem = getAbiItem({
+        name: 'vote',
+        abi: abis.LinearERC20VotingV1,
+      });
+    } else if (strategyType === 'erc721') {
+      voteAbiItem = getAbiItem({
+        name: 'vote',
+        abi: abis.LinearERC721VotingV1,
+      });
+    } else {
+      throw new Error('Invalid voting strategy type');
+    }
+    const voteSelector = toFunctionSelector(voteAbiItem);
+    return voteSelector;
+  };
+
   const buildDeployWhitelistingStrategy = useCallback(
     async (whitelistedHatsIds: bigint[]) => {
       if (!safeAddress || !moduleAzoriusAddress) {
@@ -131,42 +167,61 @@ export default function useCreateRoles() {
       }
       const azoriusGovernance = governance as AzoriusGovernance;
       const { votingStrategy, votesToken, erc721Tokens } = azoriusGovernance;
+
       if (azoriusGovernance.type === GovernanceType.AZORIUS_ERC20) {
         if (!votesToken || !votingStrategy?.quorumPercentage || !linearVotingErc20Address) {
           return;
         }
 
-        const strategyNonce = getRandomBytes();
-        const linearERC20VotingMasterCopyContract = getContract({
-          abi: abis.LinearERC20Voting,
-          address: linearVotingErc20HatsWhitelistingMasterCopy,
-          client: publicClient,
-        });
-
-        const quorumDenominator =
-          await linearERC20VotingMasterCopyContract.read.QUORUM_DENOMINATOR();
-
-        const votingStrategyContract = getContract({
+        const existingAbiAndAddress = {
           abi: abis.LinearERC20Voting,
           address: linearVotingErc20Address,
-          client: publicClient,
-        });
-        const existingVotingPeriod = await votingStrategyContract.read.votingPeriod();
-        const encodedStrategyInitParams = encodeAbiParameters(
-          parseAbiParameters(
-            'address, address, address, uint32, uint256, uint256, address, uint256[]',
-          ),
-          [
-            safeAddress, // owner
-            votesToken.address, // governance token
-            moduleAzoriusAddress, // Azorius module
-            existingVotingPeriod,
-            (votingStrategy.quorumPercentage.value * quorumDenominator) / 100n, // quorom numerator, denominator is 1,000,000, so quorum percentage is quorumNumerator * 100 / quorumDenominator
-            500000n, // basis numerator, denominator is 1,000,000, so basis percentage is 50% (simple majority)
-            hatsProtocol,
-            whitelistedHatsIds,
-          ],
-        );
+        };
+
+        const [existingVotingPeriod, existingQuorumNumerator, existingBasisNumerator] =
+          await publicClient.multicall({
+            contracts: [
+              {
+                ...existingAbiAndAddress,
+                functionName: 'votingPeriod',
+              },
+              {
+                ...existingAbiAndAddress,
+                functionName: 'quorumNumerator',
+              },
+              {
+                ...existingAbiAndAddress,
+                functionName: 'basisNumerator',
+              },
+            ],
+            allowFailure: false,
+          });
+
+        if (gaslessVotingFeatureEnabled && !accountAbstraction) {
+          throw new Error('Account abstraction is not enabled');
+        }
+        const encodedStrategyInitParams = gaslessVotingFeatureEnabled
+          ? encodeAbiParameters(parseAbiParameters(linearERC20VotingWithWhitelistV1SetupParams), [
+              safeAddress, // owner
+              votesToken.address, // governance token
+              moduleAzoriusAddress, // Azorius module
+              existingVotingPeriod,
+              existingQuorumNumerator,
+              existingBasisNumerator,
+              hatsProtocol,
+              whitelistedHatsIds,
+              accountAbstraction!.lightAccountFactory,
+            ])
+          : encodeAbiParameters(parseAbiParameters(linearERC20VotingWithWhitelistSetupParams), [
+              safeAddress, // owner
+              votesToken.address, // governance token
+              moduleAzoriusAddress, // Azorius module
+              existingVotingPeriod,
+              existingQuorumNumerator,
+              existingBasisNumerator,
+              hatsProtocol,
+              whitelistedHatsIds,
+            ]);
 
         const encodedStrategySetupData = encodeFunctionData({
           abi: abis.LinearERC20VotingWithHatsProposalCreation,
@@ -174,22 +229,21 @@ export default function useCreateRoles() {
           args: [encodedStrategyInitParams],
         });
 
+        const strategyMasterCopy = gaslessVotingFeatureEnabled
+          ? linearVotingErc20HatsWhitelistingV1MasterCopy
+          : linearVotingErc20HatsWhitelistingMasterCopy;
+
+        const strategyNonce = getRandomBytes();
         const deployWhitelistingVotingStrategyTx = {
           calldata: encodeFunctionData({
             abi: ZodiacModuleProxyFactoryAbi,
             functionName: 'deployModule',
-            args: [
-              linearVotingErc20HatsWhitelistingMasterCopy,
-              encodedStrategySetupData,
-              strategyNonce,
-            ],
+            args: [strategyMasterCopy, encodedStrategySetupData, strategyNonce],
           }),
           targetAddress: zodiacModuleProxyFactory,
         };
 
-        const strategyByteCodeLinear = generateContractByteCodeLinear(
-          linearVotingErc20HatsWhitelistingMasterCopy,
-        );
+        const strategyByteCodeLinear = generateContractByteCodeLinear(strategyMasterCopy);
 
         const strategySalt = keccak256(
           encodePacked(
@@ -213,59 +267,100 @@ export default function useCreateRoles() {
           }),
         };
 
-        return [deployWhitelistingVotingStrategyTx, enableDeployedVotingStrategyTx];
+        const optionallyWhitelistWhitelistingStrategyOnPaymaster = [];
+        if (gaslessVotingEnabled && paymasterAddress) {
+          optionallyWhitelistWhitelistingStrategyOnPaymaster.push({
+            calldata: encodeFunctionData({
+              abi: abis.DecentPaymasterV1,
+              functionName: 'whitelistFunction',
+              args: [predictedStrategyAddress, getVoteSelector('erc20')],
+            }),
+            targetAddress: paymasterAddress,
+          });
+        }
+        return [
+          deployWhitelistingVotingStrategyTx,
+          enableDeployedVotingStrategyTx,
+          ...optionallyWhitelistWhitelistingStrategyOnPaymaster,
+        ];
       } else if (azoriusGovernance.type === GovernanceType.AZORIUS_ERC721) {
         if (!erc721Tokens || !votingStrategy?.quorumThreshold || !linearVotingErc721Address) {
           return;
         }
 
-        const strategyNonce = getRandomBytes();
-        const votingStrategyContract = getContract({
+        const existingAbiAndAddress = {
           abi: abis.LinearERC721Voting,
           address: linearVotingErc721Address,
-          client: publicClient,
-        });
-        const existingVotingPeriod = await votingStrategyContract.read.votingPeriod();
+        };
 
-        const encodedStrategyInitParams = encodeAbiParameters(
-          parseAbiParameters(
-            'address, address[], uint256[], address, uint32, uint256, uint256, address, uint256[]',
-          ),
-          [
-            safeAddress, // owner
-            erc721Tokens.map(token => token.address), // governance tokens addresses
-            erc721Tokens.map(token => token.votingWeight), // governance tokens weights
-            moduleAzoriusAddress, // Azorius module
-            existingVotingPeriod,
-            votingStrategy.quorumThreshold.value, // quorom threshold, number of yes + abstain votes has to >= threshold
-            500000n, // basis numerator, denominator is 1,000,000, so basis percentage is 50% (simple majority)
-            hatsProtocol,
-            whitelistedHatsIds,
-          ],
-        );
+        const [existingVotingPeriod, existingQuorumThreshold, existingBasisNumerator] =
+          await publicClient.multicall({
+            contracts: [
+              {
+                ...existingAbiAndAddress,
+                functionName: 'votingPeriod',
+              },
+              {
+                ...existingAbiAndAddress,
+                functionName: 'quorumThreshold',
+              },
+              {
+                ...existingAbiAndAddress,
+                functionName: 'basisNumerator',
+              },
+            ],
+            allowFailure: false,
+          });
 
+        if (gaslessVotingFeatureEnabled && !accountAbstraction) {
+          throw new Error('Account abstraction is not enabled');
+        }
+
+        const encodedStrategyInitParams = gaslessVotingFeatureEnabled
+          ? encodeAbiParameters(parseAbiParameters(linearERC721VotingWithWhitelistV1SetupParams), [
+              safeAddress, // owner
+              erc721Tokens.map(token => token.address), // governance tokens addresses
+              erc721Tokens.map(token => token.votingWeight), // governance tokens weights
+              moduleAzoriusAddress, // Azorius module
+              existingVotingPeriod,
+              existingQuorumThreshold,
+              existingBasisNumerator,
+              hatsProtocol,
+              whitelistedHatsIds,
+              accountAbstraction!.lightAccountFactory,
+            ])
+          : encodeAbiParameters(parseAbiParameters(linearERC721VotingWithWhitelistSetupParams), [
+              safeAddress, // owner
+              erc721Tokens.map(token => token.address), // governance tokens addresses
+              erc721Tokens.map(token => token.votingWeight), // governance tokens weights
+              moduleAzoriusAddress, // Azorius module
+              existingVotingPeriod,
+              existingQuorumThreshold,
+              existingBasisNumerator,
+              hatsProtocol,
+              whitelistedHatsIds,
+            ]);
         const encodedStrategySetupData = encodeFunctionData({
           abi: abis.LinearERC721VotingWithHatsProposalCreation,
           functionName: 'setUp',
           args: [encodedStrategyInitParams],
         });
 
+        const strategyMasterCopy = gaslessVotingFeatureEnabled
+          ? linearVotingErc721HatsWhitelistingV1MasterCopy
+          : linearVotingErc721HatsWhitelistingMasterCopy;
+
+        const strategyNonce = getRandomBytes();
         const deployWhitelistingVotingStrategyTx = {
           calldata: encodeFunctionData({
             abi: ZodiacModuleProxyFactoryAbi,
             functionName: 'deployModule',
-            args: [
-              linearVotingErc721HatsWhitelistingMasterCopy,
-              encodedStrategySetupData,
-              strategyNonce,
-            ],
+            args: [strategyMasterCopy, encodedStrategySetupData, strategyNonce],
           }),
           targetAddress: zodiacModuleProxyFactory,
         };
 
-        const strategyByteCodeLinear = generateContractByteCodeLinear(
-          linearVotingErc721HatsWhitelistingMasterCopy,
-        );
+        const strategyByteCodeLinear = generateContractByteCodeLinear(strategyMasterCopy);
 
         const strategySalt = keccak256(
           encodePacked(
@@ -289,7 +384,23 @@ export default function useCreateRoles() {
           }),
         };
 
-        return [deployWhitelistingVotingStrategyTx, enableDeployedVotingStrategyTx];
+        const optionallyWhitelistWhitelistingStrategyOnPaymaster = [];
+        if (gaslessVotingEnabled && paymasterAddress) {
+          optionallyWhitelistWhitelistingStrategyOnPaymaster.push({
+            calldata: encodeFunctionData({
+              abi: abis.DecentPaymasterV1,
+              functionName: 'whitelistFunction',
+              args: [predictedStrategyAddress, getVoteSelector('erc721')],
+            }),
+            targetAddress: paymasterAddress,
+          });
+        }
+
+        return [
+          deployWhitelistingVotingStrategyTx,
+          enableDeployedVotingStrategyTx,
+          ...optionallyWhitelistWhitelistingStrategyOnPaymaster,
+        ];
       } else {
         throw new Error(
           'Can not deploy Whitelisting Voting Strategy - unsupported governance type!',
@@ -298,15 +409,21 @@ export default function useCreateRoles() {
     },
     [
       safeAddress,
-      governance,
-      hatsProtocol,
-      linearVotingErc20HatsWhitelistingMasterCopy,
-      linearVotingErc721HatsWhitelistingMasterCopy,
       moduleAzoriusAddress,
-      publicClient,
-      zodiacModuleProxyFactory,
+      governance,
       linearVotingErc20Address,
+      publicClient,
+      hatsProtocol,
+      gaslessVotingFeatureEnabled,
+      linearVotingErc20HatsWhitelistingV1MasterCopy,
+      linearVotingErc20HatsWhitelistingMasterCopy,
+      zodiacModuleProxyFactory,
+      gaslessVotingEnabled,
+      paymasterAddress,
       linearVotingErc721Address,
+      linearVotingErc721HatsWhitelistingV1MasterCopy,
+      linearVotingErc721HatsWhitelistingMasterCopy,
+      accountAbstraction,
     ],
   );
 

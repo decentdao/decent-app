@@ -1,14 +1,16 @@
 import { abis } from '@fractal-framework/fractal-contracts';
 import { useCallback, useMemo } from 'react';
 import { getContract } from 'viem';
-import { useFractal } from '../../../../providers/App/AppProvider';
+import { useStore } from '../../../../providers/App/AppProvider';
 import { FractalGovernanceAction } from '../../../../providers/App/governance/action';
 import { VotingStrategyType } from '../../../../types';
 import { blocksToSeconds } from '../../../../utils/contract';
 import useNetworkPublicClient from '../../../useNetworkPublicClient';
 import { useTimeHelpers } from '../../../utils/useTimeHelpers';
+import { useCurrentDAOKey } from '../../useCurrentDAOKey';
 
 export const useERC721LinearStrategy = () => {
+  const { daoKey } = useCurrentDAOKey();
   const {
     governanceContracts: {
       linearVotingErc721Address,
@@ -16,7 +18,7 @@ export const useERC721LinearStrategy = () => {
       moduleAzoriusAddress,
     },
     action,
-  } = useFractal();
+  } = useStore({ daoKey });
   const { getTimeDuration } = useTimeHelpers();
   const publicClient = useNetworkPublicClient();
 

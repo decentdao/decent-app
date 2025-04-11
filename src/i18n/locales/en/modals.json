@@ -60,5 +60,6 @@
   "dropCSVHere": "Drop CSV here",
   "csvFormat": "address,amount one entry per row",
   "pasteMultipleRecipients": "You can paste one or multiple recipients (address,amount one entry per row)",
-  "confirmTransactionTitle": "Confirm transaction"
+  "confirmTransactionTitle": "Confirm transaction",
+  "transactionBuilderTitle": "Build transaction(s)"
 }

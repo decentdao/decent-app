@@ -43,12 +43,16 @@ const useDeployAzorius = () => {
       moduleFractalMasterCopy,
       linearVotingErc20MasterCopy,
       linearVotingErc721MasterCopy,
+      linearVotingErc20V1MasterCopy,
+      linearVotingErc721V1MasterCopy,
       moduleAzoriusMasterCopy,
       freezeGuardAzoriusMasterCopy,
       freezeGuardMultisigMasterCopy,
       freezeVotingErc20MasterCopy,
       freezeVotingErc721MasterCopy,
       freezeVotingMultisigMasterCopy,
+      decentPaymasterV1MasterCopy,
+      accountAbstraction,
     },
     addressPrefix,
   } = useNetworkConfigStore();
@@ -86,9 +90,10 @@ const useDeployAzorius = () => {
       opts: {
         shouldSetName: boolean;
         shouldSetSnapshot: boolean;
+        enableGaslessVoting: boolean;
       },
     ) => {
-      const { shouldSetName, shouldSetSnapshot } = opts;
+      const { shouldSetName, shouldSetSnapshot, enableGaslessVoting } = opts;
       if (!safeAddress || !canUserCreateProposal || !safe) {
         return;
       }
@@ -157,7 +162,11 @@ const useDeployAzorius = () => {
         moduleFractalMasterCopy,
         linearVotingErc20MasterCopy,
         linearVotingErc721MasterCopy,
+        linearVotingErc20V1MasterCopy,
+        linearVotingErc721V1MasterCopy,
         moduleAzoriusMasterCopy,
+        decentPaymasterV1MasterCopy,
+        accountAbstraction,
         subgraphInfo?.parentAddress ?? undefined,
       );
 
@@ -171,6 +180,7 @@ const useDeployAzorius = () => {
       const safeTx = await daoTxBuilder.buildAzoriusTx({
         shouldSetName,
         shouldSetSnapshot,
+        enableGaslessVoting,
         existingSafeOwners: safe.owners,
       });
 
@@ -236,7 +246,11 @@ const useDeployAzorius = () => {
       moduleFractalMasterCopy,
       linearVotingErc20MasterCopy,
       linearVotingErc721MasterCopy,
+      linearVotingErc20V1MasterCopy,
+      linearVotingErc721V1MasterCopy,
       moduleAzoriusMasterCopy,
+      decentPaymasterV1MasterCopy,
+      accountAbstraction,
       submitProposal,
       t,
       getParentDAOModules,

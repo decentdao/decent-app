@@ -69,6 +69,15 @@ export const mainnetConfig: NetworkConfig = {
       a.LinearERC721VotingWithHatsProposalCreation,
     ),
 
+    linearVotingErc20V1MasterCopy: getAddress(a.LinearERC20VotingV1),
+    linearVotingErc20HatsWhitelistingV1MasterCopy: getAddress(
+      a.LinearERC20VotingWithHatsProposalCreationV1,
+    ),
+    linearVotingErc721V1MasterCopy: getAddress(a.LinearERC721VotingV1),
+    linearVotingErc721HatsWhitelistingV1MasterCopy: getAddress(
+      a.LinearERC721VotingWithHatsProposalCreationV1,
+    ),
+
     moduleAzoriusMasterCopy: getAddress(a.Azorius),
     moduleFractalMasterCopy: getAddress(a.FractalModule),
 
@@ -85,6 +94,8 @@ export const mainnetConfig: NetworkConfig = {
 
     decentAutonomousAdminV1MasterCopy: getAddress(a.DecentAutonomousAdminV1),
 
+    decentPaymasterV1MasterCopy: getAddress(a.DecentPaymasterV1),
+
     keyValuePairs: getAddress(a.KeyValuePairs),
 
     decentHatsCreationModule: getAddress(a.DecentHatsCreationModule),
@@ -100,6 +111,11 @@ export const mainnetConfig: NetworkConfig = {
     sablierV2LockupTranched: '0xf86B359035208e4529686A1825F2D5BeE38c28A8',
     sablierV2LockupLinear: '0x3962f6585946823440d274aD7C719B02b49DE51E',
     disperse: '0xD152f549545093347A162Dce210e7293f1452150',
+
+    accountAbstraction: {
+      entryPointv07: '0x0000000071727De22E5E9d8BAf0edAc6f37da032',
+      lightAccountFactory: '0x0000000000400CdFef5E2714E63d8040b700BC24',
+    },
   },
   staking: {
     lido: {
@@ -117,7 +133,7 @@ export const mainnetConfig: NetworkConfig = {
     GovernanceType.AZORIUS_ERC20,
     GovernanceType.AZORIUS_ERC721,
   ],
-  gaslessVotingSupported: true,
+  maxPriorityFeePerGasMultiplier: 100n, // @todo: Might be many times higher (or lower), depending on returned value from `estimateFeesPerGas`
 };
 
 export default mainnetConfig;

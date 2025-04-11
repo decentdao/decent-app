@@ -8,9 +8,10 @@ import { toast } from 'sonner';
 import { DAO_ROUTES } from '../../constants/routes';
 import { logError } from '../../helpers/errorLogging';
 import useSubmitProposal from '../../hooks/DAO/proposal/useSubmitProposal';
+import { useCurrentDAOKey } from '../../hooks/DAO/useCurrentDAOKey';
 import useCreateProposalSchema from '../../hooks/schemas/proposalBuilder/useCreateProposalSchema';
 import { useCanUserCreateProposal } from '../../hooks/utils/useCanUserSubmitProposal';
-import { useFractal } from '../../providers/App/AppProvider';
+import { useStore } from '../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
 import { useDaoInfoStore } from '../../store/daoInfo/useDaoInfoStore';
 import { BigIntValuePair, CreateProposalSteps, ProposalExecuteData } from '../../types';
@@ -34,9 +35,10 @@ export function ShowNonceInputOnMultisig({
   nonce: number | undefined;
   nonceOnChange: (nonce?: string) => void;
 }) {
+  const { daoKey } = useCurrentDAOKey();
   const {
     governance: { isAzorius },
-  } = useFractal();
+  } = useStore({ daoKey });
 
   if (isAzorius) {
     return null;
@@ -168,7 +170,10 @@ export function ProposalBuilder({
         const trimmedTitle = title.trim();
 
         const createProposalButtonDisabled =
-          !canUserCreateProposal || Object.keys(formikProps.errors).length > 0 || pendingCreateTx;
+          !canUserCreateProposal ||
+          Object.keys(formikProps.errors).length > 0 ||
+          !trimmedTitle ||
+          pendingCreateTx;
 
         const renderButtons = (step: CreateProposalSteps) => {
           const buttons = stepButtons({
@@ -213,18 +218,18 @@ export function ProposalBuilder({
                       bg="neutral-2"
                     >
                       {currentStep === CreateProposalSteps.METADATA ? (
-                        <ProposalMetadata
-                          typeProps={proposalMetadataTypeProps}
-                          {...formikProps}
-                        />
-                      ) : (
                         <>
-                          {mainContent(formikProps, pendingCreateTx, nonce, currentStep)}
+                          <ProposalMetadata
+                            typeProps={proposalMetadataTypeProps}
+                            {...formikProps}
+                          />
                           <ShowNonceInputOnMultisig
                             nonce={nonce}
                             nonceOnChange={newNonce => formikProps.setFieldValue('nonce', newNonce)}
                           />
                         </>
+                      ) : (
+                        <>{mainContent(formikProps, pendingCreateTx, nonce, currentStep)}</>
                       )}
                     </Box>
                     {actionsExperience}

@@ -1,15 +1,21 @@
-import { Box, Flex, Hide, Show, Text } from '@chakra-ui/react';
+import { Box, Button, Flex, Hide, Show, Text } from '@chakra-ui/react';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { zeroAddress } from 'viem';
 import { DAOSearch } from '../../components/ui/menus/DAOSearch';
-import { useFractal } from '../../providers/App/AppProvider';
+import { ModalType } from '../../components/ui/modals/ModalProvider';
+import { useDecentModal } from '../../components/ui/modals/useDecentModal';
+import useFeatureFlag from '../../helpers/environmentFeatureFlags';
+import { useCurrentDAOKey } from '../../hooks/DAO/useCurrentDAOKey';
+import { useStore } from '../../providers/App/AppProvider';
 import { useDaoInfoStore } from '../../store/daoInfo/useDaoInfoStore';
 import { GettingStarted } from './GettingStarted';
 import { MySafes } from './MySafes';
 
 export default function HomePage() {
   const { safe } = useDaoInfoStore();
-  const { action } = useFractal();
+  const { daoKey } = useCurrentDAOKey();
+  const { action } = useStore({ daoKey });
   const { t } = useTranslation('home');
 
   useEffect(() => {
@@ -19,12 +25,31 @@ export default function HomePage() {
     }
   }, [safe?.address, action]);
 
+  const openTransactionBuilderModal = useDecentModal(ModalType.TRANSACTION_BUILDER, {
+    pendingTransaction: false,
+    isProposalMode: false,
+    values: [
+      {
+        targetAddress: zeroAddress,
+        functionName: '',
+        parameters: [],
+        ethValue: {
+          value: '0',
+        },
+      },
+    ],
+    errors: undefined,
+    setFieldValue: () => {},
+  });
+
+  const isDevMode = useFeatureFlag('flag_dev');
   return (
     <Flex
       direction="column"
       mt="2.5rem"
     >
       {/* Mobile */}
+      {isDevMode && <Button onClick={openTransactionBuilderModal}>Open Modal</Button>}
       <Hide above="md">
         <Flex
           direction="column"
@@ -55,7 +80,6 @@ export default function HomePage() {
           </Box>
         </Flex>
       </Show>
-
       <Flex
         direction="column"
         w="full"

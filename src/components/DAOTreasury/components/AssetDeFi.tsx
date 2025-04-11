@@ -1,6 +1,7 @@
 import { Box, Divider, Flex, HStack, Image, Text } from '@chakra-ui/react';
 import { useTranslation } from 'react-i18next';
-import { useFractal } from '../../../providers/App/AppProvider';
+import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
+import { useStore } from '../../../providers/App/AppProvider';
 import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
 import { DefiBalance } from '../../../types';
 import { formatCoin, formatPercentage, formatUSD } from '../../../utils';
@@ -46,9 +47,10 @@ export function DeFiHeader() {
 }
 
 export function DeFiRow({ asset }: { asset: DefiBalance }) {
+  const { daoKey } = useCurrentDAOKey();
   const {
     treasury: { totalUsdValue },
-  } = useFractal();
+  } = useStore({ daoKey });
 
   const { safe } = useDaoInfoStore();
 

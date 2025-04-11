@@ -61,7 +61,7 @@
   "helperTokenSymbol": "2-6 characters, i.e. DCNT, SAFE, USDC.",
   "labelTokenSupply": "Total Supply",
   "helperTokenSupply": "The total number of tokens to be created.",
-  "labelMultisigGov": "Multisig (m of n)",
+  "labelMultisigGov": "Multisig ({{threshold}} of {{totalSigners}})",
   "descMultisigGov": "Best for small groups and/or frequent onchain activity.",
   "labelAzoriusErc20Gov": "ERC-20 Token Voting",
   "labelAzoriusErc20HatsWhitelistingGov": "Token Voting + Whitelisted Proposers DAO",

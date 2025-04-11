@@ -10,9 +10,10 @@ import { DAOCreateMode } from '../../../../components/DaoCreator/formComponents/
 import NoDataCard from '../../../../components/ui/containers/NoDataCard';
 import PageHeader from '../../../../components/ui/page/Header/PageHeader';
 import { DAO_ROUTES } from '../../../../constants/routes';
+import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
 import useDeployAzorius from '../../../../hooks/DAO/useDeployAzorius';
 import { analyticsEvents } from '../../../../insights/analyticsEvents';
-import { useFractal } from '../../../../providers/App/AppProvider';
+import { useStore } from '../../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../../providers/NetworkConfig/useNetworkConfigStore';
 import { useDaoInfoStore } from '../../../../store/daoInfo/useDaoInfoStore';
 import {
@@ -27,10 +28,10 @@ export function SafeEditGovernancePage() {
   useEffect(() => {
     amplitude.track(analyticsEvents.ModifyGovernancePageOpened);
   }, []);
-
+  const { daoKey } = useCurrentDAOKey();
   const {
     governance: { type },
-  } = useFractal();
+  } = useStore({ daoKey });
   const user = useAccount();
   const { safe, subgraphInfo } = useDaoInfoStore();
   const { addressPrefix } = useNetworkConfigStore();
@@ -60,6 +61,7 @@ export function SafeEditGovernancePage() {
     deployAzorius(daoData as AzoriusERC20DAO | AzoriusERC721DAO | SubDAO, customNonce, {
       shouldSetName,
       shouldSetSnapshot,
+      enableGaslessVoting: daoData.gaslessVoting,
     });
   };
 

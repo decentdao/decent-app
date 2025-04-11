@@ -56,8 +56,7 @@
   "votingPower": "Voting Power",
   "votingPowerTooltip": "This is your voting power at the time the snapshot was taken, which occurs at the moment of proposal creation.",
   "show": "Show",
-  "proposalSupportERC20SummaryHelper": "Minimum {{quorum}}% required out of {{total}}",
-  "proposalSupportERC721SummaryHelper": "Minimum {{quorum}} token votes required out {{total}}",
+  "proposalQuorumHelperText": "To reach quorum, {{quorum}}% of {{total}} total voting token supply must be \"Yes\" or \"Abstain\" votes.",
   "proposedBy": "Proposed By",
   "proposalTitle_one": "Proposal to execute {{count}} transaction on {{target}}",
   "proposalTitle_other": "Proposal to execute {{count}} transactions on {{target}}",
@@ -70,6 +69,11 @@
   "proposalAdditionalResources": "Additional Resources",
   "proposalAdditionalResourcesHelper": "A link to any discussion or formal documentation",
   "proposalAdditionalResourcesPlaceholder": "https://",
+  "voteForFree": "Vote for free",
+  "vote": "Vote",
+  "no": "No",
+  "yes": "Yes",
+  "abstain": "Abstain",
   "votesTitle": "Votes",
   "nftVotes_one": "{{count}} vote",
   "nftVotes_other": "{{count}} votes",
@@ -185,5 +189,8 @@
   "streamCancelableHelper": "If enabled, the stream can be canceled by the owner of the Safe",
   "streamTransferableHelper": "If enabled, the stream can be transferred to another address by the stream's recipient",
   "proposalSummaryNotEnoughVotingPower": "Your voting power did not meet requirements to vote on this proposal when it was created.",
-  "proposalSummaryNotEnoughVotingPowerSecondary": "Delegate voting tokens to your address to be eligible to vote on future proposals."
+  "proposalSummaryNotEnoughVotingPowerSecondary": "Delegate voting tokens to your address to be eligible to vote on future proposals.",
+  "castVoteError": "Failed to send vote",
+  "castVoteErrorTempAutoFallback": ". Falling back to paid voting...",
+  "labelAddTransactionsToProposal": "Add transactions to proposal"
 }

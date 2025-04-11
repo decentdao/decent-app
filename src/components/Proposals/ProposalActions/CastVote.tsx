@@ -1,12 +1,15 @@
 import { Button, Box, Text, Image, Flex, Radio, RadioGroup, Icon } from '@chakra-ui/react';
-import { Check, CheckCircle } from '@phosphor-icons/react';
-import { useEffect, useState } from 'react';
+import { Check, CheckCircle, Sparkle } from '@phosphor-icons/react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { toast } from 'sonner';
 import { TOOLTIP_MAXW } from '../../../constants/common';
+import useFeatureFlag from '../../../helpers/environmentFeatureFlags';
 import useSnapshotProposal from '../../../hooks/DAO/loaders/snapshot/useSnapshotProposal';
 import useCastSnapshotVote from '../../../hooks/DAO/proposal/useCastSnapshotVote';
 import useCastVote from '../../../hooks/DAO/proposal/useCastVote';
 import useCurrentBlockNumber from '../../../hooks/utils/useCurrentBlockNumber';
+import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
 import {
   AzoriusProposal,
   FractalProposal,
@@ -15,11 +18,13 @@ import {
 } from '../../../types';
 import { DecentTooltip } from '../../ui/DecentTooltip';
 import WeightedInput from '../../ui/forms/WeightedInput';
+import { ModalType } from '../../ui/modals/ModalProvider';
+import { useDecentModal } from '../../ui/modals/useDecentModal';
 import { useVoteContext } from '../ProposalVotes/context/VoteContext';
 
 export function CastVote({ proposal }: { proposal: FractalProposal }) {
   const [selectedVoteChoice, setVoiceChoice] = useState<number>();
-  const { t } = useTranslation(['common', 'proposal', 'transaction']);
+  const { t } = useTranslation(['proposal', 'transaction', 'gaslessVoting']);
   const { isLoaded: isCurrentBlockLoaded, currentBlockNumber } = useCurrentBlockNumber();
 
   const { snapshotProposal, extendedSnapshotProposal, loadSnapshotProposal } =
@@ -31,10 +36,9 @@ export function CastVote({ proposal }: { proposal: FractalProposal }) {
 
   const azoriusProposal = proposal as AzoriusProposal;
 
-  const { castVote, castVotePending } = useCastVote(
-    proposal.proposalId,
-    azoriusProposal.votingStrategy,
-  );
+  // @todo: (gv) Build better UX around castGaslessVotePending (and probably castVotePending)
+  const { castVote, castVotePending, castGaslessVote, castGaslessVotePending, canCastGaslessVote } =
+    useCastVote(proposal.proposalId, azoriusProposal.votingStrategy);
 
   const {
     castSnapshotVote,
@@ -45,6 +49,16 @@ export function CastVote({ proposal }: { proposal: FractalProposal }) {
   } = useCastSnapshotVote(extendedSnapshotProposal);
 
   const { canVoteLoading, hasVoted, hasVotedLoading } = useVoteContext();
+
+  const { gaslessVotingEnabled } = useDaoInfoStore();
+
+  const gaslessVoteSuccessModal = useDecentModal(ModalType.GASLESS_VOTE_SUCCESS);
+
+  // Set a reasonable minimum (slightly higher than the required amount)
+  const gaslessFeatureEnabled = useFeatureFlag('flag_gasless_voting');
+  const canVoteForFree = useMemo(() => {
+    return gaslessFeatureEnabled && gaslessVotingEnabled && canCastGaslessVote;
+  }, [canCastGaslessVote, gaslessFeatureEnabled, gaslessVotingEnabled]);
 
   // If user is lucky enough - he could create a proposal and proceed to vote on it
   // even before the block, in which proposal was created, was mined.
@@ -59,11 +73,33 @@ export function CastVote({ proposal }: { proposal: FractalProposal }) {
 
   const disabled =
     castVotePending ||
+    castGaslessVotePending ||
     azoriusProposal.state !== FractalProposalState.ACTIVE ||
     proposalStartBlockNotFinalized ||
     canVoteLoading ||
     hasVoted ||
     hasVotedLoading;
+
+  const handleVoteClick = async () => {
+    if (selectedVoteChoice !== undefined) {
+      if (canVoteForFree) {
+        await castGaslessVote({
+          selectedVoteChoice,
+          onSuccess: gaslessVoteSuccessModal,
+          onError: (error: any) => {
+            console.error('Gasless voting error:', error);
+            toast.error(`${t('castVoteError')}${t('castVoteErrorTempAutoFallback')}`);
+
+            setTimeout(() => {
+              castVote(selectedVoteChoice);
+            }, 5000);
+          },
+        });
+      } else {
+        await castVote(selectedVoteChoice);
+      }
+    }
+  };
 
   if (snapshotProposal && extendedSnapshotProposal) {
     const isWeighted = extendedSnapshotProposal.type === 'weighted';
@@ -199,7 +235,7 @@ export function CastVote({ proposal }: { proposal: FractalProposal }) {
             }}
             mb={2}
           >
-            {t(choice.label, { ns: 'common' })}
+            {t(choice.label)}
           </Radio>
         ))}
         <Button
@@ -207,10 +243,11 @@ export function CastVote({ proposal }: { proposal: FractalProposal }) {
           padding="3"
           height="3.25rem"
           width="full"
+          leftIcon={canVoteForFree ? <Icon as={Sparkle} /> : undefined}
           isDisabled={disabled}
-          onClick={() => selectedVoteChoice !== undefined && castVote(selectedVoteChoice)}
+          onClick={handleVoteClick}
         >
-          {t('vote')}
+          {canVoteForFree ? t('voteForFree') : t('vote')}
         </Button>
       </RadioGroup>
     </DecentTooltip>

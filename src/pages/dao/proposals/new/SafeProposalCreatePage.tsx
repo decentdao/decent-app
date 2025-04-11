@@ -1,5 +1,6 @@
 import * as amplitude from '@amplitude/analytics-browser';
 import { Center } from '@chakra-ui/react';
+import { FormikErrors } from 'formik';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
@@ -13,20 +14,21 @@ import { BarLoader } from '../../../../components/ui/loaders/BarLoader';
 import { useHeaderHeight } from '../../../../constants/common';
 import { DAO_ROUTES } from '../../../../constants/routes';
 import { usePrepareProposal } from '../../../../hooks/DAO/proposal/usePrepareProposal';
+import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
 import { analyticsEvents } from '../../../../insights/analyticsEvents';
-import { useFractal } from '../../../../providers/App/AppProvider';
+import { useStore } from '../../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../../providers/NetworkConfig/useNetworkConfigStore';
 import { useDaoInfoStore } from '../../../../store/daoInfo/useDaoInfoStore';
-import { CreateProposalSteps } from '../../../../types';
+import { BigIntValuePair, CreateProposalSteps, CreateProposalTransaction } from '../../../../types';
 
 export function SafeProposalCreatePage() {
   useEffect(() => {
     amplitude.track(analyticsEvents.CreateProposalPageOpened);
   }, []);
-
+  const { daoKey } = useCurrentDAOKey();
   const {
     governance: { type },
-  } = useFractal();
+  } = useStore({ daoKey });
   const { safe } = useDaoInfoStore();
   const { prepareProposal } = usePrepareProposal();
 
@@ -88,11 +90,16 @@ export function SafeProposalCreatePage() {
       prepareProposalData={prepareProposal}
       mainContent={(formikProps, pendingCreateTx, nonce, currentStep) => {
         if (currentStep !== CreateProposalSteps.TRANSACTIONS) return null;
+        const { setFieldValue, errors, values } = formikProps;
         return (
           <ProposalTransactionsForm
             pendingTransaction={pendingCreateTx}
             isProposalMode={true}
-            {...formikProps}
+            values={values.transactions}
+            setFieldValue={setFieldValue}
+            errors={
+              errors?.transactions as FormikErrors<CreateProposalTransaction<BigIntValuePair>>[]
+            }
           />
         );
       }}

@@ -4,6 +4,10 @@ import { useTranslation } from 'react-i18next';
 import { Address } from 'viem';
 import { CreateProposalTransaction, ProposalTemplate } from '../../../types';
 import { SendAssetsData } from '../../../utils/dao/prepareSendAssetsActionData';
+import {
+  ProposalTransactionsFormModal,
+  ProposalTransactionsFormProps,
+} from '../../ProposalBuilder/ProposalTransactionsForm';
 import AddSignerModal from '../../SafeSettings/Signers/modals/AddSignerModal';
 import RemoveSignerModal from '../../SafeSettings/Signers/modals/RemoveSignerModal';
 import DraggableDrawer from '../containers/DraggableDrawer';
@@ -15,12 +19,12 @@ import { ConfirmTransactionModal } from './ConfirmTransactionModal';
 import { ConfirmUrlModal } from './ConfirmUrlModal';
 import { DelegateModal } from './DelegateModal';
 import ForkProposalTemplateModal from './ForkProposalTemplateModal';
-import { IframeModal } from './IframeModal';
+import { GaslessVoteSuccessModal } from './GaslessVoting/GaslessVoteSuccessModal';
+import { RefillGasData, RefillGasTankModal } from './GaslessVoting/RefillGasTankModal';
 import { ModalBase, ModalBaseSize } from './ModalBase';
 import PaymentCancelConfirmModal from './PaymentCancelConfirmModal';
 import { PaymentWithdrawModal } from './PaymentWithdrawModal';
 import ProposalTemplateModal from './ProposalTemplateModal';
-import { RefillGasData, RefillGasTankModal } from './RefillGasTankModal';
 import { SendAssetsModal } from './SendAssetsModal';
 import StakeModal from './Stake';
 import { UnsavedChangesWarningContent } from './UnsavedChangesWarningContent';
@@ -43,8 +47,9 @@ export enum ModalType {
   SEND_ASSETS,
   AIRDROP,
   REFILL_GAS,
-  IFRAME,
+  GASLESS_VOTE_SUCCESS,
   CONFIRM_TRANSACTION,
+  TRANSACTION_BUILDER,
 }
 
 export type CurrentModal = {
@@ -101,11 +106,12 @@ export type ModalPropsTypes = {
   [ModalType.REFILL_GAS]: {
     onSubmit: (refillGasData: RefillGasData) => void;
   };
-  [ModalType.IFRAME]: {};
+  [ModalType.GASLESS_VOTE_SUCCESS]: {};
   [ModalType.CONFIRM_TRANSACTION]: {
     appName: string;
     transactionArray: CreateProposalTransaction[];
   };
+  [ModalType.TRANSACTION_BUILDER]: ProposalTransactionsFormProps;
 };
 
 export interface IModalContext {
@@ -293,6 +299,11 @@ export function ModalProvider({ children }: { children: ReactNode }) {
           />
         );
         break;
+
+      case ModalType.GASLESS_VOTE_SUCCESS:
+        modalContent = <GaslessVoteSuccessModal close={closeModal} />;
+        modalSize = 'md';
+        break;
       case ModalType.AIRDROP:
         modalContent = (
           <AirdropModal
@@ -305,10 +316,6 @@ export function ModalProvider({ children }: { children: ReactNode }) {
           />
         );
         break;
-      case ModalType.IFRAME:
-        modalContent = <IframeModal />;
-        modalSize = 'xl';
-        break;
       case ModalType.CONFIRM_TRANSACTION:
         modalTitle = t('confirmTransactionTitle');
         modalContent = (
@@ -316,6 +323,19 @@ export function ModalProvider({ children }: { children: ReactNode }) {
             appName={current.props.appName}
             transactionArray={current.props.transactionArray}
             close={closeModal}
+          />
+        );
+        modalSize = 'xl';
+        break;
+      case ModalType.TRANSACTION_BUILDER:
+        modalTitle = t('transactionBuilderTitle');
+        modalContent = (
+          <ProposalTransactionsFormModal
+            pendingTransaction={current.props.pendingTransaction}
+            isProposalMode={current.props.isProposalMode}
+            values={current.props.values}
+            errors={current.props.errors}
+            setFieldValue={current.props.setFieldValue}
           />
         );
         modalSize = 'xl';

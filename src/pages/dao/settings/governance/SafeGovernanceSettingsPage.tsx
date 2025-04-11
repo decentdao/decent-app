@@ -8,7 +8,8 @@ import { SettingsContentBox } from '../../../../components/SafeSettings/Settings
 import { SignersContainer } from '../../../../components/SafeSettings/Signers/SignersContainer';
 import NestedPageHeader from '../../../../components/ui/page/Header/NestedPageHeader';
 import { DAO_ROUTES } from '../../../../constants/routes';
-import { useFractal } from '../../../../providers/App/AppProvider';
+import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
+import { useStore } from '../../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../../providers/NetworkConfig/useNetworkConfigStore';
 import { useDaoInfoStore } from '../../../../store/daoInfo/useDaoInfoStore';
 import { GovernanceType } from '../../../../types';
@@ -16,9 +17,10 @@ import { GovernanceType } from '../../../../types';
 export function SafeGovernanceSettingsPage() {
   const { t } = useTranslation('settings');
   const { addressPrefix } = useNetworkConfigStore();
+  const { daoKey } = useCurrentDAOKey();
   const {
     governance: { type },
-  } = useFractal();
+  } = useStore({ daoKey });
   const { safe } = useDaoInfoStore();
 
   const isERC20Governance = type === GovernanceType.AZORIUS_ERC20;

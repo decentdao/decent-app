@@ -1,17 +1,19 @@
 import { useCallback } from 'react';
-import { useFractal } from '../../../providers/App/AppProvider';
+import { useStore } from '../../../providers/App/AppProvider';
 import { FractalGovernanceAction } from '../../../providers/App/governance/action';
 import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
 import { GovernanceType } from '../../../types';
 import { useUpdateTimer } from '../../utils/useUpdateTimer';
+import { useCurrentDAOKey } from '../useCurrentDAOKey';
 import { useAzoriusProposals } from './governance/useAzoriusProposals';
 import { useSafeMultisigProposals } from './governance/useSafeMultisigProposals';
 
 export const useLoadDAOProposals = () => {
+  const { daoKey } = useCurrentDAOKey();
   const {
     governance: { type },
     action,
-  } = useFractal();
+  } = useStore({ daoKey });
   const { safe } = useDaoInfoStore();
 
   const { setMethodOnInterval, clearIntervals } = useUpdateTimer(safe?.address);

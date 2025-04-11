@@ -7,6 +7,8 @@ export type TheGraphConfig = {
   id: string; // for prod
 };
 
+export type NetworkPrefix = 'base' | 'eth' | 'oeth' | 'matic' | 'sep'; // copy whatever Safe uses
+
 export type NetworkConfig = {
   order: number; // any arbitrary integer, used to "order" the networks in the dropdown
   chain: Chain;
@@ -14,7 +16,7 @@ export type NetworkConfig = {
   safeBaseURL: string;
   etherscanBaseURL: string;
   etherscanAPIUrl: string;
-  addressPrefix: string; // copy whatever Safe uses
+  addressPrefix: NetworkPrefix;
   nativeTokenIcon: string;
   isENSSupported: boolean;
   decentSubgraph: TheGraphConfig;
@@ -37,6 +39,11 @@ export type NetworkConfig = {
     linearVotingErc721MasterCopy: Address;
     linearVotingErc721HatsWhitelistingMasterCopy: Address;
 
+    linearVotingErc20V1MasterCopy: Address;
+    linearVotingErc20HatsWhitelistingV1MasterCopy: Address;
+    linearVotingErc721V1MasterCopy: Address;
+    linearVotingErc721HatsWhitelistingV1MasterCopy: Address;
+
     moduleAzoriusMasterCopy: Address;
     moduleFractalMasterCopy: Address;
 
@@ -53,6 +60,8 @@ export type NetworkConfig = {
 
     decentAutonomousAdminV1MasterCopy: Address;
 
+    decentPaymasterV1MasterCopy: Address;
+
     keyValuePairs: Address;
 
     decentHatsCreationModule: Address;
@@ -68,6 +77,12 @@ export type NetworkConfig = {
     sablierV2LockupTranched: Address;
     sablierV2LockupLinear: Address;
     disperse: Address;
+
+    // only set on networks for which we support account abstraction functionality
+    accountAbstraction?: {
+      entryPointv07: Address;
+      lightAccountFactory: Address;
+    };
   };
   staking: {
     lido?: {
@@ -77,5 +92,5 @@ export type NetworkConfig = {
     };
   };
   createOptions: GovernanceType[];
-  gaslessVotingSupported: boolean;
+  maxPriorityFeePerGasMultiplier?: bigint;
 };

@@ -1,15 +1,17 @@
 import { Box, Flex, Text } from '@chakra-ui/react';
 import { Coins } from '@phosphor-icons/react';
 import { useTranslation } from 'react-i18next';
-import { useFractal } from '../../../providers/App/AppProvider';
+import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
+import { useStore } from '../../../providers/App/AppProvider';
 import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
 import { formatUSD } from '../../../utils';
 import { BarLoader } from '../../ui/loaders/BarLoader';
 
 export function InfoTreasury() {
+  const { daoKey } = useCurrentDAOKey();
   const {
     treasury: { totalUsdValue },
-  } = useFractal();
+  } = useStore({ daoKey });
   const { safe } = useDaoInfoStore();
 
   const { t } = useTranslation('dashboard');

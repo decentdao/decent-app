@@ -3,7 +3,16 @@ import { abis } from '@fractal-framework/fractal-contracts';
 import { ChangeEventHandler, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { encodeFunctionData, zeroAddress } from 'viem';
+import {
+  AbiItem,
+  encodeAbiParameters,
+  encodeFunctionData,
+  getAbiItem,
+  parseAbiParameters,
+  toFunctionSelector,
+  zeroAddress,
+} from 'viem';
+import { ZodiacModuleProxyFactoryAbi } from '../../../../assets/abi/ZodiacModuleProxyFactoryAbi';
 import { GaslessVotingToggleDAOSettings } from '../../../../components/GaslessVoting/GaslessVotingToggle';
 import { SettingsContentBox } from '../../../../components/SafeSettings/SettingsContentBox';
 import { InputComponent } from '../../../../components/ui/forms/InputComponent';
@@ -12,20 +21,42 @@ import NestedPageHeader from '../../../../components/ui/page/Header/NestedPageHe
 import Divider from '../../../../components/ui/utils/Divider';
 import { DAO_ROUTES } from '../../../../constants/routes';
 import useSubmitProposal from '../../../../hooks/DAO/proposal/useSubmitProposal';
+import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
 import { useCanUserCreateProposal } from '../../../../hooks/utils/useCanUserSubmitProposal';
 import { createAccountSubstring } from '../../../../hooks/utils/useGetAccountName';
+import { useInstallVersionedVotingStrategy } from '../../../../hooks/utils/useInstallVersionedVotingStrategy';
+import { useStore } from '../../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../../providers/NetworkConfig/useNetworkConfigStore';
 import { useDaoInfoStore } from '../../../../store/daoInfo/useDaoInfoStore';
-import { BigIntValuePair, ProposalExecuteData } from '../../../../types';
+import {
+  FractalTokenType,
+  FractalVotingStrategy,
+  GovernanceType,
+  ProposalExecuteData,
+} from '../../../../types';
+import { getPaymasterAddress, getPaymasterSaltNonce } from '../../../../utils/gaslessVoting';
 import { validateENSName } from '../../../../utils/url';
+
 export function SafeGeneralSettingsPage() {
   const { t } = useTranslation(['settings', 'settingsMetadata']);
   const [name, setName] = useState('');
   const [snapshotENS, setSnapshotENS] = useState('');
   const [snapshotENSValid, setSnapshotENSValid] = useState<boolean>();
 
-  const [isGaslessVotingEnabled, setIsGaslessVotingEnabled] = useState<boolean>(false);
-  const [gasTankTopupAmount, setGasTankTopupAmount] = useState<BigIntValuePair>();
+  const { gaslessVotingEnabled, paymasterAddress } = useDaoInfoStore();
+
+  const [isGaslessVotingEnabledToggled, setIsGaslessVotingEnabledToggled] =
+    useState(gaslessVotingEnabled);
+
+  useEffect(() => {
+    setIsGaslessVotingEnabledToggled(gaslessVotingEnabled);
+  }, [gaslessVotingEnabled]);
+
+  const { daoKey } = useCurrentDAOKey();
+  const {
+    governanceContracts: { strategies },
+    governance: { type: votingStrategyType },
+  } = useStore({ daoKey });
 
   const navigate = useNavigate();
 
@@ -34,12 +65,20 @@ export function SafeGeneralSettingsPage() {
   const { subgraphInfo, safe } = useDaoInfoStore();
   const {
     addressPrefix,
-    contracts: { keyValuePairs },
+    chain: { id: chainId },
+    contracts: {
+      keyValuePairs,
+      accountAbstraction,
+      decentPaymasterV1MasterCopy,
+      zodiacModuleProxyFactory,
+    },
   } = useNetworkConfigStore();
 
-  const safeAddress = safe?.address;
+  const isMultisigGovernance = votingStrategyType === GovernanceType.MULTISIG;
+  const gaslessVotingSupported =
+    !isMultisigGovernance && accountAbstraction?.entryPointv07 !== undefined;
 
-  const currentIsGaslessVotingEnabled = subgraphInfo?.gaslessVotingEnabled ?? false;
+  const safeAddress = safe?.address;
 
   useEffect(() => {
     if (
@@ -68,19 +107,13 @@ export function SafeGeneralSettingsPage() {
     }
   };
 
-  const submitProposalSuccessCallback = () => {
-    if (safeAddress) {
-      navigate(DAO_ROUTES.proposals.relative(addressPrefix, safeAddress));
-    }
-  };
-
   const nameChanged = name !== subgraphInfo?.daoName;
   const snapshotChanged = snapshotENSValid && snapshotENS !== subgraphInfo?.daoSnapshotENS;
-  const gaslessVotingChanged = isGaslessVotingEnabled !== currentIsGaslessVotingEnabled;
-  const gasTankTopupAmountSet =
-    gasTankTopupAmount?.bigintValue !== undefined && gasTankTopupAmount.bigintValue > 0n;
+  const gaslessVotingChanged = isGaslessVotingEnabledToggled !== gaslessVotingEnabled;
 
-  const handleEditGeneralGovernance = () => {
+  const { buildInstallVersionedVotingStrategies } = useInstallVersionedVotingStrategy();
+
+  const handleEditGeneralGovernance = async () => {
     const changeTitles = [];
     const keyArgs = [];
     const valueArgs = [];
@@ -98,20 +131,134 @@ export function SafeGeneralSettingsPage() {
     }
 
     if (gaslessVotingChanged) {
-      changeTitles.push(t('enableGaslessVoting', { ns: 'proposalMetadata' }));
-
-      // @todo Is KV pairs the place we're storing this flag?
       keyArgs.push('gaslessVotingEnabled');
-      valueArgs.push(`${isGaslessVotingEnabled}`);
-    }
-
-    if (gasTankTopupAmountSet) {
-      changeTitles.push(t('topupGasTank', { ns: 'proposalMetadata' }));
-
-      // @todo add tx to send `gasTankTopupAmount` to gas tank address
+      if (isGaslessVotingEnabledToggled) {
+        changeTitles.push(t('enableGaslessVoting', { ns: 'proposalMetadata' }));
+        valueArgs.push('true');
+      } else {
+        changeTitles.push(t('disableGaslessVoting', { ns: 'proposalMetadata' }));
+        valueArgs.push('false');
+      }
     }
 
     const title = changeTitles.join(`; `);
+
+    const targets = [keyValuePairs];
+    const calldatas = [
+      encodeFunctionData({
+        abi: abis.KeyValuePairs,
+        functionName: 'updateValues',
+        args: [keyArgs, valueArgs],
+      }),
+    ];
+    const values = [0n];
+
+    if (gaslessVotingChanged && isGaslessVotingEnabledToggled) {
+      if (!safeAddress) {
+        throw new Error('Safe address is not set');
+      }
+
+      if (!accountAbstraction) {
+        throw new Error('Account Abstraction addresses are not set');
+      }
+
+      if (paymasterAddress === null) {
+        // Paymaster does not exist, deploy a new one
+        const paymasterInitData = encodeFunctionData({
+          abi: abis.DecentPaymasterV1,
+          functionName: 'initialize',
+          args: [
+            encodeAbiParameters(parseAbiParameters(['address', 'address', 'address']), [
+              safeAddress,
+              accountAbstraction.entryPointv07,
+              accountAbstraction.lightAccountFactory,
+            ]),
+          ],
+        });
+
+        targets.push(zodiacModuleProxyFactory);
+        calldatas.push(
+          encodeFunctionData({
+            abi: ZodiacModuleProxyFactoryAbi,
+            functionName: 'deployModule',
+            args: [
+              decentPaymasterV1MasterCopy,
+              paymasterInitData,
+              getPaymasterSaltNonce(safeAddress, chainId),
+            ],
+          }),
+        );
+        values.push(0n);
+      }
+
+      // Include txs to disable any old voting strategies and enable the new ones.
+      const { installVersionedStrategyTxDatas, newStrategies } =
+        await buildInstallVersionedVotingStrategies();
+
+      targets.push(...installVersionedStrategyTxDatas.map(tx => tx.targetAddress));
+      calldatas.push(...installVersionedStrategyTxDatas.map(tx => tx.calldata));
+      values.push(...installVersionedStrategyTxDatas.map(() => 0n));
+
+      const predictedPaymasterAddress = getPaymasterAddress({
+        safeAddress,
+        zodiacModuleProxyFactory,
+        paymasterMastercopy: decentPaymasterV1MasterCopy,
+        entryPoint: accountAbstraction.entryPointv07,
+        lightAccountFactory: accountAbstraction.lightAccountFactory,
+        chainId,
+      });
+
+      const getVoteSelector = (strategy: FractalVotingStrategy) => {
+        let voteAbiItem: AbiItem;
+        if (strategy.type === FractalTokenType.erc20) {
+          voteAbiItem = getAbiItem({
+            name: 'vote',
+            abi: abis.LinearERC20VotingV1,
+          });
+        } else if (strategy.type === FractalTokenType.erc721) {
+          voteAbiItem = getAbiItem({
+            name: 'vote',
+            abi: abis.LinearERC721VotingV1,
+          });
+        } else {
+          throw new Error('Invalid voting strategy type');
+        }
+        const voteSelector = toFunctionSelector(voteAbiItem);
+        return voteSelector;
+      };
+
+      newStrategies.forEach(strategy => {
+        // Whitelist the new strategy's `vote` function call on the Paymaster
+        // // // // // // // // // // // // // // // // // // // // // // //
+        targets.push(predictedPaymasterAddress);
+        calldatas.push(
+          encodeFunctionData({
+            abi: abis.DecentPaymasterV1,
+            functionName: 'whitelistFunction',
+            args: [strategy.address, getVoteSelector(strategy)],
+          }),
+        );
+        values.push(0n);
+      });
+
+      // Also whitelist existing versioned strategies that have not already been whitelisted.
+      // This will be the case for DAOs deployed after this feature, but did not enable gasless voting on creation.
+      if (paymasterAddress === null) {
+        strategies
+          .filter(strategy => strategy.version !== undefined)
+          .forEach(strategy => {
+            targets.push(predictedPaymasterAddress);
+            calldatas.push(
+              encodeFunctionData({
+                abi: abis.DecentPaymasterV1,
+                functionName: 'whitelistFunction',
+                args: [strategy.address, getVoteSelector(strategy)],
+              }),
+            );
+            values.push(0n);
+          });
+      }
+    }
 
     const proposalData: ProposalExecuteData = {
       metaData: {
@@ -119,15 +266,9 @@ export function SafeGeneralSettingsPage() {
         description: '',
         documentationUrl: '',
       },
-      targets: [keyValuePairs],
-      values: [0n],
-      calldatas: [
-        encodeFunctionData({
-          abi: abis.KeyValuePairs,
-          functionName: 'updateValues',
-          args: [keyArgs, valueArgs],
-        }),
-      ],
+      targets,
+      values,
+      calldatas,
     };
 
     submitProposal({
@@ -137,7 +278,11 @@ export function SafeGeneralSettingsPage() {
       pendingToastMessage: t('proposalCreatePendingToastMessage', { ns: 'proposal' }),
       successToastMessage: t('proposalCreateSuccessToastMessage', { ns: 'proposal' }),
       failedToastMessage: t('proposalCreateFailureToastMessage', { ns: 'proposal' }),
-      successCallback: submitProposalSuccessCallback,
+      successCallback: () => {
+        if (safeAddress) {
+          navigate(DAO_ROUTES.proposals.relative(addressPrefix, safeAddress));
+        }
+      },
     });
   };
 
@@ -210,16 +355,14 @@ export function SafeGeneralSettingsPage() {
             />
           </Flex>
 
-          <GaslessVotingToggleDAOSettings
-            isEnabled={isGaslessVotingEnabled}
-            onToggle={() => {
-              console.log(
-                'onToggle. Add this action to the proposal, to be submitted via propose changes button.',
-              );
-              setIsGaslessVotingEnabled(!isGaslessVotingEnabled);
-            }}
-            onGasTankTopupAmountChange={setGasTankTopupAmount}
-          />
+          {gaslessVotingSupported && (
+            <GaslessVotingToggleDAOSettings
+              isEnabled={isGaslessVotingEnabledToggled}
+              onToggle={() => {
+                setIsGaslessVotingEnabledToggled(!isGaslessVotingEnabledToggled);
+              }}
+            />
+          )}
           {canUserCreateProposal && (
             <>
               <Divider
@@ -231,7 +374,7 @@ export function SafeGeneralSettingsPage() {
                 variant="secondary"
                 size="sm"
                 marginLeft="auto"
-                isDisabled={!nameChanged && !snapshotChanged}
+                isDisabled={!nameChanged && !snapshotChanged && !gaslessVotingChanged}
                 onClick={handleEditGeneralGovernance}
               >
                 {t('proposeChanges')}

@@ -2,7 +2,8 @@ import { Box, Button, Center, Flex, HStack, Icon, Image, Text } from '@chakra-ui
 import { ArrowDown, ArrowUp } from '@phosphor-icons/react';
 import { useTranslation } from 'react-i18next';
 import { useDateTimeDisplay } from '../../../helpers/dateTime';
-import { useFractal } from '../../../providers/App/AppProvider';
+import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
+import { useStore } from '../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
 import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
 import { TokenEventType, TransferDisplayData, TransferType } from '../../../types';
@@ -124,9 +125,10 @@ function EmptyTransactions() {
 }
 
 export function Transactions({ shownTransactions }: { shownTransactions: number }) {
+  const { daoKey } = useCurrentDAOKey();
   const {
     treasury: { transfers },
-  } = useFractal();
+  } = useStore({ daoKey });
 
   if (transfers === null) {
     return (
@@ -177,9 +179,10 @@ export function PaginationButton({ onClick }: { onClick: () => void }) {
 
 export function PaginationCount({ shownTransactions }: { shownTransactions: number }) {
   const { t } = useTranslation('treasury');
+  const { daoKey } = useCurrentDAOKey();
   const {
     treasury: { transfers },
-  } = useFractal();
+  } = useStore({ daoKey });
   const { safe } = useDaoInfoStore();
 
   const totalTransfers = transfers?.length;

@@ -3,7 +3,7 @@ import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { encodeFunctionData, isHex } from 'viem';
 import MultiSendCallOnlyAbi from '../../assets/abi/MultiSendCallOnly';
-import { useFractal } from '../../providers/App/AppProvider';
+import { useStore } from '../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
 import { useDaoInfoStore } from '../../store/daoInfo/useDaoInfoStore';
 import {
@@ -17,6 +17,7 @@ import { ProposalExecuteData } from '../../types/daoProposal';
 import { useCanUserCreateProposal } from '../utils/useCanUserSubmitProposal';
 import useSubmitProposal from './proposal/useSubmitProposal';
 import useBuildDAOTx from './useBuildDAOTx';
+import { useCurrentDAOKey } from './useCurrentDAOKey';
 
 export const useCreateSubDAOProposal = () => {
   const { t } = useTranslation(['daoCreate', 'proposal', 'proposalMetadata']);
@@ -24,7 +25,8 @@ export const useCreateSubDAOProposal = () => {
   const { submitProposal, pendingCreateTx } = useSubmitProposal();
   const { canUserCreateProposal } = useCanUserCreateProposal();
   const [build] = useBuildDAOTx();
-  const { governance } = useFractal();
+  const { daoKey } = useCurrentDAOKey();
+  const { governance } = useStore({ daoKey });
   const { safe } = useDaoInfoStore();
   const {
     contracts: { multiSendCallOnly, keyValuePairs },

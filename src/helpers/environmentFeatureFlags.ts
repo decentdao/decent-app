@@ -1,4 +1,15 @@
-import { IFeatureFlags, FeatureFlagKeys, FeatureFlagKey } from './featureFlags';
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { fetchAndActivate, getValue, Value } from 'firebase/remote-config';
+import { useState } from 'react';
+import { useBetween } from 'use-between';
+import { remoteConfig } from '../insights/firebase';
+import {
+  IFeatureFlags,
+  FeatureFlagKeys,
+  FeatureFlagKey,
+  FeatureFlags,
+  FEATURE_FLAGS,
+} from './featureFlags';
 
 export class EnvironmentFeatureFlags implements IFeatureFlags {
   urlParams: { [key: string]: string | null } = {};
@@ -47,11 +58,64 @@ export class EnvironmentFeatureFlags implements IFeatureFlags {
   }
 
   isFeatureEnabled(key: FeatureFlagKey) {
-    const envVar = this.getEnvVar(key);
     const urlParam = this.getUrlParam(key);
-
     if (urlParam === 'on') return true;
-    if (envVar === 'on' && urlParam !== 'off') return true;
-    return false;
+    if (urlParam === 'off') return false;
+
+    const envVar = this.getEnvVar(key);
+    if (envVar === 'on') return true;
+    if (envVar === 'off') return false;
+    return undefined;
   }
 }
+
+interface RemoteConfigData {
+  [key: string]: Value | undefined;
+}
+
+const useRemoteFeatureFlags = () => {
+  const [remoteConfigData, setRemoteConfigData] = useState<RemoteConfigData>({});
+
+  const fetchConfig = async () => {
+    if (remoteConfig) {
+      try {
+        // Firebase uses browser cache, and uses the remoteConfig settings to refresh
+        await fetchAndActivate(remoteConfig);
+        let newData = {} as RemoteConfigData;
+        for (const flag of FEATURE_FLAGS) {
+          const value = getValue(remoteConfig, flag);
+          newData[flag] = value;
+        }
+        setRemoteConfigData(prevData => {
+          if (JSON.stringify(newData) !== JSON.stringify(prevData)) {
+            return newData;
+          } else {
+            return prevData;
+          }
+        });
+      } catch (error) {
+        console.error('Failed to fetch Remote Config', error);
+      }
+    }
+  };
+
+  return { remoteConfigData, fetchConfig };
+};
+
+const useFeatureFlag = (key: FeatureFlagKey) => {
+  const { remoteConfigData, fetchConfig } = useBetween(useRemoteFeatureFlags);
+
+  fetchConfig();
+
+  // Get from local first, either the URL params, or .env settings
+  let value = FeatureFlags.instance?.isFeatureEnabled(key);
+  if (value === undefined) {
+    // If not found in local, use remote config
+    const remoteValue = remoteConfigData[key];
+    value = remoteValue?.asString()?.toLowerCase() == 'on' || remoteValue?.asBoolean() == true;
+  }
+
+  return value;
+};
+
+export default useFeatureFlag;

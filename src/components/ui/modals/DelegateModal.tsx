@@ -6,13 +6,14 @@ import { getAddress, getContract, zeroAddress } from 'viem';
 import { useAccount } from 'wagmi';
 import * as Yup from 'yup';
 import LockReleaseAbi from '../../../assets/abi/LockRelease';
+import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import { useValidationAddress } from '../../../hooks/schemas/common/useValidationAddress';
 import { useNetworkEnsAddressAsync } from '../../../hooks/useNetworkEnsAddress';
 import { useNetworkWalletClient } from '../../../hooks/useNetworkWalletClient';
 
 import { useGetAccountName } from '../../../hooks/utils/useGetAccountName';
 import { useTransaction } from '../../../hooks/utils/useTransaction';
-import { useFractal } from '../../../providers/App/AppProvider';
+import { useStore } from '../../../providers/App/AppProvider';
 import { AzoriusGovernance, DecentGovernance } from '../../../types';
 import { formatCoin } from '../../../utils/numberFormats';
 import { validateENSName } from '../../../utils/url';
@@ -23,11 +24,11 @@ import Divider from '../utils/Divider';
 
 export function DelegateModal({ close }: { close: Function }) {
   const { t } = useTranslation(['modals', 'common']);
-
+  const { daoKey } = useCurrentDAOKey();
   const {
     governance,
     governanceContracts: { votesTokenAddress, lockReleaseAddress },
-  } = useFractal();
+  } = useStore({ daoKey });
   const user = useAccount();
 
   const azoriusGovernance = governance as AzoriusGovernance;

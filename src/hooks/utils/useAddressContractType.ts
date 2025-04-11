@@ -1,6 +1,6 @@
 import { abis } from '@fractal-framework/fractal-contracts';
 import { useCallback } from 'react';
-import { Abi, Address } from 'viem';
+import { Abi, Address, getContract } from 'viem';
 import useNetworkPublicClient from '../useNetworkPublicClient';
 
 // https://github.com/adamgall/fractal-contract-identification/blob/229fc398661c5d684600feeb98a4eb767f728632/src/identify-contracts.ts
@@ -19,6 +19,10 @@ type ContractType = {
   isModuleAzorius: boolean;
   isModuleFractal: boolean;
   isVotesErc20: boolean;
+};
+
+export type ContractTypeWithVersion = ContractType & {
+  version?: number;
 };
 
 const defaultContractType: ContractType = {
@@ -222,8 +226,35 @@ const contractTests: ContractFunctionTest[] = [
 export function useAddressContractType() {
   const publicClient = useNetworkPublicClient();
 
+  const getContractVersion = useCallback(
+    async (contractAddress: Address) => {
+      const contract = getContract({
+        abi: [
+          // function getVersion() external view returns (uint16);
+          {
+            inputs: [],
+            name: 'getVersion',
+            outputs: [{ internalType: 'uint16', name: '', type: 'uint16' }],
+            stateMutability: 'view',
+            type: 'function',
+          },
+        ],
+        address: contractAddress,
+        client: publicClient,
+      });
+
+      try {
+        const version = await contract.read.getVersion();
+        return version;
+      } catch (error) {
+        return undefined;
+      }
+    },
+    [publicClient],
+  );
+
   const getAddressContractType = useCallback(
-    async (address: Address): Promise<ContractType> => {
+    async (address: Address): Promise<ContractTypeWithVersion> => {
       const result = { ...defaultContractType };
 
       const allCalls = contractTests.flatMap(test => [
@@ -277,9 +308,11 @@ export function useAddressContractType() {
         }
       }
 
-      return result;
+      const version = await getContractVersion(address);
+
+      return { ...result, version };
     },
-    [publicClient],
+    [getContractVersion, publicClient],
   );
 
   return { getAddressContractType };

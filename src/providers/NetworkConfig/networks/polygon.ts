@@ -5,7 +5,7 @@ import {
   getProxyFactoryDeployment,
   getSafeL2SingletonDeployment,
 } from '@safe-global/safe-deployments';
-import { getAddress } from 'viem';
+import { getAddress, zeroAddress } from 'viem';
 import { polygon } from 'wagmi/chains';
 import { GovernanceType } from '../../../types';
 import { NetworkConfig } from '../../../types/network';
@@ -69,6 +69,11 @@ export const polygonConfig: NetworkConfig = {
       a.LinearERC721VotingWithHatsProposalCreation,
     ),
 
+    linearVotingErc20V1MasterCopy: zeroAddress,
+    linearVotingErc20HatsWhitelistingV1MasterCopy: zeroAddress,
+    linearVotingErc721V1MasterCopy: zeroAddress,
+    linearVotingErc721HatsWhitelistingV1MasterCopy: zeroAddress,
+
     moduleAzoriusMasterCopy: getAddress(a.Azorius),
     moduleFractalMasterCopy: getAddress(a.FractalModule),
 
@@ -84,6 +89,8 @@ export const polygonConfig: NetworkConfig = {
     claimErc20MasterCopy: getAddress(a.ERC20Claim),
 
     decentAutonomousAdminV1MasterCopy: getAddress(a.DecentAutonomousAdminV1),
+
+    decentPaymasterV1MasterCopy: zeroAddress,
 
     keyValuePairs: getAddress(a.KeyValuePairs),
 
@@ -111,7 +118,6 @@ export const polygonConfig: NetworkConfig = {
     GovernanceType.AZORIUS_ERC20,
     GovernanceType.AZORIUS_ERC721,
   ],
-  gaslessVotingSupported: false,
 };
 
 export default polygonConfig;

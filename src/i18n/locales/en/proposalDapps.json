@@ -1,3 +1,8 @@
 {
-  "emptyProposalDapps": "This Safe doesn't have any supported dApps yet."
+  "emptyProposalDapps": "This Safe doesn't have any supported dApps yet.",
+  "connectingWalletConnect": "Connecting...",
+  "successConnectingWalletConnect": "Connected!",
+  "failConnectingWalletConnect": "Failed to connect, please check uri.",
+  "labelIframeWalletConnectUri": "WalletConnect URI",
+  "helperIframeWalletConnectUri": "Paste to connect"
 }

@@ -18,7 +18,7 @@ import MultiSendCallOnlyAbi from '../../../assets/abi/MultiSendCallOnly';
 import { ADDRESS_MULTISIG_METADATA } from '../../../constants/common';
 import { buildSafeAPIPost, encodeMultiSend } from '../../../helpers';
 import { logError } from '../../../helpers/errorLogging';
-import { useFractal } from '../../../providers/App/AppProvider';
+import { useStore } from '../../../providers/App/AppProvider';
 import { FractalGovernanceAction } from '../../../providers/App/governance/action';
 import useIPFSClient from '../../../providers/App/hooks/useIPFSClient';
 import { useSafeAPI } from '../../../providers/App/hooks/useSafeAPI';
@@ -31,6 +31,7 @@ import { useNetworkWalletClient } from '../../useNetworkWalletClient';
 import useVotingStrategiesAddresses from '../../utils/useVotingStrategiesAddresses';
 import { useDecentModules } from '../loaders/useDecentModules';
 import { useLoadDAOProposals } from '../loaders/useLoadDAOProposals';
+import { useCurrentDAOKey } from '../useCurrentDAOKey';
 
 export type SubmitProposalFunction = ({
   proposalData,
@@ -69,7 +70,7 @@ export default function useSubmitProposal() {
 
   const { getVotingStrategies } = useVotingStrategiesAddresses();
   const { address: userAddress } = useAccount();
-
+  const { daoKey } = useCurrentDAOKey();
   const {
     guardContracts: { freezeVotingContractAddress },
     governanceContracts: {
@@ -79,7 +80,7 @@ export default function useSubmitProposal() {
       linearVotingErc721WithHatsWhitelistingAddress,
     },
     action,
-  } = useFractal();
+  } = useStore({ daoKey });
   const { safe, modules } = useDaoInfoStore();
   const safeAPI = useSafeAPI();
 

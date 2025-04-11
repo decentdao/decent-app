@@ -2,7 +2,8 @@ import { Box, Flex, FormControl, Switch, Text } from '@chakra-ui/react';
 import { Field, FieldInputProps, FieldMetaProps, FormikProps, useFormikContext } from 'formik';
 import { useTranslation } from 'react-i18next';
 import { DETAILS_BOX_SHADOW } from '../../../constants/common';
-import { useFractal } from '../../../providers/App/AppProvider';
+import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
+import { useStore } from '../../../providers/App/AppProvider';
 import { useRolesStore } from '../../../store/roles/useRolesStore';
 import { GovernanceType } from '../../../types';
 import { RoleFormValues } from '../../../types/roles';
@@ -10,9 +11,10 @@ import { InputComponent, TextareaComponent } from '../../ui/forms/InputComponent
 
 export default function RoleFormInfo() {
   const { t } = useTranslation('roles');
+  const { daoKey } = useCurrentDAOKey();
   const {
     governance: { type },
-  } = useFractal();
+  } = useStore({ daoKey });
   const { hatsTree, hatsTreeId } = useRolesStore();
 
   const { setFieldValue, values } = useFormikContext<RoleFormValues>();

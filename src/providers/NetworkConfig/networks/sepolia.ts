@@ -69,6 +69,15 @@ export const sepoliaConfig: NetworkConfig = {
       a.LinearERC721VotingWithHatsProposalCreation,
     ),
 
+    linearVotingErc20V1MasterCopy: getAddress(a.LinearERC20VotingV1),
+    linearVotingErc20HatsWhitelistingV1MasterCopy: getAddress(
+      a.LinearERC20VotingWithHatsProposalCreationV1,
+    ),
+    linearVotingErc721V1MasterCopy: getAddress(a.LinearERC721VotingV1),
+    linearVotingErc721HatsWhitelistingV1MasterCopy: getAddress(
+      a.LinearERC721VotingWithHatsProposalCreationV1,
+    ),
+
     moduleAzoriusMasterCopy: getAddress(a.Azorius),
     moduleFractalMasterCopy: getAddress(a.FractalModule),
 
@@ -85,6 +94,8 @@ export const sepoliaConfig: NetworkConfig = {
 
     decentAutonomousAdminV1MasterCopy: getAddress(a.DecentAutonomousAdminV1),
 
+    decentPaymasterV1MasterCopy: getAddress(a.DecentPaymasterV1),
+
     keyValuePairs: getAddress(a.KeyValuePairs),
 
     decentHatsCreationModule: getAddress(a.DecentHatsCreationModule),
@@ -100,6 +111,11 @@ export const sepoliaConfig: NetworkConfig = {
     sablierV2LockupTranched: '0x3a1beA13A8C24c0EA2b8fAE91E4b2762A59D7aF5',
     sablierV2LockupLinear: '0x3E435560fd0a03ddF70694b35b673C25c65aBB6C',
     disperse: '0xD152f549545093347A162Dce210e7293f1452150',
+
+    accountAbstraction: {
+      entryPointv07: '0x0000000071727De22E5E9d8BAf0edAc6f37da032',
+      lightAccountFactory: '0x0000000000400CdFef5E2714E63d8040b700BC24',
+    },
   },
   staking: {},
   moralis: {
@@ -111,7 +127,8 @@ export const sepoliaConfig: NetworkConfig = {
     GovernanceType.AZORIUS_ERC20,
     GovernanceType.AZORIUS_ERC721,
   ],
-  gaslessVotingSupported: true,
+
+  maxPriorityFeePerGasMultiplier: 100n,
 };
 
 export default sepoliaConfig;

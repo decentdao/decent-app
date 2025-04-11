@@ -1,14 +1,16 @@
 import { abis } from '@fractal-framework/fractal-contracts';
 import { useCallback, useMemo } from 'react';
 import { formatUnits, getContract } from 'viem';
-import { useFractal } from '../../../../providers/App/AppProvider';
+import { useStore } from '../../../../providers/App/AppProvider';
 import { FractalGovernanceAction } from '../../../../providers/App/governance/action';
 import { AzoriusGovernance, VotingStrategyType } from '../../../../types';
 import { blocksToSeconds } from '../../../../utils/contract';
 import useNetworkPublicClient from '../../../useNetworkPublicClient';
 import { useTimeHelpers } from '../../../utils/useTimeHelpers';
+import { useCurrentDAOKey } from '../../useCurrentDAOKey';
 
 export const useERC20LinearStrategy = () => {
+  const { daoKey } = useCurrentDAOKey();
   const {
     governance,
     governanceContracts: {
@@ -17,7 +19,7 @@ export const useERC20LinearStrategy = () => {
       moduleAzoriusAddress,
     },
     action,
-  } = useFractal();
+  } = useStore({ daoKey });
   const { getTimeDuration } = useTimeHelpers();
   const publicClient = useNetworkPublicClient();
 

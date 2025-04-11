@@ -2,7 +2,7 @@ import { useCallback } from 'react';
 import { Address } from 'viem';
 import { useAccount } from 'wagmi';
 import { TxBuilderFactory } from '../../models/TxBuilderFactory';
-import { useFractal } from '../../providers/App/AppProvider';
+import { useStore } from '../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
 import {
   AzoriusERC20DAO,
@@ -14,6 +14,7 @@ import {
   VotingStrategyType,
 } from '../../types';
 import useNetworkPublicClient from '../useNetworkPublicClient';
+import { useCurrentDAOKey } from './useCurrentDAOKey';
 
 const useBuildDAOTx = () => {
   const {
@@ -29,19 +30,23 @@ const useBuildDAOTx = () => {
       moduleFractalMasterCopy,
       linearVotingErc20MasterCopy,
       linearVotingErc721MasterCopy,
+      linearVotingErc20V1MasterCopy,
+      linearVotingErc721V1MasterCopy,
       moduleAzoriusMasterCopy,
       freezeGuardAzoriusMasterCopy,
       freezeGuardMultisigMasterCopy,
       freezeVotingErc20MasterCopy,
       freezeVotingErc721MasterCopy,
       freezeVotingMultisigMasterCopy,
+      decentPaymasterV1MasterCopy,
+      accountAbstraction,
     },
   } = useNetworkConfigStore();
-
+  const { daoKey } = useCurrentDAOKey();
   const {
     governance,
     governanceContracts: { linearVotingErc721Address },
-  } = useFractal();
+  } = useStore({ daoKey });
   const user = useAccount();
 
   const publicClient = useNetworkPublicClient();
@@ -85,7 +90,11 @@ const useBuildDAOTx = () => {
         moduleFractalMasterCopy,
         linearVotingErc20MasterCopy,
         linearVotingErc721MasterCopy,
+        linearVotingErc20V1MasterCopy,
+        linearVotingErc721V1MasterCopy,
         moduleAzoriusMasterCopy,
+        decentPaymasterV1MasterCopy,
+        accountAbstraction,
         parentAddress,
         parentTokenAddress,
       );
@@ -111,6 +120,7 @@ const useBuildDAOTx = () => {
       const buildSafeTxParams = {
         shouldSetName: true, // We KNOW this will always be true because the Decent UI doesn't allow creating a safe without a name
         shouldSetSnapshot: daoData.snapshotENS !== '',
+        enableGaslessVoting: daoData.gaslessVoting,
       };
 
       // Build Tx bundle based on governance type (Azorius or Multisig)
@@ -143,7 +153,11 @@ const useBuildDAOTx = () => {
       moduleFractalMasterCopy,
       linearVotingErc20MasterCopy,
       linearVotingErc721MasterCopy,
+      linearVotingErc20V1MasterCopy,
+      linearVotingErc721V1MasterCopy,
       moduleAzoriusMasterCopy,
+      decentPaymasterV1MasterCopy,
+      accountAbstraction,
       governance,
       linearVotingErc721Address,
     ],
