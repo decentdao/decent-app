@@ -7,8 +7,12 @@ export default defineConfig({
     environment: 'jsdom',
     setupFiles: ['./test/vitest-setup.ts'],
     deps: {
-      // ref: https://github.com/vitest-dev/vitest/discussions/2055
-      inline: ['@phosphor-icons/react'],
+      optimizer: {
+        web: {
+          // ref: https://github.com/vitest-dev/vitest/discussions/2055
+          include: ['@phosphor-icons/react'],
+        },
+      },
     },
   },
 });
