@@ -10,8 +10,13 @@ export function useCurrentDAOKey() {
   const [addressPrefix, daoAddress] = rawDAOKey?.split(':') ?? [];
   const normalizedDAOAddress = daoAddress ? getAddress(daoAddress) : undefined;
 
+  const daoKey =
+    addressPrefix && normalizedDAOAddress
+      ? (`${addressPrefix}:${normalizedDAOAddress}` as DAOKey)
+      : undefined;
+
   return {
-    daoKey: rawDAOKey ? (`${addressPrefix}:${normalizedDAOAddress}` as DAOKey) : undefined,
+    daoKey,
     addressPrefix: addressPrefix as NetworkPrefix,
     daoAddress: normalizedDAOAddress,
   };

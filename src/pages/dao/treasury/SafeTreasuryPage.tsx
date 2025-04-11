@@ -60,17 +60,6 @@ export function SafeTreasuryPage() {
               ),
           },
           {
-            optionKey: t('stoplossOrder'),
-            onClick: () =>
-              navigate(
-                DAO_ROUTES.proposalDapp.relative(
-                  addressPrefix,
-                  safeAddress,
-                  'https://www.stoploss.bleu.builders',
-                ),
-              ),
-          },
-          {
             optionKey: t('transfer'),
             onClick: openSendAssetsModal,
           },
