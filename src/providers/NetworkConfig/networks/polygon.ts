@@ -118,6 +118,9 @@ export const polygonConfig: NetworkConfig = {
     GovernanceType.AZORIUS_ERC20,
     GovernanceType.AZORIUS_ERC721,
   ],
+  gaslessVoting: {
+    rundlerMinimumStake: 1_0000_0000_0000_0000_0000n, // 100
+  },
 };
 
 export default polygonConfig;
