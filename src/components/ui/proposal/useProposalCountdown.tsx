@@ -5,25 +5,27 @@ import { logError } from '../../../helpers/errorLogging';
 import useSnapshotProposal from '../../../hooks/DAO/loaders/snapshot/useSnapshotProposal';
 import { useLoadDAOProposals } from '../../../hooks/DAO/loaders/useLoadDAOProposals';
 import useUpdateProposalState from '../../../hooks/DAO/proposal/useUpdateProposalState';
+import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import useNetworkPublicClient from '../../../hooks/useNetworkPublicClient';
 import { useFractal } from '../../../providers/App/AppProvider';
 import {
   AzoriusGovernance,
+  AzoriusProposal,
   FractalProposal,
   FractalProposalState,
-  AzoriusProposal,
   FreezeGuardType,
 } from '../../../types';
 import { blocksToSeconds } from '../../../utils/contract';
 import { getTxTimelockedTimestamp } from '../../../utils/guard';
 
 export function useProposalCountdown(proposal: FractalProposal) {
+  const { daoKey } = useCurrentDAOKey();
   const {
     governance,
     guardContracts: { freezeGuardContractAddress, freezeGuardType },
     governanceContracts,
     action,
-  } = useFractal();
+  } = useFractal({ daoKey });
   const publicClient = useNetworkPublicClient();
 
   const [secondsLeft, setSecondsLeft] = useState<number>();

@@ -5,15 +5,16 @@ import { useAccount } from 'wagmi';
 import { useFractal } from '../../../../providers/App/AppProvider';
 import { FractalGovernanceAction } from '../../../../providers/App/governance/action';
 import useNetworkPublicClient from '../../../useNetworkPublicClient';
+import { useCurrentDAOKey } from '../../useCurrentDAOKey';
 
 export const useERC20LinearToken = ({ onMount = true }: { onMount?: boolean }) => {
   const isTokenLoaded = useRef(false);
   const tokenAccount = useRef<string>();
-
+  const { daoKey } = useCurrentDAOKey();
   const {
     governanceContracts: { votesTokenAddress },
     action,
-  } = useFractal();
+  } = useFractal({ daoKey });
   const user = useAccount();
   const account = user.address;
   const publicClient = useNetworkPublicClient();

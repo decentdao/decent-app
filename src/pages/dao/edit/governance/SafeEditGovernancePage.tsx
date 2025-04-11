@@ -10,6 +10,7 @@ import { DAOCreateMode } from '../../../../components/DaoCreator/formComponents/
 import NoDataCard from '../../../../components/ui/containers/NoDataCard';
 import PageHeader from '../../../../components/ui/page/Header/PageHeader';
 import { DAO_ROUTES } from '../../../../constants/routes';
+import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
 import useDeployAzorius from '../../../../hooks/DAO/useDeployAzorius';
 import { analyticsEvents } from '../../../../insights/analyticsEvents';
 import { useFractal } from '../../../../providers/App/AppProvider';
@@ -27,10 +28,10 @@ export function SafeEditGovernancePage() {
   useEffect(() => {
     amplitude.track(analyticsEvents.ModifyGovernancePageOpened);
   }, []);
-
+  const { daoKey } = useCurrentDAOKey();
   const {
     governance: { type },
-  } = useFractal();
+  } = useFractal({ daoKey });
   const user = useAccount();
   const { safe, subgraphInfo } = useDaoInfoStore();
   const { addressPrefix } = useNetworkConfigStore();

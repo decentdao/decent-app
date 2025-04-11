@@ -4,6 +4,7 @@ import { getAddress } from 'viem';
 import * as Yup from 'yup';
 import { useFractal } from '../../../providers/App/AppProvider';
 import { RoleFormValues, RoleHatFormValue, SablierPaymentFormValues } from '../../../types/roles';
+import { useCurrentDAOKey } from '../../DAO/useCurrentDAOKey';
 import { useValidationAddress } from '../common/useValidationAddress';
 
 // @todo: needs typing
@@ -28,9 +29,10 @@ const getPaymentValidationContextData = (cxt: any) => {
 
 export const useRolesSchema = () => {
   const { t } = useTranslation(['roles']);
+  const { daoKey } = useCurrentDAOKey();
   const {
     treasury: { assetsFungible },
-  } = useFractal();
+  } = useFractal({ daoKey });
   const { addressValidationTest } = useValidationAddress();
 
   const paymentValidationSchema = Yup.object().shape({

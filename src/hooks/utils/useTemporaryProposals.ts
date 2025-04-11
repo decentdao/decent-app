@@ -2,11 +2,13 @@ import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { useFractal } from '../../providers/App/AppProvider';
+import { useCurrentDAOKey } from '../DAO/useCurrentDAOKey';
 
 export const useTemporaryProposals = () => {
+  const { daoKey } = useCurrentDAOKey();
   const {
     governance: { pendingProposals },
-  } = useFractal();
+  } = useFractal({ daoKey });
   const { t } = useTranslation(['proposal']);
 
   useEffect(() => {

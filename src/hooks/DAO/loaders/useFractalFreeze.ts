@@ -4,8 +4,8 @@ import { Address, GetContractReturnType, PublicClient, getContract, zeroAddress 
 import { useAccount } from 'wagmi';
 import GnosisSafeL2Abi from '../../../assets/abi/GnosisSafeL2';
 import {
-  isWithinFreezeProposalPeriod,
   isWithinFreezePeriod,
+  isWithinFreezeProposalPeriod,
 } from '../../../helpers/freezePeriodHelpers';
 import { useFractal } from '../../../providers/App/AppProvider';
 import { FractalGuardAction } from '../../../providers/App/guard/action';
@@ -14,6 +14,7 @@ import { blocksToSeconds, getTimeStamp } from '../../../utils/contract';
 import useNetworkPublicClient from '../../useNetworkPublicClient';
 import { useAddressContractType } from '../../utils/useAddressContractType';
 import useUserERC721VotingTokens from '../proposal/useUserERC721VotingTokens';
+import { useCurrentDAOKey } from '../useCurrentDAOKey';
 import { FreezeGuard } from './../../../types/fractal';
 
 export const useFractalFreeze = ({
@@ -26,8 +27,8 @@ export const useFractalFreeze = ({
   // load key for component; helps prevent unnecessary calls
   const loadKey = useRef<string>();
   const isFreezeSet = useRef(false);
-
-  const { guardContracts, action } = useFractal();
+  const { daoKey } = useCurrentDAOKey();
+  const { guardContracts, action } = useFractal({ daoKey });
   const { address: account } = useAccount();
   const { getUserERC721VotingTokens } = useUserERC721VotingTokens(
     parentSafeAddress,

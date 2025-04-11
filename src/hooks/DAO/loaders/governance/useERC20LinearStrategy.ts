@@ -7,8 +7,10 @@ import { AzoriusGovernance, VotingStrategyType } from '../../../../types';
 import { blocksToSeconds } from '../../../../utils/contract';
 import useNetworkPublicClient from '../../../useNetworkPublicClient';
 import { useTimeHelpers } from '../../../utils/useTimeHelpers';
+import { useCurrentDAOKey } from '../../useCurrentDAOKey';
 
 export const useERC20LinearStrategy = () => {
+  const { daoKey } = useCurrentDAOKey();
   const {
     governance,
     governanceContracts: {
@@ -17,7 +19,7 @@ export const useERC20LinearStrategy = () => {
       moduleAzoriusAddress,
     },
     action,
-  } = useFractal();
+  } = useFractal({ daoKey });
   const { getTimeDuration } = useTimeHelpers();
   const publicClient = useNetworkPublicClient();
 

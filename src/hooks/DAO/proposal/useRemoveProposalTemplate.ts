@@ -6,12 +6,14 @@ import { useFractal } from '../../../providers/App/AppProvider';
 import useIPFSClient from '../../../providers/App/hooks/useIPFSClient';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
 import { ProposalExecuteData } from '../../../types';
+import { useCurrentDAOKey } from '../useCurrentDAOKey';
 
 export default function useRemoveProposalTemplate() {
   const client = useIPFSClient();
+  const { daoKey } = useCurrentDAOKey();
   const {
     governance: { proposalTemplates },
-  } = useFractal();
+  } = useFractal({ daoKey });
 
   const {
     contracts: { keyValuePairs },

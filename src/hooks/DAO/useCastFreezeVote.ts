@@ -8,12 +8,14 @@ import { FreezeVotingType } from '../../types';
 import { useNetworkWalletClient } from '../useNetworkWalletClient';
 import { useTransaction } from '../utils/useTransaction';
 import useUserERC721VotingTokens from './proposal/useUserERC721VotingTokens';
+import { useCurrentDAOKey } from './useCurrentDAOKey';
 
 export const useCastFreezeVote = () => {
   const [contractCall, pending] = useTransaction();
+  const { daoKey } = useCurrentDAOKey();
   const {
     guardContracts: { freezeVotingContractAddress, freezeVotingType },
-  } = useFractal();
+  } = useFractal({ daoKey });
   const { subgraphInfo } = useDaoInfoStore();
   const { getUserERC721VotingTokens } = useUserERC721VotingTokens(null, null, false);
 

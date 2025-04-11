@@ -4,7 +4,7 @@ import { useFormikContext } from 'formik';
 import { useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { useTranslation } from 'react-i18next';
-import { isAddress } from 'viem';
+import { formatUnits, isAddress } from 'viem';
 import { AirdropFormValues } from './AirdropModal';
 
 function floatStringToBigInt(str: string, decimals: number): bigint {
@@ -22,24 +22,27 @@ function floatStringToBigInt(str: string, decimals: number): bigint {
 
 const zeroBigInt = BigInt(0);
 
-export const parseRecipients = async (csvText: string, decimals: number) => {
+const parseCsvText = (text: string, tabDelimited: boolean) => {
   const converter = csv({
+    delimiter: tabDelimited ? '\t' : 'auto',
     noheader: true,
     trim: true,
     output: 'csv', // Output as array of arrays
   });
-  const jsonArray = await converter.fromString(csvText);
+  return converter.fromString(text);
+};
 
-  return jsonArray
+const parseRecipientLines = (text: string[][], decimals: number) => {
+  return text
     .map((row: any) => {
       const [address, amount] = row;
-      const trimmedAmount = amount.replace(/,/g, '').trim(); // Remove commas
+      const trimmedAmount = amount.replace(/[^\d.]/g, ''); // Remove commas
       const parsed = floatStringToBigInt(trimmedAmount, decimals);
       if (isAddress(address) && parsed > zeroBigInt) {
         return {
           address,
           amount: {
-            value: trimmedAmount,
+            value: formatUnits(parsed, decimals),
             bigintValue: parsed,
           },
         };
@@ -48,6 +51,10 @@ export const parseRecipients = async (csvText: string, decimals: number) => {
       }
     })
     .filter(row => row != null);
+};
+
+export const parseRecipients = async (text: string, decimals: number) => {
+  return parseRecipientLines(await parseCsvText(text, text.includes('\t')), decimals);
 };
 
 export function DnDFileInput() {
@@ -79,6 +86,7 @@ export function DnDFileInput() {
     onDrop,
     accept: {
       'text/csv': ['.csv'],
+      'text/tsv': ['.tsv'],
     },
     multiple: false,
   });

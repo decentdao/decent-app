@@ -7,6 +7,8 @@ export type TheGraphConfig = {
   id: string; // for prod
 };
 
+export type NetworkPrefix = 'base' | 'eth' | 'oeth' | 'matic' | 'sep'; // copy whatever Safe uses
+
 export type NetworkConfig = {
   order: number; // any arbitrary integer, used to "order" the networks in the dropdown
   chain: Chain;
@@ -14,7 +16,7 @@ export type NetworkConfig = {
   safeBaseURL: string;
   etherscanBaseURL: string;
   etherscanAPIUrl: string;
-  addressPrefix: string; // copy whatever Safe uses
+  addressPrefix: NetworkPrefix;
   nativeTokenIcon: string;
   isENSSupported: boolean;
   decentSubgraph: TheGraphConfig;

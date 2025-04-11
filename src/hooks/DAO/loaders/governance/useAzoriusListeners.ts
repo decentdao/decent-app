@@ -14,8 +14,10 @@ import { getAverageBlockTime } from '../../../../utils/contract';
 import useNetworkPublicClient from '../../../useNetworkPublicClient';
 import { useAddressContractType } from '../../../utils/useAddressContractType';
 import { useSafeDecoder } from '../../../utils/useSafeDecoder';
+import { useCurrentDAOKey } from '../../useCurrentDAOKey';
 
 export const useAzoriusListeners = () => {
+  const { daoKey } = useCurrentDAOKey();
   const {
     action,
     governanceContracts: {
@@ -25,7 +27,7 @@ export const useAzoriusListeners = () => {
       linearVotingErc721Address,
       linearVotingErc721WithHatsWhitelistingAddress,
     },
-  } = useFractal();
+  } = useFractal({ daoKey });
   const decode = useSafeDecoder();
   const publicClient = useNetworkPublicClient();
   const { getAddressContractType } = useAddressContractType();

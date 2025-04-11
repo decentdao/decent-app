@@ -5,9 +5,11 @@ import { FractalGovernanceAction } from '../../../../providers/App/governance/ac
 import { useSafeAPI } from '../../../../providers/App/hooks/useSafeAPI';
 import { useDaoInfoStore } from '../../../../store/daoInfo/useDaoInfoStore';
 import { useSafeTransactions } from '../../../utils/useSafeTransactions';
+import { useCurrentDAOKey } from '../../useCurrentDAOKey';
 
 export const useSafeMultisigProposals = () => {
-  const { action } = useFractal();
+  const { daoKey } = useCurrentDAOKey();
+  const { action } = useFractal({ daoKey });
   const { safe } = useDaoInfoStore();
   const safeAPI = useSafeAPI();
   const safeAddress = safe?.address;
