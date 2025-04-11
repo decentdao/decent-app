@@ -93,6 +93,7 @@
   "devDependencies": {
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^14.2.1",
+    "@testing-library/user-event": "^14.6.1",
     "@types/lodash.camelcase": "^4.3.9",
     "@types/lodash.debounce": "^4.0.9",
     "@types/lodash.groupby": "^4.6.9",
