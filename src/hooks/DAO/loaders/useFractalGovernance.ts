@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { createDecentSubgraphClient } from '../../../graphql';
 import { DAOQuery, DAOQueryResponse } from '../../../graphql/DAOQueries';
-import { useFractal } from '../../../providers/App/AppProvider';
+import { useStore } from '../../../providers/App/AppProvider';
 import { FractalGovernanceAction } from '../../../providers/App/governance/action';
 import useIPFSClient from '../../../providers/App/hooks/useIPFSClient';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
@@ -22,7 +22,7 @@ export const useFractalGovernance = () => {
     action,
     governance: { type },
     guardContracts: { isGuardLoaded },
-  } = useFractal({ daoKey });
+  } = useStore({ daoKey });
   const { safe } = useDaoInfoStore();
   const { getConfigByChainId, chain } = useNetworkConfigStore();
 

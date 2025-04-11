@@ -13,7 +13,7 @@ import { CaretDown, CaretRight } from '@phosphor-icons/react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
-import { useFractal } from '../../../providers/App/AppProvider';
+import { useStore } from '../../../providers/App/AppProvider';
 import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
 import { formatUSD } from '../../../utils';
 import Divider from '../../ui/utils/Divider';
@@ -26,7 +26,7 @@ export function Assets() {
   const { daoKey } = useCurrentDAOKey();
   const {
     treasury: { assetsFungible, assetsNonFungible, assetsDeFi, totalUsdValue },
-  } = useFractal({ daoKey });
+  } = useStore({ daoKey });
   const { safe } = useDaoInfoStore();
   const { t } = useTranslation('treasury');
   const [expandedIndecies, setExpandedIndecies] = useState<number[]>([]);

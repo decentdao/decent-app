@@ -3,7 +3,7 @@ import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { encodeFunctionData } from 'viem';
 import { normalize } from 'viem/ens';
-import { useFractal } from '../../../providers/App/AppProvider';
+import { useStore } from '../../../providers/App/AppProvider';
 import useIPFSClient from '../../../providers/App/hooks/useIPFSClient';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
 import { ProposalExecuteData } from '../../../types';
@@ -26,7 +26,7 @@ export default function useCreateProposalTemplate() {
   const { daoKey } = useCurrentDAOKey();
   const {
     governance: { proposalTemplates },
-  } = useFractal({ daoKey });
+  } = useStore({ daoKey });
 
   const {
     contracts: { keyValuePairs },

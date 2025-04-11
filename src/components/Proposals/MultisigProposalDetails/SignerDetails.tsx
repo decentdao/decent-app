@@ -5,7 +5,7 @@ import { Address, getAddress } from 'viem';
 import { useAccount } from 'wagmi';
 import { findMostConfirmedMultisigRejectionProposal } from '../../../helpers/multisigProposal';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
-import { useFractal } from '../../../providers/App/AppProvider';
+import { useStore } from '../../../providers/App/AppProvider';
 import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
 import { MultisigProposal } from '../../../types';
 import { DEFAULT_DATE_TIME_FORMAT } from '../../../utils/numberFormats';
@@ -76,7 +76,7 @@ export function SignerDetails({ proposal }: { proposal: MultisigProposal }) {
   const { daoKey } = useCurrentDAOKey();
   const {
     governance: { proposals },
-  } = useFractal({ daoKey });
+  } = useStore({ daoKey });
 
   const rejectionProposal = findMostConfirmedMultisigRejectionProposal(
     safe?.address,

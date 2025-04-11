@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { formatUnits, getAddress, isAddress } from 'viem';
 import PencilWithLineIcon from '../../assets/theme/custom/icons/PencilWithLineIcon';
 import { useCurrentDAOKey } from '../../hooks/DAO/useCurrentDAOKey';
-import { useFractal } from '../../providers/App/AppProvider';
+import { useStore } from '../../providers/App/AppProvider';
 import { useProposalActionsStore } from '../../store/actions/useProposalActionsStore';
 import { CreateProposalAction, ProposalActionType } from '../../types/proposalBuilder';
 import { Card } from '../ui/cards/Card';
@@ -21,7 +21,7 @@ function SendAssetsAction({
   const { daoKey } = useCurrentDAOKey();
   const {
     treasury: { assetsFungible },
-  } = useFractal({ daoKey });
+  } = useStore({ daoKey });
 
   const isNativeAssetTransfer = action.actionType === ProposalActionType.NATIVE_TRANSFER;
 
@@ -82,7 +82,7 @@ export function AirdropAction({
   const { daoKey } = useCurrentDAOKey();
   const {
     treasury: { assetsFungible },
-  } = useFractal({ daoKey });
+  } = useStore({ daoKey });
   const totalAmountString = action.transactions[1].parameters[2].value?.slice(1, -1);
   const totalAmount = BigInt(
     totalAmountString?.split(',').reduce((acc, curr) => acc + BigInt(curr), 0n) || '0',
