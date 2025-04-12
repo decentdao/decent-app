@@ -5,20 +5,13 @@ import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetwo
 import useNetworkPublicClient from '../../useNetworkPublicClient';
 
 interface DepositInfo {
-  /**
-   * Deposited balance on EntryPoint
-   */
-  deposit: bigint;
+  balance: bigint;
   stake: bigint;
   staked: boolean;
   unstakeDelaySec: number;
   withdrawTime: number;
 }
 
-/**
- * Get deposit info from entryPoint contract
- * @returns
- */
 export function useDepositInfo(account?: Address | null) {
   const {
     contracts: { accountAbstraction },
@@ -28,14 +21,19 @@ export function useDepositInfo(account?: Address | null) {
   const [depositInfo, setDepositInfo] = useState<DepositInfo>();
 
   useEffect(() => {
-    if (!account || !accountAbstraction) return;
-    const entryPoint = getContract({
-      address: accountAbstraction.entryPointv07,
-      abi: EntryPoint07Abi,
-      client: publicClient,
-    });
+    const getDepositInfo = async () => {
+      if (!account || !accountAbstraction) return;
+      const entryPoint = getContract({
+        address: accountAbstraction.entryPointv07,
+        abi: EntryPoint07Abi,
+        client: publicClient,
+      });
 
-    entryPoint.read.getDepositInfo([account]).then(setDepositInfo);
+      const ret = await entryPoint.read.getDepositInfo([account]);
+      setDepositInfo({ ...ret, balance: ret.deposit });
+    };
+
+    getDepositInfo();
   }, [account, publicClient, accountAbstraction]);
 
   return {

@@ -214,7 +214,7 @@ export function GaslessVotingToggleDAOSettings(props: GaslessVotingToggleProps) 
     gaslessVoting?.rundlerMinimumStake !== undefined;
   if (!gaslessFeatureEnabled) return null;
 
-  const paymasterBalance = depositInfo?.deposit || 0n;
+  const paymasterBalance = depositInfo?.balance || 0n;
   const stakedAmount = depositInfo?.stake || 0n;
   const minStakeAmount = gaslessVoting?.rundlerMinimumStake || 0n;
   const formattedPaymasterBalance = formatCoin(
