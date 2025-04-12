@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useAccount } from 'wagmi';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import { useGetAccountName } from '../../../hooks/utils/useGetAccountName';
-import { useFractal } from '../../../providers/App/AppProvider';
+import { useStore } from '../../../providers/App/AppProvider';
 import { AzoriusGovernance, ERC721ProposalVote } from '../../../types';
 import StatusBox from '../../ui/badges/StatusBox';
 
@@ -16,7 +16,7 @@ export default function ProposalERC721VoteItem({
   const { t } = useTranslation(['common', 'proposal']);
   const { displayName } = useGetAccountName(voter);
   const { daoKey } = useCurrentDAOKey();
-  const { governance } = useFractal({ daoKey });
+  const { governance } = useStore({ daoKey });
   const user = useAccount();
 
   const azoriusGovernance = governance as AzoriusGovernance;

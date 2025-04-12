@@ -34,7 +34,7 @@ import useFeatureFlag from '../../../../helpers/environmentFeatureFlags';
 import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
 import useNetworkPublicClient from '../../../../hooks/useNetworkPublicClient';
 import { generateContractByteCodeLinear } from '../../../../models/helpers/utils';
-import { useFractal } from '../../../../providers/App/AppProvider';
+import { useStore } from '../../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../../providers/NetworkConfig/useNetworkConfigStore';
 import { useProposalActionsStore } from '../../../../store/actions/useProposalActionsStore';
 import { useDaoInfoStore } from '../../../../store/daoInfo/useDaoInfoStore';
@@ -73,7 +73,7 @@ export function SafePermissionsCreateProposal() {
       linearVotingErc721WithHatsWhitelistingAddress,
       moduleAzoriusAddress,
     },
-  } = useFractal({ daoKey });
+  } = useStore({ daoKey });
   const { safe } = useDaoInfoStore();
   const azoriusGovernance = governance as AzoriusGovernance;
   const openSelectAddPermissionModal = useDecentModal(ModalType.ADD_PERMISSION);

@@ -7,7 +7,7 @@ import {
   isWithinFreezePeriod,
   isWithinFreezeProposalPeriod,
 } from '../../../helpers/freezePeriodHelpers';
-import { useFractal } from '../../../providers/App/AppProvider';
+import { useStore } from '../../../providers/App/AppProvider';
 import { FractalGuardAction } from '../../../providers/App/guard/action';
 import { FractalGuardContracts, FreezeVotingType } from '../../../types';
 import { blocksToSeconds, getTimeStamp } from '../../../utils/contract';
@@ -28,7 +28,7 @@ export const useFractalFreeze = ({
   const loadKey = useRef<string>();
   const isFreezeSet = useRef(false);
   const { daoKey } = useCurrentDAOKey();
-  const { guardContracts, action } = useFractal({ daoKey });
+  const { guardContracts, action } = useStore({ daoKey });
   const { address: account } = useAccount();
   const { getUserERC721VotingTokens } = useUserERC721VotingTokens(
     parentSafeAddress,

@@ -1,7 +1,7 @@
 import { abis } from '@fractal-framework/fractal-contracts';
 import { useCallback, useEffect, useRef } from 'react';
 import { getContract, zeroAddress } from 'viem';
-import { useFractal } from '../../../providers/App/AppProvider';
+import { useStore } from '../../../providers/App/AppProvider';
 import { GuardContractAction } from '../../../providers/App/guardContracts/action';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
 import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
@@ -15,7 +15,7 @@ export const useFractalGuardContracts = ({ loadOnMount = true }: { loadOnMount?:
   // load key for component; helps prevent unnecessary calls
   const loadKey = useRef<string>();
   const { daoKey } = useCurrentDAOKey();
-  const { action } = useFractal({ daoKey });
+  const { action } = useStore({ daoKey });
 
   const { modules, safe, subgraphInfo } = useDaoInfoStore();
 

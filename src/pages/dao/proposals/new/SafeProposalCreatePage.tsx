@@ -16,7 +16,7 @@ import { DAO_ROUTES } from '../../../../constants/routes';
 import { usePrepareProposal } from '../../../../hooks/DAO/proposal/usePrepareProposal';
 import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
 import { analyticsEvents } from '../../../../insights/analyticsEvents';
-import { useFractal } from '../../../../providers/App/AppProvider';
+import { useStore } from '../../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../../providers/NetworkConfig/useNetworkConfigStore';
 import { useDaoInfoStore } from '../../../../store/daoInfo/useDaoInfoStore';
 import { BigIntValuePair, CreateProposalSteps, CreateProposalTransaction } from '../../../../types';
@@ -28,7 +28,7 @@ export function SafeProposalCreatePage() {
   const { daoKey } = useCurrentDAOKey();
   const {
     governance: { type },
-  } = useFractal({ daoKey });
+  } = useStore({ daoKey });
   const { safe } = useDaoInfoStore();
   const { prepareProposal } = usePrepareProposal();
 

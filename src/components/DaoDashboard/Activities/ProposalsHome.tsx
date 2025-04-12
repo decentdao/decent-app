@@ -8,7 +8,7 @@ import { useProposalsSortedAndFiltered } from '../../../hooks/DAO/proposal/usePr
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import { useCanUserCreateProposal } from '../../../hooks/utils/useCanUserSubmitProposal';
 import { usePagination } from '../../../hooks/utils/usePagination';
-import { useFractal } from '../../../providers/App/AppProvider';
+import { useStore } from '../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
 import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
 import {
@@ -33,7 +33,7 @@ export function ProposalsHome() {
     guardContracts: { freezeVotingContractAddress },
     guard,
     governance: { type },
-  } = useFractal({ daoKey });
+  } = useStore({ daoKey });
 
   const [sortBy, setSortBy] = useState<SortBy>(SortBy.Newest);
   const [filters, setFilters] = useState<FractalProposalState[]>([]);
@@ -51,7 +51,7 @@ export function ProposalsHome() {
     [proposals, getPaginatedItems],
   );
 
-  const { governance, guardContracts } = useFractal({ daoKey });
+  const { governance, guardContracts } = useStore({ daoKey });
   const { safe } = useDaoInfoStore();
 
   const { addressPrefix } = useNetworkConfigStore();

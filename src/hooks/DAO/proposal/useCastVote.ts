@@ -7,7 +7,7 @@ import { Address, getContract, http } from 'viem';
 import { createBundlerClient } from 'viem/account-abstraction';
 import { useAccount } from 'wagmi';
 import { EntryPoint07Abi } from '../../../assets/abi/EntryPoint07Abi';
-import { useFractal } from '../../../providers/App/AppProvider';
+import { useStore } from '../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
 import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
 import useNetworkPublicClient from '../../useNetworkPublicClient';
@@ -25,7 +25,7 @@ const useCastVote = (proposalId: string, strategy: Address) => {
       linearVotingErc721Address,
       linearVotingErc721WithHatsWhitelistingAddress,
     },
-  } = useFractal({ daoKey });
+  } = useStore({ daoKey });
   const {
     contracts: { accountAbstraction },
     rpcEndpoint,

@@ -6,7 +6,7 @@ import { toast } from 'sonner';
 import { DAO_ROUTES } from '../../../constants/routes';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import useVotingStrategiesAddresses from '../../../hooks/utils/useVotingStrategiesAddresses';
-import { useFractal } from '../../../providers/App/AppProvider';
+import { useStore } from '../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
 import { useProposalActionsStore } from '../../../store/actions/useProposalActionsStore';
 import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
@@ -19,7 +19,7 @@ export function ConfirmDeleteStrategyModal({ onClose }: { onClose: () => void })
   const { t } = useTranslation('settings');
   const { addressPrefix } = useNetworkConfigStore();
   const { daoKey } = useCurrentDAOKey();
-  const { governance, governanceContracts } = useFractal({ daoKey });
+  const { governance, governanceContracts } = useStore({ daoKey });
   const { safe } = useDaoInfoStore();
   const { addAction } = useProposalActionsStore();
 
