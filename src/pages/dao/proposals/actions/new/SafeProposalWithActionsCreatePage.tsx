@@ -86,7 +86,6 @@ export function SafeProposalWithActionsCreatePage() {
   const HEADER_HEIGHT = useHeaderHeight();
   const { t } = useTranslation('proposal');
   const navigate = useNavigate();
-  const { resetActions } = useProposalActionsStore();
 
   if (!type || !safe?.address || !safe) {
     return (
@@ -108,7 +107,6 @@ export function SafeProposalWithActionsCreatePage() {
   ];
 
   const pageHeaderButtonClickHandler = () => {
-    resetActions();
     navigate(DAO_ROUTES.proposals.relative(addressPrefix, safe.address));
   };
 
