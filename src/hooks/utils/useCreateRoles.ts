@@ -11,19 +11,16 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import {
-  AbiItem,
   Address,
   encodeAbiParameters,
   encodeFunctionData,
   encodePacked,
-  getAbiItem,
   getAddress,
   getContract,
   getCreate2Address,
   Hex,
   keccak256,
   parseAbiParameters,
-  toFunctionSelector,
   zeroAddress,
 } from 'viem';
 import GnosisSafeL2 from '../../assets/abi/GnosisSafeL2';
@@ -64,6 +61,7 @@ import {
 } from '../../types/roles';
 import { SENTINEL_MODULE } from '../../utils/address';
 import { prepareSendAssetsActionData } from '../../utils/dao/prepareSendAssetsActionData';
+import { getVoteSelectorAndValidator } from '../../utils/gaslessVoting';
 import useSubmitProposal from '../DAO/proposal/useSubmitProposal';
 import { useCurrentDAOKey } from '../DAO/useCurrentDAOKey';
 import useCreateSablierStream from '../streams/useCreateSablierStream';
@@ -73,7 +71,6 @@ import {
   predictAccountAddress,
   predictHatId,
 } from './../../store/roles/rolesStoreUtils';
-import { getVoteSelectorAndValidator } from '../../utils/gaslessVoting';
 
 function hatsDetailsBuilder(data: { name: string; description: string }) {
   return JSON.stringify({
