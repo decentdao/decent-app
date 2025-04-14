@@ -1,12 +1,12 @@
-import { Button, Flex, Icon, Text, useDisclosure } from '@chakra-ui/react';
+import { Button, Flex, Grid, Icon, Text, useDisclosure } from '@chakra-ui/react';
 import { ArrowsDownUp, Plus, SquaresFour } from '@phosphor-icons/react';
+import { useFormikContext } from 'formik';
 import { useTranslation } from 'react-i18next';
 import { DETAILS_BOX_SHADOW } from '../../../constants/common';
-import useFeatureFlag from '../../../helpers/environmentFeatureFlags';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import { useStore } from '../../../providers/App/AppProvider';
 import { useProposalActionsStore } from '../../../store/actions/useProposalActionsStore';
-import { ProposalActionType } from '../../../types';
+import { CreateProposalForm, ProposalActionType } from '../../../types';
 import { prepareSendAssetsActionData } from '../../../utils/dao/prepareSendAssetsActionData';
 import { ModalBase } from './ModalBase';
 import { ModalType } from './ModalProvider';
@@ -33,12 +33,12 @@ function ActionCard({
       isDisabled={isDisabled}
       padding={0}
       w="full"
+      boxShadow={DETAILS_BOX_SHADOW}
+      _hover={!isDisabled ? { bg: 'neutral-3' } : undefined}
+      _active={!isDisabled ? { bg: 'neutral-2' } : undefined}
+      transition="all ease-out 300ms"
     >
       <Flex
-        boxShadow={DETAILS_BOX_SHADOW}
-        _hover={!isDisabled ? { bg: 'neutral-3' } : undefined}
-        _active={!isDisabled ? { bg: 'neutral-2' } : undefined}
-        transition="all ease-out 300ms"
         p="1.5rem"
         borderRadius="0.5rem"
         flexDirection="column"
@@ -58,7 +58,13 @@ function ActionCard({
         >
           {title}
         </Text>
-        <Text color={isDisabled ? 'neutral-6' : 'neutral-7'}>{subtitle}</Text>
+        <Text
+          whiteSpace="pre-wrap"
+          textAlign="left"
+          color={isDisabled ? 'neutral-6' : 'neutral-7'}
+        >
+          {subtitle}
+        </Text>
       </Flex>
     </Button>
   );
@@ -72,11 +78,13 @@ export function AddActions() {
 
   const { t } = useTranslation(['actions', 'modals']);
   const { addAction } = useProposalActionsStore();
+  const { values, setFieldValue } = useFormikContext<CreateProposalForm>();
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const openSendAssetsModal = useDecentModal(ModalType.SEND_ASSETS, {
     onSubmit: sendAssetsData => {
       const { action } = prepareSendAssetsActionData(sendAssetsData);
+      setFieldValue('transactions', [...values.transactions, ...action.transactions]);
       addAction({ ...action, content: <></> });
     },
     submitButtonText: t('Add Action', { ns: 'modals' }),
@@ -84,6 +92,7 @@ export function AddActions() {
 
   const openTransactionBuilderModal = useDecentModal(ModalType.TRANSACTION_BUILDER, {
     onSubmit: transactionBuilderData => {
+      setFieldValue('transactions', [...values.transactions, ...transactionBuilderData]);
       addAction({
         actionType: ProposalActionType.TRANSACTION_BUILDER,
         content: <></>,
@@ -94,8 +103,6 @@ export function AddActions() {
 
   const hasAnyBalanceOfAnyFungibleTokens =
     assetsFungible.reduce((p, c) => p + BigInt(c.balance), 0n) > 0n;
-
-  const isDevMode = useFeatureFlag('flag_dev');
 
   return (
     <>
@@ -110,15 +117,17 @@ export function AddActions() {
       </Button>
 
       <ModalBase
-        size="xl"
+        size="2xl"
         isOpen={isOpen}
         onClose={onClose}
         title={t('actions')}
       >
-        <Flex
-          gap="2"
-          justifyContent="space-between"
+        <Grid
+          gap="0.5rem"
           flexWrap="wrap"
+          justifyContent="space-evenly"
+          templateColumns={{ base: '1fr', md: 'repeat(2, 1fr)' }}
+          templateRows="auto"
         >
           <ActionCard
             title={t('transferAssets')}
@@ -130,18 +139,16 @@ export function AddActions() {
             }}
             isDisabled={!hasAnyBalanceOfAnyFungibleTokens}
           />
-          {isDevMode && (
-            <ActionCard
-              title={t('transcationBuilderActionCardTitle', { ns: 'modals' })}
-              subtitle={t('transactionBuilderActionCardSub', { ns: 'modals' })}
-              icon={ArrowsDownUp}
-              onClick={() => {
-                onClose();
-                openTransactionBuilderModal();
-              }}
-              isDisabled={false}
-            />
-          )}
+          <ActionCard
+            title={t('transcationBuilderActionCardTitle', { ns: 'modals' })}
+            subtitle={t('transactionBuilderActionCardSub', { ns: 'modals' })}
+            icon={ArrowsDownUp}
+            onClick={() => {
+              onClose();
+              openTransactionBuilderModal();
+            }}
+            isDisabled={false}
+          />
 
           <ActionCard
             title={t('comingSoon')}
@@ -150,7 +157,7 @@ export function AddActions() {
             onClick={() => {}}
             isDisabled
           />
-        </Flex>
+        </Grid>
       </ModalBase>
     </>
   );
