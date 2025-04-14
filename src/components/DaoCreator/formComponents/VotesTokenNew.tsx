@@ -1,7 +1,6 @@
 import { Box, Flex, Input, RadioGroup } from '@chakra-ui/react';
 import { Field, FieldAttributes } from 'formik';
 import { useTranslation } from 'react-i18next';
-import { zeroAddress } from 'viem';
 import useFeatureFlag from '../../../helpers/environmentFeatureFlags';
 import { useFormHelpers } from '../../../hooks/utils/useFormHelpers';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
@@ -56,7 +55,7 @@ export function VotesTokenNew(props: ICreationStepProps) {
           placeholder="TKN"
         />
       </LabelComponent>
-      {lockedTokenFeatureEnabled && votesErc20LockableMasterCopy !== zeroAddress && (
+      {lockedTokenFeatureEnabled && votesErc20LockableMasterCopy && (
         <Box
           mt="2rem"
           mb="1.5rem"
