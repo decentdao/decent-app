@@ -1,8 +1,10 @@
 import { Box, Flex, Input, RadioGroup } from '@chakra-ui/react';
 import { Field, FieldAttributes } from 'formik';
 import { useTranslation } from 'react-i18next';
+import { zeroAddress } from 'viem';
 import useFeatureFlag from '../../../helpers/environmentFeatureFlags';
 import { useFormHelpers } from '../../../hooks/utils/useFormHelpers';
+import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
 import { ICreationStepProps, TokenLockType } from '../../../types';
 import ContentBoxTitle from '../../ui/containers/ContentBox/ContentBoxTitle';
 import { BigIntInput } from '../../ui/forms/BigIntInput';
@@ -14,6 +16,9 @@ export function VotesTokenNew(props: ICreationStepProps) {
   const { t } = useTranslation('daoCreate');
   const { restrictChars } = useFormHelpers();
   const lockedTokenFeatureEnabled = useFeatureFlag('flag_locked_token');
+  const {
+    contracts: { votesErc20LockableMasterCopy },
+  } = useNetworkConfigStore();
 
   return (
     <Flex
@@ -51,7 +56,7 @@ export function VotesTokenNew(props: ICreationStepProps) {
           placeholder="TKN"
         />
       </LabelComponent>
-      {lockedTokenFeatureEnabled && (
+      {lockedTokenFeatureEnabled && votesErc20LockableMasterCopy !== zeroAddress && (
         <Box
           mt="2rem"
           mb="1.5rem"

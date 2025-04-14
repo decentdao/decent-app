@@ -14,6 +14,7 @@ import {
   keccak256,
   parseAbiParameters,
   toFunctionSelector,
+  zeroAddress,
 } from 'viem';
 import GnosisSafeL2Abi from '../assets/abi/GnosisSafeL2';
 import { ZodiacModuleProxyFactoryAbi } from '../assets/abi/ZodiacModuleProxyFactoryAbi';
@@ -127,6 +128,12 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
     if (daoData.votingStrategyType === VotingStrategyType.LINEAR_ERC20) {
       daoData = daoData as AzoriusERC20DAO;
       if (!daoData.isTokenImported) {
+        if (
+          daoData.locked === TokenLockType.LOCKED &&
+          votesErc20LockableMasterCopy === zeroAddress
+        ) {
+          throw new Error('Votes Erc20 Lockable Master Copy address not set');
+        }
         this.setEncodedSetupTokenData();
         this.setPredictedTokenAddress();
       } else {
