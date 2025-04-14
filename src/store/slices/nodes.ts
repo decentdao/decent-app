@@ -17,10 +17,7 @@ export type NodesSlice = {
 
 type SetState = (fn: (state: GlobalStore) => void) => void;
 
-export const createNodesSlice: StateCreator<GlobalStore, [], [], NodesSlice> = (
-  _get,
-  set: SetState,
-) => ({
+export const createNodesSlice: StateCreator<GlobalStore, [], [], NodesSlice> = (set: SetState) => ({
   nodes: {},
   setDaoNode: (
     daoKey,
@@ -31,10 +28,7 @@ export const createNodesSlice: StateCreator<GlobalStore, [], [], NodesSlice> = (
     },
   ) => {
     set(state => {
-      if (!state.nodes[daoKey]) {
-        state.nodes[daoKey] = {} as IDAO;
-      }
-      state.nodes[daoKey].safe = {
+      const mappedSafe = {
         owners: owners.map(owner => getAddress(owner)),
         modulesAddresses: rawModules.map(module => getAddress(module)),
         guard: getAddress(guard),
@@ -43,8 +37,20 @@ export const createNodesSlice: StateCreator<GlobalStore, [], [], NodesSlice> = (
         threshold,
         nonce,
       };
-      state.nodes[daoKey].subgraphInfo = daoInfo;
-      state.nodes[daoKey].modules = modules;
+
+      if (!state.nodes[daoKey]) {
+        state.nodes[daoKey] = {
+          safe: mappedSafe,
+          subgraphInfo: daoInfo,
+          modules,
+          gaslessVotingEnabled: false,
+          paymasterAddress: null,
+        };
+      } else {
+        state.nodes[daoKey].safe = mappedSafe;
+        state.nodes[daoKey].subgraphInfo = daoInfo;
+        state.nodes[daoKey].modules = modules;
+      }
     });
   },
 });
