@@ -120,7 +120,7 @@ export function SafeCreateProposalTemplatePage() {
       transactionsDetails={transactions => <TransactionsDetails transactions={transactions} />}
       templateDetails={title => <TemplateDetails title={title} />}
       streamsDetails={null}
-      initialValues={initialProposalTemplate}
+      initialValues={{ ...initialProposalTemplate, nonce: safe?.nextNonce }}
       prepareProposalData={prepareProposalTemplateProposal}
       mainContent={(formikProps, pendingCreateTx, nonce, currentStep) => {
         if (currentStep !== CreateProposalSteps.TRANSACTIONS) return null;
