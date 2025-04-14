@@ -169,10 +169,13 @@ export default function useCreateRoles() {
       const azoriusGovernance = governance as AzoriusGovernance;
       const { votingStrategy, votesToken, erc721Tokens } = azoriusGovernance;
 
+      if (!paymaster) {
+        throw new Error('Paymaster is not defined');
+      }
       const getVoteValidator = (strategyType: 'erc20' | 'erc721') => {
         return strategyType === 'erc20'
-          ? paymaster!.linearERC20VotingV1ValidatorV1
-          : paymaster!.linearERC721VotingV1ValidatorV1;
+          ? paymaster.linearERC20VotingV1ValidatorV1
+          : paymaster.linearERC721VotingV1ValidatorV1;
       };
 
       if (azoriusGovernance.type === GovernanceType.AZORIUS_ERC20) {
