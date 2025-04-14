@@ -1,19 +1,16 @@
 import { abis } from '@fractal-framework/fractal-contracts';
 import {
-  AbiItem,
   Address,
   Hex,
   PublicClient,
   encodeAbiParameters,
   encodeFunctionData,
   encodePacked,
-  getAbiItem,
   getAddress,
   getContract,
   getCreate2Address,
   keccak256,
   parseAbiParameters,
-  toFunctionSelector,
 } from 'viem';
 import GnosisSafeL2Abi from '../assets/abi/GnosisSafeL2';
 import { ZodiacModuleProxyFactoryAbi } from '../assets/abi/ZodiacModuleProxyFactoryAbi';
@@ -28,13 +25,16 @@ import {
   AzoriusERC20DAO,
   AzoriusERC721DAO,
   AzoriusGovernanceDAO,
-  GovernanceType,
   SafeTransaction,
   TokenLockType,
   VotingStrategyType,
 } from '../types';
 import { SENTINEL_MODULE } from '../utils/address';
-import { getPaymasterAddress, getPaymasterSaltNonce } from '../utils/gaslessVoting';
+import {
+  getPaymasterAddress,
+  getPaymasterSaltNonce,
+  getVoteSelectorAndValidator,
+} from '../utils/gaslessVoting';
 import { BaseTxBuilder } from './BaseTxBuilder';
 import { generateContractByteCodeLinear, generateSalt } from './helpers/utils';
 
@@ -365,29 +365,16 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
       chainId: this.publicClient.chain!.id,
     });
 
-    let voteAbiItem: AbiItem;
-
-    if (this.daoData.governance === GovernanceType.AZORIUS_ERC20) {
-      voteAbiItem = getAbiItem({
-        name: 'vote',
-        abi: abis.LinearERC20Voting,
-      });
-    } else if (this.daoData.governance === GovernanceType.AZORIUS_ERC721) {
-      voteAbiItem = getAbiItem({
-        name: 'vote',
-        abi: abis.LinearERC721Voting,
-      });
-    } else {
-      throw new Error('Invalid voting strategy type');
-    }
-
-    const voteSelector = toFunctionSelector(voteAbiItem);
+    const { voteSelector, voteValidator } = getVoteSelectorAndValidator(
+      this.daoData.governance,
+      this.paymaster,
+    );
 
     return buildContractCall(
       abis.DecentPaymasterV1,
       predictedPaymasterAddress,
-      'whitelistFunction',
-      [this.predictedStrategyAddress, voteSelector],
+      'setFunctionValidator',
+      [this.predictedStrategyAddress, voteSelector, voteValidator],
       0,
       false,
     );
