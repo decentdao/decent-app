@@ -1,16 +1,14 @@
 import * as amplitude from '@amplitude/analytics-browser';
-import { Center, Flex, Text } from '@chakra-ui/react';
+import { Center } from '@chakra-ui/react';
 import { useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { ProposalActionCard } from '../../../../../components/ProposalBuilder/ProposalActionCard';
 import { ProposalBuilder } from '../../../../../components/ProposalBuilder/ProposalBuilder';
 import { TransactionsDetails } from '../../../../../components/ProposalBuilder/ProposalDetails';
 import { DEFAULT_PROPOSAL_METADATA_TYPE_PROPS } from '../../../../../components/ProposalBuilder/ProposalMetadata';
 import { CreateProposalButton } from '../../../../../components/ProposalBuilder/StepButtons';
 import { DEFAULT_PROPOSAL } from '../../../../../components/ProposalBuilder/constants';
 import { BarLoader } from '../../../../../components/ui/loaders/BarLoader';
-import { AddActions } from '../../../../../components/ui/modals/AddActions';
 import { useHeaderHeight } from '../../../../../constants/common';
 import { DAO_ROUTES } from '../../../../../constants/routes';
 import { usePrepareProposal } from '../../../../../hooks/DAO/proposal/usePrepareProposal';
@@ -21,44 +19,6 @@ import { useNetworkConfigStore } from '../../../../../providers/NetworkConfig/us
 import { useProposalActionsStore } from '../../../../../store/actions/useProposalActionsStore';
 import { useDaoInfoStore } from '../../../../../store/daoInfo/useDaoInfoStore';
 import { CreateProposalSteps } from '../../../../../types';
-
-function ActionsExperience() {
-  const { t } = useTranslation('actions');
-  const { actions } = useProposalActionsStore();
-
-  return (
-    <Flex
-      flexDirection="column"
-      gap="1.5rem"
-    >
-      <Flex
-        flexDirection="column"
-        gap="0.5rem"
-      >
-        <Flex
-          mt={6}
-          mb={2}
-          alignItems="center"
-        >
-          <Text ml={2}>{t('actions', { ns: 'actions' })}</Text>
-        </Flex>
-        {actions.map((action, index) => {
-          return (
-            <ProposalActionCard
-              key={index}
-              action={action}
-              index={index}
-              canBeDeleted={actions.length > 1}
-            />
-          );
-        })}
-      </Flex>
-      <Flex>
-        <AddActions />
-      </Flex>
-    </Flex>
-  );
-}
 
 export function SafeProposalWithActionsCreatePage() {
   useEffect(() => {
@@ -122,7 +82,6 @@ export function SafeProposalWithActionsCreatePage() {
       pageHeaderTitle={t('createProposal', { ns: 'proposal' })}
       pageHeaderBreadcrumbs={pageHeaderBreadcrumbs}
       pageHeaderButtonClickHandler={pageHeaderButtonClickHandler}
-      actionsExperience={<ActionsExperience />}
       stepButtons={stepButtons}
       transactionsDetails={_transactions => <TransactionsDetails transactions={_transactions} />}
       templateDetails={null}
@@ -130,6 +89,7 @@ export function SafeProposalWithActionsCreatePage() {
       proposalMetadataTypeProps={DEFAULT_PROPOSAL_METADATA_TYPE_PROPS(t)}
       prepareProposalData={prepareProposal}
       mainContent={() => null}
+      showActionsExperience
     />
   );
 }

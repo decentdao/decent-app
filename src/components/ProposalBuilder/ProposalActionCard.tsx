@@ -5,7 +5,6 @@ import { formatUnits, getAddress, isAddress } from 'viem';
 import PencilWithLineIcon from '../../assets/theme/custom/icons/PencilWithLineIcon';
 import { useCurrentDAOKey } from '../../hooks/DAO/useCurrentDAOKey';
 import { useStore } from '../../providers/App/AppProvider';
-import { useProposalActionsStore } from '../../store/actions/useProposalActionsStore';
 import { CreateProposalAction, ProposalActionType } from '../../types/proposalBuilder';
 import { Card } from '../ui/cards/Card';
 import { DappInteractionActionCard } from '../ui/cards/DappInteractionActionCard';
@@ -174,14 +173,13 @@ export function TransactionBuilderAction({
 
 export function ProposalActionCard({
   action,
+  removeAction,
   index,
-  canBeDeleted,
 }: {
   action: CreateProposalAction;
+  removeAction: (index: number) => void;
   index: number;
-  canBeDeleted: boolean;
 }) {
-  const { removeAction } = useProposalActionsStore();
   if (
     action.actionType === ProposalActionType.TRANSFER ||
     action.actionType === ProposalActionType.NATIVE_TRANSFER
@@ -240,16 +238,14 @@ export function ProposalActionCard({
           {action.content}
         </Flex>
       </Card>
-      {canBeDeleted && (
-        <IconButton
-          aria-label="Remove action"
-          icon={<Trash />}
-          variant="ghost"
-          size="icon-sm"
-          color="red-1"
-          onClick={() => removeAction(index)}
-        />
-      )}
+      <IconButton
+        aria-label="Remove action"
+        icon={<Trash />}
+        variant="ghost"
+        size="icon-sm"
+        color="red-1"
+        onClick={() => removeAction(index)}
+      />
     </Flex>
   );
 }
