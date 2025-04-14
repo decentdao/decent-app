@@ -1,7 +1,7 @@
 import { abis } from '@fractal-framework/fractal-contracts';
 import { hatIdToTreeId } from '@hatsprotocol/sdk-v1-core';
 import { useEffect } from 'react';
-import { Address, GetContractEventsReturnType, PublicClient, getContract } from 'viem';
+import { Address, GetContractEventsReturnType, PublicClient, getContract, zeroAddress } from 'viem';
 import { logError } from '../../helpers/errorLogging';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
 import { useDaoInfoStore } from '../../store/daoInfo/useDaoInfoStore';
@@ -151,7 +151,7 @@ const useKeyValuePairs = () => {
       keyValuePairs,
       sablierV2LockupLinear,
       zodiacModuleProxyFactory,
-      decentPaymasterV1MasterCopy,
+      paymaster,
       accountAbstraction,
     },
   } = useNetworkConfigStore();
@@ -187,7 +187,7 @@ const useKeyValuePairs = () => {
           safeAddress,
           publicClient,
           zodiacModuleProxyFactory,
-          decentPaymasterV1MasterCopy,
+          paymaster?.decentPaymasterV1MasterCopy ?? zeroAddress,
           accountAbstraction,
         ).then(gaslessVotingDaoData => {
           if (gaslessVotingDaoData) {
@@ -230,7 +230,7 @@ const useKeyValuePairs = () => {
             safeAddress,
             publicClient,
             zodiacModuleProxyFactory,
-            decentPaymasterV1MasterCopy,
+            paymaster?.decentPaymasterV1MasterCopy ?? zeroAddress,
             accountAbstraction,
           ).then(gaslessVotingDaoData => {
             if (gaslessVotingDaoData) {
@@ -251,7 +251,7 @@ const useKeyValuePairs = () => {
     sablierV2LockupLinear,
     setGaslessVotingDaoData,
     accountAbstraction,
-    decentPaymasterV1MasterCopy,
+    paymaster,
     zodiacModuleProxyFactory,
   ]);
 
