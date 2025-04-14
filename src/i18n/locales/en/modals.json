@@ -62,6 +62,6 @@
   "pasteMultipleRecipients": "You can paste one or multiple recipients (address,amount one entry per row)",
   "confirmTransactionTitle": "Confirm transaction",
   "transactionBuilderTitle": "Build transaction(s)",
-  "proposalBuilderActionCardTitle": "Proposal Builder",
-  "proposalBuilderActionCardSub": "Create  one or multiple transactions using ABIs"
+  "transcationBuilderActionCardTitle": "Transaction Builder",
+  "transactionBuilderActionCardSub": "Create one or more transactions using a template"
 }

@@ -135,8 +135,8 @@ export function AddActions() {
           />
           {isDevMode && (
             <ActionCard
-              title={t('proposalBuilderActionCardTitle', { ns: 'modals' })}
-              subtitle={t('proposalBuilderActionCardSub', { ns: 'modals' })}
+            title={t('transcationBuilderActionCardTitle', { ns: 'modals' })}
+            subtitle={t('transactionBuilderActionCardSub', { ns: 'modals' })}
               icon={ArrowsDownUp}
               onClick={() => {
                 onClose();
