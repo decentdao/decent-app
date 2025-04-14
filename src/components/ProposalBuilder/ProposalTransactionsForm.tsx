@@ -3,6 +3,7 @@ import { Plus } from '@phosphor-icons/react';
 import { Formik, FormikProps } from 'formik';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import useCreateProposalSchema from '../../hooks/schemas/proposalBuilder/useCreateProposalSchema';
 import { CreateProposalTransaction } from '../../types/proposalBuilder';
 import { scrollToBottom } from '../../utils/ui';
 import CeleryButtonWithIcon from '../ui/utils/CeleryButtonWithIcon';
@@ -66,6 +67,7 @@ export function ProposalTransactionsFormModal({
 }: ProposalTransactionsFormProps) {
   const [expandedIndecies, setExpandedIndecies] = useState<number[]>([0]);
   const { t } = useTranslation(['proposal']);
+  const { transactionValidationSchema } = useCreateProposalSchema();
   return (
     <Formik<CreateProposalTransaction[]>
       initialValues={[
@@ -78,6 +80,7 @@ export function ProposalTransactionsFormModal({
           },
         },
       ]}
+      validationSchema={transactionValidationSchema}
       onSubmit={values => {
         onSubmit?.(values);
         onClose?.();
