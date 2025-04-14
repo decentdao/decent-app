@@ -26,7 +26,6 @@ export class TxBuilderFactory extends BaseTxBuilder {
   private safeContractAddress: Address | undefined;
   private compatibilityFallbackHandler: Address;
   private votesErc20MasterCopy: Address;
-  private votesErc20LockableMasterCopy: Address;
   private keyValuePairs: Address;
   private gnosisSafeProxyFactory: Address;
   private gnosisSafeProxy: Address;
@@ -44,6 +43,7 @@ export class TxBuilderFactory extends BaseTxBuilder {
   private linearVotingErc20V1MasterCopy: Address;
   private linearVotingErc721V1MasterCopy: Address;
   private moduleAzoriusMasterCopy: Address;
+  private votesErc20LockableMasterCopy?: Address;
   private paymaster?: {
     decentPaymasterV1MasterCopy: Address;
     linearERC20VotingV1ValidatorV1: Address;
@@ -61,7 +61,6 @@ export class TxBuilderFactory extends BaseTxBuilder {
     daoData: SafeMultisigDAO | AzoriusERC20DAO | AzoriusERC721DAO | SubDAO,
     compatibilityFallbackHandler: Address,
     votesErc20MasterCopy: Address,
-    votesErc20LockableMasterCopy: Address,
     keyValuePairs: Address,
     gnosisSafeProxyFactory: Address,
     gnosisSafeProxy: Address,
@@ -79,6 +78,7 @@ export class TxBuilderFactory extends BaseTxBuilder {
     linearVotingErc20V1MasterCopy: Address,
     linearVotingErc721V1MasterCopy: Address,
     moduleAzoriusMasterCopy: Address,
+    votesErc20LockableMasterCopy?: Address,
     paymaster?: {
       decentPaymasterV1MasterCopy: Address;
       linearERC20VotingV1ValidatorV1: Address;
@@ -219,7 +219,6 @@ export class TxBuilderFactory extends BaseTxBuilder {
       this.daoData as AzoriusERC20DAO,
       this.safeContractAddress!,
       this.votesErc20MasterCopy,
-      this.votesErc20LockableMasterCopy,
       this.zodiacModuleProxyFactory,
       this.multiSendCallOnly,
       this.claimErc20MasterCopy,
@@ -229,6 +228,7 @@ export class TxBuilderFactory extends BaseTxBuilder {
       this.linearVotingErc721V1MasterCopy,
       this.moduleAzoriusMasterCopy,
       gaslessVotingEnabled,
+      this.votesErc20LockableMasterCopy,
       this.paymaster,
       this.accountAbstraction,
       this.parentAddress,
