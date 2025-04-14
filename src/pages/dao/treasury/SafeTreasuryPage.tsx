@@ -1,5 +1,5 @@
 import * as amplitude from '@amplitude/analytics-browser';
-import { Box, Divider, Flex, Grid, GridItem, Show, Button, Icon, Text } from '@chakra-ui/react';
+import { Box, Button, Divider, Flex, Grid, GridItem, Icon, Show, Text } from '@chakra-ui/react';
 import { CaretDown } from '@phosphor-icons/react';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -14,10 +14,11 @@ import { TitledInfoBox } from '../../../components/ui/containers/TitledInfoBox';
 import { OptionMenu } from '../../../components/ui/menus/OptionMenu';
 import PageHeader from '../../../components/ui/page/Header/PageHeader';
 import { DAO_ROUTES } from '../../../constants/routes';
+import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import useSendAssetsActionModal from '../../../hooks/DAO/useSendAssetsActionModal';
 import { useCanUserCreateProposal } from '../../../hooks/utils/useCanUserSubmitProposal';
 import { analyticsEvents } from '../../../insights/analyticsEvents';
-import { useFractal } from '../../../providers/App/AppProvider';
+import { useStore } from '../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
 import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
 
@@ -25,9 +26,10 @@ export function SafeTreasuryPage() {
   useEffect(() => {
     amplitude.track(analyticsEvents.TreasuryPageOpened);
   }, []);
+  const { daoKey } = useCurrentDAOKey();
   const {
     treasury: { assetsFungible, transfers },
-  } = useFractal();
+  } = useStore({ daoKey });
   const { subgraphInfo } = useDaoInfoStore();
   const [shownTransactions, setShownTransactions] = useState(20);
   const { t } = useTranslation(['treasury', 'modals']);

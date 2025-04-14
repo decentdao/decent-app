@@ -1,7 +1,8 @@
 import { Box, Icon, Text } from '@chakra-ui/react';
 import { Coins } from '@phosphor-icons/react';
 import { useTranslation } from 'react-i18next';
-import { useFractal } from '../../providers/App/AppProvider';
+import { useCurrentDAOKey } from '../../hooks/DAO/useCurrentDAOKey';
+import { useStore } from '../../providers/App/AppProvider';
 import { AzoriusGovernance, BigIntValuePair, ProposalActionType } from '../../types';
 
 export function SafePermissionsStrategyAction({
@@ -11,7 +12,8 @@ export function SafePermissionsStrategyAction({
   actionType: ProposalActionType;
   proposerThreshold: BigIntValuePair;
 }) {
-  const { governance } = useFractal();
+  const { daoKey } = useCurrentDAOKey();
+  const { governance } = useStore({ daoKey });
   const azoriusGovernance = governance as AzoriusGovernance;
 
   const { t } = useTranslation('settings');

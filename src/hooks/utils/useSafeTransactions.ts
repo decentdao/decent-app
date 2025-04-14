@@ -4,11 +4,12 @@ import { useCallback } from 'react';
 import { Address, getAddress, getContract } from 'viem';
 import { isApproved, isRejected } from '../../helpers/activity';
 import { isMultisigRejectionProposal } from '../../helpers/multisigProposal';
-import { useFractal } from '../../providers/App/AppProvider';
+import { useStore } from '../../providers/App/AppProvider';
 import { FractalProposal, FractalProposalState } from '../../types';
 import { parseDecodedData } from '../../utils';
 import { getAverageBlockTime } from '../../utils/contract';
 import { getTxTimelockedTimestamp } from '../../utils/guard';
+import { useCurrentDAOKey } from '../DAO/useCurrentDAOKey';
 import useNetworkPublicClient from '../useNetworkPublicClient';
 import { useSafeDecoder } from './useSafeDecoder';
 
@@ -19,7 +20,8 @@ type FreezeGuardData = {
 };
 
 export const useSafeTransactions = () => {
-  const { guardContracts } = useFractal();
+  const { daoKey } = useCurrentDAOKey();
+  const { guardContracts } = useStore({ daoKey });
   const decode = useSafeDecoder();
   const publicClient = useNetworkPublicClient();
 

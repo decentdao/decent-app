@@ -1,8 +1,15 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { fetchAndActivate, getValue, Value } from 'firebase/remote-config';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+import { useBetween } from 'use-between';
 import { remoteConfig } from '../insights/firebase';
-import { IFeatureFlags, FeatureFlagKeys, FeatureFlagKey, FeatureFlags } from './featureFlags';
+import {
+  IFeatureFlags,
+  FeatureFlagKeys,
+  FeatureFlagKey,
+  FeatureFlags,
+  FEATURE_FLAGS,
+} from './featureFlags';
 
 export class EnvironmentFeatureFlags implements IFeatureFlags {
   urlParams: { [key: string]: string | null } = {};
@@ -66,25 +73,39 @@ interface RemoteConfigData {
   [key: string]: Value | undefined;
 }
 
-const useFeatureFlag = (key: FeatureFlagKey) => {
+const useRemoteFeatureFlags = () => {
   const [remoteConfigData, setRemoteConfigData] = useState<RemoteConfigData>({});
 
-  useEffect(() => {
-    const fetchConfig = async () => {
-      if (remoteConfig) {
-        try {
-          // Firebase uses browser cache, and uses the remoteConfig settings to refresh
-          await fetchAndActivate(remoteConfig);
-          const value = getValue(remoteConfig, key);
-          setRemoteConfigData(prev => ({ ...prev, [key]: value }));
-        } catch (error) {
-          console.error('Failed to fetch Remote Config', error);
+  const fetchConfig = async () => {
+    if (remoteConfig) {
+      try {
+        // Firebase uses browser cache, and uses the remoteConfig settings to refresh
+        await fetchAndActivate(remoteConfig);
+        let newData = {} as RemoteConfigData;
+        for (const flag of FEATURE_FLAGS) {
+          const value = getValue(remoteConfig, flag);
+          newData[flag] = value;
         }
+        setRemoteConfigData(prevData => {
+          if (JSON.stringify(newData) !== JSON.stringify(prevData)) {
+            return newData;
+          } else {
+            return prevData;
+          }
+        });
+      } catch (error) {
+        console.error('Failed to fetch Remote Config', error);
       }
-    };
+    }
+  };
 
-    fetchConfig();
-  }, [key, remoteConfigData]);
+  return { remoteConfigData, fetchConfig };
+};
+
+const useFeatureFlag = (key: FeatureFlagKey) => {
+  const { remoteConfigData, fetchConfig } = useBetween(useRemoteFeatureFlags);
+
+  fetchConfig();
 
   // Get from local first, either the URL params, or .env settings
   let value = FeatureFlags.instance?.isFeatureEnabled(key);

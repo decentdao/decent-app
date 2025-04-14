@@ -1,7 +1,8 @@
-import { Text, HStack, VStack, Flex } from '@chakra-ui/react';
+import { Flex, HStack, Text, VStack } from '@chakra-ui/react';
 import { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useFractal } from '../../../providers/App/AppProvider';
+import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
+import { useStore } from '../../../providers/App/AppProvider';
 import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
 import SupportTooltip from '../badges/SupportTooltip';
 import ExampleLabel from './ExampleLabel';
@@ -20,9 +21,10 @@ export function CustomNonceInput({
   disabled?: boolean;
   renderTrimmed?: boolean;
 }) {
+  const { daoKey } = useCurrentDAOKey();
   const {
     governance: { isAzorius },
-  } = useFractal();
+  } = useStore({ daoKey });
   const { safe } = useDaoInfoStore();
   const { t } = useTranslation(['proposal', 'common']);
   const errorMessage =

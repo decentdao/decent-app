@@ -3,7 +3,7 @@ import { useCallback, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { createSablierSubgraphClient } from '../../../graphql';
-import { useFractal } from '../../../providers/App/AppProvider';
+import { useStore } from '../../../providers/App/AppProvider';
 import useIPFSClient from '../../../providers/App/hooks/useIPFSClient';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
 import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
@@ -12,18 +12,20 @@ import { useRolesStore } from '../../../store/roles/useRolesStore';
 import useNetworkPublicClient from '../../useNetworkPublicClient';
 import { CacheExpiry, CacheKeys } from '../../utils/cache/cacheDefaults';
 import { getValue, setValue } from '../../utils/cache/useLocalStorage';
+import { useCurrentDAOKey } from '../useCurrentDAOKey';
 
 const hatsSubgraphClient = new HatsSubgraphClient({});
 
 const useHatsTree = () => {
   const { t } = useTranslation('roles');
+  const { daoKey } = useCurrentDAOKey();
   const {
     governanceContracts: {
       linearVotingErc20WithHatsWhitelistingAddress,
       linearVotingErc721WithHatsWhitelistingAddress,
       isLoaded: governanceContractsLoaded,
     },
-  } = useFractal();
+  } = useStore({ daoKey });
   const { hatsTreeId, contextChainId, setHatsTree } = useRolesStore();
 
   const ipfsClient = useIPFSClient();

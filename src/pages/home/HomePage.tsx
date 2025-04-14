@@ -2,15 +2,16 @@ import { Box, Flex, Hide, Show, Text } from '@chakra-ui/react';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DAOSearch } from '../../components/ui/menus/DAOSearch';
-
-import { useFractal } from '../../providers/App/AppProvider';
+import { useCurrentDAOKey } from '../../hooks/DAO/useCurrentDAOKey';
+import { useStore } from '../../providers/App/AppProvider';
 import { useDaoInfoStore } from '../../store/daoInfo/useDaoInfoStore';
 import { GettingStarted } from './GettingStarted';
 import { MySafes } from './MySafes';
 
 export default function HomePage() {
   const { safe } = useDaoInfoStore();
-  const { action } = useFractal();
+  const { daoKey } = useCurrentDAOKey();
+  const { action } = useStore({ daoKey });
   const { t } = useTranslation('home');
 
   useEffect(() => {

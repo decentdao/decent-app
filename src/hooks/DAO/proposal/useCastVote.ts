@@ -7,15 +7,17 @@ import { Address, getContract, http } from 'viem';
 import { createBundlerClient } from 'viem/account-abstraction';
 import { useAccount } from 'wagmi';
 import { EntryPoint07Abi } from '../../../assets/abi/EntryPoint07Abi';
-import { useFractal } from '../../../providers/App/AppProvider';
+import { useStore } from '../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
 import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
 import useNetworkPublicClient from '../../useNetworkPublicClient';
 import { useNetworkWalletClient } from '../../useNetworkWalletClient';
 import { useTransaction } from '../../utils/useTransaction';
+import { useCurrentDAOKey } from '../useCurrentDAOKey';
 import useUserERC721VotingTokens from './useUserERC721VotingTokens';
 
 const useCastVote = (proposalId: string, strategy: Address) => {
+  const { daoKey } = useCurrentDAOKey();
   const {
     governanceContracts: {
       linearVotingErc20Address,
@@ -23,7 +25,7 @@ const useCastVote = (proposalId: string, strategy: Address) => {
       linearVotingErc721Address,
       linearVotingErc721WithHatsWhitelistingAddress,
     },
-  } = useFractal();
+  } = useStore({ daoKey });
   const {
     contracts: { accountAbstraction },
     rpcEndpoint,

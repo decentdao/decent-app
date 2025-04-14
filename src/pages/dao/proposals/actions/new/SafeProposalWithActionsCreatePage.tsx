@@ -16,8 +16,9 @@ import { AddActions } from '../../../../../components/ui/modals/AddActions';
 import { useHeaderHeight } from '../../../../../constants/common';
 import { DAO_ROUTES } from '../../../../../constants/routes';
 import { usePrepareProposal } from '../../../../../hooks/DAO/proposal/usePrepareProposal';
+import { useCurrentDAOKey } from '../../../../../hooks/DAO/useCurrentDAOKey';
 import { analyticsEvents } from '../../../../../insights/analyticsEvents';
-import { useFractal } from '../../../../../providers/App/AppProvider';
+import { useStore } from '../../../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../../../providers/NetworkConfig/useNetworkConfigStore';
 import { useProposalActionsStore } from '../../../../../store/actions/useProposalActionsStore';
 import { useDaoInfoStore } from '../../../../../store/daoInfo/useDaoInfoStore';
@@ -69,9 +70,10 @@ export function SafeProposalWithActionsCreatePage() {
   useEffect(() => {
     amplitude.track(analyticsEvents.SafeProposalWithActionsCreatePageOpened);
   }, []);
+  const { daoKey } = useCurrentDAOKey();
   const {
     governance: { type },
-  } = useFractal();
+  } = useStore({ daoKey });
   const { safe } = useDaoInfoStore();
 
   const { prepareProposal } = usePrepareProposal();

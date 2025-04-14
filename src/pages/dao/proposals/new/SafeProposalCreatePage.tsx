@@ -14,8 +14,9 @@ import { BarLoader } from '../../../../components/ui/loaders/BarLoader';
 import { useHeaderHeight } from '../../../../constants/common';
 import { DAO_ROUTES } from '../../../../constants/routes';
 import { usePrepareProposal } from '../../../../hooks/DAO/proposal/usePrepareProposal';
+import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
 import { analyticsEvents } from '../../../../insights/analyticsEvents';
-import { useFractal } from '../../../../providers/App/AppProvider';
+import { useStore } from '../../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../../providers/NetworkConfig/useNetworkConfigStore';
 import { useDaoInfoStore } from '../../../../store/daoInfo/useDaoInfoStore';
 import { BigIntValuePair, CreateProposalSteps, CreateProposalTransaction } from '../../../../types';
@@ -24,10 +25,10 @@ export function SafeProposalCreatePage() {
   useEffect(() => {
     amplitude.track(analyticsEvents.CreateProposalPageOpened);
   }, []);
-
+  const { daoKey } = useCurrentDAOKey();
   const {
     governance: { type },
-  } = useFractal();
+  } = useStore({ daoKey });
   const { safe } = useDaoInfoStore();
   const { prepareProposal } = usePrepareProposal();
 

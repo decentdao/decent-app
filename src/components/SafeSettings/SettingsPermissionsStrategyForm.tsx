@@ -2,7 +2,8 @@ import { Box, Button, Flex, Image, Text } from '@chakra-ui/react';
 import { Info } from '@phosphor-icons/react';
 import { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useFractal } from '../../providers/App/AppProvider';
+import { useCurrentDAOKey } from '../../hooks/DAO/useCurrentDAOKey';
+import { useStore } from '../../providers/App/AppProvider';
 import { AzoriusGovernance, BigIntValuePair } from '../../types';
 import { BigIntInput } from '../ui/forms/BigIntInput';
 import LabelWrapper from '../ui/forms/LabelWrapper';
@@ -17,7 +18,8 @@ export function SettingsPermissionsStrategyForm({
 }) {
   const { t } = useTranslation('settings');
   const tooltipContainerRef = useRef<HTMLDivElement>(null);
-  const { governance } = useFractal();
+  const { daoKey } = useCurrentDAOKey();
+  const { governance } = useStore({ daoKey });
   const azoriusGovernance = governance as AzoriusGovernance;
   const { votesToken, erc721Tokens } = azoriusGovernance;
 

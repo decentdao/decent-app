@@ -21,10 +21,11 @@ import NestedPageHeader from '../../../../components/ui/page/Header/NestedPageHe
 import Divider from '../../../../components/ui/utils/Divider';
 import { DAO_ROUTES } from '../../../../constants/routes';
 import useSubmitProposal from '../../../../hooks/DAO/proposal/useSubmitProposal';
+import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
 import { useCanUserCreateProposal } from '../../../../hooks/utils/useCanUserSubmitProposal';
 import { createAccountSubstring } from '../../../../hooks/utils/useGetAccountName';
 import { useInstallVersionedVotingStrategy } from '../../../../hooks/utils/useInstallVersionedVotingStrategy';
-import { useFractal } from '../../../../providers/App/AppProvider';
+import { useStore } from '../../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../../providers/NetworkConfig/useNetworkConfigStore';
 import { useDaoInfoStore } from '../../../../store/daoInfo/useDaoInfoStore';
 import {
@@ -51,10 +52,11 @@ export function SafeGeneralSettingsPage() {
     setIsGaslessVotingEnabledToggled(gaslessVotingEnabled);
   }, [gaslessVotingEnabled]);
 
+  const { daoKey } = useCurrentDAOKey();
   const {
     governanceContracts: { strategies },
     governance: { type: votingStrategyType },
-  } = useFractal();
+  } = useStore({ daoKey });
 
   const navigate = useNavigate();
 

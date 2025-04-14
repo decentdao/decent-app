@@ -2,15 +2,17 @@ import { abis } from '@fractal-framework/fractal-contracts';
 import { useCallback, useEffect, useState } from 'react';
 import { Address, getContract } from 'viem';
 import { useAccount } from 'wagmi';
-import { useFractal } from '../../providers/App/AppProvider';
+import { useStore } from '../../providers/App/AppProvider';
 import { useSafeAPI } from '../../providers/App/hooks/useSafeAPI';
 import { useDaoInfoStore } from '../../store/daoInfo/useDaoInfoStore';
 import { GovernanceType } from '../../types';
 import { isDemoMode } from '../../utils/demoMode';
+import { useCurrentDAOKey } from '../DAO/useCurrentDAOKey';
 import useNetworkPublicClient from '../useNetworkPublicClient';
 import useVotingStrategiesAddresses from './useVotingStrategiesAddresses';
 
 export function useCanUserCreateProposal() {
+  const { daoKey } = useCurrentDAOKey();
   const {
     governance: { type },
     governanceContracts: {
@@ -19,7 +21,7 @@ export function useCanUserCreateProposal() {
       linearVotingErc721Address,
       linearVotingErc721WithHatsWhitelistingAddress,
     },
-  } = useFractal();
+  } = useStore({ daoKey });
   const user = useAccount();
   const { safe } = useDaoInfoStore();
   const safeAPI = useSafeAPI();

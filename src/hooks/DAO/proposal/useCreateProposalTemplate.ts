@@ -3,13 +3,14 @@ import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { encodeFunctionData } from 'viem';
 import { normalize } from 'viem/ens';
-import { useFractal } from '../../../providers/App/AppProvider';
+import { useStore } from '../../../providers/App/AppProvider';
 import useIPFSClient from '../../../providers/App/hooks/useIPFSClient';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
 import { ProposalExecuteData } from '../../../types';
 import { CreateProposalForm } from '../../../types/proposalBuilder';
 import { validateENSName } from '../../../utils/url';
 import { useNetworkEnsAddressAsync } from '../../useNetworkEnsAddress';
+import { useCurrentDAOKey } from '../useCurrentDAOKey';
 
 const customSerializer = (_: string, value: any) => {
   if (typeof value === 'bigint') {
@@ -22,9 +23,10 @@ const customSerializer = (_: string, value: any) => {
 export default function useCreateProposalTemplate() {
   const { getEnsAddress } = useNetworkEnsAddressAsync();
   const client = useIPFSClient();
+  const { daoKey } = useCurrentDAOKey();
   const {
     governance: { proposalTemplates },
-  } = useFractal();
+  } = useStore({ daoKey });
 
   const {
     contracts: { keyValuePairs },

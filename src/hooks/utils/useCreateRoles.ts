@@ -42,7 +42,7 @@ import { DAO_ROUTES } from '../../constants/routes';
 import { getRandomBytes } from '../../helpers';
 import useFeatureFlag from '../../helpers/environmentFeatureFlags';
 import { generateContractByteCodeLinear } from '../../models/helpers/utils';
-import { useFractal } from '../../providers/App/AppProvider';
+import { useStore } from '../../providers/App/AppProvider';
 import useIPFSClient from '../../providers/App/hooks/useIPFSClient';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
 import { useDaoInfoStore } from '../../store/daoInfo/useDaoInfoStore';
@@ -65,6 +65,7 @@ import {
 import { SENTINEL_MODULE } from '../../utils/address';
 import { prepareSendAssetsActionData } from '../../utils/dao/prepareSendAssetsActionData';
 import useSubmitProposal from '../DAO/proposal/useSubmitProposal';
+import { useCurrentDAOKey } from '../DAO/useCurrentDAOKey';
 import useCreateSablierStream from '../streams/useCreateSablierStream';
 import useNetworkPublicClient from '../useNetworkPublicClient';
 import {
@@ -92,6 +93,7 @@ async function uploadHatDescription(
 }
 
 export default function useCreateRoles() {
+  const { daoKey } = useCurrentDAOKey();
   const {
     governance,
     governanceContracts: {
@@ -101,7 +103,7 @@ export default function useCreateRoles() {
       linearVotingErc721WithHatsWhitelistingAddress,
       moduleAzoriusAddress,
     },
-  } = useFractal();
+  } = useStore({ daoKey });
   const { safe, subgraphInfo, gaslessVotingEnabled, paymasterAddress } = useDaoInfoStore();
   const { hatsTree, hatsTreeId, getHat } = useRolesStore();
   const {

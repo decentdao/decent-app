@@ -1,12 +1,13 @@
 import { useEffect, useRef } from 'react';
 import { createDecentSubgraphClient } from '../../../graphql';
 import { DAOQuery, DAOQueryResponse } from '../../../graphql/DAOQueries';
-import { useFractal } from '../../../providers/App/AppProvider';
+import { useStore } from '../../../providers/App/AppProvider';
 import { FractalGovernanceAction } from '../../../providers/App/governance/action';
 import useIPFSClient from '../../../providers/App/hooks/useIPFSClient';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
 import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
 import { GovernanceType, ProposalTemplate } from '../../../types';
+import { useCurrentDAOKey } from '../useCurrentDAOKey';
 import { useERC20LinearStrategy } from './governance/useERC20LinearStrategy';
 import { useERC20LinearToken } from './governance/useERC20LinearToken';
 import { useERC721LinearStrategy } from './governance/useERC721LinearStrategy';
@@ -15,12 +16,13 @@ import { useLockRelease } from './governance/useLockRelease';
 import { useLoadDAOProposals } from './useLoadDAOProposals';
 
 export const useFractalGovernance = () => {
+  const { daoKey } = useCurrentDAOKey();
   const {
     governanceContracts,
     action,
     governance: { type },
     guardContracts: { isGuardLoaded },
-  } = useFractal();
+  } = useStore({ daoKey });
   const { safe } = useDaoInfoStore();
   const { getConfigByChainId, chain } = useNetworkConfigStore();
 

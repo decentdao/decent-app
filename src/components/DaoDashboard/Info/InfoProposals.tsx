@@ -1,7 +1,8 @@
 import { Box, Flex, Text } from '@chakra-ui/react';
 import { Scroll } from '@phosphor-icons/react';
 import { useTranslation } from 'react-i18next';
-import { useFractal } from '../../../providers/App/AppProvider';
+import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
+import { useStore } from '../../../providers/App/AppProvider';
 import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
 import {
   FractalProposal,
@@ -122,9 +123,10 @@ const allActiveProposalsCount = (
 
 export function InfoProposals() {
   const { t } = useTranslation('dashboard');
+  const { daoKey } = useCurrentDAOKey();
   const {
     governance: { proposals, type },
-  } = useFractal();
+  } = useStore({ daoKey });
   const { safe } = useDaoInfoStore();
 
   if (!safe?.address || !type) {

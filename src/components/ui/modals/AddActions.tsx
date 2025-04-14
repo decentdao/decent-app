@@ -3,7 +3,8 @@ import { ArrowsDownUp, Plus, SquaresFour } from '@phosphor-icons/react';
 import { useTranslation } from 'react-i18next';
 import { DETAILS_BOX_SHADOW } from '../../../constants/common';
 import useFeatureFlag from '../../../helpers/environmentFeatureFlags';
-import { useFractal } from '../../../providers/App/AppProvider';
+import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
+import { useStore } from '../../../providers/App/AppProvider';
 import { useProposalActionsStore } from '../../../store/actions/useProposalActionsStore';
 import { ProposalActionType } from '../../../types';
 import { prepareSendAssetsActionData } from '../../../utils/dao/prepareSendAssetsActionData';
@@ -64,9 +65,10 @@ function ActionCard({
 }
 
 export function AddActions() {
+  const { daoKey } = useCurrentDAOKey();
   const {
     treasury: { assetsFungible },
-  } = useFractal();
+  } = useStore({ daoKey });
 
   const { t } = useTranslation(['actions', 'modals']);
   const { addAction } = useProposalActionsStore();
@@ -135,8 +137,8 @@ export function AddActions() {
           />
           {isDevMode && (
             <ActionCard
-            title={t('transcationBuilderActionCardTitle', { ns: 'modals' })}
-            subtitle={t('transactionBuilderActionCardSub', { ns: 'modals' })}
+              title={t('transcationBuilderActionCardTitle', { ns: 'modals' })}
+              subtitle={t('transactionBuilderActionCardSub', { ns: 'modals' })}
               icon={ArrowsDownUp}
               onClick={() => {
                 onClose();
