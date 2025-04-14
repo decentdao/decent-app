@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { immer } from 'zustand/middleware/immer'
+import { immer } from 'zustand/middleware/immer';
 import { DAOKey } from '../types';
 import { createNodesSlice, NodesSlice } from './slices/nodes';
 
@@ -13,11 +13,9 @@ export type SetState = () => GlobalStore;
 
 export const useGlobalStore = create<GlobalStore>()(
   persist(
-    immer(
-      (...params) => ({
-        ...createNodesSlice(...params),
-      }),
-    ),
+    immer((...params) => ({
+      ...createNodesSlice(...params),
+    })),
     {
       name: 'global-store',
     },
