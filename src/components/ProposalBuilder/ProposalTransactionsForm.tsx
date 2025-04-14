@@ -8,17 +8,15 @@ import { CreateProposalTransaction } from '../../types/proposalBuilder';
 import { scrollToBottom } from '../../utils/ui';
 import CeleryButtonWithIcon from '../ui/utils/CeleryButtonWithIcon';
 import Divider from '../ui/utils/Divider';
-import ProposalTransactions, { ProposalTransactionsModal } from './ProposalTransactions';
+import ProposalTransactions from './ProposalTransactions';
 import { DEFAULT_PROPOSAL_TRANSACTION } from './constants';
 
 export interface ProposalTransactionsFormProps {
-  // @todo remove/replace params for local Formik instance
   pendingTransaction: boolean;
   isProposalMode: boolean;
   setFieldValue: FormikProps<CreateProposalTransaction[]>['setFieldValue'];
   values: FormikProps<CreateProposalTransaction[]>['values'];
   errors?: FormikProps<CreateProposalTransaction[]>['errors'];
-  // @todo remove optional when we remove the form from screen step
   onSubmit?: (txs: CreateProposalTransaction[]) => void;
   onClose?: () => void;
 }
@@ -39,10 +37,13 @@ export default function ProposalTransactionsForm(props: ProposalTransactionsForm
   return (
     <Box py="1.5rem">
       <ProposalTransactions
+        {...props}
         expandedIndecies={expandedIndecies}
         setExpandedIndecies={setExpandedIndecies}
         removeTransaction={removeTransaction}
-        {...props}
+        setFieldValue={(field: string, value: any) => {
+          setFieldValue(`transactions.${field}`, value);
+        }}
       />
       <Divider my="1.5rem" />
       <CeleryButtonWithIcon
@@ -96,7 +97,7 @@ export function ProposalTransactionsFormModal({
         return (
           <form onSubmit={handleSubmit}>
             <Box py="1.5rem">
-              <ProposalTransactionsModal
+              <ProposalTransactions
                 removeTransaction={removeTransaction}
                 expandedIndecies={expandedIndecies}
                 setExpandedIndecies={setExpandedIndecies}
