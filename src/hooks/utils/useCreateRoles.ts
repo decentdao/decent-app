@@ -124,6 +124,7 @@ export default function useCreateRoles() {
       zodiacModuleProxyFactory,
       decentAutonomousAdminV1MasterCopy,
       hatsElectionsEligibilityMasterCopy,
+      paymaster,
       accountAbstraction,
     },
   } = useNetworkConfigStore();
@@ -167,6 +168,12 @@ export default function useCreateRoles() {
       }
       const azoriusGovernance = governance as AzoriusGovernance;
       const { votingStrategy, votesToken, erc721Tokens } = azoriusGovernance;
+
+      const getVoteValidator = (strategyType: 'erc20' | 'erc721') => {
+        return strategyType === 'erc20'
+          ? paymaster!.linearERC20VotingV1ValidatorV1
+          : paymaster!.linearERC721VotingV1ValidatorV1;
+      };
 
       if (azoriusGovernance.type === GovernanceType.AZORIUS_ERC20) {
         if (!votesToken || !votingStrategy?.quorumPercentage || !linearVotingErc20Address) {
@@ -269,11 +276,14 @@ export default function useCreateRoles() {
 
         const optionallyWhitelistWhitelistingStrategyOnPaymaster = [];
         if (gaslessVotingEnabled && paymasterAddress) {
+          if (!paymaster) {
+            throw new Error('Paymaster is not defined');
+          }
           optionallyWhitelistWhitelistingStrategyOnPaymaster.push({
             calldata: encodeFunctionData({
               abi: abis.DecentPaymasterV1,
-              functionName: 'whitelistFunction',
-              args: [predictedStrategyAddress, getVoteSelector('erc20')],
+              functionName: 'setFunctionValidator',
+              args: [predictedStrategyAddress, getVoteSelector('erc20'), getVoteValidator('erc20')],
             }),
             targetAddress: paymasterAddress,
           });
@@ -386,11 +396,18 @@ export default function useCreateRoles() {
 
         const optionallyWhitelistWhitelistingStrategyOnPaymaster = [];
         if (gaslessVotingEnabled && paymasterAddress) {
+          if (!paymaster) {
+            throw new Error('Paymaster is not defined');
+          }
           optionallyWhitelistWhitelistingStrategyOnPaymaster.push({
             calldata: encodeFunctionData({
               abi: abis.DecentPaymasterV1,
-              functionName: 'whitelistFunction',
-              args: [predictedStrategyAddress, getVoteSelector('erc721')],
+              functionName: 'setFunctionValidator',
+              args: [
+                predictedStrategyAddress,
+                getVoteSelector('erc721'),
+                getVoteValidator('erc721'),
+              ],
             }),
             targetAddress: paymasterAddress,
           });
@@ -413,17 +430,18 @@ export default function useCreateRoles() {
       governance,
       linearVotingErc20Address,
       publicClient,
-      hatsProtocol,
       gaslessVotingFeatureEnabled,
+      accountAbstraction,
+      hatsProtocol,
       linearVotingErc20HatsWhitelistingV1MasterCopy,
       linearVotingErc20HatsWhitelistingMasterCopy,
       zodiacModuleProxyFactory,
       gaslessVotingEnabled,
       paymasterAddress,
+      paymaster,
       linearVotingErc721Address,
       linearVotingErc721HatsWhitelistingV1MasterCopy,
       linearVotingErc721HatsWhitelistingMasterCopy,
-      accountAbstraction,
     ],
   );
 
