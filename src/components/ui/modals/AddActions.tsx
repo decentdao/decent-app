@@ -1,5 +1,5 @@
 import { Button, Flex, Grid, Icon, Text, useDisclosure } from '@chakra-ui/react';
-import { ArrowsDownUp, Plus, SquaresFour } from '@phosphor-icons/react';
+import { ArrowsDownUp, Plus, PlusCircle, SquaresFour } from '@phosphor-icons/react';
 import { useFormikContext } from 'formik';
 import { useTranslation } from 'react-i18next';
 import { DETAILS_BOX_SHADOW } from '../../../constants/common';
@@ -142,7 +142,7 @@ export function AddActions() {
           <ActionCard
             title={t('transcationBuilderActionCardTitle', { ns: 'modals' })}
             subtitle={t('transactionBuilderActionCardSub', { ns: 'modals' })}
-            icon={ArrowsDownUp}
+            icon={PlusCircle}
             onClick={() => {
               onClose();
               openTransactionBuilderModal();

@@ -1,5 +1,5 @@
 import { Button, Flex, Icon, IconButton, Text } from '@chakra-ui/react';
-import { ArrowsDownUp, CheckSquare, Trash } from '@phosphor-icons/react';
+import { ArrowsDownUp, CheckSquare, PlusCircle, Trash } from '@phosphor-icons/react';
 import { useTranslation } from 'react-i18next';
 import { formatUnits, getAddress, isAddress } from 'viem';
 import PencilWithLineIcon from '../../assets/theme/custom/icons/PencilWithLineIcon';
@@ -150,7 +150,7 @@ export function TransactionBuilderAction({
           gap="0.5rem"
         >
           <Icon
-            as={ArrowsDownUp}
+            as={PlusCircle}
             w="1.5rem"
             h="1.5rem"
             color="lilac-0"
