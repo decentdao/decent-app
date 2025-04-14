@@ -65,7 +65,11 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
   private linearVotingErc20V1MasterCopy: Address;
   private linearVotingErc721V1MasterCopy: Address;
   private moduleAzoriusMasterCopy: Address;
-  private paymasterMasterCopy: Address;
+  private paymaster?: {
+    decentPaymasterV1MasterCopy: Address;
+    linearERC20VotingV1ValidatorV1: Address;
+    linearERC721VotingV1ValidatorV1: Address;
+  };
   private accountAbstraction?:
     | {
         entryPointv07: Address;
@@ -93,8 +97,12 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
     linearVotingErc20V1MasterCopy: Address,
     linearVotingErc721V1MasterCopy: Address,
     moduleAzoriusMasterCopy: Address,
-    paymasterMasterCopy: Address,
     gaslessVotingEnabled: boolean,
+    paymaster?: {
+      decentPaymasterV1MasterCopy: Address;
+      linearERC20VotingV1ValidatorV1: Address;
+      linearERC721VotingV1ValidatorV1: Address;
+    },
     accountAbstraction?: {
       entryPointv07: Address;
       lightAccountFactory: Address;
@@ -121,7 +129,7 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
     this.linearVotingErc20V1MasterCopy = linearVotingErc20V1MasterCopy;
     this.linearVotingErc721V1MasterCopy = linearVotingErc721V1MasterCopy;
     this.moduleAzoriusMasterCopy = moduleAzoriusMasterCopy;
-    this.paymasterMasterCopy = paymasterMasterCopy;
+    this.paymaster = paymaster;
     this.accountAbstraction = accountAbstraction;
     this.gaslessVotingEnabled = gaslessVotingEnabled;
 
@@ -329,12 +337,16 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
       ],
     });
 
+    if (!this.paymaster) {
+      throw new Error('Paymaster addresses are not set');
+    }
+
     return buildContractCall(
       ZodiacModuleProxyFactoryAbi,
       this.zodiacModuleProxyFactory,
       'deployModule',
       [
-        this.paymasterMasterCopy,
+        this.paymaster.decentPaymasterV1MasterCopy,
         paymasterInitData,
         getPaymasterSaltNonce(this.safeContractAddress, this.publicClient.chain!.id),
       ],
@@ -347,11 +359,14 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
     if (!this.accountAbstraction) {
       throw new Error('Account Abstraction addresses are not set');
     }
+    if (!this.paymaster) {
+      throw new Error('Paymaster addresses are not set');
+    }
 
     const predictedPaymasterAddress = getPaymasterAddress({
       safeAddress: this.safeContractAddress,
       zodiacModuleProxyFactory: this.zodiacModuleProxyFactory,
-      paymasterMastercopy: this.paymasterMasterCopy,
+      paymasterMastercopy: this.paymaster?.decentPaymasterV1MasterCopy,
       entryPoint: this.accountAbstraction.entryPointv07,
       lightAccountFactory: this.accountAbstraction.lightAccountFactory,
       chainId: this.publicClient.chain!.id,
