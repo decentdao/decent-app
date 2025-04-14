@@ -169,10 +169,10 @@ export default function useCreateRoles() {
       const azoriusGovernance = governance as AzoriusGovernance;
       const { votingStrategy, votesToken, erc721Tokens } = azoriusGovernance;
 
-      if (!paymaster) {
-        throw new Error('Paymaster is not defined');
-      }
       const getVoteValidator = (strategyType: 'erc20' | 'erc721') => {
+        if (!paymaster) {
+          throw new Error('Paymaster is not defined');
+        }
         return strategyType === 'erc20'
           ? paymaster.linearERC20VotingV1ValidatorV1
           : paymaster.linearERC721VotingV1ValidatorV1;
@@ -279,9 +279,6 @@ export default function useCreateRoles() {
 
         const optionallyWhitelistWhitelistingStrategyOnPaymaster = [];
         if (gaslessVotingEnabled && paymasterAddress) {
-          if (!paymaster) {
-            throw new Error('Paymaster is not defined');
-          }
           optionallyWhitelistWhitelistingStrategyOnPaymaster.push({
             calldata: encodeFunctionData({
               abi: abis.DecentPaymasterV1,
@@ -399,9 +396,6 @@ export default function useCreateRoles() {
 
         const optionallyWhitelistWhitelistingStrategyOnPaymaster = [];
         if (gaslessVotingEnabled && paymasterAddress) {
-          if (!paymaster) {
-            throw new Error('Paymaster is not defined');
-          }
           optionallyWhitelistWhitelistingStrategyOnPaymaster.push({
             calldata: encodeFunctionData({
               abi: abis.DecentPaymasterV1,
