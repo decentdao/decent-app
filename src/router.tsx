@@ -17,7 +17,6 @@ import { SafeProposalTemplatesPage } from './pages/dao/proposal-templates/SafePr
 import { SafeCreateProposalTemplatePage } from './pages/dao/proposal-templates/new/SafeCreateProposalTemplatePage';
 import { SafeProposalDetailsPage } from './pages/dao/proposals/[proposalId]';
 import { SafeProposalWithActionsCreatePage } from './pages/dao/proposals/actions/new/SafeProposalWithActionsCreatePage';
-import { SafeProposalCreatePage } from './pages/dao/proposals/new/SafeProposalCreatePage';
 import { SafeSablierProposalCreatePage } from './pages/dao/proposals/new/sablier/SafeSablierProposalCreatePage';
 import { SafeRolesPage } from './pages/dao/roles/SafeRolesPage';
 import { SafeRoleDetailsPage } from './pages/dao/roles/details/SafeRoleDetailsPage';
@@ -185,7 +184,7 @@ export const router = (addressPrefix: string, daoAddress: string | undefined) =>
                 },
                 {
                   path: 'new',
-                  element: <SafeProposalCreatePage />,
+                  element: <SafeProposalWithActionsCreatePage />,
                 },
                 {
                   path: 'actions/new',
