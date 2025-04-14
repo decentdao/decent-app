@@ -1,6 +1,5 @@
 import * as amplitude from '@amplitude/analytics-browser';
 import { Center, Flex, Text } from '@chakra-ui/react';
-import { FormikErrors } from 'formik';
 import { useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
@@ -8,8 +7,7 @@ import { ProposalActionCard } from '../../../../../components/ProposalBuilder/Pr
 import { ProposalBuilder } from '../../../../../components/ProposalBuilder/ProposalBuilder';
 import { TransactionsDetails } from '../../../../../components/ProposalBuilder/ProposalDetails';
 import { DEFAULT_PROPOSAL_METADATA_TYPE_PROPS } from '../../../../../components/ProposalBuilder/ProposalMetadata';
-import ProposalTransactionsForm from '../../../../../components/ProposalBuilder/ProposalTransactionsForm';
-import { GoToTransactionsStepButton } from '../../../../../components/ProposalBuilder/StepButtons';
+import { CreateProposalButton } from '../../../../../components/ProposalBuilder/StepButtons';
 import { DEFAULT_PROPOSAL } from '../../../../../components/ProposalBuilder/constants';
 import { BarLoader } from '../../../../../components/ui/loaders/BarLoader';
 import { AddActions } from '../../../../../components/ui/modals/AddActions';
@@ -22,11 +20,7 @@ import { useStore } from '../../../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../../../providers/NetworkConfig/useNetworkConfigStore';
 import { useProposalActionsStore } from '../../../../../store/actions/useProposalActionsStore';
 import { useDaoInfoStore } from '../../../../../store/daoInfo/useDaoInfoStore';
-import {
-  BigIntValuePair,
-  CreateProposalSteps,
-  CreateProposalTransaction,
-} from '../../../../../types';
+import { CreateProposalSteps } from '../../../../../types';
 
 function ActionsExperience() {
   const { t } = useTranslation('actions');
@@ -111,18 +105,12 @@ export function SafeProposalWithActionsCreatePage() {
   };
 
   const stepButtons = ({
-    formErrors,
-    onStepChange,
+    createProposalBlocked,
   }: {
     formErrors: boolean;
     createProposalBlocked: boolean;
     onStepChange: (step: CreateProposalSteps) => void;
-  }) => (
-    <GoToTransactionsStepButton
-      isDisabled={formErrors}
-      onStepChange={onStepChange}
-    />
-  );
+  }) => <CreateProposalButton isDisabled={createProposalBlocked} />;
 
   return (
     <ProposalBuilder
@@ -141,21 +129,7 @@ export function SafeProposalWithActionsCreatePage() {
       streamsDetails={null}
       proposalMetadataTypeProps={DEFAULT_PROPOSAL_METADATA_TYPE_PROPS(t)}
       prepareProposalData={prepareProposal}
-      mainContent={(formikProps, pendingCreateTx, nonce, currentStep) => {
-        if (currentStep !== CreateProposalSteps.TRANSACTIONS) return null;
-        const { setFieldValue, errors, values } = formikProps;
-        return (
-          <ProposalTransactionsForm
-            pendingTransaction={pendingCreateTx}
-            isProposalMode={true}
-            values={values.transactions}
-            setFieldValue={setFieldValue}
-            errors={
-              errors?.transactions as FormikErrors<CreateProposalTransaction<BigIntValuePair>>[]
-            }
-          />
-        );
-      }}
+      mainContent={() => null}
     />
   );
 }
