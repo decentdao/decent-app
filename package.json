@@ -39,7 +39,6 @@
     "hono": "^4.6.16",
     "i18next": "^23.10.1",
     "i18next-browser-languagedetector": "^6.1.5",
-    "immer": "^10.1.1",
     "js-big-decimal": "^1.3.12",
     "lodash.camelcase": "^4.3.0",
     "lodash.debounce": "^4.0.8",
