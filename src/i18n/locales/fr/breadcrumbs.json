@@ -1,0 +1,18 @@
+{
+  "createNewDAO": "Créer un nouveau DAO",
+  "createSubDAO": "Créer un sous-DAO",
+  "headerTitle": "{{daoName}} {{subject}}",
+  "proposals": "Toutes les propositions",
+  "proposalNew": "Créer une proposition",
+  "nodes": "Organisation",
+  "roles": "Rôles",
+  "treasury": "Trésorerie",
+  "proposal": "#{{proposalId}} {{proposalTitle}}",
+  "proposalTemplates": "Modèles de proposition",
+  "proposalDapps": "Explorer les dApps",
+  "proposalTemplate": "{{proposalTemplateTitle}}",
+  "proposalTemplateNew": "Créer un modèle de proposition",
+  "editDAO": "Modifier le DAO",
+  "parentLink": "DAO mère",
+  "settings": "Paramètres"
+}

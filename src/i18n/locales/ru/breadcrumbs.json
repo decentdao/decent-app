@@ -1,0 +1,18 @@
+{
+  "createNewDAO": "Создать новый DAO",
+  "createSubDAO": "Создайте SubDAO",
+  "headerTitle": "{{daoName}} {{subject}}",
+  "proposals": "Все предложения",
+  "proposalNew": "Создать предложение",
+  "nodes": "Организация",
+  "roles": "Роли",
+  "treasury": "Казначейство",
+  "proposal": "#{{proposalId}} {{proposalTitle}}",
+  "proposalTemplates": "Шаблоны предложений",
+  "proposalDapps": "Изучите dApps",
+  "proposalTemplate": "{{proposalTemplateTitle}}",
+  "proposalTemplateNew": "Создать шаблон предложения",
+  "editDAO": "Редактировать DAO",
+  "parentLink": "Родительский ДАО",
+  "settings": "Настройки"
+}
