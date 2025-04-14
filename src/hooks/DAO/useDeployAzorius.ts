@@ -34,6 +34,7 @@ const useDeployAzorius = () => {
     contracts: {
       compatibilityFallbackHandler,
       votesErc20MasterCopy,
+      votesErc20LockableMasterCopy,
       keyValuePairs,
       gnosisSafeProxyFactory,
       gnosisSafeL2Singleton,
@@ -148,6 +149,7 @@ const useDeployAzorius = () => {
         daoData,
         compatibilityFallbackHandler,
         votesErc20MasterCopy,
+        votesErc20LockableMasterCopy,
         keyValuePairs,
         gnosisSafeProxyFactory,
         gnosisSafeL2Singleton,
@@ -232,6 +234,7 @@ const useDeployAzorius = () => {
       subgraphInfo?.parentAddress,
       compatibilityFallbackHandler,
       votesErc20MasterCopy,
+      votesErc20LockableMasterCopy,
       keyValuePairs,
       gnosisSafeProxyFactory,
       gnosisSafeL2Singleton,

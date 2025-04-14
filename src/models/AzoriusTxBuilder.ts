@@ -30,6 +30,7 @@ import {
   AzoriusGovernanceDAO,
   GovernanceType,
   SafeTransaction,
+  TokenLockType,
   VotingStrategyType,
 } from '../types';
 import { SENTINEL_MODULE } from '../utils/address';
@@ -54,6 +55,7 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
   public linearERC721VotingAddress: Address | undefined;
   public votesTokenAddress: Address | undefined;
   private votesErc20MasterCopy: Address;
+  private votesErc20LockableMasterCopy: Address;
   private zodiacModuleProxyFactory: Address;
   private multiSendCallOnly: Address;
   private claimErc20MasterCopy: Address;
@@ -81,6 +83,7 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
     daoData: AzoriusERC20DAO | AzoriusERC721DAO,
     safeContractAddress: Address,
     votesErc20MasterCopy: Address,
+    votesErc20LockableMasterCopy: Address,
     zodiacModuleProxyFactory: Address,
     multiSendCallOnly: Address,
     claimErc20MasterCopy: Address,
@@ -108,6 +111,7 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
     this.strategyNonce = getRandomBytes();
     this.azoriusNonce = getRandomBytes();
     this.votesErc20MasterCopy = votesErc20MasterCopy;
+    this.votesErc20LockableMasterCopy = votesErc20LockableMasterCopy;
     this.zodiacModuleProxyFactory = zodiacModuleProxyFactory;
     this.multiSendCallOnly = multiSendCallOnly;
     this.claimErc20MasterCopy = claimErc20MasterCopy;
@@ -236,11 +240,18 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
   }
 
   public buildCreateTokenTx(): SafeTransaction {
+    const azoriusErc20DaoData = this.daoData as AzoriusERC20DAO;
     return buildContractCall(
       ZodiacModuleProxyFactoryAbi,
       this.zodiacModuleProxyFactory,
       'deployModule',
-      [this.votesErc20MasterCopy, this.encodedSetupTokenData, this.tokenNonce],
+      [
+        azoriusErc20DaoData.locked === TokenLockType.LOCKED
+          ? this.votesErc20LockableMasterCopy
+          : this.votesErc20MasterCopy,
+        this.encodedSetupTokenData,
+        this.tokenNonce,
+      ],
       0,
       false,
     );
@@ -421,26 +432,50 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
     const [tokenAllocationsOwners, tokenAllocationsValues] =
       this.calculateTokenAllocations(azoriusGovernanceDaoData);
 
-    const encodedInitTokenData = encodeAbiParameters(
-      parseAbiParameters('string, string, address[], uint256[]'),
-      [
-        azoriusGovernanceDaoData.tokenName,
-        azoriusGovernanceDaoData.tokenSymbol,
-        tokenAllocationsOwners,
-        tokenAllocationsValues,
-      ],
-    );
+    if (azoriusGovernanceDaoData.locked === TokenLockType.LOCKED) {
+      const encodedInitTokenData = encodeAbiParameters(
+        parseAbiParameters('address, bool, string, string, address[], uint256[]'),
+        [
+          this.safeContractAddress,
+          true,
+          azoriusGovernanceDaoData.tokenName,
+          azoriusGovernanceDaoData.tokenSymbol,
+          tokenAllocationsOwners,
+          tokenAllocationsValues,
+        ],
+      );
 
-    this.encodedSetupTokenData = encodeFunctionData({
-      abi: abis.VotesERC20,
-      functionName: 'setUp',
-      args: [encodedInitTokenData],
-    });
+      this.encodedSetupTokenData = encodeFunctionData({
+        abi: abis.VotesERC20LockableV1,
+        functionName: 'initialize',
+        args: [encodedInitTokenData],
+      });
+    } else {
+      const encodedInitTokenData = encodeAbiParameters(
+        parseAbiParameters('string, string, address[], uint256[]'),
+        [
+          azoriusGovernanceDaoData.tokenName,
+          azoriusGovernanceDaoData.tokenSymbol,
+          tokenAllocationsOwners,
+          tokenAllocationsValues,
+        ],
+      );
+
+      this.encodedSetupTokenData = encodeFunctionData({
+        abi: abis.VotesERC20,
+        functionName: 'setUp',
+        args: [encodedInitTokenData],
+      });
+    }
   }
 
   private setPredictedTokenAddress() {
-    const tokenByteCodeLinear = generateContractByteCodeLinear(this.votesErc20MasterCopy);
-
+    const azoriusGovernanceDaoData = this.daoData as AzoriusERC20DAO;
+    const tokenByteCodeLinear = generateContractByteCodeLinear(
+      azoriusGovernanceDaoData.locked === TokenLockType.LOCKED
+        ? this.votesErc20LockableMasterCopy
+        : this.votesErc20MasterCopy,
+    );
     const tokenSalt = generateSalt(this.encodedSetupTokenData!, this.tokenNonce);
 
     this.predictedTokenAddress = getCreate2Address({
