@@ -227,8 +227,8 @@ const useCastVote = (proposalId: string, strategy: Address) => {
 
     const userOp = {
       ...userOpWithoutCallData,
-      maxPriorityFeePerGas: (maxPriorityFeePerGasEstimate * BigInt(13)) / 10n,
-      maxFeePerGas: (maxFeePerGasEstimate * BigInt(13)) / 10n,
+      maxPriorityFeePerGas: (maxPriorityFeePerGasEstimate * 13n) / 10n,
+      maxFeePerGas: (maxFeePerGasEstimate * 13n) / 10n,
     };
 
     return {
