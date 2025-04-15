@@ -12,15 +12,12 @@
   "paymasterBalance": "付費員餘額",
   "submitRefillAmount": "立即傳送",
   "amountLabel": "您發送",
-  "usdValue": "$__placeholder_0__}",
-  "availableBalance": "__placeholder_0___}。",
   "insufficientPaymasterBalance": "DAO 付費者目前沒有足夠的餘額贊助您的投票。",
   "voteIsSponsoredTitle": "您的投票得到贊助。",
   "voteIsSponsoredSubtitle": "享受零費用投票！",
   "userRejectedSignature": "使用者拒絕簽名。",
   "directDeposit": "直接存款",
   "depositGas": "存款",
-  "balance": "__placeholder_0___}。可用",
   "sendingHint": "建議補充劑量",
   "sendingHintDirectDeposit": "您發送"
 }
