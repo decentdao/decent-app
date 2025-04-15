@@ -9,16 +9,5 @@
     "tags": ["Aggregator", "DAO Tooling", "MEV Protection"],
     "features": ["BATCHED_TRANSACTIONS"],
     "featured": false
-  },
-  {
-    "id": 2,
-    "url": "https://www.stoploss.bleu.builders",
-    "name": "CoW Stop Loss App",
-    "iconUrl": "https://safe-transaction-assets.safe.global/safe_apps/e0331b2c-94ab-4e7a-9b9d-5014a4fa48d5/icon.png",
-    "description": "UI for creating and managing stop loss orders on CoW Protocol",
-    "chainIds": ["42161", "1", "11155111", "100"],
-    "tags": ["DeFi", "DEX", "MEV Protection"],
-    "features": ["BATCHED_TRANSACTIONS"],
-    "featured": false
   }
 ]
