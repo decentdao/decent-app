@@ -69,6 +69,12 @@ Only new strings are automatically translated.
 Translations can be manually updated, based on professional reviews or community feedback.
 The script does not modify existing translations.
 
+### Localization Verifications
+
+Run `node scripts/localization_verify.js`
+
+This script is also used by Git Action as a precheck at merge.
+
 ## Feature flags
 
 ### Setup
