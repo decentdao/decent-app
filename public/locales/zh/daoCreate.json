@@ -61,7 +61,7 @@
   "helperTokenSymbol": "2-6 个字符，即 DCNT、SAFE、USDC。",
   "labelTokenSupply": "供应总量",
   "helperTokenSupply": "要创建的代币总数。",
-  "labelMultisigGov": "多位字符（{{totalSigners}_} 的 {{threshold}}",
+  "labelMultisigGov": "多位字符（{{threshold}} 的 {{totalSigners}})",
   "descMultisigGov": "最适合小团体和/或频繁的连锁活动。",
   "labelAzoriusErc20Gov": "ERC-20 代币投票",
   "labelAzoriusErc20HatsWhitelistingGov": "代币投票 + 白名单提案人 DAO",
