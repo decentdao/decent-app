@@ -12,6 +12,7 @@ import { DEFAULT_PROPOSAL_METADATA_TYPE_PROPS } from '../../../../../components/
 import { ProposalStreams } from '../../../../../components/ProposalBuilder/ProposalStreams';
 import { GoToTransactionsStepButton } from '../../../../../components/ProposalBuilder/StepButtons';
 import { DEFAULT_SABLIER_PROPOSAL } from '../../../../../components/ProposalBuilder/constants';
+import NoDataCard from '../../../../../components/ui/containers/NoDataCard';
 import { BarLoader } from '../../../../../components/ui/loaders/BarLoader';
 import { useHeaderHeight } from '../../../../../constants/common';
 import { DAO_ROUTES } from '../../../../../constants/routes';
@@ -33,6 +34,7 @@ export function SafeSablierProposalCreatePage() {
   const { daoKey } = useCurrentDAOKey();
   const {
     governance: { type },
+    treasury: { assetsFungible },
   } = useStore({ daoKey });
   const {
     addressPrefix,
@@ -122,6 +124,28 @@ export function SafeSablierProposalCreatePage() {
     );
   }
 
+  const fungibleNonNativeAssetsWithBalance = assetsFungible.filter(
+    asset => !asset.nativeToken && parseFloat(asset.balance) > 0,
+  );
+  if (!fungibleNonNativeAssetsWithBalance.length) {
+    return (
+      <NoDataCard
+        emptyText="noAssetsWithBalance"
+        emptyTextNotProposer="noAssetsWithBalanceNotProposer"
+        translationNameSpace="modals"
+      />
+    );
+  }
+  const sablierProposalInitialValues = {
+    ...DEFAULT_SABLIER_PROPOSAL,
+    streams: DEFAULT_SABLIER_PROPOSAL.streams.map(s => {
+      return {
+        ...s,
+        tokenAddress: s.tokenAddress || fungibleNonNativeAssetsWithBalance[0].tokenAddress,
+      };
+    }),
+  };
+
   const pageHeaderBreadcrumbs = [
     {
       terminus: t('proposals', { ns: 'breadcrumbs' }),
@@ -153,7 +177,10 @@ export function SafeSablierProposalCreatePage() {
 
   return (
     <ProposalBuilder
-      initialValues={{ ...DEFAULT_SABLIER_PROPOSAL, nonce: safe.nextNonce }}
+      initialValues={{
+        ...sablierProposalInitialValues,
+        nonce: safe.nextNonce,
+      }}
       pageHeaderTitle={t('createProposal', { ns: 'proposal' })}
       pageHeaderBreadcrumbs={pageHeaderBreadcrumbs}
       pageHeaderButtonClickHandler={pageHeaderButtonClickHandler}
