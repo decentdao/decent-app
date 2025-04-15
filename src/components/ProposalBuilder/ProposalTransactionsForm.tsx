@@ -81,6 +81,7 @@ export function ProposalTransactionsFormModal({
           },
         },
       ]}
+      validateOnMount
       validationSchema={transactionValidationSchema}
       onSubmit={values => {
         onSubmit?.(values);
@@ -121,6 +122,7 @@ export function ProposalTransactionsFormModal({
             </Box>
             <Button
               w="full"
+              isDisabled={Object.values(errors).length > 0}
               type="submit"
             >
               {t('labelAddTransactionsToProposal')}
