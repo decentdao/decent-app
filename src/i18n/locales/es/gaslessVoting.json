@@ -13,7 +13,7 @@
   "submitRefillAmount": "Enviar ahora",
   "amountLabel": "Estás enviando",
   "usdValue": "${{value}}",
-  "availableBalance": ".}",
+  "availableBalance": "{{balance}}",
   "insufficientPaymasterBalance": "El pagador DAO no tiene saldo suficiente para patrocinar su voto en este momento.",
   "voteIsSponsoredTitle": "Su voto está patrocinado.",
   "voteIsSponsoredSubtitle": "¡Disfruta de cero comisiones por esta votación!",
