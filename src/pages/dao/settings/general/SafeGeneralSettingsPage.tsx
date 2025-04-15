@@ -68,12 +68,7 @@ export function SafeGeneralSettingsPage() {
   const {
     addressPrefix,
     chain: { id: chainId },
-    contracts: {
-      keyValuePairs,
-      accountAbstraction,
-      decentPaymasterV1MasterCopy,
-      zodiacModuleProxyFactory,
-    },
+    contracts: { keyValuePairs, accountAbstraction, paymaster, zodiacModuleProxyFactory },
     gaslessVoting,
   } = useNetworkConfigStore();
   const { depositInfo } = useDepositInfo(paymasterAddress);
@@ -168,6 +163,9 @@ export function SafeGeneralSettingsPage() {
         throw new Error('Account Abstraction addresses are not set');
       }
 
+      if (!paymaster) {
+        throw new Error('Paymaster addresses are not set');
+      }
       if (paymasterAddress === null) {
         // Paymaster does not exist, deploy a new one
         const paymasterInitData = encodeFunctionData({
@@ -188,7 +186,7 @@ export function SafeGeneralSettingsPage() {
             abi: ZodiacModuleProxyFactoryAbi,
             functionName: 'deployModule',
             args: [
-              decentPaymasterV1MasterCopy,
+              paymaster.decentPaymasterV1MasterCopy,
               paymasterInitData,
               getPaymasterSaltNonce(safeAddress, chainId),
             ],
@@ -208,7 +206,7 @@ export function SafeGeneralSettingsPage() {
       const predictedPaymasterAddress = getPaymasterAddress({
         safeAddress,
         zodiacModuleProxyFactory,
-        paymasterMastercopy: decentPaymasterV1MasterCopy,
+        paymasterMastercopy: paymaster.decentPaymasterV1MasterCopy,
         entryPoint: accountAbstraction.entryPointv07,
         lightAccountFactory: accountAbstraction.lightAccountFactory,
         chainId,
@@ -254,6 +252,12 @@ export function SafeGeneralSettingsPage() {
         return voteSelector;
       };
 
+      const getVoteValidator = (strategy: FractalVotingStrategy) => {
+        return strategy.type === FractalTokenType.erc20
+          ? paymaster.linearERC20VotingV1ValidatorV1
+          : paymaster.linearERC721VotingV1ValidatorV1;
+      };
+
       newStrategies.forEach(strategy => {
         // Whitelist the new strategy's `vote` function call on the Paymaster
         // // // // // // // // // // // // // // // // // // // // // // //
@@ -261,8 +265,8 @@ export function SafeGeneralSettingsPage() {
         calldatas.push(
           encodeFunctionData({
             abi: abis.DecentPaymasterV1,
-            functionName: 'whitelistFunction',
-            args: [strategy.address, getVoteSelector(strategy)],
+            functionName: 'setFunctionValidator',
+            args: [strategy.address, getVoteSelector(strategy), getVoteValidator(strategy)],
           }),
         );
         values.push(0n);
@@ -278,8 +282,8 @@ export function SafeGeneralSettingsPage() {
             calldatas.push(
               encodeFunctionData({
                 abi: abis.DecentPaymasterV1,
-                functionName: 'whitelistFunction',
-                args: [strategy.address, getVoteSelector(strategy)],
+                functionName: 'setFunctionValidator',
+                args: [strategy.address, getVoteSelector(strategy), getVoteValidator(strategy)],
               }),
             );
             values.push(0n);

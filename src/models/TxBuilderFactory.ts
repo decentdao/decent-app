@@ -43,7 +43,13 @@ export class TxBuilderFactory extends BaseTxBuilder {
   private linearVotingErc20V1MasterCopy: Address;
   private linearVotingErc721V1MasterCopy: Address;
   private moduleAzoriusMasterCopy: Address;
-  private paymasterMasterCopy: Address;
+  private votesErc20LockableMasterCopy?: Address;
+  private paymaster?: {
+    decentPaymasterV1MasterCopy: Address;
+    linearERC20VotingV1ValidatorV1: Address;
+    linearERC721VotingV1ValidatorV1: Address;
+  };
+
   private accountAbstraction?: {
     entryPointv07: Address;
     lightAccountFactory: Address;
@@ -72,7 +78,12 @@ export class TxBuilderFactory extends BaseTxBuilder {
     linearVotingErc20V1MasterCopy: Address,
     linearVotingErc721V1MasterCopy: Address,
     moduleAzoriusMasterCopy: Address,
-    paymasterMasterCopy: Address,
+    votesErc20LockableMasterCopy?: Address,
+    paymaster?: {
+      decentPaymasterV1MasterCopy: Address;
+      linearERC20VotingV1ValidatorV1: Address;
+      linearERC721VotingV1ValidatorV1: Address;
+    },
     accountAbstraction?: {
       entryPointv07: Address;
       lightAccountFactory: Address;
@@ -85,6 +96,7 @@ export class TxBuilderFactory extends BaseTxBuilder {
 
     this.compatibilityFallbackHandler = compatibilityFallbackHandler;
     this.votesErc20MasterCopy = votesErc20MasterCopy;
+    this.votesErc20LockableMasterCopy = votesErc20LockableMasterCopy;
     this.keyValuePairs = keyValuePairs;
     this.gnosisSafeProxyFactory = gnosisSafeProxyFactory;
     this.gnosisSafeProxy = gnosisSafeProxy;
@@ -102,7 +114,7 @@ export class TxBuilderFactory extends BaseTxBuilder {
     this.linearVotingErc20V1MasterCopy = linearVotingErc20V1MasterCopy;
     this.linearVotingErc721V1MasterCopy = linearVotingErc721V1MasterCopy;
     this.moduleAzoriusMasterCopy = moduleAzoriusMasterCopy;
-    this.paymasterMasterCopy = paymasterMasterCopy;
+    this.paymaster = paymaster;
     this.accountAbstraction = accountAbstraction;
   }
 
@@ -215,8 +227,9 @@ export class TxBuilderFactory extends BaseTxBuilder {
       this.linearVotingErc20V1MasterCopy,
       this.linearVotingErc721V1MasterCopy,
       this.moduleAzoriusMasterCopy,
-      this.paymasterMasterCopy,
       gaslessVotingEnabled,
+      this.votesErc20LockableMasterCopy,
+      this.paymaster,
       this.accountAbstraction,
       this.parentAddress,
       this.parentTokenAddress,
