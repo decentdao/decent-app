@@ -85,12 +85,11 @@ export const polygonConfig: NetworkConfig = {
     freezeVotingMultisigMasterCopy: getAddress(a.MultisigFreezeVoting),
 
     votesErc20MasterCopy: getAddress(a.VotesERC20),
+    votesErc20LockableMasterCopy: getAddress(a.VotesERC20LockableV1),
 
     claimErc20MasterCopy: getAddress(a.ERC20Claim),
 
     decentAutonomousAdminV1MasterCopy: getAddress(a.DecentAutonomousAdminV1),
-
-    decentPaymasterV1MasterCopy: zeroAddress,
 
     keyValuePairs: getAddress(a.KeyValuePairs),
 

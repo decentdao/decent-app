@@ -89,12 +89,17 @@ export const sepoliaConfig: NetworkConfig = {
     freezeVotingMultisigMasterCopy: getAddress(a.MultisigFreezeVoting),
 
     votesErc20MasterCopy: getAddress(a.VotesERC20),
+    votesErc20LockableMasterCopy: getAddress(a.VotesERC20LockableV1),
 
     claimErc20MasterCopy: getAddress(a.ERC20Claim),
 
     decentAutonomousAdminV1MasterCopy: getAddress(a.DecentAutonomousAdminV1),
 
-    decentPaymasterV1MasterCopy: getAddress(a.DecentPaymasterV1),
+    paymaster: {
+      decentPaymasterV1MasterCopy: getAddress(a.DecentPaymasterV1),
+      linearERC20VotingV1ValidatorV1: getAddress(a.LinearERC20VotingV1ValidatorV1),
+      linearERC721VotingV1ValidatorV1: getAddress(a.LinearERC721VotingV1ValidatorV1),
+    },
 
     keyValuePairs: getAddress(a.KeyValuePairs),
 

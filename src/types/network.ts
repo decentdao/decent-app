@@ -55,12 +55,17 @@ export type NetworkConfig = {
     freezeVotingMultisigMasterCopy: Address;
 
     votesErc20MasterCopy: Address;
+    votesErc20LockableMasterCopy?: Address;
 
     claimErc20MasterCopy: Address;
 
     decentAutonomousAdminV1MasterCopy: Address;
 
-    decentPaymasterV1MasterCopy: Address;
+    paymaster?: {
+      decentPaymasterV1MasterCopy: Address;
+      linearERC20VotingV1ValidatorV1: Address;
+      linearERC721VotingV1ValidatorV1: Address;
+    };
 
     keyValuePairs: Address;
 
