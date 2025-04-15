@@ -73,20 +73,19 @@ export function ProposalStreams({
                       {t('streamTitle', { index: index + 1, type: t(`${stream.type}Stream`) })}
                     </Text>
                   </Flex>
-                  {index !== 0 ||
-                    (streams.length !== 1 && (
-                      <IconButton
-                        icon={<MinusCircle />}
-                        aria-label="Remove stream"
-                        variant="unstyled"
-                        onClick={() => handleRemoveStream(index)}
-                        minWidth="auto"
-                        color="lilac-0"
-                        _disabled={{ opacity: 0.4, cursor: 'default' }}
-                        sx={{ '&:disabled:hover': { color: 'inherit', opacity: 0.4 } }}
-                        isDisabled={pendingTransaction}
-                      />
-                    ))}
+                  {streams.length !== 1 && (
+                    <IconButton
+                      icon={<MinusCircle />}
+                      aria-label="Remove stream"
+                      variant="unstyled"
+                      onClick={() => handleRemoveStream(index)}
+                      minWidth="auto"
+                      color="lilac-0"
+                      _disabled={{ opacity: 0.4, cursor: 'default' }}
+                      sx={{ '&:disabled:hover': { color: 'inherit', opacity: 0.4 } }}
+                      isDisabled={pendingTransaction}
+                    />
+                  )}
                 </AccordionButton>
                 <ProposalStream
                   stream={stream}
