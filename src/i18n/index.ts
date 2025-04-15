@@ -1,6 +1,7 @@
 import { de, enUS, es, fr, it, ja, ko, pt, ru, uk, zhCN, zhTW } from 'date-fns/locale';
 import i18n from 'i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
+import { useEffect, useState } from 'react';
 import { initReactI18next } from 'react-i18next';
 
 /**
@@ -167,19 +168,50 @@ function buildLanguages(): Promise<{}> {
   return result;
 }
 
-export const supportedLanguages = await buildLanguages();
+let initializedLanguages: {} | undefined = undefined; // Singleton variable to store initialized languages
+let initializationPromise: Promise<void> | null = null; // Singleton to ensure initialization runs only once
 
-i18n
-  .use(LanguageDetector)
-  .use(initReactI18next)
-  .init({
-    resources: supportedLanguages,
-    fallbackLng: 'en',
-    defaultNS: 'common',
-    interpolation: {
-      escapeValue: false, // not needed for react as it escapes by default
-    },
-  });
+async function initializeI18n() {
+  if (!initializationPromise) {
+    initializationPromise = (async () => {
+      const supportedLanguages = await buildLanguages();
+
+      await i18n
+        .use(LanguageDetector)
+        .use(initReactI18next)
+        .init({
+          resources: supportedLanguages,
+          fallbackLng: 'en',
+          defaultNS: 'common',
+          interpolation: {
+            escapeValue: false, // not needed for react as it escapes by default
+          },
+        });
+
+      initializedLanguages = supportedLanguages;
+    })();
+  }
+
+  await initializationPromise;
+}
+
+export const useSupportedLanguages = (): {} | undefined => {
+  const [languages, setLanguages] = useState<{} | undefined>(initializedLanguages);
+
+  useEffect(() => {
+    if (!initializedLanguages) {
+      initializeI18n()
+        .then(() => {
+          setLanguages(initializedLanguages); // Update state when initialization is complete
+        })
+        .catch(err => {
+          console.error('Error initializing i18n:', err);
+        });
+    }
+  }, []); // Empty dependency array ensures this runs only once
+
+  return languages;
+};
 
 export default i18n;
 
