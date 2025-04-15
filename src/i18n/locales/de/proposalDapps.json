@@ -1,0 +1,8 @@
+{
+  "emptyProposalDapps": "Dieser Safe hat noch keine unterstützten dApps.",
+  "connectingWalletConnect": "Verbinden...",
+  "successConnectingWalletConnect": "Verbunden!",
+  "failConnectingWalletConnect": "Die Verbindung konnte nicht hergestellt werden, bitte überprüfen Sie die uri.",
+  "labelIframeWalletConnectUri": "WalletConnect URI",
+  "helperIframeWalletConnectUri": "Einfügen zum Verbinden"
+}

@@ -1,0 +1,8 @@
+{
+  "emptyProposalDapps": "이 금고에는 아직 지원되는 디앱이 없습니다.",
+  "connectingWalletConnect": "연결 중...",
+  "successConnectingWalletConnect": "연결되었습니다!",
+  "failConnectingWalletConnect": "연결에 실패했습니다. URL을 확인하세요.",
+  "labelIframeWalletConnectUri": "월렛커넥트 URI",
+  "helperIframeWalletConnectUri": "붙여넣기하여 연결"
+}

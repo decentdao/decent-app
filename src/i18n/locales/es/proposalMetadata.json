@@ -1,0 +1,20 @@
+{
+  "createChildSafe": "Crear un SubDAO",
+  "clawbackProposal": "Propuesta de devolución",
+  "clawbackDescription": "Transfiera todos los fondos de la caja fuerte del niño a la caja fuerte de los padres.",
+  "createProposalTemplateTitle": "Crear plantilla de propuesta",
+  "createProposalTemplateDescription": "La ejecución de esta propuesta creará un nuevo modelo de propuesta, adjunto a esta Caja Fuerte.",
+  "removeProposalTemplateTitle": "Eliminar plantilla de propuesta",
+  "removeProposalTemplateDescription": "La ejecución de esta propuesta eliminará el modelo de propuesta adjunto a esta Caja Fuerte.",
+  "updatesSafeName": "Actualizar nombre seguro",
+  "enableGaslessVoting": "Activar el voto sin gas",
+  "disableGaslessVoting": "Desactivar la votación sin gas",
+  "topupGasTank": "Llenar el depósito de gasolina",
+  "updateSnapshotSpace": "Actualizar espacio de instantáneas",
+  "lidoWithdrawalTitle": "Retirada de Lido",
+  "lidoWithdrawalDescription": "Esta propuesta quemará tu NFT de Retirada de Lido y devolverá el ETH a tu Caja Fuerte.",
+  "unstakeStEthTitle": "Desenganchar stETH",
+  "unstakeStEthDescription": "Esta propuesta desinvertirá stETH de Lido y acuñará un Lido Withdrawal NFT que se puede utilizar para reclamar su ETH.",
+  "stakeWithLidoTitle": "Apuesta ETH con Lido",
+  "stakeWithLidoDescription": "Esta propuesta apostará ETH en Lido, devolviendo stETH a su tesorería."
+}

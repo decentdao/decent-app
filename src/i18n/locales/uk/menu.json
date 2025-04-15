@@ -1,0 +1,14 @@
+{
+  "connect": "Підключіться",
+  "connectWallet": "Підключити гаманець",
+  "disconnect": "Від'єднати",
+  "wallet": "Гаманець",
+  "titleManageProposalTemplate": "Керування шаблоном",
+  "optionCreateSubDAO": "Створити SubDAO",
+  "optionInitiateFreeze": "Ініціювати заморожування",
+  "optionInitiateClawback": "Ініціювати Clawback",
+  "optionRemoveTemplate": "Видалити шаблон",
+  "optionForkTemplate": "Шаблон вилки",
+  "optionModifyGovernance": "Змінити управління",
+  "optionSettings": "Налаштування"
+}

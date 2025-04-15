@@ -1,0 +1,8 @@
+{
+  "emptyProposalDapps": "该 Safe 尚不支持任何应用程序。",
+  "connectingWalletConnect": "连接...",
+  "successConnectingWalletConnect": "已连接！",
+  "failConnectingWalletConnect": "连接失败，请检查 uri。",
+  "labelIframeWalletConnectUri": "钱包连接 URI",
+  "helperIframeWalletConnectUri": "粘贴连接"
+}

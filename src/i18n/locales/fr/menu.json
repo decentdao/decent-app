@@ -1,0 +1,14 @@
+{
+  "connect": "Connecter",
+  "connectWallet": "Connecter le portefeuille",
+  "disconnect": "Déconnexion",
+  "wallet": "Portefeuille",
+  "titleManageProposalTemplate": "Gérer le modèle",
+  "optionCreateSubDAO": "Créer un sous-DAO",
+  "optionInitiateFreeze": "Déclencher un gel",
+  "optionInitiateClawback": "Initier une procédure de récupération",
+  "optionRemoveTemplate": "Supprimer le modèle",
+  "optionForkTemplate": "Modèle de fourchette",
+  "optionModifyGovernance": "Modifier la gouvernance",
+  "optionSettings": "Paramètres"
+}

@@ -1,0 +1,14 @@
+{
+  "connect": "Verbinden Sie",
+  "connectWallet": "Brieftasche verbinden",
+  "disconnect": "Trennen Sie die Verbindung",
+  "wallet": "Brieftasche",
+  "titleManageProposalTemplate": "Vorlage verwalten",
+  "optionCreateSubDAO": "SubDAO erstellen",
+  "optionInitiateFreeze": "Einfrieren einleiten",
+  "optionInitiateClawback": "Rückforderung einleiten",
+  "optionRemoveTemplate": "Vorlage entfernen",
+  "optionForkTemplate": "Gabel Vorlage",
+  "optionModifyGovernance": "Ändern der Governance",
+  "optionSettings": "Einstellungen"
+}

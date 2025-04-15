@@ -1,0 +1,8 @@
+{
+  "emptyProposalDapps": "Este Cofre ainda não tem quaisquer dApps suportados.",
+  "connectingWalletConnect": "Ligar...",
+  "successConnectingWalletConnect": "Ligado!",
+  "failConnectingWalletConnect": "Falha na ligação, verifique o uri.",
+  "labelIframeWalletConnectUri": "URI do WalletConnect",
+  "helperIframeWalletConnectUri": "Colar para ligar"
+}

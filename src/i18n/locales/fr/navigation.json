@@ -1,0 +1,16 @@
+{
+  "home": "Accueil",
+  "proposals": "Propositions",
+  "nodes": "Organisation",
+  "roles": "Rôles",
+  "treasury": "Trésorerie",
+  "proposalTemplates": "Modèles",
+  "faq": "FAQ",
+  "chat": "Warpcast",
+  "documentation": "Documentation",
+  "ariaLabelFractalBrand": "Naviguer dans la maison décente",
+  "navigationExternalTelegram": "Aller au télégramme",
+  "navigationExternalX": "Aller à X",
+  "navigationExternalWarpcast": "Aller à Warpcast",
+  "navigationExternalDiscordmade": "Aller sur Discord"
+}
