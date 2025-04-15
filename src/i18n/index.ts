@@ -1,7 +1,7 @@
 import { de, enUS, es, fr, it, ja, ko, pt, ru, uk, zhCN, zhTW } from 'date-fns/locale';
 import i18n from 'i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
-import { useEffect, useReducer, useState } from 'react';
+import { useEffect, useReducer } from 'react';
 import { initReactI18next } from 'react-i18next';
 
 /**
