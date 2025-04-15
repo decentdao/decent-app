@@ -4,6 +4,7 @@ import { ArrowsDownUp, HourglassMedium, Parachute } from '@phosphor-icons/react'
 import { useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 import { AddPlus } from '../../../assets/theme/custom/icons/AddPlus';
 import ExampleTemplateCard from '../../../components/ProposalTemplates/ExampleTemplateCard';
 import ProposalTemplateCard from '../../../components/ProposalTemplates/ProposalTemplateCard';
@@ -24,7 +25,6 @@ import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetwo
 import { useProposalActionsStore } from '../../../store/actions/useProposalActionsStore';
 import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
 import { ProposalActionType } from '../../../types/proposalBuilder';
-import { toast } from 'sonner';
 
 export function SafeProposalTemplatesPage() {
   useEffect(() => {
