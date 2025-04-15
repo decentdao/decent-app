@@ -16,16 +16,17 @@ const targetBaseDir = path.join(__dirname, '../src/i18n/locales');
 
 // List of target languages and their directory names
 const languages = {
-  ja: 'JA', // Japanese
   es: 'ES', // Spanish
+  de: 'DE', // German
+  fr: 'FR', // French
+  it: 'IT', // Italian
+  ja: 'JA', // Japanese
+  ko: 'KO', // Korean
+  pt: 'PT', // Portuguese
   ru: 'RU', // Russian
   uk: 'UK', // Ukrainian
-  ko: 'KO', // Korean
   zh: 'ZH', // Simplified Chinese
   'zh-hant': 'ZH-HANT', // Traditional Chinese
-  fr: 'FR', // French
-  de: 'DE', // German
-  pt: 'PT', // Portuguese
 };
 
 // Helper function to add a delay
@@ -47,6 +48,8 @@ async function translateWithPlaceholders(text, langCode) {
   const doubleQuoteRegex = /{{[^}]+}}/g;
   const doubleQuoteRegexRegexPlaceholders = text.match(doubleQuoteRegex) || [];
 
+  let translatedText = text;
+
   // Replace placeholders with temporary markers
   singleQuoteRegexPlaceholders.forEach((placeholder, index) => {
     translatedText = translatedText.replace(placeholder, `__SINGLEQUOTE_PLACEHOLDER_${index}__`);
@@ -56,8 +59,6 @@ async function translateWithPlaceholders(text, langCode) {
   doubleQuoteRegexRegexPlaceholders.forEach((placeholder, index) => {
     translatedText = translatedText.replace(placeholder, `__DOUBLEQUOTE_PLACEHOLDER_${index}__`);
   });
-
-  let translatedText = text;
 
   // Translate the text without placeholders
   try {
