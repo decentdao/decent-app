@@ -184,7 +184,15 @@ const useCastVote = (proposalId: string, strategy: Address) => {
       transport: http(rpcEndpoint),
     });
 
-    const maxPriorityFeePerGas = await fetchMaxPriorityFeePerGas(networkConfig);
+    const minimumMaxPriorityFeePerGas = await fetchMaxPriorityFeePerGas(networkConfig);
+    const { maxPriorityFeePerGas: maxPriorityFeePerGasEstimate } =
+      await publicClient.estimateFeesPerGas();
+    const maxPriorityFeePerGasEstimateBuffered = maxPriorityFeePerGasEstimate * (13n / 10n);
+
+    const maxPriorityFeePerGas =
+      maxPriorityFeePerGasEstimateBuffered > minimumMaxPriorityFeePerGas
+        ? maxPriorityFeePerGasEstimateBuffered
+        : minimumMaxPriorityFeePerGas;
 
     const userOpWithoutCallData = {
       paymaster: paymasterAddress,
