@@ -1,7 +1,7 @@
 import { de, enUS, es, fr, it, ja, ko, pt, ru, uk, zhCN, zhTW } from 'date-fns/locale';
 import i18n from 'i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
-import { useEffect, useState } from 'react';
+import { useEffect, useReducer, useState } from 'react';
 import { initReactI18next } from 'react-i18next';
 
 /**
@@ -196,13 +196,13 @@ async function initializeI18n() {
 }
 
 export const useSupportedLanguages = (): {} | undefined => {
-  const [languages, setLanguages] = useState<{} | undefined>(initializedLanguages);
+  const [, forceUpdate] = useReducer(x => x + 1, 0); // Used to trigger re-renders
 
   useEffect(() => {
     if (!initializedLanguages) {
       initializeI18n()
         .then(() => {
-          setLanguages(initializedLanguages); // Update state when initialization is complete
+          forceUpdate(); // Trigger a re-render when initialization is complete
         })
         .catch(err => {
           console.error('Error initializing i18n:', err);
@@ -210,7 +210,7 @@ export const useSupportedLanguages = (): {} | undefined => {
     }
   }, []); // Empty dependency array ensures this runs only once
 
-  return languages;
+  return initializedLanguages;
 };
 
 export default i18n;
