@@ -83,11 +83,6 @@ export function AddActions() {
   });
 
   const openTransactionBuilderModal = useDecentModal(ModalType.TRANSACTION_BUILDER, {
-    pendingTransaction: false,
-    isProposalMode: false,
-    values: [],
-    errors: undefined,
-    setFieldValue: () => {},
     onSubmit: transactionBuilderData => {
       addAction({
         actionType: ProposalActionType.TRANSACTION_BUILDER,

@@ -5,10 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { Address } from 'viem';
 import { CreateProposalTransaction, ProposalTemplate } from '../../../types';
 import { SendAssetsData } from '../../../utils/dao/prepareSendAssetsActionData';
-import {
-  ProposalTransactionsFormModal,
-  ProposalTransactionsFormProps,
-} from '../../ProposalBuilder/ProposalTransactionsForm';
+import { ProposalTransactionsFormModal } from '../../ProposalBuilder/ProposalTransactionsForm';
 import AddSignerModal from '../../SafeSettings/Signers/modals/AddSignerModal';
 import RemoveSignerModal from '../../SafeSettings/Signers/modals/RemoveSignerModal';
 import DraggableDrawer from '../containers/DraggableDrawer';
@@ -112,7 +109,7 @@ export type ModalPropsTypes = {
     appName: string;
     transactionArray: CreateProposalTransaction[];
   };
-  [ModalType.TRANSACTION_BUILDER]: ProposalTransactionsFormProps & {
+  [ModalType.TRANSACTION_BUILDER]: {
     onSubmit?: (transactionBuilderData: FormikProps<CreateProposalTransaction[]>['values']) => void;
   };
 };
@@ -334,11 +331,11 @@ export function ModalProvider({ children }: { children: ReactNode }) {
         modalTitle = t('transactionBuilderTitle');
         modalContent = (
           <ProposalTransactionsFormModal
-            pendingTransaction={current.props.pendingTransaction}
-            isProposalMode={current.props.isProposalMode}
-            values={current.props.values}
-            errors={current.props.errors}
-            setFieldValue={current.props.setFieldValue}
+            pendingTransaction={false}
+            values={[]}
+            errors={undefined}
+            setFieldValue={() => {}}
+            isProposalMode={true}
             onSubmit={current.props.onSubmit}
             onClose={closeModal}
           />
