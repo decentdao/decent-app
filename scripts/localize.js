@@ -47,7 +47,7 @@ async function translateWithPlaceholders(text, langCode) {
 
   // Replace placeholders with temporary markers
   placeholders.forEach((placeholder, index) => {
-    translatedText = translatedText.replace(placeholder, `__PLACEHOLDER_${index}__`);
+    translatedText = translatedText.replace(placeholder, `X__PLACEHOLDER_${index}__X`);
   });
 
   // Translate the text without placeholders
@@ -76,7 +76,7 @@ async function translateWithPlaceholders(text, langCode) {
 
   // Restore placeholders in the translated text
   placeholders.forEach((placeholder, index) => {
-    translatedText = translatedText.replace(`__PLACEHOLDER_${index}__`, placeholder);
+    translatedText = translatedText.replace(`X__PLACEHOLDER_${index}__X`, placeholder);
   });
 
   return translatedText;
