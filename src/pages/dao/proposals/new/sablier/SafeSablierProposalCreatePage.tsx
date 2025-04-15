@@ -125,7 +125,7 @@ export function SafeSablierProposalCreatePage() {
   }
 
   const fungibleNonNativeAssetsWithBalance = assetsFungible.filter(
-    asset => !asset.nativeToken && parseFloat(asset.balance) > 0,
+    asset => !asset.possibleSpam && !asset.nativeToken && parseFloat(asset.balance) > 0,
   );
   if (!fungibleNonNativeAssetsWithBalance.length) {
     return (

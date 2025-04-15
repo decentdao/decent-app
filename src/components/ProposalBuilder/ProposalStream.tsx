@@ -55,7 +55,7 @@ export function ProposalStream({
 
   const safeAddress = safe?.address;
   const fungibleNonNativeAssetsWithBalance = assetsFungible.filter(
-    asset => !asset.nativeToken && parseFloat(asset.balance) > 0,
+    asset => !asset.possibleSpam && !asset.nativeToken && parseFloat(asset.balance) > 0,
   );
   const selectedAssetIndex = fungibleNonNativeAssetsWithBalance.findIndex(
     asset => asset.tokenAddress === stream.tokenAddress,
