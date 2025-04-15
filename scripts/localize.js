@@ -11,8 +11,8 @@ if (fs.existsSync(envLocalPath)) {
 }
 
 // Adjust paths to be relative to the /scripts folder
-const sourceDir = path.join(__dirname, '../src/i18n/locales/en');
-const targetBaseDir = path.join(__dirname, '../src/i18n/locales');
+const sourceDir = path.join(__dirname, '../public/locales/en');
+const targetBaseDir = path.join(__dirname, '../public/locales');
 
 // List of target languages and their directory names
 const languages = {
@@ -26,7 +26,7 @@ const languages = {
   ru: 'RU', // Russian
   uk: 'UK', // Ukrainian
   zh: 'ZH', // Simplified Chinese
-  'zh-hant': 'ZH-HANT', // Traditional Chinese
+  zh_hant: 'ZH-HANT', // Traditional Chinese
 };
 
 // Helper function to add a delay
@@ -55,10 +55,13 @@ async function translateWithPlaceholders(text, langCode) {
     translatedText = translatedText.replace(placeholder, `__SINGLEQUOTE_PLACEHOLDER_${index}__`);
   });
 
-  // Replace placeholders with temporary markers
+  // Replace placeholders with double {{}} with temporary markers
   doubleQuoteRegexRegexPlaceholders.forEach((placeholder, index) => {
     translatedText = translatedText.replace(placeholder, `__DOUBLEQUOTE_PLACEHOLDER_${index}__`);
   });
+
+  // Replace "Decent Labs" with temporary markers
+  translatedText = translatedText.replace('Decent Labs', '__DECENTLABS_PLACEHOLDER__');
 
   // Translate the text without placeholders
   try {
@@ -89,10 +92,13 @@ async function translateWithPlaceholders(text, langCode) {
     translatedText = translatedText.replace(`__DOUBLEQUOTE_PLACEHOLDER_${index}__`, placeholder);
   });
 
-  // Restore placeholders in the translated text
+  // Restore placeholders with double {{}} in the translated text
   singleQuoteRegexPlaceholders.forEach((placeholder, index) => {
     translatedText = translatedText.replace(`__SINGLEQUOTE_PLACEHOLDER_${index}__`, placeholder);
   });
+
+  // Replace "Decent Labs" with temporary markers
+  translatedText = translatedText.replace('__DECENTLABS_PLACEHOLDER__', 'Decent Labs');
 
   return translatedText;
 }
@@ -142,7 +148,7 @@ async function translateFiles() {
         const content = JSON.parse(fs.readFileSync(sourceFile, 'utf8'));
 
         // Translate for each target language
-        for (const [langCode, langDir] of Object.entries(languages)) {
+        for (const [langDir, langCode] of Object.entries(languages)) {
           const targetDir = path.join(targetBaseDir, langDir);
           const targetFile = path.join(targetDir, file);
 
