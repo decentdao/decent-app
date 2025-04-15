@@ -41,14 +41,23 @@ if (!DEEPL_API_KEY) {
 
 // Function to translate text while preserving placeholders inside {}
 async function translateWithPlaceholders(text, langCode) {
-  const placeholderRegex = /{[^}]+}/g;
-  const placeholders = text.match(placeholderRegex) || [];
-  let translatedText = text;
+  const singleQuoteRegex = /{[^}]+}/g;
+  const singleQuoteRegexPlaceholders = text.match(singleQuoteRegex) || [];
+
+  const doubleQuoteRegex = /{{[^}]+}}/g;
+  const doubleQuoteRegexRegexPlaceholders = text.match(doubleQuoteRegex) || [];
 
   // Replace placeholders with temporary markers
-  placeholders.forEach((placeholder, index) => {
-    translatedText = translatedText.replace(placeholder, `X__PLACEHOLDER_${index}__X`);
+  singleQuoteRegexPlaceholders.forEach((placeholder, index) => {
+    translatedText = translatedText.replace(placeholder, `__SINGLEQUOTE_PLACEHOLDER_${index}__`);
   });
+
+  // Replace placeholders with temporary markers
+  doubleQuoteRegexRegexPlaceholders.forEach((placeholder, index) => {
+    translatedText = translatedText.replace(placeholder, `__DOUBLEQUOTE_PLACEHOLDER_${index}__`);
+  });
+
+  let translatedText = text;
 
   // Translate the text without placeholders
   try {
@@ -75,8 +84,13 @@ async function translateWithPlaceholders(text, langCode) {
   }
 
   // Restore placeholders in the translated text
-  placeholders.forEach((placeholder, index) => {
-    translatedText = translatedText.replace(`X__PLACEHOLDER_${index}__X`, placeholder);
+  doubleQuoteRegexRegexPlaceholders.forEach((placeholder, index) => {
+    translatedText = translatedText.replace(`__DOUBLEQUOTE_PLACEHOLDER_${index}__`, placeholder);
+  });
+
+  // Restore placeholders in the translated text
+  singleQuoteRegexPlaceholders.forEach((placeholder, index) => {
+    translatedText = translatedText.replace(`__SINGLEQUOTE_PLACEHOLDER_${index}__`, placeholder);
   });
 
   return translatedText;

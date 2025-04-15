@@ -13,6 +13,7 @@
   "successDelegateVote": "授權成功",
   "sendAssetsTitle": "要求付款",
   "selectLabel": "選擇資產",
+  "selectSublabel": "Available balance: {{balance}}",
   "amountLabel": "多少錢？",
   "destinationLabel": "您想把這個寄到哪裡？",
   "destinationSublabel": "僅限以太坊錢包地址或 ENS",

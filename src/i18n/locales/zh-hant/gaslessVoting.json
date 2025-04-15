@@ -13,6 +13,7 @@
   "submitRefillAmount": "立即傳送",
   "amountLabel": "您發送",
   "usdValue": "${{value}}",
+  "availableBalance": "{{balance}}",
   "insufficientPaymasterBalance": "DAO 付費者目前沒有足夠的餘額贊助您的投票。",
   "voteIsSponsoredTitle": "您的投票得到贊助。",
   "voteIsSponsoredSubtitle": "享受零費用投票！",
