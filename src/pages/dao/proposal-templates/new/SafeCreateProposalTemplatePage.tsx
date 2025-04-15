@@ -1,4 +1,5 @@
 import * as amplitude from '@amplitude/analytics-browser';
+import { Center } from '@chakra-ui/react';
 import { FormikErrors } from 'formik';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -12,6 +13,8 @@ import { TEMPLATE_PROPOSAL_METADATA_TYPE_PROPS } from '../../../../components/Pr
 import ProposalTransactionsForm from '../../../../components/ProposalBuilder/ProposalTransactionsForm';
 import { GoToTransactionsStepButton } from '../../../../components/ProposalBuilder/StepButtons';
 import { DEFAULT_PROPOSAL } from '../../../../components/ProposalBuilder/constants';
+import { BarLoader } from '../../../../components/ui/loaders/BarLoader';
+import { useHeaderHeight } from '../../../../constants/common';
 import { DAO_ROUTES } from '../../../../constants/routes';
 import { logError } from '../../../../helpers/errorLogging';
 import useCreateProposalTemplate from '../../../../hooks/DAO/proposal/useCreateProposalTemplate';
@@ -80,13 +83,22 @@ export function SafeCreateProposalTemplatePage() {
     loadInitialTemplate();
   }, [defaultProposalTemplatesHash, defaultProposalTemplateIndex, ipfsClient]);
 
+  const HEADER_HEIGHT = useHeaderHeight();
   const { t } = useTranslation('proposalTemplate');
   const navigate = useNavigate();
+
+  if (!safe || !safe?.address) {
+    return (
+      <Center minH={`calc(100vh - ${HEADER_HEIGHT})`}>
+        <BarLoader />
+      </Center>
+    );
+  }
 
   const pageHeaderBreadcrumbs = [
     {
       terminus: t('proposalTemplates', { ns: 'breadcrumbs' }),
-      path: DAO_ROUTES.proposalTemplates.relative(addressPrefix, safe?.address ?? ''),
+      path: DAO_ROUTES.proposalTemplates.relative(addressPrefix, safe.address),
     },
     {
       terminus: t('proposalTemplateNew', { ns: 'breadcrumbs' }),
@@ -95,7 +107,7 @@ export function SafeCreateProposalTemplatePage() {
   ];
 
   const pageHeaderButtonClickHandler = () => {
-    navigate(DAO_ROUTES.proposalTemplates.relative(addressPrefix, safe?.address ?? ''));
+    navigate(DAO_ROUTES.proposalTemplates.relative(addressPrefix, safe.address));
   };
 
   const stepButtons = ({
@@ -124,7 +136,7 @@ export function SafeCreateProposalTemplatePage() {
       templateDetails={title => <TemplateDetails title={title} />}
       streamsDetails={null}
       key={initialProposalTemplate.proposalMetadata.title}
-      initialValues={{ ...initialProposalTemplate, nonce: safe?.nextNonce }}
+      initialValues={{ ...initialProposalTemplate, nonce: safe.nextNonce }}
       prepareProposalData={prepareProposalTemplateProposal}
       mainContent={(formikProps, pendingCreateTx, nonce, currentStep) => {
         if (currentStep !== CreateProposalSteps.TRANSACTIONS) return null;
