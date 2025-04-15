@@ -63,7 +63,10 @@ export function SafeCreateProposalTemplatePage() {
                 ...tx,
                 ethValue: {
                   value: tx.ethValue.value,
-                  bigintValue: tx.ethValue.value !== '' ? BigInt(tx.ethValue.value) : undefined,
+                  bigintValue:
+                    tx.ethValue.bigintValue !== undefined
+                      ? BigInt(tx.ethValue.bigintValue)
+                      : undefined,
                 },
               })),
             };
@@ -120,7 +123,8 @@ export function SafeCreateProposalTemplatePage() {
       transactionsDetails={transactions => <TransactionsDetails transactions={transactions} />}
       templateDetails={title => <TemplateDetails title={title} />}
       streamsDetails={null}
-      initialValues={initialProposalTemplate}
+      key={initialProposalTemplate.proposalMetadata.title}
+      initialValues={{ ...initialProposalTemplate, nonce: safe?.nextNonce }}
       prepareProposalData={prepareProposalTemplateProposal}
       mainContent={(formikProps, pendingCreateTx, nonce, currentStep) => {
         if (currentStep !== CreateProposalSteps.TRANSACTIONS) return null;

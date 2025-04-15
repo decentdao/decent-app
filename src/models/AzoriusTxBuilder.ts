@@ -55,7 +55,7 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
   public linearERC721VotingAddress: Address | undefined;
   public votesTokenAddress: Address | undefined;
   private votesErc20MasterCopy: Address;
-  private votesErc20LockableMasterCopy: Address;
+  private votesErc20LockableMasterCopy?: Address;
   private zodiacModuleProxyFactory: Address;
   private multiSendCallOnly: Address;
   private claimErc20MasterCopy: Address;
@@ -87,7 +87,6 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
     daoData: AzoriusERC20DAO | AzoriusERC721DAO,
     safeContractAddress: Address,
     votesErc20MasterCopy: Address,
-    votesErc20LockableMasterCopy: Address,
     zodiacModuleProxyFactory: Address,
     multiSendCallOnly: Address,
     claimErc20MasterCopy: Address,
@@ -97,6 +96,7 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
     linearVotingErc721V1MasterCopy: Address,
     moduleAzoriusMasterCopy: Address,
     gaslessVotingEnabled: boolean,
+    votesErc20LockableMasterCopy?: Address,
     paymaster?: {
       decentPaymasterV1MasterCopy: Address;
       linearERC20VotingV1ValidatorV1: Address;
@@ -135,6 +135,9 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
     if (daoData.votingStrategyType === VotingStrategyType.LINEAR_ERC20) {
       daoData = daoData as AzoriusERC20DAO;
       if (!daoData.isTokenImported) {
+        if (daoData.locked === TokenLockType.LOCKED && !votesErc20LockableMasterCopy) {
+          throw new Error('Votes Erc20 Lockable Master Copy address not set');
+        }
         this.setEncodedSetupTokenData();
         this.setPredictedTokenAddress();
       } else {
@@ -473,9 +476,15 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
 
   private setPredictedTokenAddress() {
     const azoriusGovernanceDaoData = this.daoData as AzoriusERC20DAO;
+    if (
+      azoriusGovernanceDaoData.locked === TokenLockType.LOCKED &&
+      !this.votesErc20LockableMasterCopy
+    ) {
+      throw new Error('Votes Erc20 Lockable Master Copy address not set');
+    }
     const tokenByteCodeLinear = generateContractByteCodeLinear(
       azoriusGovernanceDaoData.locked === TokenLockType.LOCKED
-        ? this.votesErc20LockableMasterCopy
+        ? this.votesErc20LockableMasterCopy!
         : this.votesErc20MasterCopy,
     );
     const tokenSalt = generateSalt(this.encodedSetupTokenData!, this.tokenNonce);

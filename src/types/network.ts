@@ -55,7 +55,7 @@ export type NetworkConfig = {
     freezeVotingMultisigMasterCopy: Address;
 
     votesErc20MasterCopy: Address;
-    votesErc20LockableMasterCopy: Address;
+    votesErc20LockableMasterCopy?: Address;
 
     claimErc20MasterCopy: Address;
 
