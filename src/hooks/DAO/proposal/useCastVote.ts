@@ -224,9 +224,15 @@ const useCastVote = (proposalId: string, strategy: Address) => {
       (paymasterPostOpGasLimit ?? 0n);
     const gasCost = maxFeePerGas * gasUsed;
 
+    const userOp = {
+      ...userOpWithoutCallData,
+      maxPriorityFeePerGas: (maxPriorityFeePerGasEstimate * 13n) / 10n,
+      maxFeePerGas: (maxFeePerGasEstimate * 13n) / 10n,
+    };
+
     return {
       gasCost,
-      userOpWithoutCallData,
+      userOp,
       bundlerClient,
     };
   }, [
@@ -297,13 +303,13 @@ const useCastVote = (proposalId: string, strategy: Address) => {
         if (!gaslessVoteData) {
           return;
         }
-        const { userOpWithoutCallData, bundlerClient } = gaslessVoteData;
+        const { userOp, bundlerClient } = gaslessVoteData;
 
         const castVoteCallData = prepareCastVoteData(selectedVoteChoice);
 
         // Sign and send UserOperation to bundler
         const hash = await bundlerClient.sendUserOperation({
-          ...userOpWithoutCallData,
+          ...userOp,
           calls: [castVoteCallData],
         });
 
