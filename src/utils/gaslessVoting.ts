@@ -1,15 +1,19 @@
 import { abis } from '@fractal-framework/fractal-contracts';
 import {
+  AbiItem,
   Address,
   encodeAbiParameters,
   encodeFunctionData,
   encodePacked,
+  getAbiItem,
   getCreate2Address,
   keccak256,
   parseAbiParameters,
   stringToHex,
+  toFunctionSelector,
 } from 'viem';
 import { generateContractByteCodeLinear } from '../models/helpers/utils';
+import { FractalTokenType, GovernanceType } from '../types';
 
 export const getPaymasterSaltNonce = (safeAddress: Address, chainId: number) => {
   const salt = `${safeAddress}-${chainId}`;
@@ -65,4 +69,37 @@ export const getPaymasterAddress = (args: {
   });
 
   return predictedPaymasterAddress;
+};
+
+export const getVoteSelectorAndValidator = (
+  strategyType: FractalTokenType | GovernanceType,
+  paymaster: {
+    linearERC20VotingV1ValidatorV1: Address;
+    linearERC721VotingV1ValidatorV1: Address;
+  },
+) => {
+  let voteAbiItem: AbiItem;
+  let voteValidator: Address;
+
+  if (strategyType === FractalTokenType.erc20 || strategyType === GovernanceType.AZORIUS_ERC20) {
+    voteAbiItem = getAbiItem({
+      name: 'vote',
+      abi: abis.LinearERC20VotingV1,
+    });
+    voteValidator = paymaster.linearERC20VotingV1ValidatorV1;
+  } else if (
+    strategyType === FractalTokenType.erc721 ||
+    strategyType === GovernanceType.AZORIUS_ERC721
+  ) {
+    voteAbiItem = getAbiItem({
+      name: 'vote',
+      abi: abis.LinearERC721VotingV1,
+    });
+    voteValidator = paymaster.linearERC721VotingV1ValidatorV1;
+  } else {
+    throw new Error('Invalid voting strategy type');
+  }
+
+  const voteSelector = toFunctionSelector(voteAbiItem);
+  return { voteSelector, voteValidator };
 };
