@@ -86,6 +86,10 @@ export const useDAOCreateSchema = ({
                   then: __schema => __schema.required(),
                 }),
               }),
+              locked: Yup.string().when('tokenCreationType', {
+                is: (value: TokenCreationType) => !!value && value === TokenCreationType.NEW,
+                then: __schema => __schema.required(),
+              }),
               tokenImportAddress: Yup.string().when('tokenCreationType', {
                 is: (value: TokenCreationType) => !!value && value === TokenCreationType.IMPORTED,
                 then: __schema =>

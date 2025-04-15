@@ -104,5 +104,11 @@
   "networks": "Networks",
   "networkDescription": "What network would you like to deploy this DAO on?",
   "attachFractalModuleDescription": "This setting controls whether Parent DAO will be able to execute arbitrary transactions on Child DAO bypassing voting process on Child DAO.",
-  "fractalModuleAttachedDescription": "This setting can not be modified as Fractal Module already attached to the DAO."
+  "fractalModuleAttachedDescription": "This setting can not be modified as Fractal Module already attached to the DAO.",
+  "labelTokenLocking": "Transferable",
+  "helperTokenLocking": "Whether the tokens are initially transferable.",
+  "labelTokenLocked": "Un-transferable",
+  "descTokenUnlocked": "Tokens are unlocked and can be freely transferred.",
+  "labelTokenUnlocked": "Transferable",
+  "descTokenLocked": "Tokens are initially locked. They are not transferable except for the DAO and whitelisted addresses. Token holders have normal proposal and voting power. DAO can vote to add addresses to the whitelist or to unlock."
 }
