@@ -10,6 +10,7 @@ import { EntryPoint07Abi } from '../../../assets/abi/EntryPoint07Abi';
 import { useStore } from '../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
 import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
+import { fetchMaxPriorityFeePerGas } from '../../../utils/gaslessVoting';
 import useNetworkPublicClient from '../../useNetworkPublicClient';
 import { useNetworkWalletClient } from '../../useNetworkWalletClient';
 import { useTransaction } from '../../utils/useTransaction';
@@ -167,25 +168,10 @@ const useCastVote = (proposalId: string, strategy: Address) => {
       return;
     }
 
-    const {
-      maxFeePerGas: maxFeePerGasEstimate,
-      maxPriorityFeePerGas: maxPriorityFeePerGasEstimate,
-    } = await publicClient.estimateFeesPerGas();
-    const castVoteCallData = prepareCastVoteData(0);
-
     const networkConfig = getConfigByChainId(publicClient.chain.id);
     if (!networkConfig.maxPriorityFeePerGasMultiplier) {
       return;
     }
-
-    // `maxPriorityFeePerGas` returned from `estimateFeesPerGas` needs to be multiplied by this value to match minimum requirement here https://docs.alchemy.com/reference/rundler-maxpriorityfeepergas
-    const maxPriorityFeePerGasMultiplier = networkConfig.maxPriorityFeePerGasMultiplier;
-
-    // Adds buffer to maxFeePerGasEstimate to ensure transaction gets included
-    const maxFeePerGasMultiplier = 50n;
-
-    const maxPriorityFeePerGas = maxPriorityFeePerGasEstimate * maxPriorityFeePerGasMultiplier;
-    const maxFeePerGas = maxFeePerGasEstimate * maxFeePerGasMultiplier;
 
     const smartWallet = await toLightSmartAccount({
       client: publicClient,
@@ -198,12 +184,14 @@ const useCastVote = (proposalId: string, strategy: Address) => {
       transport: http(rpcEndpoint),
     });
 
+    const maxPriorityFeePerGas = await fetchMaxPriorityFeePerGas(networkConfig);
+
     const userOpWithoutCallData = {
       paymaster: paymasterAddress,
       maxPriorityFeePerGas,
-      maxFeePerGas,
     };
 
+    const callDataForEstimation = prepareCastVoteData(0);
     const {
       preVerificationGas,
       verificationGasLimit,
@@ -212,28 +200,23 @@ const useCastVote = (proposalId: string, strategy: Address) => {
       paymasterPostOpGasLimit,
     } = await bundlerClient.estimateUserOperationGas({
       ...userOpWithoutCallData,
-      calls: [castVoteCallData],
+      calls: [callDataForEstimation],
     });
 
     // Calculate gas
     // check algorithm at https://github.com/alchemyplatform/rundler/blob/fae8909b34e5874c0cae2d06aa841a8a112d22a0/crates/types/src/user_operation/v0_7.rs#L206-L215
+    const { maxFeePerGas: maxFeePerGasEstimate } = await publicClient.estimateFeesPerGas();
     const gasUsed =
       preVerificationGas +
       verificationGasLimit +
       callGasLimit +
       (paymasterVerificationGasLimit ?? 0n) +
       (paymasterPostOpGasLimit ?? 0n);
-    const gasCost = maxFeePerGas * gasUsed;
-
-    const userOp = {
-      ...userOpWithoutCallData,
-      maxPriorityFeePerGas: (maxPriorityFeePerGasEstimate * 13n) / 10n,
-      maxFeePerGas: (maxFeePerGasEstimate * 13n) / 10n,
-    };
+    const gasCost = maxFeePerGasEstimate * gasUsed;
 
     return {
       gasCost,
-      userOp,
+      userOpWithoutCallData,
       bundlerClient,
     };
   }, [
@@ -304,13 +287,13 @@ const useCastVote = (proposalId: string, strategy: Address) => {
         if (!gaslessVoteData) {
           return;
         }
-        const { userOp, bundlerClient } = gaslessVoteData;
+        const { userOpWithoutCallData, bundlerClient } = gaslessVoteData;
 
         const castVoteCallData = prepareCastVoteData(selectedVoteChoice);
 
         // Sign and send UserOperation to bundler
         const hash = await bundlerClient.sendUserOperation({
-          ...userOp,
+          ...userOpWithoutCallData,
           calls: [castVoteCallData],
         });
 
