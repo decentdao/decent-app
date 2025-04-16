@@ -185,11 +185,11 @@ const useCastVote = (proposalId: string, strategy: Address) => {
     const { maxPriorityFeePerGas: maxPriorityFeePerGasEstimate } =
       await publicClient.estimateFeesPerGas();
 
+    // Select higher of the two
     const maxPriorityFeePerGas =
-      (maxPriorityFeePerGasEstimate > minimumMaxPriorityFeePerGas
+      maxPriorityFeePerGasEstimate > minimumMaxPriorityFeePerGas
         ? maxPriorityFeePerGasEstimate
-        : minimumMaxPriorityFeePerGas) * // Select higher of the two
-      (13n / 10n); // 30% buffer to result to account for gas price fluctuations
+        : minimumMaxPriorityFeePerGas;
 
     const userOpWithoutCallData = {
       paymaster: paymasterAddress,
