@@ -17,7 +17,7 @@ import { CaretDown, CaretRight, MinusCircle, Plus } from '@phosphor-icons/react'
 import { Field, FieldAttributes, FieldProps } from 'formik';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { erc20Abi, formatUnits, getContract, isAddress } from 'viem';
+import { Address, erc20Abi, formatUnits, getContract, isAddress } from 'viem';
 import { useCurrentDAOKey } from '../../hooks/DAO/useCurrentDAOKey';
 import useNetworkPublicClient from '../../hooks/useNetworkPublicClient';
 import { useStore } from '../../providers/App/AppProvider';
@@ -27,6 +27,7 @@ import { scrollToBottom } from '../../utils/ui';
 import { BigIntInput } from '../ui/forms/BigIntInput';
 import ExampleLabel from '../ui/forms/ExampleLabel';
 import { InputComponent, LabelComponent } from '../ui/forms/InputComponent';
+import { DisplayAddress } from '../ui/links/DisplayAddress';
 import CeleryButtonWithIcon from '../ui/utils/CeleryButtonWithIcon';
 import { DEFAULT_TRANCHE, SECONDS_IN_DAY } from './constants';
 
@@ -102,10 +103,10 @@ export function ProposalStream({
               isRequired
               disabled={pendingTransaction}
               subLabel={
-                <HStack textStyle="labels-large">
-                  <Text>{t('example', { ns: 'common' })}:</Text>
-                  <ExampleLabel>0x4168592...</ExampleLabel>
-                </HStack>
+                <DisplayAddress
+                  address={stream.tokenAddress as Address}
+                  truncate={false}
+                />
               }
             >
               <Select
