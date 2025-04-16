@@ -118,12 +118,6 @@ export function ProposalStream({
                 icon={<CaretDown />}
                 data-testid="stream.tokenAddress"
                 onChange={e => {
-                  console.debug(
-                    'Asdsad',
-                    index,
-                    Number(e.target.value),
-                    fungibleNonNativeAssetsWithBalance[Number(e.target.value)],
-                  );
                   handleUpdateStream(index, {
                     tokenAddress:
                       fungibleNonNativeAssetsWithBalance[Number(e.target.value)].tokenAddress,
