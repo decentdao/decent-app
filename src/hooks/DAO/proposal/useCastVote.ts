@@ -187,7 +187,7 @@ const useCastVote = (proposalId: string, strategy: Address) => {
 
     // Select higher of the two
     const maxPriorityFeePerGas =
-      maxPriorityFeePerGasEstimate > minimumMaxPriorityFeePerGas
+      maxPriorityFeePerGasEstimate > (minimumMaxPriorityFeePerGas ?? 0n)
         ? maxPriorityFeePerGasEstimate
         : minimumMaxPriorityFeePerGas;
 

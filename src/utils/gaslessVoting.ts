@@ -130,6 +130,7 @@ export const fetchMaxPriorityFeePerGas = async (networkConfig: NetworkConfig) =>
       chain: networkConfig.chain.name,
       error: error instanceof Error ? error.message : 'Unknown error',
     });
-    throw error;
+
+    return;
   }
 };
