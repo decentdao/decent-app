@@ -184,12 +184,12 @@ const useCastVote = (proposalId: string, strategy: Address) => {
     const minimumMaxPriorityFeePerGas = await fetchMaxPriorityFeePerGas(networkConfig);
     const { maxPriorityFeePerGas: maxPriorityFeePerGasEstimate } =
       await publicClient.estimateFeesPerGas();
-    const maxPriorityFeePerGasEstimateBuffered = maxPriorityFeePerGasEstimate * (13n / 10n);
 
     const maxPriorityFeePerGas =
-      maxPriorityFeePerGasEstimateBuffered > minimumMaxPriorityFeePerGas
-        ? maxPriorityFeePerGasEstimateBuffered
-        : minimumMaxPriorityFeePerGas;
+      (maxPriorityFeePerGasEstimate > minimumMaxPriorityFeePerGas
+        ? maxPriorityFeePerGasEstimate
+        : minimumMaxPriorityFeePerGas) * // Select higher of the two
+      (13n / 10n); // 30% buffer to result to account for gas price fluctuations
 
     const userOpWithoutCallData = {
       paymaster: paymasterAddress,
