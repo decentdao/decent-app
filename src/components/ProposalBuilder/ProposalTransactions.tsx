@@ -28,7 +28,6 @@ interface ProposalTransactionsProps {
   removeTransaction: (index: number) => void;
 }
 
-// @todo remove this component when we remove the form from screen step
 export default function ProposalTransactions({
   values: transactions,
   errors,

@@ -21,7 +21,6 @@ export interface ProposalTransactionsFormProps {
   onClose?: () => void;
 }
 
-// @todo remove this component when we remove the form from screen step
 export default function ProposalTransactionsForm(props: ProposalTransactionsFormProps) {
   const { pendingTransaction, setFieldValue, values } = props;
   const { t } = useTranslation(['proposal']);
