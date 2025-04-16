@@ -23,6 +23,7 @@ import useNetworkPublicClient from '../../hooks/useNetworkPublicClient';
 import { useStore } from '../../providers/App/AppProvider';
 import { useDaoInfoStore } from '../../store/daoInfo/useDaoInfoStore';
 import { Stream } from '../../types/proposalBuilder';
+import { formatCoin } from '../../utils';
 import { scrollToBottom } from '../../utils/ui';
 import { BigIntInput } from '../ui/forms/BigIntInput';
 import ExampleLabel from '../ui/forms/ExampleLabel';
@@ -79,7 +80,7 @@ export function ProposalStream({
         setTokenDecimals(decimals);
         setRawTokenBalnace(tokenBalance);
         if (tokenBalance > 0n) {
-          const balanceFormatted = formatUnits(tokenBalance, decimals);
+          const balanceFormatted = formatCoin(tokenBalance, true, decimals, symbol, false);
           setTokenBalanceFormatted(`${balanceFormatted} ${symbol} (${name})`);
         }
       }
