@@ -16,8 +16,8 @@ import NoDataCard from '../../../../../components/ui/containers/NoDataCard';
 import { BarLoader } from '../../../../../components/ui/loaders/BarLoader';
 import { useHeaderHeight } from '../../../../../constants/common';
 import { DAO_ROUTES } from '../../../../../constants/routes';
-import { filterTokenList } from '../../../../../helpers/tokenList';
 import { useCurrentDAOKey } from '../../../../../hooks/DAO/useCurrentDAOKey';
+import { useTokenListFilter } from '../../../../../hooks/utils/useTokenListFilter';
 import { analyticsEvents } from '../../../../../insights/analyticsEvents';
 import { useStore } from '../../../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../../../providers/NetworkConfig/useNetworkConfigStore';
@@ -41,6 +41,7 @@ export function SafeSablierProposalCreatePage() {
     addressPrefix,
     contracts: { sablierV2Batch, sablierV2LockupTranched },
   } = useNetworkConfigStore();
+  const tokenListFilter = useTokenListFilter();
   const { safe } = useDaoInfoStore();
   const { t } = useTranslation('proposal');
   const navigate = useNavigate();
@@ -125,7 +126,7 @@ export function SafeSablierProposalCreatePage() {
     );
   }
 
-  const fungibleNonNativeAssetsWithBalance = filterTokenList(assetsFungible);
+  const fungibleNonNativeAssetsWithBalance = tokenListFilter(assetsFungible);
   if (!fungibleNonNativeAssetsWithBalance.length) {
     return (
       <NoDataCard
