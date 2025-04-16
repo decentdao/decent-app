@@ -114,7 +114,6 @@ function InternalLinks({ closeDrawer }: { closeDrawer?: () => void }) {
 }
 
 export function NavigationLinks({ closeDrawer }: { closeDrawer?: () => void }) {
-  console.log('NavigationLinks');
   return (
     <Flex
       height="full"

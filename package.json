@@ -68,6 +68,8 @@
   "scripts": {
     "lint": "eslint . --ext .ts,.tsx --fix",
     "lint:check": "eslint . --ext .ts,.tsx",
+    "localize": "node scripts/localize.js && prettier . --write",
+    "localized": "node scripts/localization_verify.js",
     "pretty": "prettier . --write",
     "pretty:check": "prettier . --check",
     "dev": "VITE_APP_GIT_HASH=$(git rev-parse --short HEAD) vite",

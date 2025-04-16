@@ -26,12 +26,12 @@ jobs:
 
       # Step 4: Run the localization_verify.js script
       - name: Run localization verification
-        run: node scripts/localization_verify.js
+        run: npm run localized
 
       # Step 5: Fail the workflow if checkKeys returns false
       - name: Check result
         run: |
-          if ! node scripts/localization_verify.js | grep -q "All keys present in all language files: true"; then
+          if ! npm run localized | grep -q "All keys present in all language files: true"; then
             echo "Localization verification failed. Missing keys or files detected."
             exit 1
           fi
