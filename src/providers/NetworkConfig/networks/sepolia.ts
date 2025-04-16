@@ -132,8 +132,6 @@ export const sepoliaConfig: NetworkConfig = {
     GovernanceType.AZORIUS_ERC20,
     GovernanceType.AZORIUS_ERC721,
   ],
-
-  maxPriorityFeePerGasMultiplier: 100n,
 };
 
 export default sepoliaConfig;

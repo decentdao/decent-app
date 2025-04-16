@@ -169,9 +169,6 @@ const useCastVote = (proposalId: string, strategy: Address) => {
     }
 
     const networkConfig = getConfigByChainId(publicClient.chain.id);
-    if (!networkConfig.maxPriorityFeePerGasMultiplier) {
-      return;
-    }
 
     const smartWallet = await toLightSmartAccount({
       client: publicClient,

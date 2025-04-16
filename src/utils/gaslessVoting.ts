@@ -107,7 +107,7 @@ export const getVoteSelectorAndValidator = (
 };
 
 export const fetchMaxPriorityFeePerGas = async (networkConfig: NetworkConfig) => {
-  // Fetch minimum maxPriorityFeePerGasMultiplier from Alchemy
+  // Fetch minimum maxPriorityFeePerGas from Alchemy
   try {
     const response = await fetch(networkConfig.rpcEndpoint, {
       method: 'POST',
