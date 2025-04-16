@@ -17,7 +17,8 @@ import { CaretDown, CaretRight, MinusCircle, Plus } from '@phosphor-icons/react'
 import { Field, FieldAttributes, FieldProps } from 'formik';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Address, erc20Abi, formatUnits, getContract, isAddress } from 'viem';
+import { Address, erc20Abi, getContract, isAddress } from 'viem';
+import { filterTokenList } from '../../helpers/tokenList';
 import { useCurrentDAOKey } from '../../hooks/DAO/useCurrentDAOKey';
 import useNetworkPublicClient from '../../hooks/useNetworkPublicClient';
 import { useStore } from '../../providers/App/AppProvider';
@@ -56,9 +57,7 @@ export function ProposalStream({
   const { t } = useTranslation(['proposal', 'common']);
 
   const safeAddress = safe?.address;
-  const fungibleNonNativeAssetsWithBalance = assetsFungible.filter(
-    asset => !asset.possibleSpam && !asset.nativeToken && parseFloat(asset.balance) > 0,
-  );
+  const fungibleNonNativeAssetsWithBalance = filterTokenList(assetsFungible);
   const selectedAssetIndex = fungibleNonNativeAssetsWithBalance.findIndex(
     asset => asset.tokenAddress === stream.tokenAddress,
   );

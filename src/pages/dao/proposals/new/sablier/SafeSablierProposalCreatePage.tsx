@@ -16,6 +16,7 @@ import NoDataCard from '../../../../../components/ui/containers/NoDataCard';
 import { BarLoader } from '../../../../../components/ui/loaders/BarLoader';
 import { useHeaderHeight } from '../../../../../constants/common';
 import { DAO_ROUTES } from '../../../../../constants/routes';
+import { filterTokenList } from '../../../../../helpers/tokenList';
 import { useCurrentDAOKey } from '../../../../../hooks/DAO/useCurrentDAOKey';
 import { analyticsEvents } from '../../../../../insights/analyticsEvents';
 import { useStore } from '../../../../../providers/App/AppProvider';
@@ -124,9 +125,7 @@ export function SafeSablierProposalCreatePage() {
     );
   }
 
-  const fungibleNonNativeAssetsWithBalance = assetsFungible.filter(
-    asset => !asset.possibleSpam && !asset.nativeToken && parseFloat(asset.balance) > 0,
-  );
+  const fungibleNonNativeAssetsWithBalance = filterTokenList(assetsFungible);
   if (!fungibleNonNativeAssetsWithBalance.length) {
     return (
       <NoDataCard
