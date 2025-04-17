@@ -107,7 +107,6 @@
   "fractalModuleAttachedDescription": "由於 Fractal 模組已連接至 DAO，因此無法修改此設定。",
   "labelTokenLocking": "鎖定",
   "helperTokenLocking": "代幣最初是否鎖定。",
-  "labelTokenLocked": "鎖定",
   "descTokenUnlocked": "代幣已解鎖，可自由轉讓。",
   "labelTokenUnlocked": "解鎖",
   "descTokenLocked": "代幣最初是鎖定的。除了 DAO 和白名單地址外，代幣不可轉讓。代幣持有者有正常的提案權和投票權。DAO 可以投票將地址加入白名單或解除鎖定。"

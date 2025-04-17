@@ -107,7 +107,6 @@
   "fractalModuleAttachedDescription": "Esta definição não pode ser modificada porque o Módulo Fractal já está ligado ao DAO.",
   "labelTokenLocking": "Bloqueio",
   "helperTokenLocking": "Se os tokens estão inicialmente bloqueados.",
-  "labelTokenLocked": "Bloqueado",
   "descTokenUnlocked": "As fichas são desbloqueadas e podem ser transferidas livremente.",
   "labelTokenUnlocked": "Desbloqueado",
   "descTokenLocked": "Os tokens são inicialmente bloqueados. Não são transferíveis, exceto para o DAO e endereços da lista branca. Os detentores de tokens têm propostas normais e poder de voto. O DAO pode votar para adicionar endereços à lista branca ou para desbloquear."

@@ -107,7 +107,6 @@
   "fractalModuleAttachedDescription": "Questa impostazione non può essere modificata in quanto il modulo Fractal è già collegato al DAO.",
   "labelTokenLocking": "Bloccaggio",
   "helperTokenLocking": "Se i token sono inizialmente bloccati.",
-  "labelTokenLocked": "Bloccato",
   "descTokenUnlocked": "I gettoni sono sbloccati e possono essere trasferiti liberamente.",
   "labelTokenUnlocked": "Sbloccato",
   "descTokenLocked": "I gettoni sono inizialmente bloccati. Non sono trasferibili, tranne che per la DAO e gli indirizzi whitelisted. I titolari dei gettoni hanno normale potere di proposta e di voto. Il DAO può votare per aggiungere indirizzi alla whitelist o per sbloccarli."
