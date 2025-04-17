@@ -236,10 +236,11 @@ export function ProposalBuilder({
                     </Box>
                     {showActionsExperience ? (
                       <ActionsExperience
-                        onRemove={(index: number) => {
-                          const newActions = [...formikProps.values.transactions];
-                          newActions.splice(index, 1);
-                          formikProps.setFieldValue('transactions', newActions);
+                        onRemove={actionId => {
+                          const filteredActions = [...formikProps.values.transactions].filter(
+                            tx => !tx.actionId?.startsWith(actionId),
+                          );
+                          formikProps.setFieldValue('transactions', filteredActions);
                         }}
                       />
                     ) : null}

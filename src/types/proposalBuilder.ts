@@ -15,6 +15,8 @@ export interface CreateProposalTransaction<T = BigIntValuePair> {
     label?: string;
     value?: string;
   }[];
+  // @dev actionType + index, used to identify the action transactions in the proposal
+  actionId?: string;
 }
 
 export type CreateProposalMetadata = {

@@ -4,7 +4,7 @@ import { ProposalActionCard } from '../../../../../components/ProposalBuilder/Pr
 import { AddActions } from '../../../../../components/ui/modals/AddActions';
 import { useProposalActionsStore } from '../../../../../store/actions/useProposalActionsStore';
 
-export function ActionsExperience({ onRemove }: { onRemove?: (index: number) => void }) {
+export function ActionsExperience({ onRemove }: { onRemove?: (actionId: string) => void }) {
   const { t } = useTranslation('actions');
   const { actions } = useProposalActionsStore();
   const { removeAction } = useProposalActionsStore();
@@ -32,7 +32,7 @@ export function ActionsExperience({ onRemove }: { onRemove?: (index: number) => 
               action={action}
               removeAction={() => {
                 removeAction(index);
-                onRemove?.(index);
+                onRemove?.(`${action.actionType}_${index}`);
               }}
               index={index}
             />
