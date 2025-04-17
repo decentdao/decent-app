@@ -97,4 +97,5 @@ export type NetworkConfig = {
     };
   };
   createOptions: GovernanceType[];
+  bundlerMinimumStake?: bigint;
 };

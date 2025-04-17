@@ -31,6 +31,7 @@ const useCastVote = (proposalId: string, strategy: Address) => {
     contracts: { accountAbstraction },
     rpcEndpoint,
     getConfigByChainId,
+    // gaslessVoting,
   } = useNetworkConfigStore();
 
   const [contractCall, castVotePending] = useTransaction();

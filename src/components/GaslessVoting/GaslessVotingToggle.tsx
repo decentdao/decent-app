@@ -1,5 +1,4 @@
 import { Box, Button, Flex, HStack, Image, Switch, Text } from '@chakra-ui/react';
-import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { getContract } from 'viem';
@@ -7,13 +6,13 @@ import { EntryPoint07Abi } from '../../assets/abi/EntryPoint07Abi';
 import { DETAILS_BOX_SHADOW } from '../../constants/common';
 import { DAO_ROUTES } from '../../constants/routes';
 import useFeatureFlag from '../../helpers/environmentFeatureFlags';
+import { useDepositInfo } from '../../hooks/DAO/accountAbstraction/useDepositInfo';
 import useNetworkPublicClient from '../../hooks/useNetworkPublicClient';
 import { useNetworkWalletClient } from '../../hooks/useNetworkWalletClient';
 import { useCanUserCreateProposal } from '../../hooks/utils/useCanUserSubmitProposal';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
 import { useProposalActionsStore } from '../../store/actions/useProposalActionsStore';
 import { useDaoInfoStore } from '../../store/daoInfo/useDaoInfoStore';
-import { BigIntValuePair } from '../../types';
 import { formatCoin } from '../../utils';
 import { prepareRefillPaymasterAction } from '../../utils/dao/prepareRefillPaymasterActionData';
 import { RefillGasData } from '../ui/modals/GaslessVoting/RefillGasTankModal';
@@ -31,10 +30,21 @@ function GaslessVotingToggleContent({
   isEnabled,
   onToggle,
   isSettings,
-}: GaslessVotingToggleProps & { isSettings?: boolean }) {
+  displayNeedStakingLabel,
+}: GaslessVotingToggleProps & { isSettings?: boolean; displayNeedStakingLabel?: boolean }) {
   const { t } = useTranslation('gaslessVoting');
-
+  const { bundlerMinimumStake } = useNetworkConfigStore();
   const { canUserCreateProposal } = useCanUserCreateProposal();
+
+  const publicClient = useNetworkPublicClient();
+  const nativeCurrency = publicClient.chain.nativeCurrency;
+  const formattedMinStakeAmount = formatCoin(
+    bundlerMinimumStake || 0n,
+    true,
+    nativeCurrency.decimals,
+    nativeCurrency.symbol,
+    false,
+  );
 
   return (
     <Box
@@ -61,6 +71,17 @@ function GaslessVotingToggleContent({
           >
             {isSettings ? t('gaslessVotingDescriptionSettings') : t('gaslessVotingDescription')}
           </Text>
+          {displayNeedStakingLabel && (
+            <Text
+              textStyle={isSettings ? 'labels-large' : 'helper-text'}
+              color="neutral-7"
+            >
+              {t('gaslessStakingDescription', {
+                amount: formattedMinStakeAmount,
+                symbol: nativeCurrency.symbol,
+              })}
+            </Text>
+          )}
         </Flex>
         <Switch
           size="md"
@@ -117,6 +138,7 @@ export function GaslessVotingToggleDAOSettings(props: GaslessVotingToggleProps) 
   const {
     addressPrefix,
     contracts: { accountAbstraction },
+    bundlerMinimumStake,
   } = useNetworkConfigStore();
 
   const navigate = useNavigate();
@@ -124,23 +146,7 @@ export function GaslessVotingToggleDAOSettings(props: GaslessVotingToggleProps) 
   const nativeCurrency = publicClient.chain.nativeCurrency;
 
   const { safe, gaslessVotingEnabled, paymasterAddress } = useDaoInfoStore();
-
-  const [paymasterBalance, setPaymasterBalance] = useState<BigIntValuePair>();
-  useEffect(() => {
-    if (!paymasterAddress || !accountAbstraction) return;
-    const entryPoint = getContract({
-      address: accountAbstraction.entryPointv07,
-      abi: EntryPoint07Abi,
-      client: publicClient,
-    });
-
-    entryPoint.read.balanceOf([paymasterAddress]).then(balance => {
-      setPaymasterBalance({
-        value: balance.toString(),
-        bigintValue: balance,
-      });
-    });
-  }, [accountAbstraction, paymasterAddress, publicClient]);
+  const { depositInfo } = useDepositInfo(paymasterAddress);
 
   const { addAction } = useProposalActionsStore();
   const { data: walletClient } = useNetworkWalletClient();
@@ -201,11 +207,28 @@ export function GaslessVotingToggleDAOSettings(props: GaslessVotingToggleProps) 
   });
 
   const gaslessFeatureEnabled = useFeatureFlag('flag_gasless_voting');
+  const gaslessStakingFeatureEnabled = useFeatureFlag('flag_gasless_staking');
+  const gaslessStakingEnabled =
+    gaslessVotingEnabled && gaslessStakingFeatureEnabled && bundlerMinimumStake !== undefined;
   if (!gaslessFeatureEnabled) return null;
 
-  const formattedPaymasterBalance =
-    paymasterBalance &&
-    formatCoin(paymasterBalance.value, true, nativeCurrency.decimals, nativeCurrency.symbol, false);
+  const paymasterBalance = depositInfo?.balance || 0n;
+  const stakedAmount = depositInfo?.stake || 0n;
+  const minStakeAmount = bundlerMinimumStake || 0n;
+  const formattedPaymasterBalance = formatCoin(
+    paymasterBalance,
+    true,
+    nativeCurrency.decimals,
+    nativeCurrency.symbol,
+    false,
+  );
+  const formattedPaymasterStakedAmount = formatCoin(
+    stakedAmount,
+    true,
+    nativeCurrency.decimals,
+    nativeCurrency.symbol,
+    false,
+  );
 
   return (
     <Box
@@ -222,6 +245,7 @@ export function GaslessVotingToggleDAOSettings(props: GaslessVotingToggleProps) 
       <GaslessVotingToggleContent
         {...props}
         isSettings
+        displayNeedStakingLabel={gaslessStakingEnabled && stakedAmount < minStakeAmount}
       />
 
       {!gaslessVotingEnabled && <StarterPromoBanner />}
@@ -267,6 +291,40 @@ export function GaslessVotingToggleDAOSettings(props: GaslessVotingToggleProps) 
           >
             {t('addGas')}
           </Button>
+        </Flex>
+      )}
+
+      {gaslessStakingEnabled && (
+        <Flex justifyContent="space-between">
+          <Flex
+            direction="column"
+            justifyContent="space-between"
+          >
+            <Text
+              textStyle="labels-small"
+              color="neutral-7"
+              mb="0.25rem"
+            >
+              {t('paymasterStakedAmount')}
+            </Text>
+            <Text
+              textStyle="labels-large"
+              display="flex"
+              alignItems="center"
+            >
+              {formattedPaymasterStakedAmount}
+              <Image
+                src={'/images/coin-icon-default.svg'} // @todo: (gv) Use the correct image for the token.
+                fallbackSrc={'/images/coin-icon-default.svg'}
+                alt={nativeCurrency.symbol}
+                w="1.25rem"
+                h="1.25rem"
+                ml="0.5rem"
+                mr="0.25rem"
+              />
+              {nativeCurrency.symbol}
+            </Text>
+          </Flex>
         </Flex>
       )}
     </Box>
