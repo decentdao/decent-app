@@ -20,7 +20,7 @@ import { useTranslation } from 'react-i18next';
 import { Address, erc20Abi, getContract, isAddress } from 'viem';
 import { useCurrentDAOKey } from '../../hooks/DAO/useCurrentDAOKey';
 import useNetworkPublicClient from '../../hooks/useNetworkPublicClient';
-import { useTokenListFilter } from '../../hooks/utils/useTokenListFilter';
+import { useFilterSpamTokens } from '../../hooks/utils/useFilterSpamTokens';
 import { useStore } from '../../providers/App/AppProvider';
 import { useDaoInfoStore } from '../../store/daoInfo/useDaoInfoStore';
 import { Stream } from '../../types/proposalBuilder';
@@ -54,11 +54,11 @@ export function ProposalStream({
   const {
     treasury: { assetsFungible },
   } = useStore({ daoKey });
-  const tokenListFilter = useTokenListFilter();
+  const filterSpamTokens = useFilterSpamTokens();
   const { t } = useTranslation(['proposal', 'common']);
 
   const safeAddress = safe?.address;
-  const fungibleNonNativeAssetsWithBalance = tokenListFilter(assetsFungible);
+  const fungibleNonNativeAssetsWithBalance = filterSpamTokens(assetsFungible);
   const selectedAssetIndex = fungibleNonNativeAssetsWithBalance.findIndex(
     asset => asset.tokenAddress === stream.tokenAddress,
   );

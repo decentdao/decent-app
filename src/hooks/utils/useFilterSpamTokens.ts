@@ -12,7 +12,7 @@ interface TokenListFilterOptions {
 /**
  * Filter out spam tokens. DAO's governance tokens will be included.
  */
-export function useTokenListFilter(options: Partial<TokenListFilterOptions> = {}) {
+export function useFilterSpamTokens(options: TokenListFilterOptions = {}) {
   const { includeNativeToken = false, includeZeroBalanceToken = false } = options;
   const { daoKey } = useCurrentDAOKey();
   const { governance } = useStore({ daoKey });
