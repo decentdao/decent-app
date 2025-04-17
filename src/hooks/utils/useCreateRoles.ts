@@ -11,19 +11,16 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import {
-  AbiItem,
   Address,
   encodeAbiParameters,
   encodeFunctionData,
   encodePacked,
-  getAbiItem,
   getAddress,
   getContract,
   getCreate2Address,
   Hex,
   keccak256,
   parseAbiParameters,
-  toFunctionSelector,
   zeroAddress,
 } from 'viem';
 import GnosisSafeL2 from '../../assets/abi/GnosisSafeL2';
@@ -64,6 +61,7 @@ import {
 } from '../../types/roles';
 import { SENTINEL_MODULE } from '../../utils/address';
 import { prepareSendAssetsActionData } from '../../utils/dao/prepareSendAssetsActionData';
+import { getVoteSelectorAndValidator } from '../../utils/gaslessVoting';
 import useSubmitProposal from '../DAO/proposal/useSubmitProposal';
 import { useCurrentDAOKey } from '../DAO/useCurrentDAOKey';
 import useCreateSablierStream from '../streams/useCreateSablierStream';
@@ -124,6 +122,7 @@ export default function useCreateRoles() {
       zodiacModuleProxyFactory,
       decentAutonomousAdminV1MasterCopy,
       hatsElectionsEligibilityMasterCopy,
+      paymaster,
       accountAbstraction,
     },
   } = useNetworkConfigStore();
@@ -141,25 +140,6 @@ export default function useCreateRoles() {
 
   const gaslessVotingFeatureEnabled = useFeatureFlag('flag_gasless_voting');
 
-  const getVoteSelector = (strategyType: 'erc20' | 'erc721') => {
-    let voteAbiItem: AbiItem;
-    if (strategyType === 'erc20') {
-      voteAbiItem = getAbiItem({
-        name: 'vote',
-        abi: abis.LinearERC20VotingV1,
-      });
-    } else if (strategyType === 'erc721') {
-      voteAbiItem = getAbiItem({
-        name: 'vote',
-        abi: abis.LinearERC721VotingV1,
-      });
-    } else {
-      throw new Error('Invalid voting strategy type');
-    }
-    const voteSelector = toFunctionSelector(voteAbiItem);
-    return voteSelector;
-  };
-
   const buildDeployWhitelistingStrategy = useCallback(
     async (whitelistedHatsIds: bigint[]) => {
       if (!safeAddress || !moduleAzoriusAddress) {
@@ -167,6 +147,19 @@ export default function useCreateRoles() {
       }
       const azoriusGovernance = governance as AzoriusGovernance;
       const { votingStrategy, votesToken, erc721Tokens } = azoriusGovernance;
+
+      if (!paymaster) {
+        throw new Error('Paymaster addresses are not set');
+      }
+
+      if (!azoriusGovernance.type) {
+        throw new Error('Governance type is not set');
+      }
+
+      const { voteSelector, voteValidator } = getVoteSelectorAndValidator(
+        azoriusGovernance.type,
+        paymaster,
+      );
 
       if (azoriusGovernance.type === GovernanceType.AZORIUS_ERC20) {
         if (!votesToken || !votingStrategy?.quorumPercentage || !linearVotingErc20Address) {
@@ -272,8 +265,8 @@ export default function useCreateRoles() {
           optionallyWhitelistWhitelistingStrategyOnPaymaster.push({
             calldata: encodeFunctionData({
               abi: abis.DecentPaymasterV1,
-              functionName: 'whitelistFunction',
-              args: [predictedStrategyAddress, getVoteSelector('erc20')],
+              functionName: 'setFunctionValidator',
+              args: [predictedStrategyAddress, voteSelector, voteValidator],
             }),
             targetAddress: paymasterAddress,
           });
@@ -389,8 +382,8 @@ export default function useCreateRoles() {
           optionallyWhitelistWhitelistingStrategyOnPaymaster.push({
             calldata: encodeFunctionData({
               abi: abis.DecentPaymasterV1,
-              functionName: 'whitelistFunction',
-              args: [predictedStrategyAddress, getVoteSelector('erc721')],
+              functionName: 'setFunctionValidator',
+              args: [predictedStrategyAddress, voteSelector, voteValidator],
             }),
             targetAddress: paymasterAddress,
           });
@@ -413,17 +406,18 @@ export default function useCreateRoles() {
       governance,
       linearVotingErc20Address,
       publicClient,
-      hatsProtocol,
       gaslessVotingFeatureEnabled,
+      accountAbstraction,
+      hatsProtocol,
       linearVotingErc20HatsWhitelistingV1MasterCopy,
       linearVotingErc20HatsWhitelistingMasterCopy,
       zodiacModuleProxyFactory,
       gaslessVotingEnabled,
       paymasterAddress,
+      paymaster,
       linearVotingErc721Address,
       linearVotingErc721HatsWhitelistingV1MasterCopy,
       linearVotingErc721HatsWhitelistingMasterCopy,
-      accountAbstraction,
     ],
   );
 

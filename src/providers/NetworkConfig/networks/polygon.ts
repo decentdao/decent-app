@@ -85,13 +85,11 @@ export const polygonConfig: NetworkConfig = {
     freezeVotingMultisigMasterCopy: getAddress(a.MultisigFreezeVoting),
 
     votesErc20MasterCopy: getAddress(a.VotesERC20),
-    votesErc20LockableMasterCopy: zeroAddress,
+    votesErc20LockableMasterCopy: getAddress(a.VotesERC20LockableV1),
 
     claimErc20MasterCopy: getAddress(a.ERC20Claim),
 
     decentAutonomousAdminV1MasterCopy: getAddress(a.DecentAutonomousAdminV1),
-
-    decentPaymasterV1MasterCopy: zeroAddress,
 
     keyValuePairs: getAddress(a.KeyValuePairs),
 
@@ -119,6 +117,9 @@ export const polygonConfig: NetworkConfig = {
     GovernanceType.AZORIUS_ERC20,
     GovernanceType.AZORIUS_ERC721,
   ],
+  gaslessVoting: {
+    bundlerMinimumStake: 1_0000_0000_0000_0000_0000n, // 100
+  },
 };
 
 export default polygonConfig;

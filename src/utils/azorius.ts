@@ -251,7 +251,7 @@ export const mapProposalCreatedEventToProposal = async (
       transactionHash = executedEvent?.transactionHash;
     } else {
       // @dev Proposal with 0 transactions goes straight into EXECUTED state, but since executeProposal event wasn't fired - it can't be found
-      throw new Error('Proposal state is EXECUTED, but no execution event found');
+      transactionHash = createdEventTransactionHash;
     }
   } else {
     transactionHash = createdEventTransactionHash;

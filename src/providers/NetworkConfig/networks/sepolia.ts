@@ -95,7 +95,11 @@ export const sepoliaConfig: NetworkConfig = {
 
     decentAutonomousAdminV1MasterCopy: getAddress(a.DecentAutonomousAdminV1),
 
-    decentPaymasterV1MasterCopy: getAddress(a.DecentPaymasterV1),
+    paymaster: {
+      decentPaymasterV1MasterCopy: getAddress(a.DecentPaymasterV1),
+      linearERC20VotingV1ValidatorV1: getAddress(a.LinearERC20VotingV1ValidatorV1),
+      linearERC721VotingV1ValidatorV1: getAddress(a.LinearERC721VotingV1ValidatorV1),
+    },
 
     keyValuePairs: getAddress(a.KeyValuePairs),
 
@@ -128,8 +132,10 @@ export const sepoliaConfig: NetworkConfig = {
     GovernanceType.AZORIUS_ERC20,
     GovernanceType.AZORIUS_ERC721,
   ],
-
-  maxPriorityFeePerGasMultiplier: 100n,
+  gaslessVoting: {
+    maxPriorityFeePerGasMultiplier: 100n, // @todo: Might be many times higher (or lower), depending on returned value from `estimateFeesPerGas`
+    bundlerMinimumStake: 10_0000_0000_0000_0000n, // 0.1
+  },
 };
 
 export default sepoliaConfig;

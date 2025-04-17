@@ -1,19 +1,16 @@
 import { abis } from '@fractal-framework/fractal-contracts';
 import {
-  AbiItem,
   Address,
   Hex,
   PublicClient,
   encodeAbiParameters,
   encodeFunctionData,
   encodePacked,
-  getAbiItem,
   getAddress,
   getContract,
   getCreate2Address,
   keccak256,
   parseAbiParameters,
-  toFunctionSelector,
 } from 'viem';
 import GnosisSafeL2Abi from '../assets/abi/GnosisSafeL2';
 import { ZodiacModuleProxyFactoryAbi } from '../assets/abi/ZodiacModuleProxyFactoryAbi';
@@ -28,13 +25,16 @@ import {
   AzoriusERC20DAO,
   AzoriusERC721DAO,
   AzoriusGovernanceDAO,
-  GovernanceType,
   SafeTransaction,
   TokenLockType,
   VotingStrategyType,
 } from '../types';
 import { SENTINEL_MODULE } from '../utils/address';
-import { getPaymasterAddress, getPaymasterSaltNonce } from '../utils/gaslessVoting';
+import {
+  getPaymasterAddress,
+  getPaymasterSaltNonce,
+  getVoteSelectorAndValidator,
+} from '../utils/gaslessVoting';
 import { BaseTxBuilder } from './BaseTxBuilder';
 import { generateContractByteCodeLinear, generateSalt } from './helpers/utils';
 
@@ -55,7 +55,7 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
   public linearERC721VotingAddress: Address | undefined;
   public votesTokenAddress: Address | undefined;
   private votesErc20MasterCopy: Address;
-  private votesErc20LockableMasterCopy: Address;
+  private votesErc20LockableMasterCopy?: Address;
   private zodiacModuleProxyFactory: Address;
   private multiSendCallOnly: Address;
   private claimErc20MasterCopy: Address;
@@ -64,7 +64,11 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
   private linearVotingErc20V1MasterCopy: Address;
   private linearVotingErc721V1MasterCopy: Address;
   private moduleAzoriusMasterCopy: Address;
-  private paymasterMasterCopy: Address;
+  private paymaster?: {
+    decentPaymasterV1MasterCopy: Address;
+    linearERC20VotingV1ValidatorV1: Address;
+    linearERC721VotingV1ValidatorV1: Address;
+  };
   private accountAbstraction?:
     | {
         entryPointv07: Address;
@@ -83,7 +87,6 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
     daoData: AzoriusERC20DAO | AzoriusERC721DAO,
     safeContractAddress: Address,
     votesErc20MasterCopy: Address,
-    votesErc20LockableMasterCopy: Address,
     zodiacModuleProxyFactory: Address,
     multiSendCallOnly: Address,
     claimErc20MasterCopy: Address,
@@ -92,8 +95,13 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
     linearVotingErc20V1MasterCopy: Address,
     linearVotingErc721V1MasterCopy: Address,
     moduleAzoriusMasterCopy: Address,
-    paymasterMasterCopy: Address,
     gaslessVotingEnabled: boolean,
+    votesErc20LockableMasterCopy?: Address,
+    paymaster?: {
+      decentPaymasterV1MasterCopy: Address;
+      linearERC20VotingV1ValidatorV1: Address;
+      linearERC721VotingV1ValidatorV1: Address;
+    },
     accountAbstraction?: {
       entryPointv07: Address;
       lightAccountFactory: Address;
@@ -120,13 +128,16 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
     this.linearVotingErc20V1MasterCopy = linearVotingErc20V1MasterCopy;
     this.linearVotingErc721V1MasterCopy = linearVotingErc721V1MasterCopy;
     this.moduleAzoriusMasterCopy = moduleAzoriusMasterCopy;
-    this.paymasterMasterCopy = paymasterMasterCopy;
+    this.paymaster = paymaster;
     this.accountAbstraction = accountAbstraction;
     this.gaslessVotingEnabled = gaslessVotingEnabled;
 
     if (daoData.votingStrategyType === VotingStrategyType.LINEAR_ERC20) {
       daoData = daoData as AzoriusERC20DAO;
       if (!daoData.isTokenImported) {
+        if (daoData.locked === TokenLockType.LOCKED && !votesErc20LockableMasterCopy) {
+          throw new Error('Votes Erc20 Lockable Master Copy address not set');
+        }
         this.setEncodedSetupTokenData();
         this.setPredictedTokenAddress();
       } else {
@@ -322,12 +333,16 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
       ],
     });
 
+    if (!this.paymaster) {
+      throw new Error('Paymaster addresses are not set');
+    }
+
     return buildContractCall(
       ZodiacModuleProxyFactoryAbi,
       this.zodiacModuleProxyFactory,
       'deployModule',
       [
-        this.paymasterMasterCopy,
+        this.paymaster.decentPaymasterV1MasterCopy,
         paymasterInitData,
         getPaymasterSaltNonce(this.safeContractAddress, this.publicClient.chain!.id),
       ],
@@ -340,39 +355,29 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
     if (!this.accountAbstraction) {
       throw new Error('Account Abstraction addresses are not set');
     }
+    if (!this.paymaster) {
+      throw new Error('Paymaster addresses are not set');
+    }
 
     const predictedPaymasterAddress = getPaymasterAddress({
       safeAddress: this.safeContractAddress,
       zodiacModuleProxyFactory: this.zodiacModuleProxyFactory,
-      paymasterMastercopy: this.paymasterMasterCopy,
+      paymasterMastercopy: this.paymaster?.decentPaymasterV1MasterCopy,
       entryPoint: this.accountAbstraction.entryPointv07,
       lightAccountFactory: this.accountAbstraction.lightAccountFactory,
       chainId: this.publicClient.chain!.id,
     });
 
-    let voteAbiItem: AbiItem;
-
-    if (this.daoData.governance === GovernanceType.AZORIUS_ERC20) {
-      voteAbiItem = getAbiItem({
-        name: 'vote',
-        abi: abis.LinearERC20Voting,
-      });
-    } else if (this.daoData.governance === GovernanceType.AZORIUS_ERC721) {
-      voteAbiItem = getAbiItem({
-        name: 'vote',
-        abi: abis.LinearERC721Voting,
-      });
-    } else {
-      throw new Error('Invalid voting strategy type');
-    }
-
-    const voteSelector = toFunctionSelector(voteAbiItem);
+    const { voteSelector, voteValidator } = getVoteSelectorAndValidator(
+      this.daoData.governance,
+      this.paymaster,
+    );
 
     return buildContractCall(
       abis.DecentPaymasterV1,
       predictedPaymasterAddress,
-      'whitelistFunction',
-      [this.predictedStrategyAddress, voteSelector],
+      'setFunctionValidator',
+      [this.predictedStrategyAddress, voteSelector, voteValidator],
       0,
       false,
     );
@@ -471,9 +476,15 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
 
   private setPredictedTokenAddress() {
     const azoriusGovernanceDaoData = this.daoData as AzoriusERC20DAO;
+    if (
+      azoriusGovernanceDaoData.locked === TokenLockType.LOCKED &&
+      !this.votesErc20LockableMasterCopy
+    ) {
+      throw new Error('Votes Erc20 Lockable Master Copy address not set');
+    }
     const tokenByteCodeLinear = generateContractByteCodeLinear(
       azoriusGovernanceDaoData.locked === TokenLockType.LOCKED
-        ? this.votesErc20LockableMasterCopy
+        ? this.votesErc20LockableMasterCopy!
         : this.votesErc20MasterCopy,
     );
     const tokenSalt = generateSalt(this.encodedSetupTokenData!, this.tokenNonce);

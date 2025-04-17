@@ -29,7 +29,7 @@ const useCastVote = (proposalId: string, strategy: Address) => {
   const {
     contracts: { accountAbstraction },
     rpcEndpoint,
-    getConfigByChainId,
+    gaslessVoting,
   } = useNetworkConfigStore();
 
   const [contractCall, castVotePending] = useTransaction();
@@ -173,13 +173,12 @@ const useCastVote = (proposalId: string, strategy: Address) => {
     } = await publicClient.estimateFeesPerGas();
     const castVoteCallData = prepareCastVoteData(0);
 
-    const networkConfig = getConfigByChainId(publicClient.chain.id);
-    if (!networkConfig.maxPriorityFeePerGasMultiplier) {
+    if (!gaslessVoting?.maxPriorityFeePerGasMultiplier) {
       return;
     }
 
     // `maxPriorityFeePerGas` returned from `estimateFeesPerGas` needs to be multiplied by this value to match minimum requirement here https://docs.alchemy.com/reference/rundler-maxpriorityfeepergas
-    const maxPriorityFeePerGasMultiplier = networkConfig.maxPriorityFeePerGasMultiplier;
+    const maxPriorityFeePerGasMultiplier = gaslessVoting.maxPriorityFeePerGasMultiplier;
 
     // Adds buffer to maxFeePerGasEstimate to ensure transaction gets included
     const maxFeePerGasMultiplier = 50n;
@@ -225,14 +224,20 @@ const useCastVote = (proposalId: string, strategy: Address) => {
       (paymasterPostOpGasLimit ?? 0n);
     const gasCost = maxFeePerGas * gasUsed;
 
+    const userOp = {
+      ...userOpWithoutCallData,
+      maxPriorityFeePerGas: (maxPriorityFeePerGasEstimate * 13n) / 10n,
+      maxFeePerGas: (maxFeePerGasEstimate * 13n) / 10n,
+    };
+
     return {
       gasCost,
-      userOpWithoutCallData,
+      userOp,
       bundlerClient,
     };
   }, [
     accountAbstraction,
-    getConfigByChainId,
+    gaslessVoting?.maxPriorityFeePerGasMultiplier,
     paymasterAddress,
     prepareCastVoteData,
     publicClient,
@@ -298,13 +303,13 @@ const useCastVote = (proposalId: string, strategy: Address) => {
         if (!gaslessVoteData) {
           return;
         }
-        const { userOpWithoutCallData, bundlerClient } = gaslessVoteData;
+        const { userOp, bundlerClient } = gaslessVoteData;
 
         const castVoteCallData = prepareCastVoteData(selectedVoteChoice);
 
         // Sign and send UserOperation to bundler
         const hash = await bundlerClient.sendUserOperation({
-          ...userOpWithoutCallData,
+          ...userOp,
           calls: [castVoteCallData],
         });
 

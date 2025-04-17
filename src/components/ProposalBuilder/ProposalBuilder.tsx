@@ -11,6 +11,7 @@ import useSubmitProposal from '../../hooks/DAO/proposal/useSubmitProposal';
 import { useCurrentDAOKey } from '../../hooks/DAO/useCurrentDAOKey';
 import useCreateProposalSchema from '../../hooks/schemas/proposalBuilder/useCreateProposalSchema';
 import { useCanUserCreateProposal } from '../../hooks/utils/useCanUserSubmitProposal';
+import { ActionsExperience } from '../../pages/dao/proposals/actions/new/ActionsExperience';
 import { useStore } from '../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
 import { useDaoInfoStore } from '../../store/daoInfo/useDaoInfoStore';
@@ -68,7 +69,7 @@ interface ProposalBuilderProps {
   pageHeaderBreadcrumbs: Crumb[];
   pageHeaderButtonClickHandler: () => void;
   proposalMetadataTypeProps: ProposalMetadataTypeProps;
-  actionsExperience: React.ReactNode | null;
+  showActionsExperience?: boolean;
   stepButtons: ({
     formErrors,
     createProposalBlocked,
@@ -98,7 +99,7 @@ export function ProposalBuilder({
   pageHeaderBreadcrumbs,
   pageHeaderButtonClickHandler,
   proposalMetadataTypeProps,
-  actionsExperience,
+  showActionsExperience,
   stepButtons,
   transactionsDetails,
   templateDetails,
@@ -173,6 +174,7 @@ export function ProposalBuilder({
           !canUserCreateProposal ||
           Object.keys(formikProps.errors).length > 0 ||
           !trimmedTitle ||
+          transactions.length === 0 ||
           pendingCreateTx;
 
         const renderButtons = (step: CreateProposalSteps) => {
@@ -232,7 +234,15 @@ export function ProposalBuilder({
                         <>{mainContent(formikProps, pendingCreateTx, nonce, currentStep)}</>
                       )}
                     </Box>
-                    {actionsExperience}
+                    {showActionsExperience ? (
+                      <ActionsExperience
+                        onRemove={(index: number) => {
+                          const newActions = [...formikProps.values.transactions];
+                          newActions.splice(index, 1);
+                          formikProps.setFieldValue('transactions', newActions);
+                        }}
+                      />
+                    ) : null}
                     <StepButtons
                       renderButtons={renderButtons}
                       currentStep={currentStep}
