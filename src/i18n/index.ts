@@ -34,7 +34,6 @@ async function buildLanguageFile(languageCode: string, path: string): Promise<{}
       throw new Error(`Failed to load ${fileName}: ${response.statusText}`);
     }
     const obj = await response.json(); // Parse the JSON response
-    console.log(obj);
     return obj;
   } catch (error) {
     console.error(`Error loading file: ${fileName}`, error);
@@ -43,9 +42,6 @@ async function buildLanguageFile(languageCode: string, path: string): Promise<{}
 }
 
 function buildLanguage(languageCode: string): Promise<{}> {
-  buildLanguageFile(languageCode, 'actions').then(actions => {
-    console.log('actions', actions);
-  });
   const result = Promise.all([
     buildLanguageFile(languageCode, 'actions'),
     buildLanguageFile(languageCode, 'breadcrumbs'),

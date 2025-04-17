@@ -48,7 +48,7 @@ function checkKeys() {
 
       if (!areKeysPresent(enContent, langContent)) {
         console.error(`Missing keys in ${langFilePath}`);
-        allKeysPresent = false;
+        throw new Error(`Missing keys in ${lang} for file ${file}`);
       }
     }
   }

@@ -115,7 +115,7 @@ async function translateObject(obj, langCode, existingTranslations = {}) {
       } else {
         try {
           translatedObj[key] = await translateWithPlaceholders(value, langCode);
-          await delay(200); // Add a delay of 500ms between requests
+          await delay(200); // Add a delay of 200ms between requests to avoid rate limiting
         } catch (error) {
           console.error(`Error translating key "${key}" to "${langCode}":`, error);
           translatedObj[key] = value; // Fallback to original
