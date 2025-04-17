@@ -9,7 +9,6 @@ import './insights';
 import { EnvironmentFeatureFlags } from './helpers/environmentFeatureFlags';
 import { FEATURE_FLAGS, FeatureFlags } from './helpers/featureFlags';
 import { runMigrations } from './hooks/utils/cache/runMigrations';
-import { useSupportedLanguages } from './i18n';
 import { useNetworkConfigStore } from './providers/NetworkConfig/useNetworkConfigStore';
 import Providers from './providers/Providers';
 import { router } from './router';
@@ -21,12 +20,6 @@ function DecentRouterProvider() {
 
   const prefixAndAddress = addressWithPrefix?.split(':');
   const daoAddressStr = prefixAndAddress?.[1];
-
-  const supportedLanguages = useSupportedLanguages();
-
-  if (!supportedLanguages) {
-    return null;
-  }
 
   return <RouterProvider router={router(addressPrefix, daoAddressStr)} />;
 }

@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 
 // Paths
-const localesDir = path.join(__dirname, '../public/locales');
+const localesDir = path.join(__dirname, '../src/i18n/locales');
 const enDir = path.join(localesDir, 'en');
 
 // List of target languages (excluding 'en' and skipping .DS_Store)

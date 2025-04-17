@@ -2,15 +2,11 @@ import { Box, Flex } from '@chakra-ui/react';
 import { GlobeSimple } from '@phosphor-icons/react';
 import { useTranslation } from 'react-i18next';
 import { OptionMenu } from '../components/ui/menus/OptionMenu';
-import { useSupportedLanguages } from '.';
+import { supportedLanguages } from '.';
 
 export function LanguageSwitcher() {
   const { i18n, t } = useTranslation('languages');
 
-  const supportedLanguages = useSupportedLanguages();
-  if (!supportedLanguages) {
-    return null;
-  }
   const supported = Object.keys(supportedLanguages).map(function (languageCode) {
     return {
       optionKey: languageCode,

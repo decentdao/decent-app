@@ -11,8 +11,8 @@ if (fs.existsSync(envLocalPath)) {
 }
 
 // Adjust paths to be relative to the /scripts folder
-const sourceDir = path.join(__dirname, '../public/locales/en');
-const targetBaseDir = path.join(__dirname, '../public/locales');
+const sourceDir = path.join(__dirname, '../src/i18n/locales/en');
+const targetBaseDir = path.join(__dirname, '../src/i18n/locales');
 
 // List of target languages and their directory names
 const languages = {
