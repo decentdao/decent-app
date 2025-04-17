@@ -4,6 +4,7 @@ import { ArrowsDownUp, HourglassMedium, Parachute } from '@phosphor-icons/react'
 import { useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 import { AddPlus } from '../../../assets/theme/custom/icons/AddPlus';
 import ExampleTemplateCard from '../../../components/ProposalTemplates/ExampleTemplateCard';
 import ProposalTemplateCard from '../../../components/ProposalTemplates/ProposalTemplateCard';
@@ -34,6 +35,7 @@ export function SafeProposalTemplatesPage() {
   const { daoKey } = useCurrentDAOKey();
   const {
     governance: { proposalTemplates },
+    treasury: { assetsFungible },
   } = useStore({ daoKey });
   const { safe } = useDaoInfoStore();
   const { canUserCreateProposal } = useCanUserCreateProposal();
@@ -46,6 +48,10 @@ export function SafeProposalTemplatesPage() {
 
   const safeAddress = safe?.address;
   const { openSendAssetsModal } = useSendAssetsActionModal();
+  const hasAvailableAssetsForSablierStream =
+    assetsFungible.filter(
+      asset => !asset.possibleSpam && !asset.nativeToken && parseFloat(asset.balance) > 0,
+    ).length > 0;
 
   const handleAirdropSubmit = (data: AirdropData) => {
     if (!safeAddress) return;
@@ -112,8 +118,13 @@ export function SafeProposalTemplatesPage() {
         icon: HourglassMedium,
         title: t('templateSablierTitle', { ns: 'proposalTemplate' }),
         description: t('templateSablierDescription', { ns: 'proposalTemplate' }),
-        onProposalTemplateClick: () =>
-          navigate(DAO_ROUTES.proposalSablierNew.relative(addressPrefix, safeAddress)),
+        onProposalTemplateClick: () => {
+          if (hasAvailableAssetsForSablierStream) {
+            navigate(DAO_ROUTES.proposalSablierNew.relative(addressPrefix, safeAddress));
+          } else {
+            toast.info(t('noAssetsWithBalance', { ns: 'modals' }));
+          }
+        },
       },
       {
         icon: ArrowsDownUp,
@@ -122,7 +133,15 @@ export function SafeProposalTemplatesPage() {
         onProposalTemplateClick: openSendAssetsModal,
       },
     ];
-  }, [safeAddress, t, openAirdropModal, openSendAssetsModal, navigate, addressPrefix]);
+  }, [
+    safeAddress,
+    t,
+    openAirdropModal,
+    openSendAssetsModal,
+    hasAvailableAssetsForSablierStream,
+    navigate,
+    addressPrefix,
+  ]);
 
   return (
     <div>

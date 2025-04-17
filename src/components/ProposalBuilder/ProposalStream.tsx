@@ -9,20 +9,27 @@ import {
   Flex,
   HStack,
   IconButton,
+  Select,
   Text,
   VStack,
 } from '@chakra-ui/react';
 import { CaretDown, CaretRight, MinusCircle, Plus } from '@phosphor-icons/react';
+import { Field, FieldAttributes, FieldProps } from 'formik';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { erc20Abi, formatUnits, getContract, isAddress } from 'viem';
+import { Address, erc20Abi, getContract, isAddress } from 'viem';
+import { useCurrentDAOKey } from '../../hooks/DAO/useCurrentDAOKey';
 import useNetworkPublicClient from '../../hooks/useNetworkPublicClient';
+import { useFilterSpamTokens } from '../../hooks/utils/useFilterSpamTokens';
+import { useStore } from '../../providers/App/AppProvider';
 import { useDaoInfoStore } from '../../store/daoInfo/useDaoInfoStore';
 import { Stream } from '../../types/proposalBuilder';
+import { formatCoin } from '../../utils';
 import { scrollToBottom } from '../../utils/ui';
 import { BigIntInput } from '../ui/forms/BigIntInput';
 import ExampleLabel from '../ui/forms/ExampleLabel';
 import { InputComponent, LabelComponent } from '../ui/forms/InputComponent';
+import { DisplayAddress } from '../ui/links/DisplayAddress';
 import CeleryButtonWithIcon from '../ui/utils/CeleryButtonWithIcon';
 import { DEFAULT_TRANCHE, SECONDS_IN_DAY } from './constants';
 
@@ -43,9 +50,18 @@ export function ProposalStream({
   const [tokenBalanceFormatted, setTokenBalanceFormatted] = useState('');
   const [expandedIndecies, setExpandedIndecies] = useState<number[]>([0]);
   const { safe } = useDaoInfoStore();
+  const { daoKey } = useCurrentDAOKey();
+  const {
+    treasury: { assetsFungible },
+  } = useStore({ daoKey });
+  const filterSpamTokens = useFilterSpamTokens();
   const { t } = useTranslation(['proposal', 'common']);
 
   const safeAddress = safe?.address;
+  const fungibleNonNativeAssetsWithBalance = filterSpamTokens(assetsFungible);
+  const selectedAssetIndex = fungibleNonNativeAssetsWithBalance.findIndex(
+    asset => asset.tokenAddress === stream.tokenAddress,
+  );
 
   useEffect(() => {
     const fetchFormattedTokenBalance = async () => {
@@ -64,7 +80,7 @@ export function ProposalStream({
         setTokenDecimals(decimals);
         setRawTokenBalnace(tokenBalance);
         if (tokenBalance > 0n) {
-          const balanceFormatted = formatUnits(tokenBalance, decimals);
+          const balanceFormatted = formatCoin(tokenBalance, true, decimals, symbol, false);
           setTokenBalanceFormatted(`${balanceFormatted} ${symbol} (${name})`);
         }
       }
@@ -72,6 +88,7 @@ export function ProposalStream({
 
     fetchFormattedTokenBalance();
   }, [safeAddress, publicClient, stream.tokenAddress]);
+
   return (
     <AccordionPanel p={0}>
       <VStack
@@ -79,23 +96,49 @@ export function ProposalStream({
         px="1.5rem"
         mt={6}
       >
-        <InputComponent
-          label={t('streamedTokenAddress')}
-          helper={t('streamedTokenAddressHelper', { balance: tokenBalanceFormatted })}
-          placeholder="0x0000"
-          isRequired
-          disabled={pendingTransaction}
-          subLabel={
-            <HStack textStyle="labels-large">
-              <Text>{t('example', { ns: 'common' })}:</Text>
-              <ExampleLabel>0x4168592...</ExampleLabel>
-            </HStack>
-          }
-          isInvalid={!!stream.tokenAddress && !isAddress(stream.tokenAddress)}
-          value={stream.tokenAddress}
-          testId="stream.tokenAddress"
-          onChange={e => handleUpdateStream(index, { tokenAddress: e.target.value })}
-        />
+        <Field name="selectedAsset">
+          {({ field }: FieldAttributes<FieldProps<string>>) => (
+            <LabelComponent
+              label={t('streamedTokenAddress')}
+              helper={t('streamedTokenAddressHelper', { balance: tokenBalanceFormatted })}
+              isRequired
+              disabled={pendingTransaction}
+              subLabel={
+                <DisplayAddress
+                  address={stream.tokenAddress as Address}
+                  truncate={false}
+                />
+              }
+            >
+              <Select
+                {...field}
+                bgColor="neutral-1"
+                borderColor="neutral-3"
+                rounded="lg"
+                cursor="pointer"
+                iconSize="1.5rem"
+                icon={<CaretDown />}
+                data-testid="stream.tokenAddress"
+                onChange={e => {
+                  handleUpdateStream(index, {
+                    tokenAddress:
+                      fungibleNonNativeAssetsWithBalance[Number(e.target.value)].tokenAddress,
+                  });
+                }}
+                value={selectedAssetIndex}
+              >
+                {fungibleNonNativeAssetsWithBalance.map((asset, i) => (
+                  <option
+                    key={i}
+                    value={i}
+                  >
+                    {asset.symbol}
+                  </option>
+                ))}
+              </Select>
+            </LabelComponent>
+          )}
+        </Field>
         <Divider
           variant="light"
           my="1rem"

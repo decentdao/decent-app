@@ -12,6 +12,8 @@ import { BarLoader } from '../../../../components/ui/loaders/BarLoader';
 import NestedPageHeader from '../../../../components/ui/page/Header/NestedPageHeader';
 import Divider from '../../../../components/ui/utils/Divider';
 import { DAO_ROUTES } from '../../../../constants/routes';
+import useFeatureFlag from '../../../../helpers/environmentFeatureFlags';
+import { useDepositInfo } from '../../../../hooks/DAO/accountAbstraction/useDepositInfo';
 import useSubmitProposal from '../../../../hooks/DAO/proposal/useSubmitProposal';
 import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
 import { useCanUserCreateProposal } from '../../../../hooks/utils/useCanUserSubmitProposal';
@@ -58,7 +60,11 @@ export function SafeGeneralSettingsPage() {
     addressPrefix,
     chain: { id: chainId },
     contracts: { keyValuePairs, accountAbstraction, paymaster, zodiacModuleProxyFactory },
+    gaslessVoting,
   } = useNetworkConfigStore();
+  const { depositInfo } = useDepositInfo(paymasterAddress);
+  const gaslessStakingFeatureEnabled =
+    useFeatureFlag('flag_gasless_staking') && gaslessVoting?.bundlerMinimumStake !== undefined;
 
   const isMultisigGovernance = votingStrategyType === GovernanceType.MULTISIG;
   const gaslessVotingSupported =
@@ -196,6 +202,27 @@ export function SafeGeneralSettingsPage() {
         lightAccountFactory: accountAbstraction.lightAccountFactory,
         chainId,
       });
+
+      // Add stake for Paymaster if not enough
+      if (gaslessStakingFeatureEnabled) {
+        const minStakeAmount = gaslessVoting.bundlerMinimumStake!;
+        const stakedAmount = depositInfo?.stake || 0n;
+
+        if (paymasterAddress === null || stakedAmount < minStakeAmount) {
+          const delta = minStakeAmount - stakedAmount;
+
+          targets.push(predictedPaymasterAddress);
+          calldatas.push(
+            encodeFunctionData({
+              abi: abis.DecentPaymasterV1,
+              functionName: 'addStake',
+              // one day in seconds, defined on https://github.com/alchemyplatform/rundler/blob/c17fd3dbc24d2af93fd68310031d445d5440794f/crates/sim/src/simulation/mod.rs#L170
+              args: [86400],
+            }),
+          );
+          values.push(delta);
+        }
+      }
 
       newStrategies.forEach(strategy => {
         // Whitelist the new strategy's `vote` function call on the Paymaster
