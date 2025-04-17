@@ -64,7 +64,7 @@ export function SafeGeneralSettingsPage() {
   } = useNetworkConfigStore();
   const { depositInfo } = useDepositInfo(paymasterAddress);
   const gaslessStakingFeatureEnabled =
-    useFeatureFlag('flag_gasless_staking') && gaslessVoting?.rundlerMinimumStake !== undefined;
+    useFeatureFlag('flag_gasless_staking') && gaslessVoting?.bundlerMinimumStake !== undefined;
 
   const isMultisigGovernance = votingStrategyType === GovernanceType.MULTISIG;
   const gaslessVotingSupported =
@@ -205,7 +205,7 @@ export function SafeGeneralSettingsPage() {
 
       // Add stake for Paymaster if not enough
       if (gaslessStakingFeatureEnabled) {
-        const minStakeAmount = gaslessVoting.rundlerMinimumStake!;
+        const minStakeAmount = gaslessVoting.bundlerMinimumStake!;
         const stakedAmount = depositInfo?.stake || 0n;
 
         if (paymasterAddress === null || stakedAmount < minStakeAmount) {

@@ -39,7 +39,7 @@ function GaslessVotingToggleContent({
   const publicClient = useNetworkPublicClient();
   const nativeCurrency = publicClient.chain.nativeCurrency;
   const formattedMinStakeAmount = formatCoin(
-    gaslessVoting?.rundlerMinimumStake || 0n,
+    gaslessVoting?.bundlerMinimumStake || 0n,
     true,
     nativeCurrency.decimals,
     nativeCurrency.symbol,
@@ -211,12 +211,12 @@ export function GaslessVotingToggleDAOSettings(props: GaslessVotingToggleProps) 
   const gaslessStakingEnabled =
     gaslessVotingEnabled &&
     gaslessStakingFeatureEnabled &&
-    gaslessVoting?.rundlerMinimumStake !== undefined;
+    gaslessVoting?.bundlerMinimumStake !== undefined;
   if (!gaslessFeatureEnabled) return null;
 
   const paymasterBalance = depositInfo?.balance || 0n;
   const stakedAmount = depositInfo?.stake || 0n;
-  const minStakeAmount = gaslessVoting?.rundlerMinimumStake || 0n;
+  const minStakeAmount = gaslessVoting?.bundlerMinimumStake || 0n;
   const formattedPaymasterBalance = formatCoin(
     paymasterBalance,
     true,

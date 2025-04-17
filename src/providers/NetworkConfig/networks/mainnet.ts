@@ -140,7 +140,7 @@ export const mainnetConfig: NetworkConfig = {
   ],
   gaslessVoting: {
     maxPriorityFeePerGasMultiplier: 100n, // @todo: Might be many times higher (or lower), depending on returned value from `estimateFeesPerGas`
-    rundlerMinimumStake: 10_0000_0000_0000_0000n, // 0.1
+    bundlerMinimumStake: 10_0000_0000_0000_0000n, // 0.1
   },
 };
 

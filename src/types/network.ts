@@ -100,6 +100,6 @@ export type NetworkConfig = {
   gaslessVoting?: {
     maxPriorityFeePerGasMultiplier?: bigint;
     // check https://docs.alchemy.com/docs/bundler-services#minimum-stake
-    rundlerMinimumStake?: bigint;
+    bundlerMinimumStake?: bigint;
   };
 };
