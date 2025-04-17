@@ -1,0 +1,18 @@
+{
+  "createNewDAO": "建立新的 DAO",
+  "createSubDAO": "建立 SubDAO",
+  "headerTitle": "{{daoName}} {{subject}}",
+  "proposals": "所有提案",
+  "proposalNew": "建立提案",
+  "nodes": "組織架構",
+  "roles": "角色",
+  "treasury": "庫務署",
+  "proposal": "#{{proposalId}} {{proposalTitle}}",
+  "proposalTemplates": "提案範本",
+  "proposalDapps": "探索 dApps",
+  "proposalTemplate": "{{proposalTemplateTitle}}",
+  "proposalTemplateNew": "建立提案範本",
+  "editDAO": "編輯 DAO",
+  "parentLink": "父 DAO",
+  "settings": "設定"
+}

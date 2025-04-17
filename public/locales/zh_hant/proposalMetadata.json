@@ -1,0 +1,20 @@
+{
+  "createChildSafe": "建立子DAO",
+  "clawbackProposal": "退還提案",
+  "clawbackDescription": "將所有資金從目標兒童 Safe 轉移到父母 Safe",
+  "createProposalTemplateTitle": "建立提案範本",
+  "createProposalTemplateDescription": "執行此提案將建立一個新的提案範本，附在此 Safe 之後。",
+  "removeProposalTemplateTitle": "移除提案範本",
+  "removeProposalTemplateDescription": "本提案的執行將刪除本 Safe 所附的提案範本。",
+  "updatesSafeName": "更新保險箱名稱",
+  "enableGaslessVoting": "啟用無瓦斯投票",
+  "disableGaslessVoting": "停用無瓦斯投票",
+  "topupGasTank": "加滿油箱",
+  "updateSnapshotSpace": "更新快照空間",
+  "lidoWithdrawalTitle": "麗都退房",
+  "lidoWithdrawalDescription": "此建議將燒毀您的 Lido 提款 NFT，並將 ETH 返回到您的 Safe。",
+  "unstakeStEthTitle": "解鎖 stETH",
+  "unstakeStEthDescription": "此建議將從 Lido 解鎖 StETH，並鑄造一個 Lido 提款 NFT，可用於認領您的 ETH。",
+  "stakeWithLidoTitle": "用 Lido 賭 ETH",
+  "stakeWithLidoDescription": "此提案將 ETH 賭在 Lido，將 stETH 歸還您的金庫。"
+}

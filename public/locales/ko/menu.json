@@ -1,0 +1,14 @@
+{
+  "connect": "연결",
+  "connectWallet": "지갑 연결",
+  "disconnect": "연결 해제",
+  "wallet": "지갑",
+  "titleManageProposalTemplate": "템플릿 관리",
+  "optionCreateSubDAO": "SubDAO 만들기",
+  "optionInitiateFreeze": "동결 시작",
+  "optionInitiateClawback": "클로백 시작",
+  "optionRemoveTemplate": "템플릿 제거",
+  "optionForkTemplate": "포크 템플릿",
+  "optionModifyGovernance": "거버넌스 수정",
+  "optionSettings": "설정"
+}

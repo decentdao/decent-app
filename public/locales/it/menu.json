@@ -1,0 +1,14 @@
+{
+  "connect": "Collegare",
+  "connectWallet": "Portafoglio Connect",
+  "disconnect": "Disconnessione",
+  "wallet": "Portafoglio",
+  "titleManageProposalTemplate": "Gestire il modello",
+  "optionCreateSubDAO": "Creare un subDAO",
+  "optionInitiateFreeze": "Avviare un congelamento",
+  "optionInitiateClawback": "Avviare il Clawback",
+  "optionRemoveTemplate": "Rimuovi modello",
+  "optionForkTemplate": "Modello di forcella",
+  "optionModifyGovernance": "Modificare la governance",
+  "optionSettings": "Impostazioni"
+}

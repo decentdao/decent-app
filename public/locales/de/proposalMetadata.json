@@ -1,0 +1,20 @@
+{
+  "createChildSafe": "Erstellen eines SubDAOs",
+  "clawbackProposal": "Clawback-Vorschlag",
+  "clawbackDescription": "Übertragen Sie alle Gelder aus dem Safe des Zielkindes in den Elternsafe",
+  "createProposalTemplateTitle": "Vorschlagsvorlage erstellen",
+  "createProposalTemplateDescription": "Mit der Ausführung dieses Vorschlags wird eine neue Vorschlagsvorlage erstellt, die diesem Safe beigefügt ist.",
+  "removeProposalTemplateTitle": "Vorschlagsvorlage entfernen",
+  "removeProposalTemplateDescription": "Durch die Ausführung dieses Vorschlags wird die diesem Safe beigefügte Vorschlagsvorlage entfernt.",
+  "updatesSafeName": "Tresorname aktualisieren",
+  "enableGaslessVoting": "Gaslose Stimmabgabe aktivieren",
+  "disableGaslessVoting": "Gaslose Stimmabgabe deaktivieren",
+  "topupGasTank": "Gastank auffüllen",
+  "updateSnapshotSpace": "Snapshot-Bereich aktualisieren",
+  "lidoWithdrawalTitle": "Lido Rückzug",
+  "lidoWithdrawalDescription": "Dieser Vorschlag wird Ihre Lido Withdrawal NFT verbrennen und die ETH in Ihren Safe zurückführen.",
+  "unstakeStEthTitle": "Unstake stETH",
+  "unstakeStEthDescription": "Dieser Vorschlag wird stETH von Lido abheben und eine Lido Withdrawal NFT prägen, mit der Sie Ihre ETH einfordern können.",
+  "stakeWithLidoTitle": "ETH-Einsatz mit Lido",
+  "stakeWithLidoDescription": "Dieser Vorschlag wird ETH in Lido einsetzen und stETH in Ihre Kasse zurückführen."
+}
