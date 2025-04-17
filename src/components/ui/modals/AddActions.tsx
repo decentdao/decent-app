@@ -90,10 +90,10 @@ export function AddActions() {
     transactions: CreateProposalTransaction<BigIntValuePair>[],
     actionType: string,
   ) => {
-    return transactions.map((transaction, index) => ({
+    return transactions.map(transaction => ({
       ...transaction,
       // Generate a unique actionId for each transaction based on the action type and index
-      actionId: `${actionType}_${actions.length}_${index}`,
+      actionId: `${actionType}_${actions.length}`,
     }));
   };
 
