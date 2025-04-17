@@ -158,7 +158,6 @@ export function SafeSablierProposalCreatePage() {
       pageHeaderBreadcrumbs={pageHeaderBreadcrumbs}
       pageHeaderButtonClickHandler={pageHeaderButtonClickHandler}
       proposalMetadataTypeProps={DEFAULT_PROPOSAL_METADATA_TYPE_PROPS(t)}
-      actionsExperience={null}
       stepButtons={stepButtons}
       transactionsDetails={null}
       templateDetails={null}

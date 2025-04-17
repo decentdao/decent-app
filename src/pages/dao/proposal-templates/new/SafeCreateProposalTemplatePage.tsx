@@ -130,7 +130,6 @@ export function SafeCreateProposalTemplatePage() {
       pageHeaderBreadcrumbs={pageHeaderBreadcrumbs}
       pageHeaderButtonClickHandler={pageHeaderButtonClickHandler}
       proposalMetadataTypeProps={TEMPLATE_PROPOSAL_METADATA_TYPE_PROPS(t)}
-      actionsExperience={null}
       stepButtons={stepButtons}
       transactionsDetails={transactions => <TransactionsDetails transactions={transactions} />}
       templateDetails={title => <TemplateDetails title={title} />}
