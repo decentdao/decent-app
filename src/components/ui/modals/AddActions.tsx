@@ -1,12 +1,16 @@
-import { Button, Flex, Icon, Text, useDisclosure } from '@chakra-ui/react';
-import { ArrowsDownUp, Plus, SquaresFour } from '@phosphor-icons/react';
+import { Button, Flex, Grid, Icon, Text, useDisclosure } from '@chakra-ui/react';
+import { ArrowsDownUp, Plus, PlusCircle, SquaresFour } from '@phosphor-icons/react';
+import { useFormikContext } from 'formik';
 import { useTranslation } from 'react-i18next';
 import { DETAILS_BOX_SHADOW } from '../../../constants/common';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import { useStore } from '../../../providers/App/AppProvider';
-import { SendAssetsData } from '../../../utils/dao/prepareSendAssetsActionData';
+import { useProposalActionsStore } from '../../../store/actions/useProposalActionsStore';
+import { CreateProposalForm, ProposalActionType } from '../../../types';
+import { prepareSendAssetsActionData } from '../../../utils/dao/prepareSendAssetsActionData';
 import { ModalBase } from './ModalBase';
-import { SendAssetsModal } from './SendAssetsModal';
+import { ModalType } from './ModalProvider';
+import { useDecentModal } from './useDecentModal';
 
 function ActionCard({
   title,
@@ -29,12 +33,12 @@ function ActionCard({
       isDisabled={isDisabled}
       padding={0}
       w="full"
+      boxShadow={DETAILS_BOX_SHADOW}
+      _hover={!isDisabled ? { bg: 'neutral-3' } : undefined}
+      _active={!isDisabled ? { bg: 'neutral-2' } : undefined}
+      transition="all ease-out 300ms"
     >
       <Flex
-        boxShadow={DETAILS_BOX_SHADOW}
-        _hover={!isDisabled ? { bg: 'neutral-3' } : undefined}
-        _active={!isDisabled ? { bg: 'neutral-2' } : undefined}
-        transition="all ease-out 300ms"
         p="1.5rem"
         borderRadius="0.5rem"
         flexDirection="column"
@@ -54,26 +58,48 @@ function ActionCard({
         >
           {title}
         </Text>
-        <Text color={isDisabled ? 'neutral-6' : 'neutral-7'}>{subtitle}</Text>
+        <Text
+          whiteSpace="pre-wrap"
+          textAlign="left"
+          color={isDisabled ? 'neutral-6' : 'neutral-7'}
+        >
+          {subtitle}
+        </Text>
       </Flex>
     </Button>
   );
 }
 
-export function AddActions({
-  addSendAssetsAction,
-}: {
-  addSendAssetsAction: (data: SendAssetsData) => void;
-}) {
+export function AddActions() {
   const { daoKey } = useCurrentDAOKey();
   const {
     treasury: { assetsFungible },
   } = useStore({ daoKey });
 
-  const { t } = useTranslation('actions');
+  const { t } = useTranslation(['actions', 'modals']);
+  const { addAction } = useProposalActionsStore();
+  const { values, setFieldValue } = useFormikContext<CreateProposalForm>();
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
-  const { isOpen: isOpenAction, onOpen: onOpenAction, onClose: onCloseAction } = useDisclosure();
-  const { isOpen: isOpenAssets, onOpen: onOpenAssets, onClose: onCloseAssets } = useDisclosure();
+  const openSendAssetsModal = useDecentModal(ModalType.SEND_ASSETS, {
+    onSubmit: sendAssetsData => {
+      const { action } = prepareSendAssetsActionData(sendAssetsData);
+      setFieldValue('transactions', [...values.transactions, ...action.transactions]);
+      addAction({ ...action, content: <></> });
+    },
+    submitButtonText: t('Add Action', { ns: 'modals' }),
+  });
+
+  const openTransactionBuilderModal = useDecentModal(ModalType.TRANSACTION_BUILDER, {
+    onSubmit: transactionBuilderData => {
+      setFieldValue('transactions', [...values.transactions, ...transactionBuilderData]);
+      addAction({
+        actionType: ProposalActionType.TRANSACTION_BUILDER,
+        content: <></>,
+        transactions: transactionBuilderData,
+      });
+    },
+  });
 
   const hasAnyBalanceOfAnyFungibleTokens =
     assetsFungible.reduce((p, c) => p + BigInt(c.balance), 0n) > 0n;
@@ -84,31 +110,44 @@ export function AddActions({
         variant="secondary"
         mt="1rem"
         size="sm"
-        onClick={onOpenAction}
+        onClick={onOpen}
       >
         <Icon as={Plus} />
         {t('addAction')}
       </Button>
 
       <ModalBase
-        size="xl"
-        isOpen={isOpenAction}
-        onClose={onCloseAction}
+        size="2xl"
+        isOpen={isOpen}
+        onClose={onClose}
         title={t('actions')}
       >
-        <Flex
-          gap="2"
-          justifyContent="space-between"
+        <Grid
+          gap="0.5rem"
+          flexWrap="wrap"
+          justifyContent="space-evenly"
+          templateColumns={{ base: '1fr', md: 'repeat(2, 1fr)' }}
+          templateRows="auto"
         >
           <ActionCard
             title={t('transferAssets')}
             subtitle={t('transferAssetsSub')}
             icon={ArrowsDownUp}
             onClick={() => {
-              onCloseAction();
-              onOpenAssets();
+              onClose();
+              openSendAssetsModal();
             }}
             isDisabled={!hasAnyBalanceOfAnyFungibleTokens}
+          />
+          <ActionCard
+            title={t('transcationBuilderActionCardTitle', { ns: 'modals' })}
+            subtitle={t('transactionBuilderActionCardSub', { ns: 'modals' })}
+            icon={PlusCircle}
+            onClick={() => {
+              onClose();
+              openTransactionBuilderModal();
+            }}
+            isDisabled={false}
           />
 
           <ActionCard
@@ -118,19 +157,7 @@ export function AddActions({
             onClick={() => {}}
             isDisabled
           />
-        </Flex>
-      </ModalBase>
-
-      <ModalBase
-        isOpen={isOpenAssets}
-        onClose={onCloseAssets}
-        title={t('transferAssets')}
-      >
-        <SendAssetsModal
-          submitButtonText={t('add', { ns: 'modals' })}
-          close={onCloseAssets}
-          sendAssetsData={addSendAssetsAction}
-        />
+        </Grid>
       </ModalBase>
     </>
   );

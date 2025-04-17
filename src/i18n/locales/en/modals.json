@@ -61,5 +61,7 @@
   "csvFormat": "address,amount one entry per row",
   "pasteMultipleRecipients": "You can paste one or multiple recipients (address,amount one entry per row)",
   "confirmTransactionTitle": "Confirm transaction",
-  "transactionBuilderTitle": "Build transaction(s)"
+  "transactionBuilderTitle": "Build transaction(s)",
+  "transcationBuilderActionCardTitle": "Transaction Builder",
+  "transactionBuilderActionCardSub": "Create one or more transactions using a template"
 }

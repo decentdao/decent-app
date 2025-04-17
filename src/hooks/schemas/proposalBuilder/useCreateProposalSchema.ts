@@ -38,34 +38,40 @@ const useCreateProposalSchema = () => {
     return false;
   };
 
+  const transactionValidationSchema = useMemo(
+    () =>
+      Yup.array().of(
+        Yup.object().shape({
+          targetAddress: Yup.string().test(addressValidationTest),
+          ethValue: Yup.object().shape({
+            value: Yup.string(),
+          }),
+          functionName: Yup.string().matches(/^[a-z0-9]+$/i, {
+            message: t('functionNameError'),
+          }),
+          parameters: Yup.array().of(
+            Yup.object().shape({
+              signature: Yup.string(),
+              label: Yup.string().test({
+                message: t('labelOrValueRequired'),
+                test: labelOrValueValidationTest,
+              }),
+              value: Yup.string().test({
+                message: t('labelOrValueRequired'),
+                test: labelOrValueValidationTest,
+              }),
+            }),
+          ),
+        }),
+      ),
+    [addressValidationTest, t],
+  );
+
   const createProposalValidation = useMemo(
     () =>
       Yup.object()
         .shape({
-          transactions: Yup.array().of(
-            Yup.object().shape({
-              targetAddress: Yup.string().test(addressValidationTest),
-              ethValue: Yup.object().shape({
-                value: Yup.string(),
-              }),
-              functionName: Yup.string().matches(/^[a-z0-9]+$/i, {
-                message: t('functionNameError'),
-              }),
-              parameters: Yup.array().of(
-                Yup.object().shape({
-                  signature: Yup.string(),
-                  label: Yup.string().test({
-                    message: t('labelOrValueRequired'),
-                    test: labelOrValueValidationTest,
-                  }),
-                  value: Yup.string().test({
-                    message: t('labelOrValueRequired'),
-                    test: labelOrValueValidationTest,
-                  }),
-                }),
-              ),
-            }),
-          ),
+          transactions: transactionValidationSchema,
           streams: Yup.array().of(
             Yup.object().shape({
               type: Yup.string().oneOf(['tranched']).required(),
@@ -121,9 +127,9 @@ const useCreateProposalSchema = () => {
             (value.streams?.length && value.streams.length > 0)
           );
         }),
-    [addressValidationTest, t, safe],
+    [addressValidationTest, t, safe, transactionValidationSchema],
   );
-  return { createProposalValidation };
+  return { createProposalValidation, transactionValidationSchema };
 };
 
 export default useCreateProposalSchema;
