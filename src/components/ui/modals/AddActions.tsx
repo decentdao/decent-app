@@ -6,7 +6,12 @@ import { DETAILS_BOX_SHADOW } from '../../../constants/common';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import { useStore } from '../../../providers/App/AppProvider';
 import { useProposalActionsStore } from '../../../store/actions/useProposalActionsStore';
-import { CreateProposalForm, ProposalActionType } from '../../../types';
+import {
+  BigIntValuePair,
+  CreateProposalForm,
+  CreateProposalTransaction,
+  ProposalActionType,
+} from '../../../types';
 import { prepareSendAssetsActionData } from '../../../utils/dao/prepareSendAssetsActionData';
 import { ModalBase } from './ModalBase';
 import { ModalType } from './ModalProvider';
@@ -81,15 +86,25 @@ export function AddActions() {
   const { values, setFieldValue } = useFormikContext<CreateProposalForm>();
   const { isOpen, onOpen, onClose } = useDisclosure();
 
+  const addActionIdToTransaction = (
+    transactions: CreateProposalTransaction<BigIntValuePair>[],
+    actionType: string,
+  ) => {
+    return transactions.map((transaction, index) => ({
+      ...transaction,
+      // Generate a unique actionId for each transaction based on the action type and index
+      actionId: `${actionType}_${actions.length}_${index}`,
+    }));
+  };
+
   const openSendAssetsModal = useDecentModal(ModalType.SEND_ASSETS, {
     onSubmit: sendAssetsData => {
       const { action } = prepareSendAssetsActionData(sendAssetsData);
-      const transactions = action.transactions.map(transaction => ({
-        ...transaction,
-        // Generate a unique actionId for each transaction based on the action type and index
-        actionId: `${action.actionType}_${actions.length}`,
-      }));
-      setFieldValue('transactions', [...values.transactions, ...transactions]);
+
+      setFieldValue('transactions', [
+        ...values.transactions,
+        ...addActionIdToTransaction(action.transactions, action.actionType),
+      ]);
       addAction({ ...action, content: <></> });
     },
     submitButtonText: t('Add Action', { ns: 'modals' }),
@@ -98,16 +113,15 @@ export function AddActions() {
   const openTransactionBuilderModal = useDecentModal(ModalType.TRANSACTION_BUILDER, {
     onSubmit: transactionBuilderData => {
       const actionType = ProposalActionType.TRANSACTION_BUILDER;
-      const transactions = transactionBuilderData.map(transaction => ({
-        ...transaction,
-        // Generate a unique actionId for each transaction based on the action type and index
-        actionId: `${actionType}_${actions.length}`,
-      }));
-      setFieldValue('transactions', [...values.transactions, ...transactions]);
+
+      setFieldValue('transactions', [
+        ...values.transactions,
+        ...addActionIdToTransaction(transactionBuilderData, actionType),
+      ]);
       addAction({
         actionType: actionType,
         content: <></>,
-        transactions: transactions,
+        transactions: transactionBuilderData,
       });
     },
   });
