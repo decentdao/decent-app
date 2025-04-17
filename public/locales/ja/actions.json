@@ -4,5 +4,6 @@
   "transferAssets": "譲渡資産",
   "transferAssetsSub": "1回の支払いを作成します。",
   "comingSoon": "近日公開...",
-  "comingSoonSub": "途中でより多くのアクション。"
+  "comingSoonSub": "途中でより多くのアクション。",
+  "proposalBuilderBatch": "バッチ{{ numOfTransactions }}トランザクション"
 }

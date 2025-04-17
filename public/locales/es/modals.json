@@ -61,5 +61,7 @@
   "csvFormat": "dirección,importe una entrada por fila",
   "pasteMultipleRecipients": "Puede pegar uno o varios destinatarios (dirección,importe una entrada por fila)",
   "confirmTransactionTitle": "Confirmar transacción",
-  "transactionBuilderTitle": "Construir transacción(es)"
+  "transactionBuilderTitle": "Construir transacción(es)",
+  "transcationBuilderActionCardTitle": "Generador de transacciones",
+  "transactionBuilderActionCardSub": "Crear una o más transacciones utilizando una plantilla"
 }

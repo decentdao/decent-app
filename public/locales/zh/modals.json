@@ -61,5 +61,7 @@
   "csvFormat": "地址、金额，每行一个条目",
   "pasteMultipleRecipients": "您可以粘贴一个或多个收件人（地址、金额，每行一个条目）",
   "confirmTransactionTitle": "确认交易",
-  "transactionBuilderTitle": "建立交易"
+  "transactionBuilderTitle": "建立交易",
+  "transcationBuilderActionCardTitle": "交易生成器",
+  "transactionBuilderActionCardSub": "使用模板创建一个或多个交易"
 }

@@ -61,5 +61,7 @@
   "csvFormat": "adresse,montant une entrée par ligne",
   "pasteMultipleRecipients": "Vous pouvez coller un ou plusieurs destinataires (adresse, montant, une entrée par ligne).",
   "confirmTransactionTitle": "Confirmer la transaction",
-  "transactionBuilderTitle": "Opération(s) de construction"
+  "transactionBuilderTitle": "Opération(s) de construction",
+  "transcationBuilderActionCardTitle": "Constructeur de transactions",
+  "transactionBuilderActionCardSub": "Créer une ou plusieurs transactions à l'aide d'un modèle"
 }

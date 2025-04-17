@@ -4,5 +4,6 @@
   "transferAssets": "Vermögenswerte übertragen",
   "transferAssetsSub": "Erstellen Sie einmalige Zahlungen.",
   "comingSoon": "Bald kommen ...",
-  "comingSoonSub": "Weitere Aktionen unterwegs."
+  "comingSoonSub": "Weitere Aktionen unterwegs.",
+  "proposalBuilderBatch": "Stapel: {{ numOfTransactions }} Transaktionen"
 }

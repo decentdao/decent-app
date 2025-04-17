@@ -61,5 +61,7 @@
   "csvFormat": "住所、金額",
   "pasteMultipleRecipients": "1人または複数の受取人（住所、金額）を貼り付けることができます。",
   "confirmTransactionTitle": "トランザクションの確認",
-  "transactionBuilderTitle": "取引構築"
+  "transactionBuilderTitle": "取引構築",
+  "transcationBuilderActionCardTitle": "トランザクション・ビルダー",
+  "transactionBuilderActionCardSub": "テンプレートを使用して1つまたは複数のトランザクションを作成する"
 }

@@ -61,5 +61,7 @@
   "csvFormat": "주소, 금액 행당 하나의 항목",
   "pasteMultipleRecipients": "한 명 또는 여러 명의 수신자를 붙여넣을 수 있습니다(주소, 금액은 행당 한 항목씩).",
   "confirmTransactionTitle": "거래 확인",
-  "transactionBuilderTitle": "트랜잭션 빌드"
+  "transactionBuilderTitle": "트랜잭션 빌드",
+  "transcationBuilderActionCardTitle": "트랜잭션 빌더",
+  "transactionBuilderActionCardSub": "템플릿을 사용하여 하나 이상의 트랜잭션 만들기"
 }

@@ -61,5 +61,7 @@
   "csvFormat": "Adresse,Betrag ein Eintrag pro Zeile",
   "pasteMultipleRecipients": "Sie können einen oder mehrere Empfänger einfügen (Adresse, Betrag, ein Eintrag pro Zeile)",
   "confirmTransactionTitle": "Bestätigen Sie die Transaktion",
-  "transactionBuilderTitle": "Transaktion(en) erstellen"
+  "transactionBuilderTitle": "Transaktion(en) erstellen",
+  "transcationBuilderActionCardTitle": "Transaction Builder",
+  "transactionBuilderActionCardSub": "Eine oder mehrere Transaktionen mit Hilfe einer Vorlage erstellen"
 }

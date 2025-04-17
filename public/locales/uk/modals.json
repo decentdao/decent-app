@@ -61,5 +61,7 @@
   "csvFormat": "адреса,сума один запис у рядку",
   "pasteMultipleRecipients": "Ви можете вставити одного або декількох одержувачів (адреса, сума, один запис у рядку)",
   "confirmTransactionTitle": "Підтвердити транзакцію",
-  "transactionBuilderTitle": "Побудувати транзакцію(ї)"
+  "transactionBuilderTitle": "Побудувати транзакцію(ї)",
+  "transcationBuilderActionCardTitle": "Конструктор транзакцій",
+  "transactionBuilderActionCardSub": "Створіть одну або кілька транзакцій за допомогою шаблону"
 }
