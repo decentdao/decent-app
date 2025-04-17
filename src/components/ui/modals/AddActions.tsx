@@ -2,11 +2,15 @@ import { Button, Flex, Icon, Text, useDisclosure } from '@chakra-ui/react';
 import { ArrowsDownUp, Plus, SquaresFour } from '@phosphor-icons/react';
 import { useTranslation } from 'react-i18next';
 import { DETAILS_BOX_SHADOW } from '../../../constants/common';
+import useFeatureFlag from '../../../helpers/environmentFeatureFlags';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import { useStore } from '../../../providers/App/AppProvider';
-import { SendAssetsData } from '../../../utils/dao/prepareSendAssetsActionData';
+import { useProposalActionsStore } from '../../../store/actions/useProposalActionsStore';
+import { ProposalActionType } from '../../../types';
+import { prepareSendAssetsActionData } from '../../../utils/dao/prepareSendAssetsActionData';
 import { ModalBase } from './ModalBase';
-import { SendAssetsModal } from './SendAssetsModal';
+import { ModalType } from './ModalProvider';
+import { useDecentModal } from './useDecentModal';
 
 function ActionCard({
   title,
@@ -60,23 +64,38 @@ function ActionCard({
   );
 }
 
-export function AddActions({
-  addSendAssetsAction,
-}: {
-  addSendAssetsAction: (data: SendAssetsData) => void;
-}) {
+export function AddActions() {
   const { daoKey } = useCurrentDAOKey();
   const {
     treasury: { assetsFungible },
   } = useStore({ daoKey });
 
-  const { t } = useTranslation('actions');
+  const { t } = useTranslation(['actions', 'modals']);
+  const { addAction } = useProposalActionsStore();
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
-  const { isOpen: isOpenAction, onOpen: onOpenAction, onClose: onCloseAction } = useDisclosure();
-  const { isOpen: isOpenAssets, onOpen: onOpenAssets, onClose: onCloseAssets } = useDisclosure();
+  const openSendAssetsModal = useDecentModal(ModalType.SEND_ASSETS, {
+    onSubmit: sendAssetsData => {
+      const { action } = prepareSendAssetsActionData(sendAssetsData);
+      addAction({ ...action, content: <></> });
+    },
+    submitButtonText: t('Add Action', { ns: 'modals' }),
+  });
+
+  const openTransactionBuilderModal = useDecentModal(ModalType.TRANSACTION_BUILDER, {
+    onSubmit: transactionBuilderData => {
+      addAction({
+        actionType: ProposalActionType.TRANSACTION_BUILDER,
+        content: <></>,
+        transactions: transactionBuilderData,
+      });
+    },
+  });
 
   const hasAnyBalanceOfAnyFungibleTokens =
     assetsFungible.reduce((p, c) => p + BigInt(c.balance), 0n) > 0n;
+
+  const isDevMode = useFeatureFlag('flag_dev');
 
   return (
     <>
@@ -84,7 +103,7 @@ export function AddActions({
         variant="secondary"
         mt="1rem"
         size="sm"
-        onClick={onOpenAction}
+        onClick={onOpen}
       >
         <Icon as={Plus} />
         {t('addAction')}
@@ -92,24 +111,37 @@ export function AddActions({
 
       <ModalBase
         size="xl"
-        isOpen={isOpenAction}
-        onClose={onCloseAction}
+        isOpen={isOpen}
+        onClose={onClose}
         title={t('actions')}
       >
         <Flex
           gap="2"
           justifyContent="space-between"
+          flexWrap="wrap"
         >
           <ActionCard
             title={t('transferAssets')}
             subtitle={t('transferAssetsSub')}
             icon={ArrowsDownUp}
             onClick={() => {
-              onCloseAction();
-              onOpenAssets();
+              onClose();
+              openSendAssetsModal();
             }}
             isDisabled={!hasAnyBalanceOfAnyFungibleTokens}
           />
+          {isDevMode && (
+            <ActionCard
+              title={t('transcationBuilderActionCardTitle', { ns: 'modals' })}
+              subtitle={t('transactionBuilderActionCardSub', { ns: 'modals' })}
+              icon={ArrowsDownUp}
+              onClick={() => {
+                onClose();
+                openTransactionBuilderModal();
+              }}
+              isDisabled={false}
+            />
+          )}
 
           <ActionCard
             title={t('comingSoon')}
@@ -119,18 +151,6 @@ export function AddActions({
             isDisabled
           />
         </Flex>
-      </ModalBase>
-
-      <ModalBase
-        isOpen={isOpenAssets}
-        onClose={onCloseAssets}
-        title={t('transferAssets')}
-      >
-        <SendAssetsModal
-          submitButtonText={t('add', { ns: 'modals' })}
-          close={onCloseAssets}
-          sendAssetsData={addSendAssetsAction}
-        />
       </ModalBase>
     </>
   );
