@@ -1,8 +1,0 @@
-{
-  "emptyProposalDapps": "У этого сейфа пока нет ни одного поддерживаемого dApp.",
-  "connectingWalletConnect": "Подключение...",
-  "successConnectingWalletConnect": "Подключено!",
-  "failConnectingWalletConnect": "Не удалось подключиться, проверьте uri.",
-  "labelIframeWalletConnectUri": "URI WalletConnect",
-  "helperIframeWalletConnectUri": "Вставьте, чтобы соединить"
-}

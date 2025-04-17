@@ -1,8 +1,0 @@
-{
-  "emptyProposalDapps": "Esta Caja Fuerte aún no tiene ninguna dApp compatible.",
-  "connectingWalletConnect": "Conectando...",
-  "successConnectingWalletConnect": "¡Conectado!",
-  "failConnectingWalletConnect": "No se ha podido conectar, compruebe la uri.",
-  "labelIframeWalletConnectUri": "URI de WalletConnect",
-  "helperIframeWalletConnectUri": "Pegar para conectar"
-}

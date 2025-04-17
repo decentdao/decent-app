@@ -26,18 +26,7 @@ import { initReactI18next } from 'react-i18next';
  * https://www.i18next.com/translation-function/interpolation
  */
 
-export const supportedLanguages = {
-  en: {},
-  es: {},
-  fr: {},
-  it: {},
-  ja: {},
-  ko: {},
-  pt: {},
-  ru: {},
-  zh: {},
-  zh_hant: {},
-};
+export const supportedLanguages = ['en'];
 
 i18n
   .use(

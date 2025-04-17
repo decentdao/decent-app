@@ -1,9 +1,0 @@
-{
-  "actions": "Azioni",
-  "addAction": "Aggiungi azione",
-  "transferAssets": "Trasferimento di attività",
-  "transferAssetsSub": "Creare pagamenti una tantum.",
-  "comingSoon": "Prossimamente...",
-  "comingSoonSub": "Altre azioni sono in arrivo.",
-  "proposalBuilderBatch": "Lotto: {{ numOfTransactions }} transazioni"
-}

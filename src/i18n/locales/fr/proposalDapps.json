@@ -1,8 +1,0 @@
-{
-  "emptyProposalDapps": "Ce coffre-fort n'a pas encore de dApps supportées.",
-  "connectingWalletConnect": "Connexion...",
-  "successConnectingWalletConnect": "Connecté !",
-  "failConnectingWalletConnect": "Échec de la connexion, veuillez vérifier l'uri.",
-  "labelIframeWalletConnectUri": "URI de WalletConnect",
-  "helperIframeWalletConnectUri": "Coller pour connecter"
-}

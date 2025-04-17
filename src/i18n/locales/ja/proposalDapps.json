@@ -1,8 +1,0 @@
-{
-  "emptyProposalDapps": "このSafeにはまだサポートされているdAppsがありません。",
-  "connectingWalletConnect": "接続...",
-  "successConnectingWalletConnect": "つながっている！",
-  "failConnectingWalletConnect": "接続に失敗しました。",
-  "labelIframeWalletConnectUri": "ウォレットコネクトURI",
-  "helperIframeWalletConnectUri": "ペーストで接続"
-}
