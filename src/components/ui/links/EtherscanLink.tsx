@@ -21,7 +21,7 @@ export default function EtherscanLink({
   ...rest
 }: EtherscanLinkProps) {
   const { etherscanBaseURL } = useNetworkConfigStore();
-  const { t } = useTranslation();
+  const { t } = useTranslation('common');
   const containerRef = useRef<HTMLDivElement>(null);
 
   if (!value) {

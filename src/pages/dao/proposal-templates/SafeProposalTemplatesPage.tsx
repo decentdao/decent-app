@@ -31,7 +31,7 @@ export function SafeProposalTemplatesPage() {
     amplitude.track(analyticsEvents.ProposalTemplatesPageOpened);
   }, []);
 
-  const { t } = useTranslation();
+  const { t } = useTranslation(['modals', 'proposalTemplate', 'common']);
   const { daoKey } = useCurrentDAOKey();
   const {
     governance: { proposalTemplates },
@@ -101,7 +101,7 @@ export function SafeProposalTemplatesPage() {
 
   const openAirdropModal = useDecentModal(ModalType.AIRDROP, {
     onSubmit: handleAirdropSubmit,
-    submitButtonText: t('submitProposal', { ns: 'modals' }),
+    submitButtonText: t('submitProposal'),
   });
 
   const EXAMPLE_TEMPLATES = useMemo(() => {
@@ -110,14 +110,14 @@ export function SafeProposalTemplatesPage() {
     return [
       {
         icon: Parachute,
-        title: t('templateAirdropTitle', { ns: 'proposalTemplate' }),
-        description: t('templateAirdropDescription', { ns: 'proposalTemplate' }),
+        title: t('templateAirdropTitle'),
+        description: t('templateAirdropDescription'),
         onProposalTemplateClick: openAirdropModal,
       },
       {
         icon: HourglassMedium,
-        title: t('templateSablierTitle', { ns: 'proposalTemplate' }),
-        description: t('templateSablierDescription', { ns: 'proposalTemplate' }),
+        title: t('templateSablierTitle'),
+        description: t('templateSablierDescription'),
         onProposalTemplateClick: () => {
           if (hasAvailableAssetsForSablierStream) {
             navigate(DAO_ROUTES.proposalSablierNew.relative(addressPrefix, safeAddress));
@@ -128,8 +128,8 @@ export function SafeProposalTemplatesPage() {
       },
       {
         icon: ArrowsDownUp,
-        title: t('templateTransferTitle', { ns: 'proposalTemplate' }),
-        description: t('templateTransferDescription', { ns: 'proposalTemplate' }),
+        title: t('templateTransferTitle'),
+        description: t('templateTransferDescription'),
         onProposalTemplateClick: openSendAssetsModal,
       },
     ];
@@ -197,7 +197,7 @@ export function SafeProposalTemplatesPage() {
         color="white-0"
         mb="1rem"
       >
-        {t('defaultTemplates', { ns: 'proposalTemplate' })}
+        {t('defaultTemplates')}
       </Text>
       <Flex
         flexDirection="row"

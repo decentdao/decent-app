@@ -17,7 +17,7 @@ export default function ProposalERC20VoteItem({
   govTokenDecimals: number;
   govTokenSymbol: string;
 }) {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['common', 'proposal']);
   const { displayName } = useGetAccountName(vote.voter);
   const user = useAccount();
   return (
