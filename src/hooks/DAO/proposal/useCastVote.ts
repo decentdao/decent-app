@@ -259,18 +259,9 @@ const useCastVote = (proposalId: string, strategy: Address) => {
     };
 
     estimateGaslessVoteGas().catch(() => {
-      //const error = e as EstimateUserOperationGasErrorType;
-      //console.warn('error', error.message);
       setCanCastGaslessVote(false);
     });
-  }, [
-    accountAbstraction,
-    paymasterAddress,
-    prepareCastVoteData,
-    prepareGaslessVoteOperation,
-    publicClient,
-    rpcEndpoint,
-  ]);
+  }, [accountAbstraction, paymasterAddress, prepareGaslessVoteOperation, publicClient]);
 
   const castGaslessVote = useCallback(
     async ({
