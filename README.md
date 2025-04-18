@@ -57,10 +57,6 @@ The application uses two sets of environment variables:
 Obtain your API key from https://www.deepl.com/pro-api?cta=header-pro-api
 Set it to VITE_APP_DEEPL_API_KEY in .env.local
 
-### Setup
-
-npm install axios
-
 ### Localize
 
 Run `npm run localize`

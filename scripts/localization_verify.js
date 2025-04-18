@@ -40,8 +40,7 @@ function checkKeys() {
 
       if (!fs.existsSync(langFilePath)) {
         console.error(`Missing file: ${langFilePath}`);
-        allKeysPresent = false;
-        continue;
+        throw new Error(`Missing keys in ${lang} for file ${file}`);
       }
 
       const langContent = JSON.parse(fs.readFileSync(langFilePath, 'utf8'));
