@@ -21,14 +21,15 @@ type FractalStoreWithNode = FractalStore & {
 export const useStore = ({ daoKey }: { daoKey: DAOKey | undefined }): FractalStoreWithNode => {
   const storeFeatureEnabled = useFeatureFlag('flag_store_v2');
   const context = useContext(FractalContext as Context<FractalStore>);
-  const { getDaoNode, setDaoNode } = useGlobalStore();
+  const { getDaoNode, setDaoNode, getTreasury } = useGlobalStore();
   if (storeFeatureEnabled) {
     if (!daoKey) {
-      throw new Error('DAO key is required to access the Fractal store');
+      throw new Error('DAO key is required to access global store');
     }
     // Returning complete data from Zustand store will be handled in future tickets under following project:
     // https://linear.app/decent-labs/project/architecture-zustand-dao-addresses-as-keys-809cf9fe41b0
     const node = getDaoNode(daoKey);
+    const treasury = getTreasury(daoKey);
     return {
       ...context,
       node: {
@@ -58,6 +59,7 @@ export const useStore = ({ daoKey }: { daoKey: DAOKey | undefined }): FractalSto
           // Do nothing - this is handled in governance slice
         },
       },
+      treasury,
     };
   } else {
     return context as FractalStoreWithNode;
