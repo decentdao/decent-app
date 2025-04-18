@@ -122,7 +122,6 @@ const useBuildDAOTx = () => {
       const buildSafeTxParams = {
         shouldSetName: true, // We KNOW this will always be true because the Decent UI doesn't allow creating a safe without a name
         shouldSetSnapshot: daoData.snapshotENS !== '',
-        enableGaslessVoting: daoData.gaslessVoting,
       };
 
       // Build Tx bundle based on governance type (Azorius or Multisig)

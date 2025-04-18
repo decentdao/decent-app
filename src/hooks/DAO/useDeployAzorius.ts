@@ -91,10 +91,9 @@ const useDeployAzorius = () => {
       opts: {
         shouldSetName: boolean;
         shouldSetSnapshot: boolean;
-        enableGaslessVoting: boolean;
       },
     ) => {
-      const { shouldSetName, shouldSetSnapshot, enableGaslessVoting } = opts;
+      const { shouldSetName, shouldSetSnapshot } = opts;
       if (!safeAddress || !canUserCreateProposal || !safe) {
         return;
       }
@@ -182,7 +181,6 @@ const useDeployAzorius = () => {
       const safeTx = await daoTxBuilder.buildAzoriusTx({
         shouldSetName,
         shouldSetSnapshot,
-        enableGaslessVoting,
         existingSafeOwners: safe.owners,
       });
 
