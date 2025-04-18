@@ -1,0 +1,14 @@
+{
+  "connect": "Ligar",
+  "connectWallet": "Conectar a carteira",
+  "disconnect": "Desligar",
+  "wallet": "Carteira",
+  "titleManageProposalTemplate": "Gerir modelo",
+  "optionCreateSubDAO": "Criar SubDAO",
+  "optionInitiateFreeze": "Iniciar um congelamento",
+  "optionInitiateClawback": "Iniciar o Clawback",
+  "optionRemoveTemplate": "Remover modelo",
+  "optionForkTemplate": "Modelo de garfo",
+  "optionModifyGovernance": "Modificar a governação",
+  "optionSettings": "Definições"
+}
