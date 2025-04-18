@@ -16,7 +16,7 @@ interface ISnapshotProposalVoteItem {
 }
 
 export default function SnapshotProposalVoteItem({ proposal, vote }: ISnapshotProposalVoteItem) {
-  const { t } = useTranslation();
+  const { t } = useTranslation('common');
   const { displayName } = useGetAccountName(vote.voter);
   const user = useAccount();
 

@@ -5,7 +5,7 @@ import { useHeaderHeight } from '../../../constants/common';
 import { BASE_ROUTES } from '../../../constants/routes';
 
 export function TopErrorFallback() {
-  const { t } = useTranslation();
+  const { t } = useTranslation('common');
   const navigate = useNavigate();
   const HEADER_HEIGHT = useHeaderHeight();
 
