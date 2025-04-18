@@ -293,26 +293,30 @@ export class DaoTxBuilder extends BaseTxBuilder {
   }
 
   private buildExecInternalSafeTx(signatures: Hex): SafeTransaction {
-    const safeInternalTx = encodeMultiSend(this.internalTxs);
+    const encodedInternalTxs = encodeMultiSend(this.internalTxs);
+
+    const internalTxTarget = this.multiSendCallOnly;
+    const internalTxCalldata = encodeFunctionData({
+      abi: MultiSendCallOnlyAbi,
+      functionName: 'multiSend',
+      args: [encodedInternalTxs],
+    });
+
     return buildContractCall({
       target: this.safeContractAddress,
       encodedFunctionData: encodeFunctionData({
         functionName: 'execTransaction',
         args: [
-          this.multiSendCallOnly, // to
+          internalTxTarget,
           0n, // value
-          encodeFunctionData({
-            abi: MultiSendCallOnlyAbi,
-            functionName: 'multiSend',
-            args: [safeInternalTx],
-          }), // calldata
+          internalTxCalldata,
           1, // operation
           0n, // tx gas
           0n, // base gas
           0n, // gas price
           zeroAddress, // gas token
           zeroAddress, // receiver
-          signatures, // sigs
+          signatures,
         ],
         abi: GnosisSafeL2Abi,
       }),
