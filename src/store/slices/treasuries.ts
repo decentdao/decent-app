@@ -1,6 +1,6 @@
 import { StateCreator } from 'zustand';
 import { DAOKey, DecentTreasury, TransferDisplayData } from '../../types';
-import { GlobalStore, StoreSlice } from '../store';
+import { GlobalStore, StoreMiddleware, StoreSlice } from '../store';
 
 export type TreasuriesSlice = {
   treasuries: StoreSlice<DecentTreasury>;
@@ -20,7 +20,7 @@ const EMPTY_TREASURY: DecentTreasury = {
 
 export const createTreasuriesSlice: StateCreator<
   GlobalStore,
-  [['zustand/immer', never], ['zustand/devtools', never]],
+  StoreMiddleware,
   [],
   TreasuriesSlice
 > = (set, get) => ({

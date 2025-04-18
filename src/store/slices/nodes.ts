@@ -1,7 +1,7 @@
 import { getAddress } from 'viem';
 import { StateCreator } from 'zustand';
 import { DAOKey, DAOSubgraph, DecentModule, IDAO, SafeWithNextNonce } from '../../types';
-import { GlobalStore, StoreSlice } from '../store';
+import { GlobalStore, StoreMiddleware, StoreSlice } from '../store';
 
 export type NodesSlice = {
   nodes: StoreSlice<IDAO>;
@@ -24,12 +24,10 @@ export const EMPTY_NODE: IDAO = {
   paymasterAddress: undefined,
 };
 
-export const createNodesSlice: StateCreator<
-  GlobalStore,
-  [['zustand/immer', never], ['zustand/devtools', never]],
-  [],
-  NodesSlice
-> = (set, get) => ({
+export const createNodesSlice: StateCreator<GlobalStore, StoreMiddleware, [], NodesSlice> = (
+  set,
+  get,
+) => ({
   nodes: {},
   setDaoNode: (
     daoKey,

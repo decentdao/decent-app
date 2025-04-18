@@ -8,6 +8,7 @@ import { createTreasuriesSlice, TreasuriesSlice } from './slices/treasuries';
 export type StoreSlice<T> = { [daoKey: DAOKey]: T };
 
 export type GlobalStore = NodesSlice & TreasuriesSlice;
+export type StoreMiddleware = [['zustand/immer', never], ['zustand/devtools', never]];
 
 export const useGlobalStore = create<GlobalStore>()(
   persist(
