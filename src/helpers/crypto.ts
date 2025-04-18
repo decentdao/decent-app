@@ -168,13 +168,11 @@ export const buildSafeAPIPost = async (
 export const buildContractCall = ({
   target,
   encodedFunctionData,
-  nonce,
   delegateCall,
   overrides,
 }: {
   target: Address;
   encodedFunctionData: Hex;
-  nonce?: number;
   delegateCall?: boolean;
   overrides?: Partial<SafeTransaction>;
 }): SafeTransaction => {
@@ -185,7 +183,7 @@ export const buildContractCall = ({
         to: target,
         data: encodedFunctionData,
         operation,
-        nonce: nonce || 0,
+        nonce: 0,
       },
       overrides,
     ),
