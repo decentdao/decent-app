@@ -9,8 +9,6 @@ import {
   Address,
   bytesToBigInt,
   Hex,
-  encodeFunctionData,
-  Abi,
   WalletClient,
 } from 'viem';
 import { MetaTransaction, SafeTransaction } from '../types/transaction';
