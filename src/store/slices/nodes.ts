@@ -1,7 +1,7 @@
 import { getAddress } from 'viem';
 import { StateCreator } from 'zustand';
 import { DAOKey, DAOSubgraph, DecentModule, IDAO, SafeWithNextNonce } from '../../types';
-import { GlobalStore, StoreSlice } from '../store';
+import { GlobalStore, SetState, StoreSlice } from '../store';
 
 export type NodesSlice = {
   nodes: StoreSlice<IDAO>;
@@ -15,8 +15,6 @@ export type NodesSlice = {
   ) => void;
   getDaoNode: (daoKey: DAOKey) => IDAO;
 };
-
-type SetState = (fn: (state: GlobalStore) => void) => void;
 
 export const EMPTY_NODE: IDAO = {
   safe: null,
