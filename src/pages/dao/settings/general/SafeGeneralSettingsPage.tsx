@@ -152,9 +152,6 @@ export function SafeGeneralSettingsPage() {
         throw new Error('Account Abstraction addresses are not set');
       }
 
-      if (!paymaster) {
-        throw new Error('Paymaster addresses are not set');
-      }
       if (paymasterAddress === null) {
         // Paymaster does not exist, deploy a new one
         const paymasterInitData = encodeFunctionData({

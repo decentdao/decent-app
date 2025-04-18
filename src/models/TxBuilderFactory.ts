@@ -44,7 +44,7 @@ export class TxBuilderFactory extends BaseTxBuilder {
   private linearVotingErc721V1MasterCopy: Address;
   private moduleAzoriusMasterCopy: Address;
   private votesErc20LockableMasterCopy?: Address;
-  private paymaster?: {
+  private paymaster: {
     decentPaymasterV1MasterCopy: Address;
     linearERC20VotingV1ValidatorV1: Address;
     linearERC721VotingV1ValidatorV1: Address;
@@ -78,12 +78,12 @@ export class TxBuilderFactory extends BaseTxBuilder {
     linearVotingErc20V1MasterCopy: Address,
     linearVotingErc721V1MasterCopy: Address,
     moduleAzoriusMasterCopy: Address,
-    votesErc20LockableMasterCopy?: Address,
-    paymaster?: {
+    paymaster: {
       decentPaymasterV1MasterCopy: Address;
       linearERC20VotingV1ValidatorV1: Address;
       linearERC721VotingV1ValidatorV1: Address;
     },
+    votesErc20LockableMasterCopy?: Address,
     accountAbstraction?: {
       entryPointv07: Address;
       lightAccountFactory: Address;
@@ -228,8 +228,8 @@ export class TxBuilderFactory extends BaseTxBuilder {
       this.linearVotingErc721V1MasterCopy,
       this.moduleAzoriusMasterCopy,
       gaslessVotingEnabled,
-      this.votesErc20LockableMasterCopy,
       this.paymaster,
+      this.votesErc20LockableMasterCopy,
       this.accountAbstraction,
       this.parentAddress,
       this.parentTokenAddress,

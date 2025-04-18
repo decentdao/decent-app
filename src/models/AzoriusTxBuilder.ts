@@ -64,7 +64,7 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
   private linearVotingErc20V1MasterCopy: Address;
   private linearVotingErc721V1MasterCopy: Address;
   private moduleAzoriusMasterCopy: Address;
-  private paymaster?: {
+  private paymaster: {
     decentPaymasterV1MasterCopy: Address;
     linearERC20VotingV1ValidatorV1: Address;
     linearERC721VotingV1ValidatorV1: Address;
@@ -96,12 +96,12 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
     linearVotingErc721V1MasterCopy: Address,
     moduleAzoriusMasterCopy: Address,
     gaslessVotingEnabled: boolean,
-    votesErc20LockableMasterCopy?: Address,
-    paymaster?: {
+    paymaster: {
       decentPaymasterV1MasterCopy: Address;
       linearERC20VotingV1ValidatorV1: Address;
       linearERC721VotingV1ValidatorV1: Address;
     },
+    votesErc20LockableMasterCopy?: Address,
     accountAbstraction?: {
       entryPointv07: Address;
       lightAccountFactory: Address;
@@ -333,10 +333,6 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
       ],
     });
 
-    if (!this.paymaster) {
-      throw new Error('Paymaster addresses are not set');
-    }
-
     return buildContractCall(
       ZodiacModuleProxyFactoryAbi,
       this.zodiacModuleProxyFactory,
@@ -355,14 +351,11 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
     if (!this.accountAbstraction) {
       throw new Error('Account Abstraction addresses are not set');
     }
-    if (!this.paymaster) {
-      throw new Error('Paymaster addresses are not set');
-    }
 
     const predictedPaymasterAddress = getPaymasterAddress({
       safeAddress: this.safeContractAddress,
       zodiacModuleProxyFactory: this.zodiacModuleProxyFactory,
-      paymasterMastercopy: this.paymaster?.decentPaymasterV1MasterCopy,
+      paymasterMastercopy: this.paymaster.decentPaymasterV1MasterCopy,
       entryPoint: this.accountAbstraction.entryPointv07,
       lightAccountFactory: this.accountAbstraction.lightAccountFactory,
       chainId: this.publicClient.chain!.id,
