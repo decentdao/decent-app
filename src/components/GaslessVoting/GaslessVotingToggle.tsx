@@ -33,13 +33,13 @@ function GaslessVotingToggleContent({
   displayNeedStakingLabel,
 }: GaslessVotingToggleProps & { isSettings?: boolean; displayNeedStakingLabel?: boolean }) {
   const { t } = useTranslation('gaslessVoting');
-  const { gaslessVoting } = useNetworkConfigStore();
+  const { bundlerMinimumStake } = useNetworkConfigStore();
   const { canUserCreateProposal } = useCanUserCreateProposal();
 
   const publicClient = useNetworkPublicClient();
   const nativeCurrency = publicClient.chain.nativeCurrency;
   const formattedMinStakeAmount = formatCoin(
-    gaslessVoting?.bundlerMinimumStake || 0n,
+    bundlerMinimumStake || 0n,
     true,
     nativeCurrency.decimals,
     nativeCurrency.symbol,
@@ -138,7 +138,7 @@ export function GaslessVotingToggleDAOSettings(props: GaslessVotingToggleProps) 
   const {
     addressPrefix,
     contracts: { accountAbstraction },
-    gaslessVoting,
+    bundlerMinimumStake,
   } = useNetworkConfigStore();
 
   const navigate = useNavigate();
@@ -209,14 +209,12 @@ export function GaslessVotingToggleDAOSettings(props: GaslessVotingToggleProps) 
   const gaslessFeatureEnabled = useFeatureFlag('flag_gasless_voting');
   const gaslessStakingFeatureEnabled = useFeatureFlag('flag_gasless_staking');
   const gaslessStakingEnabled =
-    gaslessVotingEnabled &&
-    gaslessStakingFeatureEnabled &&
-    gaslessVoting?.bundlerMinimumStake !== undefined;
+    gaslessVotingEnabled && gaslessStakingFeatureEnabled && bundlerMinimumStake !== undefined;
   if (!gaslessFeatureEnabled) return null;
 
   const paymasterBalance = depositInfo?.balance || 0n;
   const stakedAmount = depositInfo?.stake || 0n;
-  const minStakeAmount = gaslessVoting?.bundlerMinimumStake || 0n;
+  const minStakeAmount = bundlerMinimumStake || 0n;
   const formattedPaymasterBalance = formatCoin(
     paymasterBalance,
     true,

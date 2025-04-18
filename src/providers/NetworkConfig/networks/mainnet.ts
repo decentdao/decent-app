@@ -138,10 +138,7 @@ export const mainnetConfig: NetworkConfig = {
     GovernanceType.AZORIUS_ERC20,
     GovernanceType.AZORIUS_ERC721,
   ],
-  gaslessVoting: {
-    maxPriorityFeePerGasMultiplier: 100n, // @todo: Might be many times higher (or lower), depending on returned value from `estimateFeesPerGas`
-    bundlerMinimumStake: 1_000_000_000_000_000_000n, // 1 ETH
-  },
+  bundlerMinimumStake: 1_000_000_000_000_000_000n, // 1 ETH
 };
 
 export default mainnetConfig;
