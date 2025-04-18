@@ -10,7 +10,7 @@
   "proposal": "#{{proposalId}} {{proposalTitle}}",
   "proposalTemplates": "建议书模板",
   "proposalDapps": "探索 dApps",
-  "proposalTemplate": "x__placeholder_0__x}",
+  "proposalTemplate": "{{proposalTemplateTitle}}",
   "proposalTemplateNew": "创建建议书模板",
   "editDAO": "编辑 DAO",
   "parentLink": "母 DAO",

@@ -1,5 +1,5 @@
 {
-  "titleTreasury": "__placeholder_0__}财务处",
+  "titleTreasury": "{{daoName}}财务处",
   "buttonSendAssets": "申请付款",
   "titleTransactions": "交易",
   "titleAssets": "资产",

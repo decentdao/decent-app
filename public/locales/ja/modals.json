@@ -13,7 +13,7 @@
   "successDelegateVote": "委任が成功",
   "sendAssetsTitle": "支払い請求",
   "selectLabel": "資産の選択",
-  "selectSublabel": "利用可能な残高__placeholder_0__}。",
+  "selectSublabel": "利用可能残高{{balance}}",
   "amountLabel": "いくらですか？",
   "destinationLabel": "これをどこに送りたいですか？",
   "destinationSublabel": "イーサリアムウォレットアドレスまたはENSのみ",

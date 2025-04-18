@@ -56,7 +56,7 @@
   "votingPower": "Poder de voto",
   "votingPowerTooltip": "Este é o seu poder de voto no momento em que o instantâneo foi tirado, o que ocorre no momento da criação da proposta.",
   "show": "Mostrar",
-  "proposalQuorumHelperText": "Para atingir o quórum, __LOCALIZADOR_0__}% do __LOCALIZADOR_1__} total de fichas de voto devem ser votos \"Sim\" ou \"Abstenção\".",
+  "proposalQuorumHelperText": "Para atingir o quórum, {{quorum}}% do total de {{total}} fichas de voto devem ser votos \"Sim\" ou \"Abstenção\".",
   "proposedBy": "Proposta por",
   "proposalTitle_one": "Proposta de execução da transação {{count}} em {{target}}",
   "proposalTitle_other": "Proposta de execução de transacções {{count}} em {{target}}",

@@ -19,7 +19,7 @@
   "errorInsufficientFunds": "Unzureichende Mittel für die Transaktion",
   "pendingTokenClaim": "Anspruch auf {{ symbol }}",
   "failedTokenClaim": "Anspruch auf {{ symbol }} fehlgeschlagen",
-  "successTokenClaim": "Sie haben erfolgreich {{ amount }} beansprucht __PLATZHALTER_1__}",
+  "successTokenClaim": "Sie haben erfolgreich {{ amount }} {{ symbol }}",
   "snapshotRecastVoteHelper": "Sie können Ihre Stimme noch bis zum Ende des Abstimmungszeitraums ändern.",
   "modifyGovernanceSetAzoriusProposalPendingMessage": "Unterbreitung eines Vorschlags zur Änderung der Governance...",
   "errorLoadingParentNode": "Fehler beim Laden des Elternteils"

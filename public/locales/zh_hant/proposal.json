@@ -163,7 +163,7 @@
   "removeStream": "移除串流",
   "streamStartNotice": "串流會在提案執行時啟動。為了\n為了 「模擬 」串流開始的延遲 - 第一筆付款的金額應設定為\n0 和所需的 「延遲 」時間。",
   "streamedTokenAddress": "串流代幣位址",
-  "streamedTokenAddressHelper": "庫存結餘：__placeholder_0__}",
+  "streamedTokenAddressHelper": "庫房結餘：{{balance}}",
   "recipientAddress": "收件人地址",
   "recipientAddressHelper": "誰會是這個串流的接收者 - 只有這個位址的擁有者才能接收代幣。",
   "streamTotalAmount": "溪流總金額",

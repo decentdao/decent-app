@@ -7,7 +7,7 @@
   "gaslessStakingDescription": "Uma aposta de {{amount}} {{symbol}} é necessário para ativar a votação sem gás. Pode ser retirado após 1 dia se a votação sem gás estiver desactivada.",
   "addGas": "Recarga",
   "refillTank": "Pagador de recarga",
-  "refillPaymasterAction": "Recarregar o Paymaster com {{amount}} __POSSEIRO_1__}",
+  "refillPaymasterAction": "Recarregar o Paymaster com {{amount}} {{symbol}}",
   "starterPromoTitle": "PROMOÇÃO INICIAL",
   "starterPromoDescription": "Junte-se ao nosso Telegrama e entre em contacto com a nossa equipa para saber como conseguir que as suas taxas de rede sejam cobertas pela Decent:",
   "paymasterBalance": "Saldo do ordenador",

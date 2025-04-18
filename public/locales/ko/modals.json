@@ -13,7 +13,7 @@
   "successDelegateVote": "위임 성공",
   "sendAssetsTitle": "결제 요청",
   "selectLabel": "자산 선택",
-  "selectSublabel": "사용 가능한 잔액입니다: __placeholder_0__}",
+  "selectSublabel": "사용 가능한 잔액입니다: {{balance}}",
   "amountLabel": "얼마예요?",
   "destinationLabel": "어디로 보내시겠습니까?",
   "destinationSublabel": "이더리움 지갑 주소 또는 ENS 전용",

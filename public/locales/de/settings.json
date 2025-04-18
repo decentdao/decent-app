@@ -1,6 +1,6 @@
 {
   "settings": "Einstellungen",
-  "settingsPageTitle": "__PLATZHALTER_0__} Einstellungen",
+  "settingsPageTitle": "{{daoName}} Einstellungen",
   "governanceTokenTitle": "Governance-Token",
   "governanceERC721TokenTitle": "Governance NFT-Token(s)",
   "governanceTokenNameLabel": "Name",
@@ -29,8 +29,8 @@
   "emptyPermissions": "Sie haben noch keine Berechtigungen hinzugefügt. Erstellen Sie oben eine.",
   "emptyPermissionsNotProposer": "Dieser Safe hat noch keine Berechtigungen.",
   "permissionCreateProposalsTitle": "Vorschläge erstellen",
-  "permissionsErc20CreateProposalsDescription": "Mindestens {{proposerThreshold}} halten __PLATZHALTER_1__}",
-  "permissionsErc721CreateProposalsDescription_one": "Mindestens {{proposerThreshold}} halten __PLATZHALTER_1__}",
+  "permissionsErc20CreateProposalsDescription": "Mindestens {{proposerThreshold}} halten {{symbol}}",
+  "permissionsErc721CreateProposalsDescription_one": "Mindestens {{proposerThreshold}} halten {{symbol}}",
   "permissionsErc721CreateProposalsDescription_other": "mindestens {{proposerThreshold}} kumulierte Stimmrechte besitzen",
   "asset": "Vermögen",
   "assetTooltip": "Das Asset, auf das die Erlaubnis angewendet werden soll",

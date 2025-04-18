@@ -13,7 +13,7 @@
   "successDelegateVote": "Delegation erfolgreich",
   "sendAssetsTitle": "Zahlung anfordern",
   "selectLabel": "Asset auswählen",
-  "selectSublabel": "Verfügbarer Saldo: __PLATZHALTER_0__}",
+  "selectSublabel": "Verfügbarer Saldo: {{balance}}",
   "amountLabel": "Wie viel?",
   "destinationLabel": "Wohin möchten Sie es schicken?",
   "destinationSublabel": "Nur Ethereum-Wallet-Adresse oder ENS",

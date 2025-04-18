@@ -52,16 +52,16 @@ async function translateWithPlaceholders(text, langCode) {
 
   // Replace placeholders with temporary markers
   singleQuoteRegexPlaceholders.forEach((placeholder, index) => {
-    translatedText = translatedText.replace(placeholder, `__SINGLEQUOTE_PLACEHOLDER_${index}__`);
+    translatedText = translatedText.replace(placeholder, `<__DO_NOT_TRANSLATE_${index}__>`);
   });
 
   // Replace placeholders with double {{}} with temporary markers
   doubleQuoteRegexRegexPlaceholders.forEach((placeholder, index) => {
-    translatedText = translatedText.replace(placeholder, `__DOUBLEQUOTE_PLACEHOLDER_${index}__`);
+    translatedText = translatedText.replace(placeholder, `<__${index}_DO_NOT_TRANSLATE__>`);
   });
 
   // Replace "Decent Labs" with temporary markers
-  translatedText = translatedText.replace('Decent Labs', '__DECENTLABS_PLACEHOLDER__');
+  translatedText = translatedText.replace('Decent Labs', '<__DO_NOT_TRANSLATE__>');
 
   // Translate the text without placeholders
   try {
@@ -89,16 +89,16 @@ async function translateWithPlaceholders(text, langCode) {
 
   // Restore placeholders in the translated text
   doubleQuoteRegexRegexPlaceholders.forEach((placeholder, index) => {
-    translatedText = translatedText.replace(`__DOUBLEQUOTE_PLACEHOLDER_${index}__`, placeholder);
+    translatedText = translatedText.replace(`<__${index}_DO_NOT_TRANSLATE__>`, placeholder);
   });
 
   // Restore placeholders with double {{}} in the translated text
   singleQuoteRegexPlaceholders.forEach((placeholder, index) => {
-    translatedText = translatedText.replace(`__SINGLEQUOTE_PLACEHOLDER_${index}__`, placeholder);
+    translatedText = translatedText.replace(`<__DO_NOT_TRANSLATE_${index}__>`, placeholder);
   });
 
   // Replace "Decent Labs" with temporary markers
-  translatedText = translatedText.replace('__DECENTLABS_PLACEHOLDER__', 'Decent Labs');
+  translatedText = translatedText.replace('<__DO_NOT_TRANSLATE__>', 'Decent Labs');
 
   return translatedText;
 }

@@ -1,6 +1,6 @@
 {
   "settings": "設定",
-  "settingsPageTitle": "__placeholder_0__}設定",
+  "settingsPageTitle": "{{daoName}}設定",
   "governanceTokenTitle": "ガバナンス・トークン",
   "governanceERC721TokenTitle": "ガバナンス NFTトークン",
   "governanceTokenNameLabel": "名称",

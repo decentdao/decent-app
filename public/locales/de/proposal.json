@@ -163,7 +163,7 @@
   "removeStream": "Stream entfernen",
   "streamStartNotice": "Der Stream wird im Moment der Ausführung des Vorschlags gestartet. Um eine\nVerzögerung des Streamstarts zu \"emulieren\" - sollte der Betrag der ersten Tranche auf\n0 mit der gewünschten \"Verzögerungs\"-Dauer.",
   "streamedTokenAddress": "Gestreamte Token-Adresse",
-  "streamedTokenAddressHelper": "Saldo der Staatskasse: __PLATZHALTER_0__}",
+  "streamedTokenAddressHelper": "Saldo des Schatzamtes: {{balance}}",
   "recipientAddress": "Adresse des Empfängers",
   "recipientAddressHelper": "Wer wird Empfänger dieses Streams sein - nur der Besitzer dieser Adresse wird Token erhalten können.",
   "streamTotalAmount": "Strom Gesamtbetrag",

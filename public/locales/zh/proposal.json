@@ -163,7 +163,7 @@
   "removeStream": "移除水流",
   "streamStartNotice": "流将在执行建议时启动。为了\n为了 \"模拟 \"流启动的延迟 - 第一档的金额应设置为\n0 和所需的 \"延迟 \"时间。",
   "streamedTokenAddress": "流媒体令牌地址",
-  "streamedTokenAddressHelper": "国库余额：__placeholder_0__}",
+  "streamedTokenAddressHelper": "国库余额：{{balance}}",
   "recipientAddress": "收件人地址",
   "recipientAddressHelper": "该信息流的接收者是谁 - 只有该地址的所有者才能接收代币。",
   "streamTotalAmount": "总金额",

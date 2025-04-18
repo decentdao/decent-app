@@ -1,6 +1,6 @@
 {
   "settings": "设置",
-  "settingsPageTitle": "__placeholder_0______}（位置设置",
+  "settingsPageTitle": "{{daoName}}设置",
   "governanceTokenTitle": "治理代币",
   "governanceERC721TokenTitle": "治理 NFT 代币",
   "governanceTokenNameLabel": "名称",

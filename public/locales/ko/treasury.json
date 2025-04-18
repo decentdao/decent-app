@@ -1,5 +1,5 @@
 {
-  "titleTreasury": "__placeholder_0__} Treasury",
+  "titleTreasury": "{{daoName}} 재무",
   "buttonSendAssets": "결제 요청",
   "titleTransactions": "거래",
   "titleAssets": "자산",
@@ -16,9 +16,9 @@
   "labelMinted": "Mint",
   "textEmptyTransactions": "전송 없음",
   "textMoreTransactions": "더 보기",
-  "transactionsShownCount": "최신 {{count}}의 총 __PLACEHOLDER_0__}에서",
+  "transactionsShownCount": "최신 {{count}}의 총합에서",
   "transactionsTotalCount": "{{count}} 트랜잭션",
-  "addresses": "플레이스홀더_0__} 주소",
+  "addresses": "{{numOfAddresses}} 주소",
   "approveToken": "토큰 승인",
   "approvalPendingMessage": "토큰 승인...",
   "approvalFailedMessage": "토큰 승인에 실패했습니다!",

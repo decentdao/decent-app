@@ -14,15 +14,15 @@
   "paymasterStakedAmount": "付款人押注金额",
   "submitRefillAmount": "立即发送",
   "amountLabel": "您将发送",
-  "usdValue": "$__placeholder_0__}",
-  "availableBalance": "___placeholder_0____}。",
+  "usdValue": "${{value}}",
+  "availableBalance": "{{balance}}",
   "insufficientPaymasterBalance": "DAO 付款大师目前没有足够的余额来赞助您的投票。",
   "voteIsSponsoredTitle": "您的投票将得到赞助。",
   "voteIsSponsoredSubtitle": "享受零收费投票！",
   "userRejectedSignature": "用户拒绝签字。",
   "directDeposit": "直接存款",
   "depositGas": "存款",
-  "balance": "__placeholder_0__}可用",
+  "balance": "{{balance}}可用",
   "sendingHint": "建议的加注量",
   "sendingHintDirectDeposit": "您将发送"
 }

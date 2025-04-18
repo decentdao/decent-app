@@ -1,5 +1,5 @@
 {
-  "titleTreasury": "__PLATZHALTER_0__} Schatzamt",
+  "titleTreasury": "{{daoName}} Schatzamt",
   "buttonSendAssets": "Zahlung anfordern",
   "titleTransactions": "Transaktionen",
   "titleAssets": "Vermögenswerte",

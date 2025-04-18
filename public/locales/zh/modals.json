@@ -13,7 +13,7 @@
   "successDelegateVote": "授权成功",
   "sendAssetsTitle": "申请付款",
   "selectLabel": "选择资产",
-  "selectSublabel": "可用余额：__placeholder_0__}",
+  "selectSublabel": "可用余额：{{balance}}",
   "amountLabel": "多少钱？",
   "destinationLabel": "您想把这个寄到哪里？",
   "destinationSublabel": "仅以太坊钱包地址或 ENS",

@@ -1,6 +1,6 @@
 {
   "settings": "Ajustes",
-  "settingsPageTitle": "__MARCADOR_0__} Ajustes",
+  "settingsPageTitle": "{{daoName}} Ajustes",
   "governanceTokenTitle": "Ficha de Gobernanza",
   "governanceERC721TokenTitle": "Gobernanza Fichas NFT",
   "governanceTokenNameLabel": "Nombre",

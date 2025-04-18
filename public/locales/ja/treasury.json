@@ -1,5 +1,5 @@
 {
-  "titleTreasury": "__placeholder_0__}財務省",
+  "titleTreasury": "{{daoName}}財務省",
   "buttonSendAssets": "支払い請求",
   "titleTransactions": "トランザクション",
   "titleAssets": "資産",
@@ -17,8 +17,8 @@
   "textEmptyTransactions": "移籍なし",
   "textMoreTransactions": "もっと読む",
   "transactionsShownCount": "の合計から最新の{{count}}を選ぶ。",
-  "transactionsTotalCount": "PLACEHOLDER_0__} トランザクション",
-  "addresses": "PLACEHOLDER_0__} アドレス",
+  "transactionsTotalCount": "{{count}}取引",
+  "addresses": "{{numOfAddresses}}アドレス",
   "approveToken": "トークンの承認",
   "approvalPendingMessage": "トークンの承認",
   "approvalFailedMessage": "トークンの承認に失敗した！",

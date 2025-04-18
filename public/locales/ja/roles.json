@@ -25,12 +25,12 @@
   "starting": "スタート",
   "ending": "終了",
   "deleteRole": "役割の削除",
-  "addedHats": "PLACEHOLDER_0__}新しいロールの追加",
-  "addedHats_other": "PLACEHOLDER_0__} 新しいロールを追加する。",
-  "updatedHats": "PLACEHOLDER_0__}ロールの更新",
-  "updatedHats_other": "PLACEHOLDER_0__}ロールの更新",
-  "removedHats": "PLACEHOLDER_0__}ロールの削除",
-  "removedHats_other": "PLACEHOLDER_0__} ロールを削除する。",
+  "addedHats": "{{count}}新しい役割を追加する",
+  "addedHats_other": "新しいロールの追加 {{count}}",
+  "updatedHats": "更新 {{count}} ロール",
+  "updatedHats_other": "更新 {{count}} ロール",
+  "removedHats": "{{count}}ロールを削除する",
+  "removedHats_other": "{{count}}ロールを削除する",
   "totalAmount": "総額",
   "paymentStart": "支払い開始",
   "Months": "ヶ月",
@@ -141,5 +141,5 @@
   "startTermFailureToastMessage": "学期が始まらなかった",
   "invalidHatsTreeIdMessage": "ハットツリーIDが無効",
   "savePayment": "支払いの追加",
-  "withdrawPayment": "PLACEHOLDER_0__}を{{roleName}}からDAOに引き出す"
+  "withdrawPayment": "から{{amount}}をDAOに出金する。"
 }

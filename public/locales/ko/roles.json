@@ -26,11 +26,11 @@
   "ending": "종료",
   "deleteRole": "역할 삭제",
   "addedHats": "새 역할 {{count}} 추가하기",
-  "addedHats_other": "PLACEHOLDER_0__} 새 역할 추가하기",
-  "updatedHats": "플레이스홀더_0__} 역할 업데이트",
-  "updatedHats_other": "플레이스홀더_0__} 역할 업데이트",
-  "removedHats": "PLACEHOLDER_0__} 역할 제거",
-  "removedHats_other": "PLACEHOLDER_0__} 역할 제거",
+  "addedHats_other": "새 역할 {{count}} 추가하기",
+  "updatedHats": "업데이트 {{count}} 역할",
+  "updatedHats_other": "업데이트 {{count}} 역할 업데이트",
+  "removedHats": "{{count}} 역할 제거",
+  "removedHats_other": "역할 제거 {{count}} 제거",
   "totalAmount": "총 금액",
   "paymentStart": "결제 시작",
   "Months": "개월",
@@ -141,5 +141,5 @@
   "startTermFailureToastMessage": "학기를 시작하지 못했습니다.",
   "invalidHatsTreeIdMessage": "햇트리 ID가 유효하지 않습니다.",
   "savePayment": "결제 추가",
-  "withdrawPayment": "플레이스홀더_0__}를 {{roleName}}에서 DAO로 인출합니다."
+  "withdrawPayment": "{{amount}}를 {{roleName}}에서 DAO로 인출합니다."
 }
