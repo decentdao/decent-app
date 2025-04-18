@@ -40,7 +40,7 @@
   "labelTimelockPeriod": "타임락 기간",
   "helperTimelockPeriod": "제안서가 통과되어 온체인에서 실행될 때까지 필요한 시간입니다.",
   "labelFreezeVotesThreshold": "투표 한도 동결",
-  "helperFreezeVotesThreshold": "이 자식 DAO를 완전히 동결하는 데 필요한 부모({{totalVotes}} 중)의 총 투표 수입니다.",
+  "helperFreezeVotesThreshold": "이 자식 DAO를 완전히 동결하기 위해 부모가 필요한 총 투표 수 ( {{totalVotes}} 중).",
   "labelFreezeProposalPeriod": "제안 기간 동결",
   "helperFreezeProposalPeriod": "동결 투표의 시작 및 종료 시점까지의 시간(분)입니다.",
   "exampleFreezeProposalPeriod": "10,080분 = 1주일",

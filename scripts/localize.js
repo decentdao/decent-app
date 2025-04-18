@@ -52,16 +52,16 @@ async function translateWithPlaceholders(text, langCode) {
 
   // Replace placeholders with temporary markers
   singleQuoteRegexPlaceholders.forEach((placeholder, index) => {
-    translatedText = translatedText.replace(placeholder, `<__DO_NOT_TRANSLATE_${index}__>`);
+    translatedText = translatedText.replace(placeholder, `<x>${placeholder}</x>`);
   });
 
   // Replace placeholders with double {{}} with temporary markers
   doubleQuoteRegexRegexPlaceholders.forEach((placeholder, index) => {
-    translatedText = translatedText.replace(placeholder, `<__${index}_DO_NOT_TRANSLATE__>`);
+    translatedText = translatedText.replace(placeholder, `<<x>${placeholder}</x>`);
   });
 
   // Replace "Decent Labs" with temporary markers
-  translatedText = translatedText.replace('Decent Labs', '<__DO_NOT_TRANSLATE__>');
+  translatedText = translatedText.replace('Decent Labs', '<x>Decent Labs</x>');
 
   // Translate the text without placeholders
   try {
@@ -72,6 +72,8 @@ async function translateWithPlaceholders(text, langCode) {
         text: translatedText,
         source_lang: 'EN',
         target_lang: langCode,
+        tag_handling: 'xml',
+        ignore_tags: 'x',
       }),
       {
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -88,18 +90,7 @@ async function translateWithPlaceholders(text, langCode) {
   }
 
   // Restore placeholders in the translated text
-  doubleQuoteRegexRegexPlaceholders.forEach((placeholder, index) => {
-    translatedText = translatedText.replace(`<__${index}_DO_NOT_TRANSLATE__>`, placeholder);
-  });
-
-  // Restore placeholders with double {{}} in the translated text
-  singleQuoteRegexPlaceholders.forEach((placeholder, index) => {
-    translatedText = translatedText.replace(`<__DO_NOT_TRANSLATE_${index}__>`, placeholder);
-  });
-
-  // Replace "Decent Labs" with temporary markers
-  translatedText = translatedText.replace('<__DO_NOT_TRANSLATE__>', 'Decent Labs');
-
+  translatedText = translatedText.replace('<x>', '').replace('</x>', '');
   return translatedText;
 }
 
