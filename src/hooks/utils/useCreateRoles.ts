@@ -148,10 +148,6 @@ export default function useCreateRoles() {
       const azoriusGovernance = governance as AzoriusGovernance;
       const { votingStrategy, votesToken, erc721Tokens } = azoriusGovernance;
 
-      if (!paymaster) {
-        throw new Error('Paymaster addresses are not set');
-      }
-
       if (!azoriusGovernance.type) {
         throw new Error('Governance type is not set');
       }

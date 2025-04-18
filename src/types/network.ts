@@ -45,7 +45,7 @@ type ContractsBase = {
 
   decentAutonomousAdminV1MasterCopy: Address;
 
-  paymaster?: {
+  paymaster: {
     decentPaymasterV1MasterCopy: Address;
     linearERC20VotingV1ValidatorV1: Address;
     linearERC721VotingV1ValidatorV1: Address;

@@ -166,8 +166,8 @@ const useDeployAzorius = () => {
         linearVotingErc20V1MasterCopy,
         linearVotingErc721V1MasterCopy,
         moduleAzoriusMasterCopy,
-        votesErc20LockableMasterCopy,
         paymaster,
+        votesErc20LockableMasterCopy,
         accountAbstraction,
         subgraphInfo?.parentAddress ?? undefined,
       );
