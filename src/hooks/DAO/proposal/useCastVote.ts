@@ -175,6 +175,7 @@ const useCastVote = (proposalId: string, strategy: Address) => {
       client: publicClient,
       owner: walletClient,
       version: '2.0.0',
+      index: 0n,
     });
     const bundlerClient = createBundlerClient({
       account: smartWallet,
