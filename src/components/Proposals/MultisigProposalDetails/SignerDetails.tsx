@@ -6,7 +6,6 @@ import { useAccount } from 'wagmi';
 import { findMostConfirmedMultisigRejectionProposal } from '../../../helpers/multisigProposal';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import { useStore } from '../../../providers/App/AppProvider';
-import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
 import { MultisigProposal } from '../../../types';
 import { DEFAULT_DATE_TIME_FORMAT } from '../../../utils/numberFormats';
 import { ActivityAddress } from '../../Activity/ActivityAddress';
@@ -72,10 +71,10 @@ function OwnerInfoRow({
 export function SignerDetails({ proposal }: { proposal: MultisigProposal }) {
   const { t } = useTranslation('proposal');
   const user = useAccount();
-  const { safe } = useDaoInfoStore();
   const { daoKey } = useCurrentDAOKey();
   const {
     governance: { proposals },
+    node: { safe },
   } = useStore({ daoKey });
 
   const rejectionProposal = findMostConfirmedMultisigRejectionProposal(

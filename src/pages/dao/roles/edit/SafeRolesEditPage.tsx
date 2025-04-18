@@ -16,10 +16,10 @@ import { UnsavedChangesWarningContent } from '../../../../components/ui/modals/U
 import PageHeader from '../../../../components/ui/page/Header/PageHeader';
 import { DAO_ROUTES } from '../../../../constants/routes';
 import { getRandomBytes } from '../../../../helpers';
+import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
 import { useNavigationBlocker } from '../../../../hooks/utils/useNavigationBlocker';
 import { analyticsEvents } from '../../../../insights/analyticsEvents';
 import { useNetworkConfigStore } from '../../../../providers/NetworkConfig/useNetworkConfigStore';
-import { useDaoInfoStore } from '../../../../store/daoInfo/useDaoInfoStore';
 import { useRolesStore } from '../../../../store/roles/useRolesStore';
 import { RoleFormValues, RoleHatFormValue } from '../../../../types/roles';
 
@@ -29,7 +29,7 @@ export function SafeRolesEditPage() {
   }, []);
 
   const { t } = useTranslation(['roles', 'navigation', 'modals', 'common']);
-  const { safe } = useDaoInfoStore();
+  const { safeAddress } = useCurrentDAOKey();
   const { addressPrefix } = useNetworkConfigStore();
 
   const { values, setFieldValue } = useFormikContext<RoleFormValues>();
@@ -42,7 +42,6 @@ export function SafeRolesEditPage() {
 
   const blocker = useNavigationBlocker({ roleEditPageNavigationBlockerParams: { hasEditedRoles } });
 
-  const safeAddress = safe?.address;
   if (!safeAddress) return null;
 
   const showRoleEditDetails = (roleId: Hex) => {

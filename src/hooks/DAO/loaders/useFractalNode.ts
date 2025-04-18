@@ -5,7 +5,6 @@ import { DAOQuery, DAOQueryResponse } from '../../../graphql/DAOQueries';
 import { useStore } from '../../../providers/App/AppProvider';
 import { useSafeAPI } from '../../../providers/App/hooks/useSafeAPI';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
-import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
 import { useCurrentDAOKey } from '../useCurrentDAOKey';
 import { useDecentModules } from './useDecentModules';
 
@@ -27,9 +26,10 @@ export const useFractalNode = ({
   const [errorLoading, setErrorLoading] = useState<boolean>(false);
   const { getConfigByChainId, chain } = useNetworkConfigStore();
   const { daoKey } = useCurrentDAOKey();
-  const { action } = useStore({ daoKey });
-
-  const { setDaoInfo, setSafeInfo, setDecentModules } = useDaoInfoStore();
+  const {
+    action,
+    node: { setDaoInfo, setSafeInfo, setDecentModules },
+  } = useStore({ daoKey });
 
   const reset = useCallback(
     ({ error }: { error: boolean }) => {

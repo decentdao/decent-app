@@ -4,7 +4,6 @@ import { getContract, zeroAddress } from 'viem';
 import { useStore } from '../../../providers/App/AppProvider';
 import { GuardContractAction } from '../../../providers/App/guardContracts/action';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
-import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
 import { FreezeGuardType, FreezeVotingType } from '../../../types';
 import useNetworkPublicClient from '../../useNetworkPublicClient';
 import { useAddressContractType } from '../../utils/useAddressContractType';
@@ -15,9 +14,10 @@ export const useFractalGuardContracts = ({ loadOnMount = true }: { loadOnMount?:
   // load key for component; helps prevent unnecessary calls
   const loadKey = useRef<string>();
   const { daoKey } = useCurrentDAOKey();
-  const { action } = useStore({ daoKey });
-
-  const { modules, safe, subgraphInfo } = useDaoInfoStore();
+  const {
+    action,
+    node: { safe, subgraphInfo, modules },
+  } = useStore({ daoKey });
 
   const safeAddress = safe?.address;
 

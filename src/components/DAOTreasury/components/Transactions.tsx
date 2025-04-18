@@ -5,7 +5,6 @@ import { useDateTimeDisplay } from '../../../helpers/dateTime';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import { useStore } from '../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
-import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
 import { TokenEventType, TransferDisplayData, TransferType } from '../../../types';
 import { DecentTooltip } from '../../ui/DecentTooltip';
 import DisplayTransaction from '../../ui/links/DisplayTransaction';
@@ -182,8 +181,8 @@ export function PaginationCount({ shownTransactions }: { shownTransactions: numb
   const { daoKey } = useCurrentDAOKey();
   const {
     treasury: { transfers },
+    node: { safe },
   } = useStore({ daoKey });
-  const { safe } = useDaoInfoStore();
 
   const totalTransfers = transfers?.length;
   if (!totalTransfers || !safe?.address) {

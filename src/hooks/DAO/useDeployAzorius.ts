@@ -9,9 +9,9 @@ import MultiSendCallOnlyAbi from '../../assets/abi/MultiSendCallOnly';
 import { SENTINEL_ADDRESS } from '../../constants/common';
 import { DAO_ROUTES } from '../../constants/routes';
 import { TxBuilderFactory } from '../../models/TxBuilderFactory';
+import { useStore } from '../../providers/App/AppProvider';
 import { useSafeAPI } from '../../providers/App/hooks/useSafeAPI';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
-import { useDaoInfoStore } from '../../store/daoInfo/useDaoInfoStore';
 import {
   AzoriusERC20DAO,
   AzoriusERC721DAO,
@@ -26,6 +26,7 @@ import { useCanUserCreateProposal } from '../utils/useCanUserSubmitProposal';
 import { DecentModule } from './../../types/fractal';
 import { useDecentModules } from './loaders/useDecentModules';
 import useSubmitProposal from './proposal/useSubmitProposal';
+import { useCurrentDAOKey } from './useCurrentDAOKey';
 
 const useDeployAzorius = () => {
   const navigate = useNavigate();
@@ -57,7 +58,11 @@ const useDeployAzorius = () => {
     },
     addressPrefix,
   } = useNetworkConfigStore();
-  const { safe, subgraphInfo } = useDaoInfoStore();
+
+  const { daoKey } = useCurrentDAOKey();
+  const {
+    node: { safe, subgraphInfo },
+  } = useStore({ daoKey });
 
   const { t } = useTranslation(['transaction', 'proposalMetadata']);
   const { submitProposal } = useSubmitProposal();

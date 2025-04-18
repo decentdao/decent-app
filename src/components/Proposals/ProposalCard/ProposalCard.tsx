@@ -3,8 +3,8 @@ import { format } from 'date-fns';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { DAO_ROUTES } from '../../../constants/routes';
+import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
-import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
 import { AzoriusProposal, FractalProposal, SnapshotProposal } from '../../../types';
 import { DEFAULT_DATE_FORMAT } from '../../../utils';
 import { ActivityDescription } from '../../Activity/ActivityDescription';
@@ -14,11 +14,11 @@ import { SnapshotIcon } from '../../ui/badges/Snapshot';
 import { ProposalCountdown } from '../../ui/proposal/ProposalCountdown';
 
 function ProposalCard({ proposal }: { proposal: FractalProposal }) {
-  const { safe } = useDaoInfoStore();
+  const { safeAddress } = useCurrentDAOKey();
   const { addressPrefix } = useNetworkConfigStore();
   const { t } = useTranslation('common');
 
-  if (!safe?.address) {
+  if (!safeAddress) {
     return null;
   }
 
@@ -26,7 +26,7 @@ function ProposalCard({ proposal }: { proposal: FractalProposal }) {
   const isAzoriusProposal = !!(proposal as AzoriusProposal).votesSummary;
 
   return (
-    <Link to={DAO_ROUTES.proposal.relative(addressPrefix, safe.address, proposal.proposalId)}>
+    <Link to={DAO_ROUTES.proposal.relative(addressPrefix, safeAddress, proposal.proposalId)}>
       <Box
         minHeight="6.25rem"
         bg="neutral-2"

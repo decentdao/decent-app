@@ -5,7 +5,6 @@ import { encodeFunctionData, isHex } from 'viem';
 import MultiSendCallOnlyAbi from '../../assets/abi/MultiSendCallOnly';
 import { useStore } from '../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
-import { useDaoInfoStore } from '../../store/daoInfo/useDaoInfoStore';
 import {
   AzoriusERC20DAO,
   AzoriusERC721DAO,
@@ -26,8 +25,10 @@ export const useCreateSubDAOProposal = () => {
   const { canUserCreateProposal } = useCanUserCreateProposal();
   const [build] = useBuildDAOTx();
   const { daoKey } = useCurrentDAOKey();
-  const { governance } = useStore({ daoKey });
-  const { safe } = useDaoInfoStore();
+  const {
+    governance,
+    node: { safe },
+  } = useStore({ daoKey });
   const {
     contracts: { multiSendCallOnly, keyValuePairs },
   } = useNetworkConfigStore();

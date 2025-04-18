@@ -3,7 +3,6 @@ import { useCallback, useEffect, useState } from 'react';
 import { Address, erc721Abi, getContract } from 'viem';
 import { useAccount } from 'wagmi';
 import { useStore } from '../../../providers/App/AppProvider';
-import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
 import { AzoriusGovernance, ERC721TokenData } from '../../../types';
 import useNetworkPublicClient from '../../useNetworkPublicClient';
 import useVotingStrategiesAddresses from '../../utils/useVotingStrategiesAddresses';
@@ -45,9 +44,9 @@ export default function useUserERC721VotingTokens(
       linearVotingErc721WithHatsWhitelistingAddress,
     },
     governance,
+    node: { safe },
   } = useStore({ daoKey });
   const user = useAccount();
-  const { safe } = useDaoInfoStore();
   const publicClient = useNetworkPublicClient();
 
   const { getVotingStrategies } = useVotingStrategiesAddresses();

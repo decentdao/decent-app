@@ -3,10 +3,11 @@ import { Formik, FormikErrors, FormikProps } from 'formik';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { DAO_ROUTES } from '../../../constants/routes';
+import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import useCreateProposalSchema from '../../../hooks/schemas/proposalBuilder/useCreateProposalSchema';
+import { useStore } from '../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
 import { useProposalActionsStore } from '../../../store/actions/useProposalActionsStore';
-import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
 import {
   BigIntValuePair,
   CreateProposalActionData,
@@ -31,7 +32,10 @@ export function ConfirmTransactionModal({
   close: () => void;
 }) {
   const { t } = useTranslation(['modals', 'common']);
-  const { safe } = useDaoInfoStore();
+  const { daoKey } = useCurrentDAOKey();
+  const {
+    node: { safe },
+  } = useStore({ daoKey });
   const { addressPrefix } = useNetworkConfigStore();
   const { addAction } = useProposalActionsStore();
   const navigate = useNavigate();

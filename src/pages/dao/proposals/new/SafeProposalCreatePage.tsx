@@ -18,7 +18,6 @@ import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
 import { analyticsEvents } from '../../../../insights/analyticsEvents';
 import { useStore } from '../../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../../providers/NetworkConfig/useNetworkConfigStore';
-import { useDaoInfoStore } from '../../../../store/daoInfo/useDaoInfoStore';
 import { BigIntValuePair, CreateProposalSteps, CreateProposalTransaction } from '../../../../types';
 
 export function SafeProposalCreatePage() {
@@ -28,8 +27,8 @@ export function SafeProposalCreatePage() {
   const { daoKey } = useCurrentDAOKey();
   const {
     governance: { type },
+    node: { safe },
   } = useStore({ daoKey });
-  const { safe } = useDaoInfoStore();
   const { prepareProposal } = usePrepareProposal();
 
   const { addressPrefix } = useNetworkConfigStore();

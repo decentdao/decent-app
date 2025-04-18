@@ -12,8 +12,9 @@ import { WarningCircle } from '@phosphor-icons/react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import useFeatureFlag from '../../../helpers/environmentFeatureFlags';
+import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
+import { useStore } from '../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
-import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
 import { FractalModuleType, ICreationStepProps, VotingStrategyType } from '../../../types';
 import { DEV_VOTING_PERIOD_MINUTES } from '../../../utils/dev/devModeConstants';
 import { GaslessVotingToggleDAOCreate } from '../../GaslessVoting/GaslessVotingToggle';
@@ -55,7 +56,10 @@ function DayStepperInput({
 export function AzoriusGovernance(props: ICreationStepProps) {
   const { values, setFieldValue, isSubmitting, transactionPending, isSubDAO, mode } = props;
 
-  const { safe, subgraphInfo, modules } = useDaoInfoStore();
+  const { daoKey } = useCurrentDAOKey();
+  const {
+    node: { safe, subgraphInfo, modules },
+  } = useStore({ daoKey });
   const {
     contracts: { accountAbstraction },
   } = useNetworkConfigStore();

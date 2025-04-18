@@ -15,19 +15,21 @@ import { useAutomaticSwitchChain } from '../../hooks/utils/useAutomaticSwitchCha
 import { usePageTitle } from '../../hooks/utils/usePageTitle';
 import { useTemporaryProposals } from '../../hooks/utils/useTemporaryProposals';
 import { useUpdateSafeData } from '../../hooks/utils/useUpdateSafeData';
-import { useDaoInfoStore } from '../../store/daoInfo/useDaoInfoStore';
+import { useStore } from '../../providers/App/AppProvider';
 import { useGlobalStoreFetcher } from '../../store/fetcher';
 import LoadingProblem from '../LoadingProblem';
 
 export function SafeController() {
-  const { invalidQuery, wrongNetwork, addressPrefix, safeAddress } = useCurrentDAOKey();
+  const { invalidQuery, wrongNetwork, addressPrefix, safeAddress, daoKey } = useCurrentDAOKey();
   useAutomaticSwitchChain({ urlAddressPrefix: addressPrefix });
 
   useUpdateSafeData(safeAddress);
   usePageTitle();
   useTemporaryProposals();
 
-  const { subgraphInfo } = useDaoInfoStore();
+  const {
+    node: { subgraphInfo },
+  } = useStore({ daoKey });
 
   const { errorLoading } = useFractalNode({
     addressPrefix,

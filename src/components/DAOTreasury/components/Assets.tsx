@@ -14,7 +14,6 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import { useStore } from '../../../providers/App/AppProvider';
-import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
 import { formatUSD } from '../../../utils';
 import Divider from '../../ui/utils/Divider';
 import { CoinHeader, CoinRow } from './AssetCoin';
@@ -26,8 +25,8 @@ export function Assets() {
   const { daoKey } = useCurrentDAOKey();
   const {
     treasury: { assetsFungible, assetsNonFungible, assetsDeFi, totalUsdValue },
+    node: { safe },
   } = useStore({ daoKey });
-  const { safe } = useDaoInfoStore();
   const { t } = useTranslation('treasury');
   const [expandedIndecies, setExpandedIndecies] = useState<number[]>([]);
 

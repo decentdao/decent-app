@@ -3,7 +3,6 @@ import { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import { useStore } from '../../../providers/App/AppProvider';
-import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
 import SupportTooltip from '../badges/SupportTooltip';
 import ExampleLabel from './ExampleLabel';
 import { InputComponent } from './InputComponent';
@@ -24,8 +23,8 @@ export function CustomNonceInput({
   const { daoKey } = useCurrentDAOKey();
   const {
     governance: { isAzorius },
+    node: { safe },
   } = useStore({ daoKey });
-  const { safe } = useDaoInfoStore();
   const { t } = useTranslation(['proposal', 'common']);
   const errorMessage =
     nonce !== undefined && safe && nonce < safe.nonce ? t('customNonceError') : undefined;

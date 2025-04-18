@@ -37,7 +37,6 @@ import { generateContractByteCodeLinear } from '../../../../models/helpers/utils
 import { useStore } from '../../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../../providers/NetworkConfig/useNetworkConfigStore';
 import { useProposalActionsStore } from '../../../../store/actions/useProposalActionsStore';
-import { useDaoInfoStore } from '../../../../store/daoInfo/useDaoInfoStore';
 import {
   AzoriusGovernance,
   BigIntValuePair,
@@ -73,8 +72,8 @@ export function SafePermissionsCreateProposal() {
       linearVotingErc721WithHatsWhitelistingAddress,
       moduleAzoriusAddress,
     },
+    node: { safe },
   } = useStore({ daoKey });
-  const { safe } = useDaoInfoStore();
   const azoriusGovernance = governance as AzoriusGovernance;
   const openSelectAddPermissionModal = useDecentModal(ModalType.ADD_PERMISSION);
   const openConfirmDeleteStrategyModal = useDecentModal(ModalType.CONFIRM_DELETE_STRATEGY);

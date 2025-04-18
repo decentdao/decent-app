@@ -23,7 +23,6 @@ import { analyticsEvents } from '../../../insights/analyticsEvents';
 import { useStore } from '../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
 import { useProposalActionsStore } from '../../../store/actions/useProposalActionsStore';
-import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
 import { ProposalActionType } from '../../../types/proposalBuilder';
 
 export function SafeProposalTemplatesPage() {
@@ -36,8 +35,8 @@ export function SafeProposalTemplatesPage() {
   const {
     governance: { proposalTemplates },
     treasury: { assetsFungible },
+    node: { safe },
   } = useStore({ daoKey });
-  const { safe } = useDaoInfoStore();
   const { canUserCreateProposal } = useCanUserCreateProposal();
   const {
     addressPrefix,

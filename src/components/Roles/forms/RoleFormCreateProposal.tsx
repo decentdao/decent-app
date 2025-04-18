@@ -6,8 +6,8 @@ import { useNavigate } from 'react-router-dom';
 import { getAddress, Hex, zeroAddress } from 'viem';
 import { CARD_SHADOW } from '../../../constants/common';
 import { DAO_ROUTES } from '../../../constants/routes';
+import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
-import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
 import {
   EditedRole,
   RoleDetailsDrawerEditingRoleHatProp,
@@ -106,12 +106,10 @@ export function RoleFormCreateProposal({ close }: { close: () => void }) {
     drawerViewingRole?.roleTerms.nextTerm,
     values.hats,
   ]);
-
-  const { safe } = useDaoInfoStore();
   const navigate = useNavigate();
   const { addressPrefix } = useNetworkConfigStore();
 
-  const safeAddress = safe?.address;
+  const { safeAddress } = useCurrentDAOKey();
 
   const handleEditRoleClick = useCallback(
     (hatId: Hex) => {

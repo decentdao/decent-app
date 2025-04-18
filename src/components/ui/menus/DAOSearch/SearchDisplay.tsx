@@ -1,11 +1,12 @@
-import { Flex, Text, Spinner, Icon } from '@chakra-ui/react';
+import { Flex, Icon, Spinner, Text } from '@chakra-ui/react';
 import { WarningCircle } from '@phosphor-icons/react';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Address } from 'viem';
+import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
 import { SafeDisplayRow } from '../../../../pages/home/SafeDisplayRow';
+import { useStore } from '../../../../providers/App/AppProvider';
 import { getNetworkConfig } from '../../../../providers/NetworkConfig/useNetworkConfigStore';
-import { useDaoInfoStore } from '../../../../store/daoInfo/useDaoInfoStore';
 import { ErrorBoundary } from '../../utils/ErrorBoundary';
 import { MySafesErrorFallback } from '../../utils/MySafesErrorFallback';
 
@@ -25,11 +26,14 @@ export function SearchDisplay({
   chainId,
 }: ISearchDisplay) {
   const { t } = useTranslation(['common', 'dashboard']);
-  const node = useDaoInfoStore();
+  const { daoKey } = useCurrentDAOKey();
+  const {
+    node: { safe },
+  } = useStore({ daoKey });
 
   const isCurrentSafe = useMemo(
-    () => !!node && !!node?.safe?.address && node.safe.address === address,
-    [node, address],
+    () => !!safe && !!safe?.address && safe.address === address,
+    [safe, address],
   );
 
   if (loading) {

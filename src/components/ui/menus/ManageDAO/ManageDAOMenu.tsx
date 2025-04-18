@@ -17,7 +17,6 @@ import useBlockTimestamp from '../../../../hooks/utils/useBlockTimestamp';
 import { useCanUserCreateProposal } from '../../../../hooks/utils/useCanUserSubmitProposal';
 import { useStore } from '../../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../../providers/NetworkConfig/useNetworkConfigStore';
-import { useDaoInfoStore } from '../../../../store/daoInfo/useDaoInfoStore';
 import { FractalModuleType, FreezeVotingType, GovernanceType } from '../../../../types';
 import { ModalType } from '../../modals/ModalProvider';
 import { useDecentModal } from '../../modals/useDecentModal';
@@ -29,18 +28,18 @@ export function ManageDAOMenu() {
     governance: { type },
     guard,
     guardContracts,
+    node: { safe, subgraphInfo, modules },
   } = useStore({ daoKey });
-  const dao = useDaoInfoStore();
   const currentTime = BigInt(useBlockTimestamp());
   const navigate = useNavigate();
-  const safeAddress = dao.safe?.address;
+  const safeAddress = safe?.address;
   const { canUserCreateProposal } = useCanUserCreateProposal();
   const { getUserERC721VotingTokens } = useUserERC721VotingTokens(safeAddress ?? null, null, false);
   const { handleClawBack } = useClawBack({
-    parentAddress: dao.subgraphInfo?.parentAddress ?? null,
+    parentAddress: subgraphInfo?.parentAddress ?? null,
     childSafeInfo: {
-      daoAddress: dao.safe?.address,
-      modules: dao.modules,
+      daoAddress: safe?.address,
+      modules: modules,
     },
   });
 
@@ -90,30 +89,28 @@ export function ManageDAOMenu() {
           });
           return contract.write.castFreezeVote();
         } else if (freezeVotingType === FreezeVotingType.ERC721) {
-          getUserERC721VotingTokens(dao.subgraphInfo?.parentAddress ?? null, null).then(
-            tokensInfo => {
-              if (!guardContracts.freezeVotingContractAddress) {
-                throw new Error('freeze voting contract address not set');
-              }
-              if (!walletClient) {
-                throw new Error('wallet client not set');
-              }
-              const freezeERC721VotingContract = getContract({
-                abi: abis.ERC721FreezeVoting,
-                address: guardContracts.freezeVotingContractAddress,
-                client: walletClient,
-              });
-              return freezeERC721VotingContract.write.castFreezeVote([
-                tokensInfo.totalVotingTokenAddresses,
-                tokensInfo.totalVotingTokenIds.map(i => BigInt(i)),
-              ]);
-            },
-          );
+          getUserERC721VotingTokens(subgraphInfo?.parentAddress ?? null, null).then(tokensInfo => {
+            if (!guardContracts.freezeVotingContractAddress) {
+              throw new Error('freeze voting contract address not set');
+            }
+            if (!walletClient) {
+              throw new Error('wallet client not set');
+            }
+            const freezeERC721VotingContract = getContract({
+              abi: abis.ERC721FreezeVoting,
+              address: guardContracts.freezeVotingContractAddress,
+              client: walletClient,
+            });
+            return freezeERC721VotingContract.write.castFreezeVote([
+              tokensInfo.totalVotingTokenAddresses,
+              tokensInfo.totalVotingTokenIds.map(i => BigInt(i)),
+            ]);
+          });
         }
       },
     }),
     [
-      dao.subgraphInfo?.parentAddress,
+      subgraphInfo?.parentAddress,
       getUserERC721VotingTokens,
       guardContracts.freezeVotingContractAddress,
       guardContracts.freezeVotingType,
@@ -161,7 +158,7 @@ export function ManageDAOMenu() {
       guard.isFrozen &&
       guard.userHasVotes
     ) {
-      const fractalModule = (dao.modules ?? []).find(
+      const fractalModule = (modules ?? []).find(
         module => module.moduleType === FractalModuleType.FRACTAL,
       );
       if (fractalModule) {
@@ -185,7 +182,7 @@ export function ManageDAOMenu() {
     handleModifyGovernance,
     handleNavigateToSettings,
     freezeOption,
-    dao.modules,
+    modules,
     canUserCreateProposal,
   ]);
 

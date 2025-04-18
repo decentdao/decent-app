@@ -17,7 +17,6 @@ import { analyticsEvents } from '../../../../../insights/analyticsEvents';
 import { useStore } from '../../../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../../../providers/NetworkConfig/useNetworkConfigStore';
 import { useProposalActionsStore } from '../../../../../store/actions/useProposalActionsStore';
-import { useDaoInfoStore } from '../../../../../store/daoInfo/useDaoInfoStore';
 import { CreateProposalSteps } from '../../../../../types';
 
 export function SafeProposalWithActionsCreatePage() {
@@ -27,8 +26,8 @@ export function SafeProposalWithActionsCreatePage() {
   const { daoKey } = useCurrentDAOKey();
   const {
     governance: { type },
+    node: { safe },
   } = useStore({ daoKey });
-  const { safe } = useDaoInfoStore();
 
   const { prepareProposal } = usePrepareProposal();
   const { getTransactions, actions } = useProposalActionsStore();

@@ -11,7 +11,6 @@ import { DAO_ROUTES } from '../../../../constants/routes';
 import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
 import { useStore } from '../../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../../providers/NetworkConfig/useNetworkConfigStore';
-import { useDaoInfoStore } from '../../../../store/daoInfo/useDaoInfoStore';
 import { GovernanceType } from '../../../../types';
 
 export function SafeGovernanceSettingsPage() {
@@ -20,8 +19,8 @@ export function SafeGovernanceSettingsPage() {
   const { daoKey } = useCurrentDAOKey();
   const {
     governance: { type },
+    node: { safe },
   } = useStore({ daoKey });
-  const { safe } = useDaoInfoStore();
 
   const isERC20Governance = type === GovernanceType.AZORIUS_ERC20;
   const isERC721Governance = type === GovernanceType.AZORIUS_ERC721;
