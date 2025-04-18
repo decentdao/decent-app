@@ -1,7 +1,7 @@
 import { getAddress } from 'viem';
 import { StateCreator } from 'zustand';
 import { DAOKey, DAOSubgraph, DecentModule, IDAO, SafeWithNextNonce } from '../../types';
-import { GlobalStore, StoreSlice, SetState } from '../store';
+import { GlobalStore, StoreSlice } from '../store';
 
 export type NodesSlice = {
   nodes: StoreSlice<IDAO>;
@@ -24,10 +24,12 @@ export const EMPTY_NODE: IDAO = {
   paymasterAddress: undefined,
 };
 
-export const createNodesSlice: StateCreator<GlobalStore, [], [], NodesSlice> = (
-  set: SetState,
-  get,
-) => ({
+export const createNodesSlice: StateCreator<
+  GlobalStore,
+  [['zustand/immer', never], ['zustand/devtools', never]],
+  [],
+  NodesSlice
+> = (set, get) => ({
   nodes: {},
   setDaoNode: (
     daoKey,
@@ -37,31 +39,35 @@ export const createNodesSlice: StateCreator<GlobalStore, [], [], NodesSlice> = (
       modules,
     },
   ) => {
-    set(state => {
-      const mappedSafe = {
-        owners: owners.map(owner => getAddress(owner)),
-        modulesAddresses: rawModules.map(module => getAddress(module)),
-        guard: getAddress(guard),
-        address: getAddress(address),
-        nextNonce,
-        threshold,
-        nonce,
-      };
-
-      if (!state.nodes[daoKey]) {
-        state.nodes[daoKey] = {
-          safe: mappedSafe,
-          subgraphInfo: daoInfo,
-          modules,
-          gaslessVotingEnabled: false,
-          paymasterAddress: null,
+    set(
+      state => {
+        const mappedSafe = {
+          owners: owners.map(owner => getAddress(owner)),
+          modulesAddresses: rawModules.map(module => getAddress(module)),
+          guard: getAddress(guard),
+          address: getAddress(address),
+          nextNonce,
+          threshold,
+          nonce,
         };
-      } else {
-        state.nodes[daoKey].safe = mappedSafe;
-        state.nodes[daoKey].subgraphInfo = daoInfo;
-        state.nodes[daoKey].modules = modules;
-      }
-    });
+
+        if (!state.nodes[daoKey]) {
+          state.nodes[daoKey] = {
+            safe: mappedSafe,
+            subgraphInfo: daoInfo,
+            modules,
+            gaslessVotingEnabled: false,
+            paymasterAddress: null,
+          };
+        } else {
+          state.nodes[daoKey].safe = mappedSafe;
+          state.nodes[daoKey].subgraphInfo = daoInfo;
+          state.nodes[daoKey].modules = modules;
+        }
+      },
+      false,
+      'setDaoNode',
+    );
   },
   getDaoNode: (daoKey: DAOKey) => {
     const nodes = get().nodes;
