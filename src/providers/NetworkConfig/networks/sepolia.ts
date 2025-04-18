@@ -132,10 +132,7 @@ export const sepoliaConfig: NetworkConfig = {
     GovernanceType.AZORIUS_ERC20,
     GovernanceType.AZORIUS_ERC721,
   ],
-  gaslessVoting: {
-    maxPriorityFeePerGasMultiplier: 100n, // @todo: Might be many times higher (or lower), depending on returned value from `estimateFeesPerGas`
-    bundlerMinimumStake: 10_0000_0000_0000_0000n, // 0.1
-  },
+  bundlerMinimumStake: 10_0000_0000_0000_0000n, // 0.1
 };
 
 export default sepoliaConfig;

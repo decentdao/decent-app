@@ -60,11 +60,11 @@ export function SafeGeneralSettingsPage() {
     addressPrefix,
     chain: { id: chainId },
     contracts: { keyValuePairs, accountAbstraction, paymaster, zodiacModuleProxyFactory },
-    gaslessVoting,
+    bundlerMinimumStake,
   } = useNetworkConfigStore();
   const { depositInfo } = useDepositInfo(paymasterAddress);
   const gaslessStakingFeatureEnabled =
-    useFeatureFlag('flag_gasless_staking') && gaslessVoting?.bundlerMinimumStake !== undefined;
+    useFeatureFlag('flag_gasless_staking') && bundlerMinimumStake !== undefined;
 
   const isMultisigGovernance = votingStrategyType === GovernanceType.MULTISIG;
   const gaslessVotingSupported =
@@ -205,11 +205,10 @@ export function SafeGeneralSettingsPage() {
 
       // Add stake for Paymaster if not enough
       if (gaslessStakingFeatureEnabled) {
-        const minStakeAmount = gaslessVoting.bundlerMinimumStake!;
         const stakedAmount = depositInfo?.stake || 0n;
 
-        if (paymasterAddress === null || stakedAmount < minStakeAmount) {
-          const delta = minStakeAmount - stakedAmount;
+        if (paymasterAddress === null || stakedAmount < bundlerMinimumStake) {
+          const delta = bundlerMinimumStake - stakedAmount;
 
           targets.push(predictedPaymasterAddress);
           calldatas.push(
