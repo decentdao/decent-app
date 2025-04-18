@@ -31,7 +31,11 @@ export function SafeProposalTemplatesPage() {
     amplitude.track(analyticsEvents.ProposalTemplatesPageOpened);
   }, []);
 
-  const { t } = useTranslation(['modals', 'proposalTemplate', 'common']);
+  const { t: tModals } = useTranslation('modals');
+  const { t: tProposalTemplate } = useTranslation('proposalTemplate');
+  const { t: tCommon } = useTranslation('common');
+  const { t: tBreadcrumbs } = useTranslation('breadcrumbs');
+
   const { daoKey } = useCurrentDAOKey();
   const {
     governance: { proposalTemplates },
@@ -101,7 +105,7 @@ export function SafeProposalTemplatesPage() {
 
   const openAirdropModal = useDecentModal(ModalType.AIRDROP, {
     onSubmit: handleAirdropSubmit,
-    submitButtonText: t('submitProposal'),
+    submitButtonText: tModals('submitProposal'),
   });
 
   const EXAMPLE_TEMPLATES = useMemo(() => {
@@ -110,32 +114,33 @@ export function SafeProposalTemplatesPage() {
     return [
       {
         icon: Parachute,
-        title: t('templateAirdropTitle'),
-        description: t('templateAirdropDescription'),
+        title: tProposalTemplate('templateAirdropTitle'),
+        description: tProposalTemplate('templateAirdropDescription'),
         onProposalTemplateClick: openAirdropModal,
       },
       {
         icon: HourglassMedium,
-        title: t('templateSablierTitle'),
-        description: t('templateSablierDescription'),
+        title: tProposalTemplate('templateSablierTitle'),
+        description: tProposalTemplate('templateSablierDescription'),
         onProposalTemplateClick: () => {
           if (hasAvailableAssetsForSablierStream) {
             navigate(DAO_ROUTES.proposalSablierNew.relative(addressPrefix, safeAddress));
           } else {
-            toast.info(t('noAssetsWithBalance', { ns: 'modals' }));
+            toast.info(tModals('noAssetsWithBalance'));
           }
         },
       },
       {
         icon: ArrowsDownUp,
-        title: t('templateTransferTitle'),
-        description: t('templateTransferDescription'),
+        title: tProposalTemplate('templateTransferTitle'),
+        description: tProposalTemplate('templateTransferDescription'),
         onProposalTemplateClick: openSendAssetsModal,
       },
     ];
   }, [
     safeAddress,
-    t,
+    tModals,
+    tProposalTemplate,
     openAirdropModal,
     openSendAssetsModal,
     hasAvailableAssetsForSablierStream,
@@ -146,10 +151,10 @@ export function SafeProposalTemplatesPage() {
   return (
     <div>
       <PageHeader
-        title={t('proposalTemplates', { ns: 'breadcrumbs' })}
+        title={tBreadcrumbs('proposalTemplates')}
         breadcrumbs={[
           {
-            terminus: t('proposalTemplates', { ns: 'breadcrumbs' }),
+            terminus: tBreadcrumbs('proposalTemplates'),
             path: '',
           },
         ]}
@@ -158,7 +163,7 @@ export function SafeProposalTemplatesPage() {
           <Link to={DAO_ROUTES.proposalTemplateNew.relative(addressPrefix, safeAddress)}>
             <Button minW={0}>
               <AddPlus />
-              <Show above="sm">{t('create')}</Show>
+              <Show above="sm">{tCommon('create')}</Show>
             </Button>
           </Link>
         )}
@@ -197,7 +202,7 @@ export function SafeProposalTemplatesPage() {
         color="white-0"
         mb="1rem"
       >
-        {t('defaultTemplates')}
+        {tProposalTemplate('defaultTemplates')}
       </Text>
       <Flex
         flexDirection="row"
