@@ -175,6 +175,11 @@ const useCastVote = (proposalId: string, strategy: Address) => {
       client: publicClient,
       owner: walletClient,
       version: '2.0.0',
+
+      // DO NOT CHANGE THIS INDEX!!!
+      // For context, see:
+      // - https://docs.pimlico.io/permissionless/reference/accounts/toLightSmartAccount#index-optional
+      // - https://github.com/decentdao/decent-contracts/blob/a2fad6470015c0f59c84d8b5249dd1ee7b8a4773/contracts/account-abstraction/SmartAccountValidationV1.sol#L47
       index: 0n,
     });
     const bundlerClient = createBundlerClient({
