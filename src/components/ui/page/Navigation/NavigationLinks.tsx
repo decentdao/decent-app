@@ -2,8 +2,9 @@ import { Box, Flex, Hide } from '@chakra-ui/react';
 import { BookOpen, Coins, GitFork, House, Question, UsersThree } from '@phosphor-icons/react';
 import { DAO_ROUTES } from '../../../../constants/routes';
 import { URL_DOCS, URL_FAQ } from '../../../../constants/url';
+import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
+import { useStore } from '../../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../../providers/NetworkConfig/useNetworkConfigStore';
-import { useDaoInfoStore } from '../../../../store/daoInfo/useDaoInfoStore';
 import Divider from '../../utils/Divider';
 import { NavigationLink } from './NavigationLink';
 
@@ -43,7 +44,10 @@ function ExternalLinks({ closeDrawer }: { closeDrawer?: () => void }) {
 }
 
 function InternalLinks({ closeDrawer }: { closeDrawer?: () => void }) {
-  const { safe } = useDaoInfoStore();
+  const { daoKey } = useCurrentDAOKey();
+  const {
+    node: { safe },
+  } = useStore({ daoKey });
   const { addressPrefix } = useNetworkConfigStore();
 
   const safeAddress = safe?.address;

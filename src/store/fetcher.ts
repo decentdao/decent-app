@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { getAddress, isAddress } from 'viem';
 import { createDecentSubgraphClient } from '../graphql';
 import { DAOQuery, DAOQueryResponse } from '../graphql/DAOQueries';
+import useFeatureFlag from '../helpers/environmentFeatureFlags';
 import { useDecentModules } from '../hooks/DAO/loaders/useDecentModules';
 import { useCurrentDAOKey } from '../hooks/DAO/useCurrentDAOKey';
 import { useSafeAPI } from '../providers/App/hooks/useSafeAPI';
@@ -16,10 +17,11 @@ export const useGlobalStoreFetcher = () => {
   const { daoKey, safeAddress, invalidQuery, wrongNetwork } = useCurrentDAOKey();
   const { setDaoNode } = useGlobalStore();
   const { chain, getConfigByChainId } = useNetworkConfigStore();
+  const storeFeatureEnabled = useFeatureFlag('flag_store_v2');
 
   useEffect(() => {
     async function fetchDaoNode() {
-      if (!daoKey || !safeAddress || invalidQuery || wrongNetwork) return;
+      if (!daoKey || !safeAddress || invalidQuery || wrongNetwork || !storeFeatureEnabled) return;
 
       const safeInfo = await safeApi.getSafeData(safeAddress);
       const modules = await lookupModules(safeInfo.modules);
@@ -70,5 +72,6 @@ export const useGlobalStoreFetcher = () => {
     getConfigByChainId,
     invalidQuery,
     wrongNetwork,
+    storeFeatureEnabled,
   ]);
 };

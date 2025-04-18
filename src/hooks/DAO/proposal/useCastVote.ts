@@ -9,7 +9,6 @@ import { useAccount } from 'wagmi';
 import { EntryPoint07Abi } from '../../../assets/abi/EntryPoint07Abi';
 import { useStore } from '../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
-import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
 import useNetworkPublicClient from '../../useNetworkPublicClient';
 import { useNetworkWalletClient } from '../../useNetworkWalletClient';
 import { useTransaction } from '../../utils/useTransaction';
@@ -25,6 +24,7 @@ const useCastVote = (proposalId: string, strategy: Address) => {
       linearVotingErc721Address,
       linearVotingErc721WithHatsWhitelistingAddress,
     },
+    node: { paymasterAddress },
   } = useStore({ daoKey });
   const {
     contracts: { accountAbstraction },
@@ -159,7 +159,7 @@ const useCastVote = (proposalId: string, strategy: Address) => {
   );
 
   const { address } = useAccount();
-  const { paymasterAddress } = useDaoInfoStore();
+
   const publicClient = useNetworkPublicClient();
 
   const prepareGaslessVoteOperation = useCallback(async () => {

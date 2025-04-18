@@ -7,9 +7,10 @@ import NoDataCard from '../../../components/ui/containers/NoDataCard';
 import { InfoBoxLoader } from '../../../components/ui/loaders/InfoBoxLoader';
 import PageHeader from '../../../components/ui/page/Header/PageHeader';
 import { useSupportedDapps } from '../../../hooks/DAO/loaders/useSupportedDapps';
+import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import { analyticsEvents } from '../../../insights/analyticsEvents';
+import { useStore } from '../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
-import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
 
 export function SafeProposalDappsPage() {
   useEffect(() => {
@@ -18,7 +19,10 @@ export function SafeProposalDappsPage() {
 
   const { t } = useTranslation();
   const { chain } = useNetworkConfigStore();
-  const { safe } = useDaoInfoStore();
+  const { daoKey } = useCurrentDAOKey();
+  const {
+    node: { safe },
+  } = useStore({ daoKey });
   const { dapps } = useSupportedDapps(chain.id);
 
   const safeAddress = safe?.address;

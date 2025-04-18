@@ -3,7 +3,6 @@ import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { getContract } from 'viem';
 import { useStore } from '../../providers/App/AppProvider';
-import { useDaoInfoStore } from '../../store/daoInfo/useDaoInfoStore';
 import { FreezeVotingType } from '../../types';
 import { useNetworkWalletClient } from '../useNetworkWalletClient';
 import { useTransaction } from '../utils/useTransaction';
@@ -15,8 +14,8 @@ export const useCastFreezeVote = () => {
   const { daoKey } = useCurrentDAOKey();
   const {
     guardContracts: { freezeVotingContractAddress, freezeVotingType },
+    node: { subgraphInfo },
   } = useStore({ daoKey });
-  const { subgraphInfo } = useDaoInfoStore();
   const { getUserERC721VotingTokens } = useUserERC721VotingTokens(null, null, false);
 
   const { t } = useTranslation('transaction');

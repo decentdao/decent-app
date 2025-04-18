@@ -9,7 +9,6 @@ import useVotingStrategiesAddresses from '../../../hooks/utils/useVotingStrategi
 import { useStore } from '../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
 import { useProposalActionsStore } from '../../../store/actions/useProposalActionsStore';
-import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
 import { AzoriusGovernance, CreateProposalTransaction, ProposalActionType } from '../../../types';
 import { SENTINEL_MODULE } from '../../../utils/address';
 import { SafePermissionsStrategyAction } from '../../SafeSettings/SafePermissionsStrategyAction';
@@ -19,8 +18,11 @@ export function ConfirmDeleteStrategyModal({ onClose }: { onClose: () => void })
   const { t } = useTranslation('settings');
   const { addressPrefix } = useNetworkConfigStore();
   const { daoKey } = useCurrentDAOKey();
-  const { governance, governanceContracts } = useStore({ daoKey });
-  const { safe } = useDaoInfoStore();
+  const {
+    node: { safe },
+    governance,
+    governanceContracts,
+  } = useStore({ daoKey });
   const { addAction } = useProposalActionsStore();
 
   const azoriusGovernance = governance as AzoriusGovernance;

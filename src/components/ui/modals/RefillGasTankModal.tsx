@@ -3,8 +3,9 @@ import { Field, FieldAttributes, FieldProps, Form, Formik } from 'formik';
 import { useTranslation } from 'react-i18next';
 import { useBalance } from 'wagmi';
 import * as Yup from 'yup';
+import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import { useValidationAddress } from '../../../hooks/schemas/common/useValidationAddress';
-import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
+import { useStore } from '../../../providers/App/AppProvider';
 import { BigIntValuePair } from '../../../types';
 import { formatCoinUnits } from '../../../utils/numberFormats';
 import { BigIntInput } from '../forms/BigIntInput';
@@ -26,7 +27,10 @@ export function RefillGasTankModal({
   close: () => void;
   refillGasData: (refillData: RefillGasData) => void;
 }) {
-  const { safe } = useDaoInfoStore();
+  const { daoKey } = useCurrentDAOKey();
+  const {
+    node: { safe },
+  } = useStore({ daoKey });
   const { data: nativeTokenBalance } = useBalance({
     address: safe?.address,
   });

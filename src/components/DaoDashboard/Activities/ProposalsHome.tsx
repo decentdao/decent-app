@@ -10,7 +10,6 @@ import { useCanUserCreateProposal } from '../../../hooks/utils/useCanUserSubmitP
 import { usePagination } from '../../../hooks/utils/usePagination';
 import { useStore } from '../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
-import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
 import {
   AzoriusGovernance,
   DecentGovernance,
@@ -33,6 +32,7 @@ export function ProposalsHome() {
     guardContracts: { freezeVotingContractAddress },
     guard,
     governance: { type },
+    node: { subgraphInfo },
   } = useStore({ daoKey });
 
   const [sortBy, setSortBy] = useState<SortBy>(SortBy.Newest);
@@ -51,8 +51,11 @@ export function ProposalsHome() {
     [proposals, getPaginatedItems],
   );
 
-  const { governance, guardContracts } = useStore({ daoKey });
-  const { safe } = useDaoInfoStore();
+  const {
+    governance,
+    guardContracts,
+    node: { safe },
+  } = useStore({ daoKey });
 
   const { addressPrefix } = useNetworkConfigStore();
   const azoriusGovernance = governance as AzoriusGovernance;
@@ -73,8 +76,6 @@ export function ProposalsHome() {
   }, [azoriusGovernance]);
 
   const { canUserCreateProposal } = useCanUserCreateProposal();
-
-  const { subgraphInfo } = useDaoInfoStore();
   const [allOptions, setAllFilterOptions] = useState<FractalProposalState[]>([]);
 
   const { t } = useTranslation(['proposal', 'common']);

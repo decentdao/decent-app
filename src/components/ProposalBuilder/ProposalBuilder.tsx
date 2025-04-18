@@ -14,7 +14,6 @@ import { useCanUserCreateProposal } from '../../hooks/utils/useCanUserSubmitProp
 import { ActionsExperience } from '../../pages/dao/proposals/actions/new/ActionsExperience';
 import { useStore } from '../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
-import { useDaoInfoStore } from '../../store/daoInfo/useDaoInfoStore';
 import { BigIntValuePair, CreateProposalSteps, ProposalExecuteData } from '../../types';
 import {
   CreateProposalForm,
@@ -111,8 +110,7 @@ export function ProposalBuilder({
   const navigate = useNavigate();
   const { t } = useTranslation(['proposalTemplate', 'proposal']);
   const [currentStep, setCurrentStep] = useState<CreateProposalSteps>(CreateProposalSteps.METADATA);
-  const { safe } = useDaoInfoStore();
-  const safeAddress = safe?.address;
+  const { safeAddress } = useCurrentDAOKey();
 
   const { addressPrefix } = useNetworkConfigStore();
   const { submitProposal, pendingCreateTx } = useSubmitProposal();

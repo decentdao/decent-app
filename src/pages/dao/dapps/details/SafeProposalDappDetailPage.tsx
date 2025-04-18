@@ -16,11 +16,12 @@ import PageHeader from '../../../../components/ui/page/Header/PageHeader';
 import { DAO_ROUTES } from '../../../../constants/routes';
 import { decodeTransactionsWithABI } from '../../../../helpers/transactionDecoder';
 import { useSupportedDapps } from '../../../../hooks/DAO/loaders/useSupportedDapps';
+import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
 import { useABI } from '../../../../hooks/utils/useABI';
 import { useDebounce } from '../../../../hooks/utils/useDebounce';
 import { analyticsEvents } from '../../../../insights/analyticsEvents';
+import { useStore } from '../../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../../providers/NetworkConfig/useNetworkConfigStore';
-import { useDaoInfoStore } from '../../../../store/daoInfo/useDaoInfoStore';
 import { CreateProposalTransaction } from '../../../../types';
 import LoadingProblem from '../../../LoadingProblem';
 
@@ -106,7 +107,10 @@ export function SafeProposalDappDetailPage() {
   const { t } = useTranslation();
   const { chain } = useNetworkConfigStore();
   const { loadABI } = useABI();
-  const { safe } = useDaoInfoStore();
+  const { daoKey } = useCurrentDAOKey();
+  const {
+    node: { safe },
+  } = useStore({ daoKey });
   const { addressPrefix } = useNetworkConfigStore();
   const { dapps } = useSupportedDapps(chain.id);
   const [searchParams] = useSearchParams();

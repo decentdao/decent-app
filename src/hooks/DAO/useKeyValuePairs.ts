@@ -3,11 +3,12 @@ import { hatIdToTreeId } from '@hatsprotocol/sdk-v1-core';
 import { useEffect } from 'react';
 import { Address, GetContractEventsReturnType, PublicClient, getContract, zeroAddress } from 'viem';
 import { logError } from '../../helpers/errorLogging';
+import { useStore } from '../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
-import { useDaoInfoStore } from '../../store/daoInfo/useDaoInfoStore';
 import { useRolesStore } from '../../store/roles/useRolesStore';
 import { getPaymasterAddress } from '../../utils/gaslessVoting';
 import useNetworkPublicClient from '../useNetworkPublicClient';
+import { useCurrentDAOKey } from './useCurrentDAOKey';
 
 const getGaslessVotingDaoData = async (
   events: GetContractEventsReturnType<typeof abis.KeyValuePairs>,
@@ -145,7 +146,6 @@ const getHatIdsToStreamIds = (
 
 const useKeyValuePairs = () => {
   const publicClient = useNetworkPublicClient();
-  const node = useDaoInfoStore();
   const {
     contracts: {
       keyValuePairs,
@@ -155,9 +155,12 @@ const useKeyValuePairs = () => {
       accountAbstraction,
     },
   } = useNetworkConfigStore();
+  const { daoKey } = useCurrentDAOKey();
+  const {
+    node: { safe, setGaslessVotingDaoData },
+  } = useStore({ daoKey });
   const { setHatKeyValuePairData, resetHatsStore } = useRolesStore();
-  const { setGaslessVotingDaoData } = useDaoInfoStore();
-  const safeAddress = node.safe?.address;
+  const safeAddress = safe?.address;
 
   useEffect(() => {
     if (!safeAddress || !publicClient.chain) {
