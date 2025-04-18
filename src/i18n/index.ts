@@ -38,7 +38,7 @@ i18n
       loadPath: '/locales/{{lng}}/{{ns}}.json',
     },
     initImmediate: true,
-    debug: true,
+    debug: false,
     fallbackLng: 'en',
     lng: 'en',
     ns: [

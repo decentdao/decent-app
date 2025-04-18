@@ -9,7 +9,7 @@ interface Props extends BoxProps {
 }
 
 export function FavoriteIcon({ isFavorite, toggleFavoriteCallback, ...rest }: Props) {
-  const { t } = useTranslation();
+  const { t } = useTranslation('common');
   return (
     <Box {...rest}>
       <DecentTooltip label={t('favoriteTooltip')}>
