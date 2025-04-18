@@ -3,7 +3,6 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { getContract } from 'viem';
 import { EntryPoint07Abi } from '../../assets/abi/EntryPoint07Abi';
-import { DETAILS_BOX_SHADOW } from '../../constants/common';
 import { DAO_ROUTES } from '../../constants/routes';
 import useFeatureFlag from '../../helpers/environmentFeatureFlags';
 import { useDepositInfo } from '../../hooks/DAO/accountAbstraction/useDepositInfo';
@@ -19,7 +18,6 @@ import { RefillGasData } from '../ui/modals/GaslessVoting/RefillGasTankModal';
 import { ModalType } from '../ui/modals/ModalProvider';
 import { useDecentModal } from '../ui/modals/useDecentModal';
 import Divider from '../ui/utils/Divider';
-import { StarterPromoBanner } from './StarterPromoBanner';
 
 interface GaslessVotingToggleProps {
   isEnabled: boolean;
@@ -92,44 +90,6 @@ function GaslessVotingToggleContent({
         />
       </HStack>
     </Box>
-  );
-}
-
-export function GaslessVotingToggleDAOCreate(props: GaslessVotingToggleProps) {
-  const gaslessFeatureEnabled = useFeatureFlag('flag_gasless_voting');
-  if (!gaslessFeatureEnabled) return null;
-
-  return (
-    <Flex
-      direction="column"
-      gap="0.5rem"
-    >
-      <Box
-        borderRadius="0.75rem"
-        bg="neutral-2"
-        p="1.5rem"
-        display="flex"
-        flexDirection="column"
-        gap="1.5rem"
-        boxShadow={DETAILS_BOX_SHADOW}
-        mt={2}
-      >
-        <Box
-          borderRadius="0.5rem"
-          border="1px solid"
-          borderColor="neutral-3"
-          px="1.5rem"
-          py="1rem"
-          display="flex"
-          flexDirection="column"
-          alignItems="flex-start"
-          mt={2}
-        >
-          <GaslessVotingToggleContent {...props} />
-        </Box>
-      </Box>
-      <StarterPromoBanner />
-    </Flex>
   );
 }
 
@@ -207,9 +167,7 @@ export function GaslessVotingToggleDAOSettings(props: GaslessVotingToggleProps) 
   });
 
   const gaslessFeatureEnabled = useFeatureFlag('flag_gasless_voting');
-  const gaslessStakingFeatureEnabled = useFeatureFlag('flag_gasless_staking');
-  const gaslessStakingEnabled =
-    gaslessVotingEnabled && gaslessStakingFeatureEnabled && bundlerMinimumStake !== undefined;
+  const gaslessStakingEnabled = gaslessVotingEnabled && bundlerMinimumStake !== undefined;
   if (!gaslessFeatureEnabled) return null;
 
   const paymasterBalance = depositInfo?.balance || 0n;
@@ -247,8 +205,6 @@ export function GaslessVotingToggleDAOSettings(props: GaslessVotingToggleProps) 
         isSettings
         displayNeedStakingLabel={gaslessStakingEnabled && stakedAmount < minStakeAmount}
       />
-
-      {!gaslessVotingEnabled && <StarterPromoBanner />}
 
       {gaslessVotingEnabled && (
         <Flex justifyContent="space-between">
