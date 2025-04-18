@@ -12,7 +12,6 @@ import { BarLoader } from '../../../../components/ui/loaders/BarLoader';
 import NestedPageHeader from '../../../../components/ui/page/Header/NestedPageHeader';
 import Divider from '../../../../components/ui/utils/Divider';
 import { DAO_ROUTES } from '../../../../constants/routes';
-import useFeatureFlag from '../../../../helpers/environmentFeatureFlags';
 import { useDepositInfo } from '../../../../hooks/DAO/accountAbstraction/useDepositInfo';
 import useSubmitProposal from '../../../../hooks/DAO/proposal/useSubmitProposal';
 import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
@@ -63,8 +62,7 @@ export function SafeGeneralSettingsPage() {
     bundlerMinimumStake,
   } = useNetworkConfigStore();
   const { depositInfo } = useDepositInfo(paymasterAddress);
-  const gaslessStakingFeatureEnabled =
-    useFeatureFlag('flag_gasless_staking') && bundlerMinimumStake !== undefined;
+  const gaslessStakingFeatureEnabled = bundlerMinimumStake !== undefined;
 
   const isMultisigGovernance = votingStrategyType === GovernanceType.MULTISIG;
   const gaslessVotingSupported =

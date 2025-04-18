@@ -207,9 +207,7 @@ export function GaslessVotingToggleDAOSettings(props: GaslessVotingToggleProps) 
   });
 
   const gaslessFeatureEnabled = useFeatureFlag('flag_gasless_voting');
-  const gaslessStakingFeatureEnabled = useFeatureFlag('flag_gasless_staking');
-  const gaslessStakingEnabled =
-    gaslessVotingEnabled && gaslessStakingFeatureEnabled && bundlerMinimumStake !== undefined;
+  const gaslessStakingEnabled = gaslessVotingEnabled && bundlerMinimumStake !== undefined;
   if (!gaslessFeatureEnabled) return null;
 
   const paymasterBalance = depositInfo?.balance || 0n;
