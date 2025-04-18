@@ -44,14 +44,15 @@ export const fractalModuleData = (
 
   const fractalSalt = generateSalt(fractalModuleCalldata, saltNum);
 
-  const deployFractalModuleTx = buildContractCall(
-    ZodiacModuleProxyFactoryAbi,
-    moduleProxyFactoryAddress,
-    'deployModule',
-    [fractalModuleMasterCopyAddress, fractalModuleCalldata, saltNum],
-    0,
-    false,
-  );
+  const deployFractalModuleTx = buildContractCall({
+    target: moduleProxyFactoryAddress,
+    encodedFunctionData: encodeFunctionData({
+      functionName: 'deployModule',
+      args: [fractalModuleMasterCopyAddress, fractalModuleCalldata, saltNum],
+      abi: ZodiacModuleProxyFactoryAbi,
+    }),
+    nonce: 0,
+  });
 
   const predictedFractalModuleAddress = getCreate2Address({
     from: moduleProxyFactoryAddress,
@@ -59,15 +60,15 @@ export const fractalModuleData = (
     bytecodeHash: keccak256(encodePacked(['bytes'], [fractalByteCodeLinear])),
   });
 
-  const enableFractalModuleTx = buildContractCall(
-    GnosisSafeL2Abi,
-    safeAddress,
-    'enableModule',
-    [predictedFractalModuleAddress],
-    0,
-    false,
-  );
-
+  const enableFractalModuleTx = buildContractCall({
+    target: safeAddress,
+    encodedFunctionData: encodeFunctionData({
+      functionName: 'enableModule',
+      args: [predictedFractalModuleAddress],
+      abi: GnosisSafeL2Abi,
+    }),
+    nonce: 0,
+  });
   return {
     predictedFractalModuleAddress,
     deployFractalModuleTx,

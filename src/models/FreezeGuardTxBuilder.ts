@@ -95,22 +95,34 @@ export class FreezeGuardTxBuilder extends BaseTxBuilder {
   }
 
   public buildDeployZodiacModuleTx(): SafeTransaction {
-    return buildContractCall(
-      ZodiacModuleProxyFactoryAbi,
-      this.zodiacModuleProxyFactory,
-      'deployModule',
-      [
-        this.freezeVotingType === 'erc20'
-          ? this.freezeVotingErc20MasterCopy
-          : this.freezeVotingType === 'erc721'
-            ? this.freezeVotingErc721MasterCopy
-            : this.freezeVotingMultisigMasterCopy,
-        this.freezeVotingCallData,
-        this.saltNum,
-      ],
-      0,
-      false,
-    );
+    if (!this.freezeVotingCallData) {
+      throw new Error('Freeze voting calldata not set');
+    }
+
+    let freezeVotingMasterCopy: Address;
+    switch (this.freezeVotingType) {
+      case 'erc20':
+        freezeVotingMasterCopy = this.freezeVotingErc20MasterCopy;
+        break;
+      case 'erc721':
+        freezeVotingMasterCopy = this.freezeVotingErc721MasterCopy;
+        break;
+      case 'multisig':
+        freezeVotingMasterCopy = this.freezeVotingMultisigMasterCopy;
+        break;
+      default:
+        throw new Error('Unsupported freeze voting type');
+    }
+
+    return buildContractCall({
+      target: this.zodiacModuleProxyFactory,
+      encodedFunctionData: encodeFunctionData({
+        functionName: 'deployModule',
+        args: [freezeVotingMasterCopy, this.freezeVotingCallData, this.saltNum],
+        abi: ZodiacModuleProxyFactoryAbi,
+      }),
+      nonce: 0,
+    });
   }
 
   public buildFreezeVotingSetupTx(): SafeTransaction {
@@ -126,60 +138,94 @@ export class FreezeGuardTxBuilder extends BaseTxBuilder {
       );
     }
 
-    const functionArgs: [string, [string], number, boolean] = [
-      'setUp',
+    const encodedSetupFunctionArgs = encodeAbiParameters(
+      parseAbiParameters('address, uint256, uint32, uint32, address'),
       [
-        encodeAbiParameters(parseAbiParameters('address, uint256, uint32, uint32, address'), [
-          this.parentAddress, // Owner -- Parent DAO
-          subDaoData.freezeVotesThreshold, // FreezeVotesThreshold
-          Number(subDaoData.freezeProposalPeriod), // FreezeProposalPeriod
-          Number(subDaoData.freezePeriod), // FreezePeriod
-          parentStrategyAddress, // Parent Votes Token or Parent Safe Address
-        ]),
+        this.parentAddress, // Owner -- Parent DAO
+        subDaoData.freezeVotesThreshold, // FreezeVotesThreshold
+        Number(subDaoData.freezeProposalPeriod), // FreezeProposalPeriod
+        Number(subDaoData.freezePeriod), // FreezePeriod
+        parentStrategyAddress, // Parent Votes Token or Parent Safe Address
       ],
-      0,
-      false,
-    ];
+    );
 
     if (this.freezeVotingType === 'erc20') {
-      return buildContractCall(abis.ERC20FreezeVoting, this.freezeVotingAddress, ...functionArgs);
+      return buildContractCall({
+        target: this.freezeVotingAddress,
+        encodedFunctionData: encodeFunctionData({
+          functionName: 'setUp',
+          args: [encodedSetupFunctionArgs],
+          abi: abis.ERC20FreezeVoting,
+        }),
+        nonce: 0,
+      });
     } else if (this.freezeVotingType === 'erc721') {
-      return buildContractCall(abis.ERC721FreezeVoting, this.freezeVotingAddress, ...functionArgs);
+      return buildContractCall({
+        target: this.freezeVotingAddress,
+        encodedFunctionData: encodeFunctionData({
+          functionName: 'setUp',
+          args: [encodedSetupFunctionArgs],
+          abi: abis.ERC721FreezeVoting,
+        }),
+        nonce: 0,
+      });
     } else if (this.freezeVotingType === 'multisig') {
-      return buildContractCall(
-        abis.MultisigFreezeVoting,
-        this.freezeVotingAddress,
-        ...functionArgs,
-      );
+      return buildContractCall({
+        target: this.freezeVotingAddress,
+        encodedFunctionData: encodeFunctionData({
+          functionName: 'setUp',
+          args: [encodedSetupFunctionArgs],
+          abi: abis.MultisigFreezeVoting,
+        }),
+        nonce: 0,
+      });
     } else {
       throw new Error('Unsupported freeze voting type');
     }
   }
 
   public buildSetGuardTx(abi: Abi, address: Address): SafeTransaction {
-    return buildContractCall(abi, address, 'setGuard', [this.freezeGuardAddress], 0, false);
+    return buildContractCall({
+      target: address,
+      encodedFunctionData: encodeFunctionData({
+        functionName: 'setGuard',
+        args: [this.freezeGuardAddress],
+        abi: abi,
+      }),
+      nonce: 0,
+    });
   }
 
   public buildSetGuardTxSafe(safeAddress: Address): SafeTransaction {
-    return buildContractCall(
-      GnosisSafeL2Abi,
-      safeAddress,
-      'setGuard',
-      [this.freezeGuardAddress],
-      0,
-      false,
-    );
+    if (!this.freezeGuardAddress) {
+      throw new Error('Freeze guard address not set');
+    }
+
+    return buildContractCall({
+      target: safeAddress,
+      encodedFunctionData: encodeFunctionData({
+        functionName: 'setGuard',
+        args: [this.freezeGuardAddress],
+        abi: GnosisSafeL2Abi,
+      }),
+      nonce: 0,
+    });
   }
 
   public buildDeployFreezeGuardTx() {
-    return buildContractCall(
-      ZodiacModuleProxyFactoryAbi,
-      this.zodiacModuleProxyFactory,
-      'deployModule',
-      [this.getGuardMasterCopyAddress(), this.freezeGuardCallData!, this.saltNum],
-      0,
-      false,
-    );
+    if (!this.freezeGuardCallData) {
+      throw new Error('Freeze guard call data not set');
+    }
+
+    return buildContractCall({
+      target: this.zodiacModuleProxyFactory,
+      encodedFunctionData: encodeFunctionData({
+        functionName: 'deployModule',
+        args: [this.getGuardMasterCopyAddress(), this.freezeGuardCallData!, this.saltNum],
+        abi: ZodiacModuleProxyFactoryAbi,
+      }),
+      nonce: 0,
+    });
   }
 
   /**

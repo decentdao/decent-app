@@ -66,14 +66,15 @@ export const safeData = async (
     ),
   });
 
-  const createSafeTx = buildContractCall(
-    GnosisSafeProxyFactoryAbi,
-    safeFactoryContract.address,
-    'createProxyWithNonce',
-    [safeSingletonContract.address, createSafeCalldata, saltNum],
-    0,
-    false,
-  );
+  const createSafeTx = buildContractCall({
+    target: safeFactoryContract.address,
+    encodedFunctionData: encodeFunctionData({
+      functionName: 'createProxyWithNonce',
+      args: [safeSingletonContract.address, createSafeCalldata, saltNum],
+      abi: GnosisSafeProxyFactoryAbi,
+    }),
+    nonce: 0,
+  });
 
   return {
     predictedSafeAddress,

@@ -177,16 +177,17 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
     }
   }
 
-  public buildRemoveOwners(owners: string[]): SafeTransaction[] {
+  public buildRemoveOwners(owners: Address[]): SafeTransaction[] {
     const removeOwnerTxs = owners.map(owner =>
-      buildContractCall(
-        GnosisSafeL2Abi,
-        this.safeContractAddress,
-        'removeOwner',
-        [this.multiSendCallOnly, owner, 1],
-        0,
-        false,
-      ),
+      buildContractCall({
+        target: this.safeContractAddress,
+        encodedFunctionData: encodeFunctionData({
+          functionName: 'removeOwner',
+          args: [this.multiSendCallOnly, owner, 1n],
+          abi: GnosisSafeL2Abi,
+        }),
+        nonce: 0,
+      }),
     );
     return removeOwnerTxs;
   }
@@ -195,77 +196,114 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
     const daoData = this.daoData as AzoriusGovernanceDAO;
 
     if (daoData.votingStrategyType === VotingStrategyType.LINEAR_ERC20) {
-      return buildContractCall(
-        abis.LinearERC20Voting,
-        this.linearERC20VotingAddress!,
-        'setAzorius', // contract function name
-        [this.predictedAzoriusAddress],
-        0,
-        false,
-      );
+      if (!this.predictedAzoriusAddress || !this.linearERC20VotingAddress) {
+        throw new Error('Linear ERC20 addresses not set');
+      }
+
+      return buildContractCall({
+        target: this.linearERC20VotingAddress,
+        encodedFunctionData: encodeFunctionData({
+          functionName: 'setAzorius',
+          args: [this.predictedAzoriusAddress],
+          abi: abis.LinearERC20Voting,
+        }),
+        nonce: 0,
+      });
     } else if (daoData.votingStrategyType === VotingStrategyType.LINEAR_ERC721) {
-      return buildContractCall(
-        abis.LinearERC721Voting,
-        this.linearERC721VotingAddress!,
-        'setAzorius', // contract function name
-        [this.predictedAzoriusAddress],
-        0,
-        false,
-      );
+      if (!this.predictedAzoriusAddress || !this.linearERC721VotingAddress) {
+        throw new Error('Linear ERC721 addresses not set');
+      }
+
+      return buildContractCall({
+        target: this.linearERC721VotingAddress,
+        encodedFunctionData: encodeFunctionData({
+          functionName: 'setAzorius',
+          args: [this.predictedAzoriusAddress],
+          abi: abis.LinearERC721Voting,
+        }),
+        nonce: 0,
+      });
     } else {
       throw new Error('voting strategy type unknown');
     }
   }
 
   public buildEnableAzoriusModuleTx(): SafeTransaction {
-    return buildContractCall(
-      GnosisSafeL2Abi,
-      this.safeContractAddress,
-      'enableModule',
-      [this.predictedAzoriusAddress],
-      0,
-      false,
-    );
+    if (!this.predictedAzoriusAddress) {
+      throw new Error('Azorius address not set');
+    }
+
+    return buildContractCall({
+      target: this.safeContractAddress,
+      encodedFunctionData: encodeFunctionData({
+        functionName: 'enableModule',
+        args: [this.predictedAzoriusAddress],
+        abi: GnosisSafeL2Abi,
+      }),
+      nonce: 0,
+    });
   }
 
   public buildAddAzoriusContractAsOwnerTx(): SafeTransaction {
-    return buildContractCall(
-      GnosisSafeL2Abi,
-      this.safeContractAddress,
-      'addOwnerWithThreshold',
-      [this.predictedAzoriusAddress, 1],
-      0,
-      false,
-    );
+    if (!this.predictedAzoriusAddress) {
+      throw new Error('Azorius address not set');
+    }
+
+    return buildContractCall({
+      target: this.safeContractAddress,
+      encodedFunctionData: encodeFunctionData({
+        functionName: 'addOwnerWithThreshold',
+        args: [this.predictedAzoriusAddress, 1n],
+        abi: GnosisSafeL2Abi,
+      }),
+      nonce: 0,
+    });
   }
 
   public buildRemoveMultiSendOwnerTx(): SafeTransaction {
-    return buildContractCall(
-      GnosisSafeL2Abi,
-      this.safeContractAddress,
-      'removeOwner',
-      [this.predictedAzoriusAddress, this.multiSendCallOnly, 1],
-      0,
-      false,
-    );
+    if (!this.predictedAzoriusAddress) {
+      throw new Error('Azorius address not set');
+    }
+    if (!this.multiSendCallOnly) {
+      throw new Error('multiSendCallOnly address not set');
+    }
+
+    return buildContractCall({
+      target: this.safeContractAddress,
+      encodedFunctionData: encodeFunctionData({
+        functionName: 'removeOwner',
+        args: [this.predictedAzoriusAddress, this.multiSendCallOnly, 1n],
+        abi: GnosisSafeL2Abi,
+      }),
+      nonce: 0,
+    });
   }
 
   public buildCreateTokenTx(): SafeTransaction {
     const azoriusErc20DaoData = this.daoData as AzoriusERC20DAO;
-    return buildContractCall(
-      ZodiacModuleProxyFactoryAbi,
-      this.zodiacModuleProxyFactory,
-      'deployModule',
-      [
-        azoriusErc20DaoData.locked === TokenLockType.LOCKED
-          ? this.votesErc20LockableMasterCopy
-          : this.votesErc20MasterCopy,
-        this.encodedSetupTokenData,
-        this.tokenNonce,
-      ],
-      0,
-      false,
-    );
+
+    if (
+      !this.encodedSetupTokenData ||
+      !this.votesErc20MasterCopy ||
+      !this.votesErc20LockableMasterCopy
+    ) {
+      throw new Error('Encoded setup token data or votes erc20 master copy not set');
+    }
+
+    const votingStrategyMasterCopy =
+      azoriusErc20DaoData.locked === TokenLockType.LOCKED
+        ? this.votesErc20LockableMasterCopy
+        : this.votesErc20MasterCopy;
+
+    return buildContractCall({
+      target: this.zodiacModuleProxyFactory,
+      encodedFunctionData: encodeFunctionData({
+        functionName: 'deployModule',
+        args: [votingStrategyMasterCopy, this.encodedSetupTokenData, this.tokenNonce],
+        abi: ZodiacModuleProxyFactoryAbi,
+      }),
+      nonce: 0,
+    });
   }
 
   public buildDeployStrategyTx(): SafeTransaction {
@@ -284,36 +322,51 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
           : this.linearVotingErc721MasterCopy;
     }
 
-    return buildContractCall(
-      ZodiacModuleProxyFactoryAbi,
-      this.zodiacModuleProxyFactory,
-      'deployModule',
-      [votingStrategyMasterCopy, this.encodedStrategySetupData, this.strategyNonce],
-      0,
-      false,
-    );
+    if (!this.encodedStrategySetupData) {
+      throw new Error('Encoded strategy setup data not set');
+    }
+
+    return buildContractCall({
+      target: this.zodiacModuleProxyFactory,
+      encodedFunctionData: encodeFunctionData({
+        functionName: 'deployModule',
+        args: [votingStrategyMasterCopy, this.encodedStrategySetupData, this.strategyNonce],
+        abi: ZodiacModuleProxyFactoryAbi,
+      }),
+      nonce: 0,
+    });
   }
 
   public buildDeployAzoriusTx(): SafeTransaction {
-    return buildContractCall(
-      ZodiacModuleProxyFactoryAbi,
-      this.zodiacModuleProxyFactory,
-      'deployModule',
-      [this.moduleAzoriusMasterCopy, this.encodedSetupAzoriusData, this.azoriusNonce],
-      0,
-      false,
-    );
+    if (!this.encodedSetupAzoriusData) {
+      throw new Error('Encoded setup azorius data not set');
+    }
+
+    return buildContractCall({
+      target: this.zodiacModuleProxyFactory,
+      encodedFunctionData: encodeFunctionData({
+        functionName: 'deployModule',
+        args: [this.moduleAzoriusMasterCopy, this.encodedSetupAzoriusData, this.azoriusNonce],
+        abi: ZodiacModuleProxyFactoryAbi,
+      }),
+      nonce: 0,
+    });
   }
 
   public buildDeployTokenClaim() {
-    return buildContractCall(
-      ZodiacModuleProxyFactoryAbi,
-      this.zodiacModuleProxyFactory,
-      'deployModule',
-      [this.claimErc20MasterCopy, this.encodedSetupTokenClaimData, this.claimNonce],
-      0,
-      false,
-    );
+    if (!this.encodedSetupTokenClaimData) {
+      throw new Error('Encoded setup token claim data not set');
+    }
+
+    return buildContractCall({
+      target: this.zodiacModuleProxyFactory,
+      encodedFunctionData: encodeFunctionData({
+        functionName: 'deployModule',
+        args: [this.claimErc20MasterCopy, this.encodedSetupTokenClaimData, this.claimNonce],
+        abi: ZodiacModuleProxyFactoryAbi,
+      }),
+      nonce: 0,
+    });
   }
 
   public buildDeployPaymasterTx(): SafeTransaction {
@@ -337,18 +390,19 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
       throw new Error('Paymaster addresses are not set');
     }
 
-    return buildContractCall(
-      ZodiacModuleProxyFactoryAbi,
-      this.zodiacModuleProxyFactory,
-      'deployModule',
-      [
-        this.paymaster.decentPaymasterV1MasterCopy,
-        paymasterInitData,
-        getPaymasterSaltNonce(this.safeContractAddress, this.publicClient.chain!.id),
-      ],
-      0,
-      false,
-    );
+    return buildContractCall({
+      target: this.zodiacModuleProxyFactory,
+      encodedFunctionData: encodeFunctionData({
+        functionName: 'deployModule',
+        args: [
+          this.paymaster.decentPaymasterV1MasterCopy,
+          paymasterInitData,
+          getPaymasterSaltNonce(this.safeContractAddress, this.publicClient.chain!.id),
+        ],
+        abi: ZodiacModuleProxyFactoryAbi,
+      }),
+      nonce: 0,
+    });
   }
 
   public buildApproveStrategyOnPaymasterTx(): SafeTransaction {
@@ -357,6 +411,9 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
     }
     if (!this.paymaster) {
       throw new Error('Paymaster addresses are not set');
+    }
+    if (!this.predictedStrategyAddress) {
+      throw new Error('Predicted strategy address not set');
     }
 
     const predictedPaymasterAddress = getPaymasterAddress({
@@ -373,39 +430,42 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
       this.paymaster,
     );
 
-    return buildContractCall(
-      abis.DecentPaymasterV1,
-      predictedPaymasterAddress,
-      'setFunctionValidator',
-      [this.predictedStrategyAddress, voteSelector, voteValidator],
-      0,
-      false,
-    );
+    return buildContractCall({
+      target: predictedPaymasterAddress,
+      encodedFunctionData: encodeFunctionData({
+        functionName: 'setFunctionValidator',
+        args: [this.predictedStrategyAddress, voteSelector, voteValidator],
+        abi: abis.DecentPaymasterV1,
+      }),
+      nonce: 0,
+    });
   }
 
   public buildApproveClaimAllocation() {
     if (!this.votesTokenAddress) {
       return;
     }
+    if (!this.predictedTokenClaimAddress) {
+      throw new Error('Predicted token claim address not set');
+    }
 
     const azoriusGovernanceDaoData = this.daoData as AzoriusERC20DAO;
-    return buildContractCall(
-      abis.VotesERC20,
-      this.votesTokenAddress,
-      'approve',
-      [this.predictedTokenClaimAddress, azoriusGovernanceDaoData.parentAllocationAmount],
-      0,
-      false,
-    );
+    return buildContractCall({
+      target: this.votesTokenAddress,
+      encodedFunctionData: encodeFunctionData({
+        functionName: 'approve',
+        args: [this.predictedTokenClaimAddress, azoriusGovernanceDaoData.parentAllocationAmount],
+        abi: abis.VotesERC20,
+      }),
+      nonce: 0,
+    });
   }
 
-  public signatures = (): string => {
-    return (
-      '0x000000000000000000000000' +
+  public signatures = (): Hex => {
+    return ('0x000000000000000000000000' +
       this.multiSendCallOnly.slice(2) +
       '0000000000000000000000000000000000000000000000000000000000000000' +
-      '01'
-    );
+      '01') as Hex;
   };
 
   private calculateTokenAllocations(

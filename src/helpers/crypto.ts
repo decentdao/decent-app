@@ -167,43 +167,31 @@ export const buildSafeAPIPost = async (
   };
 };
 
-const finishBuildingConractCall = (
-  data: Hex,
-  nonce: number,
-  contractAddress: Address,
-  delegateCall?: boolean,
-  overrides?: Partial<SafeTransaction>,
-) => {
+export const buildContractCall = ({
+  target,
+  encodedFunctionData,
+  nonce,
+  delegateCall,
+  overrides,
+}: {
+  target: Address;
+  encodedFunctionData: Hex;
+  nonce: number;
+  delegateCall?: boolean;
+  overrides?: Partial<SafeTransaction>;
+}): SafeTransaction => {
   const operation: 0 | 1 = delegateCall ? 1 : 0;
   return buildSafeTransaction(
     Object.assign(
       {
-        to: contractAddress,
-        data,
+        to: target,
+        data: encodedFunctionData,
         operation,
         nonce,
       },
       overrides,
     ),
   );
-};
-
-export const buildContractCall = (
-  contractAbi: Abi,
-  contractAddress: Address,
-  method: string,
-  params: any[],
-  nonce: number,
-  delegateCall?: boolean,
-  overrides?: Partial<SafeTransaction>,
-): SafeTransaction => {
-  const data = encodeFunctionData({
-    abi: contractAbi,
-    functionName: method,
-    args: params,
-  });
-
-  return finishBuildingConractCall(data, nonce, contractAddress, delegateCall, overrides);
 };
 
 const encodeMetaTransaction = (tx: MetaTransaction): string => {

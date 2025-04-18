@@ -1,5 +1,5 @@
 import { abis } from '@fractal-framework/fractal-contracts';
-import { Address, encodeFunctionData, PublicClient, zeroAddress } from 'viem';
+import { Address, encodeFunctionData, Hex, PublicClient, zeroAddress } from 'viem';
 import GnosisSafeL2Abi from '../assets/abi/GnosisSafeL2';
 import MultiSendCallOnlyAbi from '../assets/abi/MultiSendCallOnly';
 import { buildContractCall, encodeMultiSend } from '../helpers';
@@ -84,7 +84,7 @@ export class DaoTxBuilder extends BaseTxBuilder {
     shouldSetName: boolean;
     shouldSetSnapshot: boolean;
     enableGaslessVoting: boolean;
-    existingSafeOwners?: string[];
+    existingSafeOwners?: Address[];
   }): Promise<string> {
     const { shouldSetName, shouldSetSnapshot, existingSafeOwners, enableGaslessVoting } = params;
     const azoriusTxBuilder =
@@ -257,62 +257,66 @@ export class DaoTxBuilder extends BaseTxBuilder {
   //
 
   private buildUpdateDAONameTx(): SafeTransaction {
-    return buildContractCall(
-      abis.KeyValuePairs,
-      this.keyValuePairs,
-      'updateValues',
-      [['daoName'], [this.daoData.daoName]],
-      0,
-      false,
-    );
+    return buildContractCall({
+      target: this.keyValuePairs,
+      encodedFunctionData: encodeFunctionData({
+        functionName: 'updateValues',
+        args: [['daoName'], [this.daoData.daoName]],
+        abi: abis.KeyValuePairs,
+      }),
+      nonce: 0,
+    });
   }
 
   private buildUpdateDAOSnapshotENSTx(): SafeTransaction {
-    return buildContractCall(
-      abis.KeyValuePairs,
-      this.keyValuePairs,
-      'updateValues',
-      [['snapshotENS'], [this.daoData.snapshotENS]],
-      0,
-      false,
-    );
+    return buildContractCall({
+      target: this.keyValuePairs,
+      encodedFunctionData: encodeFunctionData({
+        functionName: 'updateValues',
+        args: [['snapshotENS'], [this.daoData.snapshotENS]],
+        abi: abis.KeyValuePairs,
+      }),
+      nonce: 0,
+    });
   }
 
   private buildSetGaslessVotingEnabledTx(): SafeTransaction {
-    return buildContractCall(
-      abis.KeyValuePairs,
-      this.keyValuePairs,
-      'updateValues',
-      [['gaslessVotingEnabled'], ['true']],
-      0,
-      false,
-    );
+    return buildContractCall({
+      target: this.keyValuePairs,
+      encodedFunctionData: encodeFunctionData({
+        functionName: 'updateValues',
+        args: [['gaslessVotingEnabled'], ['true']],
+        abi: abis.KeyValuePairs,
+      }),
+      nonce: 0,
+    });
   }
 
-  private buildExecInternalSafeTx(signatures: string): SafeTransaction {
+  private buildExecInternalSafeTx(signatures: Hex): SafeTransaction {
     const safeInternalTx = encodeMultiSend(this.internalTxs);
-    return buildContractCall(
-      GnosisSafeL2Abi,
-      this.safeContractAddress,
-      'execTransaction',
-      [
-        this.multiSendCallOnly, // to
-        '0', // value
-        encodeFunctionData({
-          abi: MultiSendCallOnlyAbi,
-          functionName: 'multiSend',
-          args: [safeInternalTx],
-        }), // calldata
-        '1', // operation
-        '0', // tx gas
-        '0', // base gas
-        '0', // gas price
-        zeroAddress, // gas token
-        zeroAddress, // receiver
-        signatures, // sigs
-      ],
-      0,
-      false,
-    );
+    return buildContractCall({
+      target: this.safeContractAddress,
+      encodedFunctionData: encodeFunctionData({
+        functionName: 'execTransaction',
+        args: [
+          this.multiSendCallOnly, // to
+          0n, // value
+          encodeFunctionData({
+            abi: MultiSendCallOnlyAbi,
+            functionName: 'multiSend',
+            args: [safeInternalTx],
+          }), // calldata
+          1, // operation
+          0n, // tx gas
+          0n, // base gas
+          0n, // gas price
+          zeroAddress, // gas token
+          zeroAddress, // receiver
+          signatures, // sigs
+        ],
+        abi: GnosisSafeL2Abi,
+      }),
+      nonce: 0,
+    });
   }
 }
