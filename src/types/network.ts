@@ -93,10 +93,12 @@ type NetworkConfigBase = {
     };
   };
   createOptions: GovernanceType[];
+  accountAbstractionSupported: boolean;
 };
 
 // Type for networks *with* Account Abstraction
 type NetworkConfigWithAA = NetworkConfigBase & {
+  accountAbstractionSupported: true;
   contracts: ContractsBase & {
     // accountAbstraction is REQUIRED here
     accountAbstraction: {
@@ -110,6 +112,7 @@ type NetworkConfigWithAA = NetworkConfigBase & {
 
 // Type for networks *without* Account Abstraction
 type NetworkConfigWithoutAA = NetworkConfigBase & {
+  accountAbstractionSupported: false;
   contracts: ContractsBase & {
     // accountAbstraction is OPTIONAL and UNDEFINED here
     accountAbstraction?: undefined;

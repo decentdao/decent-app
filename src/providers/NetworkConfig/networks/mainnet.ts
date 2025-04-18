@@ -138,6 +138,7 @@ export const mainnetConfig: NetworkConfig = {
     GovernanceType.AZORIUS_ERC20,
     GovernanceType.AZORIUS_ERC721,
   ],
+  accountAbstractionSupported: true,
   bundlerMinimumStake: 100_000_000_000_000_000n, // 0.1 ETH
 };
 
