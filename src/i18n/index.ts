@@ -1,7 +1,7 @@
 import { enUS } from 'date-fns/locale';
 import i18n from 'i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
-import resourcesToBackend from 'i18next-resources-to-backend';
+import Backend from 'i18next-http-backend';
 import { initReactI18next } from 'react-i18next';
 
 /**
@@ -29,14 +29,14 @@ import { initReactI18next } from 'react-i18next';
 export const supportedLanguages = ['en'];
 
 i18n
-  .use(
-    resourcesToBackend(
-      (language: string, namespace: string) => import(`./locales/${language}/${namespace}.json`),
-    ),
-  )
+  .use(Backend)
   .use(LanguageDetector)
   .use(initReactI18next)
   .init({
+    backend: {
+      // for all available options read the backend's repository readme file
+      loadPath: '/locales/{{lng}}/{{ns}}.json',
+    },
     initImmediate: true,
     debug: false,
     fallbackLng: 'en',
