@@ -264,7 +264,6 @@ export class DaoTxBuilder extends BaseTxBuilder {
         args: [['daoName'], [this.daoData.daoName]],
         abi: abis.KeyValuePairs,
       }),
-      nonce: 0,
     });
   }
 
@@ -276,7 +275,6 @@ export class DaoTxBuilder extends BaseTxBuilder {
         args: [['snapshotENS'], [this.daoData.snapshotENS]],
         abi: abis.KeyValuePairs,
       }),
-      nonce: 0,
     });
   }
 
@@ -288,7 +286,6 @@ export class DaoTxBuilder extends BaseTxBuilder {
         args: [['gaslessVotingEnabled'], ['true']],
         abi: abis.KeyValuePairs,
       }),
-      nonce: 0,
     });
   }
 
@@ -320,7 +317,6 @@ export class DaoTxBuilder extends BaseTxBuilder {
         ],
         abi: GnosisSafeL2Abi,
       }),
-      nonce: 0,
     });
   }
 }

@@ -37,7 +37,6 @@ export class MultisigTxBuilder {
         ],
         abi: GnosisSafeL2Abi,
       }),
-      nonce: 0,
     });
   }
 }

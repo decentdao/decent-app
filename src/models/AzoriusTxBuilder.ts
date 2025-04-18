@@ -186,7 +186,6 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
           args: [this.multiSendCallOnly, owner, 1n],
           abi: GnosisSafeL2Abi,
         }),
-        nonce: 0,
       }),
     );
     return removeOwnerTxs;
@@ -207,7 +206,6 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
           args: [this.predictedAzoriusAddress],
           abi: abis.LinearERC20Voting,
         }),
-        nonce: 0,
       });
     } else if (daoData.votingStrategyType === VotingStrategyType.LINEAR_ERC721) {
       if (!this.predictedAzoriusAddress || !this.linearERC721VotingAddress) {
@@ -221,7 +219,6 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
           args: [this.predictedAzoriusAddress],
           abi: abis.LinearERC721Voting,
         }),
-        nonce: 0,
       });
     } else {
       throw new Error('voting strategy type unknown');
@@ -240,7 +237,6 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
         args: [this.predictedAzoriusAddress],
         abi: GnosisSafeL2Abi,
       }),
-      nonce: 0,
     });
   }
 
@@ -256,7 +252,6 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
         args: [this.predictedAzoriusAddress, 1n],
         abi: GnosisSafeL2Abi,
       }),
-      nonce: 0,
     });
   }
 
@@ -275,7 +270,6 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
         args: [this.predictedAzoriusAddress, this.multiSendCallOnly, 1n],
         abi: GnosisSafeL2Abi,
       }),
-      nonce: 0,
     });
   }
 
@@ -302,7 +296,6 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
         args: [votingStrategyMasterCopy, this.encodedSetupTokenData, this.tokenNonce],
         abi: ZodiacModuleProxyFactoryAbi,
       }),
-      nonce: 0,
     });
   }
 
@@ -333,7 +326,6 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
         args: [votingStrategyMasterCopy, this.encodedStrategySetupData, this.strategyNonce],
         abi: ZodiacModuleProxyFactoryAbi,
       }),
-      nonce: 0,
     });
   }
 
@@ -349,7 +341,6 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
         args: [this.moduleAzoriusMasterCopy, this.encodedSetupAzoriusData, this.azoriusNonce],
         abi: ZodiacModuleProxyFactoryAbi,
       }),
-      nonce: 0,
     });
   }
 
@@ -365,7 +356,6 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
         args: [this.claimErc20MasterCopy, this.encodedSetupTokenClaimData, this.claimNonce],
         abi: ZodiacModuleProxyFactoryAbi,
       }),
-      nonce: 0,
     });
   }
 
@@ -401,7 +391,6 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
         ],
         abi: ZodiacModuleProxyFactoryAbi,
       }),
-      nonce: 0,
     });
   }
 
@@ -437,7 +426,6 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
         args: [this.predictedStrategyAddress, voteSelector, voteValidator],
         abi: abis.DecentPaymasterV1,
       }),
-      nonce: 0,
     });
   }
 
@@ -457,7 +445,6 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
         args: [this.predictedTokenClaimAddress, azoriusGovernanceDaoData.parentAllocationAmount],
         abi: abis.VotesERC20,
       }),
-      nonce: 0,
     });
   }
 
