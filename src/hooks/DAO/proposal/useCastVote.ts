@@ -5,7 +5,6 @@ import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { Address, getContract, http } from 'viem';
 import { createBundlerClient } from 'viem/account-abstraction';
-import { useAccount } from 'wagmi';
 import { EntryPoint07Abi } from '../../../assets/abi/EntryPoint07Abi';
 import { useStore } from '../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
@@ -31,7 +30,6 @@ const useCastVote = (proposalId: string, strategy: Address) => {
     contracts: { accountAbstraction },
     rpcEndpoint,
     getConfigByChainId,
-    // gaslessVoting,
   } = useNetworkConfigStore();
 
   const [contractCall, castVotePending] = useTransaction();
@@ -160,12 +158,11 @@ const useCastVote = (proposalId: string, strategy: Address) => {
     ],
   );
 
-  const { address } = useAccount();
   const { paymasterAddress } = useDaoInfoStore();
   const publicClient = useNetworkPublicClient();
 
   const prepareGaslessVoteOperation = useCallback(async () => {
-    if (!publicClient || !paymasterAddress || !walletClient || !accountAbstraction) {
+    if (!publicClient || !paymasterAddress || !walletClient) {
       return;
     }
 
@@ -232,7 +229,6 @@ const useCastVote = (proposalId: string, strategy: Address) => {
       bundlerClient,
     };
   }, [
-    accountAbstraction,
     getConfigByChainId,
     paymasterAddress,
     prepareCastVoteData,
@@ -279,10 +275,6 @@ const useCastVote = (proposalId: string, strategy: Address) => {
       onError: (error: any) => void;
       onSuccess: () => void;
     }) => {
-      if (!address || !paymasterAddress || !walletClient || !publicClient) {
-        throw new Error('Invalid state');
-      }
-
       try {
         setCastGaslessVotePending(true);
 
@@ -315,15 +307,7 @@ const useCastVote = (proposalId: string, strategy: Address) => {
         onError(error);
       }
     },
-    [
-      address,
-      prepareGaslessVoteOperation,
-      paymasterAddress,
-      prepareCastVoteData,
-      publicClient,
-      t,
-      walletClient,
-    ],
+    [prepareGaslessVoteOperation, prepareCastVoteData, t],
   );
 
   return {
