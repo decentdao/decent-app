@@ -51,7 +51,6 @@ export const fractalModuleData = (
       args: [fractalModuleMasterCopyAddress, fractalModuleCalldata, saltNum],
       abi: ZodiacModuleProxyFactoryAbi,
     }),
-    nonce: 0,
   });
 
   const predictedFractalModuleAddress = getCreate2Address({
@@ -67,8 +66,8 @@ export const fractalModuleData = (
       args: [predictedFractalModuleAddress],
       abi: GnosisSafeL2Abi,
     }),
-    nonce: 0,
   });
+
   return {
     predictedFractalModuleAddress,
     deployFractalModuleTx,

@@ -121,7 +121,6 @@ export class FreezeGuardTxBuilder extends BaseTxBuilder {
         args: [freezeVotingMasterCopy, this.freezeVotingCallData, this.saltNum],
         abi: ZodiacModuleProxyFactoryAbi,
       }),
-      nonce: 0,
     });
   }
 
@@ -157,7 +156,6 @@ export class FreezeGuardTxBuilder extends BaseTxBuilder {
           args: [encodedSetupFunctionArgs],
           abi: abis.ERC20FreezeVoting,
         }),
-        nonce: 0,
       });
     } else if (this.freezeVotingType === 'erc721') {
       return buildContractCall({
@@ -167,7 +165,6 @@ export class FreezeGuardTxBuilder extends BaseTxBuilder {
           args: [encodedSetupFunctionArgs],
           abi: abis.ERC721FreezeVoting,
         }),
-        nonce: 0,
       });
     } else if (this.freezeVotingType === 'multisig') {
       return buildContractCall({
@@ -177,7 +174,6 @@ export class FreezeGuardTxBuilder extends BaseTxBuilder {
           args: [encodedSetupFunctionArgs],
           abi: abis.MultisigFreezeVoting,
         }),
-        nonce: 0,
       });
     } else {
       throw new Error('Unsupported freeze voting type');
@@ -192,7 +188,6 @@ export class FreezeGuardTxBuilder extends BaseTxBuilder {
         args: [this.freezeGuardAddress],
         abi: abi,
       }),
-      nonce: 0,
     });
   }
 
@@ -208,7 +203,6 @@ export class FreezeGuardTxBuilder extends BaseTxBuilder {
         args: [this.freezeGuardAddress],
         abi: GnosisSafeL2Abi,
       }),
-      nonce: 0,
     });
   }
 
@@ -224,7 +218,6 @@ export class FreezeGuardTxBuilder extends BaseTxBuilder {
         args: [this.getGuardMasterCopyAddress(), this.freezeGuardCallData!, this.saltNum],
         abi: ZodiacModuleProxyFactoryAbi,
       }),
-      nonce: 0,
     });
   }
 

@@ -174,7 +174,7 @@ export const buildContractCall = ({
 }: {
   target: Address;
   encodedFunctionData: Hex;
-  nonce: number;
+  nonce?: number;
   delegateCall?: boolean;
   overrides?: Partial<SafeTransaction>;
 }): SafeTransaction => {
@@ -185,7 +185,7 @@ export const buildContractCall = ({
         to: target,
         data: encodedFunctionData,
         operation,
-        nonce,
+        nonce: nonce || 0,
       },
       overrides,
     ),

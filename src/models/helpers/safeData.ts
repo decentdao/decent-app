@@ -73,7 +73,6 @@ export const safeData = async (
       args: [safeSingletonContract.address, createSafeCalldata, saltNum],
       abi: GnosisSafeProxyFactoryAbi,
     }),
-    nonce: 0,
   });
 
   return {
