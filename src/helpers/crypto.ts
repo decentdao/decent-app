@@ -9,8 +9,6 @@ import {
   Address,
   bytesToBigInt,
   Hex,
-  encodeFunctionData,
-  Abi,
   WalletClient,
 } from 'viem';
 import { MetaTransaction, SafeTransaction } from '../types/transaction';
@@ -167,43 +165,29 @@ export const buildSafeAPIPost = async (
   };
 };
 
-const finishBuildingConractCall = (
-  data: Hex,
-  nonce: number,
-  contractAddress: Address,
-  delegateCall?: boolean,
-  overrides?: Partial<SafeTransaction>,
-) => {
-  const operation: 0 | 1 = delegateCall ? 1 : 0;
+export const buildContractCall = ({
+  target,
+  encodedFunctionData,
+  overrides,
+}: {
+  target: Address;
+  encodedFunctionData: Hex;
+  overrides?: Partial<SafeTransaction>;
+}): SafeTransaction => {
+  // If ever in the future some caller of `buildContractCall` needs to specify delegateCall, add a `delegateCall` param to this function
+  const operation: 0 | 1 = 0;
+
   return buildSafeTransaction(
     Object.assign(
       {
-        to: contractAddress,
-        data,
+        to: target,
+        data: encodedFunctionData,
         operation,
-        nonce,
+        nonce: 0,
       },
       overrides,
     ),
   );
-};
-
-export const buildContractCall = (
-  contractAbi: Abi,
-  contractAddress: Address,
-  method: string,
-  params: any[],
-  nonce: number,
-  delegateCall?: boolean,
-  overrides?: Partial<SafeTransaction>,
-): SafeTransaction => {
-  const data = encodeFunctionData({
-    abi: contractAbi,
-    functionName: method,
-    args: params,
-  });
-
-  return finishBuildingConractCall(data, nonce, contractAddress, delegateCall, overrides);
 };
 
 const encodeMetaTransaction = (tx: MetaTransaction): string => {
