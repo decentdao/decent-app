@@ -17,9 +17,9 @@
   "failedIndexSafe": "Ihre DAO wurde bereitgestellt, kann aber noch nicht angezeigt werden. Sie wurde zu Ihrer Favoritenliste \"Meine DAOs\" hinzugefügt.",
   "errorUserDeniedTransaction": "Der Benutzer hat die Transaktion abgelehnt",
   "errorInsufficientFunds": "Unzureichende Mittel für die Transaktion",
-  "pendingTokenClaim": "Anspruch auf {{ symbol }}",
-  "failedTokenClaim": "Anspruch auf {{ symbol }} fehlgeschlagen",
-  "successTokenClaim": "Sie haben erfolgreich {{ amount }} {{ symbol }}",
+  "pendingTokenClaim": "Claiming {{symbol}}",
+  "failedTokenClaim": "Beantragung fehlgeschlagen {{symbol}}",
+  "successTokenClaim": "Sie haben sich erfolgreich angemeldet {{amount}} {{symbol}}",
   "snapshotRecastVoteHelper": "Sie können Ihre Stimme noch bis zum Ende des Abstimmungszeitraums ändern.",
   "modifyGovernanceSetAzoriusProposalPendingMessage": "Unterbreitung eines Vorschlags zur Änderung der Governance...",
   "errorLoadingParentNode": "Fehler beim Laden des Elternteils"
