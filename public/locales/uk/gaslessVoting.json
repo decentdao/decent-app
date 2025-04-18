@@ -4,7 +4,7 @@
   "gaslessVotingGettingStarted": "Для початку ми покриваємо ваші перші 0.1 {{symbol}} плати за газ. Ви можете поповнити свій баланс у налаштуваннях DAO.",
   "gaslessVotingLabelSettings": "Спонсоровані голоси",
   "gaslessVotingDescriptionSettings": "Створіть платіжну систему, щоб спонсорувати мережеві збори за голосування за пропозиції.",
-  "gaslessStakingDescription": "Ставка у розмірі {{amount}} {{symbol}} необхідне для увімкнення голосування без газу. Його можна зняти через 1 день, якщо голосування без газу вимкнено.",
+  "gaslessStakingDescription": "Необхідно зробити ставку в розмірі {{amount}} {{symbol}}, щоб увімкнути голосування без газу. Його можна зняти через 1 день, якщо голосування без газу вимкнено.",
   "addGas": "Поповнення",
   "refillTank": "Поповнити Paymaster",
   "refillPaymasterAction": "Поповнити Paymaster за допомогою {{amount}} {{symbol}}",

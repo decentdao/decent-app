@@ -57,7 +57,7 @@ async function translateWithPlaceholders(text, langCode) {
 
   // Replace placeholders with double {{}} with temporary markers
   doubleQuoteRegexRegexPlaceholders.forEach((placeholder, index) => {
-    translatedText = translatedText.replace(placeholder, `<<x>${placeholder}</x>`);
+    translatedText = translatedText.replace(placeholder, `<x>${placeholder}</x>`);
   });
 
   // Replace "Decent Labs" with temporary markers
@@ -90,7 +90,7 @@ async function translateWithPlaceholders(text, langCode) {
   }
 
   // Restore placeholders in the translated text
-  translatedText = translatedText.replace('<x>', '').replace('</x>', '');
+  translatedText = translatedText.replaceAll('<x>', '').replaceAll('</x>', '');
   return translatedText;
 }
 

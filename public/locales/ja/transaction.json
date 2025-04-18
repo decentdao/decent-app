@@ -17,9 +17,9 @@
   "failedIndexSafe": "あなたの DAO はデプロイされましたが、まだ閲覧できません。My DAOs' のお気に入りリストに追加されました。",
   "errorUserDeniedTransaction": "ユーザーがトランザクションを拒否した",
   "errorInsufficientFunds": "取引資金の不足",
-  "pendingTokenClaim": "クレーム {{ symbol }}",
-  "failedTokenClaim": "請求に失敗 {{ symbol }}",
-  "successTokenClaim": "{{ amount }}の請求に成功しました。{{ symbol }}",
+  "pendingTokenClaim": "{{symbol}}を主張する。",
+  "failedTokenClaim": "{{symbol}}の請求に失敗した。",
+  "successTokenClaim": "{{amount} の請求に成功しました。｝{{symbol}}",
   "snapshotRecastVoteHelper": "投票期間が終了するまで、投票の変更は可能です。",
   "modifyGovernanceSetAzoriusProposalPendingMessage": "ガバナンス変更案を提出...",
   "errorLoadingParentNode": "親の読み込みエラー"

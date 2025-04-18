@@ -4,7 +4,7 @@
   "gaslessVotingGettingStarted": "Pour commencer, nous couvrons vos premiers 0,1 {{symbol}} de frais de gaz. Vous pouvez recharger votre solde dans les paramètres de votre DAO.",
   "gaslessVotingLabelSettings": "Votes sponsorisés",
   "gaslessVotingDescriptionSettings": "Créer un payeur pour sponsoriser les frais de réseau pour les votes de propositions.",
-  "gaslessStakingDescription": "Un enjeu de {{amount}} {{symbol}} est nécessaire pour activer le vote sans gaz. Le piquetage peut être annulé au bout d'un jour si le vote sans gaz est désactivé.",
+  "gaslessStakingDescription": "Un enjeu de {{amount}} {{symbol}} est nécessaire pour activer le vote sans gaz. Il peut être déstabilisé après 1 jour si le vote sans gaz est désactivé.",
   "addGas": "Recharge",
   "refillTank": "Remplir le Paymaster",
   "refillPaymasterAction": "Remplir le Paymaster avec {{amount}} {{symbol}}",

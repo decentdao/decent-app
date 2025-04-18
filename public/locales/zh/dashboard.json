@@ -12,8 +12,8 @@
   "titleActive": "活跃",
   "titleTotal": "总计",
   "titleTreasury": "库房",
-  "proposalDescription_one": "执行{{count}_}事务的建议",
-  "proposalDescription_other": "执行{{count}_}事务的建议",
+  "proposalDescription_one": "建议执行{{count}} 交易",
+  "proposalDescription_other": "执行{{count}} 交易的建议",
   "freezeDescription": "儿童安全冻结投票待定",
   "frozenDescription": "保险箱已冻结",
   "freezeButton": "冻结",
@@ -21,6 +21,6 @@
   "noVotesButton": "用户没有投票",
   "tipFreeze": "要求冻结投票",
   "proposalDescriptionCont": "将",
-  "alertTokenClaim": "您有{{amount}_}代币可以领取。",
+  "alertTokenClaim": "您有{{amount}} 代币可以申请。",
   "claim": "索赔"
 }

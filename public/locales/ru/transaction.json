@@ -17,9 +17,9 @@
   "failedIndexSafe": "Ваша DAO была развернута, но еще не доступна для просмотра. Она была добавлена в ваш список избранных \"Мои DAO\".",
   "errorUserDeniedTransaction": "Пользователь отклонил транзакцию",
   "errorInsufficientFunds": "Недостаточно средств для проведения операции",
-  "pendingTokenClaim": "Претендуя на {{ symbol }}",
-  "failedTokenClaim": "Не удалось заявить {{ symbol }}",
-  "successTokenClaim": "Вы успешно заявили {{ amount }} {{ symbol }}",
+  "pendingTokenClaim": "Утверждение {{symbol}}",
+  "failedTokenClaim": "Не удалось заявить {{symbol}}",
+  "successTokenClaim": "Вы успешно заявили о себе {{amount}} {{symbol}}",
   "snapshotRecastVoteHelper": "Вы все еще можете изменить свой голос до окончания периода голосования.",
   "modifyGovernanceSetAzoriusProposalPendingMessage": "Представление предложения по изменению управления...",
   "errorLoadingParentNode": "Ошибка при загрузке родителя"

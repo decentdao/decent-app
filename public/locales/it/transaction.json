@@ -17,9 +17,9 @@
   "failedIndexSafe": "Il DAO è stato distribuito ma non è ancora disponibile per la visualizzazione. È stato aggiunto all'elenco dei preferiti di \"I miei DAO\".",
   "errorUserDeniedTransaction": "L'utente ha rifiutato la transazione",
   "errorInsufficientFunds": "Fondi insufficienti per la transazione",
-  "pendingTokenClaim": "Rivendicazione di {{ symbol }}",
-  "failedTokenClaim": "Non è stato possibile richiedere {{ symbol }}",
-  "successTokenClaim": "Avete richiesto con successo {{ amount }} {{ symbol }}",
+  "pendingTokenClaim": "Claiming {{symbol}}",
+  "failedTokenClaim": "Impossibile richiedere {{symbol}}",
+  "successTokenClaim": "Hai richiesto con successo {{amount}} {{symbol}}",
   "snapshotRecastVoteHelper": "È ancora possibile modificare il proprio voto fino al termine del periodo di votazione.",
   "modifyGovernanceSetAzoriusProposalPendingMessage": "Presentazione della proposta di modifica della governance...",
   "errorLoadingParentNode": "Errore nel caricamento del genitore"

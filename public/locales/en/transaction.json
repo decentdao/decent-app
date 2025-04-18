@@ -17,9 +17,9 @@
   "failedIndexSafe": "Your DAO was deployed but is not yet available to view. It has been added to your favorited list of 'My DAOs'.",
   "errorUserDeniedTransaction": "User rejected the transaction",
   "errorInsufficientFunds": "Insufficient funds for transaction",
-  "pendingTokenClaim": "Claiming {{ symbol }}",
-  "failedTokenClaim": "Failed to claim {{ symbol }}",
-  "successTokenClaim": "You have successfully claimed {{ amount }} {{ symbol }}",
+  "pendingTokenClaim": "Claiming {{symbol}}",
+  "failedTokenClaim": "Failed to claim {{symbol}}",
+  "successTokenClaim": "You have successfully claimed {{amount}} {{symbol}}",
   "snapshotRecastVoteHelper": "You can still change your vote until the voting period ends.",
   "modifyGovernanceSetAzoriusProposalPendingMessage": "Submitting proposal to modify governance...",
   "errorLoadingParentNode": "Error loading parent"
