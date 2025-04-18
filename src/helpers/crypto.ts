@@ -168,15 +168,15 @@ export const buildSafeAPIPost = async (
 export const buildContractCall = ({
   target,
   encodedFunctionData,
-  delegateCall,
   overrides,
 }: {
   target: Address;
   encodedFunctionData: Hex;
-  delegateCall?: boolean;
   overrides?: Partial<SafeTransaction>;
 }): SafeTransaction => {
-  const operation: 0 | 1 = delegateCall ? 1 : 0;
+  // If ever in the future some caller of `buildContractCall` needs to specify delegateCall, add a `delegateCall` param to this function
+  const operation: 0 | 1 = 0;
+
   return buildSafeTransaction(
     Object.assign(
       {
