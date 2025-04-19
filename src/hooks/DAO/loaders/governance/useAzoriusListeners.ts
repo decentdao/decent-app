@@ -115,7 +115,7 @@ export const useAzoriusListeners = () => {
           // which include the `proposalId` error out because the RPC node (rather, the block it's on)
           // doesn't see this proposal yet (despite the event being caught in the app...).
           const averageBlockTime = await getAverageBlockTime(publicClient);
-          await new Promise(resolve => setTimeout(resolve, averageBlockTime * 1000));
+          await new Promise(resolve => setTimeout(resolve, averageBlockTime * 1000 * 2));
 
           const typedTransactions = log.args.transactions.map(t => ({
             ...t,
