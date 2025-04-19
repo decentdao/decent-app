@@ -11,7 +11,6 @@ import { FavoriteIcon } from '../icons/FavoriteIcon';
 import AddressCopier from '../links/AddressCopier';
 import { BarLoader } from '../loaders/BarLoader';
 import { ManageDAOMenu } from '../menus/ManageDAO/ManageDAOMenu';
-
 /**
  * Info card used on the DAO homepage.
  */

@@ -1,5 +1,7 @@
 import { useSearchParams } from 'react-router-dom';
-import { getAddress } from 'viem';
+import { getAddress, isAddress } from 'viem';
+import { validPrefixes } from '../../providers/NetworkConfig/networks';
+import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
 import { DAOKey } from '../../types';
 import { NetworkPrefix } from '../../types/network';
 
@@ -7,17 +9,47 @@ export function useCurrentDAOKey() {
   const [searchParams] = useSearchParams();
   const rawDAOKey = searchParams.get('dao');
 
-  const [addressPrefix, daoAddress] = rawDAOKey?.split(':') ?? [];
-  const normalizedDAOAddress = daoAddress ? getAddress(daoAddress) : undefined;
+  const { addressPrefix } = useNetworkConfigStore();
+
+  const [queryAddressPrefix, queryDaoAddress] = rawDAOKey?.split(':') ?? [];
+  const normalizedDAOAddress =
+    queryDaoAddress && isAddress(queryDaoAddress) ? getAddress(queryDaoAddress) : undefined;
+  const normalizedQueryAddressPrefix = queryAddressPrefix as NetworkPrefix;
 
   const daoKey =
-    addressPrefix && normalizedDAOAddress
-      ? (`${addressPrefix}:${normalizedDAOAddress}` as DAOKey)
+    queryAddressPrefix && normalizedDAOAddress
+      ? (`${queryAddressPrefix}:${normalizedDAOAddress}` as DAOKey)
       : undefined;
 
+  if (
+    queryAddressPrefix === undefined ||
+    queryDaoAddress === undefined ||
+    !validPrefixes.has(normalizedQueryAddressPrefix)
+  ) {
+    return {
+      invalidQuery: true,
+      wrongNetwork: false,
+      addressPrefix: undefined,
+      safeAddress: undefined,
+      daoKey: undefined,
+    };
+  }
+
+  if (queryAddressPrefix !== addressPrefix) {
+    return {
+      invalidQuery: false,
+      wrongNetwork: true,
+      addressPrefix: queryAddressPrefix,
+      safeAddress: undefined,
+      daoKey: undefined,
+    };
+  }
+
   return {
-    daoKey,
-    addressPrefix: addressPrefix as NetworkPrefix,
-    daoAddress: normalizedDAOAddress,
+    invalidQuery: false,
+    wrongNetwork: false,
+    addressPrefix: normalizedQueryAddressPrefix,
+    safeAddress: normalizedDAOAddress,
+    daoKey: daoKey,
   };
 }

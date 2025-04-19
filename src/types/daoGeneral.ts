@@ -7,3 +7,8 @@ export enum DAOState {
   freezeInit = 'stateFreezeInit',
   frozen = 'stateFrozen',
 }
+
+export interface GaslessVotingDaoData {
+  gaslessVotingEnabled: boolean;
+  paymasterAddress: Address | null;
+}

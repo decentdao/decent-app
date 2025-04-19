@@ -1,6 +1,12 @@
-import { Address, getAddress } from 'viem';
+import { getAddress } from 'viem';
 import { create } from 'zustand';
-import { DAOSubgraph, DecentModule, IDAO, SafeWithNextNonce } from '../../types';
+import {
+  DAOSubgraph,
+  DecentModule,
+  GaslessVotingDaoData,
+  IDAO,
+  SafeWithNextNonce,
+} from '../../types';
 
 export const initialDaoInfoStore: IDAO = {
   safe: null,
@@ -9,11 +15,6 @@ export const initialDaoInfoStore: IDAO = {
   gaslessVotingEnabled: false,
   paymasterAddress: undefined,
 };
-
-interface GaslessVotingDaoData {
-  gaslessVotingEnabled: boolean;
-  paymasterAddress: Address | null;
-}
 
 export interface DaoInfoStore extends IDAO {
   setSafeInfo: (safe: SafeWithNextNonce) => void;
