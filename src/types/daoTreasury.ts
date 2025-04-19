@@ -109,6 +109,7 @@ export type NFTBalance = {
     backgroundImage?: string;
     image?: string;
     imageUrl?: string;
+    name?: string;
   };
   tokenId: string | number;
   tokenUri?: string | undefined;
