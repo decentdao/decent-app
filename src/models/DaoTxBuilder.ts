@@ -126,7 +126,7 @@ export class DaoTxBuilder extends BaseTxBuilder {
         freezeGuardTxBuilder.buildDeployZodiacModuleTx(),
         freezeGuardTxBuilder.buildFreezeVotingSetupTx(),
         freezeGuardTxBuilder.buildDeployFreezeGuardTx(),
-        freezeGuardTxBuilder.buildSetGuardTx(abis.Azorius, azoriusTxBuilder.azoriusAddress!),
+        freezeGuardTxBuilder.buildSetGuardTx(azoriusTxBuilder.azoriusAddress!),
       );
     }
     const data = this.daoData as AzoriusERC20DAO;

@@ -1,6 +1,5 @@
 import { abis } from '@fractal-framework/fractal-contracts';
 import {
-  Abi,
   Address,
   encodeAbiParameters,
   encodeFunctionData,
@@ -180,13 +179,17 @@ export class FreezeGuardTxBuilder extends BaseTxBuilder {
     }
   }
 
-  public buildSetGuardTx(abi: Abi, address: Address): SafeTransaction {
+  public buildSetGuardTx(address: Address): SafeTransaction {
+    if (!this.freezeGuardAddress) {
+      throw new Error('Freeze guard address not set');
+    }
+
     return buildContractCall({
       target: address,
       encodedFunctionData: encodeFunctionData({
         functionName: 'setGuard',
         args: [this.freezeGuardAddress],
-        abi: abi,
+        abi: abis.Azorius,
       }),
     });
   }
