@@ -140,7 +140,6 @@ This section describes the process during the initial creation of a new DAO.
         - `**Current Behavior:**` Toggle ON proposes KV set + Add Stake + Whitelist.
         - `**Desired Behavior / Issue:**`
           - Offer "Activate Sponsorship" -> Propose: [Call `setFunctionValidator(strategy, selector, validatorAddress)`. If activation requires locking funds (`stakingRequired`), _also_ call `addStake(bundlerMinimumStake)`]. (See Issue #20)
-          - (If activation does _not_ require locked funds, i.e. `!stakingRequired`) _Confirm:_ Paymaster works with 0 locked funds. If yes, only `setFunctionValidator` is needed. (See Issue #21)
           - Offer "Withdraw Gas Tank" -> Propose: [Call `withdrawTo(recipient, amount)`].
 5.  **Refill:** (This remains largely the same, renumbered)
     - `**Current Behavior:**` An "Refill" button (`addGas`) allows a user (with proposal rights for proposal method, or any user for direct deposit) to add funds to the paymaster deposit (gas tank). This button is likely only visible if the Paymaster is deployed.
@@ -149,7 +148,7 @@ This section describes the process during the initial creation of a new DAO.
       - User chooses the method:
         - **Via Proposal:** Creates a new DAO proposal (`prepareRefillPaymasterAction`) to transfer funds from the DAO treasury to the paymaster's deposit on the EntryPoint contract. The user is navigated to the proposal creation page to submit it.
         - **Direct Deposit:** User sends funds directly from their connected wallet to the paymaster's deposit on the EntryPoint contract (`EntryPoint07Abi.depositTo`).
-    - `**Desired Behavior / Issue:**` Ensure the "Refill" button is only available when the Paymaster is deployed (`paymasterAddress !== null`). (See Issue #22)
+    - `**Desired Behavior / Issue:**` Ensure the "Refill" button is only available when the Paymaster is deployed (`paymasterAddress !== null`). (See Issue #21)
 
 ### 3.3. DAO Member: Voting on a Proposal
 
@@ -170,7 +169,7 @@ This section describes the process during the initial creation of a new DAO.
         - It compares the fetched `paymasterBalance` to the estimated `gasCost` returned by the bundler.
         - The `canCastGaslessVote` state variable is set to `true` **only if** the estimation succeeded _and_ `paymasterBalance >= gasCost`.
       - **Final Determination:** `canVoteForFree` is ultimately `true` if and only if `gaslessFeatureEnabled && gaslessVotingEnabled && canCastGaslessVote` evaluates to `true`.
-    - `**Desired Behavior / Issue:**` (See Issue #23) The determination of `canVoteForFree` should be made proactively and explicitly within the frontend, based on verifiable on-chain data, before attempting gas estimation. The process should be:
+    - `**Desired Behavior / Issue:**` (See Issue #22) The determination of `canVoteForFree` should be made proactively and explicitly within the frontend, based on verifiable on-chain data, before attempting gas estimation. The process should be:
       1.  **Check Global Feature Flag:** Verify `flag_gasless_voting` is enabled. If not, result is `false`.
       2.  **Check Paymaster Deployment:** Verify a `paymasterAddress` exists for the DAO (via `useDaoInfoStore` or `getPaymasterAddress`). If not, result is `false`.
       3.  **Check Strategy Validator:** Verify that the expected validator is registered for the voting strategy's function selector: `paymaster.validators(strategyAddress, voteSelector)` must return the _expected_, non-zero `validatorAddress`. If it's `address(0)` (or unexpected), result is `false`.
@@ -199,12 +198,12 @@ This section describes the process during the initial creation of a new DAO.
         - **Fallback on Error:** If another error occurs during the gasless submission process (e.g., bundler error, paymaster validation fails), an error toast appears (`castVoteError`), and the system automatically attempts to fall back to the standard voting path after a 5-second delay (`setTimeout(() => { castVote(...) }, 5000)`).
       - `**Desired Behavior / Issue:**` The fallback UX needs improvement. The 5-second automatic retry after a generic error toast is confusing. Instead:
         - Communicate the failure clearly to the user, explaining _why_ if possible (e.g., "Sponsored vote failed: Paymaster out of funds", "Sponsored vote failed: Network congestion").
-        - Explicitly ask the user if they want to proceed by submitting a standard transaction (paying their own gas). Avoid automatic retries. (See Issue #24)
+        - Explicitly ask the user if they want to proceed by submitting a standard transaction (paying their own gas). Avoid automatic retries. (See Issue #23)
       - `**Desired Behavior / Issue:**` Improve UX around pending states (`castGaslessVotePending`) and success/failure feedback using a modal:
         - **Immediately after the user signs the UserOperation and it is submitted to the bundler:** Display a **modal** with a clear **pending state** (e.g., "Your vote is _being_ sponsored...", perhaps with a loading animation). This replaces the current behavior where a success modal only appears _after_ confirmation.
         - **On successful on-chain confirmation:** Update the modal content to a **success state** (e.g., "Your vote _was_ sponsored!", possibly with a success animation or checkmark). This leverages the existing `ModalType.GASLESS_VOTE_SUCCESS` but shows it earlier in a pending form.
         - **If an error occurs _after_ submission** (e.g., bundler error, on-chain validation failure): Update the modal to an **error state**. This modal should clearly explain the failure and present the user with the option to retry via a standard transaction (paying their own gas), replacing the confusing automatic 5-second fallback.
-        - This modal-based flow provides continuous, clear feedback throughout the sponsored voting process, clearly distinguishing it from standard voting. (See Issue #25)
+        - This modal-based flow provides continuous, clear feedback throughout the sponsored voting process, clearly distinguishing it from standard voting. (See Issue #26)
     - **Standard Path (`canVoteForFree` is false):**
       - `**Current Behavior:**`
         - User selects their vote choice.
@@ -213,7 +212,7 @@ This section describes the process during the initial creation of a new DAO.
         - The standard `castVote` function is called.
         - The user is prompted to sign and send a standard blockchain transaction via their wallet, paying the associated gas fee themselves.
         - The UI does not proactively explain _why_ sponsoring is unavailable; the user only sees the standard voting option.
-      - `**Desired Behavior / Issue:**` Consider providing contextual information to the user explaining _why_ the "Vote for Free" option is not available, if the reason is known (e.g., "Sponsorship currently deactivated by DAO", "Sponsorship gas tank is low", "Network issue preventing sponsorship check"). This would improve transparency compared to simply not showing the option. (See Issue #26)
+      - `**Desired Behavior / Issue:**` Consider providing contextual information to the user explaining _why_ the "Vote for Free" option is not available, if the reason is known (e.g., "Sponsorship currently deactivated by DAO", "Sponsorship gas tank is low", "Network issue preventing sponsorship check"). This would improve transparency compared to simply not showing the option. (See Issue #25)
 
 ## 4. Technical Details (High-Level)
 
@@ -249,10 +248,9 @@ This section lists actionable improvements and issues identified in the desired 
 18. Disable actions related to increasing lock/deactivating sponsorship when already deactivated/withdrawable.
 19. Implement UI for "Inactive (Activation Required: Whitelist strategy / Lock funds)" status with warning label.
 20. Implement "Activate Sponsorship" proposal action: Call `setFunctionValidator(strategy, selector, validator)`. If `stakingRequired`, also call `addStake(bundlerMinimumStake)`.
-21. Confirm Paymaster functionality with 0 locked funds if activation doesn't require locking (`!stakingRequired`). Only `setFunctionValidator` needed in this case.
-22. Ensure the "Refill" button is only available when the Paymaster is deployed.
-23. Implement the revised proactive logic for determining `canVoteForFree` (8-step check: flag, deployment, validator check, status, activation, estimation, balance).
-24. Implement improved gasless vote fallback UX: clear error communication, explicit user prompt for standard tx retry, remove automatic fallback.
-25. Implement modal-based UX for sponsored votes: immediate pending modal, update to success/error state (incorporating #24 for error state).
-26. Consider adding contextual information explaining _why_ sponsoring is unavailable in the standard voting path.
-27. **Allow enabling Gasless Voting during DAO creation:** Implement the workflow where the creator provides `msg.value` to cover the initial stake, which is then forwarded via the predicted DAO address to the Paymaster's `addStake` function within the creation transaction. Requires address prediction, value routing, Paymaster deployment, internal `addStake` call, and strategy whitelisting (`setFunctionValidator`) within the main tx.
+21. Ensure the "Refill" button is only available when the Paymaster is deployed.
+22. Implement the revised proactive logic for determining `canVoteForFree` (8-step check: flag, deployment, validator check, status, activation, estimation, balance).
+23. Implement improved gasless vote fallback UX: clear error communication, explicit user prompt for standard tx retry, remove automatic fallback.
+24. Implement modal-based UX for sponsored votes: immediate pending modal, update to success/error state (incorporating #23 for error state).
+25. Consider adding contextual information explaining _why_ sponsoring is unavailable in the standard voting path.
+26. **Allow enabling Gasless Voting during DAO creation:** Implement the workflow where the creator provides `msg.value` to cover the initial stake, which is then forwarded via the predicted DAO address to the Paymaster's `addStake` function within the creation transaction. Requires address prediction, value routing, Paymaster deployment, internal `addStake` call, and strategy whitelisting (`setFunctionValidator`) within the main tx.
