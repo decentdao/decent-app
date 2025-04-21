@@ -9,6 +9,7 @@ import {
   getAddress,
   getContract,
   getCreate2Address,
+  isHex,
   keccak256,
   parseAbiParameters,
 } from 'viem';
@@ -195,8 +196,11 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
     const daoData = this.daoData as AzoriusGovernanceDAO;
 
     if (daoData.votingStrategyType === VotingStrategyType.LINEAR_ERC20) {
-      if (!this.predictedAzoriusAddress || !this.linearERC20VotingAddress) {
-        throw new Error('Linear ERC20 addresses not set');
+      if (!this.predictedAzoriusAddress) {
+        throw new Error('Predicted Azorius address not set');
+      }
+      if (!this.linearERC20VotingAddress) {
+        throw new Error('Linear ERC20 voting address not set');
       }
 
       return buildContractCall({
@@ -208,8 +212,11 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
         }),
       });
     } else if (daoData.votingStrategyType === VotingStrategyType.LINEAR_ERC721) {
-      if (!this.predictedAzoriusAddress || !this.linearERC721VotingAddress) {
-        throw new Error('Linear ERC721 addresses not set');
+      if (!this.linearERC721VotingAddress) {
+        throw new Error('Linear ERC721 voting address not set');
+      }
+      if (!this.predictedAzoriusAddress) {
+        throw new Error('Predicted Azorius address not set');
       }
 
       return buildContractCall({
