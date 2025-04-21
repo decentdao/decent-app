@@ -53,7 +53,7 @@ i18n
     initImmediate: true,
     debug: false,
     fallbackLng: 'en',
-    lng: 'en',
+    defaultNS: 'common',
     ns: [
       'actions',
       'breadcrumbs',
