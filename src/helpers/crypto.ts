@@ -209,10 +209,11 @@ export const encodeMultiSend = (txs: MetaTransaction[]): Hex => {
 };
 
 export const buildSignatures = (multiSendCallOnlyAddress: Address): Hex => {
-  const signatureData = ('0x000000000000000000000000' +
+  const signatureData =
+    '0x000000000000000000000000' +
     multiSendCallOnlyAddress.slice(2) +
     '0000000000000000000000000000000000000000000000000000000000000000' +
-    '01') as Hex;
+    '01';
 
   if (!isHex(signatureData)) {
     throw new Error('Invalid signature data');
