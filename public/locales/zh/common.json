@@ -122,6 +122,6 @@
   "recipients_one": "受援国",
   "recipients_other": "受助人",
   "airdrop": "空投",
-  "pageXofY": "第{{current}}之{{total}}页",
+  "pageXofY": "第{{current}}页，共{{total}}页",
   "network": "网络"
 }

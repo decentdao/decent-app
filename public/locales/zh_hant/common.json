@@ -122,5 +122,6 @@
   "recipients_one": "收件人",
   "recipients_other": "受助人",
   "airdrop": "空投",
+  "pageXofY": "第{{current}}頁，共{{total}}頁",
   "network": "網路"
 }
