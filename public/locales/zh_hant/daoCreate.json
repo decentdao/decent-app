@@ -98,7 +98,7 @@
   "tooltipTokenVoting": "<1>瞭解更多</1",
   "toastDisconnected": "連接帳戶以繼續！",
   "toastDisconnectedPersistent": "您需要連接您的錢包來部署此 DAO。",
-  "tooltipNftVoting": "NFT 投票允許一群 ERC-721 (NFT) 持有人提出交易並進行投票。可使用多個 NFT 位址。<1>瞭解更多</1",
+  "tooltipNftVoting": "NFT投票允許一群ERC-721(NFT)持有人提出交易並進行投票。可使用多個NFT位址。<1>瞭解更多</1>",
   "errorUnsupportedCreateOption": "此網路不支援先前選取的治理選項。",
   "attachFractalModuleLabel": "啟用回溯機制",
   "networks": "網路",
