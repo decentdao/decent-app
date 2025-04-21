@@ -218,7 +218,7 @@ export class FreezeGuardTxBuilder extends BaseTxBuilder {
       target: this.zodiacModuleProxyFactory,
       encodedFunctionData: encodeFunctionData({
         functionName: 'deployModule',
-        args: [this.getGuardMasterCopyAddress(), this.freezeGuardCallData!, this.saltNum],
+        args: [this.getGuardMasterCopyAddress(), this.freezeGuardCallData, this.saltNum],
         abi: ZodiacModuleProxyFactoryAbi,
       }),
     });
