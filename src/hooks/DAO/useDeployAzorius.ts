@@ -44,16 +44,12 @@ const useDeployAzorius = () => {
       moduleFractalMasterCopy,
       linearVotingErc20MasterCopy,
       linearVotingErc721MasterCopy,
-      linearVotingErc20V1MasterCopy,
-      linearVotingErc721V1MasterCopy,
       moduleAzoriusMasterCopy,
       freezeGuardAzoriusMasterCopy,
       freezeGuardMultisigMasterCopy,
       freezeVotingErc20MasterCopy,
       freezeVotingErc721MasterCopy,
       freezeVotingMultisigMasterCopy,
-      paymaster,
-      accountAbstraction,
     },
     addressPrefix,
   } = useNetworkConfigStore();
@@ -91,10 +87,9 @@ const useDeployAzorius = () => {
       opts: {
         shouldSetName: boolean;
         shouldSetSnapshot: boolean;
-        enableGaslessVoting: boolean;
       },
     ) => {
-      const { shouldSetName, shouldSetSnapshot, enableGaslessVoting } = opts;
+      const { shouldSetName, shouldSetSnapshot } = opts;
       if (!safeAddress || !canUserCreateProposal || !safe) {
         return;
       }
@@ -163,12 +158,8 @@ const useDeployAzorius = () => {
         moduleFractalMasterCopy,
         linearVotingErc20MasterCopy,
         linearVotingErc721MasterCopy,
-        linearVotingErc20V1MasterCopy,
-        linearVotingErc721V1MasterCopy,
         moduleAzoriusMasterCopy,
-        paymaster,
         votesErc20LockableMasterCopy,
-        accountAbstraction,
         subgraphInfo?.parentAddress ?? undefined,
       );
 
@@ -182,7 +173,6 @@ const useDeployAzorius = () => {
       const safeTx = await daoTxBuilder.buildAzoriusTx({
         shouldSetName,
         shouldSetSnapshot,
-        enableGaslessVoting,
         existingSafeOwners: safe.owners,
       });
 
@@ -249,11 +239,7 @@ const useDeployAzorius = () => {
       moduleFractalMasterCopy,
       linearVotingErc20MasterCopy,
       linearVotingErc721MasterCopy,
-      linearVotingErc20V1MasterCopy,
-      linearVotingErc721V1MasterCopy,
       moduleAzoriusMasterCopy,
-      paymaster,
-      accountAbstraction,
       submitProposal,
       t,
       getParentDAOModules,
