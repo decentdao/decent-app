@@ -45,7 +45,7 @@ type ContractsBase = {
 
   decentAutonomousAdminV1MasterCopy: Address;
 
-  paymaster?: {
+  paymaster: {
     decentPaymasterV1MasterCopy: Address;
     linearERC20VotingV1ValidatorV1: Address;
     linearERC721VotingV1ValidatorV1: Address;
@@ -93,12 +93,10 @@ type NetworkConfigBase = {
     };
   };
   createOptions: GovernanceType[];
-  accountAbstractionSupported: boolean;
 };
 
 // Type for networks *with* Account Abstraction
 type NetworkConfigWithAA = NetworkConfigBase & {
-  accountAbstractionSupported: true;
   contracts: ContractsBase & {
     // accountAbstraction is REQUIRED here
     accountAbstraction: {
@@ -112,7 +110,6 @@ type NetworkConfigWithAA = NetworkConfigBase & {
 
 // Type for networks *without* Account Abstraction
 type NetworkConfigWithoutAA = NetworkConfigBase & {
-  accountAbstractionSupported: false;
   contracts: ContractsBase & {
     // accountAbstraction is OPTIONAL and UNDEFINED here
     accountAbstraction?: undefined;
