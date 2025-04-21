@@ -4,6 +4,5 @@
   "transferAssets": "轉移資產",
   "transferAssetsSub": "建立一次性付款。",
   "comingSoon": "即將推出...",
-  "comingSoonSub": "途中有更多動作。",
-  "proposalBuilderBatch": "批次：{{ numOfTransactions }} 交易"
+  "comingSoonSub": "途中有更多動作。"
 }

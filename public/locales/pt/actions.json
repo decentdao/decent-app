@@ -4,6 +4,5 @@
   "transferAssets": "Transferir ativos",
   "transferAssetsSub": "Crie pagamentos únicos.",
   "comingSoon": "Em breve...",
-  "comingSoonSub": "Mais ações a caminho.",
-  "proposalBuilderBatch": "Lote: {{ numOfTransactions }} transacções"
+  "comingSoonSub": "Mais ações a caminho."
 }

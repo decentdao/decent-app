@@ -52,16 +52,16 @@ async function translateWithPlaceholders(text, langCode) {
 
   // Replace placeholders with temporary markers
   singleQuoteRegexPlaceholders.forEach((placeholder, index) => {
-    translatedText = translatedText.replace(placeholder, `<x>${placeholder}</x>`);
+    translatedText = translatedText.replace(placeholder, `<xx>${placeholder}</xx>`);
   });
 
   // Replace placeholders with double {{}} with temporary markers
   doubleQuoteRegexRegexPlaceholders.forEach((placeholder, index) => {
-    translatedText = translatedText.replace(placeholder, `<x>${placeholder}</x>`);
+    translatedText = translatedText.replace(placeholder, `<xx>${placeholder}</xx>`);
   });
 
   // Replace "Decent Labs" with temporary markers
-  translatedText = translatedText.replace('Decent Labs', '<x>Decent Labs</x>');
+  translatedText = translatedText.replace('Decent Labs', '<xx>Decent Labs</xx>');
 
   // Translate the text without placeholders
   try {
@@ -73,7 +73,7 @@ async function translateWithPlaceholders(text, langCode) {
         source_lang: 'EN',
         target_lang: langCode,
         tag_handling: 'xml',
-        ignore_tags: 'x',
+        ignore_tags: 'xx',
       }),
       {
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -90,7 +90,7 @@ async function translateWithPlaceholders(text, langCode) {
   }
 
   // Restore placeholders in the translated text
-  translatedText = translatedText.replaceAll('<x>', '').replaceAll('</x>', '');
+  translatedText = translatedText.replaceAll('<xx>', '').replaceAll('</xx>', '');
   return translatedText;
 }
 

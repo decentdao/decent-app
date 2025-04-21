@@ -61,6 +61,7 @@
   "helperTokenSymbol": "2-6 個字元，即 DCNT、SAFE、USDC。",
   "labelTokenSupply": "總供應量",
   "helperTokenSupply": "要建立的代幣總數。",
+  "labelMultisigGov": "Multisig ({{threshold}} 的{{totalSigners}})",
   "descMultisigGov": "最適合小組和/或頻繁的onchain活動。",
   "labelAzoriusErc20Gov": "ERC-20 代幣投票",
   "labelAzoriusErc20HatsWhitelistingGov": "代幣投票 + 白名單提案者 DAO",

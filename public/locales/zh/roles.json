@@ -25,12 +25,12 @@
   "starting": "开始",
   "ending": "结束",
   "deleteRole": "删除角色",
-  "addedHats": "添加 {{count}} 新角色",
-  "addedHats_other": "添加 {{count}} 新角色",
-  "updatedHats": "更新 {{count}} 角色",
-  "updatedHats_other": "更新 {{count}} 角色",
-  "removedHats": "删除 {{count}} 角色",
-  "removedHats_other": "删除 {{count}} 角色",
+  "addedHats": "添加{{count}}新角色",
+  "addedHats_other": "添加{{count}}新角色",
+  "updatedHats": "更新{{count}}角色",
+  "updatedHats_other": "更新{{count}}角色",
+  "removedHats": "删除{{count}}角色",
+  "removedHats_other": "删除{{count}}角色",
   "totalAmount": "总金额",
   "paymentStart": "付款开始",
   "Months": "月数",
@@ -141,5 +141,5 @@
   "startTermFailureToastMessage": "未开始学期",
   "invalidHatsTreeIdMessage": "帽子树 ID 无效",
   "savePayment": "添加付款",
-  "withdrawPayment": "从 {{roleName}} 向 DAO 撤回 {{amount}}"
+  "withdrawPayment": "从{{roleName}}向DAO撤回{{amount}}"
 }

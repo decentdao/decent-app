@@ -4,6 +4,5 @@
   "transferAssets": "Передача активів",
   "transferAssetsSub": "Створіть одноразові платежі.",
   "comingSoon": "Незабаром ...",
-  "comingSoonSub": "Більше дій на шляху.",
-  "proposalBuilderBatch": "Пакет: {{ numOfTransactions }} транзакцій"
+  "comingSoonSub": "Більше дій на шляху."
 }
