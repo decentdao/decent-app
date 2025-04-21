@@ -1,15 +1,24 @@
-import { Button, Box, Text, Image, Flex, Radio, RadioGroup, Icon } from '@chakra-ui/react';
-import { Check, CheckCircle, Sparkle } from '@phosphor-icons/react';
-import { useEffect, useMemo, useState } from 'react';
+import {
+  Box,
+  Button,
+  Flex,
+  Icon,
+  Image,
+  Radio,
+  RadioGroup,
+  Spinner,
+  Text,
+  VStack,
+} from '@chakra-ui/react';
+import { Check, CheckCircle, Sparkle, WarningCircle } from '@phosphor-icons/react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { TOOLTIP_MAXW } from '../../../constants/common';
-import useFeatureFlag from '../../../helpers/environmentFeatureFlags';
 import useSnapshotProposal from '../../../hooks/DAO/loaders/snapshot/useSnapshotProposal';
 import useCastSnapshotVote from '../../../hooks/DAO/proposal/useCastSnapshotVote';
 import useCastVote from '../../../hooks/DAO/proposal/useCastVote';
 import useCurrentBlockNumber from '../../../hooks/utils/useCurrentBlockNumber';
-import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
 import {
   AzoriusProposal,
   FractalProposal,
@@ -36,9 +45,15 @@ export function CastVote({ proposal }: { proposal: FractalProposal }) {
 
   const azoriusProposal = proposal as AzoriusProposal;
 
-  // @todo: (gv) Build better UX around castGaslessVotePending (and probably castVotePending)
-  const { castVote, castVotePending, castGaslessVote, castGaslessVotePending, canCastGaslessVote } =
-    useCastVote(proposal.proposalId, azoriusProposal.votingStrategy);
+  const {
+    castVote,
+    castVotePending,
+    castGaslessVote,
+    castGaslessVotePending,
+    canCastGaslessVote,
+    isLoadingEligibility,
+    gasEstimationError,
+  } = useCastVote(proposal.proposalId, azoriusProposal.votingStrategy);
 
   const {
     castSnapshotVote,
@@ -50,20 +65,10 @@ export function CastVote({ proposal }: { proposal: FractalProposal }) {
 
   const { canVoteLoading, hasVoted, hasVotedLoading } = useVoteContext();
 
-  const { gaslessVotingEnabled } = useDaoInfoStore();
-
   const gaslessVoteSuccessModal = useDecentModal(ModalType.GASLESS_VOTE_SUCCESS);
 
-  // Set a reasonable minimum (slightly higher than the required amount)
-  const gaslessFeatureEnabled = useFeatureFlag('flag_gasless_voting');
-  const canVoteForFree = useMemo(() => {
-    return gaslessFeatureEnabled && gaslessVotingEnabled && canCastGaslessVote;
-  }, [canCastGaslessVote, gaslessFeatureEnabled, gaslessVotingEnabled]);
+  const canVoteForFree = canCastGaslessVote;
 
-  // If user is lucky enough - he could create a proposal and proceed to vote on it
-  // even before the block, in which proposal was created, was mined.
-  // This gives a weird behavior when casting vote fails due to requirement under LinearERC20Voting contract that current block number
-  // shouldn't be equal to proposal's start block number. Which is dictated by the need to have voting tokens delegation being "finalized" to prevent proposal hijacking.
   const proposalStartBlockNotFinalized = Boolean(
     !snapshotProposal &&
       isCurrentBlockLoaded &&
@@ -78,7 +83,8 @@ export function CastVote({ proposal }: { proposal: FractalProposal }) {
     proposalStartBlockNotFinalized ||
     canVoteLoading ||
     hasVoted ||
-    hasVotedLoading;
+    hasVotedLoading ||
+    isLoadingEligibility;
 
   const handleVoteClick = async () => {
     if (selectedVoteChoice !== undefined) {
@@ -88,8 +94,9 @@ export function CastVote({ proposal }: { proposal: FractalProposal }) {
           onSuccess: gaslessVoteSuccessModal,
           onError: (error: any) => {
             console.error('Gasless voting error:', error);
-            toast.error(`${t('castVoteError')}${t('castVoteErrorTempAutoFallback')}`);
-
+            toast.error(
+              `${t('castVoteError')}. ${error.message || 'Gasless submission failed.'} ${t('castVoteErrorTempAutoFallback')}`,
+            );
             setTimeout(() => {
               castVote(selectedVoteChoice);
             }, 5000);
@@ -199,57 +206,100 @@ export function CastVote({ proposal }: { proposal: FractalProposal }) {
     <DecentTooltip
       placement="left"
       maxW={TOOLTIP_MAXW}
-      title={
+      label={
         proposalStartBlockNotFinalized
           ? t('proposalStartBlockNotFinalized', { ns: 'proposal' })
           : hasVoted
             ? t('currentUserAlreadyVoted', { ns: 'proposal' })
             : undefined
       }
+      hasArrow
     >
-      <RadioGroup
+      <VStack
+        align="stretch"
+        spacing={4}
         mt={6}
-        mx={-2}
       >
-        {VOTE_CHOICES.map(choice => (
-          <Radio
-            key={choice.value}
-            onChange={event => {
-              event.preventDefault();
-              if (!disabled) {
-                setVoiceChoice(choice.value);
-              }
-            }}
-            width="100%"
-            isChecked={choice.value === selectedVoteChoice}
-            isDisabled={disabled}
-            bg="black-0"
-            color="lilac--3"
-            size="md"
-            _disabled={{ bg: 'neutral-6', color: 'neutral-5' }}
-            _hover={{ bg: 'black-0', color: 'lilac--4' }}
-            _checked={{
-              bg: 'black-0',
-              color: 'lilac--3',
-              borderWidth: '6px',
-            }}
-            mb={2}
+        <RadioGroup mx={-2}>
+          {VOTE_CHOICES.map(choice => (
+            <Radio
+              key={choice.value}
+              onChange={event => {
+                event.preventDefault();
+                if (!disabled) {
+                  setVoiceChoice(choice.value);
+                }
+              }}
+              width="100%"
+              isChecked={choice.value === selectedVoteChoice}
+              isDisabled={disabled}
+              bg="black-0"
+              color="lilac--3"
+              size="md"
+              _disabled={{ bg: 'neutral-6', color: 'neutral-5', cursor: 'not-allowed' }}
+              _hover={{ bg: 'black-0', color: 'lilac--4' }}
+              _checked={{
+                bg: 'black-0',
+                color: 'lilac--3',
+                borderWidth: '6px',
+              }}
+              mb={2}
+              p={3}
+            >
+              {t(choice.label)}
+            </Radio>
+          ))}
+        </RadioGroup>
+
+        {isLoadingEligibility ? (
+          <Flex
+            justifyContent="center"
+            alignItems="center"
+            h="3.25rem"
           >
-            {t(choice.label)}
-          </Radio>
-        ))}
+            <Spinner size="md" />
+            <Text
+              ml={3}
+              textStyle="body-base"
+              color="neutral-7"
+            >
+              {t('checkingSponsorship')}
+            </Text>
+          </Flex>
+        ) : gasEstimationError ? (
+          <Flex
+            p={3}
+            bg="neutral-3"
+            borderRadius="md"
+            alignItems="center"
+          >
+            <Icon
+              as={WarningCircle}
+              color="gold.500"
+              boxSize="1.25rem"
+              mr={2}
+            />
+            <Text
+              textStyle="body-small"
+              color="neutral-7"
+            >
+              {gasEstimationError} {t('sponsorshipUnavailableStandardVote')}
+            </Text>
+          </Flex>
+        ) : null}
+
         <Button
-          marginTop={5}
           padding="3"
           height="3.25rem"
           width="full"
           leftIcon={canVoteForFree ? <Icon as={Sparkle} /> : undefined}
-          isDisabled={disabled}
+          isDisabled={disabled || selectedVoteChoice === undefined}
           onClick={handleVoteClick}
+          isLoading={castGaslessVotePending || castVotePending}
         >
           {canVoteForFree ? t('voteForFree') : t('vote')}
         </Button>
-      </RadioGroup>
+      </VStack>
     </DecentTooltip>
   );
 }

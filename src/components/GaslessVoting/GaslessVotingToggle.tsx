@@ -1,17 +1,30 @@
 import { Box, Button, Flex, HStack, Image, Switch, Text } from '@chakra-ui/react';
+import { abis } from '@fractal-framework/fractal-contracts';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { getContract } from 'viem';
+import {
+  Address,
+  encodeFunctionData,
+  getAbiItem,
+  getContract,
+  Hex,
+  toFunctionSelector,
+} from 'viem';
 import { EntryPoint07Abi } from '../../assets/abi/EntryPoint07Abi';
 import { DAO_ROUTES } from '../../constants/routes';
 import useFeatureFlag from '../../helpers/environmentFeatureFlags';
 import { useDepositInfo } from '../../hooks/DAO/accountAbstraction/useDepositInfo';
+import { usePaymasterValidatorStatus } from '../../hooks/DAO/accountAbstraction/usePaymasterValidatorStatus';
+import useSubmitProposal from '../../hooks/DAO/proposal/useSubmitProposal';
+import { useCurrentDAOKey } from '../../hooks/DAO/useCurrentDAOKey';
 import useNetworkPublicClient from '../../hooks/useNetworkPublicClient';
 import { useNetworkWalletClient } from '../../hooks/useNetworkWalletClient';
 import { useCanUserCreateProposal } from '../../hooks/utils/useCanUserSubmitProposal';
+import { useStore } from '../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
 import { useProposalActionsStore } from '../../store/actions/useProposalActionsStore';
 import { useDaoInfoStore } from '../../store/daoInfo/useDaoInfoStore';
+import { FractalTokenType } from '../../types/fractal';
 import { formatCoin } from '../../utils';
 import { prepareRefillPaymasterAction } from '../../utils/dao/prepareRefillPaymasterActionData';
 import { RefillGasData } from '../ui/modals/GaslessVoting/RefillGasTankModal';
@@ -19,9 +32,10 @@ import { ModalType } from '../ui/modals/ModalProvider';
 import { useDecentModal } from '../ui/modals/useDecentModal';
 import Divider from '../ui/utils/Divider';
 
-interface GaslessVotingToggleProps {
-  isEnabled: boolean;
-  onToggle: () => void;
+interface LocalProposalExecuteData {
+  targets: Address[];
+  values: bigint[];
+  calldatas: Hex[];
 }
 
 function GaslessVotingToggleContent({
@@ -29,7 +43,14 @@ function GaslessVotingToggleContent({
   onToggle,
   isSettings,
   displayNeedStakingLabel,
-}: GaslessVotingToggleProps & { isSettings?: boolean; displayNeedStakingLabel?: boolean }) {
+  isLoading,
+}: {
+  isEnabled: boolean;
+  onToggle: () => void;
+  isSettings?: boolean;
+  displayNeedStakingLabel?: boolean;
+  isLoading?: boolean;
+}) {
   const { t } = useTranslation('gaslessVoting');
   const { bundlerMinimumStake } = useNetworkConfigStore();
   const { canUserCreateProposal } = useCanUserCreateProposal();
@@ -83,7 +104,7 @@ function GaslessVotingToggleContent({
         </Flex>
         <Switch
           size="md"
-          isDisabled={isSettings && !canUserCreateProposal}
+          isDisabled={(isSettings && !canUserCreateProposal) || isLoading}
           isChecked={isEnabled}
           onChange={() => onToggle()}
           variant="secondary"
@@ -93,11 +114,15 @@ function GaslessVotingToggleContent({
   );
 }
 
-export function GaslessVotingToggleDAOSettings(props: GaslessVotingToggleProps) {
-  const { t } = useTranslation('gaslessVoting');
+export function GaslessVotingToggleDAOSettings() {
+  const { t } = useTranslation(['gaslessVoting', 'proposalMetadata', 'modals']);
+  const { submitProposal, pendingCreateTx } = useSubmitProposal();
+  const { daoKey } = useCurrentDAOKey();
+  const { governanceContracts } = useStore({ daoKey });
+
   const {
     addressPrefix,
-    contracts: { accountAbstraction },
+    contracts: { accountAbstraction, paymaster: paymasterConfig },
     bundlerMinimumStake,
   } = useNetworkConfigStore();
 
@@ -105,11 +130,113 @@ export function GaslessVotingToggleDAOSettings(props: GaslessVotingToggleProps) 
   const publicClient = useNetworkPublicClient();
   const nativeCurrency = publicClient.chain.nativeCurrency;
 
-  const { safe, gaslessVotingEnabled, paymasterAddress } = useDaoInfoStore();
+  const { safe, paymasterAddress } = useDaoInfoStore();
   const { depositInfo } = useDepositInfo(paymasterAddress);
+  const { isValidatorSet, isLoading: isLoadingValidatorStatus } = usePaymasterValidatorStatus();
 
   const { addAction } = useProposalActionsStore();
   const { data: walletClient } = useNetworkWalletClient();
+
+  const isLoading = isLoadingValidatorStatus || pendingCreateTx;
+
+  const handleToggle = async () => {
+    if (!safe?.address || !paymasterAddress || !paymasterConfig || isLoading || !safe.nextNonce)
+      return;
+
+    const preparedTransactions: {
+      target: Address;
+      value: bigint;
+      abi: any;
+      functionName: string;
+      args: any[];
+    }[] = [];
+    let proposalDescription = '';
+    let proposalTitle = '';
+
+    const strategies = governanceContracts.strategies;
+    const validatorActions: {
+      strategyAddress: Address;
+      validatorAddress: Address;
+      selector: Hex;
+    }[] = [];
+
+    for (const strategy of strategies) {
+      let validatorAddress: Address | undefined;
+      let selector: Hex | undefined;
+      if (strategy.type === FractalTokenType.erc20) {
+        validatorAddress = paymasterConfig.linearERC20VotingV1ValidatorV1;
+        selector = toFunctionSelector(getAbiItem({ abi: abis.LinearERC20VotingV1, name: 'vote' }));
+      } else if (strategy.type === FractalTokenType.erc721) {
+        validatorAddress = paymasterConfig.linearERC721VotingV1ValidatorV1;
+        selector = toFunctionSelector(getAbiItem({ abi: abis.LinearERC721VotingV1, name: 'vote' }));
+      }
+
+      if (validatorAddress && selector) {
+        validatorActions.push({ strategyAddress: strategy.address, validatorAddress, selector });
+      }
+    }
+
+    if (isValidatorSet) {
+      proposalTitle = t('disableSponsorshipProposalTitle', { ns: 'proposalMetadata' });
+      proposalDescription = t('disableSponsorshipProposalDescription', { ns: 'proposalMetadata' });
+      for (const action of validatorActions) {
+        preparedTransactions.push({
+          target: paymasterAddress,
+          value: 0n,
+          abi: abis.DecentPaymasterV1,
+          functionName: 'removeFunctionValidator',
+          args: [action.strategyAddress, action.selector],
+        });
+      }
+    } else {
+      proposalTitle = t('enableSponsorshipProposalTitle', { ns: 'proposalMetadata' });
+      proposalDescription = t('enableSponsorshipProposalDescription', { ns: 'proposalMetadata' });
+      for (const action of validatorActions) {
+        preparedTransactions.push({
+          target: paymasterAddress,
+          value: 0n,
+          abi: abis.DecentPaymasterV1,
+          functionName: 'setFunctionValidator',
+          args: [action.strategyAddress, action.selector, action.validatorAddress],
+        });
+      }
+    }
+
+    if (preparedTransactions.length === 0) {
+      console.error('No valid validator actions could be prepared.');
+      return;
+    }
+
+    const proposalExecuteData: LocalProposalExecuteData = {
+      targets: preparedTransactions.map(tx => tx.target),
+      values: preparedTransactions.map(tx => tx.value),
+      calldatas: preparedTransactions.map(tx =>
+        encodeFunctionData({
+          abi: tx.abi,
+          functionName: tx.functionName,
+          args: tx.args,
+        }),
+      ),
+    };
+
+    await submitProposal({
+      proposalData: {
+        ...proposalExecuteData,
+        metaData: {
+          title: proposalTitle,
+          description: proposalDescription,
+          documentationUrl: '',
+        },
+      },
+      pendingToastMessage: t('pendingCreateProposalToast', { ns: 'modals' }),
+      successToastMessage: t('successCreateProposalToast', { ns: 'modals' }),
+      failedToastMessage: t('failedCreateProposalToast', { ns: 'modals' }),
+      nonce: safe.nextNonce,
+      successCallback: () => {
+        navigate(DAO_ROUTES.proposals.relative(addressPrefix, safe.address));
+      },
+    });
+  };
 
   const refillGas = useDecentModal(ModalType.REFILL_GAS, {
     onSubmit: async (refillGasData: RefillGasData) => {
@@ -167,12 +294,19 @@ export function GaslessVotingToggleDAOSettings(props: GaslessVotingToggleProps) 
   });
 
   const gaslessFeatureEnabled = useFeatureFlag('flag_gasless_voting');
-  const gaslessStakingEnabled = gaslessVotingEnabled && bundlerMinimumStake !== undefined;
+  const isStakingRequired = bundlerMinimumStake !== undefined && bundlerMinimumStake > 0n;
+  const gaslessStakingRelevant = gaslessFeatureEnabled && isStakingRequired;
+  const displayNeedStakingLabel =
+    gaslessStakingRelevant &&
+    isValidatorSet &&
+    (depositInfo?.stake || 0n) < (bundlerMinimumStake || 0n);
+
+  console.log({ gaslessFeatureEnabled, paymasterAddress });
+
   if (!gaslessFeatureEnabled) return null;
 
   const paymasterBalance = depositInfo?.balance || 0n;
   const stakedAmount = depositInfo?.stake || 0n;
-  const minStakeAmount = bundlerMinimumStake || 0n;
   const formattedPaymasterBalance = formatCoin(
     paymasterBalance,
     true,
@@ -201,56 +335,56 @@ export function GaslessVotingToggleDAOSettings(props: GaslessVotingToggleProps) 
       />
 
       <GaslessVotingToggleContent
-        {...props}
+        isEnabled={isValidatorSet}
+        onToggle={handleToggle}
         isSettings
-        displayNeedStakingLabel={gaslessStakingEnabled && stakedAmount < minStakeAmount}
+        displayNeedStakingLabel={displayNeedStakingLabel}
+        isLoading={isLoading}
       />
 
-      {gaslessVotingEnabled && (
-        <Flex justifyContent="space-between">
-          <Flex
-            direction="column"
-            justifyContent="space-between"
+      <Flex justifyContent="space-between">
+        <Flex
+          direction="column"
+          justifyContent="space-between"
+        >
+          <Text
+            textStyle="labels-small"
+            color="neutral-7"
+            mb="0.25rem"
           >
-            <Text
-              textStyle="labels-small"
-              color="neutral-7"
-              mb="0.25rem"
-            >
-              {t('paymasterBalance')}
-            </Text>
-            <Text
-              textStyle="labels-large"
-              display="flex"
-              alignItems="center"
-            >
-              {formattedPaymasterBalance}
-              <Image
-                src={'/images/coin-icon-default.svg'} // @todo: (gv) Use the correct image for the token.
-                fallbackSrc={'/images/coin-icon-default.svg'}
-                alt={nativeCurrency.symbol}
-                w="1.25rem"
-                h="1.25rem"
-                ml="0.5rem"
-                mr="0.25rem"
-              />
-              {nativeCurrency.symbol}
-            </Text>
-          </Flex>
-
-          <Button
-            variant="secondary"
-            size="sm"
-            onClick={() => {
-              refillGas();
-            }}
+            {t('paymasterBalance')}
+          </Text>
+          <Text
+            textStyle="labels-large"
+            display="flex"
+            alignItems="center"
           >
-            {t('addGas')}
-          </Button>
+            {formattedPaymasterBalance}
+            <Image
+              src={'/images/coin-icon-default.svg'}
+              fallbackSrc={'/images/coin-icon-default.svg'}
+              alt={nativeCurrency.symbol}
+              w="1.25rem"
+              h="1.25rem"
+              ml="0.5rem"
+              mr="0.25rem"
+            />
+            {nativeCurrency.symbol}
+          </Text>
         </Flex>
-      )}
 
-      {gaslessStakingEnabled && (
+        <Button
+          variant="secondary"
+          size="sm"
+          onClick={() => {
+            refillGas();
+          }}
+        >
+          {t('addGas')}
+        </Button>
+      </Flex>
+
+      {gaslessStakingRelevant && (
         <Flex justifyContent="space-between">
           <Flex
             direction="column"
@@ -270,7 +404,7 @@ export function GaslessVotingToggleDAOSettings(props: GaslessVotingToggleProps) 
             >
               {formattedPaymasterStakedAmount}
               <Image
-                src={'/images/coin-icon-default.svg'} // @todo: (gv) Use the correct image for the token.
+                src={'/images/coin-icon-default.svg'}
                 fallbackSrc={'/images/coin-icon-default.svg'}
                 alt={nativeCurrency.symbol}
                 w="1.25rem"

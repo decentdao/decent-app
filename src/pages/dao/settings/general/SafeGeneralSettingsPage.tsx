@@ -35,14 +35,7 @@ export function SafeGeneralSettingsPage() {
   const [snapshotENS, setSnapshotENS] = useState('');
   const [snapshotENSValid, setSnapshotENSValid] = useState<boolean>();
 
-  const { gaslessVotingEnabled, paymasterAddress } = useDaoInfoStore();
-
-  const [isGaslessVotingEnabledToggled, setIsGaslessVotingEnabledToggled] =
-    useState(gaslessVotingEnabled);
-
-  useEffect(() => {
-    setIsGaslessVotingEnabledToggled(gaslessVotingEnabled);
-  }, [gaslessVotingEnabled]);
+  const { paymasterAddress } = useDaoInfoStore();
 
   const { daoKey } = useCurrentDAOKey();
   const {
@@ -99,7 +92,6 @@ export function SafeGeneralSettingsPage() {
 
   const nameChanged = name !== subgraphInfo?.daoName;
   const snapshotChanged = snapshotENSValid && snapshotENS !== subgraphInfo?.daoSnapshotENS;
-  const gaslessVotingChanged = isGaslessVotingEnabledToggled !== gaslessVotingEnabled;
 
   const { buildInstallVersionedVotingStrategies } = useInstallVersionedVotingStrategy();
 
@@ -120,17 +112,6 @@ export function SafeGeneralSettingsPage() {
       valueArgs.push(snapshotENS);
     }
 
-    if (gaslessVotingChanged) {
-      keyArgs.push('gaslessVotingEnabled');
-      if (isGaslessVotingEnabledToggled) {
-        changeTitles.push(t('enableGaslessVoting', { ns: 'proposalMetadata' }));
-        valueArgs.push('true');
-      } else {
-        changeTitles.push(t('disableGaslessVoting', { ns: 'proposalMetadata' }));
-        valueArgs.push('false');
-      }
-    }
-
     const title = changeTitles.join(`; `);
 
     const targets = [keyValuePairs];
@@ -143,7 +124,7 @@ export function SafeGeneralSettingsPage() {
     ];
     const values = [0n];
 
-    if (gaslessVotingChanged && isGaslessVotingEnabledToggled) {
+    if (gaslessVotingSupported) {
       if (!safeAddress) {
         throw new Error('Safe address is not set');
       }
@@ -356,14 +337,7 @@ export function SafeGeneralSettingsPage() {
             />
           </Flex>
 
-          {gaslessVotingSupported && (
-            <GaslessVotingToggleDAOSettings
-              isEnabled={isGaslessVotingEnabledToggled}
-              onToggle={() => {
-                setIsGaslessVotingEnabledToggled(!isGaslessVotingEnabledToggled);
-              }}
-            />
-          )}
+          {gaslessVotingSupported && <GaslessVotingToggleDAOSettings />}
           {canUserCreateProposal && (
             <>
               <Divider
@@ -375,7 +349,7 @@ export function SafeGeneralSettingsPage() {
                 variant="secondary"
                 size="sm"
                 marginLeft="auto"
-                isDisabled={!nameChanged && !snapshotChanged && !gaslessVotingChanged}
+                isDisabled={!nameChanged && !snapshotChanged}
                 onClick={handleEditGeneralGovernance}
               >
                 {t('proposeChanges')}
