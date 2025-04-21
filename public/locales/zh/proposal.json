@@ -172,7 +172,7 @@
   "cancelableHelper": "如果启用，安全信息流的所有者可以取消该信息流。",
   "transferable": "可转让",
   "transferableHelper": "如果启用，可以将数据流传输到另一个地址",
-  "tranche": "{{index}}",
+  "tranche": "第{{index}}期",
   "trancheHelper": "这批代币的发行量",
   "trancheAmount": "分期付款金额",
   "trancheAmountHelper": "这批代币的发行量",
