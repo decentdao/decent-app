@@ -123,7 +123,6 @@ export const baseConfig: NetworkConfig = {
     GovernanceType.AZORIUS_ERC20,
     GovernanceType.AZORIUS_ERC721,
   ],
-  accountAbstractionSupported: false,
 };
 
 export default baseConfig;
