@@ -221,24 +221,19 @@ This section describes the process during the initial creation of a new DAO.
         - It compares the fetched `paymasterBalance` to the estimated `gasCost` returned by the bundler.
         - The `canCastGaslessVote` state variable is set to `true` **only if** the estimation succeeded _and_ `paymasterBalance >= gasCost`.
       - **Final Determination:** `canVoteForFree` is ultimately `true` if and only if `gaslessFeatureEnabled && gaslessVotingEnabled && canCastGaslessVote` evaluates to `true`.
-    - `**Desired Behavior / Issue:**` The determination of `canVoteForFree` should be made proactively and explicitly within the frontend, based on verifiable on-chain data, before attempting gas estimation. The process should be:
-      1.  **Check Global Feature Flag:** Verify `flag_gasless_voting` is enabled. If not, result is `false`.
-      2.  **Check Paymaster Deployment:** Verify a `paymasterAddress` exists for the DAO (via `useDaoInfoStore` or `getPaymasterAddress`). If not, result is `false`.
-      3.  **Check Strategy Validator:** Verify that the expected validator is registered for the voting strategy's function selector: `paymaster.validators(strategyAddress, voteSelector)` must return the _expected_, non-zero `validatorAddress`. If it's `address(0)` (or unexpected), result is `false`.
-      4.  **Fetch Paymaster Status:** Retrieve the Paymaster's deposit and lock/stake information (`depositInfo` containing `balance`, `stake`, `withdrawTime` via `useDepositInfo`) and the network's `bundlerMinimumStake` (if `stakingRequired`).
-      5.  **Verify Sponsorship Stake/Lock Status:** Check if the Paymaster's stake/lock status allows sponsoring:
-          - **If Fund Locking Required** (`stakingRequired` is true AND `bundlerMinimumStake > 0`):
-            - Check if `depositInfo.stake >= bundlerMinimumStake`.
-            - Check if the lock is active (`depositInfo.withdrawTime === 0`).
-            - If either of these fails, result is `false`.
-          - **If Fund Locking Not Required:** This check is implicitly passed.
-      6.  **Estimate Gas Cost:** **Only if all preceding checks passed**, attempt to estimate the gas cost (`estimatedGasCost`) for the specific vote UserOperation (e.g., using a modified `prepareGaslessVoteOperation` logic).
-          - If this estimation fails for reasons other than predictable Paymaster status issues (which should have been caught above), handle the error appropriately (perhaps indicate temporary network issue, but still result in `false` for `canVoteForFree`).
-      7.  **Check Deposit Balance:** Compare the fetched `depositInfo.balance` against the `estimatedGasCost` from the successful estimation.
-      8.  **Final Determination:** `canVoteForFree` is `true` **if and only if** the global flag is enabled (1), Paymaster is deployed (2), the correct Strategy Validator is set (3), Sponsorship Stake/Lock Status is valid (5), gas estimation succeeded (6), AND the deposit balance is sufficient (`depositInfo.balance >= estimatedGasCost`) (7). This determination avoids reliance on the deprecated KV flag and implicit bundler error handling for Paymaster status checks.
-4.  **Determine Voting Path:**
-    - **Sponsored Path (`canVoteForFree` is true):**
-      - `**Current Behavior:**`
+    - `**Desired Behavior / Issue:**` The determination of voting eligibility should be made proactively and explicitly within the frontend based on the Paymaster's actual state and balance.
+      1.  **Check Global Feature Flag:** Verify `flag_gasless_voting` is enabled. If not, sponsorship is unavailable.
+      2.  **Check Paymaster Deployment:** Verify a `paymasterAddress` exists for the DAO. If not, sponsorship is unavailable.
+      3.  **Determine Paymaster Sponsorship Status:** Use the logic defined in Section 3.2.4 (based on validator status, `DepositInfo`, `stakingRequired`, etc.) to determine the current status (e.g., "Active", "Active (Stake Issue)", "Inactive (Validator Not Set)", "Deactivating", "Deactivated").
+      4.  **Eligibility Check:**
+          - **If Sponsorship Status is exactly `"Active"`:**
+            - Attempt to estimate the gas cost (`estimatedGasCost`) for the specific vote UserOperation.
+            - Fetch the current Paymaster deposit balance (`depositInfo.balance`).
+            - Compare balance to cost (`depositInfo.balance >= estimatedGasCost`).
+          - **If Sponsorship Status is _not_ `"Active"`:** Sponsorship is considered unavailable for this vote.
+4.  **Determine Voting Experience:**
+    - `**Current Behavior:**`
+      - **Sponsored Path (`canVoteForFree` is true):**
         - User selects their vote choice.
         - User clicks the "Vote" button.
         - The `castGaslessVote` function is called.
@@ -248,23 +243,30 @@ This section describes the process during the initial creation of a new DAO.
         - On successful inclusion, a confirmation modal is shown (`ModalType.GASLESS_VOTE_SUCCESS`) indicating the vote was sponsored ("Your vote is sponsored.").
         - If the user rejects the signature request (`UserRejectedRequestError`), an error message is shown via toast.
         - **Fallback on Error:** If another error occurs during the gasless submission process (e.g., bundler error, paymaster validation fails), an error toast appears (`castVoteError`), and the system automatically attempts to fall back to the standard voting path after a 5-second delay (`setTimeout(() => { castVote(...) }, 5000)`).
-      - `**Desired Behavior / Issue:**` The fallback UX needs improvement. The 5-second automatic retry after a generic error toast is confusing. Instead:
-        - Communicate the failure clearly to the user, explaining _why_ if possible (e.g., "Sponsored vote failed: Paymaster out of funds", "Sponsored vote failed: Network congestion").
-        - Explicitly ask the user if they want to proceed by submitting a standard transaction (paying their own gas). Avoid automatic retries.
-      - `**Desired Behavior / Issue:**` Improve UX around pending states (`castGaslessVotePending`) and success/failure feedback using a modal:
-        - **Immediately after the user signs the UserOperation and it is submitted to the bundler:** Display a **modal** with a clear **pending state** (e.g., "Your vote is _being_ sponsored...", perhaps with a loading animation). This replaces the current behavior where a success modal only appears _after_ confirmation.
-        - **On successful on-chain confirmation:** Update the modal content to a **success state** (e.g., "Your vote _was_ sponsored!", possibly with a success animation or checkmark). This leverages the existing `ModalType.GASLESS_VOTE_SUCCESS` but shows it earlier in a pending form.
-        - **If an error occurs _after_ submission** (e.g., bundler error, on-chain validation failure): Update the modal to an **error state**. This modal should clearly explain the failure and present the user with the option to retry via a standard transaction (paying their own gas), replacing the confusing automatic 5-second fallback.
-        - This modal-based flow provides continuous, clear feedback throughout the sponsored voting process, clearly distinguishing it from standard voting.
-    - **Standard Path (`canVoteForFree` is false):**
-      - `**Current Behavior:**`
+      - **Standard Path (`canVoteForFree` is false):**
         - User selects their vote choice.
         - The button simply says "Vote" (without the "for free" indication).
         - User clicks the "Vote" button.
         - The standard `castVote` function is called.
         - The user is prompted to sign and send a standard blockchain transaction via their wallet, paying the associated gas fee themselves.
         - The UI does not proactively explain _why_ sponsoring is unavailable; the user only sees the standard voting option.
-      - `**Desired Behavior / Issue:**` Consider providing contextual information to the user explaining _why_ the "Vote for Free" option is not available, if the reason is known (e.g., "Sponsorship currently deactivated by DAO", "Sponsorship gas tank is low", "Network issue preventing sponsorship check"). This would improve transparency compared to simply not showing the option.
+    - `**Desired Behavior / Issue:**` Based on the checks above, the UI presents the appropriate voting option and handles the submission:
+      - **Scenario A: Sponsorship Status == "Active"**
+        - **Sub-Scenario A.1: Sufficient Balance (`depositInfo.balance >= estimatedGasCost`)**
+          - **UI:** Show "Vote for Free" button.
+          - **Action:** User clicks -> Proceed with `castGaslessVote` flow:
+            - User signs UserOperation.
+            - Submit UserOp to bundler.
+            - Show pending modal.
+            - On confirmation, show success modal.
+          - **Error Handling:** If `castGaslessVote` fails post-submission (bundler/paymaster error), display error modal with option to retry via standard tx.
+        - **Sub-Scenario A.2: Insufficient Balance (`depositInfo.balance < estimatedGasCost`)**
+          - **UI:** Show standard "Vote" button. Display message: "Sponsorship is active, but the gas tank is too low for this vote. Refill via Direct Deposit possible."
+          - **Action:** User clicks -> Proceed with standard `castVote` flow (User pays gas).
+      - **Scenario B: Sponsorship Status != "Active"** (i.e., "Active (Stake Issue)", "Inactive (Validator Not Set)", "Deactivating", "Deactivated")
+        - **UI:** Show standard "Vote" button.
+        - **Action:** User clicks -> Proceed with standard `castVote` flow (User pays gas).
+        - _Note: No extra explanation is given to the user about why sponsorship is unavailable in these cases._
 
 ## 4. Technical Details (High-Level)
 
