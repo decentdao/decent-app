@@ -14,6 +14,7 @@ import { useCanUserCreateProposal } from '../../hooks/utils/useCanUserSubmitProp
 import { ActionsExperience } from '../../pages/dao/proposals/actions/new/ActionsExperience';
 import { useStore } from '../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
+import { useProposalActionsStore } from '../../store/actions/useProposalActionsStore';
 import { useDaoInfoStore } from '../../store/daoInfo/useDaoInfoStore';
 import { BigIntValuePair, CreateProposalSteps, ProposalExecuteData } from '../../types';
 import {
@@ -114,6 +115,7 @@ export function ProposalBuilder({
   const { safe } = useDaoInfoStore();
   const safeAddress = safe?.address;
 
+  const { resetActions } = useProposalActionsStore();
   const { addressPrefix } = useNetworkConfigStore();
   const { submitProposal, pendingCreateTx } = useSubmitProposal();
   const { canUserCreateProposal } = useCanUserCreateProposal();
@@ -121,6 +123,7 @@ export function ProposalBuilder({
 
   const successCallback = () => {
     if (safeAddress) {
+      resetActions();
       // Redirecting to home page so that user will see newly created Proposal
       navigate(DAO_ROUTES.dao.relative(addressPrefix, safeAddress));
     }
@@ -129,6 +132,7 @@ export function ProposalBuilder({
   return (
     <Formik<CreateProposalForm>
       validationSchema={createProposalValidation}
+      enableReinitialize
       initialValues={initialValues}
       onSubmit={async values => {
         if (!canUserCreateProposal) {
@@ -234,15 +238,7 @@ export function ProposalBuilder({
                         <>{mainContent(formikProps, pendingCreateTx, nonce, currentStep)}</>
                       )}
                     </Box>
-                    {showActionsExperience ? (
-                      <ActionsExperience
-                        onRemove={(index: number) => {
-                          const newActions = [...formikProps.values.transactions];
-                          newActions.splice(index, 1);
-                          formikProps.setFieldValue('transactions', newActions);
-                        }}
-                      />
-                    ) : null}
+                    {showActionsExperience ? <ActionsExperience /> : null}
                     <StepButtons
                       renderButtons={renderButtons}
                       currentStep={currentStep}
