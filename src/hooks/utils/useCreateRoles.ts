@@ -1825,7 +1825,7 @@ export default function useCreateRoles() {
           failedToastMessage: t('proposalCreateFailureToastMessage', { ns: 'proposal' }),
           successCallback: () => {
             if (safeAddress) {
-              navigate(DAO_ROUTES.proposals.relative(addressPrefix, safeAddress));
+              navigate(DAO_ROUTES.dao.relative(addressPrefix, safeAddress));
             }
           },
         });
