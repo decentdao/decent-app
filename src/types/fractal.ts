@@ -10,16 +10,11 @@ import { TreasuryActions } from '../providers/App/treasury/action';
 import { ERC721TokenData, VotesTokenData } from './account';
 import { FreezeGuardType, FreezeVotingType } from './daoGovernance';
 import { AzoriusProposal, MultisigProposal, ProposalData } from './daoProposal';
+import { DefiBalance, NFTBalance, TokenBalance, TokenEventType, TransferType } from './daoTreasury';
 import { ProposalTemplate } from './proposalBuilder';
 import { SafeInfoResponseWithGuard } from './safeGlobal';
-import {
-  DefiBalance,
-  NFTBalance,
-  SnapshotProposal,
-  TokenBalance,
-  TokenEventType,
-  TransferType,
-} from '.';
+import { SnapshotProposal } from './snapshot';
+
 /**
  * The possible states of a DAO proposal, for both Token Voting (Azorius) and Multisignature
  * (Safe) governance, as well as Snapshot specific states.
@@ -161,6 +156,8 @@ export interface IDAO {
 
   // @todo: Preferrably should live in governance store. Using here fore convenience till we refactor governance store for zustand.
   gaslessVotingEnabled: boolean;
+
+  // null -- Paymaster contract has not been deployed at the address we expect it to be at
   paymasterAddress: Address | null;
 }
 
