@@ -42,7 +42,7 @@ This section describes the process during the initial creation of a new DAO.
     - The designated owner of the Paymaster is the DAO Safe contract.
     - During the creation transaction, the DAO Safe does not yet exist and, more importantly, possesses no funds to forward as `msg.value` to the `Paymaster.addStake` function.
   - **Result:** DAO users must enable sponsored voting _after_ the DAO is created and funded, using the DAO Settings page (described in Section 3.2).
-- `**Desired Behavior / Issue:**` Allow the DAO creator to optionally enable Gasless Voting during the initial DAO setup transaction, provided the network requires staking (`stakingRequired`). (See Issue #28)
+- `**Desired Behavior / Issue:**` Allow the DAO creator to optionally enable Gasless Voting during the initial DAO setup transaction, provided the network requires staking (`stakingRequired`).
   - **Workflow:**
     1.  The DAO creation UI presents an option like "Enable Sponsored Voting".
     2.  If selected **and** `stakingRequired` is true:
@@ -68,7 +68,7 @@ This section describes the process during the initial creation of a new DAO.
 3.  **Scenario A: Paymaster Not Deployed (`paymasterAddress === null`)**
     - **UI State:**
       - `**Current Behavior:**` Displays a toggle reflecting the (now irrelevant) KV state. Does not clearly state Paymaster is missing.
-      - `**Desired Behavior / Issue:**` Display clear status: "Sponsorship Status: Inactive (Paymaster not deployed)." No toggle shown. Show "Deploy Paymaster" button only if user has proposal rights. (See Issue #1)
+      - `**Desired Behavior / Issue:**` Display clear status: "Sponsorship Status: Inactive (Paymaster not deployed)." No toggle shown. Show "Deploy Paymaster" button only if user has proposal rights.
     - **Available Actions (Proposal):**
       - `**Current Behavior:**` Clicking toggle ON proposes bundled deployment/KV/stake/whitelist.
       - `**Desired Behavior / Issue:**` Clicking "Deploy Paymaster" button -> Propose: [
@@ -76,13 +76,13 @@ This section describes the process during the initial creation of a new DAO.
         2. (If `stakingRequired`) Lock Required Funds via `addStake(86400)` with `msg.value=bundlerMinimumStake`.
         3. Whitelist Strategies via `setFunctionValidator(strategy, selector, validator)`.
         4. Fund Initial Gas Tank via `depositTo(predictedPaymasterAddress, initialDepositAmount)` (requires user input for `initialDepositAmount >= 0`).
-           ]. (See Issue #2)
-        - Add UI confirmation explaining a Paymaster deployment is being proposed, potentially including the initial fund lock if required. (See Issue #3)
-        - Perform Treasury funding check before proposal creation if locking funds (`addStake`) is included. (See Issue #4)
+           ].
+        - Add UI confirmation explaining a Paymaster deployment is being proposed, potentially including the initial fund lock if required.
+        - Perform Treasury funding check before proposal creation if locking funds (`addStake`) is included.
 4.  **Scenario B: Paymaster Deployed (`paymasterAddress !== null`)**
     - **Common Information Display:**
       - `**Current Behavior:**` Only displays Balance/Stake when toggle is ON. Address not shown. Stake status unclear. Validator status not shown.
-      - `**Desired Behavior / Issue:**` (See Issue #5) _Always_ display the following:
+      - `**Desired Behavior / Issue:**` _Always_ display the following:
         - Paymaster Address (`paymasterAddress`), linked to block explorer.
         - Current Paymaster Deposit Balance (`depositInfo.balance`) (aka "Gas Tank").
         - Funds Locked for Sponsorship (`depositInfo.stake`).
@@ -122,37 +122,37 @@ This section describes the process during the initial creation of a new DAO.
     - **Sub-Scenario 4.1: Sponsorship Active (`paymaster.validators(...) != address(0)` AND (`stakingRequired == false` OR (`stakingRequired == true` AND `info.staked == true` AND `info.stake >= bundlerMinimumStake`)))**
       - **UI State:**
         - `**Current Behavior:**` Toggle reflects KV state. Status/sufficiency unclear unless KV `true`.
-        - `**Desired Behavior / Issue:**` Display Sponsorship Status: "Active". If activation requires locked funds (`stakingRequired`), show sufficiency ("X Funds Locked / Y Required"). Buttons disabled if user lacks proposal rights. (See Issue #6)
+        - `**Desired Behavior / Issue:**` Display Sponsorship Status: "Active". If activation requires locked funds (`stakingRequired`), show sufficiency ("X Funds Locked / Y Required"). Buttons disabled if user lacks proposal rights.
       - **Available Actions (Proposal):**
         - `**Current Behavior:**` Toggle ON proposes KV set + stake top-up + whitelist. Toggle OFF proposes KV set to `false`. Separate Refill/Withdraw Deposit.
         - `**Desired Behavior / Issue:**` Provide explicit action buttons:
-          - "Deactivate Sponsorship" -> Propose: [Call `removeFunctionValidator(...)` for all voting strategies. If `info.stake > 0`, _also_ call `unlockStake()`]. _Add UI Warning: "Turns off sponsoring immediately by removing strategy validation. If funds are staked, also starts the **[~1-day]** cooldown before locked funds can be withdrawn."_ (This replaces KV disabling). (See Issue #7)
+          - "Deactivate Sponsorship" -> Propose: [Call `removeFunctionValidator(...)` for all voting strategies. If `info.stake > 0`, _also_ call `unlockStake()`]. _Add UI Warning: "Turns off sponsoring immediately by removing strategy validation. If funds are staked, also starts the **[~1-day]** cooldown before locked funds can be withdrawn."_ (This replaces KV disabling).
           - **Pre-check:** Only available if `depositInfo.balance > 0`.
           - Offer "Withdraw Gas Tank" -> Propose: [Call `withdrawTo(recipient, amount)`].
-          - _**Note:** It should be possible to bundle the "Withdraw Gas Tank" action (`withdrawTo`) with either "Deactivate Sponsorship" (`removeFunctionValidator` / `unlockStake`) or "Increase Locked Funds" (`addStake`) in a single proposal._ (See Issue #9)
+          - _**Note:** It should be possible to bundle the "Withdraw Gas Tank" action (`withdrawTo`) with either "Deactivate Sponsorship" (`removeFunctionValidator` / `unlockStake`) or "Increase Locked Funds" (`addStake`) in a single proposal._
     - **Sub-Scenario 4.2: Sponsorship Active (Stake Issue) (`paymaster.validators(...) != address(0)` AND `stakingRequired == true` AND (`info.staked == false` OR `info.stake < bundlerMinimumStake`))**
       - **UI State:**
         - `**Desired Behavior / Issue:**` Display Sponsorship Status: "Active (Stake Issue)". Display **Prominent Warning:** "Sponsorship should pass on-chain, but bundlers will likely reject UserOps due to insufficient or unlocked stake. Configuration needed." Buttons disabled if user lacks proposal rights.
       - **Available Actions (Proposal):**
         - `**Desired Behavior / Issue:**`
           - (If `info.staked == false`)
-            - **Pre-check:** Verify DAO Treasury balance >= `max(0, bundlerMinimumStake - info.stake)`. (Ref: Issue #4)
-            - "Re-lock Stake" -> Propose: [`addStake(currentUnstakeDelay)` with `msg.value = max(0, bundlerMinimumStake - info.stake)`]. _Explain: "Re-locks existing stake and tops up to minimum if needed. Uses the previously set unstake delay."_ (Requires fetching `unstakeDelaySec`). (Addresses Issue #8 partially)
+            - **Pre-check:** Verify DAO Treasury balance >= `max(0, bundlerMinimumStake - info.stake)`.
+            - "Re-lock Stake" -> Propose: [`addStake(currentUnstakeDelay)` with `msg.value = max(0, bundlerMinimumStake - info.stake)`]. _Explain: "Re-locks existing stake and tops up to minimum if needed. Uses the previously set unstake delay."_ (Requires fetching `unstakeDelaySec`).
           - (If `info.staked == true` AND `info.stake < bundlerMinimumStake`)
-            - **Pre-check:** Verify DAO Treasury balance >= `bundlerMinimumStake - info.stake`. (Ref: Issue #4)
-            - "Increase Locked Funds" -> Propose: [`addStake(currentUnstakeDelay)` with `msg.value = bundlerMinimumStake - info.stake`]. _Explain: "Tops up locked funds to meet the minimum requirement."_ (Addresses Issue #8 partially)
+            - **Pre-check:** Verify DAO Treasury balance >= `bundlerMinimumStake - info.stake`.
+            - "Increase Locked Funds" -> Propose: [`addStake(currentUnstakeDelay)` with `msg.value = bundlerMinimumStake - info.stake`]. _Explain: "Tops up locked funds to meet the minimum requirement."_
           - **Pre-check:** Only available if `depositInfo.balance > 0`.
           - Offer "Withdraw Gas Tank" -> Propose: [Call `withdrawTo(recipient, amount)`].
-          - "Deactivate Sponsorship" -> Propose: [`removeFunctionValidator(...)` for all strategies. If `info.stake > 0` AND `info.staked == true`, also call `unlockStake()`]. _UI Warning as before._ (See Issue #7)
-          - _**Note:** Bundling "Deactivate Sponsorship" (`removeFunctionValidator`/`unlockStake`) with "Withdraw Gas Tank" (`withdrawTo`) should be possible._ (Addresses Issue #9 partially)
+          - "Deactivate Sponsorship" -> Propose: [`removeFunctionValidator(...)` for all strategies. If `info.stake > 0` AND `info.staked == true`, also call `unlockStake()`]. _UI Warning as before._
+          - _**Note:** Bundling "Deactivate Sponsorship" (`removeFunctionValidator`/`unlockStake`) with "Withdraw Gas Tank" (`withdrawTo`) should be possible._
     - **Sub-Scenario 4.3: Sponsorship Deactivating (Cooldown Active) (`paymaster.validators(...) == address(0)`, `info.withdrawTime > block.timestamp`)**
       - **UI State:**
         - `**Current Behavior:**` Unclear UI representation.
-        - `**Desired Behavior / Issue:**` Display Sponsorship Status: **"Deactivating (Validator Removed / Cooldown Period: ~X days remaining)"**. Display **Prominent Warning: "Sponsored voting is inactive."** Buttons disabled if user lacks proposal rights. (See Issue #10)
+        - `**Desired Behavior / Issue:**` Display Sponsorship Status: **"Deactivating (Validator Removed / Cooldown Period: ~X days remaining)"**. Display **Prominent Warning: "Sponsored voting is inactive."** Buttons disabled if user lacks proposal rights.
       - **Available Actions (Proposal):**
         - `**Current Behavior:**` Unclear available actions.
         - `**Desired Behavior / Issue:**`
-          - Offer "Propose Locked Funds Withdrawal" -> Propose: [Call `withdrawStake(recipient)`]. _Add UI Explanation: "Proposal execution only possible after cooldown ends (~X days remaining)."_ (See Issue #11)
+          - Offer "Propose Locked Funds Withdrawal" -> Propose: [Call `withdrawStake(recipient)`]. _Add UI Explanation: "Proposal execution only possible after cooldown ends (~X days remaining)."_
           - **Pre-check:** Only available if `depositInfo.balance > 0`.
           - Offer "Withdraw Gas Tank" -> Propose: [Call `withdrawTo(recipient, amount)`].
           - Offer "Reactivate Sponsorship" -> Propose: [
@@ -160,37 +160,37 @@ This section describes the process during the initial creation of a new DAO.
             2. If `stakingRequired`:
                - **Pre-check:** Verify DAO Treasury balance >= `max(0, bundlerMinimumStake - info.stake)`.
                - Call `addStake(86400)` with `msg.value = max(0, bundlerMinimumStake - info.stake)`
-                 ]. _Explain: "Re-whitelists strategy validation, cancels the pending stake withdrawal, re-locks funds (potentially topping up), turning sponsorship back on."_ (Combines parts of Issue #16 & #20)
-          - _**Note:** It should be possible to bundle "Propose Locked Funds Withdrawal" and "Withdraw Gas Tank" into a single proposal._ (See Issue #12)
+                 ]. _Explain: "Re-whitelists strategy validation, cancels the pending stake withdrawal, re-locks funds (potentially topping up), turning sponsorship back on."_
+          - _**Note:** It should be possible to bundle "Propose Locked Funds Withdrawal" and "Withdraw Gas Tank" into a single proposal._
     - **Sub-Scenario 4.4: Sponsorship Deactivated (Ready to Withdraw Stake) (`paymaster.validators(...) == address(0)`, `info.withdrawTime > 0`, `info.withdrawTime <= block.timestamp`)**
       - **UI State:**
         - `**Current Behavior:**` Unclear UI representation.
-        - `**Desired Behavior / Issue:**` Display Sponsorship Status: **"Deactivated (Ready to Withdraw Stake)"**. Display **Prominent Warning: "Sponsored voting is inactive (Validator Removed)."** Buttons disabled if user lacks proposal rights. (See Issue #14)
+        - `**Desired Behavior / Issue:**` Display Sponsorship Status: **"Deactivated (Ready to Withdraw Stake)"**. Display **Prominent Warning: "Sponsored voting is inactive (Validator Removed)."** Buttons disabled if user lacks proposal rights.
       - **Available Actions (Proposal):**
         - `**Current Behavior:**` Unclear available actions.
         - `**Desired Behavior / Issue:**`
-          - Offer "Withdraw Locked Funds" -> Propose: [Call `withdrawStake(recipient)`]. (See Issue #15)
+          - Offer "Withdraw Locked Funds" -> Propose: [Call `withdrawStake(recipient)`].
           - Offer "Reactivate Sponsorship" -> Propose: [
             1. Call `setFunctionValidator(...)`.
             2. If `stakingRequired`:
                - **Pre-check:** Verify DAO Treasury balance >= `max(0, bundlerMinimumStake - info.stake)`.
                - Calculate `stakeDelta = max(0, bundlerMinimumStake - info.stake)`.
                - Call `addStake(86400)` with `msg.value = stakeDelta`
-                 ]. _Explain: "Re-whitelists strategy validation, tops up stake to meet minimum (if required), cancels pending withdrawal, and re-locks funds using a 1-day delay, turning vote sponsoring back on."_ (See Issue #16)
+                 ]. _Explain: "Re-whitelists strategy validation, tops up stake to meet minimum (if required), cancels pending withdrawal, and re-locks funds using a 1-day delay, turning vote sponsoring back on."_
           - **Pre-check:** Only available if `depositInfo.balance > 0`.
           - Offer "Withdraw Gas Tank" -> Propose: [Call `withdrawTo(recipient, amount)`].
-          - _**Note:** It should be possible to bundle "Withdraw Locked Funds" and "Withdraw Gas Tank" into a single proposal._ (See Issue #17)
+          - _**Note:** It should be possible to bundle "Withdraw Locked Funds" and "Withdraw Gas Tank" into a single proposal._
     - **Sub-Scenario 4.5: Sponsorship Inactive (Validator Not Set) (`paymaster.validators(...) == address(0)` AND `info.staked == false`)**
       - **UI State:**
         - `**Current Behavior:**` Toggle reflects KV state. Stake status implied 0. Validator status ignored.
-        - `**Desired Behavior / Issue:**` Display Sponsorship Status: "Inactive (Validator Not Set)". Show warning label ("Activation Required: Set validator" or "Set validator & Lock Funds"). Buttons disabled if user lacks proposal rights. (See Issue #19)
+        - `**Desired Behavior / Issue:**` Display Sponsorship Status: "Inactive (Validator Not Set)". Show warning label ("Activation Required: Set validator" or "Set validator & Lock Funds"). Buttons disabled if user lacks proposal rights.
       - **Available Actions (Proposal):**
         - `**Current Behavior:**` Toggle ON proposes KV set + Add Stake + Whitelist.
         - `**Desired Behavior / Issue:**`
           - Offer "Activate Sponsorship" -> Propose: [
             1. Call `setFunctionValidator(...)`.
             2. If `stakingRequired`: - **Pre-check:** Verify DAO Treasury balance >= `bundlerMinimumStake`. - Call `addStake(bundlerMinimumStake)` with appropriate delay (e.g., 86400).
-               ]. (See Issue #20)
+               ].
           - **Pre-check:** Only available if `depositInfo.balance > 0`.
           - Offer "Withdraw Gas Tank" -> Propose: [Call `withdrawTo(recipient, amount)`].
 5.  **Refill:**
@@ -200,7 +200,7 @@ This section describes the process during the initial creation of a new DAO.
       - User chooses the method:
         - **Via Proposal:** Creates a new DAO proposal (`prepareRefillPaymasterAction`) to transfer funds from the DAO treasury to the paymaster's deposit on the EntryPoint contract. The user is navigated to the proposal creation page to submit it.
         - **Direct Deposit:** User sends funds directly from their connected wallet to the paymaster's deposit on the EntryPoint contract (`EntryPoint07Abi.depositTo`).
-    - `**Desired Behavior / Issue:**` Ensure the "Refill" button is only available when the Paymaster is deployed (`paymasterAddress !== null`). (See Issue #21)
+    - `**Desired Behavior / Issue:**` Ensure the "Refill" button is only available when the Paymaster is deployed (`paymasterAddress !== null`).
 
 ### 3.3. DAO Member: Voting on a Proposal
 
@@ -221,7 +221,7 @@ This section describes the process during the initial creation of a new DAO.
         - It compares the fetched `paymasterBalance` to the estimated `gasCost` returned by the bundler.
         - The `canCastGaslessVote` state variable is set to `true` **only if** the estimation succeeded _and_ `paymasterBalance >= gasCost`.
       - **Final Determination:** `canVoteForFree` is ultimately `true` if and only if `gaslessFeatureEnabled && gaslessVotingEnabled && canCastGaslessVote` evaluates to `true`.
-    - `**Desired Behavior / Issue:**` (See Issue #22) The determination of `canVoteForFree` should be made proactively and explicitly within the frontend, based on verifiable on-chain data, before attempting gas estimation. The process should be:
+    - `**Desired Behavior / Issue:**` The determination of `canVoteForFree` should be made proactively and explicitly within the frontend, based on verifiable on-chain data, before attempting gas estimation. The process should be:
       1.  **Check Global Feature Flag:** Verify `flag_gasless_voting` is enabled. If not, result is `false`.
       2.  **Check Paymaster Deployment:** Verify a `paymasterAddress` exists for the DAO (via `useDaoInfoStore` or `getPaymasterAddress`). If not, result is `false`.
       3.  **Check Strategy Validator:** Verify that the expected validator is registered for the voting strategy's function selector: `paymaster.validators(strategyAddress, voteSelector)` must return the _expected_, non-zero `validatorAddress`. If it's `address(0)` (or unexpected), result is `false`.
@@ -250,12 +250,12 @@ This section describes the process during the initial creation of a new DAO.
         - **Fallback on Error:** If another error occurs during the gasless submission process (e.g., bundler error, paymaster validation fails), an error toast appears (`castVoteError`), and the system automatically attempts to fall back to the standard voting path after a 5-second delay (`setTimeout(() => { castVote(...) }, 5000)`).
       - `**Desired Behavior / Issue:**` The fallback UX needs improvement. The 5-second automatic retry after a generic error toast is confusing. Instead:
         - Communicate the failure clearly to the user, explaining _why_ if possible (e.g., "Sponsored vote failed: Paymaster out of funds", "Sponsored vote failed: Network congestion").
-        - Explicitly ask the user if they want to proceed by submitting a standard transaction (paying their own gas). Avoid automatic retries. (See Issue #23)
+        - Explicitly ask the user if they want to proceed by submitting a standard transaction (paying their own gas). Avoid automatic retries.
       - `**Desired Behavior / Issue:**` Improve UX around pending states (`castGaslessVotePending`) and success/failure feedback using a modal:
         - **Immediately after the user signs the UserOperation and it is submitted to the bundler:** Display a **modal** with a clear **pending state** (e.g., "Your vote is _being_ sponsored...", perhaps with a loading animation). This replaces the current behavior where a success modal only appears _after_ confirmation.
         - **On successful on-chain confirmation:** Update the modal content to a **success state** (e.g., "Your vote _was_ sponsored!", possibly with a success animation or checkmark). This leverages the existing `ModalType.GASLESS_VOTE_SUCCESS` but shows it earlier in a pending form.
         - **If an error occurs _after_ submission** (e.g., bundler error, on-chain validation failure): Update the modal to an **error state**. This modal should clearly explain the failure and present the user with the option to retry via a standard transaction (paying their own gas), replacing the confusing automatic 5-second fallback.
-        - This modal-based flow provides continuous, clear feedback throughout the sponsored voting process, clearly distinguishing it from standard voting. (See Issue #26)
+        - This modal-based flow provides continuous, clear feedback throughout the sponsored voting process, clearly distinguishing it from standard voting.
     - **Standard Path (`canVoteForFree` is false):**
       - `**Current Behavior:**`
         - User selects their vote choice.
@@ -264,7 +264,7 @@ This section describes the process during the initial creation of a new DAO.
         - The standard `castVote` function is called.
         - The user is prompted to sign and send a standard blockchain transaction via their wallet, paying the associated gas fee themselves.
         - The UI does not proactively explain _why_ sponsoring is unavailable; the user only sees the standard voting option.
-      - `**Desired Behavior / Issue:**` Consider providing contextual information to the user explaining _why_ the "Vote for Free" option is not available, if the reason is known (e.g., "Sponsorship currently deactivated by DAO", "Sponsorship gas tank is low", "Network issue preventing sponsorship check"). This would improve transparency compared to simply not showing the option. (See Issue #25)
+      - `**Desired Behavior / Issue:**` Consider providing contextual information to the user explaining _why_ the "Vote for Free" option is not available, if the reason is known (e.g., "Sponsorship currently deactivated by DAO", "Sponsorship gas tank is low", "Network issue preventing sponsorship check"). This would improve transparency compared to simply not showing the option.
 
 ## 4. Technical Details (High-Level)
 
@@ -275,34 +275,3 @@ This section describes the process during the initial creation of a new DAO.
 - **State Management:** `useDaoInfoStore` (remove `gaslessVotingEnabled` state, keep `paymasterAddress`).
 - **Utils:** `gaslessVoting.ts` (e.g., `getPaymasterAddress`), `prepareRefillPaymasterActionData.ts`.
 - **Backend/Infrastructure:** Relies on an ERC-4337 Bundler service (RPC endpoint configured via `rpcEndpoint`).
-
-## 5. Actionable Improvements / Issues Summary
-
-This section lists actionable improvements and issues identified in the desired behaviors described above.
-
-1.  Display clear status: "Sponsorship Status: Inactive (Paymaster not deployed)." No toggle shown. Show "Deploy Paymaster" button only if user has proposal rights.
-2.  Implement "Deploy Paymaster" proposal action: Bundle calls for `deployModule`, `addStake` (if required, using 86400s delay & `bundlerMinimumStake`), `setFunctionValidator` (to whitelist strategies), and `depositTo(predictedAddress, initialAmount)` (requiring user input for initial deposit amount >= 0).
-3.  Add UI confirmation explaining Paymaster deployment proposal.
-4.  Perform Treasury funding check before creating proposals that lock funds (`addStake`) or deposit funds (`depositTo`).
-5.  Always display Paymaster Address, Deposit Balance, Locked Funds, and Sponsorship Status (based on validator, stake, lock) in Settings when deployed.
-6.  Implement Sponsorship Status display logic (Active, Inactive, Deactivating, Deactivated) based on validator status, locked funds, required funds, and cooldown timer.
-7.  Implement "Deactivate Sponsorship" proposal action: Call `removeFunctionValidator(strategy, selector)` for all strategies. If `stake > 0`, also call `unlockStake()`. Add appropriate UI warning.
-8.  Implement "Increase Locked Funds" proposal action (`addStake(delta)`) when required and funds are insufficient (validator must already be set).
-9.  Support bundling "Withdraw Gas Tank" (`withdrawTo`) with "Deactivate Sponsorship" (`removeFunctionValidator`/`unlockStake`) or "Increase Locked Funds" (`addStake`) in a single proposal.
-10. Implement UI for "Deactivating (Validator Removed / Cooldown Period...)" status with warning and correct button states.
-11. Implement "Propose Locked Funds Withdrawal" (`withdrawStake`) action with UI explanation about timing (only available after cooldown).
-12. Support bundling "Propose Locked Funds Withdrawal" and "Withdraw Gas Tank" in a single proposal during cooldown.
-13. Disable actions related to activation/deactivation/increasing lock during cooldown.
-14. Implement UI for "Deactivated (Validator Removed / Locked Funds Ready...)" status with warning and correct button states.
-15. Implement "Withdraw Locked Funds" (`withdrawStake`) proposal action when ready.
-16. Implement "Reactivate Sponsorship" proposal action: Call `setFunctionValidator(strategy, selector, validator)`. If `stake > 0`, calculate delta and call `addStake(86400)` with `msg.value=delta` to top up and re-lock. Add UI explanation.
-17. Support bundling "Withdraw Locked Funds" and "Withdraw Gas Tank" into a single proposal when withdrawable.
-18. Disable actions related to increasing lock/deactivating sponsorship when already deactivated/withdrawable.
-19. Implement UI for "Inactive (Activation Required: Whitelist strategy / Lock funds)" status with warning label.
-20. Implement "Activate Sponsorship" proposal action: Call `setFunctionValidator(strategy, selector, validator)`. If `stakingRequired`, also call `addStake(bundlerMinimumStake)`.
-21. Ensure the "Refill" button is only available when the Paymaster is deployed.
-22. Implement the revised proactive logic for determining `canVoteForFree` (8-step check: flag, deployment, validator check, status, activation, estimation, balance).
-23. Implement improved gasless vote fallback UX: clear error communication, explicit user prompt for standard tx retry, remove automatic fallback.
-24. Implement modal-based UX for sponsored votes: immediate pending modal, update to success/error state (incorporating #23 for error state).
-25. Consider adding contextual information explaining _why_ sponsoring is unavailable in the standard voting path.
-26. **Allow enabling Gasless Voting during DAO creation:** Implement the workflow where the creator provides `msg.value` to cover the initial stake, which is then forwarded via the predicted DAO address to the Paymaster's `addStake` function within the creation transaction. Requires address prediction, value routing, Paymaster deployment, internal `addStake` call, and strategy whitelisting (`setFunctionValidator`) within the main tx.
