@@ -83,12 +83,10 @@ export class DaoTxBuilder extends BaseTxBuilder {
   public async buildAzoriusTx(params: {
     shouldSetName: boolean;
     shouldSetSnapshot: boolean;
-    enableGaslessVoting: boolean;
     existingSafeOwners?: Address[];
   }): Promise<string> {
-    const { shouldSetName, shouldSetSnapshot, existingSafeOwners, enableGaslessVoting } = params;
-    const azoriusTxBuilder =
-      await this.txBuilderFactory.createAzoriusTxBuilder(enableGaslessVoting);
+    const { shouldSetName, shouldSetSnapshot, existingSafeOwners } = params;
+    const azoriusTxBuilder = await this.txBuilderFactory.createAzoriusTxBuilder();
 
     // transactions that must be called by safe
     this.internalTxs = [];
@@ -144,13 +142,6 @@ export class DaoTxBuilder extends BaseTxBuilder {
 
     txs.push(azoriusTxBuilder.buildDeployStrategyTx());
     txs.push(azoriusTxBuilder.buildDeployAzoriusTx());
-
-    // Deploy paymaster and set gasless voting enabled
-    if (enableGaslessVoting) {
-      this.internalTxs.push(azoriusTxBuilder.buildDeployPaymasterTx());
-      this.internalTxs.push(this.buildSetGaslessVotingEnabledTx());
-      this.internalTxs.push(azoriusTxBuilder.buildApproveStrategyOnPaymasterTx());
-    }
 
     // If subDAO and parentAllocation, deploy claim module
     let tokenClaimTx: SafeTransaction | undefined;
@@ -278,17 +269,6 @@ export class DaoTxBuilder extends BaseTxBuilder {
     });
   }
 
-  private buildSetGaslessVotingEnabledTx(): SafeTransaction {
-    return buildContractCall({
-      target: this.keyValuePairs,
-      encodedFunctionData: encodeFunctionData({
-        functionName: 'updateValues',
-        args: [['gaslessVotingEnabled'], ['true']],
-        abi: abis.KeyValuePairs,
-      }),
-    });
-  }
-
   private buildExecInternalSafeTx(signatures: Hex): SafeTransaction {
     const encodedInternalTxs = encodeMultiSend(this.internalTxs);
 
@@ -298,7 +278,6 @@ export class DaoTxBuilder extends BaseTxBuilder {
       functionName: 'multiSend',
       args: [encodedInternalTxs],
     });
-
     return buildContractCall({
       target: this.safeContractAddress,
       encodedFunctionData: encodeFunctionData({

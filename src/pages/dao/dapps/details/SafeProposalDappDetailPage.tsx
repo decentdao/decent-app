@@ -103,7 +103,7 @@ export function SafeProposalDappDetailPage() {
     amplitude.track(analyticsEvents.ProposalDappsPageOpened);
   }, []);
 
-  const { t } = useTranslation();
+  const { t } = useTranslation('breadcrumbs');
   const { chain } = useNetworkConfigStore();
   const { loadABI } = useABI();
   const { safe } = useDaoInfoStore();
@@ -142,7 +142,7 @@ export function SafeProposalDappDetailPage() {
         title={appName}
         breadcrumbs={[
           {
-            terminus: t('proposalDapps', { ns: 'breadcrumbs' }),
+            terminus: t('proposalDapps'),
             path: DAO_ROUTES.proposalDapps.relative(addressPrefix, safeAddress),
           },
           {

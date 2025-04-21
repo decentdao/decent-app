@@ -16,7 +16,7 @@ function SortMenuItem({
   testId: string;
   onClick: () => void;
 }) {
-  const { t } = useTranslation();
+  const { t } = useTranslation('common');
   return (
     <MenuItem
       borderRadius="0.75rem"
@@ -41,7 +41,7 @@ interface ISort {
 }
 
 export function Sort({ sortBy, setSortBy, buttonProps }: ISort) {
-  const { t } = useTranslation();
+  const { t } = useTranslation('common');
   return (
     <Menu isLazy>
       <MenuButton

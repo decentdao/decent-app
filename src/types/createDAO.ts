@@ -85,7 +85,6 @@ export type DAOEssentials = {
   daoName: string;
   governance: GovernanceType;
   snapshotENS: string;
-  gaslessVoting: boolean;
 };
 
 export type ERC721TokenConfig<T = bigint> = {

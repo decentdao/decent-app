@@ -1,0 +1,14 @@
+{
+  "connect": "接続",
+  "connectWallet": "コネクトウォレット",
+  "disconnect": "切断",
+  "wallet": "財布",
+  "titleManageProposalTemplate": "テンプレートの管理",
+  "optionCreateSubDAO": "SubDAOの作成",
+  "optionInitiateFreeze": "凍結を開始する",
+  "optionInitiateClawback": "クローバックの開始",
+  "optionRemoveTemplate": "テンプレートの削除",
+  "optionForkTemplate": "フォークテンプレート",
+  "optionModifyGovernance": "ガバナンスの変更",
+  "optionSettings": "設定"
+}

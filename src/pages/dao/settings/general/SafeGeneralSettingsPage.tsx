@@ -12,7 +12,6 @@ import { BarLoader } from '../../../../components/ui/loaders/BarLoader';
 import NestedPageHeader from '../../../../components/ui/page/Header/NestedPageHeader';
 import Divider from '../../../../components/ui/utils/Divider';
 import { DAO_ROUTES } from '../../../../constants/routes';
-import useFeatureFlag from '../../../../helpers/environmentFeatureFlags';
 import { useDepositInfo } from '../../../../hooks/DAO/accountAbstraction/useDepositInfo';
 import useSubmitProposal from '../../../../hooks/DAO/proposal/useSubmitProposal';
 import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
@@ -63,12 +62,11 @@ export function SafeGeneralSettingsPage() {
     bundlerMinimumStake,
   } = useNetworkConfigStore();
   const { depositInfo } = useDepositInfo(paymasterAddress);
-  const gaslessStakingFeatureEnabled =
-    useFeatureFlag('flag_gasless_staking') && bundlerMinimumStake !== undefined;
+  const accountAbstractionSupported = bundlerMinimumStake !== undefined;
+  const stakingRequired = accountAbstractionSupported && bundlerMinimumStake > 0n;
 
   const isMultisigGovernance = votingStrategyType === GovernanceType.MULTISIG;
-  const gaslessVotingSupported =
-    !isMultisigGovernance && accountAbstraction?.entryPointv07 !== undefined;
+  const gaslessVotingSupported = !isMultisigGovernance && accountAbstractionSupported;
 
   const safeAddress = safe?.address;
 
@@ -154,9 +152,6 @@ export function SafeGeneralSettingsPage() {
         throw new Error('Account Abstraction addresses are not set');
       }
 
-      if (!paymaster) {
-        throw new Error('Paymaster addresses are not set');
-      }
       if (paymasterAddress === null) {
         // Paymaster does not exist, deploy a new one
         const paymasterInitData = encodeFunctionData({
@@ -204,7 +199,7 @@ export function SafeGeneralSettingsPage() {
       });
 
       // Add stake for Paymaster if not enough
-      if (gaslessStakingFeatureEnabled) {
+      if (stakingRequired) {
         const stakedAmount = depositInfo?.stake || 0n;
 
         if (paymasterAddress === null || stakedAmount < bundlerMinimumStake) {

@@ -1,0 +1,18 @@
+{
+  "createNewDAO": "创建新 DAO",
+  "createSubDAO": "创建子DAO",
+  "headerTitle": "{{daoName}} {{subject}}",
+  "proposals": "所有建议",
+  "proposalNew": "创建提案",
+  "nodes": "组织结构",
+  "roles": "角色",
+  "treasury": "库房",
+  "proposal": "#{{proposalId}} {{proposalTitle}}",
+  "proposalTemplates": "建议书模板",
+  "proposalDapps": "探索 dApps",
+  "proposalTemplate": "{{proposalTemplateTitle}}",
+  "proposalTemplateNew": "创建建议书模板",
+  "editDAO": "编辑 DAO",
+  "parentLink": "母 DAO",
+  "settings": "设置"
+}

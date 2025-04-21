@@ -5,7 +5,6 @@ import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { Address, getContract, http } from 'viem';
 import { createBundlerClient } from 'viem/account-abstraction';
-import { useAccount } from 'wagmi';
 import { EntryPoint07Abi } from '../../../assets/abi/EntryPoint07Abi';
 import { useStore } from '../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
@@ -31,7 +30,6 @@ const useCastVote = (proposalId: string, strategy: Address) => {
     contracts: { accountAbstraction },
     rpcEndpoint,
     getConfigByChainId,
-    // gaslessVoting,
   } = useNetworkConfigStore();
 
   const [contractCall, castVotePending] = useTransaction();
@@ -160,12 +158,11 @@ const useCastVote = (proposalId: string, strategy: Address) => {
     ],
   );
 
-  const { address } = useAccount();
   const { paymasterAddress } = useDaoInfoStore();
   const publicClient = useNetworkPublicClient();
 
   const prepareGaslessVoteOperation = useCallback(async () => {
-    if (!publicClient || !paymasterAddress || !walletClient || !accountAbstraction) {
+    if (!publicClient || !paymasterAddress || !walletClient) {
       return;
     }
 
@@ -175,6 +172,12 @@ const useCastVote = (proposalId: string, strategy: Address) => {
       client: publicClient,
       owner: walletClient,
       version: '2.0.0',
+
+      // DO NOT CHANGE THIS INDEX!!!
+      // For context, see:
+      // - https://docs.pimlico.io/permissionless/reference/accounts/toLightSmartAccount#index-optional
+      // - https://github.com/decentdao/decent-contracts/blob/a2fad6470015c0f59c84d8b5249dd1ee7b8a4773/contracts/account-abstraction/SmartAccountValidationV1.sol#L47
+      index: 0n,
     });
     const bundlerClient = createBundlerClient({
       account: smartWallet,
@@ -226,7 +229,6 @@ const useCastVote = (proposalId: string, strategy: Address) => {
       bundlerClient,
     };
   }, [
-    accountAbstraction,
     getConfigByChainId,
     paymasterAddress,
     prepareCastVoteData,
@@ -259,18 +261,9 @@ const useCastVote = (proposalId: string, strategy: Address) => {
     };
 
     estimateGaslessVoteGas().catch(() => {
-      //const error = e as EstimateUserOperationGasErrorType;
-      //console.warn('error', error.message);
       setCanCastGaslessVote(false);
     });
-  }, [
-    accountAbstraction,
-    paymasterAddress,
-    prepareCastVoteData,
-    prepareGaslessVoteOperation,
-    publicClient,
-    rpcEndpoint,
-  ]);
+  }, [accountAbstraction, paymasterAddress, prepareGaslessVoteOperation, publicClient]);
 
   const castGaslessVote = useCallback(
     async ({
@@ -282,10 +275,6 @@ const useCastVote = (proposalId: string, strategy: Address) => {
       onError: (error: any) => void;
       onSuccess: () => void;
     }) => {
-      if (!address || !paymasterAddress || !walletClient || !publicClient) {
-        throw new Error('Invalid state');
-      }
-
       try {
         setCastGaslessVotePending(true);
 
@@ -318,15 +307,7 @@ const useCastVote = (proposalId: string, strategy: Address) => {
         onError(error);
       }
     },
-    [
-      address,
-      prepareGaslessVoteOperation,
-      paymasterAddress,
-      prepareCastVoteData,
-      publicClient,
-      t,
-      walletClient,
-    ],
+    [prepareGaslessVoteOperation, prepareCastVoteData, t],
   );
 
   return {
