@@ -1,6 +1,6 @@
 import { Address, encodeFunctionData, getAddress, Hex } from 'viem';
 import GnosisSafeL2Abi from '../assets/abi/GnosisSafeL2';
-import { buildContractCall } from '../helpers';
+import { buildContractCall, buildSignatures } from '../helpers';
 import { SafeMultisigDAO, SafeTransaction } from '../types';
 
 export class MultisigTxBuilder {
@@ -18,12 +18,9 @@ export class MultisigTxBuilder {
     this.safeContractAddress = safeContractAddress;
   }
 
-  public signatures = (): Hex => {
-    return ('0x000000000000000000000000' +
-      this.multiSendCallOnlyAddress.slice(2) +
-      '0000000000000000000000000000000000000000000000000000000000000000' +
-      '01') as Hex;
-  };
+  public signatures(): Hex {
+    return buildSignatures(this.multiSendCallOnlyAddress);
+  }
 
   public buildRemoveMultiSendOwnerTx(): SafeTransaction {
     return buildContractCall({

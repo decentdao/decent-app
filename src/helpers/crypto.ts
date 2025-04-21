@@ -10,6 +10,7 @@ import {
   bytesToBigInt,
   Hex,
   WalletClient,
+  isHex,
 } from 'viem';
 import { MetaTransaction, SafeTransaction } from '../types/transaction';
 
@@ -202,4 +203,17 @@ const encodeMetaTransaction = (tx: MetaTransaction): string => {
 
 export const encodeMultiSend = (txs: MetaTransaction[]): Hex => {
   return `0x${txs.map(tx => encodeMetaTransaction(tx)).join('')}`;
+};
+
+export const buildSignatures = (multiSendCallOnlyAddress: Address): Hex => {
+  const signatureData = ('0x000000000000000000000000' +
+    multiSendCallOnlyAddress.slice(2) +
+    '0000000000000000000000000000000000000000000000000000000000000000' +
+    '01') as Hex;
+
+  if (!isHex(signatureData)) {
+    throw new Error('Invalid signature data');
+  }
+
+  return signatureData;
 };

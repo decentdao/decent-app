@@ -9,7 +9,6 @@ import {
   getAddress,
   getContract,
   getCreate2Address,
-  isHex,
   keccak256,
   parseAbiParameters,
 } from 'viem';
@@ -21,7 +20,7 @@ import {
   linearERC721VotingSetupParams,
   linearERC721VotingV1SetupParams,
 } from '../constants/params';
-import { buildContractCall, getRandomBytes } from '../helpers';
+import { buildContractCall, buildSignatures, getRandomBytes } from '../helpers';
 import {
   AzoriusERC20DAO,
   AzoriusERC721DAO,
@@ -455,19 +454,9 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
     });
   }
 
-  public signatures = (): Hex => {
-    const signatureData =
-      '0x000000000000000000000000' +
-      this.multiSendCallOnly.slice(2) +
-      '0000000000000000000000000000000000000000000000000000000000000000' +
-      '01';
-
-    if (!isHex(signatureData)) {
-      throw new Error('Invalid signature data');
-    }
-
-    return signatureData;
-  };
+  public signatures(): Hex {
+    return buildSignatures(this.multiSendCallOnly);
+  }
 
   private calculateTokenAllocations(
     azoriusGovernanceDaoData: AzoriusERC20DAO,
