@@ -6,6 +6,8 @@ import { useStore } from '../../../providers/App/AppProvider';
 import { useSafeAPI } from '../../../providers/App/hooks/useSafeAPI';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
 import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
+import { getPaymasterAddress } from '../../../utils/gaslessVoting';
+import useNetworkPublicClient from '../../useNetworkPublicClient';
 import { useCurrentDAOKey } from '../useCurrentDAOKey';
 import { useDecentModules } from './useDecentModules';
 
@@ -28,8 +30,10 @@ export const useFractalNode = ({
   const { getConfigByChainId, chain } = useNetworkConfigStore();
   const { daoKey } = useCurrentDAOKey();
   const { action } = useStore({ daoKey });
+  const publicClient = useNetworkPublicClient();
+  const { contracts } = useNetworkConfigStore();
 
-  const { setDaoInfo, setSafeInfo, setDecentModules } = useDaoInfoStore();
+  const { setDaoInfo, setSafeInfo, setDecentModules, setPaymasterAddress } = useDaoInfoStore();
 
   const reset = useCallback(
     ({ error }: { error: boolean }) => {
@@ -48,6 +52,40 @@ export const useFractalNode = ({
       try {
         const safeInfo = await safeApi.getSafeData(safeAddress);
         setSafeInfo(safeInfo);
+
+        // Check for Paymaster deployment
+        setPaymasterAddress(null); // Reset initially
+        const {
+          zodiacModuleProxyFactory,
+          paymaster: paymasterConfig,
+          accountAbstraction,
+        } = contracts;
+        if (
+          accountAbstraction &&
+          paymasterConfig?.decentPaymasterV1MasterCopy &&
+          zodiacModuleProxyFactory &&
+          publicClient.chain
+        ) {
+          try {
+            const predictedPaymasterAddress = getPaymasterAddress({
+              safeAddress,
+              zodiacModuleProxyFactory,
+              paymasterMastercopy: paymasterConfig.decentPaymasterV1MasterCopy,
+              entryPoint: accountAbstraction.entryPointv07,
+              lightAccountFactory: accountAbstraction.lightAccountFactory,
+              chainId: publicClient.chain.id,
+            });
+            const paymasterCode = await publicClient.getCode({
+              address: predictedPaymasterAddress,
+            });
+            if (paymasterCode && paymasterCode !== '0x') {
+              setPaymasterAddress(predictedPaymasterAddress);
+            }
+          } catch (e) {
+            console.error('Error checking Paymaster address', e);
+            // Don't reset the whole DAO load, just Paymaster stays null
+          }
+        }
 
         const modules = await lookupModules(safeInfo.modules);
 
@@ -102,6 +140,9 @@ export const useFractalNode = ({
     chain.id,
     setDecentModules,
     setDaoInfo,
+    setPaymasterAddress,
+    publicClient,
+    contracts,
     reset,
   ]);
 

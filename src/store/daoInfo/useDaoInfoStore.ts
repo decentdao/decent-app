@@ -6,21 +6,15 @@ export const initialDaoInfoStore: IDAO = {
   safe: null,
   subgraphInfo: null,
   modules: null,
-  gaslessVotingEnabled: false,
   paymasterAddress: null,
 };
-
-interface GaslessVotingDaoData {
-  gaslessVotingEnabled: boolean;
-  paymasterAddress: Address | null;
-}
 
 export interface DaoInfoStore extends IDAO {
   setSafeInfo: (safe: SafeWithNextNonce) => void;
   setDaoInfo: (daoInfo: DAOSubgraph) => void;
   setDecentModules: (modules: DecentModule[]) => void;
   resetDaoInfoStore: () => void;
-  setGaslessVotingDaoData: (gaslessVotingDaoData: GaslessVotingDaoData) => void;
+  setPaymasterAddress: (paymasterAddress: Address | null) => void;
 }
 
 export const useDaoInfoStore = create<DaoInfoStore>()(set => ({
@@ -50,10 +44,7 @@ export const useDaoInfoStore = create<DaoInfoStore>()(set => ({
   },
 
   resetDaoInfoStore: () => set(initialDaoInfoStore),
-  setGaslessVotingDaoData: (gaslessVotingDaoData: GaslessVotingDaoData) => {
-    set(state => ({
-      ...state,
-      ...gaslessVotingDaoData,
-    }));
+  setPaymasterAddress: (paymasterAddress: Address | null) => {
+    set({ paymasterAddress });
   },
 }));
