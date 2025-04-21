@@ -456,10 +456,17 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
   }
 
   public signatures = (): Hex => {
-    return ('0x000000000000000000000000' +
+    const signatureData =
+      '0x000000000000000000000000' +
       this.multiSendCallOnly.slice(2) +
       '0000000000000000000000000000000000000000000000000000000000000000' +
-      '01') as Hex;
+      '01';
+
+    if (!isHex(signatureData)) {
+      throw new Error('Invalid signature data');
+    }
+
+    return signatureData;
   };
 
   private calculateTokenAllocations(
