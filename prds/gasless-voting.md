@@ -87,24 +87,65 @@ This section describes the process during the initial creation of a new DAO.
         - Current Paymaster Deposit Balance (`depositInfo.balance`) (aka "Gas Tank").
         - Funds Locked for Sponsorship (`depositInfo.stake`).
         - **Sponsorship Status:** Clearly display one of:
-          - "Active" (Validator set, sufficient stake if required, lock inactive)
-          - "Inactive (Activation Required)" Conditions: (Validator not set) OR (`stakingRequired` is true AND `stake < bundlerMinimumStake`) OR (`stakingRequired` is true AND `withdrawTime != 0`)
-          - "Deactivating (Validator Removed / Cooldown Period: ~X days remaining)" (Validator removed, `withdrawTime > 0`)
-          - "Deactivated (Validator Removed / Locked Funds Ready for Withdrawal)" (Validator removed, `withdrawTime > 0`, cooldown passed)
-          - _Determined based on `paymaster.validators(strategy, selector)`, `stake`, `withdrawTime`, `block.timestamp`, and `bundlerMinimumStake` (if `stakingRequired`)._
-        - **Sponsoring Functional Status:** Display "Inactive" if Sponsorship Status is Deactivating, Deactivated, or Inactive (Activation Required). Otherwise, determined by technical readiness (sufficient deposit/locked funds).
-    - **Sub-Scenario 4.1: Sponsorship Active (`paymaster.validators(strategy, selector) !== address(0)`, `withdrawTime === 0`, AND (IF `stakingRequired`, THEN `stake >= bundlerMinimumStake`))**
+          - **"Active"**
+            - **Conditions:** `paymaster.validators(...) != address(0)` AND (`stakingRequired == false` OR (`stakingRequired == true` AND `info.staked == true` AND `info.stake >= bundlerMinimumStake`))
+            - **Meaning:** Ready for sponsorship. On-chain validation passes and bundler requirements met.
+          - **"Active (Stake Issue)"**
+            - **Conditions:** `paymaster.validators(...) != address(0)` AND `stakingRequired == true` AND (`info.staked == false` OR `info.stake < bundlerMinimumStake`)
+            - **Meaning:** Sponsorship **passes** on-chain (validator set), but **bundlers will likely reject** due to insufficient/unlocked stake. Needs stake configuration (`addStake`/re-locking). Direct UserOp submission might still work.
+          - **"Deactivating (Cooldown Active)"**
+            - **Conditions:** `paymaster.validators(...) == address(0)` AND `info.withdrawTime > block.timestamp`
+            - **Meaning:** Sponsorship **fails** on-chain (validator not set). Stake unlock initiated, cooldown active.
+          - **"Deactivated (Ready to Withdraw Stake)"**
+            - **Conditions:** `paymaster.validators(...) == address(0)` AND `info.withdrawTime > 0` AND `info.withdrawTime <= block.timestamp`
+            - **Meaning:** Sponsorship **fails** on-chain (validator not set). Stake withdrawal ready.
+          - **"Inactive (Validator Not Set)"**
+            - **Conditions:** `paymaster.validators(...) == address(0)` AND `info.staked == false`
+            - **Meaning:** Sponsorship **fails** on-chain (validator not set). Stake not in withdrawal cycle. Needs `setFunctionValidator`.
+          - _**Note:** Status prioritizes on-chain possibility (Validator Set). Stake issues are secondary but critical for bundler compatibility. UI should clearly distinguish these._
+            **Flowchart Representation:**
+          ```mermaid
+          graph TD
+              A[Start: Check Paymaster Status] --> D{Validator Set?};
+              D -- No --> B{withdrawTime > 0?};
+              D -- Yes --> E{Staking Required?};
+              B -- Yes --> C{withdrawTime <= <br/>block.timestamp?};
+              B -- No --> S3[Status: Inactive: <br/>Validator Not Set];
+              C -- Yes --> S5[Status: Deactivated: <br/>Ready to Withdraw Stake];
+              C -- No --> S4[Status: Deactivating: <br/>Cooldown Active];
+              E -- No --> S1[Status: Active];
+              E -- Yes --> F{staked == true AND <br/>stake >= minStake?};
+              F -- Yes --> S1;
+              F -- No --> S2[Status: Active: <br/>Stake Issue];
+          ```
+        - **Sponsoring Functional Status:** Display "Inactive" only if Sponsorship Status is `Inactive (Validator Not Set)`, `Deactivating`, or `Deactivated`. Display "Needs Attention" or similar if `Active (Stake Issue)`. Otherwise, determined by technical readiness (sufficient **deposit** balance in gas tank).
+    - **Sub-Scenario 4.1: Sponsorship Active (`paymaster.validators(...) != address(0)` AND (`stakingRequired == false` OR (`stakingRequired == true` AND `info.staked == true` AND `info.stake >= bundlerMinimumStake`)))**
       - **UI State:**
         - `**Current Behavior:**` Toggle reflects KV state. Status/sufficiency unclear unless KV `true`.
         - `**Desired Behavior / Issue:**` Display Sponsorship Status: "Active". If activation requires locked funds (`stakingRequired`), show sufficiency ("X Funds Locked / Y Required"). Buttons disabled if user lacks proposal rights. (See Issue #6)
       - **Available Actions (Proposal):**
         - `**Current Behavior:**` Toggle ON proposes KV set + stake top-up + whitelist. Toggle OFF proposes KV set to `false`. Separate Refill/Withdraw Deposit.
         - `**Desired Behavior / Issue:**` Provide explicit action buttons:
-          - "Deactivate Sponsorship" -> Propose: [Call `removeFunctionValidator(strategy, selector)` for all voting strategies. If `stake > 0`, _also_ call `unlockStake()`]. _Add UI Warning: "Turns off sponsoring immediately by removing strategy validation. If funds are staked, also starts the **[~7-day]** cooldown before locked funds can be withdrawn."_ (This replaces KV disabling). (See Issue #7)
-          - (If activation requires locked funds and `lockedFunds < bundlerMinimumStake`) "Increase Locked Funds" -> Propose: [Increase lock via `addStake(delta)`]. (See Issue #8)
-          - "Withdraw Gas Tank" -> Propose: [Call `withdrawTo(recipient, amount)`].
+          - "Deactivate Sponsorship" -> Propose: [Call `removeFunctionValidator(...)` for all voting strategies. If `info.stake > 0`, _also_ call `unlockStake()`]. _Add UI Warning: "Turns off sponsoring immediately by removing strategy validation. If funds are staked, also starts the **[~1-day]** cooldown before locked funds can be withdrawn."_ (This replaces KV disabling). (See Issue #7)
+          - **Pre-check:** Only available if `depositInfo.balance > 0`.
+          - Offer "Withdraw Gas Tank" -> Propose: [Call `withdrawTo(recipient, amount)`].
           - _**Note:** It should be possible to bundle the "Withdraw Gas Tank" action (`withdrawTo`) with either "Deactivate Sponsorship" (`removeFunctionValidator` / `unlockStake`) or "Increase Locked Funds" (`addStake`) in a single proposal._ (See Issue #9)
-    - **Sub-Scenario 4.2: Sponsorship Deactivating (Validator Removed / Cooldown Period Active) (`paymaster.validators(strategy, selector) === address(0)`, `lockedFunds > 0`, `withdrawTime > 0`, `block.timestamp < withdrawTime`)**
+    - **Sub-Scenario 4.2: Sponsorship Active (Stake Issue) (`paymaster.validators(...) != address(0)` AND `stakingRequired == true` AND (`info.staked == false` OR `info.stake < bundlerMinimumStake`))**
+      - **UI State:**
+        - `**Desired Behavior / Issue:**` Display Sponsorship Status: "Active (Stake Issue)". Display **Prominent Warning:** "Sponsorship should pass on-chain, but bundlers will likely reject UserOps due to insufficient or unlocked stake. Configuration needed." Buttons disabled if user lacks proposal rights.
+      - **Available Actions (Proposal):**
+        - `**Desired Behavior / Issue:**`
+          - (If `info.staked == false`)
+            - **Pre-check:** Verify DAO Treasury balance >= `max(0, bundlerMinimumStake - info.stake)`. (Ref: Issue #4)
+            - "Re-lock Stake" -> Propose: [`addStake(currentUnstakeDelay)` with `msg.value = max(0, bundlerMinimumStake - info.stake)`]. _Explain: "Re-locks existing stake and tops up to minimum if needed. Uses the previously set unstake delay."_ (Requires fetching `unstakeDelaySec`). (Addresses Issue #8 partially)
+          - (If `info.staked == true` AND `info.stake < bundlerMinimumStake`)
+            - **Pre-check:** Verify DAO Treasury balance >= `bundlerMinimumStake - info.stake`. (Ref: Issue #4)
+            - "Increase Locked Funds" -> Propose: [`addStake(currentUnstakeDelay)` with `msg.value = bundlerMinimumStake - info.stake`]. _Explain: "Tops up locked funds to meet the minimum requirement."_ (Addresses Issue #8 partially)
+          - **Pre-check:** Only available if `depositInfo.balance > 0`.
+          - Offer "Withdraw Gas Tank" -> Propose: [Call `withdrawTo(recipient, amount)`].
+          - "Deactivate Sponsorship" -> Propose: [`removeFunctionValidator(...)` for all strategies. If `info.stake > 0` AND `info.staked == true`, also call `unlockStake()`]. _UI Warning as before._ (See Issue #7)
+          - _**Note:** Bundling "Deactivate Sponsorship" (`removeFunctionValidator`/`unlockStake`) with "Withdraw Gas Tank" (`withdrawTo`) should be possible._ (Addresses Issue #9 partially)
+    - **Sub-Scenario 4.3: Sponsorship Deactivating (Cooldown Active) (`paymaster.validators(...) == address(0)`, `info.withdrawTime > block.timestamp`)**
       - **UI State:**
         - `**Current Behavior:**` Unclear UI representation.
         - `**Desired Behavior / Issue:**` Display Sponsorship Status: **"Deactivating (Validator Removed / Cooldown Period: ~X days remaining)"**. Display **Prominent Warning: "Sponsored voting is inactive."** Buttons disabled if user lacks proposal rights. (See Issue #10)
@@ -112,36 +153,47 @@ This section describes the process during the initial creation of a new DAO.
         - `**Current Behavior:**` Unclear available actions.
         - `**Desired Behavior / Issue:**`
           - Offer "Propose Locked Funds Withdrawal" -> Propose: [Call `withdrawStake(recipient)`]. _Add UI Explanation: "Proposal execution only possible after cooldown ends (~X days remaining)."_ (See Issue #11)
+          - **Pre-check:** Only available if `depositInfo.balance > 0`.
           - Offer "Withdraw Gas Tank" -> Propose: [Call `withdrawTo(recipient, amount)`].
+          - Offer "Reactivate Sponsorship" -> Propose: [
+            1. Call `setFunctionValidator(...)`.
+            2. If `stakingRequired`:
+               - **Pre-check:** Verify DAO Treasury balance >= `max(0, bundlerMinimumStake - info.stake)`.
+               - Call `addStake(86400)` with `msg.value = max(0, bundlerMinimumStake - info.stake)`
+                 ]. _Explain: "Re-whitelists strategy validation, cancels the pending stake withdrawal, re-locks funds (potentially topping up), turning sponsorship back on."_ (Combines parts of Issue #16 & #20)
           - _**Note:** It should be possible to bundle "Propose Locked Funds Withdrawal" and "Withdraw Gas Tank" into a single proposal._ (See Issue #12)
-          - _Disable_ actions related to activating/deactivating sponsorship or increasing locked funds. (Reactivation requires `setFunctionValidator` first). (See Issue #13)
-    - **Sub-Scenario 4.3: Sponsorship Deactivated (Validator Removed / Locked Funds Ready for Withdrawal) (`paymaster.validators(strategy, selector) === address(0)`, `lockedFunds > 0`, `withdrawTime > 0`, `block.timestamp >= withdrawTime`)**
+    - **Sub-Scenario 4.4: Sponsorship Deactivated (Ready to Withdraw Stake) (`paymaster.validators(...) == address(0)`, `info.withdrawTime > 0`, `info.withdrawTime <= block.timestamp`)**
       - **UI State:**
         - `**Current Behavior:**` Unclear UI representation.
-        - `**Desired Behavior / Issue:**` Display Sponsorship Status: **"Deactivated (Validator Removed / Locked Funds Ready for Withdrawal)"**. Display **Prominent Warning: "Sponsored voting is inactive."** Buttons disabled if user lacks proposal rights. (See Issue #14)
+        - `**Desired Behavior / Issue:**` Display Sponsorship Status: **"Deactivated (Ready to Withdraw Stake)"**. Display **Prominent Warning: "Sponsored voting is inactive (Validator Removed)."** Buttons disabled if user lacks proposal rights. (See Issue #14)
       - **Available Actions (Proposal):**
         - `**Current Behavior:**` Unclear available actions.
         - `**Desired Behavior / Issue:**`
           - Offer "Withdraw Locked Funds" -> Propose: [Call `withdrawStake(recipient)`]. (See Issue #15)
           - Offer "Reactivate Sponsorship" -> Propose: [
-            1. Call `setFunctionValidator(strategy, selector, validatorAddress)`.
-            2. If `stake > 0`:
-               Calculate `stakeDelta = max(0, (stakingRequired ? bundlerMinimumStake : 0) - currentStake)`.
-               Call `addStake(86400)` with `msg.value = stakeDelta`
-               ]. _Explain: "Re-whitelists strategy validation, tops up stake to meet minimum (if required), and re-locks funds using a 1-day delay, turning vote sponsoring back on."_ (See Issue #16)
+            1. Call `setFunctionValidator(...)`.
+            2. If `stakingRequired`:
+               - **Pre-check:** Verify DAO Treasury balance >= `max(0, bundlerMinimumStake - info.stake)`.
+               - Calculate `stakeDelta = max(0, bundlerMinimumStake - info.stake)`.
+               - Call `addStake(86400)` with `msg.value = stakeDelta`
+                 ]. _Explain: "Re-whitelists strategy validation, tops up stake to meet minimum (if required), cancels pending withdrawal, and re-locks funds using a 1-day delay, turning vote sponsoring back on."_ (See Issue #16)
+          - **Pre-check:** Only available if `depositInfo.balance > 0`.
           - Offer "Withdraw Gas Tank" -> Propose: [Call `withdrawTo(recipient, amount)`].
           - _**Note:** It should be possible to bundle "Withdraw Locked Funds" and "Withdraw Gas Tank" into a single proposal._ (See Issue #17)
-          - _Disable_ actions related to increasing locked funds or deactivating sponsorship (already deactivated). (See Issue #18)
-    - **Sub-Scenario 4.4: Sponsorship Inactive (Validator Not Set / Activation Potentially Required) (`paymaster.validators(strategy, selector) === address(0)`, `lockedFunds === 0` or `stakingRequired` is false)**
+    - **Sub-Scenario 4.5: Sponsorship Inactive (Validator Not Set) (`paymaster.validators(...) == address(0)` AND `info.staked == false`)**
       - **UI State:**
         - `**Current Behavior:**` Toggle reflects KV state. Stake status implied 0. Validator status ignored.
-        - `**Desired Behavior / Issue:**` Display Sponsorship Status: "Inactive". Show warning label ("Activation Required: Whitelist strategy" or "Whitelist strategy & Lock Funds"). Buttons disabled if user lacks proposal rights. (See Issue #19)
+        - `**Desired Behavior / Issue:**` Display Sponsorship Status: "Inactive (Validator Not Set)". Show warning label ("Activation Required: Set validator" or "Set validator & Lock Funds"). Buttons disabled if user lacks proposal rights. (See Issue #19)
       - **Available Actions (Proposal):**
         - `**Current Behavior:**` Toggle ON proposes KV set + Add Stake + Whitelist.
         - `**Desired Behavior / Issue:**`
-          - Offer "Activate Sponsorship" -> Propose: [Call `setFunctionValidator(strategy, selector, validatorAddress)`. If activation requires locking funds (`stakingRequired`), _also_ call `addStake(bundlerMinimumStake)`]. (See Issue #20)
+          - Offer "Activate Sponsorship" -> Propose: [
+            1. Call `setFunctionValidator(...)`.
+            2. If `stakingRequired`: - **Pre-check:** Verify DAO Treasury balance >= `bundlerMinimumStake`. - Call `addStake(bundlerMinimumStake)` with appropriate delay (e.g., 86400).
+               ]. (See Issue #20)
+          - **Pre-check:** Only available if `depositInfo.balance > 0`.
           - Offer "Withdraw Gas Tank" -> Propose: [Call `withdrawTo(recipient, amount)`].
-5.  **Refill:** (This remains largely the same, renumbered)
+5.  **Refill:**
     - `**Current Behavior:**` An "Refill" button (`addGas`) allows a user (with proposal rights for proposal method, or any user for direct deposit) to add funds to the paymaster deposit (gas tank). This button is likely only visible if the Paymaster is deployed.
       - Clicking opens a modal (`ModalType.REFILL_GAS`).
       - User enters the amount to add.
