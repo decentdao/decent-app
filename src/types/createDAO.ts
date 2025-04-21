@@ -61,6 +61,17 @@ export interface ICreationStepProps extends Omit<FormikProps<CreatorFormState>, 
   steps: CreatorSteps[];
 }
 
+type DAOGovernorERC20Token<T = bigint> = {
+  tokenCreationType: TokenCreationType;
+  tokenImportAddress?: Address;
+  tokenName: string;
+  tokenSymbol: string;
+  locked: TokenLockType;
+  tokenSupply: T;
+  tokenAllocations: { amount: T; address: string }[];
+  parentAllocationAmount: T;
+};
+
 export interface CreatorFormState<T = BigIntValuePair> {
   essentials: DAOEssentials;
   multisig: SafeConfiguration;
@@ -74,17 +85,6 @@ export type DAOEssentials = {
   daoName: string;
   governance: GovernanceType;
   snapshotENS: string;
-};
-
-export type DAOGovernorERC20Token<T = bigint> = {
-  tokenCreationType: TokenCreationType;
-  tokenImportAddress?: Address;
-  tokenName: string;
-  tokenSymbol: string;
-  locked: TokenLockType;
-  tokenSupply: T;
-  tokenAllocations: { amount: T; address: string }[];
-  parentAllocationAmount: T;
 };
 
 export type ERC721TokenConfig<T = bigint> = {
@@ -114,7 +114,7 @@ export type DAOFreezeGuardConfig<T = bigint> = {
   attachFractalModule: boolean;
 };
 
-export interface SafeConfiguration {
+interface SafeConfiguration {
   trustedAddresses: string[];
   signatureThreshold: number;
   numOfSigners?: number;
@@ -148,22 +148,19 @@ export type DAOTrigger = (
   customNonce?: number,
 ) => void;
 
-export type AddressValidationMap = Map<string, AddressValidation>;
-
-export type AddressValidation = {
-  address: string;
-  isValidAddress: boolean;
-};
+export type AddressValidationMap = Map<
+  string,
+  {
+    address: string;
+    isValidAddress: boolean;
+  }
+>;
 
 export type TokenAllocation<T = bigint> = {
   amount: T;
   address: Address;
 };
 
-export type CreateDAOFunc = (
-  daoData: SafeMultisigDAO,
-  successCallback: DeployDAOSuccessCallback,
-) => void;
 export type DeployDAOSuccessCallback = (address: string) => void;
 export type DAODetails = {
   daoName: string;
