@@ -1,7 +1,7 @@
 import { abis } from '@fractal-framework/fractal-contracts';
 import { hatIdToTreeId } from '@hatsprotocol/sdk-v1-core';
 import { useEffect } from 'react';
-import { Address, GetContractEventsReturnType, PublicClient, getContract, zeroAddress } from 'viem';
+import { Address, GetContractEventsReturnType, PublicClient, getContract } from 'viem';
 import { logError } from '../../helpers/errorLogging';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
 import { useDaoInfoStore } from '../../store/daoInfo/useDaoInfoStore';
@@ -187,7 +187,7 @@ const useKeyValuePairs = () => {
           safeAddress,
           publicClient,
           zodiacModuleProxyFactory,
-          paymaster?.decentPaymasterV1MasterCopy ?? zeroAddress,
+          paymaster.decentPaymasterV1MasterCopy,
           accountAbstraction,
         ).then(gaslessVotingDaoData => {
           if (gaslessVotingDaoData) {
@@ -230,7 +230,7 @@ const useKeyValuePairs = () => {
             safeAddress,
             publicClient,
             zodiacModuleProxyFactory,
-            paymaster?.decentPaymasterV1MasterCopy ?? zeroAddress,
+            paymaster.decentPaymasterV1MasterCopy,
             accountAbstraction,
           ).then(gaslessVotingDaoData => {
             if (gaslessVotingDaoData) {
