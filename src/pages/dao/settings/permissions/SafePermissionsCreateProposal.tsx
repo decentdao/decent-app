@@ -10,7 +10,6 @@ import {
   encodePacked,
   getContract,
   getCreate2Address,
-  Hex,
   keccak256,
   parseAbiParameters,
   zeroAddress,
@@ -171,41 +170,29 @@ export function SafePermissionsCreateProposal() {
         const quorumDenominator =
           await linearERC20VotingMasterCopyContract.read.QUORUM_DENOMINATOR();
 
-        let encodedStrategyInitParams: Hex;
-
-        if (gaslessVotingFeatureEnabled) {
-          if (!accountAbstraction) {
-            throw new Error('Account abstraction not found');
-          }
-          encodedStrategyInitParams = encodeAbiParameters(
-            parseAbiParameters(linearERC20VotingWithWhitelistV1SetupParams),
-            [
-              safe.address, // owner
-              votesToken.address, // governance token
-              moduleAzoriusAddress, // Azorius module
-              Number(votingStrategy.votingPeriod.value),
-              (votingStrategy.quorumPercentage.value * quorumDenominator) / 100n,
-              500000n,
-              hatsProtocol, // hats protocol
-              [], // whitelisted hat ids
-              accountAbstraction.lightAccountFactory, // light account factory
-            ],
-          );
-        } else {
-          encodedStrategyInitParams = encodeAbiParameters(
-            parseAbiParameters(linearERC20VotingWithWhitelistSetupParams),
-            [
-              safe.address, // owner
-              votesToken.address, // governance token
-              moduleAzoriusAddress, // Azorius module
-              Number(votingStrategy.votingPeriod.value),
-              (votingStrategy.quorumPercentage.value * quorumDenominator) / 100n,
-              500000n,
-              hatsProtocol, // hats protocol
-              [], // whitelisted hat ids
-            ],
-          );
-        }
+        const encodedStrategyInitParams =
+          gaslessVotingFeatureEnabled && accountAbstraction
+            ? encodeAbiParameters(parseAbiParameters(linearERC20VotingWithWhitelistV1SetupParams), [
+                safe.address, // owner
+                votesToken.address, // governance token
+                moduleAzoriusAddress, // Azorius module
+                Number(votingStrategy.votingPeriod.value),
+                (votingStrategy.quorumPercentage.value * quorumDenominator) / 100n,
+                500000n,
+                hatsProtocol, // hats protocol
+                [], // whitelisted hat ids
+                accountAbstraction.lightAccountFactory, // light account factory
+              ])
+            : encodeAbiParameters(parseAbiParameters(linearERC20VotingWithWhitelistSetupParams), [
+                safe.address, // owner
+                votesToken.address, // governance token
+                moduleAzoriusAddress, // Azorius module
+                Number(votingStrategy.votingPeriod.value),
+                (votingStrategy.quorumPercentage.value * quorumDenominator) / 100n,
+                500000n,
+                hatsProtocol, // hats protocol
+                [], // whitelisted hat ids
+              ]);
 
         const encodedStrategySetupData = encodeFunctionData({
           abi: gaslessVotingFeatureEnabled
@@ -265,43 +252,34 @@ export function SafePermissionsCreateProposal() {
           throw new Error('Voting strategy or NFT votes tokens not found');
         }
 
-        let encodedStrategyInitParams: Hex;
-
-        if (gaslessVotingFeatureEnabled) {
-          if (!accountAbstraction) {
-            throw new Error('Account abstraction not found');
-          }
-          encodedStrategyInitParams = encodeAbiParameters(
-            parseAbiParameters(linearERC721VotingWithWhitelistV1SetupParams),
-            [
-              safe.address, // owner
-              erc721Tokens.map(token => token.address), // governance token
-              erc721Tokens.map(token => token.votingWeight),
-              moduleAzoriusAddress,
-              Number(votingStrategy.votingPeriod.value),
-              proposerThreshold.bigintValue,
-              500000n,
-              hatsProtocol, // hats protocol
-              [], // whitelisted hat ids
-              accountAbstraction.lightAccountFactory, // light account factory
-            ],
-          );
-        } else {
-          encodedStrategyInitParams = encodeAbiParameters(
-            parseAbiParameters(linearERC721VotingWithWhitelistSetupParams),
-            [
-              safe.address, // owner
-              erc721Tokens.map(token => token.address), // governance token
-              erc721Tokens.map(token => token.votingWeight),
-              moduleAzoriusAddress,
-              Number(votingStrategy.votingPeriod.value),
-              proposerThreshold.bigintValue,
-              500000n,
-              hatsProtocol, // hats protocol
-              [], // whitelisted hat ids
-            ],
-          );
-        }
+        const encodedStrategyInitParams =
+          gaslessVotingFeatureEnabled && accountAbstraction
+            ? encodeAbiParameters(
+                parseAbiParameters(linearERC721VotingWithWhitelistV1SetupParams),
+                [
+                  safe.address, // owner
+                  erc721Tokens.map(token => token.address), // governance token
+                  erc721Tokens.map(token => token.votingWeight),
+                  moduleAzoriusAddress,
+                  Number(votingStrategy.votingPeriod.value),
+                  proposerThreshold.bigintValue,
+                  500000n,
+                  hatsProtocol, // hats protocol
+                  [], // whitelisted hat ids
+                  accountAbstraction.lightAccountFactory, // light account factory
+                ],
+              )
+            : encodeAbiParameters(parseAbiParameters(linearERC721VotingWithWhitelistSetupParams), [
+                safe.address, // owner
+                erc721Tokens.map(token => token.address), // governance token
+                erc721Tokens.map(token => token.votingWeight),
+                moduleAzoriusAddress,
+                Number(votingStrategy.votingPeriod.value),
+                proposerThreshold.bigintValue,
+                500000n,
+                hatsProtocol, // hats protocol
+                [], // whitelisted hat ids
+              ]);
 
         const encodedStrategySetupData = encodeFunctionData({
           abi: gaslessVotingFeatureEnabled
