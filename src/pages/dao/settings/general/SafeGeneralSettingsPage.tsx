@@ -62,11 +62,11 @@ export function SafeGeneralSettingsPage() {
     bundlerMinimumStake,
   } = useNetworkConfigStore();
   const { depositInfo } = useDepositInfo(paymasterAddress);
-  const gaslessStakingFeatureEnabled = bundlerMinimumStake !== undefined;
+  const accountAbstractionSupported = bundlerMinimumStake !== undefined;
+  const stakingRequired = accountAbstractionSupported && bundlerMinimumStake > 0n;
 
   const isMultisigGovernance = votingStrategyType === GovernanceType.MULTISIG;
-  const gaslessVotingSupported =
-    !isMultisigGovernance && accountAbstraction?.entryPointv07 !== undefined;
+  const gaslessVotingSupported = !isMultisigGovernance && accountAbstractionSupported;
 
   const safeAddress = safe?.address;
 
@@ -199,7 +199,7 @@ export function SafeGeneralSettingsPage() {
       });
 
       // Add stake for Paymaster if not enough
-      if (gaslessStakingFeatureEnabled) {
+      if (stakingRequired) {
         const stakedAmount = depositInfo?.stake || 0n;
 
         if (paymasterAddress === null || stakedAmount < bundlerMinimumStake) {
