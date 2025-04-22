@@ -2,7 +2,7 @@ import { Box, Button, CloseButton, Flex, Text } from '@chakra-ui/react';
 import { Field, FieldAttributes, FieldProps, Form, Formik } from 'formik';
 import { useTranslation } from 'react-i18next';
 import * as Yup from 'yup';
-import { usePaymasterDepositInfo } from '../../../../hooks/DAO/accountAbstraction/useDepositInfo';
+import { usePaymasterDepositInfo } from '../../../../hooks/DAO/accountAbstraction/usePaymasterDepositInfo';
 import { useValidationAddress } from '../../../../hooks/schemas/common/useValidationAddress';
 import { BigIntValuePair } from '../../../../types';
 import { formatCoinUnits } from '../../../../utils/numberFormats';
