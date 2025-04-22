@@ -395,6 +395,7 @@ class EnhancedSafeApiKit {
         headers: {
           accept: 'application/json',
         },
+        timeout: 1000,
       });
 
       return value.data;
