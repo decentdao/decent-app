@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
 import { Hex, getAddress } from 'viem';
+import { encodeFunction } from '../../../helpers';
 import { CreateProposalForm } from '../../../types/proposalBuilder';
-import { encodeFunction } from '../../../utils/crypto';
 import { validateENSName, isValidUrl } from '../../../utils/url';
 import { useNetworkEnsAddressAsync } from '../../useNetworkEnsAddress';
 
