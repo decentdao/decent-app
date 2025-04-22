@@ -170,11 +170,14 @@ export function ProposalBuilder({
 
         const trimmedTitle = title.trim();
 
+        const noTransactionsOrStreams =
+          transactions.length === 0 &&
+          (formikProps.values as CreateSablierProposalForm).streams?.length === 0;
         const createProposalButtonDisabled =
           !canUserCreateProposal ||
           Object.keys(formikProps.errors).length > 0 ||
           !trimmedTitle ||
-          transactions.length === 0 ||
+          noTransactionsOrStreams ||
           pendingCreateTx;
 
         const renderButtons = (step: CreateProposalSteps) => {
