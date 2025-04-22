@@ -22,5 +22,5 @@
   "tipFreeze": "{{amount}}必須凍結投票",
   "proposalDescriptionCont": "將",
   "alertTokenClaim": "您有{{amount}}代幣可以領取。",
-  "claim": "索賠"
+  "claim": "申領"
 }

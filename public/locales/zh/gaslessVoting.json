@@ -23,6 +23,6 @@
   "directDeposit": "直接存款",
   "depositGas": "存款",
   "balance": "{{balance}}可用",
-  "sendingHint": "建议的加注量",
+  "sendingHint": "提案的加注量",
   "sendingHintDirectDeposit": "您将发送"
 }

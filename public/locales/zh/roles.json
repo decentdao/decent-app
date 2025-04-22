@@ -19,7 +19,7 @@
   "roleDescription": "角色描述",
   "canCreateProposals": "可以创建提案",
   "permissions": "权限",
-  "permissionsProposals": "建议",
+  "permissionsProposals": "提案",
   "permissionsProposalsTooltip": "可以创建提案。",
   "amount": "金额",
   "starting": "开始",

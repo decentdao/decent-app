@@ -46,7 +46,7 @@
   "errorMinimumValue": "该值不能小于{{minValue}}",
   "errorMaximumValue": "该值不能大于{{maxValue}}",
   "errorInvalidAddress": "无效ETH地址",
-  "errorNotProposer": "您没有为Safe创建建议所需的权限。",
+  "errorNotProposer": "您没有为Safe创建提案所需的权限。",
   "errorSentryFallbackTitle": "哎呀！出错了",
   "errorSentryFallbackMessage": "不便之处，敬请原谅。请稍后再试。",
   "errorMySafesNotLoaded": "保险箱无法加载。请稍后再试。",

@@ -18,7 +18,7 @@
   "errorUserDeniedTransaction": "使用者拒絕交易",
   "errorInsufficientFunds": "交易資金不足",
   "pendingTokenClaim": "領取{{symbol}}",
-  "failedTokenClaim": "索賠失敗{{symbol}}",
+  "failedTokenClaim": "申領失敗{{symbol}}",
   "successTokenClaim": "您已成功申領{{amount}}{{symbol}}",
   "snapshotRecastVoteHelper": "在投票結束前，您仍可更改您的投票。",
   "modifyGovernanceSetAzoriusProposalPendingMessage": "提交修改治理的提案...",
