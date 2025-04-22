@@ -33,8 +33,12 @@ export function NFTRow({ asset, isLast }: { asset: NFTBalance; isLast: boolean }
     : asset.media?.mediaCollection
       ? asset.media?.mediaCollection.medium.url
       : asset.media?.originalMediaUrl;
-  const name = asset.name;
+  const name = asset.name || asset.metadata?.name;
   const id = asset.tokenId.toString();
+
+  const normalizedImageSrc = image?.startsWith('ipfs://')
+    ? `https://ipfs.io/ipfs/${image.split('://')[1]}`
+    : image;
 
   return (
     <HStack
@@ -53,7 +57,7 @@ export function NFTRow({ asset, isLast }: { asset: NFTBalance; isLast: boolean }
           _hover={{ bg: 'transparent' }}
         >
           <Image
-            src={image}
+            src={normalizedImageSrc}
             fallbackSrc="/images/nft-image-default.svg"
             alt={name}
             w="3rem"
