@@ -5,5 +5,5 @@
   "transferAssetsSub": "Créez des paiements une fois.",
   "comingSoon": "À venir...",
   "comingSoonSub": "Plus d'actions sur le chemin.",
-  "proposalBuilderBatch": "Lot : {{ numOfTransactions }} transactions"
+  "proposalBuilderBatch": "Lot : {{numOfTransactions}} transactions"
 }
