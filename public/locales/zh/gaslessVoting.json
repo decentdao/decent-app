@@ -6,6 +6,7 @@
   "gaslessVotingDescriptionSettings": "创建一个付费系统，用于赞助提案投票的网络费用。",
   "gaslessStakingDescription": "{{amount}}{{symbol}}的质押是启用免费投票的必要条件。如果停用了免费投票，则可在1天后解除锁定。",
   "addGas": "笔芯",
+  "withdrawGas": "退出",
   "refillTank": "充值付款大师",
   "refillPaymasterAction": "用{{amount}}填充付款大师",
   "starterPromoTitle": "入门促销",
@@ -24,5 +25,8 @@
   "depositGas": "存款",
   "balance": "{{balance}}可用",
   "sendingHint": "提案的加注量",
-  "sendingHintDirectDeposit": "您将发送"
+  "sendingHintDirectDeposit": "您将发送",
+  "withdrawAmount": "提取金额",
+  "submitWithdrawAmount": "退出",
+  "withdrawGasAction": "提取{{amount}}<x>{{symbol}</x>从付款人处"
 }

@@ -1,41 +1,37 @@
 import { Box, Button, CloseButton, Flex, Text } from '@chakra-ui/react';
 import { Field, FieldAttributes, FieldProps, Form, Formik } from 'formik';
 import { useTranslation } from 'react-i18next';
-import { useBalance } from 'wagmi';
 import * as Yup from 'yup';
-import { useValidationAddress } from '../../../hooks/schemas/common/useValidationAddress';
-import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
-import { BigIntValuePair } from '../../../types';
-import { formatCoinUnits } from '../../../utils/numberFormats';
-import { BigIntInput } from '../forms/BigIntInput';
-import LabelWrapper from '../forms/LabelWrapper';
-import { AssetSelector } from '../utils/AssetSelector';
+import { usePaymasterDepositInfo } from '../../../../hooks/DAO/accountAbstraction/useDepositInfo';
+import { useValidationAddress } from '../../../../hooks/schemas/common/useValidationAddress';
+import { BigIntValuePair } from '../../../../types';
+import { formatCoinUnits } from '../../../../utils/numberFormats';
+import { BigIntInput } from '../../forms/BigIntInput';
+import LabelWrapper from '../../forms/LabelWrapper';
+import { AssetSelector } from '../../utils/AssetSelector';
 
-interface RefillGasFormValues {
+interface WithdrawGasFormValues {
   inputAmount?: BigIntValuePair;
 }
 
-export interface RefillGasData {
-  transferAmount: bigint;
+export interface WithdrawGasData {
+  withdrawAmount: bigint;
 }
 
-export function RefillGasTankModal({
+export function WithdrawGasTankModal({
   close,
-  refillGasData,
+  withdrawGasData,
 }: {
   close: () => void;
-  refillGasData: (refillData: RefillGasData) => void;
+  withdrawGasData: (withdrawGasData: WithdrawGasData) => void;
 }) {
-  const { safe } = useDaoInfoStore();
-  const { data: nativeTokenBalance } = useBalance({
-    address: safe?.address,
-  });
+  const { depositInfo } = usePaymasterDepositInfo();
 
   const { t } = useTranslation('gaslessVoting');
 
   const { isValidating } = useValidationAddress();
 
-  const refillGasValidationSchema = Yup.object().shape({
+  const withdrawGasValidationSchema = Yup.object().shape({
     inputAmount: Yup.object()
       .shape({
         value: Yup.string().required(),
@@ -43,9 +39,9 @@ export function RefillGasTankModal({
       .required(),
   });
 
-  const handleRefillGasSubmit = async (values: RefillGasFormValues) => {
-    refillGasData({
-      transferAmount: values.inputAmount?.bigintValue || 0n,
+  const handleWithdrawGasSubmit = async (values: WithdrawGasFormValues) => {
+    withdrawGasData({
+      withdrawAmount: values.inputAmount?.bigintValue || 0n,
     });
 
     close();
@@ -53,19 +49,14 @@ export function RefillGasTankModal({
 
   return (
     <Box>
-      <Formik<RefillGasFormValues>
+      <Formik<WithdrawGasFormValues>
         initialValues={{ inputAmount: undefined }}
-        onSubmit={handleRefillGasSubmit}
-        validationSchema={refillGasValidationSchema}
+        onSubmit={handleWithdrawGasSubmit}
+        validationSchema={withdrawGasValidationSchema}
       >
         {({ errors, values, setFieldValue, handleSubmit }) => {
           const overDraft =
-            Number(values.inputAmount?.value || '0') >
-            formatCoinUnits(
-              nativeTokenBalance?.value || 0n,
-              nativeTokenBalance?.decimals || 0,
-              nativeTokenBalance?.symbol || '',
-            );
+            Number(values.inputAmount?.value || '0') > formatCoinUnits(depositInfo?.balance ?? 0n);
 
           const inputBigint = values.inputAmount?.bigintValue;
           const inputBigintIsZero = inputBigint !== undefined ? inputBigint === 0n : undefined;
@@ -77,7 +68,7 @@ export function RefillGasTankModal({
                 justify="space-between"
                 align="center"
               >
-                <Text textStyle="heading-small">{t('refillTank')}</Text>
+                <Text textStyle="heading-small">{t('withdrawGas')}</Text>
                 <CloseButton onClick={close} />
               </Flex>
 
@@ -96,7 +87,7 @@ export function RefillGasTankModal({
                   textStyle="labels-large"
                   color="neutral-7"
                 >
-                  {t('amountLabel')}
+                  {t('withdrawAmount')}
                 </Text>
 
                 <Flex
@@ -113,9 +104,8 @@ export function RefillGasTankModal({
                             setFieldValue('inputAmount', value);
                           }}
                           parentFormikValue={values.inputAmount}
-                          decimalPlaces={nativeTokenBalance?.decimals || 0}
                           placeholder="0"
-                          maxValue={nativeTokenBalance?.value || 0n}
+                          maxValue={depositInfo?.balance ?? 0n}
                           isInvalid={overDraft}
                           errorBorderColor="red-0"
                         />
@@ -139,11 +129,7 @@ export function RefillGasTankModal({
                       px="0.25rem"
                     >
                       {`${t('availableBalance', {
-                        balance: formatCoinUnits(
-                          nativeTokenBalance?.value || 0n,
-                          nativeTokenBalance?.decimals || 0,
-                          nativeTokenBalance?.symbol || '',
-                        ),
+                        balance: formatCoinUnits(depositInfo?.balance ?? 0n),
                       })} `}
                       Available
                     </Text>
@@ -166,7 +152,7 @@ export function RefillGasTankModal({
                   type="submit"
                   isDisabled={isValidating || !!errors.inputAmount || isSubmitDisabled}
                 >
-                  {t('submitRefillAmount')}
+                  {t('submitWithdrawAmount')}
                 </Button>
               </Flex>
             </Form>

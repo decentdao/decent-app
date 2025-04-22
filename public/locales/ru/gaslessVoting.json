@@ -6,6 +6,7 @@
   "gaslessVotingDescriptionSettings": "Создайте платежную систему для оплаты сетевых взносов за голосование по предложениям.",
   "gaslessStakingDescription": "Ставка {{amount}} {{symbol}} требуется для включения голосования без газа. Если голосование без газа отключено, его можно снять через 1 день.",
   "addGas": "Заправка",
+  "withdrawGas": "Вывести",
   "refillTank": "Пополнение Paymaster",
   "refillPaymasterAction": "Пополните Paymaster с помощью {{amount}} {{symbol}}",
   "starterPromoTitle": "СТАРТОВОЕ ПРОМО",
@@ -24,5 +25,8 @@
   "depositGas": "Депозит",
   "balance": "{{balance}} Доступно",
   "sendingHint": "Предлагаемое количество пополнения",
-  "sendingHintDirectDeposit": "Вы отправляете"
+  "sendingHintDirectDeposit": "Вы отправляете",
+  "withdrawAmount": "Сумма к снятию",
+  "submitWithdrawAmount": "Вывести",
+  "withdrawGasAction": "Вывести {{amount}} <x>{{symbol}</x>} из платежной системы"
 }

@@ -6,6 +6,7 @@
   "gaslessVotingDescriptionSettings": "プロポーザル投票のネットワーク手数料をスポンサーするペイマスターを作る。",
   "gaslessStakingDescription": "{{amount}}のステーキングが必要である。{{symbol}ガスなし投票を有効にするには、  } のステーキングが必要である。ガスなし投票を無効にした場合は、1日後に杭を抜くことができる。",
   "addGas": "リフィル",
+  "withdrawGas": "辞退",
   "refillTank": "リフィル・ペイマスター",
   "refillPaymasterAction": "ペイマスターに {{amount}} を補充する。{{symbol}}",
   "starterPromoTitle": "スターター・プロモーション",
@@ -24,5 +25,8 @@
   "depositGas": "デポジット",
   "balance": "{{balance}}利用可能",
   "sendingHint": "詰め替え提案量",
-  "sendingHintDirectDeposit": "あなたは"
+  "sendingHintDirectDeposit": "あなたは",
+  "withdrawAmount": "出金額",
+  "submitWithdrawAmount": "辞退",
+  "withdrawGasAction": "{{amount}}を引き出す。<x>{{symbol}</x>ペイマスターから"
 }

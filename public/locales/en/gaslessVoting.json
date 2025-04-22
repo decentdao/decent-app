@@ -6,6 +6,7 @@
   "gaslessVotingDescriptionSettings": "Create a paymaster to sponsor network fees for proposal votes.",
   "gaslessStakingDescription": "A staking of {{amount}} {{symbol}} is required to enable gasless voting. It can be unstaked after 1 day if gasless voting is disabled.",
   "addGas": "Refill",
+  "withdrawGas": "Withdraw",
   "refillTank": "Refill Paymaster",
   "refillPaymasterAction": "Refill Paymaster with {{amount}} {{symbol}}",
   "starterPromoTitle": "STARTER PROMO",
@@ -24,5 +25,8 @@
   "depositGas": "Deposit",
   "balance": "{{balance}} Available",
   "sendingHint": "Proposed refill amount",
-  "sendingHintDirectDeposit": "You're sending"
+  "sendingHintDirectDeposit": "You're sending",
+  "withdrawAmount": "Amount to Withdraw",
+  "submitWithdrawAmount": "Withdraw",
+  "withdrawGasAction": "Withdraw {{amount}} {{symbol}} from the paymaster"
 }

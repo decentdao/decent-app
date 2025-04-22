@@ -6,6 +6,7 @@
   "gaslessVotingDescriptionSettings": "建立付費者，贊助提案投票的網路費用。",
   "gaslessStakingDescription": "{{amount}}{{symbol}}的押記是啟用無瓦斯投票的必要條件。如果禁用無瓦斯投票，1 天後可以取消釘住。",
   "addGas": "筆芯",
+  "withdrawGas": "退出",
   "refillTank": "補充款主",
   "refillPaymasterAction": "用{{amount}}填充Paymaster{{symbol}}",
   "starterPromoTitle": "入門促銷",
@@ -24,5 +25,8 @@
   "depositGas": "存款",
   "balance": "{{balance}}可用",
   "sendingHint": "建議補充劑量",
-  "sendingHintDirectDeposit": "您發送"
+  "sendingHintDirectDeposit": "您發送",
+  "withdrawAmount": "提款金額",
+  "submitWithdrawAmount": "退出",
+  "withdrawGasAction": "提款{{amount}}<x>{{symbol}</x>從收款人處"
 }
