@@ -8,17 +8,10 @@ import useIPFSClient from '../../../providers/App/hooks/useIPFSClient';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
 import { ProposalExecuteData } from '../../../types';
 import { CreateProposalForm } from '../../../types/proposalBuilder';
+import { bigintSerializer } from '../../../utils/bigintSerializer';
 import { validateENSName } from '../../../utils/url';
 import { useNetworkEnsAddressAsync } from '../../useNetworkEnsAddress';
 import { useCurrentDAOKey } from '../useCurrentDAOKey';
-
-const customSerializer = (_: string, value: any) => {
-  if (typeof value === 'bigint') {
-    // need to convert bigint to string
-    return value.toString();
-  }
-  return value;
-};
 
 export default function useCreateProposalTemplate() {
   const { getEnsAddress } = useNetworkEnsAddressAsync();
@@ -68,7 +61,7 @@ export default function useCreateProposalTemplate() {
 
         const updatedTemplatesList = [...proposalTemplates, proposalTemplateData];
 
-        const { Hash } = await client.add(JSON.stringify(updatedTemplatesList, customSerializer));
+        const { Hash } = await client.add(JSON.stringify(updatedTemplatesList, bigintSerializer));
 
         const encodedUpdateValues = encodeFunctionData({
           abi: abis.KeyValuePairs,
