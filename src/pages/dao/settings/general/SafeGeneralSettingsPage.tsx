@@ -271,7 +271,6 @@ export function SafeGeneralSettingsPage() {
       values,
       calldatas,
     };
-
     submitProposal({
       safeAddress: safe?.address,
       proposalData,
@@ -281,7 +280,7 @@ export function SafeGeneralSettingsPage() {
       failedToastMessage: t('proposalCreateFailureToastMessage', { ns: 'proposal' }),
       successCallback: () => {
         if (safeAddress) {
-          navigate(DAO_ROUTES.proposals.relative(addressPrefix, safeAddress));
+          navigate(DAO_ROUTES.dao.relative(addressPrefix, safeAddress));
         }
       },
     });

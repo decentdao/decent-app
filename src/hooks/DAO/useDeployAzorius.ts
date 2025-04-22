@@ -213,7 +213,7 @@ const useDeployAzorius = () => {
         pendingToastMessage: t('modifyGovernanceSetAzoriusProposalPendingMessage'),
         successToastMessage: t('proposalCreateSuccessToastMessage', { ns: 'proposal' }),
         failedToastMessage: t('proposalCreateFailureToastMessage', { ns: 'proposal' }),
-        successCallback: () => navigate(DAO_ROUTES.proposals.relative(addressPrefix, safeAddress)),
+        successCallback: () => navigate(DAO_ROUTES.dao.relative(addressPrefix, safeAddress)),
       });
     },
     [

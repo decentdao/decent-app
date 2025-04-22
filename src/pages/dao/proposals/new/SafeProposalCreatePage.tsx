@@ -49,7 +49,7 @@ export function SafeProposalCreatePage() {
   const pageHeaderBreadcrumbs = [
     {
       terminus: t('proposals', { ns: 'breadcrumbs' }),
-      path: DAO_ROUTES.proposals.relative(addressPrefix, safe.address),
+      path: DAO_ROUTES.dao.relative(addressPrefix, safe.address),
     },
     {
       terminus: t('proposalNew', { ns: 'breadcrumbs' }),
@@ -58,7 +58,7 @@ export function SafeProposalCreatePage() {
   ];
 
   const pageHeaderButtonClickHandler = () => {
-    navigate(DAO_ROUTES.proposals.relative(addressPrefix, safe.address));
+    navigate(DAO_ROUTES.dao.relative(addressPrefix, safe.address));
   };
 
   const stepButtons = ({
