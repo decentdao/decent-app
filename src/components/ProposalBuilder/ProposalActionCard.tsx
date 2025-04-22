@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { formatUnits, getAddress, isAddress } from 'viem';
 import PencilWithLineIcon from '../../assets/theme/custom/icons/PencilWithLineIcon';
 import { useCurrentDAOKey } from '../../hooks/DAO/useCurrentDAOKey';
+import { createAccountSubstring } from '../../hooks/utils/useGetAccountName';
 import { useStore } from '../../providers/App/AppProvider';
 import { CreateProposalAction, ProposalActionType } from '../../types/proposalBuilder';
 import { Card } from '../ui/cards/Card';
@@ -155,7 +156,14 @@ export function TransactionBuilderAction({
             color="lilac-0"
           />
           <Text>
-            {t('proposalBuilderBatch', { numOfTransactions: action.transactions.length })}
+            {action.transactions.length === 1
+              ? t('transactionBuilderActionCard_single', {
+                  functionName: action.transactions[0].functionName,
+                  targetAddress: createAccountSubstring(action.transactions[0].targetAddress),
+                })
+              : t('transactionBuilderActionCard_multiple', {
+                  numOfTransactions: action.transactions.length,
+                })}
           </Text>
         </Flex>
         <Button
