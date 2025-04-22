@@ -6,6 +6,7 @@ import { useStore } from '../../../providers/App/AppProvider';
 import useIPFSClient from '../../../providers/App/hooks/useIPFSClient';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
 import { ProposalExecuteData } from '../../../types';
+import { bigintSerializer } from '../../../utils/bigintSerializer';
 import { useCurrentDAOKey } from '../useCurrentDAOKey';
 
 export default function useRemoveProposalTemplate() {
@@ -34,7 +35,7 @@ export default function useRemoveProposalTemplate() {
           (_, index: number) => index !== templateIndex,
         );
 
-        const { Hash } = await client.add(JSON.stringify(updatedTemplatesList));
+        const { Hash } = await client.add(JSON.stringify(updatedTemplatesList, bigintSerializer));
 
         const encodedUpdateValues = encodeFunctionData({
           abi: abis.KeyValuePairs,
