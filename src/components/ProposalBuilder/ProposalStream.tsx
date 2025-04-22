@@ -177,6 +177,7 @@ export function ProposalStream({
         >
           <BigIntInput
             value={stream.totalAmount.bigintValue}
+            parentFormikValue={stream.totalAmount}
             onChange={value => handleUpdateStream(index, { totalAmount: value })}
             decimalPlaces={tokenDecimals}
             maxValue={rawTokenBalance}
@@ -318,6 +319,7 @@ export function ProposalStream({
                                 <BigIntInput
                                   isRequired
                                   value={tranche.amount.bigintValue}
+                                  parentFormikValue={tranche.amount}
                                   decimalPlaces={tokenDecimals}
                                   placeholder="1000"
                                   onChange={value =>
