@@ -28,5 +28,8 @@
   "sendingHintDirectDeposit": "您将发送",
   "withdrawAmount": "提取金额",
   "submitWithdrawAmount": "退出",
-  "withdrawGasAction": "提取{{amount}}<x>{{symbol}</x>从付款人处"
+  "recipientAddressRequired": "收件人地址为必填项",
+  "withdrawGasAction": "提取{{amount}}<x>{{symbol}</x>从付款人处",
+  "recipientAddress": "收件人地址",
+  "enterRecipientAddress": "输入收件人地址"
 }

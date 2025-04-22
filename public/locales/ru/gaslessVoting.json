@@ -28,5 +28,8 @@
   "sendingHintDirectDeposit": "Вы отправляете",
   "withdrawAmount": "Сумма к снятию",
   "submitWithdrawAmount": "Вывести",
-  "withdrawGasAction": "Вывести {{amount}} <x>{{symbol}</x>} из платежной системы"
+  "recipientAddressRequired": "Адрес получателя обязателен",
+  "withdrawGasAction": "Вывести {{amount}} <x>{{symbol}</x>} из платежной системы",
+  "recipientAddress": "Адрес получателя",
+  "enterRecipientAddress": "Введите адрес получателя"
 }

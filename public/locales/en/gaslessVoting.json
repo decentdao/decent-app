@@ -28,5 +28,8 @@
   "sendingHintDirectDeposit": "You're sending",
   "withdrawAmount": "Amount to Withdraw",
   "submitWithdrawAmount": "Withdraw",
-  "withdrawGasAction": "Withdraw {{amount}} {{symbol}} from the paymaster"
+  "recipientAddressRequired": "Recipient address is required",
+  "withdrawGasAction": "Withdraw {{amount}} {{symbol}} from the paymaster",
+  "recipientAddress": "Recipient Address",
+  "enterRecipientAddress": "Enter recipient address"
 }

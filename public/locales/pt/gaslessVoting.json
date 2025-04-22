@@ -28,5 +28,8 @@
   "sendingHintDirectDeposit": "Está a enviar",
   "withdrawAmount": "Montante a levantar",
   "submitWithdrawAmount": "Retirada",
-  "withdrawGasAction": "Levantar {{amount}} <x>{{symbol}</x>} do pagador"
+  "recipientAddressRequired": "O endereço do destinatário é obrigatório",
+  "withdrawGasAction": "Levantar {{amount}} <x>{{symbol}</x>} do pagador",
+  "recipientAddress": "Endereço do destinatário",
+  "enterRecipientAddress": "Introduzir o endereço do destinatário"
 }

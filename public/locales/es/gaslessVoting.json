@@ -28,5 +28,8 @@
   "sendingHintDirectDeposit": "Estás enviando",
   "withdrawAmount": "Importe a retirar",
   "submitWithdrawAmount": "Retirar",
-  "withdrawGasAction": "Retirar {{amount}} <x>{{symbol}</x>} del pagador"
+  "recipientAddressRequired": "Se requiere la dirección del destinatario",
+  "withdrawGasAction": "Retirar {{amount}} <x>{{symbol}</x>} del pagador",
+  "recipientAddress": "Dirección del destinatario",
+  "enterRecipientAddress": "Introduzca la dirección del destinatario"
 }

@@ -28,5 +28,8 @@
   "sendingHintDirectDeposit": "あなたは",
   "withdrawAmount": "出金額",
   "submitWithdrawAmount": "辞退",
-  "withdrawGasAction": "{{amount}}を引き出す。<x>{{symbol}</x>ペイマスターから"
+  "recipientAddressRequired": "受取人の住所が必要です",
+  "withdrawGasAction": "{{amount}}を引き出す。<x>{{symbol}</x>ペイマスターから",
+  "recipientAddress": "受取人住所",
+  "enterRecipientAddress": "受信者のアドレスを入力"
 }

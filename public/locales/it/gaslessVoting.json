@@ -28,5 +28,8 @@
   "sendingHintDirectDeposit": "State inviando",
   "withdrawAmount": "Importo da prelevare",
   "submitWithdrawAmount": "Ritiro",
-  "withdrawGasAction": "Prelevare {{amount}} <x>{{symbol}</x>} dal paymaster"
+  "recipientAddressRequired": "L'indirizzo del destinatario è obbligatorio",
+  "withdrawGasAction": "Prelevare {{amount}} <x>{{symbol}</x>} dal paymaster",
+  "recipientAddress": "Indirizzo del destinatario",
+  "enterRecipientAddress": "Inserire l'indirizzo del destinatario"
 }

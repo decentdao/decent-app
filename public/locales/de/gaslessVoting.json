@@ -28,5 +28,8 @@
   "sendingHintDirectDeposit": "Du schickst",
   "withdrawAmount": "Abzuhebender Betrag",
   "submitWithdrawAmount": "Zurückziehen",
-  "withdrawGasAction": "Abheben {{amount}} <x>{{symbol}</x>} vom Zahlmeister"
+  "recipientAddressRequired": "Adresse des Empfängers ist erforderlich",
+  "withdrawGasAction": "Abheben {{amount}} <x>{{symbol}</x>} vom Zahlmeister",
+  "recipientAddress": "Adresse des Empfängers",
+  "enterRecipientAddress": "Empfängeradresse eingeben"
 }
