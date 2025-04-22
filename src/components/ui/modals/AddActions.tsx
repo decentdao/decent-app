@@ -1,5 +1,5 @@
 import { Button, Flex, Grid, Icon, Text, useDisclosure } from '@chakra-ui/react';
-import { ArrowsDownUp, Plus, PlusCircle, SquaresFour } from '@phosphor-icons/react';
+import { ArrowsDownUp, CraneTower, Plus, SquaresFour } from '@phosphor-icons/react';
 import { useTranslation } from 'react-i18next';
 import { DETAILS_BOX_SHADOW } from '../../../constants/common';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
@@ -141,7 +141,7 @@ export function AddActions() {
           <ActionCard
             title={t('transcationBuilderActionCardTitle', { ns: 'modals' })}
             subtitle={t('transactionBuilderActionCardSub', { ns: 'modals' })}
-            icon={PlusCircle}
+            icon={CraneTower}
             onClick={() => {
               onClose();
               openTransactionBuilderModal();
