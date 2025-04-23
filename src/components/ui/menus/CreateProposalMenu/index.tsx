@@ -41,12 +41,18 @@ export function CreateProposalMenu({ safeAddress }: { safeAddress: Address }) {
   // @dev Continue a proposal adding adding a action via a template
   options.push({
     optionKey: t('browseTemplates'),
-    onClick: () => navigate(DAO_ROUTES.proposalTemplates.relative(addressPrefix, safeAddress)),
+    onClick: () => {
+      resetActions();
+      navigate(DAO_ROUTES.proposalTemplates.relative(addressPrefix, safeAddress));
+    },
   });
   if (iframeFeatureEnabled) {
     options.push({
       optionKey: t('useDapps'),
-      onClick: () => navigate(DAO_ROUTES.proposalDapps.relative(addressPrefix, safeAddress)),
+      onClick: () => {
+        resetActions();
+        navigate(DAO_ROUTES.proposalDapps.relative(addressPrefix, safeAddress));
+      },
     });
   }
 
