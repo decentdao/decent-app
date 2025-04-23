@@ -292,14 +292,16 @@ class EnhancedSafeApiKit {
           { address: tokenAddress, abi: erc20Abi, functionName: 'symbol' },
           { address: tokenAddress, abi: erc20Abi, functionName: 'decimals' },
         ],
-        allowFailure: false,
+        allowFailure: true,
       });
-
+      const resolvedName = name.result ?? 'Unknown Token';
+      const resolvedSymbol = symbol.result ?? 'Unknown Token';
+      const resolvedDecimals = decimals.result;
       return {
         address: tokenAddress,
-        name,
-        symbol,
-        decimals,
+        name: resolvedName,
+        symbol: resolvedSymbol,
+        decimals: Number(resolvedDecimals),
       };
     } catch (error) {
       console.error('Error fetching getToken from contract:', error);
