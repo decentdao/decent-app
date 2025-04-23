@@ -180,7 +180,7 @@
   "trancheDurationHelper": "トランシェの期間",
   "removeTranche": "トランシェの削除",
   "addTranche": "トランシェの追加",
-  "trancheDurationHelperFirstTranche": "最初のトランスには最低1秒。",
+  "trancheDurationHelperFirstTranche": "最初のトランシェは少なくとも1秒。",
   "labelRecipientAddress": "受取人住所",
   "labelTotalAmount": "総額",
   "labelTranches": "トランシェ",

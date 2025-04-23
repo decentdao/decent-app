@@ -180,7 +180,7 @@
   "trancheDurationHelper": "트랜치 기간",
   "removeTranche": "트랜치 제거",
   "addTranche": "트랜치 추가",
-  "trancheDurationHelperFirstTranche": "첫 번째 트랜스에는 최소 1초가 걸립니다.",
+  "trancheDurationHelperFirstTranche": "첫 번째 트랜치의 경우 최소 1초.",
   "labelRecipientAddress": "수신자 주소",
   "labelTotalAmount": "총 금액",
   "labelTranches": "트랜치",

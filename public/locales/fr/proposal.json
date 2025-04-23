@@ -180,7 +180,7 @@
   "trancheDurationHelper": "La durée de la tranche",
   "removeTranche": "Supprimer la tranche",
   "addTranche": "Ajouter une tranche",
-  "trancheDurationHelperFirstTranche": "Au moins 1 seconde pour la première transe.",
+  "trancheDurationHelperFirstTranche": "Au moins 1 seconde pour la première tranche.",
   "labelRecipientAddress": "Adresse du destinataire",
   "labelTotalAmount": "Montant total",
   "labelTranches": "Tranches",
