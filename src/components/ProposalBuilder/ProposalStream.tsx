@@ -15,14 +15,15 @@ import {
 } from '@chakra-ui/react';
 import { CaretDown, CaretRight, MinusCircle, Plus } from '@phosphor-icons/react';
 import { Field, FieldAttributes, FieldProps } from 'formik';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Address, erc20Abi, getContract, isAddress } from 'viem';
+import { Address, erc20Abi, formatUnits, getContract, isAddress } from 'viem';
 import { useCurrentDAOKey } from '../../hooks/DAO/useCurrentDAOKey';
 import useNetworkPublicClient from '../../hooks/useNetworkPublicClient';
 import { useFilterSpamTokens } from '../../hooks/utils/useFilterSpamTokens';
 import { useStore } from '../../providers/App/AppProvider';
 import { useDaoInfoStore } from '../../store/daoInfo/useDaoInfoStore';
+import { BigIntValuePair } from '../../types';
 import { Stream } from '../../types/proposalBuilder';
 import { formatCoin } from '../../utils';
 import { scrollToBottom } from '../../utils/ui';
@@ -61,6 +62,22 @@ export function ProposalStream({
   const fungibleNonNativeAssetsWithBalance = filterSpamTokens(assetsFungible);
   const selectedAssetIndex = fungibleNonNativeAssetsWithBalance.findIndex(
     asset => asset.tokenAddress === stream.tokenAddress,
+  );
+
+  const calcNewTotalAmount = useCallback(
+    (trancheIndex: number, addValue?: bigint | undefined) => {
+      const newTotalAmountBigIntValue =
+        stream.tranches
+          .filter((_, itemIndex) => itemIndex !== trancheIndex)
+          .map(item => item.amount.bigintValue || 0n)
+          .reduce((acc, curr) => acc + curr, 0n) + (addValue || 0n);
+      const newTotalAmount: BigIntValuePair = {
+        bigintValue: newTotalAmountBigIntValue,
+        value: formatUnits(newTotalAmountBigIntValue, tokenDecimals),
+      };
+      return newTotalAmount;
+    },
+    [stream.tranches, tokenDecimals],
   );
 
   useEffect(() => {
@@ -164,29 +181,6 @@ export function ProposalStream({
           variant="light"
           my="1rem"
         />
-        <LabelComponent
-          label={t('streamTotalAmount')}
-          helper={t('streamTotalAmountHelper')}
-          subLabel={
-            <HStack textStyle="labels-large">
-              <Text>{t('example', { ns: 'common' })}:</Text>
-              <ExampleLabel>10000</ExampleLabel>
-            </HStack>
-          }
-          isRequired
-        >
-          <BigIntInput
-            value={stream.totalAmount.bigintValue}
-            parentFormikValue={stream.totalAmount}
-            onChange={value => handleUpdateStream(index, { totalAmount: value })}
-            decimalPlaces={tokenDecimals}
-            maxValue={rawTokenBalance}
-          />
-        </LabelComponent>
-        <Divider
-          variant="light"
-          my="1rem"
-        />
         <Box>
           <Flex gap="0.5rem">
             <Checkbox
@@ -283,6 +277,7 @@ export function ProposalStream({
                                 tranches: stream.tranches.filter(
                                   (_, removedTrancheIndex) => removedTrancheIndex !== trancheIndex,
                                 ),
+                                totalAmount: calcNewTotalAmount(trancheIndex),
                               })
                             }
                             minWidth="auto"
@@ -328,6 +323,10 @@ export function ProposalStream({
                                         updatedTrancheIndex === trancheIndex
                                           ? { ...item, amount: value }
                                           : item,
+                                      ),
+                                      totalAmount: calcNewTotalAmount(
+                                        trancheIndex,
+                                        value.bigintValue,
                                       ),
                                     })
                                   }
