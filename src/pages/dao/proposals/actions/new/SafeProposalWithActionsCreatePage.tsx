@@ -31,10 +31,18 @@ export function SafeProposalWithActionsCreatePage() {
   const { safe } = useDaoInfoStore();
 
   const { prepareProposal } = usePrepareProposal();
-  const { getTransactions, actions } = useProposalActionsStore();
+  const { getTransactions, actions, proposalMetadata } = useProposalActionsStore();
   // getTransactions function depends on actions internally
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const transactions = useMemo(() => getTransactions(), [getTransactions, actions]);
+
+  const defaultProposalValues = proposalMetadata
+    ? {
+        ...DEFAULT_PROPOSAL,
+        proposalMetadata,
+      }
+    : DEFAULT_PROPOSAL;
+
   const { addressPrefix } = useNetworkConfigStore();
 
   const HEADER_HEIGHT = useHeaderHeight();
@@ -75,7 +83,7 @@ export function SafeProposalWithActionsCreatePage() {
   return (
     <ProposalBuilder
       initialValues={{
-        ...DEFAULT_PROPOSAL,
+        ...defaultProposalValues,
         transactions,
         nonce: safe.nextNonce,
       }}
