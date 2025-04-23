@@ -23,10 +23,12 @@ import useNetworkPublicClient from '../../hooks/useNetworkPublicClient';
 import { useFilterSpamTokens } from '../../hooks/utils/useFilterSpamTokens';
 import { useStore } from '../../providers/App/AppProvider';
 import { useDaoInfoStore } from '../../store/daoInfo/useDaoInfoStore';
+import { BigIntValuePair } from '../../types';
 import { Stream } from '../../types/proposalBuilder';
 import { formatCoin } from '../../utils';
 import { scrollToBottom } from '../../utils/ui';
 import { BigIntInput } from '../ui/forms/BigIntInput';
+import DurationUnitStepperInput from '../ui/forms/DurationUnitStepperInput';
 import ExampleLabel from '../ui/forms/ExampleLabel';
 import { InputComponent, LabelComponent } from '../ui/forms/InputComponent';
 import { DisplayAddress } from '../ui/links/DisplayAddress';
@@ -353,22 +355,22 @@ export function ProposalStream({
                                   </VStack>
                                 }
                               >
-                                <BigIntInput
-                                  isRequired
-                                  value={tranche.duration.bigintValue}
-                                  placeholder={(SECONDS_IN_DAY * 365).toString()}
-                                  decimalPlaces={0}
-                                  min={index === 0 ? '1' : undefined}
-                                  step={1}
-                                  onChange={value =>
+                                <DurationUnitStepperInput
+                                  minSeconds={trancheIndex === 0 ? 1 : 0}
+                                  secondsValue={Number(tranche.duration.bigintValue || 0n)}
+                                  onSecondsValueChange={value => {
+                                    const duration: BigIntValuePair = {
+                                      bigintValue: BigInt(value),
+                                      value: value.toString(),
+                                    };
                                     handleUpdateStream(index, {
                                       tranches: stream.tranches.map((item, updatedTrancheIndex) =>
                                         updatedTrancheIndex === trancheIndex
-                                          ? { ...item, duration: value }
+                                          ? { ...item, duration }
                                           : item,
                                       ),
-                                    })
-                                  }
+                                    });
+                                  }}
                                 />
                               </LabelComponent>
                             </Box>
