@@ -78,7 +78,7 @@ export function SafePermissionsCreateProposal() {
   const azoriusGovernance = governance as AzoriusGovernance;
   const openSelectAddPermissionModal = useDecentModal(ModalType.ADD_PERMISSION);
   const openConfirmDeleteStrategyModal = useDecentModal(ModalType.CONFIRM_DELETE_STRATEGY);
-  const { addAction } = useProposalActionsStore();
+  const { addAction, resetActions } = useProposalActionsStore();
 
   const [proposerThreshold, setProposerThreshold] = useState<BigIntValuePair>({
     bigintValue: BigInt(azoriusGovernance.votingStrategy?.proposerThreshold?.value ?? 0),
@@ -332,6 +332,7 @@ export function SafePermissionsCreateProposal() {
       } else {
         throw new Error('No existing voting strategy address found');
       }
+      resetActions();
       addAction({
         actionType,
         content: (
