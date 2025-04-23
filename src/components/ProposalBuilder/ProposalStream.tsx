@@ -317,6 +317,10 @@ export function ProposalStream({
                                   parentFormikValue={tranche.amount}
                                   decimalPlaces={tokenDecimals}
                                   placeholder="1000"
+                                  maxValue={
+                                    rawTokenBalance -
+                                    (calcNewTotalAmount(trancheIndex).bigintValue || 0n)
+                                  }
                                   onChange={value =>
                                     handleUpdateStream(index, {
                                       tranches: stream.tranches.map((item, updatedTrancheIndex) =>
