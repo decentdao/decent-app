@@ -108,7 +108,7 @@ export function GaslessVotingToggleDAOSettings(props: GaslessVotingToggleProps) 
   const { safe, gaslessVotingEnabled, paymasterAddress } = useDaoInfoStore();
   const { depositInfo } = useDepositInfo(paymasterAddress);
 
-  const { addAction } = useProposalActionsStore();
+  const { addAction, resetActions } = useProposalActionsStore();
   const { data: walletClient } = useNetworkWalletClient();
 
   const refillGas = useDecentModal(ModalType.REFILL_GAS, {
@@ -147,7 +147,7 @@ export function GaslessVotingToggleDAOSettings(props: GaslessVotingToggleProps) 
         nativeCurrency.symbol,
         false,
       );
-
+      resetActions();
       addAction({
         ...action,
         content: (

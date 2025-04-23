@@ -48,7 +48,7 @@ export function SafeProposalTemplatesPage() {
     contracts: { disperse },
   } = useNetworkConfigStore();
   const navigate = useNavigate();
-  const { addAction } = useProposalActionsStore();
+  const { addAction, resetActions } = useProposalActionsStore();
 
   const safeAddress = safe?.address;
   const { openSendAssetsModal } = useSendAssetsActionModal();
@@ -61,7 +61,7 @@ export function SafeProposalTemplatesPage() {
     if (!safeAddress) return;
 
     const totalAmount = data.recipients.reduce((acc, recipient) => acc + recipient.amount, 0n);
-
+    resetActions();
     addAction({
       actionType: ProposalActionType.AIRDROP,
       content: <></>,
