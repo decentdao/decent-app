@@ -79,6 +79,12 @@ export default function DurationUnitStepperInput({
               onChange={e => {
                 const unit = units.find(u => u.label === e.target.value);
                 if (unit) {
+                  // Calculate ceiling value when changing to bigger unit
+                  //   , to avoid long decimals.
+                  if (unit.unit > selectedUnit.unit) {
+                    const ceil = Math.ceil(secondsValue / unit.unit);
+                    onSecondsValueChange(ceil * unit.unit);
+                  }
                   setSelectedUnit(unit);
                 }
               }}
