@@ -76,6 +76,11 @@ export default function DurationUnitStepperInput({
             <Select
               cursor="pointer"
               border="none"
+              sx={{
+                _focusVisible: {
+                  boxShadow: 'none',
+                },
+              }}
               onChange={e => {
                 const unit = units.find(u => u.label === e.target.value);
                 if (unit) {
