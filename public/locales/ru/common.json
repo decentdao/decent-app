@@ -26,6 +26,7 @@
   "timelock": "Timelock",
   "execution": "Исполнение",
   "move": "Переместить",
+  "hours": "Часы",
   "minutes": "Протоколы",
   "quorum": "Кворум",
   "deploy": "Развернуть",

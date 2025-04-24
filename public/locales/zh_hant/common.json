@@ -26,6 +26,7 @@
   "timelock": "時鐘鎖",
   "execution": "執行",
   "move": "移動",
+  "hours": "時數",
   "minutes": "分鐘",
   "quorum": "法定人數",
   "deploy": "部署",

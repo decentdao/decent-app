@@ -26,6 +26,7 @@
   "timelock": "Timelock",
   "execution": "Execution",
   "move": "Move",
+  "hours": "Hours",
   "minutes": "Minutes",
   "quorum": "Quorum",
   "deploy": "Deploy",
