@@ -136,7 +136,6 @@ export function WithdrawGasTankModal({
                           }}
                           parentFormikValue={values.inputAmount}
                           placeholder="0"
-                          maxValue={depositInfo?.balance ?? 0n}
                           isInvalid={overDraft}
                           errorBorderColor="red-0"
                         />
