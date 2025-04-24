@@ -180,7 +180,7 @@
   "trancheDurationHelper": "付款期限",
   "removeTranche": "移除付款",
   "addTranche": "增加付款",
-  "trancheDurationHelperFirstTranche": "第一次恍惚至少1秒鐘。",
+  "trancheDurationHelperFirstTranche": "第一批至少 1 秒。",
   "labelRecipientAddress": "收件人地址",
   "labelTotalAmount": "總金額",
   "labelTranches": "級別",

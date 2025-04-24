@@ -180,7 +180,7 @@
   "trancheDurationHelper": "Тривалість траншу",
   "removeTranche": "Зняти транш",
   "addTranche": "Додати транш",
-  "trancheDurationHelperFirstTranche": "Щонайменше 1 секунда для першого трансу.",
+  "trancheDurationHelperFirstTranche": "Мінімум 1 секунда для першого траншу.",
   "labelRecipientAddress": "Адреса одержувача",
   "labelTotalAmount": "Загальна сума",
   "labelTranches": "Транші",

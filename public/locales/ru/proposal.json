@@ -180,7 +180,7 @@
   "trancheDurationHelper": "Продолжительность транша",
   "removeTranche": "Удалить транш",
   "addTranche": "Добавить транш",
-  "trancheDurationHelperFirstTranche": "Не менее 1 секунды для первого транса.",
+  "trancheDurationHelperFirstTranche": "Не менее 1 секунды для первого транша.",
   "labelRecipientAddress": "Адрес получателя",
   "labelTotalAmount": "Общая сумма",
   "labelTranches": "Транши",
