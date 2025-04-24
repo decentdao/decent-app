@@ -192,7 +192,6 @@ export function WithdrawGasTankModal({
                 >
                   {t('toDaoTreasury')}
                 </Button>
-                <Box h="0.25rem" />
               </Flex>
 
               <Flex
