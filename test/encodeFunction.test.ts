@@ -1,6 +1,6 @@
 import { encodeFunctionData, parseAbiParameters } from 'viem';
 import { expect, test } from 'vitest';
-import { encodeFunction } from '../src/utils/crypto';
+import { encodeFunction } from '../src/helpers/crypto';
 
 test.skip('Function encoding with no parameters', () => {
   const abiItems = [

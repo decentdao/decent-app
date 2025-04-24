@@ -18,6 +18,7 @@ import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
 import { analyticsEvents } from '../../../../insights/analyticsEvents';
 import { useStore } from '../../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../../providers/NetworkConfig/useNetworkConfigStore';
+import { useProposalActionsStore } from '../../../../store/actions/useProposalActionsStore';
 import { useDaoInfoStore } from '../../../../store/daoInfo/useDaoInfoStore';
 import { BigIntValuePair, CreateProposalSteps, CreateProposalTransaction } from '../../../../types';
 
@@ -31,7 +32,7 @@ export function SafeProposalCreatePage() {
   } = useStore({ daoKey });
   const { safe } = useDaoInfoStore();
   const { prepareProposal } = usePrepareProposal();
-
+  const { proposalMetadata } = useProposalActionsStore();
   const { addressPrefix } = useNetworkConfigStore();
 
   const HEADER_HEIGHT = useHeaderHeight();
@@ -49,7 +50,7 @@ export function SafeProposalCreatePage() {
   const pageHeaderBreadcrumbs = [
     {
       terminus: t('proposals', { ns: 'breadcrumbs' }),
-      path: DAO_ROUTES.proposals.relative(addressPrefix, safe.address),
+      path: DAO_ROUTES.dao.relative(addressPrefix, safe.address),
     },
     {
       terminus: t('proposalNew', { ns: 'breadcrumbs' }),
@@ -58,7 +59,7 @@ export function SafeProposalCreatePage() {
   ];
 
   const pageHeaderButtonClickHandler = () => {
-    navigate(DAO_ROUTES.proposals.relative(addressPrefix, safe.address));
+    navigate(DAO_ROUTES.dao.relative(addressPrefix, safe.address));
   };
 
   const stepButtons = ({
@@ -77,12 +78,19 @@ export function SafeProposalCreatePage() {
 
   return (
     <ProposalBuilder
-      initialValues={{ ...DEFAULT_PROPOSAL, nonce: safe.nextNonce }}
+      initialValues={{
+        ...(proposalMetadata
+          ? {
+              ...DEFAULT_PROPOSAL,
+              proposalMetadata,
+            }
+          : DEFAULT_PROPOSAL),
+        nonce: safe.nextNonce,
+      }}
       pageHeaderTitle={t('createProposal', { ns: 'proposal' })}
       pageHeaderBreadcrumbs={pageHeaderBreadcrumbs}
       pageHeaderButtonClickHandler={pageHeaderButtonClickHandler}
       proposalMetadataTypeProps={DEFAULT_PROPOSAL_METADATA_TYPE_PROPS(t)}
-      actionsExperience={null}
       stepButtons={stepButtons}
       transactionsDetails={transactions => <TransactionsDetails transactions={transactions} />}
       templateDetails={null}

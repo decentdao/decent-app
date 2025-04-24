@@ -135,14 +135,16 @@ export default function SettingsNavigation() {
           >
             <Text color="neutral-7">{(modules ?? []).length + (safe?.guard ? 1 : 0)}</Text>
           </SettingsLink>
-          <SettingsLink
-            path={DAO_ROUTES.settingsPermissions.relative(addressPrefix, safe.address)}
-            leftIcon={<CheckSquare fontSize="1.5rem" />}
-            title={t('permissionsTitle')}
-            showDivider={false}
-          >
-            <Text color="neutral-7">{azoriusGovernance.votingStrategy ? 1 : 0}</Text>
-          </SettingsLink>
+          {governance.isAzorius && (
+            <SettingsLink
+              path={DAO_ROUTES.settingsPermissions.relative(addressPrefix, safe.address)}
+              leftIcon={<CheckSquare fontSize="1.5rem" />}
+              title={t('permissionsTitle')}
+              showDivider={false}
+            >
+              <Text color="neutral-7">{azoriusGovernance.votingStrategy ? 1 : 0}</Text>
+            </SettingsLink>
+          )}
         </>
       )}
     </Flex>

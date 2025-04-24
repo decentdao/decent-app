@@ -12,13 +12,16 @@ import { DEFAULT_PROPOSAL_METADATA_TYPE_PROPS } from '../../../../../components/
 import { ProposalStreams } from '../../../../../components/ProposalBuilder/ProposalStreams';
 import { GoToTransactionsStepButton } from '../../../../../components/ProposalBuilder/StepButtons';
 import { DEFAULT_SABLIER_PROPOSAL } from '../../../../../components/ProposalBuilder/constants';
+import NoDataCard from '../../../../../components/ui/containers/NoDataCard';
 import { BarLoader } from '../../../../../components/ui/loaders/BarLoader';
 import { useHeaderHeight } from '../../../../../constants/common';
 import { DAO_ROUTES } from '../../../../../constants/routes';
 import { useCurrentDAOKey } from '../../../../../hooks/DAO/useCurrentDAOKey';
+import { useFilterSpamTokens } from '../../../../../hooks/utils/useFilterSpamTokens';
 import { analyticsEvents } from '../../../../../insights/analyticsEvents';
 import { useStore } from '../../../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../../../providers/NetworkConfig/useNetworkConfigStore';
+import { useProposalActionsStore } from '../../../../../store/actions/useProposalActionsStore';
 import { useDaoInfoStore } from '../../../../../store/daoInfo/useDaoInfoStore';
 import {
   CreateProposalForm,
@@ -33,14 +36,17 @@ export function SafeSablierProposalCreatePage() {
   const { daoKey } = useCurrentDAOKey();
   const {
     governance: { type },
+    treasury: { assetsFungible },
   } = useStore({ daoKey });
   const {
     addressPrefix,
     contracts: { sablierV2Batch, sablierV2LockupTranched },
   } = useNetworkConfigStore();
+  const filterSpamTokens = useFilterSpamTokens();
   const { safe } = useDaoInfoStore();
   const { t } = useTranslation('proposal');
   const navigate = useNavigate();
+  const { proposalMetadata: actionsProposalMetadata } = useProposalActionsStore();
 
   const prepareProposalData = useCallback(
     async (values: CreateProposalForm | CreateSablierProposalForm) => {
@@ -122,10 +128,36 @@ export function SafeSablierProposalCreatePage() {
     );
   }
 
+  const fungibleNonNativeAssetsWithBalance = filterSpamTokens(assetsFungible);
+  if (!fungibleNonNativeAssetsWithBalance.length) {
+    return (
+      <NoDataCard
+        emptyText="noAssetsWithBalance"
+        emptyTextNotProposer="noAssetsWithBalanceNotProposer"
+        translationNameSpace="modals"
+      />
+    );
+  }
+  const sablierProposalInitialValues: CreateSablierProposalForm = {
+    ...(actionsProposalMetadata
+      ? {
+          ...DEFAULT_SABLIER_PROPOSAL,
+          proposalMetadata: { ...actionsProposalMetadata },
+        }
+      : DEFAULT_SABLIER_PROPOSAL),
+    streams: DEFAULT_SABLIER_PROPOSAL.streams.map(s => {
+      return {
+        ...s,
+        tokenAddress: s.tokenAddress || fungibleNonNativeAssetsWithBalance[0].tokenAddress,
+      };
+    }),
+    nonce: safe.nextNonce,
+  };
+
   const pageHeaderBreadcrumbs = [
     {
       terminus: t('proposals', { ns: 'breadcrumbs' }),
-      path: DAO_ROUTES.proposals.relative(addressPrefix, safe.address),
+      path: DAO_ROUTES.dao.relative(addressPrefix, safe.address),
     },
     {
       terminus: t('proposalNew', { ns: 'breadcrumbs' }),
@@ -134,7 +166,7 @@ export function SafeSablierProposalCreatePage() {
   ];
 
   const pageHeaderButtonClickHandler = () => {
-    navigate(DAO_ROUTES.proposals.relative(addressPrefix, safe.address));
+    navigate(DAO_ROUTES.dao.relative(addressPrefix, safe.address));
   };
 
   const stepButtons = ({
@@ -153,12 +185,11 @@ export function SafeSablierProposalCreatePage() {
 
   return (
     <ProposalBuilder
-      initialValues={{ ...DEFAULT_SABLIER_PROPOSAL, nonce: safe.nextNonce }}
+      initialValues={sablierProposalInitialValues}
       pageHeaderTitle={t('createProposal', { ns: 'proposal' })}
       pageHeaderBreadcrumbs={pageHeaderBreadcrumbs}
       pageHeaderButtonClickHandler={pageHeaderButtonClickHandler}
       proposalMetadataTypeProps={DEFAULT_PROPOSAL_METADATA_TYPE_PROPS(t)}
-      actionsExperience={null}
       stepButtons={stepButtons}
       transactionsDetails={null}
       templateDetails={null}

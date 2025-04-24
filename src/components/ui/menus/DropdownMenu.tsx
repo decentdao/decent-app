@@ -49,7 +49,7 @@ export function DropdownMenu<T>({
 }: DropdownMenuProps<T>) {
   return (
     <Menu
-      placement="bottom-end"
+      placement="bottom-start"
       offset={[0, 8]}
     >
       {({ isOpen, onClose }) => (

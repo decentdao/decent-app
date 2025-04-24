@@ -2,6 +2,7 @@ import { VStack } from '@chakra-ui/react';
 import { FormikProps } from 'formik';
 import { TFunction } from 'i18next';
 import { useTranslation } from 'react-i18next';
+import { useProposalActionsStore } from '../../store/actions/useProposalActionsStore';
 import { CreateProposalForm } from '../../types/proposalBuilder';
 import { InputComponent, TextareaComponent } from '../ui/forms/InputComponent';
 
@@ -40,7 +41,7 @@ export default function ProposalMetadata({
   typeProps,
 }: ProposalMetadataProps) {
   const { t } = useTranslation(['proposal']);
-
+  const { setProposalMetadata } = useProposalActionsStore();
   return (
     <VStack
       align="left"
@@ -53,7 +54,7 @@ export default function ProposalMetadata({
         placeholder={t('proposalTitlePlaceholder', { ns: 'proposal' })}
         isRequired
         value={proposalMetadata.title}
-        onChange={e => setFieldValue('proposalMetadata.title', e.target.value)}
+        onChange={e => setProposalMetadata({ ...proposalMetadata, title: e.target.value })}
         testId="metadata.title"
         maxLength={50}
       />
@@ -64,7 +65,7 @@ export default function ProposalMetadata({
         placeholder={t('proposalDescriptionPlaceholder', { ns: 'proposal' })}
         isRequired={false}
         value={proposalMetadata.description}
-        onChange={e => setFieldValue('proposalMetadata.description', e.target.value)}
+        onChange={e => setProposalMetadata({ ...proposalMetadata, description: e.target.value })}
         rows={12}
       />
       <InputComponent

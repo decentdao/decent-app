@@ -1,11 +1,11 @@
 import { Button, Flex, Icon, IconButton, Text } from '@chakra-ui/react';
-import { ArrowsDownUp, CheckSquare, Trash } from '@phosphor-icons/react';
+import { ArrowsDownUp, CheckSquare, CraneTower, Trash } from '@phosphor-icons/react';
 import { useTranslation } from 'react-i18next';
 import { formatUnits, getAddress, isAddress } from 'viem';
 import PencilWithLineIcon from '../../assets/theme/custom/icons/PencilWithLineIcon';
 import { useCurrentDAOKey } from '../../hooks/DAO/useCurrentDAOKey';
+import { createAccountSubstring } from '../../hooks/utils/useGetAccountName';
 import { useStore } from '../../providers/App/AppProvider';
-import { useProposalActionsStore } from '../../store/actions/useProposalActionsStore';
 import { CreateProposalAction, ProposalActionType } from '../../types/proposalBuilder';
 import { Card } from '../ui/cards/Card';
 import { DappInteractionActionCard } from '../ui/cards/DappInteractionActionCard';
@@ -133,17 +133,61 @@ export function AirdropAction({
     </Card>
   );
 }
+export function TransactionBuilderAction({
+  action,
+  onRemove,
+}: {
+  action: CreateProposalAction;
+  onRemove: () => void;
+}) {
+  const { t } = useTranslation('actions');
+
+  return (
+    <Card my="0.5rem">
+      <Flex justifyContent="space-between">
+        <Flex
+          alignItems="center"
+          gap="0.5rem"
+        >
+          <Icon
+            as={CraneTower}
+            w="1.5rem"
+            h="1.5rem"
+            color="lilac-0"
+          />
+          <Text>
+            {action.transactions.length === 1
+              ? t('transactionBuilderActionCard_single', {
+                  functionName: action.transactions[0].functionName,
+                  targetAddress: createAccountSubstring(action.transactions[0].targetAddress),
+                })
+              : t('transactionBuilderActionCard_multiple', {
+                  numOfTransactions: action.transactions.length,
+                })}
+          </Text>
+        </Flex>
+        <Button
+          color="red-0"
+          variant="tertiary"
+          size="sm"
+          onClick={onRemove}
+        >
+          <Icon as={Trash} />
+        </Button>
+      </Flex>
+    </Card>
+  );
+}
 
 export function ProposalActionCard({
   action,
+  removeAction,
   index,
-  canBeDeleted,
 }: {
   action: CreateProposalAction;
+  removeAction: (index: number) => void;
   index: number;
-  canBeDeleted: boolean;
 }) {
-  const { removeAction } = useProposalActionsStore();
   if (
     action.actionType === ProposalActionType.TRANSFER ||
     action.actionType === ProposalActionType.NATIVE_TRANSFER
@@ -164,6 +208,13 @@ export function ProposalActionCard({
   } else if (action.actionType === ProposalActionType.DAPP_INTEGRATION) {
     return (
       <DappInteractionActionCard
+        action={action}
+        onRemove={() => removeAction(index)}
+      />
+    );
+  } else if (action.actionType === ProposalActionType.TRANSACTION_BUILDER) {
+    return (
+      <TransactionBuilderAction
         action={action}
         onRemove={() => removeAction(index)}
       />
@@ -195,16 +246,14 @@ export function ProposalActionCard({
           {action.content}
         </Flex>
       </Card>
-      {canBeDeleted && (
-        <IconButton
-          aria-label="Remove action"
-          icon={<Trash />}
-          variant="ghost"
-          size="icon-sm"
-          color="red-1"
-          onClick={() => removeAction(index)}
-        />
-      )}
+      <IconButton
+        aria-label="Remove action"
+        icon={<Trash />}
+        variant="ghost"
+        size="icon-sm"
+        color="red-1"
+        onClick={() => removeAction(index)}
+      />
     </Flex>
   );
 }

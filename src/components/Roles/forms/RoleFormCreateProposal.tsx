@@ -13,7 +13,6 @@ import {
   RoleDetailsDrawerEditingRoleHatProp,
   RoleFormValues,
 } from '../../../types/roles';
-import { SendAssetsData } from '../../../utils/dao/prepareSendAssetsActionData';
 import { SendAssetsActionCard } from '../../ui/cards/SendAssetsActionCard';
 import { CustomNonceInput } from '../../ui/forms/CustomNonceInput';
 import { InputComponent, TextareaComponent } from '../../ui/forms/InputComponent';
@@ -124,10 +123,6 @@ export function RoleFormCreateProposal({ close }: { close: () => void }) {
   );
 
   const handleCloseDrawer = () => setDrawerViewingRole(undefined);
-
-  const addSendAssetsAction = (sendAssetsAction: SendAssetsData) => {
-    setFieldValueTopLevel('actions', [...values.actions, sendAssetsAction]);
-  };
 
   return (
     <Box w="full">
@@ -248,7 +243,7 @@ export function RoleFormCreateProposal({ close }: { close: () => void }) {
         />
       ))}
 
-      <AddActions addSendAssetsAction={addSendAssetsAction} />
+      <AddActions />
 
       <Flex
         gap="1rem"

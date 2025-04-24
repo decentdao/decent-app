@@ -1,0 +1,8 @@
+{
+  "emptyProposalDapps": "Questa cassaforte non ha ancora alcuna dApp supportata.",
+  "connectingWalletConnect": "Collegamento...",
+  "successConnectingWalletConnect": "Collegato!",
+  "failConnectingWalletConnect": "Connessione fallita, controllare l'uri.",
+  "labelIframeWalletConnectUri": "URI di WalletConnect",
+  "helperIframeWalletConnectUri": "Incolla per collegare"
+}

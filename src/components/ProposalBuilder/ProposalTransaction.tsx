@@ -30,7 +30,7 @@ interface ProposalTransactionProps {
   transactionPending: boolean;
   txAddressError?: string;
   txFunctionError?: string;
-  setFieldValue: (field: string, value: any, shouldValidate?: boolean | undefined) => void;
+  setFieldValue: (field: string, value: any) => void;
   isProposalMode: boolean;
 }
 
@@ -48,9 +48,9 @@ export default function ProposalTransaction({
 
   const handleABISelectorChange = useCallback(
     (value: ABIElement) => {
-      setFieldValue(`transactions.${transactionIndex}.functionName`, value.name);
+      setFieldValue(`${transactionIndex}.functionName`, value.name);
       setFieldValue(
-        `transactions.${transactionIndex}.parameters`,
+        `${transactionIndex}.parameters`,
         value.inputs.map(abiInput => ({
           signature: `${abiInput.type} ${abiInput.name}`,
           label: '',
@@ -86,9 +86,7 @@ export default function ProposalTransaction({
         isInvalid={!!transaction.targetAddress && !!txAddressError}
         value={transaction.targetAddress}
         testId="transaction.targetAddress"
-        onChange={e =>
-          setFieldValue(`transactions.${transactionIndex}.targetAddress`, e.target.value)
-        }
+        onChange={e => setFieldValue(`${transactionIndex}.targetAddress`, e.target.value)}
       />
       {transaction.targetAddress && (
         <Box mt="1.5rem">
@@ -115,9 +113,7 @@ export default function ProposalTransaction({
           placeholder="functionName"
           isRequired={false}
           value={transaction.functionName}
-          onChange={e =>
-            setFieldValue(`transactions.${transactionIndex}.functionName`, e.target.value)
-          }
+          onChange={e => setFieldValue(`${transactionIndex}.functionName`, e.target.value)}
           disabled={transactionPending}
           subLabel={
             <HStack>
@@ -191,7 +187,7 @@ export default function ProposalTransaction({
                           variant="unstyled"
                           onClick={() =>
                             setFieldValue(
-                              `transactions.${transactionIndex}.parameters`,
+                              `${transactionIndex}.parameters`,
                               transaction.parameters.filter(
                                 (_parameterToRemove, parameterToRemoveIndex) =>
                                   parameterToRemoveIndex !== i,
@@ -221,7 +217,7 @@ export default function ProposalTransaction({
                             value={parameter.signature}
                             onChange={e =>
                               setFieldValue(
-                                `transactions.${transactionIndex}.parameters.${i}.signature`,
+                                `${transactionIndex}.parameters.${i}.signature`,
                                 e.target.value,
                               )
                             }
@@ -285,7 +281,7 @@ export default function ProposalTransaction({
                                   })}
                                   onChange={e =>
                                     setFieldValue(
-                                      `transactions.${transactionIndex}.parameters.${i}.label`,
+                                      `${transactionIndex}.parameters.${i}.label`,
                                       e.target.value,
                                     )
                                   }
@@ -347,7 +343,7 @@ export default function ProposalTransaction({
                               placeholder="100"
                               onChange={e =>
                                 setFieldValue(
-                                  `transactions.${transactionIndex}.parameters.${i}.value`,
+                                  `${transactionIndex}.parameters.${i}.value`,
                                   e.target.value,
                                 )
                               }
@@ -383,7 +379,7 @@ export default function ProposalTransaction({
                   {i === transaction.parameters.length - 1 && (
                     <CeleryButtonWithIcon
                       onClick={() => {
-                        setFieldValue(`transactions.${transactionIndex}.parameters`, [
+                        setFieldValue(`${transactionIndex}.parameters`, [
                           ...transaction.parameters,
                           DEFAULT_PROPOSAL_TRANSACTION,
                         ]);
@@ -424,7 +420,7 @@ export default function ProposalTransaction({
             errorMessage={undefined}
             value={transaction.ethValue.bigintValue}
             onChange={e => {
-              setFieldValue(`transactions.${transactionIndex}.ethValue`, e);
+              setFieldValue(`${transactionIndex}.ethValue`, e);
             }}
             decimalPlaces={18}
           />

@@ -27,6 +27,7 @@ interface ProposalTransactionsProps {
   isProposalMode: boolean;
   removeTransaction: (index: number) => void;
 }
+
 export default function ProposalTransactions({
   values: transactions,
   errors,

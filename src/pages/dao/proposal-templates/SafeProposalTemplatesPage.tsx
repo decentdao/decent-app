@@ -4,6 +4,7 @@ import { ArrowsDownUp, HourglassMedium, Parachute } from '@phosphor-icons/react'
 import { useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 import { AddPlus } from '../../../assets/theme/custom/icons/AddPlus';
 import ExampleTemplateCard from '../../../components/ProposalTemplates/ExampleTemplateCard';
 import ProposalTemplateCard from '../../../components/ProposalTemplates/ProposalTemplateCard';
@@ -30,10 +31,15 @@ export function SafeProposalTemplatesPage() {
     amplitude.track(analyticsEvents.ProposalTemplatesPageOpened);
   }, []);
 
-  const { t } = useTranslation();
+  const { t: tModals } = useTranslation('modals');
+  const { t: tProposalTemplate } = useTranslation('proposalTemplate');
+  const { t: tCommon } = useTranslation('common');
+  const { t: tBreadcrumbs } = useTranslation('breadcrumbs');
+
   const { daoKey } = useCurrentDAOKey();
   const {
     governance: { proposalTemplates },
+    treasury: { assetsFungible },
   } = useStore({ daoKey });
   const { safe } = useDaoInfoStore();
   const { canUserCreateProposal } = useCanUserCreateProposal();
@@ -42,16 +48,20 @@ export function SafeProposalTemplatesPage() {
     contracts: { disperse },
   } = useNetworkConfigStore();
   const navigate = useNavigate();
-  const { addAction } = useProposalActionsStore();
+  const { addAction, resetActions } = useProposalActionsStore();
 
   const safeAddress = safe?.address;
   const { openSendAssetsModal } = useSendAssetsActionModal();
+  const hasAvailableAssetsForSablierStream =
+    assetsFungible.filter(
+      asset => !asset.possibleSpam && !asset.nativeToken && parseFloat(asset.balance) > 0,
+    ).length > 0;
 
   const handleAirdropSubmit = (data: AirdropData) => {
     if (!safeAddress) return;
 
     const totalAmount = data.recipients.reduce((acc, recipient) => acc + recipient.amount, 0n);
-
+    resetActions();
     addAction({
       actionType: ProposalActionType.AIRDROP,
       content: <></>,
@@ -95,7 +105,7 @@ export function SafeProposalTemplatesPage() {
 
   const openAirdropModal = useDecentModal(ModalType.AIRDROP, {
     onSubmit: handleAirdropSubmit,
-    submitButtonText: t('submitProposal', { ns: 'modals' }),
+    submitButtonText: tModals('submitProposal'),
   });
 
   const EXAMPLE_TEMPLATES = useMemo(() => {
@@ -104,33 +114,47 @@ export function SafeProposalTemplatesPage() {
     return [
       {
         icon: Parachute,
-        title: t('templateAirdropTitle', { ns: 'proposalTemplate' }),
-        description: t('templateAirdropDescription', { ns: 'proposalTemplate' }),
+        title: tProposalTemplate('templateAirdropTitle'),
+        description: tProposalTemplate('templateAirdropDescription'),
         onProposalTemplateClick: openAirdropModal,
       },
       {
         icon: HourglassMedium,
-        title: t('templateSablierTitle', { ns: 'proposalTemplate' }),
-        description: t('templateSablierDescription', { ns: 'proposalTemplate' }),
-        onProposalTemplateClick: () =>
-          navigate(DAO_ROUTES.proposalSablierNew.relative(addressPrefix, safeAddress)),
+        title: tProposalTemplate('templateSablierTitle'),
+        description: tProposalTemplate('templateSablierDescription'),
+        onProposalTemplateClick: () => {
+          if (hasAvailableAssetsForSablierStream) {
+            navigate(DAO_ROUTES.proposalSablierNew.relative(addressPrefix, safeAddress));
+          } else {
+            toast.info(tModals('noAssetsWithBalance'));
+          }
+        },
       },
       {
         icon: ArrowsDownUp,
-        title: t('templateTransferTitle', { ns: 'proposalTemplate' }),
-        description: t('templateTransferDescription', { ns: 'proposalTemplate' }),
+        title: tProposalTemplate('templateTransferTitle'),
+        description: tProposalTemplate('templateTransferDescription'),
         onProposalTemplateClick: openSendAssetsModal,
       },
     ];
-  }, [safeAddress, t, openAirdropModal, openSendAssetsModal, navigate, addressPrefix]);
+  }, [
+    safeAddress,
+    tModals,
+    tProposalTemplate,
+    openAirdropModal,
+    openSendAssetsModal,
+    hasAvailableAssetsForSablierStream,
+    navigate,
+    addressPrefix,
+  ]);
 
   return (
     <div>
       <PageHeader
-        title={t('proposalTemplates', { ns: 'breadcrumbs' })}
+        title={tBreadcrumbs('proposalTemplates')}
         breadcrumbs={[
           {
-            terminus: t('proposalTemplates', { ns: 'breadcrumbs' }),
+            terminus: tBreadcrumbs('proposalTemplates'),
             path: '',
           },
         ]}
@@ -139,7 +163,7 @@ export function SafeProposalTemplatesPage() {
           <Link to={DAO_ROUTES.proposalTemplateNew.relative(addressPrefix, safeAddress)}>
             <Button minW={0}>
               <AddPlus />
-              <Show above="sm">{t('create')}</Show>
+              <Show above="sm">{tCommon('create')}</Show>
             </Button>
           </Link>
         )}
@@ -178,7 +202,7 @@ export function SafeProposalTemplatesPage() {
         color="white-0"
         mb="1rem"
       >
-        {t('defaultTemplates', { ns: 'proposalTemplate' })}
+        {tProposalTemplate('defaultTemplates')}
       </Text>
       <Flex
         flexDirection="row"

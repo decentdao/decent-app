@@ -1,6 +1,6 @@
 {
   "name": "decent-interface",
-  "version": "0.12.2",
+  "version": "0.13.0",
   "private": true,
   "dependencies": {
     "@amplitude/analytics-browser": "^2.11.1",
@@ -8,7 +8,7 @@
     "@chakra-ui/react": "^2.8.2",
     "@cloudflare/workers-types": "^4.20241230.0",
     "@fontsource/space-mono": "^5.0.19",
-    "@fractal-framework/fractal-contracts": "^1.6.0-rc.5",
+    "@fractal-framework/fractal-contracts": "^1.6.0",
     "@hatsprotocol/modules-sdk": "^1.4.0",
     "@hatsprotocol/sdk-v1-core": "^0.9.0",
     "@hatsprotocol/sdk-v1-subgraph": "^1.0.0",
@@ -39,6 +39,7 @@
     "hono": "^4.6.16",
     "i18next": "^23.10.1",
     "i18next-browser-languagedetector": "^6.1.5",
+    "i18next-http-backend": "^3.0.2",
     "js-big-decimal": "^1.3.12",
     "lodash.camelcase": "^4.3.0",
     "lodash.debounce": "^4.0.8",
@@ -67,6 +68,8 @@
   "scripts": {
     "lint": "eslint . --ext .ts,.tsx --fix",
     "lint:check": "eslint . --ext .ts,.tsx",
+    "localize": "node scripts/localize.js && prettier . --write",
+    "localized": "node scripts/localization_verify.js",
     "pretty": "prettier . --write",
     "pretty:check": "prettier . --check",
     "dev": "VITE_APP_GIT_HASH=$(git rev-parse --short HEAD) vite",

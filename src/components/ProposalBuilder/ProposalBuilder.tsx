@@ -11,8 +11,10 @@ import useSubmitProposal from '../../hooks/DAO/proposal/useSubmitProposal';
 import { useCurrentDAOKey } from '../../hooks/DAO/useCurrentDAOKey';
 import useCreateProposalSchema from '../../hooks/schemas/proposalBuilder/useCreateProposalSchema';
 import { useCanUserCreateProposal } from '../../hooks/utils/useCanUserSubmitProposal';
+import { ActionsExperience } from '../../pages/dao/proposals/actions/new/ActionsExperience';
 import { useStore } from '../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
+import { useProposalActionsStore } from '../../store/actions/useProposalActionsStore';
 import { useDaoInfoStore } from '../../store/daoInfo/useDaoInfoStore';
 import { BigIntValuePair, CreateProposalSteps, ProposalExecuteData } from '../../types';
 import {
@@ -68,7 +70,7 @@ interface ProposalBuilderProps {
   pageHeaderBreadcrumbs: Crumb[];
   pageHeaderButtonClickHandler: () => void;
   proposalMetadataTypeProps: ProposalMetadataTypeProps;
-  actionsExperience: React.ReactNode | null;
+  showActionsExperience?: boolean;
   stepButtons: ({
     formErrors,
     createProposalBlocked,
@@ -98,7 +100,7 @@ export function ProposalBuilder({
   pageHeaderBreadcrumbs,
   pageHeaderButtonClickHandler,
   proposalMetadataTypeProps,
-  actionsExperience,
+  showActionsExperience,
   stepButtons,
   transactionsDetails,
   templateDetails,
@@ -113,6 +115,7 @@ export function ProposalBuilder({
   const { safe } = useDaoInfoStore();
   const safeAddress = safe?.address;
 
+  const { resetActions } = useProposalActionsStore();
   const { addressPrefix } = useNetworkConfigStore();
   const { submitProposal, pendingCreateTx } = useSubmitProposal();
   const { canUserCreateProposal } = useCanUserCreateProposal();
@@ -120,6 +123,7 @@ export function ProposalBuilder({
 
   const successCallback = () => {
     if (safeAddress) {
+      resetActions();
       // Redirecting to home page so that user will see newly created Proposal
       navigate(DAO_ROUTES.dao.relative(addressPrefix, safeAddress));
     }
@@ -128,6 +132,7 @@ export function ProposalBuilder({
   return (
     <Formik<CreateProposalForm>
       validationSchema={createProposalValidation}
+      enableReinitialize
       initialValues={initialValues}
       onSubmit={async values => {
         if (!canUserCreateProposal) {
@@ -169,10 +174,14 @@ export function ProposalBuilder({
 
         const trimmedTitle = title.trim();
 
+        const noTransactionsOrStreams =
+          transactions.length === 0 &&
+          (formikProps.values as CreateSablierProposalForm).streams?.length === 0;
         const createProposalButtonDisabled =
           !canUserCreateProposal ||
           Object.keys(formikProps.errors).length > 0 ||
           !trimmedTitle ||
+          noTransactionsOrStreams ||
           pendingCreateTx;
 
         const renderButtons = (step: CreateProposalSteps) => {
@@ -232,7 +241,7 @@ export function ProposalBuilder({
                         <>{mainContent(formikProps, pendingCreateTx, nonce, currentStep)}</>
                       )}
                     </Box>
-                    {actionsExperience}
+                    {showActionsExperience ? <ActionsExperience /> : null}
                     <StepButtons
                       renderButtons={renderButtons}
                       currentStep={currentStep}

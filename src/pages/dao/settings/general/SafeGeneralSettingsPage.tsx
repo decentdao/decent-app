@@ -3,15 +3,7 @@ import { abis } from '@fractal-framework/fractal-contracts';
 import { ChangeEventHandler, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import {
-  AbiItem,
-  encodeAbiParameters,
-  encodeFunctionData,
-  getAbiItem,
-  parseAbiParameters,
-  toFunctionSelector,
-  zeroAddress,
-} from 'viem';
+import { encodeAbiParameters, encodeFunctionData, parseAbiParameters, zeroAddress } from 'viem';
 import { ZodiacModuleProxyFactoryAbi } from '../../../../assets/abi/ZodiacModuleProxyFactoryAbi';
 import { GaslessVotingToggleDAOSettings } from '../../../../components/GaslessVoting/GaslessVotingToggle';
 import { SettingsContentBox } from '../../../../components/SafeSettings/SettingsContentBox';
@@ -20,6 +12,7 @@ import { BarLoader } from '../../../../components/ui/loaders/BarLoader';
 import NestedPageHeader from '../../../../components/ui/page/Header/NestedPageHeader';
 import Divider from '../../../../components/ui/utils/Divider';
 import { DAO_ROUTES } from '../../../../constants/routes';
+import { useDepositInfo } from '../../../../hooks/DAO/accountAbstraction/useDepositInfo';
 import useSubmitProposal from '../../../../hooks/DAO/proposal/useSubmitProposal';
 import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
 import { useCanUserCreateProposal } from '../../../../hooks/utils/useCanUserSubmitProposal';
@@ -28,13 +21,12 @@ import { useInstallVersionedVotingStrategy } from '../../../../hooks/utils/useIn
 import { useStore } from '../../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../../providers/NetworkConfig/useNetworkConfigStore';
 import { useDaoInfoStore } from '../../../../store/daoInfo/useDaoInfoStore';
+import { GovernanceType, ProposalExecuteData } from '../../../../types';
 import {
-  FractalTokenType,
-  FractalVotingStrategy,
-  GovernanceType,
-  ProposalExecuteData,
-} from '../../../../types';
-import { getPaymasterAddress, getPaymasterSaltNonce } from '../../../../utils/gaslessVoting';
+  getPaymasterAddress,
+  getPaymasterSaltNonce,
+  getVoteSelectorAndValidator,
+} from '../../../../utils/gaslessVoting';
 import { validateENSName } from '../../../../utils/url';
 
 export function SafeGeneralSettingsPage() {
@@ -67,11 +59,14 @@ export function SafeGeneralSettingsPage() {
     addressPrefix,
     chain: { id: chainId },
     contracts: { keyValuePairs, accountAbstraction, paymaster, zodiacModuleProxyFactory },
+    bundlerMinimumStake,
   } = useNetworkConfigStore();
+  const { depositInfo } = useDepositInfo(paymasterAddress);
+  const accountAbstractionSupported = bundlerMinimumStake !== undefined;
+  const stakingRequired = accountAbstractionSupported && bundlerMinimumStake > 0n;
 
   const isMultisigGovernance = votingStrategyType === GovernanceType.MULTISIG;
-  const gaslessVotingSupported =
-    !isMultisigGovernance && accountAbstraction?.entryPointv07 !== undefined;
+  const gaslessVotingSupported = !isMultisigGovernance && accountAbstractionSupported;
 
   const safeAddress = safe?.address;
 
@@ -157,9 +152,6 @@ export function SafeGeneralSettingsPage() {
         throw new Error('Account Abstraction addresses are not set');
       }
 
-      if (!paymaster) {
-        throw new Error('Paymaster addresses are not set');
-      }
       if (paymasterAddress === null) {
         // Paymaster does not exist, deploy a new one
         const paymasterInitData = encodeFunctionData({
@@ -206,40 +198,40 @@ export function SafeGeneralSettingsPage() {
         chainId,
       });
 
-      const getVoteSelector = (strategy: FractalVotingStrategy) => {
-        let voteAbiItem: AbiItem;
-        if (strategy.type === FractalTokenType.erc20) {
-          voteAbiItem = getAbiItem({
-            name: 'vote',
-            abi: abis.LinearERC20VotingV1,
-          });
-        } else if (strategy.type === FractalTokenType.erc721) {
-          voteAbiItem = getAbiItem({
-            name: 'vote',
-            abi: abis.LinearERC721VotingV1,
-          });
-        } else {
-          throw new Error('Invalid voting strategy type');
-        }
-        const voteSelector = toFunctionSelector(voteAbiItem);
-        return voteSelector;
-      };
+      // Add stake for Paymaster if not enough
+      if (stakingRequired) {
+        const stakedAmount = depositInfo?.stake || 0n;
 
-      const getVoteValidator = (strategy: FractalVotingStrategy) => {
-        return strategy.type === FractalTokenType.erc20
-          ? paymaster.linearERC20VotingV1ValidatorV1
-          : paymaster.linearERC721VotingV1ValidatorV1;
-      };
+        if (paymasterAddress === null || stakedAmount < bundlerMinimumStake) {
+          const delta = bundlerMinimumStake - stakedAmount;
+
+          targets.push(predictedPaymasterAddress);
+          calldatas.push(
+            encodeFunctionData({
+              abi: abis.DecentPaymasterV1,
+              functionName: 'addStake',
+              // one day in seconds, defined on https://github.com/alchemyplatform/rundler/blob/c17fd3dbc24d2af93fd68310031d445d5440794f/crates/sim/src/simulation/mod.rs#L170
+              args: [86400],
+            }),
+          );
+          values.push(delta);
+        }
+      }
 
       newStrategies.forEach(strategy => {
         // Whitelist the new strategy's `vote` function call on the Paymaster
         // // // // // // // // // // // // // // // // // // // // // // //
+        const { voteSelector, voteValidator } = getVoteSelectorAndValidator(
+          strategy.type,
+          paymaster,
+        );
+
         targets.push(predictedPaymasterAddress);
         calldatas.push(
           encodeFunctionData({
             abi: abis.DecentPaymasterV1,
             functionName: 'setFunctionValidator',
-            args: [strategy.address, getVoteSelector(strategy), getVoteValidator(strategy)],
+            args: [strategy.address, voteSelector, voteValidator],
           }),
         );
         values.push(0n);
@@ -251,12 +243,17 @@ export function SafeGeneralSettingsPage() {
         strategies
           .filter(strategy => strategy.version !== undefined)
           .forEach(strategy => {
+            const { voteSelector, voteValidator } = getVoteSelectorAndValidator(
+              strategy.type,
+              paymaster,
+            );
+
             targets.push(predictedPaymasterAddress);
             calldatas.push(
               encodeFunctionData({
                 abi: abis.DecentPaymasterV1,
                 functionName: 'setFunctionValidator',
-                args: [strategy.address, getVoteSelector(strategy), getVoteValidator(strategy)],
+                args: [strategy.address, voteSelector, voteValidator],
               }),
             );
             values.push(0n);
@@ -274,7 +271,6 @@ export function SafeGeneralSettingsPage() {
       values,
       calldatas,
     };
-
     submitProposal({
       safeAddress: safe?.address,
       proposalData,
@@ -284,7 +280,7 @@ export function SafeGeneralSettingsPage() {
       failedToastMessage: t('proposalCreateFailureToastMessage', { ns: 'proposal' }),
       successCallback: () => {
         if (safeAddress) {
-          navigate(DAO_ROUTES.proposals.relative(addressPrefix, safeAddress));
+          navigate(DAO_ROUTES.dao.relative(addressPrefix, safeAddress));
         }
       },
     });
