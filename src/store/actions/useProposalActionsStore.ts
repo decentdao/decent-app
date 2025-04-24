@@ -11,7 +11,8 @@ interface ProposalActionsStoreData {
 }
 
 interface ProposalActionsStore extends ProposalActionsStoreData {
-  addAction: (action: CreateProposalAction & { proposalMetadata?: CreateProposalMetadata }) => void;
+  addAction: (action: CreateProposalAction) => void;
+  setProposalMetadata: (proposalMetadata: CreateProposalMetadata) => void;
   removeAction: (actionIndex: number) => void;
   resetActions: () => void;
   getTransactions: () => CreateProposalTransaction[];
@@ -26,9 +27,9 @@ export const useProposalActionsStore = create<ProposalActionsStore>()((set, get)
   addAction: action =>
     set(state => ({
       ...state,
-      proposalMetadata: action.proposalMetadata,
       actions: [...state.actions, action],
     })),
+  setProposalMetadata: proposalMetadata => set({ proposalMetadata }),
   removeAction: actionIndex =>
     set(state => ({ actions: state.actions.filter((_, index) => index !== actionIndex) })),
   resetActions: () => set({ actions: [] }),
