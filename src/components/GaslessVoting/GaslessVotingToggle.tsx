@@ -120,9 +120,8 @@ export function GaslessVotingToggleDAOSettings(props: GaslessVotingToggleProps) 
       }
 
       const action = prepareWithdrawPaymasterAction({
-        withdrawAmount: withdrawGasData.withdrawAmount,
+        withdrawData: withdrawGasData,
         paymasterAddress,
-        daoAddress: safe.address,
       });
       const formattedWithdrawAmount = formatCoin(
         withdrawGasData.withdrawAmount,

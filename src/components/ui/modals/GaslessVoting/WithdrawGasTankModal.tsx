@@ -196,7 +196,12 @@ export function WithdrawGasTankModal({
                 </Button>
                 <Button
                   type="submit"
-                  isDisabled={isValidating || !!errors.inputAmount || isSubmitDisabled}
+                  isDisabled={
+                    isValidating ||
+                    !!errors.inputAmount ||
+                    !!errors.recipientAddress ||
+                    isSubmitDisabled
+                  }
                 >
                   {t('submitWithdrawAmount')}
                 </Button>

@@ -1,10 +1,10 @@
 import { Address } from 'viem';
+import { WithdrawGasData } from '../../components/ui/modals/GaslessVoting/WithdrawGasTankModal';
 import { CreateProposalActionData, ProposalActionType } from '../../types';
 
 export interface WithdrawPaymasterData {
-  daoAddress: Address;
   paymasterAddress: Address;
-  withdrawAmount: bigint;
+  withdrawData: WithdrawGasData;
 }
 
 /**
@@ -13,10 +13,10 @@ export interface WithdrawPaymasterData {
  * @returns Returns a `CreateProposalActionData` object.
  */
 export const prepareWithdrawPaymasterAction = ({
-  withdrawAmount,
+  withdrawData,
   paymasterAddress,
-  daoAddress,
 }: WithdrawPaymasterData): CreateProposalActionData => {
+  const { recipientAddress, withdrawAmount } = withdrawData;
   const action: CreateProposalActionData = {
     actionType: ProposalActionType.WITHDRAW_PAYMASTER,
     transactions: [
@@ -24,7 +24,7 @@ export const prepareWithdrawPaymasterAction = ({
         targetAddress: paymasterAddress,
         functionName: 'withdrawTo',
         parameters: [
-          { signature: 'address', value: daoAddress },
+          { signature: 'address', value: recipientAddress },
           { signature: 'uint256', value: withdrawAmount.toString() },
         ],
         ethValue: {
