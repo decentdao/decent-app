@@ -28,6 +28,7 @@
   "sendingHintDirectDeposit": "Ви відправляєте",
   "withdrawAmount": "Сума до зняття",
   "submitWithdrawAmount": "Зняти",
+  "toDaoTreasury": "До казни DAO",
   "recipientAddressRequired": "Адреса одержувача є обов'язковою",
   "withdrawGasAction": "Зняти {{amount}} <x>{{symbol}</x>} від платника",
   "recipientAddress": "Адреса одержувача",

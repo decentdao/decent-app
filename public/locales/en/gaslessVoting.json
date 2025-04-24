@@ -28,6 +28,7 @@
   "sendingHintDirectDeposit": "You're sending",
   "withdrawAmount": "Amount to Withdraw",
   "submitWithdrawAmount": "Withdraw",
+  "toDaoTreasury": "To DAO treasury",
   "recipientAddressRequired": "Recipient address is required",
   "withdrawGasAction": "Withdraw {{amount}} {{symbol}} from the paymaster",
   "recipientAddress": "Recipient Address",

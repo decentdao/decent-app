@@ -28,6 +28,7 @@
   "sendingHintDirectDeposit": "Vous envoyez",
   "withdrawAmount": "Montant à retirer",
   "submitWithdrawAmount": "Se retirer",
+  "toDaoTreasury": "Au trésor de l'OFA",
   "recipientAddressRequired": "L'adresse du destinataire est requise",
   "withdrawGasAction": "Retirer {{amount}} <x>{{symbol}</x>} du payeur",
   "recipientAddress": "Adresse du destinataire",

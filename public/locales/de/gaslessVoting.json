@@ -28,6 +28,7 @@
   "sendingHintDirectDeposit": "Du schickst",
   "withdrawAmount": "Abzuhebender Betrag",
   "submitWithdrawAmount": "Zurückziehen",
+  "toDaoTreasury": "An die DAO-Schatzkammer",
   "recipientAddressRequired": "Adresse des Empfängers ist erforderlich",
   "withdrawGasAction": "Abheben {{amount}} <x>{{symbol}</x>} vom Zahlmeister",
   "recipientAddress": "Adresse des Empfängers",

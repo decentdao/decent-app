@@ -28,6 +28,7 @@
   "sendingHintDirectDeposit": "您發送",
   "withdrawAmount": "提款金額",
   "submitWithdrawAmount": "退出",
+  "toDaoTreasury": "至 DAO 金庫",
   "recipientAddressRequired": "收件人地址為必填項目",
   "withdrawGasAction": "提款{{amount}}<x>{{symbol}</x>從收款人處",
   "recipientAddress": "收件人地址",

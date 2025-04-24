@@ -28,6 +28,7 @@
   "sendingHintDirectDeposit": "Estás enviando",
   "withdrawAmount": "Importe a retirar",
   "submitWithdrawAmount": "Retirar",
+  "toDaoTreasury": "A la tesorería de la DAO",
   "recipientAddressRequired": "Se requiere la dirección del destinatario",
   "withdrawGasAction": "Retirar {{amount}} <x>{{symbol}</x>} del pagador",
   "recipientAddress": "Dirección del destinatario",

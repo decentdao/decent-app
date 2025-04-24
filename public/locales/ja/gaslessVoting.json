@@ -28,6 +28,7 @@
   "sendingHintDirectDeposit": "あなたは",
   "withdrawAmount": "出金額",
   "submitWithdrawAmount": "辞退",
+  "toDaoTreasury": "DAOの金庫へ",
   "recipientAddressRequired": "受取人の住所が必要です",
   "withdrawGasAction": "{{amount}}を引き出す。<x>{{symbol}</x>ペイマスターから",
   "recipientAddress": "受取人住所",

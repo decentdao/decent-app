@@ -6,6 +6,7 @@ import { Address, getAddress } from 'viem';
 import * as Yup from 'yup';
 import { usePaymasterDepositInfo } from '../../../../hooks/DAO/accountAbstraction/usePaymasterDepositInfo';
 import { useValidationAddress } from '../../../../hooks/schemas/common/useValidationAddress';
+import { useDaoInfoStore } from '../../../../store/daoInfo/useDaoInfoStore';
 import { BigIntValuePair } from '../../../../types';
 import { formatCoinUnits } from '../../../../utils/numberFormats';
 import { BigIntInput } from '../../forms/BigIntInput';
@@ -36,6 +37,8 @@ export function WithdrawGasTankModal({
 
   const { isValidating, validateAddress } = useValidationAddress();
   const [recipientAddress, setRecipientAddress] = useState<Address | undefined>(undefined);
+
+  const { safe } = useDaoInfoStore();
 
   const withdrawGasValidationSchema = Yup.object().shape({
     inputAmount: Yup.object()
@@ -180,6 +183,16 @@ export function WithdrawGasTankModal({
                     </LabelWrapper>
                   )}
                 </Field>
+                <Button
+                  variant="tertiary"
+                  size="sm"
+                  alignSelf="flex-end"
+                  onClick={() => {
+                    setFieldValue('recipientAddress', safe?.address);
+                  }}
+                >
+                  {t('toDaoTreasury')}
+                </Button>
                 <Box h="0.25rem" />
               </Flex>
 

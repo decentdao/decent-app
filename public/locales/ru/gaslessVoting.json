@@ -28,6 +28,7 @@
   "sendingHintDirectDeposit": "Вы отправляете",
   "withdrawAmount": "Сумма к снятию",
   "submitWithdrawAmount": "Вывести",
+  "toDaoTreasury": "В казначейство ДАО",
   "recipientAddressRequired": "Адрес получателя обязателен",
   "withdrawGasAction": "Вывести {{amount}} <x>{{symbol}</x>} из платежной системы",
   "recipientAddress": "Адрес получателя",

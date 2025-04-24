@@ -28,6 +28,7 @@
   "sendingHintDirectDeposit": "State inviando",
   "withdrawAmount": "Importo da prelevare",
   "submitWithdrawAmount": "Ritiro",
+  "toDaoTreasury": "Alla tesoreria della DAO",
   "recipientAddressRequired": "L'indirizzo del destinatario è obbligatorio",
   "withdrawGasAction": "Prelevare {{amount}} <x>{{symbol}</x>} dal paymaster",
   "recipientAddress": "Indirizzo del destinatario",

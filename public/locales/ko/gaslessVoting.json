@@ -28,6 +28,7 @@
   "sendingHintDirectDeposit": "다음을 전송하고 있습니다.",
   "withdrawAmount": "인출할 금액",
   "submitWithdrawAmount": "철회",
+  "toDaoTreasury": "DAO 재무부로",
   "recipientAddressRequired": "수신자 주소는 필수입니다.",
   "withdrawGasAction": "인출 {{amount}} <x>{{symbol}</x>}를 페이 마스터에서 출금합니다.",
   "recipientAddress": "수신자 주소",
