@@ -1,65 +1,12 @@
 import { abis } from '@fractal-framework/fractal-contracts';
 import { hatIdToTreeId } from '@hatsprotocol/sdk-v1-core';
 import { useEffect } from 'react';
-import { Address, GetContractEventsReturnType, PublicClient, getContract } from 'viem';
+import { Address, GetContractEventsReturnType, getContract } from 'viem';
 import { logError } from '../../helpers/errorLogging';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
 import { useDaoInfoStore } from '../../store/daoInfo/useDaoInfoStore';
 import { useRolesStore } from '../../store/roles/useRolesStore';
-import { getPaymasterAddress } from '../../utils/gaslessVoting';
 import useNetworkPublicClient from '../useNetworkPublicClient';
-
-const getGaslessVotingDaoData = async (
-  events: GetContractEventsReturnType<typeof abis.KeyValuePairs>,
-  safeAddress: Address,
-  publicClient: PublicClient,
-  zodiacModuleProxyFactory: Address,
-  paymasterMastercopy: Address,
-  accountAbstraction?: {
-    entryPointv07: Address;
-    lightAccountFactory: Address;
-  },
-) => {
-  // get most recent event where `gaslessVotingEnabled` was set
-  const gaslessVotingEnabledEvent = events
-    .filter(event => event.args.key && event.args.key === 'gaslessVotingEnabled')
-    .pop();
-
-  if (!gaslessVotingEnabledEvent || !accountAbstraction || !publicClient.chain) {
-    return { gaslessVotingEnabled: false, paymasterAddress: null };
-  }
-
-  try {
-    const paymasterAddress = getPaymasterAddress({
-      safeAddress,
-      zodiacModuleProxyFactory,
-      paymasterMastercopy,
-      entryPoint: accountAbstraction.entryPointv07,
-      lightAccountFactory: accountAbstraction.lightAccountFactory,
-      chainId: publicClient.chain.id,
-    });
-
-    const paymasterCode = await publicClient.getCode({
-      address: paymasterAddress,
-    });
-
-    const paymasterExists = !!paymasterCode && paymasterCode !== '0x';
-
-    const gaslessVotingEnabled = gaslessVotingEnabledEvent.args.value === 'true';
-    return { gaslessVotingEnabled, paymasterAddress: paymasterExists ? paymasterAddress : null };
-  } catch (e) {
-    logError({
-      message: 'Error getting gasless voting dao data',
-      network: publicClient.chain!.id,
-      args: {
-        transactionHash: gaslessVotingEnabledEvent.transactionHash,
-        logIndex: gaslessVotingEnabledEvent.logIndex,
-      },
-    });
-
-    return;
-  }
-};
 
 const getHatsTreeId = (
   events: GetContractEventsReturnType<typeof abis.KeyValuePairs> | undefined,
@@ -147,16 +94,9 @@ const useKeyValuePairs = () => {
   const publicClient = useNetworkPublicClient();
   const node = useDaoInfoStore();
   const {
-    contracts: {
-      keyValuePairs,
-      sablierV2LockupLinear,
-      zodiacModuleProxyFactory,
-      paymaster,
-      accountAbstraction,
-    },
+    contracts: { keyValuePairs, sablierV2LockupLinear },
   } = useNetworkConfigStore();
   const { setHatKeyValuePairData, resetHatsStore } = useRolesStore();
-  const { setGaslessVotingDaoData } = useDaoInfoStore();
   const safeAddress = node.safe?.address;
 
   useEffect(() => {
@@ -180,19 +120,6 @@ const useKeyValuePairs = () => {
             sablierV2LockupLinear,
             publicClient.chain.id,
           ),
-        });
-
-        getGaslessVotingDaoData(
-          safeEvents,
-          safeAddress,
-          publicClient,
-          zodiacModuleProxyFactory,
-          paymaster.decentPaymasterV1MasterCopy,
-          accountAbstraction,
-        ).then(gaslessVotingDaoData => {
-          if (gaslessVotingDaoData) {
-            setGaslessVotingDaoData(gaslessVotingDaoData);
-          }
         });
       })
       .catch(error => {
@@ -224,36 +151,13 @@ const useKeyValuePairs = () => {
               ),
             });
           }, 20_000);
-
-          getGaslessVotingDaoData(
-            logs,
-            safeAddress,
-            publicClient,
-            zodiacModuleProxyFactory,
-            paymaster.decentPaymasterV1MasterCopy,
-            accountAbstraction,
-          ).then(gaslessVotingDaoData => {
-            if (gaslessVotingDaoData) {
-              setGaslessVotingDaoData(gaslessVotingDaoData);
-            }
-          });
         },
       },
     );
     return () => {
       unwatch();
     };
-  }, [
-    keyValuePairs,
-    safeAddress,
-    publicClient,
-    setHatKeyValuePairData,
-    sablierV2LockupLinear,
-    setGaslessVotingDaoData,
-    accountAbstraction,
-    paymaster,
-    zodiacModuleProxyFactory,
-  ]);
+  }, [keyValuePairs, safeAddress, publicClient, setHatKeyValuePairData, sablierV2LockupLinear]);
 
   useEffect(() => {
     if (safeAddress === undefined) {

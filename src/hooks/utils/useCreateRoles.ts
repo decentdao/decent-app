@@ -102,7 +102,7 @@ export default function useCreateRoles() {
       moduleAzoriusAddress,
     },
   } = useStore({ daoKey });
-  const { safe, subgraphInfo, gaslessVotingEnabled, paymasterAddress } = useDaoInfoStore();
+  const { safe, subgraphInfo, paymasterAddress } = useDaoInfoStore();
   const { hatsTree, hatsTreeId, getHat } = useRolesStore();
   const {
     addressPrefix,
@@ -255,7 +255,7 @@ export default function useCreateRoles() {
         };
 
         const optionallyWhitelistWhitelistingStrategyOnPaymaster = [];
-        if (gaslessVotingEnabled && paymasterAddress) {
+        if (gaslessVotingFeatureEnabled && paymasterAddress) {
           optionallyWhitelistWhitelistingStrategyOnPaymaster.push({
             calldata: encodeFunctionData({
               abi: abis.DecentPaymasterV1,
@@ -373,7 +373,7 @@ export default function useCreateRoles() {
         };
 
         const optionallyWhitelistWhitelistingStrategyOnPaymaster = [];
-        if (gaslessVotingEnabled && paymasterAddress) {
+        if (gaslessVotingFeatureEnabled && paymasterAddress) {
           optionallyWhitelistWhitelistingStrategyOnPaymaster.push({
             calldata: encodeFunctionData({
               abi: abis.DecentPaymasterV1,
@@ -407,7 +407,6 @@ export default function useCreateRoles() {
       linearVotingErc20HatsWhitelistingV1MasterCopy,
       linearVotingErc20HatsWhitelistingMasterCopy,
       zodiacModuleProxyFactory,
-      gaslessVotingEnabled,
       paymasterAddress,
       paymaster,
       linearVotingErc721Address,

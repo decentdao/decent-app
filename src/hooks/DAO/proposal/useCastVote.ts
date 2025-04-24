@@ -1,40 +1,42 @@
 import { abis } from '@fractal-framework/fractal-contracts';
 import { toLightSmartAccount } from 'permissionless/accounts';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { Address, getContract, http } from 'viem';
 import { createBundlerClient } from 'viem/account-abstraction';
-import { EntryPoint07Abi } from '../../../assets/abi/EntryPoint07Abi';
+import useFeatureFlag from '../../../helpers/environmentFeatureFlags';
 import { useStore } from '../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
 import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
+import { FractalTokenType } from '../../../types/fractal';
 import { fetchMaxPriorityFeePerGas } from '../../../utils/gaslessVoting';
 import useNetworkPublicClient from '../../useNetworkPublicClient';
 import { useNetworkWalletClient } from '../../useNetworkWalletClient';
 import { useTransaction } from '../../utils/useTransaction';
+import { useDepositInfo } from '../accountAbstraction/useDepositInfo';
+import { usePaymasterValidatorStatus } from '../accountAbstraction/usePaymasterValidatorStatus';
 import { useCurrentDAOKey } from '../useCurrentDAOKey';
 import useUserERC721VotingTokens from './useUserERC721VotingTokens';
 
-const useCastVote = (proposalId: string, strategy: Address) => {
+const useCastVote = (proposalId: string, strategyAddress: Address) => {
   const { daoKey } = useCurrentDAOKey();
-  const {
-    governanceContracts: {
-      linearVotingErc20Address,
-      linearVotingErc20WithHatsWhitelistingAddress,
-      linearVotingErc721Address,
-      linearVotingErc721WithHatsWhitelistingAddress,
-    },
-  } = useStore({ daoKey });
-  const {
-    contracts: { accountAbstraction },
-    rpcEndpoint,
-    getConfigByChainId,
-  } = useNetworkConfigStore();
+  const { governanceContracts } = useStore({ daoKey });
+  const { rpcEndpoint, getConfigByChainId, bundlerMinimumStake } = useNetworkConfigStore();
+  const { paymasterAddress } = useDaoInfoStore();
+  const { isValidatorSet, isLoading: isLoadingValidator } = usePaymasterValidatorStatus();
+  const { depositInfo } = useDepositInfo(paymasterAddress);
+  const gaslessFeatureEnabled = useFeatureFlag('flag_gasless_voting');
+
+  const isStakingRequired = useMemo(
+    () => bundlerMinimumStake !== undefined && bundlerMinimumStake > 0n,
+    [bundlerMinimumStake],
+  );
 
   const [contractCall, castVotePending] = useTransaction();
   const [castGaslessVotePending, setCastGaslessVotePending] = useState(false);
   const [canCastGaslessVote, setCanCastGaslessVote] = useState(false);
+  const [gasEstimationError, setGasEstimationError] = useState<string | null>(null);
 
   const { remainingTokenIds, remainingTokenAddresses } = useUserERC721VotingTokens(
     null,
@@ -42,11 +44,19 @@ const useCastVote = (proposalId: string, strategy: Address) => {
   );
 
   const { data: walletClient } = useNetworkWalletClient();
+  const publicClient = useNetworkPublicClient();
+  const { t } = useTranslation(['transaction', 'gaslessVoting']);
 
-  const { t } = useTranslation('transaction');
+  const strategy = useMemo(() => {
+    return governanceContracts.strategies.find(s => s.address === strategyAddress);
+  }, [governanceContracts.strategies, strategyAddress]);
 
-  const prepareCastVoteData = useCallback(
+  const prepareCastVoteCall = useCallback(
     (vote: number) => {
+      if (!strategy) {
+        throw new Error('Voting strategy not found for proposal');
+      }
+
       type Erc20VoteArgs = [proposalId: number, vote: number];
       type Erc721VoteArgs = [
         proposalId: number,
@@ -56,214 +66,181 @@ const useCastVote = (proposalId: string, strategy: Address) => {
       ];
 
       let voteArgs: Erc20VoteArgs | Erc721VoteArgs;
-      let abi: typeof abis.LinearERC20Voting | typeof abis.LinearERC721Voting;
+      let abi;
+      let functionName: 'vote';
 
-      const isErc20 =
-        strategy === linearVotingErc20Address ||
-        strategy === linearVotingErc20WithHatsWhitelistingAddress;
-      const isErc721 =
-        strategy === linearVotingErc721Address ||
-        strategy === linearVotingErc721WithHatsWhitelistingAddress;
-
-      if (isErc20) {
-        abi = abis.LinearERC20Voting;
+      if (strategy.type === FractalTokenType.erc20) {
+        abi = abis.LinearERC20VotingV1;
         voteArgs = [Number(proposalId), vote];
-      } else if (isErc721) {
-        abi = abis.LinearERC721Voting;
+        functionName = 'vote';
+      } else if (strategy.type === FractalTokenType.erc721) {
+        abi = abis.LinearERC721VotingV1;
         voteArgs = [
           Number(proposalId),
           vote,
           remainingTokenAddresses,
           remainingTokenIds.map(i => BigInt(i)),
         ];
+        functionName = 'vote';
       } else {
-        throw new Error('Invalid strategy');
+        throw new Error('Invalid strategy type');
       }
 
       return {
-        to: strategy,
+        to: strategy.address,
         abi,
-        functionName: 'vote',
+        functionName,
         args: voteArgs,
       } as const;
     },
-    [
-      linearVotingErc721Address,
-      linearVotingErc721WithHatsWhitelistingAddress,
-      linearVotingErc20Address,
-      linearVotingErc20WithHatsWhitelistingAddress,
-      proposalId,
-      remainingTokenAddresses,
-      remainingTokenIds,
-      strategy,
-    ],
+    [proposalId, remainingTokenAddresses, remainingTokenIds, strategy],
   );
 
   const castVote = useCallback(
     async (vote: number) => {
-      if (!walletClient) {
+      if (!walletClient || !strategy) {
         return;
       }
 
-      if (
-        strategy === linearVotingErc20Address ||
-        strategy === linearVotingErc20WithHatsWhitelistingAddress
-      ) {
-        const ozLinearVotingContract = getContract({
-          abi: abis.LinearERC20Voting,
-          address: strategy,
-          client: walletClient,
-        });
-        contractCall({
-          contractFn: () => ozLinearVotingContract.write.vote([Number(proposalId), vote]),
-          pendingMessage: t('pendingCastVote'),
-          failedMessage: t('failedCastVote'),
-          successMessage: t('successCastVote'),
-        });
-      } else if (
-        strategy === linearVotingErc721Address ||
-        strategy === linearVotingErc721WithHatsWhitelistingAddress
-      ) {
-        const erc721LinearVotingContract = getContract({
-          abi: abis.LinearERC721Voting,
-          address: strategy,
-          client: walletClient,
-        });
-        contractCall({
-          contractFn: () =>
-            erc721LinearVotingContract.write.vote([
-              Number(proposalId),
-              vote,
-              remainingTokenAddresses,
-              remainingTokenIds.map(i => BigInt(i)),
-            ]),
-          pendingMessage: t('pendingCastVote'),
-          failedMessage: t('failedCastVote'),
-          successMessage: t('successCastVote'),
-        });
+      const { abi, functionName, args } = prepareCastVoteCall(vote);
+      const contract = getContract({
+        abi,
+        address: strategy.address,
+        client: walletClient,
+      });
+
+      contractCall({
+        // @ts-ignore args type validation is tricky here
+        contractFn: () => contract.write[functionName](args),
+        pendingMessage: t('pendingCastVote'),
+        failedMessage: t('failedCastVote'),
+        successMessage: t('successCastVote'),
+      });
+    },
+    [walletClient, strategy, prepareCastVoteCall, contractCall, t],
+  );
+
+  const prepareGaslessVoteOperation = useCallback(
+    async (vote: number) => {
+      if (!publicClient || !paymasterAddress || !walletClient || !strategy) {
+        return null;
       }
+
+      const networkConfig = getConfigByChainId(publicClient.chain.id);
+      const smartWallet = await toLightSmartAccount({
+        client: publicClient,
+        owner: walletClient,
+        version: '2.0.0',
+        index: 0n,
+      });
+      const bundlerClient = createBundlerClient({
+        account: smartWallet,
+        client: publicClient,
+        transport: http(rpcEndpoint),
+      });
+
+      const minimumMaxPriorityFeePerGas = await fetchMaxPriorityFeePerGas(networkConfig);
+      const { maxPriorityFeePerGas: maxPriorityFeePerGasEstimate } =
+        await publicClient.estimateFeesPerGas();
+
+      const maxPriorityFeePerGas =
+        maxPriorityFeePerGasEstimate > (minimumMaxPriorityFeePerGas ?? 0n)
+          ? maxPriorityFeePerGasEstimate
+          : minimumMaxPriorityFeePerGas;
+
+      const userOpBase = {
+        paymaster: paymasterAddress,
+        maxPriorityFeePerGas,
+      };
+
+      const callData = prepareCastVoteCall(vote);
+
+      return {
+        userOpBase,
+        callData,
+        bundlerClient,
+      };
     },
     [
-      contractCall,
-      linearVotingErc721Address,
-      linearVotingErc721WithHatsWhitelistingAddress,
-      linearVotingErc20Address,
-      linearVotingErc20WithHatsWhitelistingAddress,
-      proposalId,
-      remainingTokenAddresses,
-      remainingTokenIds,
-      t,
+      publicClient,
+      paymasterAddress,
       walletClient,
       strategy,
+      getConfigByChainId,
+      rpcEndpoint,
+      prepareCastVoteCall,
     ],
   );
 
-  const { paymasterAddress } = useDaoInfoStore();
-  const publicClient = useNetworkPublicClient();
-
-  const prepareGaslessVoteOperation = useCallback(async () => {
-    if (!publicClient || !paymasterAddress || !walletClient) {
-      return;
-    }
-
-    const networkConfig = getConfigByChainId(publicClient.chain.id);
-
-    const smartWallet = await toLightSmartAccount({
-      client: publicClient,
-      owner: walletClient,
-      version: '2.0.0',
-
-      // DO NOT CHANGE THIS INDEX!!!
-      // For context, see:
-      // - https://docs.pimlico.io/permissionless/reference/accounts/toLightSmartAccount#index-optional
-      // - https://github.com/decentdao/decent-contracts/blob/a2fad6470015c0f59c84d8b5249dd1ee7b8a4773/contracts/account-abstraction/SmartAccountValidationV1.sol#L47
-      index: 0n,
-    });
-    const bundlerClient = createBundlerClient({
-      account: smartWallet,
-      client: publicClient,
-      transport: http(rpcEndpoint),
-    });
-
-    const minimumMaxPriorityFeePerGas = await fetchMaxPriorityFeePerGas(networkConfig);
-    const { maxPriorityFeePerGas: maxPriorityFeePerGasEstimate } =
-      await publicClient.estimateFeesPerGas();
-
-    // Select higher of the two
-    const maxPriorityFeePerGas =
-      maxPriorityFeePerGasEstimate > (minimumMaxPriorityFeePerGas ?? 0n)
-        ? maxPriorityFeePerGasEstimate
-        : minimumMaxPriorityFeePerGas;
-
-    const userOpWithoutCallData = {
-      paymaster: paymasterAddress,
-      maxPriorityFeePerGas,
-    };
-
-    const callDataForEstimation = prepareCastVoteData(0);
-    const {
-      preVerificationGas,
-      verificationGasLimit,
-      callGasLimit,
-      paymasterVerificationGasLimit,
-      paymasterPostOpGasLimit,
-    } = await bundlerClient.estimateUserOperationGas({
-      ...userOpWithoutCallData,
-      calls: [callDataForEstimation],
-    });
-
-    // Calculate gas
-    // check algorithm at https://github.com/alchemyplatform/rundler/blob/fae8909b34e5874c0cae2d06aa841a8a112d22a0/crates/types/src/user_operation/v0_7.rs#L206-L215
-    const { maxFeePerGas: maxFeePerGasEstimate } = await publicClient.estimateFeesPerGas();
-    const gasUsed =
-      preVerificationGas +
-      verificationGasLimit +
-      callGasLimit +
-      (paymasterVerificationGasLimit ?? 0n) +
-      (paymasterPostOpGasLimit ?? 0n);
-    const gasCost = maxFeePerGasEstimate * gasUsed;
-
-    return {
-      gasCost,
-      userOpWithoutCallData,
-      bundlerClient,
-    };
-  }, [
-    getConfigByChainId,
-    paymasterAddress,
-    prepareCastVoteData,
-    publicClient,
-    rpcEndpoint,
-    walletClient,
-  ]);
-
-  // Check if the paymaster has enough balance to cover the gas cost of the vote
   useEffect(() => {
-    const estimateGaslessVoteGas = async () => {
-      if (!paymasterAddress || !publicClient || !accountAbstraction) {
-        return;
+    const checkEligibility = async () => {
+      setGasEstimationError(null);
+      setCanCastGaslessVote(false);
+
+      if (!gaslessFeatureEnabled) return;
+      if (!paymasterAddress) return;
+
+      if (isLoadingValidator) return;
+
+      if (!isValidatorSet) return;
+      if (!depositInfo) return;
+
+      if (isStakingRequired) {
+        const minStake = bundlerMinimumStake || 0n;
+        if (depositInfo.stake < minStake || depositInfo.withdrawTime !== 0) {
+          return;
+        }
       }
 
-      const entryPoint = getContract({
-        address: accountAbstraction.entryPointv07,
-        abi: EntryPoint07Abi,
-        client: publicClient,
-      });
-      const paymasterBalance = await entryPoint.read.balanceOf([paymasterAddress]);
+      try {
+        const preparedOp = await prepareGaslessVoteOperation(0);
+        if (!preparedOp) {
+          throw new Error('Failed to prepare gasless operation for estimation.');
+        }
 
-      const gaslessVoteData = await prepareGaslessVoteOperation();
-      if (!gaslessVoteData) {
-        return;
+        const {
+          preVerificationGas,
+          verificationGasLimit,
+          callGasLimit,
+          paymasterVerificationGasLimit,
+          paymasterPostOpGasLimit,
+        } = await preparedOp.bundlerClient.estimateUserOperationGas({
+          ...preparedOp.userOpBase,
+          calls: [preparedOp.callData],
+        });
+
+        const { maxFeePerGas: maxFeePerGasEstimate } = await publicClient.estimateFeesPerGas();
+        const gasUsed =
+          preVerificationGas +
+          verificationGasLimit +
+          callGasLimit +
+          (paymasterVerificationGasLimit ?? 0n) +
+          (paymasterPostOpGasLimit ?? 0n);
+        const estimatedGasCost = maxFeePerGasEstimate * gasUsed;
+
+        if (depositInfo.balance >= estimatedGasCost) {
+          setCanCastGaslessVote(true);
+        } else {
+          setGasEstimationError(t('insufficientPaymasterBalance', { ns: 'gaslessVoting' }));
+        }
+      } catch (e: any) {
+        setGasEstimationError(t('gasEstimationFailed'));
       }
-      const { gasCost } = gaslessVoteData;
-
-      setCanCastGaslessVote(paymasterBalance >= gasCost);
     };
 
-    estimateGaslessVoteGas().catch(() => {
-      setCanCastGaslessVote(false);
-    });
-  }, [accountAbstraction, paymasterAddress, prepareGaslessVoteOperation, publicClient]);
+    checkEligibility();
+  }, [
+    gaslessFeatureEnabled,
+    paymasterAddress,
+    isValidatorSet,
+    isLoadingValidator,
+    depositInfo,
+    isStakingRequired,
+    bundlerMinimumStake,
+    prepareGaslessVoteOperation,
+    publicClient,
+    t,
+  ]);
 
   const castGaslessVote = useCallback(
     async ({
@@ -278,21 +255,17 @@ const useCastVote = (proposalId: string, strategy: Address) => {
       try {
         setCastGaslessVotePending(true);
 
-        const gaslessVoteData = await prepareGaslessVoteOperation();
-        if (!gaslessVoteData) {
-          return;
+        const preparedOp = await prepareGaslessVoteOperation(selectedVoteChoice);
+        if (!preparedOp) {
+          throw new Error('Failed to prepare gasless operation for sending.');
         }
-        const { userOpWithoutCallData, bundlerClient } = gaslessVoteData;
 
-        const castVoteCallData = prepareCastVoteData(selectedVoteChoice);
-
-        // Sign and send UserOperation to bundler
-        const hash = await bundlerClient.sendUserOperation({
-          ...userOpWithoutCallData,
-          calls: [castVoteCallData],
+        const hash = await preparedOp.bundlerClient.sendUserOperation({
+          ...preparedOp.userOpBase,
+          calls: [preparedOp.callData],
         });
 
-        bundlerClient.waitForUserOperationReceipt({ hash }).then(() => {
+        preparedOp.bundlerClient.waitForUserOperationReceipt({ hash }).then(() => {
           setCastGaslessVotePending(false);
           onSuccess();
         });
@@ -307,7 +280,7 @@ const useCastVote = (proposalId: string, strategy: Address) => {
         onError(error);
       }
     },
-    [prepareGaslessVoteOperation, prepareCastVoteData, t],
+    [prepareGaslessVoteOperation, t],
   );
 
   return {
@@ -316,6 +289,8 @@ const useCastVote = (proposalId: string, strategy: Address) => {
     castVotePending,
     castGaslessVotePending,
     canCastGaslessVote,
+    isLoadingEligibility: isLoadingValidator,
+    gasEstimationError,
   };
 };
 
