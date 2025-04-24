@@ -21,6 +21,7 @@ import { useFilterSpamTokens } from '../../../../../hooks/utils/useFilterSpamTok
 import { analyticsEvents } from '../../../../../insights/analyticsEvents';
 import { useStore } from '../../../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../../../providers/NetworkConfig/useNetworkConfigStore';
+import { useProposalActionsStore } from '../../../../../store/actions/useProposalActionsStore';
 import { useDaoInfoStore } from '../../../../../store/daoInfo/useDaoInfoStore';
 import {
   CreateProposalForm,
@@ -45,6 +46,7 @@ export function SafeSablierProposalCreatePage() {
   const { safe } = useDaoInfoStore();
   const { t } = useTranslation('proposal');
   const navigate = useNavigate();
+  const { proposalMetadata: actionsProposalMetadata } = useProposalActionsStore();
 
   const prepareProposalData = useCallback(
     async (values: CreateProposalForm | CreateSablierProposalForm) => {
@@ -136,14 +138,20 @@ export function SafeSablierProposalCreatePage() {
       />
     );
   }
-  const sablierProposalInitialValues = {
-    ...DEFAULT_SABLIER_PROPOSAL,
+  const sablierProposalInitialValues: CreateSablierProposalForm = {
+    ...(actionsProposalMetadata
+      ? {
+          ...DEFAULT_SABLIER_PROPOSAL,
+          proposalMetadata: { ...actionsProposalMetadata },
+        }
+      : DEFAULT_SABLIER_PROPOSAL),
     streams: DEFAULT_SABLIER_PROPOSAL.streams.map(s => {
       return {
         ...s,
         tokenAddress: s.tokenAddress || fungibleNonNativeAssetsWithBalance[0].tokenAddress,
       };
     }),
+    nonce: safe.nextNonce,
   };
 
   const pageHeaderBreadcrumbs = [
@@ -177,10 +185,7 @@ export function SafeSablierProposalCreatePage() {
 
   return (
     <ProposalBuilder
-      initialValues={{
-        ...sablierProposalInitialValues,
-        nonce: safe.nextNonce,
-      }}
+      initialValues={sablierProposalInitialValues}
       pageHeaderTitle={t('createProposal', { ns: 'proposal' })}
       pageHeaderBreadcrumbs={pageHeaderBreadcrumbs}
       pageHeaderButtonClickHandler={pageHeaderButtonClickHandler}
