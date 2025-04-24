@@ -180,7 +180,7 @@
   "trancheDurationHelper": "La duración del tramo",
   "removeTranche": "Eliminar tramo",
   "addTranche": "Añadir tramo",
-  "trancheDurationHelperFirstTranche": "Al menos 1 segundo para el primer trance.",
+  "trancheDurationHelperFirstTranche": "Al menos 1 segundo para el primer tramo.",
   "labelRecipientAddress": "Dirección del destinatario",
   "labelTotalAmount": "Importe total",
   "labelTranches": "Tramos",

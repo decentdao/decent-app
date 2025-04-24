@@ -180,7 +180,7 @@
   "trancheDurationHelper": "A duração da fração",
   "removeTranche": "Retirar a fração",
   "addTranche": "Acrescentar fração",
-  "trancheDurationHelperFirstTranche": "Pelo menos 1 segundo para o primeiro transe.",
+  "trancheDurationHelperFirstTranche": "Pelo menos 1 segundo para a primeira fração.",
   "labelRecipientAddress": "Endereço do destinatário",
   "labelTotalAmount": "Montante total",
   "labelTranches": "Tranches",
