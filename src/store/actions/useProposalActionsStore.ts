@@ -32,7 +32,7 @@ export const useProposalActionsStore = create<ProposalActionsStore>()((set, get)
   setProposalMetadata: proposalMetadata => set({ proposalMetadata }),
   removeAction: actionIndex =>
     set(state => ({ actions: state.actions.filter((_, index) => index !== actionIndex) })),
-  resetActions: () => set({ actions: [] }),
+  resetActions: () => set({ actions: [], proposalMetadata: undefined }),
   getTransactions: () =>
     get()
       .actions.map(action => action.transactions)
