@@ -186,7 +186,7 @@ export function GaslessVotingToggleDAOSettings(props: GaslessVotingToggleProps) 
         nativeCurrency.symbol,
         false,
       );
-
+      resetActions();
       addAction({
         ...action,
         content: (

@@ -21,7 +21,7 @@ export function ConfirmDeleteStrategyModal({ onClose }: { onClose: () => void })
   const { daoKey } = useCurrentDAOKey();
   const { governance, governanceContracts } = useStore({ daoKey });
   const { safe } = useDaoInfoStore();
-  const { addAction } = useProposalActionsStore();
+  const { addAction, resetActions } = useProposalActionsStore();
 
   const azoriusGovernance = governance as AzoriusGovernance;
   const { getVotingStrategies } = useVotingStrategiesAddresses();
@@ -112,7 +112,7 @@ export function ConfirmDeleteStrategyModal({ onClose }: { onClose: () => void })
     } else {
       throw new Error('No linear voting contract found');
     }
-
+    resetActions();
     addAction({
       actionType: ProposalActionType.DELETE,
       content: (
