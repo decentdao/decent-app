@@ -17,6 +17,7 @@ import { ConfirmTransactionModal } from './ConfirmTransactionModal';
 import { ConfirmUrlModal } from './ConfirmUrlModal';
 import { DelegateModal } from './DelegateModal';
 import ForkProposalTemplateModal from './ForkProposalTemplateModal';
+import { GaslessVoteLoadingModal } from './GaslessVoting/GaslessVoteLoadingModal';
 import { GaslessVoteSuccessModal } from './GaslessVoting/GaslessVoteSuccessModal';
 import { RefillGasData, RefillGasTankModal } from './GaslessVoting/RefillGasTankModal';
 import { ModalBase, ModalBaseSize } from './ModalBase';
@@ -45,6 +46,7 @@ export enum ModalType {
   SEND_ASSETS,
   AIRDROP,
   REFILL_GAS,
+  GASLESS_VOTE_LOADING,
   GASLESS_VOTE_SUCCESS,
   CONFIRM_TRANSACTION,
   TRANSACTION_BUILDER,
@@ -104,6 +106,7 @@ export type ModalPropsTypes = {
   [ModalType.REFILL_GAS]: {
     onSubmit: (refillGasData: RefillGasData) => void;
   };
+  [ModalType.GASLESS_VOTE_LOADING]: {};
   [ModalType.GASLESS_VOTE_SUCCESS]: {};
   [ModalType.CONFIRM_TRANSACTION]: {
     appName: string;
@@ -302,6 +305,10 @@ export function ModalProvider({ children }: { children: ReactNode }) {
 
       case ModalType.GASLESS_VOTE_SUCCESS:
         modalContent = <GaslessVoteSuccessModal close={closeModal} />;
+        modalSize = 'md';
+        break;
+      case ModalType.GASLESS_VOTE_LOADING:
+        modalContent = <GaslessVoteLoadingModal />;
         modalSize = 'md';
         break;
       case ModalType.AIRDROP:
