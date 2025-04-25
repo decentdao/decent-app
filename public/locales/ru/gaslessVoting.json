@@ -17,6 +17,7 @@
   "usdValue": "${{value}}",
   "availableBalance": "{{balance}}",
   "insufficientPaymasterBalance": "У DAO paymaster нет достаточного баланса, чтобы спонсировать ваш голос в данный момент.",
+  "voteIsSponsoredLoading": "Ваш спонсорский голос обрабатывается...",
   "voteIsSponsoredTitle": "Ваш голос спонсируется.",
   "voteIsSponsoredSubtitle": "Наслаждайтесь нулевой комиссией за это голосование!",
   "userRejectedSignature": "Пользователь отказался от подписи.",

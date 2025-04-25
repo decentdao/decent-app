@@ -17,6 +17,7 @@
   "usdValue": "${{value}}",
   "availableBalance": "{{balance}}",
   "insufficientPaymasterBalance": "DAOのペイマスターは、現時点ではあなたの投票を後援するのに十分な残高を持っていません。",
+  "voteIsSponsoredLoading": "あなたのスポンサー投票が処理されています...",
   "voteIsSponsoredTitle": "あなたの一票がスポンサーに",
   "voteIsSponsoredSubtitle": "この投票にかかる手数料はゼロ！",
   "userRejectedSignature": "ユーザーは署名を拒否した。",

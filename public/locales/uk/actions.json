@@ -5,5 +5,6 @@
   "transferAssetsSub": "Створіть одноразові платежі.",
   "comingSoon": "Незабаром ...",
   "comingSoonSub": "Більше дій на шляху.",
-  "proposalBuilderBatch": "Пакет: {{numOfTransactions}} транзакцій"
+  "transactionBuilderActionCard_single": "Конструктор транзакцій: Виконайте {{ functionName }} на {{ targetAddress }}",
+  "transactionBuilderActionCard_multiple": "Конструктор транзакцій: Пакетні {{ numOfTransactions }} транзакції"
 }

@@ -17,6 +17,7 @@
   "usdValue": "${{value}}",
   "availableBalance": "{{balance}}",
   "insufficientPaymasterBalance": "El pagador DAO no tiene saldo suficiente para patrocinar su voto en este momento.",
+  "voteIsSponsoredLoading": "Su voto patrocinado se está procesando...",
   "voteIsSponsoredTitle": "Su voto está patrocinado.",
   "voteIsSponsoredSubtitle": "¡Disfruta de cero comisiones por esta votación!",
   "userRejectedSignature": "El usuario se negó a firmar.",
