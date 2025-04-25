@@ -41,7 +41,7 @@ export default function Breadcrumbs({
 
         return (
           <BreadcrumbItem
-            key={path}
+            key={path + title}
             isCurrentPage={isCurrentPage}
             color="neutral-7"
             textStyle="labels-large"
