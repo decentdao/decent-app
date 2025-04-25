@@ -4,7 +4,7 @@
   "gaslessVotingGettingStarted": "Para começar, estamos a cobrir os seus primeiros 0,1 {{symbol}} de taxas de gás. Pode aumentar o seu saldo nas definições do seu DAO.",
   "gaslessVotingLabelSettings": "Votos patrocinados",
   "gaslessVotingDescriptionSettings": "Criar um pagador para patrocinar as taxas de rede para a votação de propostas.",
-  "gaslessStakingDescription": "Uma aposta de {{amount}} {{symbol}} é necessário para ativar a votação sem gás. Pode ser retirado a qualquer altura e retirado após 1 dia se a votação sem gás estiver desactivada.",
+  "gaslessStakingDescription": "Um staking de {{amount}} {{symbol}} é necessário para ativar a votação sem gás e será retirado da tesouraria da DAO. Se a votação sem gás estiver desactivada, os activos podem ser retirados a qualquer momento e retirados após 1 dia.",
   "addGas": "Recarga",
   "refillTank": "Pagador de recarga",
   "refillPaymasterAction": "Recarregar o Paymaster com {{amount}} {{symbol}}",
