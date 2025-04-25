@@ -6,6 +6,8 @@ import { toast } from 'sonner';
 import { Address, getContract, http } from 'viem';
 import { createBundlerClient } from 'viem/account-abstraction';
 import { EntryPoint07Abi } from '../../../assets/abi/EntryPoint07Abi';
+import { ModalType } from '../../../components/ui/modals/ModalProvider';
+import { useDecentModal } from '../../../components/ui/modals/useDecentModal';
 import { useStore } from '../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
 import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
@@ -265,6 +267,8 @@ const useCastVote = (proposalId: string, strategy: Address) => {
     });
   }, [accountAbstraction, paymasterAddress, prepareGaslessVoteOperation, publicClient]);
 
+  const gaslessVoteLoadingModal = useDecentModal(ModalType.GASLESS_VOTE_LOADING);
+
   const castGaslessVote = useCallback(
     async ({
       selectedVoteChoice,
@@ -285,6 +289,8 @@ const useCastVote = (proposalId: string, strategy: Address) => {
         const { userOpWithoutCallData, bundlerClient } = gaslessVoteData;
 
         const castVoteCallData = prepareCastVoteData(selectedVoteChoice);
+
+        gaslessVoteLoadingModal();
 
         // Sign and send UserOperation to bundler
         const hash = await bundlerClient.sendUserOperation({
@@ -307,7 +313,7 @@ const useCastVote = (proposalId: string, strategy: Address) => {
         onError(error);
       }
     },
-    [prepareGaslessVoteOperation, prepareCastVoteData, t],
+    [prepareGaslessVoteOperation, prepareCastVoteData, gaslessVoteLoadingModal, t],
   );
 
   return {
