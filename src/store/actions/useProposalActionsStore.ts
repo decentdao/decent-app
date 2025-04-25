@@ -12,7 +12,7 @@ interface ProposalActionsStoreData {
 
 interface ProposalActionsStore extends ProposalActionsStoreData {
   addAction: (action: CreateProposalAction) => void;
-  setProposalMetadata: (proposalMetadata: CreateProposalMetadata) => void;
+  setProposalMetadata: (field: keyof CreateProposalMetadata, value: string | undefined) => void;
   removeAction: (actionIndex: number) => void;
   resetActions: () => void;
   getTransactions: () => CreateProposalTransaction[];
@@ -29,7 +29,17 @@ export const useProposalActionsStore = create<ProposalActionsStore>()((set, get)
       ...state,
       actions: [...state.actions, action],
     })),
-  setProposalMetadata: proposalMetadata => set({ proposalMetadata }),
+  setProposalMetadata(field, value = '') {
+    set(state => {
+      const metadata =
+        state.proposalMetadata ?? ({ title: '', description: '' } as CreateProposalMetadata);
+      metadata[field] = value;
+      return {
+        ...state,
+        proposalMetadata: metadata,
+      };
+    });
+  },
   removeAction: actionIndex =>
     set(state => ({ actions: state.actions.filter((_, index) => index !== actionIndex) })),
   resetActions: () => set({ actions: [], proposalMetadata: undefined }),
