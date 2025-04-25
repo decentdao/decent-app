@@ -10,6 +10,7 @@ import { logError } from '../../helpers/errorLogging';
 import useSubmitProposal from '../../hooks/DAO/proposal/useSubmitProposal';
 import { useCurrentDAOKey } from '../../hooks/DAO/useCurrentDAOKey';
 import useCreateProposalSchema from '../../hooks/schemas/proposalBuilder/useCreateProposalSchema';
+import { useUnsavedChangesBlocker } from '../../hooks/useUnsavedChangesBlocker';
 import { useCanUserCreateProposal } from '../../hooks/utils/useCanUserSubmitProposal';
 import { ActionsExperience } from '../../pages/dao/proposals/actions/new/ActionsExperience';
 import { useStore } from '../../providers/App/AppProvider';
@@ -121,6 +122,16 @@ export function ProposalBuilder({
   const { canUserCreateProposal } = useCanUserCreateProposal();
   const { createProposalValidation } = useCreateProposalSchema();
 
+  useUnsavedChangesBlocker({
+    when:
+      initialValues.transactions.length > 0 ||
+      !!initialValues.proposalMetadata.title ||
+      !!initialValues.proposalMetadata.description,
+    onDiscardChanges: () => {
+      resetActions();
+      navigate(DAO_ROUTES.dao.relative(addressPrefix, safeAddress!));
+    },
+  });
   const successCallback = () => {
     if (safeAddress) {
       resetActions();
