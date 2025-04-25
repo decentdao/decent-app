@@ -4,7 +4,7 @@
   "gaslessVotingGettingStarted": "Per iniziare, copriamo i primi 0,1 {{symbol}} di spese per il gas. Potete ricaricare il vostro saldo nelle impostazioni del DAO.",
   "gaslessVotingLabelSettings": "Voti sponsorizzati",
   "gaslessVotingDescriptionSettings": "Creare un paymaster per sponsorizzare le commissioni di rete per le votazioni delle proposte.",
-  "gaslessStakingDescription": "È necessaria una puntata di {{amount}} {{symbol}} è necessario per abilitare il voto senza gas. Se il voto senza gas è disabilitato, può essere tolto dopo 1 giorno.",
+  "gaslessStakingDescription": "È richiesta una puntata di {{amount}} {{symbol}} è necessaria per abilitare il voto senza gas e sarà prelevata dalla tesoreria della DAO. Se il voto senza gas è disabilitato, gli asset possono essere stakati in qualsiasi momento e ritirati dopo 1 giorno.",
   "addGas": "Ricarica",
   "refillTank": "Ricarica Paymaster",
   "refillPaymasterAction": "Riempire il Paymaster con {{amount}} {{symbol}}",

@@ -54,7 +54,7 @@ export default function ProposalMetadata({
         placeholder={t('proposalTitlePlaceholder', { ns: 'proposal' })}
         isRequired
         value={proposalMetadata.title}
-        onChange={e => setProposalMetadata({ ...proposalMetadata, title: e.target.value })}
+        onChange={e => setProposalMetadata('title', e.target.value)}
         testId="metadata.title"
         maxLength={50}
       />
@@ -65,7 +65,7 @@ export default function ProposalMetadata({
         placeholder={t('proposalDescriptionPlaceholder', { ns: 'proposal' })}
         isRequired={false}
         value={proposalMetadata.description}
-        onChange={e => setProposalMetadata({ ...proposalMetadata, description: e.target.value })}
+        onChange={e => setProposalMetadata('description', e.target.value)}
         rows={12}
       />
       <InputComponent

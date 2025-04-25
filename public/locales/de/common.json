@@ -26,6 +26,7 @@
   "timelock": "Zeitschloss",
   "execution": "Ausführung",
   "move": "Verschieben",
+  "hours": "Stunden",
   "minutes": "Protokoll",
   "quorum": "Quorum",
   "deploy": "Bereitstellung von",
