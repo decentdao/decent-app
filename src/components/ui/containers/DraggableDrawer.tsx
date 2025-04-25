@@ -100,7 +100,7 @@ export default function DraggableDrawer({
         onClose();
       }}
       size="md"
-      onOverlayClick={onClose}
+      onOverlayClick={closeOnOverlayClick ? onClose : undefined}
       closeOnOverlayClick={closeOnOverlayClick}
     >
       <DrawerOverlay

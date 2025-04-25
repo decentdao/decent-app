@@ -392,7 +392,9 @@ export function ModalProvider({ children }: { children: ReactNode }) {
     current.type === ModalType.WITHDRAW_PAYMENT ||
     current.type === ModalType.CONFIRM_CANCEL_PAYMENT ||
     current.type === ModalType.ADD_PERMISSION ||
-    current.type === ModalType.CONFIRM_DELETE_STRATEGY
+    current.type === ModalType.CONFIRM_DELETE_STRATEGY ||
+    current.type === ModalType.GASLESS_VOTE_LOADING ||
+    current.type === ModalType.GASLESS_VOTE_SUCCESS
   ) {
     display = (
       <>
@@ -401,7 +403,7 @@ export function ModalProvider({ children }: { children: ReactNode }) {
             isOpen={isOpen}
             onClose={onSetClosed}
             onOpen={onOpen}
-            closeOnOverlayClick
+            closeOnOverlayClick={closeOnOverlayClick}
             headerContent={null}
           >
             {content}
@@ -409,6 +411,7 @@ export function ModalProvider({ children }: { children: ReactNode }) {
         </Show>
         <Show above="md">
           <ModalBase
+            closeOnOverlayClick={closeOnOverlayClick}
             title={title}
             warn={warn}
             isOpen={isOpen}
