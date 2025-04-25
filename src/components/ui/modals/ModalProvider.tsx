@@ -1,6 +1,6 @@
 import { Portal, Show, useDisclosure } from '@chakra-ui/react';
 import { FormikProps } from 'formik';
-import { createContext, ReactNode, useEffect, useMemo, useState } from 'react';
+import { createContext, ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Address } from 'viem';
 import { CreateProposalTransaction, ProposalTemplate } from '../../../types';
@@ -154,17 +154,21 @@ export function ModalProvider({ children }: { children: ReactNode }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { t } = useTranslation('modals');
 
+  const closeModal = useCallback(() => {
+    setCurrent({ type: ModalType.NONE, props: {} });
+    onClose();
+  }, [onClose]);
+
   useEffect(() => {
-    if (current.type != ModalType.NONE) onOpen();
-  }, [current.type, onOpen]);
+    if (current.type == ModalType.NONE) {
+      closeModal();
+    } else {
+      onOpen();
+    }
+  }, [current.type, onOpen, onClose, closeModal]);
 
   const { title, warn, content, onSetClosed, isSearchInputModal, size, closeOnOverlayClick } =
     useMemo<ModalUI>(() => {
-      const closeModal = () => {
-        setCurrent({ type: ModalType.NONE, props: {} });
-        onClose();
-      };
-
       let modalSize: ModalBaseSize = 'lg';
       let modalTitle: string | undefined;
       let hasWarning = false;
@@ -368,7 +372,7 @@ export function ModalProvider({ children }: { children: ReactNode }) {
         size: modalSize,
         closeOnOverlayClick: closeModalOnOverlayClick,
       };
-    }, [current, onClose, t]);
+    }, [closeModal, current.props, current.type, t]);
 
   let display = content ? (
     <ModalBase

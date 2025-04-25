@@ -268,6 +268,7 @@ const useCastVote = (proposalId: string, strategy: Address) => {
   }, [accountAbstraction, paymasterAddress, prepareGaslessVoteOperation, publicClient]);
 
   const gaslessVoteLoadingModal = useDecentModal(ModalType.GASLESS_VOTE_LOADING);
+  const closeModal = useDecentModal(ModalType.NONE);
 
   const castGaslessVote = useCallback(
     async ({
@@ -299,10 +300,13 @@ const useCastVote = (proposalId: string, strategy: Address) => {
         });
 
         bundlerClient.waitForUserOperationReceipt({ hash }).then(() => {
+          closeModal();
+
           setCastGaslessVotePending(false);
           onSuccess();
         });
       } catch (error: any) {
+        closeModal();
         setCastGaslessVotePending(false);
 
         if (error.name === 'UserRejectedRequestError') {
@@ -313,7 +317,7 @@ const useCastVote = (proposalId: string, strategy: Address) => {
         onError(error);
       }
     },
-    [prepareGaslessVoteOperation, prepareCastVoteData, gaslessVoteLoadingModal, t],
+    [prepareGaslessVoteOperation, prepareCastVoteData, gaslessVoteLoadingModal, closeModal, t],
   );
 
   return {
