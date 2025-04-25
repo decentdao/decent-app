@@ -155,6 +155,7 @@
   "metadataFailedParsePlaceholder": "未知 - 元数据解析失败",
   "multisigNonceDuplicateErrorMessage": "已存在具有相同 nce 的事务",
   "createFromScratch": "从零开始",
+  "continueProposal": "继续建议 ({{numerOfPendingActions}})",
   "browseTemplates": "浏览模板",
   "useDapps": "使用 dApps",
   "tranchedStream": "转录",

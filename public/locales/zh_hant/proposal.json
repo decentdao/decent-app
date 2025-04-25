@@ -155,6 +155,7 @@
   "metadataFailedParsePlaceholder": "未知-解析元資料失敗",
   "multisigNonceDuplicateErrorMessage": "具有相同非核心密碼的交易已經存在",
   "createFromScratch": "從零開始",
+  "continueProposal": "繼續建議 ({{numerOfPendingActions}})",
   "browseTemplates": "瀏覽範本",
   "useDapps": "使用 dApps",
   "tranchedStream": "轉換",
