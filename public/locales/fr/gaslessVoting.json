@@ -18,7 +18,7 @@
   "availableBalance": "{{balance}}",
   "insufficientPaymasterBalance": "Le payeur DAO n'a pas assez de solde pour sponsoriser votre vote en ce moment.",
   "voteIsSponsoredLoading": "Votre vote sponsorisé est en cours de traitement...",
-  "voteIsSponsoredTitle": "Votre vote est parrainé.",
+  "voteWasSponsoredTitle": "Votre vote a été parrainé.",
   "voteIsSponsoredSubtitle": "Ne payez pas de frais pour ce vote !",
   "userRejectedSignature": "L'utilisateur a refusé de signer.",
   "directDeposit": "Dépôt direct",

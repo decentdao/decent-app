@@ -18,7 +18,7 @@
   "availableBalance": "{{balance}}",
   "insufficientPaymasterBalance": "Der DAO-Zahlmeister hat derzeit nicht genug Guthaben, um Ihre Stimme zu unterstützen.",
   "voteIsSponsoredLoading": "Ihre gesponserte Stimme wird bearbeitet...",
-  "voteIsSponsoredTitle": "Ihre Stimme wird gesponsert.",
+  "voteWasSponsoredTitle": "Ihre Stimme wurde gesponsert.",
   "voteIsSponsoredSubtitle": "Genießen Sie die Gebührenfreiheit für diese Abstimmung!",
   "userRejectedSignature": "Der Benutzer lehnte eine Unterschrift ab.",
   "directDeposit": "Direkt einzahlen",

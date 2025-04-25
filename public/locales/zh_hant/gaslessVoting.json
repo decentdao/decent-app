@@ -18,7 +18,7 @@
   "availableBalance": "{{balance}}",
   "insufficientPaymasterBalance": "DAO付費者目前沒有足夠的餘額贊助您的投票。",
   "voteIsSponsoredLoading": "您的贊助投票正在處理中...",
-  "voteIsSponsoredTitle": "您的投票得到贊助。",
+  "voteWasSponsoredTitle": "您的投票獲得贊助。",
   "voteIsSponsoredSubtitle": "享受零費用投票！",
   "userRejectedSignature": "使用者拒絕簽名。",
   "directDeposit": "直接存款",

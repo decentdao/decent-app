@@ -18,7 +18,7 @@
   "availableBalance": "{{balance}}.",
   "insufficientPaymasterBalance": "У платіжного адміністратора DAO зараз недостатньо коштів, щоб спонсорувати ваш голос.",
   "voteIsSponsoredLoading": "Ваш спонсорський голос обробляється...",
-  "voteIsSponsoredTitle": "Ваш голос спонсорується.",
+  "voteWasSponsoredTitle": "Ваш голос був підтриманий.",
   "voteIsSponsoredSubtitle": "Насолоджуйтесь нульовою комісією за це голосування!",
   "userRejectedSignature": "Користувач відмовився від підпису.",
   "directDeposit": "Поповнюйте безпосередньо",
