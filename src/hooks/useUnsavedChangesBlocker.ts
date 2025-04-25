@@ -37,4 +37,15 @@ export function useUnsavedChangesBlocker({
       modalRef.current = false;
     }
   }, [blocker.state, openModal]);
+
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (!when) return;
+      e.preventDefault();
+    };
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, [when]);
 }
