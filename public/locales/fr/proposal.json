@@ -155,6 +155,7 @@
   "metadataFailedParsePlaceholder": "Inconnu - Échec de l'analyse des métadonnées",
   "multisigNonceDuplicateErrorMessage": "Une transaction avec le même nonce existe déjà",
   "createFromScratch": "Partir de zéro",
+  "continueProposal": "Poursuivre la proposition ({{numerOfPendingActions}})",
   "browseTemplates": "Parcourir les modèles",
   "useDapps": "Utiliser les dApps",
   "tranchedStream": "Tranché",

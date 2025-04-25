@@ -155,6 +155,7 @@
   "metadataFailedParsePlaceholder": "Unbekannt - Metadaten konnten nicht geparst werden",
   "multisigNonceDuplicateErrorMessage": "Transaktion mit der gleichen Nonce existiert bereits",
   "createFromScratch": "Ganz von vorne anfangen",
+  "continueProposal": "Vorschlag fortsetzen ({{numerOfPendingActions}})",
   "browseTemplates": "Vorlagen durchsuchen",
   "useDapps": "dApps verwenden",
   "tranchedStream": "Tranchiert",

@@ -4,7 +4,7 @@
   "gaslessVotingGettingStarted": "To get you started, we're covering your first 0.1 {{symbol}} of gas fees. You can top up your balance in your DAO settings.",
   "gaslessVotingLabelSettings": "Sponsored Votes",
   "gaslessVotingDescriptionSettings": "Create a paymaster to sponsor network fees for proposal votes.",
-  "gaslessStakingDescription": "A staking of {{amount}} {{symbol}} is required to enable gasless voting. It can be unstaked after 1 day if gasless voting is disabled.",
+  "gaslessStakingDescription": "A staking of {{amount}} {{symbol}} is required to enable gasless voting. It can be unstaked anytime and withdrawn after 1 day after that if gasless voting is disabled.",
   "addGas": "Refill",
   "refillTank": "Refill Paymaster",
   "refillPaymasterAction": "Refill Paymaster with {{amount}} {{symbol}}",
