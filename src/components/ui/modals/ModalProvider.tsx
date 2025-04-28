@@ -23,6 +23,7 @@ import { ModalBase, ModalBaseSize } from './ModalBase';
 import PaymentCancelConfirmModal from './PaymentCancelConfirmModal';
 import { PaymentWithdrawModal } from './PaymentWithdrawModal';
 import ProposalTemplateModal from './ProposalTemplateModal';
+import { SafeProposalDappsModal } from './SafeProposalDappsModal';
 import { SendAssetsModal } from './SendAssetsModal';
 import StakeModal from './Stake';
 import { UnsavedChangesWarningContent } from './UnsavedChangesWarningContent';
@@ -48,6 +49,7 @@ export enum ModalType {
   GASLESS_VOTE_SUCCESS,
   CONFIRM_TRANSACTION,
   TRANSACTION_BUILDER,
+  DAPPS_BROWSER,
 }
 
 export type CurrentModal = {
@@ -112,6 +114,7 @@ export type ModalPropsTypes = {
   [ModalType.TRANSACTION_BUILDER]: {
     onSubmit?: (transactionBuilderData: FormikProps<CreateProposalTransaction[]>['values']) => void;
   };
+  [ModalType.DAPPS_BROWSER]: {};
 };
 
 export interface IModalContext {
@@ -340,6 +343,10 @@ export function ModalProvider({ children }: { children: ReactNode }) {
             onClose={closeModal}
           />
         );
+        modalSize = '2xl';
+        break;
+      case ModalType.DAPPS_BROWSER:
+        modalContent = <SafeProposalDappsModal onClose={closeModal} />;
         modalSize = '2xl';
         break;
       case ModalType.NONE:

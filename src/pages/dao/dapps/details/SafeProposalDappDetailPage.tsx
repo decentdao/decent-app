@@ -13,7 +13,6 @@ import { InfoBoxLoader } from '../../../../components/ui/loaders/InfoBoxLoader';
 import { ModalType } from '../../../../components/ui/modals/ModalProvider';
 import { useDecentModal } from '../../../../components/ui/modals/useDecentModal';
 import PageHeader from '../../../../components/ui/page/Header/PageHeader';
-import { DAO_ROUTES } from '../../../../constants/routes';
 import { decodeTransactionsWithABI } from '../../../../helpers/transactionDecoder';
 import { useSupportedDapps } from '../../../../hooks/DAO/loaders/useSupportedDapps';
 import { useABI } from '../../../../hooks/utils/useABI';
@@ -103,11 +102,9 @@ export function SafeProposalDappDetailPage() {
     amplitude.track(analyticsEvents.ProposalDappsPageOpened);
   }, []);
 
-  const { t } = useTranslation('breadcrumbs');
   const { chain } = useNetworkConfigStore();
   const { loadABI } = useABI();
   const { safe } = useDaoInfoStore();
-  const { addressPrefix } = useNetworkConfigStore();
   const { dapps } = useSupportedDapps(chain.id);
   const [searchParams] = useSearchParams();
 
@@ -141,10 +138,6 @@ export function SafeProposalDappDetailPage() {
       <PageHeader
         title={appName}
         breadcrumbs={[
-          {
-            terminus: t('proposalDapps'),
-            path: DAO_ROUTES.proposalDapps.relative(addressPrefix, safeAddress),
-          },
           {
             terminus: appName,
             path: '',

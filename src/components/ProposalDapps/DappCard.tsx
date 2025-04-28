@@ -13,6 +13,7 @@ type DappCardProps = {
   description: string;
   categories: string[];
   safeAddress: string;
+  onClose: () => void;
 };
 
 export default function DappCard({
@@ -22,6 +23,7 @@ export default function DappCard({
   description,
   categories,
   safeAddress,
+  onClose,
 }: DappCardProps) {
   const navigate = useNavigate();
   const { addressPrefix } = useNetworkConfigStore();
@@ -29,7 +31,10 @@ export default function DappCard({
   return (
     <ContentBox
       containerBoxProps={{ flex: '0 0 calc(33.333333% - 0.6666666rem)', my: '0' }}
-      onClick={() => navigate(DAO_ROUTES.proposalDapp.relative(addressPrefix, safeAddress, appUrl))}
+      onClick={() => {
+        onClose();
+        navigate(DAO_ROUTES.proposalDapp.relative(addressPrefix, safeAddress, appUrl));
+      }}
     >
       <Flex
         justifyContent="center"
