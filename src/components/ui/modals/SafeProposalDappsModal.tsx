@@ -18,7 +18,10 @@ export function SafeProposalDappsModal({ onClose }: { onClose: () => void }) {
 
   return (
     <div>
-      <Flex justifyContent="space-between">
+      <Flex
+        justifyContent="space-between"
+        gap="6rem"
+      >
         <div>
           <Text
             textStyle="heading-large"
