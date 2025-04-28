@@ -1,25 +1,23 @@
-import { Box } from '@chakra-ui/react';
+import { Box, CloseButton, Flex, Text } from '@chakra-ui/react';
 import { useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useSearchParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import { isAddress } from 'viem';
-import { SafeInjectContext } from '../../../../components/SafeInjectIframe/context/SafeInjectContext';
-import { SafeInjectProvider } from '../../../../components/SafeInjectIframe/context/SafeInjectProvider';
-import useWalletConnect from '../../../../components/SafeInjectIframe/hooks/useWalletConnect';
-import { InputComponent } from '../../../../components/ui/forms/InputComponent';
-import { InfoBoxLoader } from '../../../../components/ui/loaders/InfoBoxLoader';
-import { ModalType } from '../../../../components/ui/modals/ModalProvider';
-import { useDecentModal } from '../../../../components/ui/modals/useDecentModal';
-import PageHeader from '../../../../components/ui/page/Header/PageHeader';
-import { decodeTransactionsWithABI } from '../../../../helpers/transactionDecoder';
-import { useSupportedDapps } from '../../../../hooks/DAO/loaders/useSupportedDapps';
-import { useABI } from '../../../../hooks/utils/useABI';
-import { useDebounce } from '../../../../hooks/utils/useDebounce';
-import { useNetworkConfigStore } from '../../../../providers/NetworkConfig/useNetworkConfigStore';
-import { useDaoInfoStore } from '../../../../store/daoInfo/useDaoInfoStore';
-import { CreateProposalTransaction } from '../../../../types';
-import LoadingProblem from '../../../LoadingProblem';
+import { decodeTransactionsWithABI } from '../../../helpers/transactionDecoder';
+import { useSupportedDapps } from '../../../hooks/DAO/loaders/useSupportedDapps';
+import { useABI } from '../../../hooks/utils/useABI';
+import { useDebounce } from '../../../hooks/utils/useDebounce';
+import LoadingProblem from '../../../pages/LoadingProblem';
+import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
+import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
+import { CreateProposalTransaction } from '../../../types';
+import { SafeInjectContext } from '../../SafeInjectIframe/context/SafeInjectContext';
+import { SafeInjectProvider } from '../../SafeInjectIframe/context/SafeInjectProvider';
+import useWalletConnect from '../../SafeInjectIframe/hooks/useWalletConnect';
+import { InputComponent } from '../forms/InputComponent';
+import { InfoBoxLoader } from '../loaders/InfoBoxLoader';
+import { ModalType } from './ModalProvider';
+import { useDecentModal } from './useDecentModal';
 
 function Iframe({ appUrl, enableWalletConnect }: { appUrl: string; enableWalletConnect: boolean }) {
   const { t } = useTranslation(['proposalDapps']);
@@ -95,14 +93,18 @@ function Iframe({ appUrl, enableWalletConnect }: { appUrl: string; enableWalletC
   );
 }
 
-export function SafeProposalDappDetailPage() {
+export function SafeProposalDappDetailModal({
+  appUrl,
+  onClose,
+}: {
+  appUrl: string;
+  onClose: () => void;
+}) {
   const { chain } = useNetworkConfigStore();
   const { loadABI } = useABI();
   const { safe } = useDaoInfoStore();
   const { dapps } = useSupportedDapps(chain.id);
-  const [searchParams] = useSearchParams();
 
-  const appUrl = searchParams.get('appUrl') || '';
   const safeAddress = safe?.address;
   const dapp = dapps.find(d => d.url === appUrl);
   const appName = dapp?.name || appUrl;
@@ -129,15 +131,20 @@ export function SafeProposalDappDetailPage() {
 
   return (
     <div>
-      <PageHeader
-        title={appName}
-        breadcrumbs={[
-          {
-            terminus: appName,
-            path: '',
-          },
-        ]}
-      ></PageHeader>
+      <Flex
+        justifyContent="space-between"
+        gap="6rem"
+      >
+        <Text
+          textStyle="heading-large"
+          color="white-0"
+        >
+          {appName}
+        </Text>
+
+        <CloseButton onClick={onClose} />
+      </Flex>
+
       <SafeInjectProvider
         defaultAddress={safeAddress}
         defaultAppUrl={appUrl}

@@ -1,9 +1,8 @@
 import { Avatar, Box, Flex, Icon, Tag, TagLabel, Text } from '@chakra-ui/react';
 import { Dot } from '@phosphor-icons/react';
-import { useNavigate } from 'react-router-dom';
-import { DAO_ROUTES } from '../../constants/routes';
-import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
 import ContentBox from '../ui/containers/ContentBox';
+import { ModalType } from '../ui/modals/ModalProvider';
+import { useDecentModal } from '../ui/modals/useDecentModal';
 import Markdown from '../ui/proposal/Markdown';
 import Divider from '../ui/utils/Divider';
 
@@ -13,7 +12,6 @@ type DappCardProps = {
   iconUrl: string;
   description: string;
   categories: string[];
-  safeAddress: string;
   onClose: () => void;
 };
 
@@ -23,11 +21,11 @@ export default function DappCard({
   iconUrl,
   description,
   categories,
-  safeAddress,
   onClose,
 }: DappCardProps) {
-  const navigate = useNavigate();
-  const { addressPrefix } = useNetworkConfigStore();
+  const openDappBrowserModal = useDecentModal(ModalType.DAPP_BROWSER, {
+    appUrl,
+  });
 
   return (
     <ContentBox
@@ -42,7 +40,7 @@ export default function DappCard({
       }}
       onClick={() => {
         onClose();
-        navigate(DAO_ROUTES.proposalDapp.relative(addressPrefix, safeAddress, appUrl));
+        openDappBrowserModal();
       }}
     >
       <Flex mb="0.5rem">

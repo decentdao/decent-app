@@ -23,6 +23,7 @@ import { ModalBase, ModalBaseSize } from './ModalBase';
 import PaymentCancelConfirmModal from './PaymentCancelConfirmModal';
 import { PaymentWithdrawModal } from './PaymentWithdrawModal';
 import ProposalTemplateModal from './ProposalTemplateModal';
+import { SafeProposalDappDetailModal } from './SafeProposalDappDetailModal';
 import { SafeProposalDappsModal } from './SafeProposalDappsModal';
 import { SendAssetsModal } from './SendAssetsModal';
 import StakeModal from './Stake';
@@ -50,6 +51,7 @@ export enum ModalType {
   CONFIRM_TRANSACTION,
   TRANSACTION_BUILDER,
   DAPPS_BROWSER,
+  DAPP_BROWSER,
 }
 
 export type CurrentModal = {
@@ -115,6 +117,9 @@ export type ModalPropsTypes = {
     onSubmit?: (transactionBuilderData: FormikProps<CreateProposalTransaction[]>['values']) => void;
   };
   [ModalType.DAPPS_BROWSER]: {};
+  [ModalType.DAPP_BROWSER]: {
+    appUrl: string;
+  };
 };
 
 export interface IModalContext {
@@ -347,6 +352,15 @@ export function ModalProvider({ children }: { children: ReactNode }) {
         break;
       case ModalType.DAPPS_BROWSER:
         modalContent = <SafeProposalDappsModal onClose={closeModal} />;
+        modalSize = '2xl';
+        break;
+      case ModalType.DAPP_BROWSER:
+        modalContent = (
+          <SafeProposalDappDetailModal
+            appUrl={current.props.appUrl}
+            onClose={closeModal}
+          />
+        );
         modalSize = '2xl';
         break;
       case ModalType.NONE:

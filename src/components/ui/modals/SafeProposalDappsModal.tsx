@@ -54,7 +54,6 @@ export function SafeProposalDappsModal({ onClose }: { onClose: () => void }) {
               iconUrl={dapp.iconUrl}
               description={dapp.description}
               categories={dapp.tags}
-              safeAddress={safeAddress}
               onClose={onClose}
             />
           ))
