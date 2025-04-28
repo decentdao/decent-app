@@ -17,6 +17,7 @@ import { ConfirmTransactionModal } from './ConfirmTransactionModal';
 import { ConfirmUrlModal } from './ConfirmUrlModal';
 import { DelegateModal } from './DelegateModal';
 import ForkProposalTemplateModal from './ForkProposalTemplateModal';
+import { GaslessVoteFailedModal } from './GaslessVoting/GaslessVoteFailedModal';
 import { GaslessVoteLoadingModal } from './GaslessVoting/GaslessVoteLoadingModal';
 import { GaslessVoteSuccessModal } from './GaslessVoting/GaslessVoteSuccessModal';
 import { RefillGasData, RefillGasTankModal } from './GaslessVoting/RefillGasTankModal';
@@ -48,6 +49,7 @@ export enum ModalType {
   REFILL_GAS,
   GASLESS_VOTE_LOADING,
   GASLESS_VOTE_SUCCESS,
+  GASLESS_VOTE_FAILED,
   CONFIRM_TRANSACTION,
   TRANSACTION_BUILDER,
 }
@@ -108,6 +110,10 @@ export type ModalPropsTypes = {
   };
   [ModalType.GASLESS_VOTE_LOADING]: {};
   [ModalType.GASLESS_VOTE_SUCCESS]: {};
+  [ModalType.GASLESS_VOTE_FAILED]: {
+    onRetry: () => void;
+    onFallback: () => void;
+  };
   [ModalType.CONFIRM_TRANSACTION]: {
     appName: string;
     transactionArray: CreateProposalTransaction[];
@@ -312,6 +318,16 @@ export function ModalProvider({ children }: { children: ReactNode }) {
 
         case ModalType.GASLESS_VOTE_SUCCESS:
           modalContent = <GaslessVoteSuccessModal close={closeModal} />;
+          modalSize = 'md';
+          break;
+        case ModalType.GASLESS_VOTE_FAILED:
+          modalContent = (
+            <GaslessVoteFailedModal
+              onCancel={closeModal}
+              onRetry={current.props.onRetry}
+              onFallback={current.props.onFallback}
+            />
+          );
           modalSize = 'md';
           break;
         case ModalType.GASLESS_VOTE_LOADING:

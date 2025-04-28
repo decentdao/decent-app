@@ -192,6 +192,5 @@
   "proposalSummaryNotEnoughVotingPower": "Ваше право голоса не соответствовало требованиям для голосования по этому предложению, когда оно было создано.",
   "proposalSummaryNotEnoughVotingPowerSecondary": "Делегируйте жетоны для голосования на свой адрес, чтобы иметь право голосовать по будущим предложениям.",
   "castVoteError": "Не удалось отправить голос",
-  "castVoteErrorTempAutoFallback": ". Возвращаясь к платному голосованию...",
   "labelAddTransactionsToProposal": "Добавить транзакции в предложение"
 }

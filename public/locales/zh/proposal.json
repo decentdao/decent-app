@@ -192,6 +192,5 @@
   "proposalSummaryNotEnoughVotingPower": "您的投票权不符合该提案设立时的投票要求。",
   "proposalSummaryNotEnoughVotingPowerSecondary": "将投票代币委托给您的地址，以便有资格对未来的提案进行投票。",
   "castVoteError": "投票失败",
-  "castVoteErrorTempAutoFallback": ".退回到有偿投票......",
   "labelAddTransactionsToProposal": "将交易添加到提案中"
 }
