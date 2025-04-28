@@ -74,7 +74,7 @@ function GaslessVotingToggleContent({
               textStyle={isSettings ? 'labels-large' : 'helper-text'}
               color="neutral-7"
             >
-              {t('gaslessStakingDescription', {
+              {t('gaslessStakingRequirement', {
                 amount: formattedMinStakeAmount,
                 symbol: nativeCurrency.symbol,
               })}

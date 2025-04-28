@@ -4,7 +4,7 @@
   "gaslessVotingGettingStarted": "まず始めに、最初の0.1{{symbol}}のガス代を負担します。DAOの設定で残高を増やすことができます。",
   "gaslessVotingLabelSettings": "スポンサー投票",
   "gaslessVotingDescriptionSettings": "プロポーザル投票のネットワーク手数料をスポンサーするペイマスターを作る。",
-  "gaslessStakingDescription": "{{amount}} {{symbol}} のステーキングはガスレス投票を有効にするために必要であり、DAOのトレジャリーから引き出されます。ガスレス投票が無効化された場合、資産はいつでもアンステークでき、1日後に引き出すことができます。",
+  "gaslessStakingRequirement": "{{amount}}のステーキングが必要である。{{symbol}ガスなし投票を有効にするには、  } のステーキングが必要である。ガスなし投票を無効にした場合は、1日後に杭を抜くことができる。",
   "addGas": "リフィル",
   "refillTank": "リフィル・ペイマスター",
   "refillPaymasterAction": "ペイマスターに {{amount}} を補充する。{{symbol}}",

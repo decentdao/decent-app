@@ -4,7 +4,7 @@
   "gaslessVotingGettingStarted": "為了讓您開始使用，我們會支付您的第一筆 0.1 {{symbol}}的汽油費。您可以在您的DAO設定中為您的餘額充值。",
   "gaslessVotingLabelSettings": "贊助投票",
   "gaslessVotingDescriptionSettings": "建立付費者，贊助提案投票的網路費用。",
-  "gaslessStakingDescription": "{{amount}}{{symbol}} 的押记是启用无矿工费投票的必要条件。如果无矿工费投票已停用，则可随时取消质押，并在 1 天后提取。",
+  "gaslessStakingRequirement": "{{amount}} } 的押記。{{symbol}} 是啟用無瓦斯投票的必要條件。如果禁用無瓦斯投票，1 天後可以取消釘住。",
   "addGas": "筆芯",
   "refillTank": "補充款主",
   "refillPaymasterAction": "用{{amount}}填充Paymaster{{symbol}}",
