@@ -13,7 +13,6 @@ import AddStrategyPermissionModal from './AddStrategyPermissionModal';
 import { AirdropData, AirdropModal } from './AirdropModal/AirdropModal';
 import { ConfirmDeleteStrategyModal } from './ConfirmDeleteStrategyModal';
 import { ConfirmModifyGovernanceModal } from './ConfirmModifyGovernanceModal';
-import { ConfirmTransactionModal } from './ConfirmTransactionModal';
 import { ConfirmUrlModal } from './ConfirmUrlModal';
 import { DelegateModal } from './DelegateModal';
 import ForkProposalTemplateModal from './ForkProposalTemplateModal';
@@ -48,7 +47,6 @@ export enum ModalType {
   AIRDROP,
   REFILL_GAS,
   GASLESS_VOTE_SUCCESS,
-  CONFIRM_TRANSACTION,
   TRANSACTION_BUILDER,
   DAPPS_BROWSER,
   DAPP_BROWSER,
@@ -109,10 +107,6 @@ export type ModalPropsTypes = {
     onSubmit: (refillGasData: RefillGasData) => void;
   };
   [ModalType.GASLESS_VOTE_SUCCESS]: {};
-  [ModalType.CONFIRM_TRANSACTION]: {
-    appName: string;
-    transactionArray: CreateProposalTransaction[];
-  };
   [ModalType.TRANSACTION_BUILDER]: {
     onSubmit?: (transactionBuilderData: FormikProps<CreateProposalTransaction[]>['values']) => void;
   };
@@ -323,17 +317,6 @@ export function ModalProvider({ children }: { children: ReactNode }) {
             }}
           />
         );
-        break;
-      case ModalType.CONFIRM_TRANSACTION:
-        modalTitle = t('confirmTransactionTitle');
-        modalContent = (
-          <ConfirmTransactionModal
-            appName={current.props.appName}
-            transactionArray={current.props.transactionArray}
-            close={closeModal}
-          />
-        );
-        modalSize = 'xl';
         break;
       case ModalType.TRANSACTION_BUILDER:
         modalTitle = t('transactionBuilderTitle');

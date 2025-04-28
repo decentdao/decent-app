@@ -1,23 +1,23 @@
 import { Box, CloseButton, Flex, Text } from '@chakra-ui/react';
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { isAddress } from 'viem';
+import { DAO_ROUTES } from '../../../constants/routes';
 import { decodeTransactionsWithABI } from '../../../helpers/transactionDecoder';
 import { useSupportedDapps } from '../../../hooks/DAO/loaders/useSupportedDapps';
 import { useABI } from '../../../hooks/utils/useABI';
 import { useDebounce } from '../../../hooks/utils/useDebounce';
-import LoadingProblem from '../../../pages/LoadingProblem';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
+import { useProposalActionsStore } from '../../../store/actions/useProposalActionsStore';
 import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
-import { CreateProposalTransaction } from '../../../types';
+import { CreateProposalActionData, ProposalActionType } from '../../../types';
 import { SafeInjectContext } from '../../SafeInjectIframe/context/SafeInjectContext';
 import { SafeInjectProvider } from '../../SafeInjectIframe/context/SafeInjectProvider';
 import useWalletConnect from '../../SafeInjectIframe/hooks/useWalletConnect';
 import { InputComponent } from '../forms/InputComponent';
 import { InfoBoxLoader } from '../loaders/InfoBoxLoader';
-import { ModalType } from './ModalProvider';
-import { useDecentModal } from './useDecentModal';
 
 function Iframe({ appUrl, enableWalletConnect }: { appUrl: string; enableWalletConnect: boolean }) {
   const { t } = useTranslation(['proposalDapps']);
@@ -100,34 +100,18 @@ export function SafeProposalDappDetailModal({
   appUrl: string;
   onClose: () => void;
 }) {
-  const { chain } = useNetworkConfigStore();
+  const { t } = useTranslation(['common']);
+  const { chain, addressPrefix } = useNetworkConfigStore();
   const { loadABI } = useABI();
   const { safe } = useDaoInfoStore();
   const { dapps } = useSupportedDapps(chain.id);
+  const { addAction, resetActions } = useProposalActionsStore();
+  const navigate = useNavigate();
 
   const safeAddress = safe?.address;
   const dapp = dapps.find(d => d.url === appUrl);
   const appName = dapp?.name || appUrl;
-
-  const [decodedTransactions, setDecodedTransactions] = useState<CreateProposalTransaction[]>([]);
-  const openConfirmTransactionModal = useDecentModal(ModalType.CONFIRM_TRANSACTION, {
-    appName,
-    transactionArray: decodedTransactions,
-  });
-
-  useEffect(() => {
-    if (decodedTransactions.length > 0) {
-      openConfirmTransactionModal();
-      setDecodedTransactions([]);
-    }
-  }, [decodedTransactions, openConfirmTransactionModal]);
-
-  if (!safeAddress) {
-    return null;
-  }
-  if (!appUrl) {
-    return <LoadingProblem type="badQueryParamAppUrl" />;
-  }
+  const dappLabel = t('dappIntegration', { appName });
 
   return (
     <div>
@@ -152,11 +136,26 @@ export function SafeProposalDappDetailModal({
         onTransactionsReceived={transactions => {
           (async () => {
             if (transactions && transactions.length > 0) {
-              const { decodedTransactions: decoded } = await decodeTransactionsWithABI(
+              const { decodedTransactions } = await decodeTransactionsWithABI(
                 transactions,
                 loadABI,
               );
-              setDecodedTransactions(decoded);
+
+              if (!safe?.address) {
+                return;
+              }
+
+              const action: CreateProposalActionData = {
+                actionType: ProposalActionType.DAPP_INTEGRATION,
+                transactions: decodedTransactions,
+              };
+              resetActions();
+              addAction({
+                ...action,
+                content: <Text>{dappLabel}</Text>,
+              });
+              onClose();
+              navigate(DAO_ROUTES.proposalWithActionsNew.relative(addressPrefix, safe.address));
             }
           })();
         }}
