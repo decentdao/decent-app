@@ -1,4 +1,3 @@
-import * as amplitude from '@amplitude/analytics-browser';
 import { Box } from '@chakra-ui/react';
 import { useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -17,7 +16,6 @@ import { decodeTransactionsWithABI } from '../../../../helpers/transactionDecode
 import { useSupportedDapps } from '../../../../hooks/DAO/loaders/useSupportedDapps';
 import { useABI } from '../../../../hooks/utils/useABI';
 import { useDebounce } from '../../../../hooks/utils/useDebounce';
-import { analyticsEvents } from '../../../../insights/analyticsEvents';
 import { useNetworkConfigStore } from '../../../../providers/NetworkConfig/useNetworkConfigStore';
 import { useDaoInfoStore } from '../../../../store/daoInfo/useDaoInfoStore';
 import { CreateProposalTransaction } from '../../../../types';
@@ -98,10 +96,6 @@ function Iframe({ appUrl, enableWalletConnect }: { appUrl: string; enableWalletC
 }
 
 export function SafeProposalDappDetailPage() {
-  useEffect(() => {
-    amplitude.track(analyticsEvents.ProposalDappsPageOpened);
-  }, []);
-
   const { chain } = useNetworkConfigStore();
   const { loadABI } = useABI();
   const { safe } = useDaoInfoStore();
