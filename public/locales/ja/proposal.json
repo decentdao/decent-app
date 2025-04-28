@@ -155,6 +155,7 @@
   "metadataFailedParsePlaceholder": "不明 - メタデータの解析に失敗しました。",
   "multisigNonceDuplicateErrorMessage": "同じnonceを持つトランザクションがすでに存在する",
   "createFromScratch": "ゼロから始める",
+  "continueProposal": "提案を続ける ({{numerOfPendingActions}})",
   "browseTemplates": "テンプレートを見る",
   "useDapps": "dAppsを使う",
   "tranchedStream": "トランザム",

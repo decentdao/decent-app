@@ -26,6 +26,7 @@
   "timelock": "Bloqueio de tempo",
   "execution": "Execução",
   "move": "Mover",
+  "hours": "Horas",
   "minutes": "Minutos",
   "quorum": "Quórum",
   "deploy": "Implantar",

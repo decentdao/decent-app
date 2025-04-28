@@ -1,7 +1,8 @@
-import { getSDKVersion, Methods, RPCPayload } from '@safe-global/safe-apps-sdk';
+import { ChainInfo, getSDKVersion, Methods, RPCPayload } from '@safe-global/safe-apps-sdk';
 import { PropsWithChildren, useState, useRef, useCallback, useEffect } from 'react';
 import { Address, BlockTag, getAddress, Hash } from 'viem';
 import useNetworkPublicClient from '../../../hooks/useNetworkPublicClient';
+import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
 import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
 import { useAppCommunicator } from '../hooks/useAppCommunicator';
 import { InterfaceMessageIds, InterfaceMessageProps, RequestId, TransactionWithId } from '../types';
@@ -40,6 +41,7 @@ export function SafeInjectProvider({
     },
     [onAppConnected],
   );
+  const { chain } = useNetworkConfigStore();
   const publicClient = useNetworkPublicClient();
   const [latestTransactions, setLatestTransactions] = useState<TransactionWithId[]>([]);
   const receivedTransactions = useCallback(
@@ -94,6 +96,21 @@ export function SafeInjectProvider({
         ret.owners = safe.owners;
         ret.threshold = safe.threshold;
       }
+      return ret;
+    });
+
+    communicator?.on(Methods.getChainInfo, async () => {
+      const ret: ChainInfo = {
+        chainId: chainId.toString(),
+        nativeCurrency: { ...chain.nativeCurrency, logoUri: '' },
+        chainName: chain.name,
+        shortName: chain.name,
+        blockExplorerUriTemplate: {
+          address: '',
+          txHash: '',
+          api: chain.blockExplorers?.default.url || '',
+        },
+      };
       return ret;
     });
 
@@ -207,6 +224,9 @@ export function SafeInjectProvider({
     receivedTransactions,
     receivedConnection,
     safe,
+    chain.nativeCurrency,
+    chain.name,
+    chain.blockExplorers?.default.url,
   ]);
 
   return (

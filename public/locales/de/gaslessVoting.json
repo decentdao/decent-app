@@ -4,7 +4,7 @@
   "gaslessVotingGettingStarted": "Um Ihnen den Einstieg zu erleichtern, übernehmen wir die ersten 0,1 {{symbol}} an Gasgebühren. Sie können Ihr Guthaben in Ihren DAO-Einstellungen aufladen.",
   "gaslessVotingLabelSettings": "Gesponserte Abstimmungen",
   "gaslessVotingDescriptionSettings": "Einrichtung eines Zahlungsverkehrsdienstleisters zur Finanzierung von Netzgebühren für die Abstimmung über Vorschläge.",
-  "gaslessStakingDescription": "Ein Einsatz von {{amount}} {{symbol}} ist erforderlich, um die gaslose Abstimmung zu aktivieren. Der Einsatz kann nach 1 Tag wieder aufgehoben werden, wenn die gaslose Abstimmung deaktiviert ist.",
+  "gaslessStakingDescription": "Eine Einlage von {{amount}} {{symbol}} ist erforderlich, um die gaslose Abstimmung zu ermöglichen, und wird aus der DAO-Schatzkammer entnommen. Wenn das gaslose Voting deaktiviert ist, können die Vermögenswerte jederzeit entstaked und nach einem Tag eingezogen werden.",
   "addGas": "Nachfüllen",
   "refillTank": "Nachfüllen Paymaster",
   "refillPaymasterAction": "Paymaster mit {{amount}} auffüllen {{symbol}}",

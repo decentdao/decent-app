@@ -5,5 +5,6 @@
   "transferAssetsSub": "Erstellen Sie einmalige Zahlungen.",
   "comingSoon": "Bald kommen ...",
   "comingSoonSub": "Weitere Aktionen unterwegs.",
-  "proposalBuilderBatch": "Stapel: {{numOfTransactions}} Transaktionen"
+  "transactionBuilderActionCard_single": "Transaction Builder: Ausführen {{ functionName }} auf {{ targetAddress }}",
+  "transactionBuilderActionCard_multiple": "Transaction Builder: Batch {{ numOfTransactions }} Transaktionen"
 }

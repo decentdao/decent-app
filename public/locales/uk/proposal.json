@@ -155,6 +155,7 @@
   "metadataFailedParsePlaceholder": "Невідомо - Не вдалося розібрати метадані",
   "multisigNonceDuplicateErrorMessage": "Транзакція з тим самим nonce вже існує",
   "createFromScratch": "Почніть з нуля",
+  "continueProposal": "Продовжити пропозицію ({{numerOfPendingActions}})",
   "browseTemplates": "Переглянути шаблони",
   "useDapps": "Використовуйте dApps",
   "tranchedStream": "Транширований",
