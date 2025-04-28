@@ -116,7 +116,6 @@ export function CastVote({ proposal }: { proposal: FractalProposal }) {
   ]);
 
   useEffect(() => {
-    console.log('doRetryGaslessVote', doRetryGaslessVote);
     if (doRetryGaslessVote) {
       castGaslessVoteCallback();
       setDoRetryGaslessVote(false);

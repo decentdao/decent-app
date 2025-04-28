@@ -2,15 +2,20 @@ import { Box, Button, Flex, Text } from '@chakra-ui/react';
 import { useTranslation } from 'react-i18next';
 
 export function GaslessVoteFailedModal({
-  onCancel,
+  close,
   onRetry,
   onFallback,
 }: {
-  onCancel: () => void;
+  close: () => void;
   onRetry: () => void;
   onFallback: () => void;
 }) {
   const { t } = useTranslation('gaslessVoting');
+
+  const handleButtonClick = (onClick: () => void) => {
+    onClick();
+    close();
+  };
 
   return (
     <Box>
@@ -30,19 +35,19 @@ export function GaslessVoteFailedModal({
         <Flex gap={2}>
           <Button
             variant="secondary"
-            onClick={onRetry}
+            onClick={() => handleButtonClick(onRetry)}
           >
             {t('gaslessVoteFailedRetry')}
           </Button>
           <Button
             variant="secondary"
-            onClick={onFallback}
+            onClick={() => handleButtonClick(onFallback)}
           >
             {t('gaslessVoteFailedFallback')}
           </Button>
           <Button
             variant="secondary"
-            onClick={onCancel}
+            onClick={close}
           >
             {t('gaslessVoteFailedCancel')}
           </Button>

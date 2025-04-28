@@ -323,7 +323,7 @@ export function ModalProvider({ children }: { children: ReactNode }) {
         case ModalType.GASLESS_VOTE_FAILED:
           modalContent = (
             <GaslessVoteFailedModal
-              onCancel={closeModal}
+              close={closeModal}
               onRetry={current.props.onRetry}
               onFallback={current.props.onFallback}
             />
