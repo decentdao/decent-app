@@ -1,4 +1,6 @@
 {
+  "dappsTitle": "Explorar las dApps",
+  "dappsDescription": "Conéctate a tus aplicaciones web3 favoritas con tu Decent DAO, de forma segura y eficiente.",
   "emptyProposalDapps": "Esta Caja Fuerte aún no tiene ninguna dApp compatible.",
   "connectingWalletConnect": "Conectando...",
   "successConnectingWalletConnect": "¡Conectado!",

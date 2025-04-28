@@ -1,4 +1,6 @@
 {
+  "dappsTitle": "探索 dApps",
+  "dappsDescription": "使用 Decent DAO 安全高效地连接到您最喜爱的 Web3 应用程序。",
   "emptyProposalDapps": "该 Safe 尚不支持任何应用程序。",
   "connectingWalletConnect": "连接...",
   "successConnectingWalletConnect": "已连接！",

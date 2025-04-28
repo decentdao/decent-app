@@ -1,4 +1,6 @@
 {
+  "dappsTitle": "Explorer les dApps",
+  "dappsDescription": "Connectez-vous à vos applications web3 préférées avec votre Decent DAO, de manière sécurisée et efficace.",
   "emptyProposalDapps": "Ce coffre-fort n'a pas encore de dApps supportées.",
   "connectingWalletConnect": "Connexion...",
   "successConnectingWalletConnect": "Connecté !",

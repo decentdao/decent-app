@@ -1,4 +1,6 @@
 {
+  "dappsTitle": "dApps erforschen",
+  "dappsDescription": "Verbinden Sie sich mit Ihren bevorzugten web3 Anwendungen mit Ihrem Decent DAO, sicher und effizient.",
   "emptyProposalDapps": "Dieser Safe hat noch keine unterstützten dApps.",
   "connectingWalletConnect": "Verbinden...",
   "successConnectingWalletConnect": "Verbunden!",

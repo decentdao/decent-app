@@ -1,4 +1,6 @@
 {
+  "dappsTitle": "dAppsを探る",
+  "dappsDescription": "お気に入りのWeb3アプリケーションにDecent DAOで安全かつ効率的に接続しましょう。",
   "emptyProposalDapps": "このSafeにはまだサポートされているdAppsがありません。",
   "connectingWalletConnect": "接続...",
   "successConnectingWalletConnect": "つながっている！",

@@ -1,4 +1,6 @@
 {
+  "dappsTitle": "Дослідіть dApps",
+  "dappsDescription": "Підключайтеся до улюблених web3-додатків за допомогою Decent DAO, безпечно та ефективно.",
   "emptyProposalDapps": "Цей сейф ще не має підтримуваних dApps.",
   "connectingWalletConnect": "З'єднання...",
   "successConnectingWalletConnect": "З'єднано!",

@@ -1,4 +1,6 @@
 {
+  "dappsTitle": "dApp 살펴보기",
+  "dappsDescription": "디센트 DAO로 즐겨 사용하는 웹3.0 애플리케이션에 안전하고 효율적으로 연결하세요.",
   "emptyProposalDapps": "이 금고에는 아직 지원되는 디앱이 없습니다.",
   "connectingWalletConnect": "연결 중...",
   "successConnectingWalletConnect": "연결되었습니다!",

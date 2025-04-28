@@ -1,4 +1,6 @@
 {
+  "dappsTitle": "Изучите dApps",
+  "dappsDescription": "Безопасно и эффективно подключайтесь к своим любимым web3-приложениям с помощью Decent DAO.",
   "emptyProposalDapps": "У этого сейфа пока нет ни одного поддерживаемого dApp.",
   "connectingWalletConnect": "Подключение...",
   "successConnectingWalletConnect": "Подключено!",

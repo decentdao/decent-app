@@ -1,4 +1,6 @@
 {
+  "dappsTitle": "Esplora le dApp",
+  "dappsDescription": "Collegatevi alle vostre applicazioni web3 preferite con il vostro Decent DAO, in modo sicuro ed efficiente.",
   "emptyProposalDapps": "Questa cassaforte non ha ancora alcuna dApp supportata.",
   "connectingWalletConnect": "Collegamento...",
   "successConnectingWalletConnect": "Collegato!",

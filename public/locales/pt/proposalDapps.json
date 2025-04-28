@@ -1,4 +1,6 @@
 {
+  "dappsTitle": "Explorar dApps",
+  "dappsDescription": "Ligue-se às suas aplicações web3 favoritas com o seu Decent DAO, de forma segura e eficiente.",
   "emptyProposalDapps": "Este Cofre ainda não tem quaisquer dApps suportados.",
   "connectingWalletConnect": "Ligar...",
   "successConnectingWalletConnect": "Ligado!",
