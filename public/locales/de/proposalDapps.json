@@ -6,5 +6,9 @@
   "successConnectingWalletConnect": "Verbunden!",
   "failConnectingWalletConnect": "Die Verbindung konnte nicht hergestellt werden, bitte überprüfen Sie die uri.",
   "labelIframeWalletConnectUri": "WalletConnect URI",
-  "helperIframeWalletConnectUri": "Einfügen zum Verbinden"
+  "helperIframeWalletConnectUri": "Einfügen zum Verbinden",
+  "dappIntegrationActionLabel": "[{{appName}} Integration]",
+  "processingTransactions": "Bearbeitung von Transaktionen...",
+  "successProcessingTransactions": "Bearbeitete Vorgänge.",
+  "errorProcessingTransactions": "Fehler bei der Verarbeitung von Transaktionen."
 }

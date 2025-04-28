@@ -6,5 +6,9 @@
   "successConnectingWalletConnect": "Ligado!",
   "failConnectingWalletConnect": "Falha na ligação, verifique o uri.",
   "labelIframeWalletConnectUri": "URI do WalletConnect",
-  "helperIframeWalletConnectUri": "Colar para ligar"
+  "helperIframeWalletConnectUri": "Colar para ligar",
+  "dappIntegrationActionLabel": "[{{appName}} Integração]",
+  "processingTransactions": "Processamento de transacções...",
+  "successProcessingTransactions": "Transacções processadas.",
+  "errorProcessingTransactions": "Erro no processamento de transacções."
 }

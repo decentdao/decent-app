@@ -100,7 +100,7 @@ export function SafeProposalDappDetailModal({
   appUrl: string;
   onClose: () => void;
 }) {
-  const { t } = useTranslation(['common']);
+  const { t } = useTranslation(['proposalDapps']);
   const { chain, addressPrefix } = useNetworkConfigStore();
   const { loadABI } = useABI();
   const { safe } = useDaoInfoStore();
@@ -111,7 +111,7 @@ export function SafeProposalDappDetailModal({
   const safeAddress = safe?.address;
   const dapp = dapps.find(d => d.url === appUrl);
   const appName = dapp?.name || appUrl;
-  const dappLabel = t('dappIntegration', { appName });
+  const dappLabel = t('dappIntegrationActionLabel', { appName });
 
   return (
     <div>
@@ -134,30 +134,40 @@ export function SafeProposalDappDetailModal({
         defaultAppUrl={appUrl}
         chainId={chain.id}
         onTransactionsReceived={transactions => {
-          (async () => {
-            if (transactions && transactions.length > 0) {
-              const { decodedTransactions } = await decodeTransactionsWithABI(
-                transactions,
-                loadABI,
-              );
-
+          toast.promise(
+            async () => {
               if (!safe?.address) {
                 return;
               }
 
-              const action: CreateProposalActionData = {
-                actionType: ProposalActionType.DAPP_INTEGRATION,
-                transactions: decodedTransactions,
-              };
-              resetActions();
-              addAction({
-                ...action,
-                content: <Text>{dappLabel}</Text>,
-              });
-              onClose();
-              navigate(DAO_ROUTES.proposalWithActionsNew.relative(addressPrefix, safe.address));
-            }
-          })();
+              if (transactions && transactions.length > 0) {
+                const { decodedTransactions, failedTransactions } = await decodeTransactionsWithABI(
+                  transactions,
+                  loadABI,
+                );
+                if (failedTransactions.length > 0) {
+                  throw new Error('Failed to decode transactions');
+                }
+
+                const action: CreateProposalActionData = {
+                  actionType: ProposalActionType.DAPP_INTEGRATION,
+                  transactions: decodedTransactions,
+                };
+                resetActions();
+                addAction({
+                  ...action,
+                  content: <Text>{dappLabel}</Text>,
+                });
+                onClose();
+                navigate(DAO_ROUTES.proposalWithActionsNew.relative(addressPrefix, safe.address));
+              }
+            },
+            {
+              loading: t('processingTransactions'),
+              success: t('successProcessingTransactions'),
+              error: t('errorProcessingTransactions'),
+            },
+          );
         }}
       >
         <Iframe
