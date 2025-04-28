@@ -13,6 +13,7 @@ import {
   encodeFunctionData,
   parseAbiParameters,
   isHex,
+  Abi,
 } from 'viem';
 
 import { MetaTransaction, SafeTransaction } from '../types/transaction';
