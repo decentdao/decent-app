@@ -1,4 +1,4 @@
-import { Box, Flex, Text } from '@chakra-ui/react';
+import { Box, CloseButton, Flex, Text } from '@chakra-ui/react';
 import { useTranslation } from 'react-i18next';
 import { useSupportedDapps } from '../../../hooks/DAO/loaders/useSupportedDapps';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
@@ -18,13 +18,20 @@ export function SafeProposalDappsModal({ onClose }: { onClose: () => void }) {
 
   return (
     <div>
-      <Text
-        textStyle="heading-large"
-        color="white-0"
-      >
-        {t('dappsTitle')}
-      </Text>
-      <Text color="neutral-7">{t('dappsDescription')}</Text>
+      <Flex justifyContent="space-between">
+        <div>
+          <Text
+            textStyle="heading-large"
+            color="white-0"
+          >
+            {t('dappsTitle')}
+          </Text>
+          <Text color="neutral-7">{t('dappsDescription')}</Text>
+        </div>
+
+        <CloseButton onClick={onClose} />
+      </Flex>
+
       <Flex
         marginTop="2rem"
         flexDirection={!loading && dapps.length > 0 ? 'row' : 'column'}
