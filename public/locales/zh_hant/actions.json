@@ -5,5 +5,6 @@
   "transferAssetsSub": "建立一次性付款。",
   "comingSoon": "即將推出...",
   "comingSoonSub": "途中有更多動作。",
-  "proposalBuilderBatch": "批次：{{numOfTransactions}}交易"
+  "transactionBuilderActionCard_single": "交易建立者：執行{{ functionName }} at{{ targetAddress }}",
+  "transactionBuilderActionCard_multiple": "交易建立程式：批次{{ numOfTransactions }} 交易"
 }

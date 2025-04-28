@@ -26,6 +26,7 @@
   "timelock": "计时器",
   "execution": "执行",
   "move": "移动",
+  "hours": "小时数",
   "minutes": "分钟",
   "quorum": "法定人数",
   "deploy": "部署",

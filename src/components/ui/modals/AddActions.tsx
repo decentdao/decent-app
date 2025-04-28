@@ -1,12 +1,11 @@
 import { Button, Flex, Grid, Icon, Text, useDisclosure } from '@chakra-ui/react';
-import { ArrowsDownUp, Plus, PlusCircle, SquaresFour } from '@phosphor-icons/react';
-import { useFormikContext } from 'formik';
+import { ArrowsDownUp, CraneTower, Plus, SquaresFour } from '@phosphor-icons/react';
 import { useTranslation } from 'react-i18next';
 import { DETAILS_BOX_SHADOW } from '../../../constants/common';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import { useStore } from '../../../providers/App/AppProvider';
 import { useProposalActionsStore } from '../../../store/actions/useProposalActionsStore';
-import { CreateProposalForm, ProposalActionType } from '../../../types';
+import { ProposalActionType } from '../../../types';
 import { prepareSendAssetsActionData } from '../../../utils/dao/prepareSendAssetsActionData';
 import { ModalBase } from './ModalBase';
 import { ModalType } from './ModalProvider';
@@ -78,14 +77,13 @@ export function AddActions() {
 
   const { t } = useTranslation(['actions', 'modals']);
   const { addAction } = useProposalActionsStore();
-  const { values } = useFormikContext<CreateProposalForm>();
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const openSendAssetsModal = useDecentModal(ModalType.SEND_ASSETS, {
     onSubmit: sendAssetsData => {
       const { action } = prepareSendAssetsActionData(sendAssetsData);
 
-      addAction({ ...action, proposalMetadata: values.proposalMetadata, content: <></> });
+      addAction({ ...action, content: <></> });
     },
     submitButtonText: t('Add Action', { ns: 'modals' }),
   });
@@ -96,7 +94,6 @@ export function AddActions() {
 
       addAction({
         actionType: actionType,
-        proposalMetadata: values.proposalMetadata,
         content: <></>,
         transactions: transactionBuilderData,
       });
@@ -144,7 +141,7 @@ export function AddActions() {
           <ActionCard
             title={t('transcationBuilderActionCardTitle', { ns: 'modals' })}
             subtitle={t('transactionBuilderActionCardSub', { ns: 'modals' })}
-            icon={PlusCircle}
+            icon={CraneTower}
             onClick={() => {
               onClose();
               openTransactionBuilderModal();

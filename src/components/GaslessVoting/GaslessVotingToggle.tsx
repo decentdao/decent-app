@@ -101,6 +101,7 @@ export function GaslessVotingToggleDAOSettings(props: GaslessVotingToggleProps) 
     addressPrefix,
     contracts: { accountAbstraction },
     bundlerMinimumStake,
+    nativeTokenIcon,
   } = useNetworkConfigStore();
 
   const navigate = useNavigate();
@@ -206,7 +207,7 @@ export function GaslessVotingToggleDAOSettings(props: GaslessVotingToggleProps) 
   });
 
   const gaslessFeatureEnabled = useFeatureFlag('flag_gasless_voting');
-  const gaslessStakingEnabled = gaslessVotingEnabled && bundlerMinimumStake !== undefined;
+  const gaslessStakingEnabled = gaslessFeatureEnabled && bundlerMinimumStake !== undefined;
   if (!gaslessFeatureEnabled) return null;
 
   const paymasterBalance = depositInfo?.balance || 0n;
@@ -265,7 +266,7 @@ export function GaslessVotingToggleDAOSettings(props: GaslessVotingToggleProps) 
             >
               {formattedPaymasterBalance}
               <Image
-                src={'/images/coin-icon-default.svg'} // @todo: (gv) Use the correct image for the token.
+                src={nativeTokenIcon}
                 fallbackSrc={'/images/coin-icon-default.svg'}
                 alt={nativeCurrency.symbol}
                 w="1.25rem"
@@ -316,7 +317,7 @@ export function GaslessVotingToggleDAOSettings(props: GaslessVotingToggleProps) 
             >
               {formattedPaymasterStakedAmount}
               <Image
-                src={'/images/coin-icon-default.svg'} // @todo: (gv) Use the correct image for the token.
+                src={nativeTokenIcon}
                 fallbackSrc={'/images/coin-icon-default.svg'}
                 alt={nativeCurrency.symbol}
                 w="1.25rem"
