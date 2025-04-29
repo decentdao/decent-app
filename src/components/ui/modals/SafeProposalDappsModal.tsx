@@ -1,6 +1,9 @@
+import * as amplitude from '@amplitude/analytics-browser';
 import { Box, CloseButton, Flex, Text } from '@chakra-ui/react';
+import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSupportedDapps } from '../../../hooks/DAO/loaders/useSupportedDapps';
+import { analyticsEvents } from '../../../insights/analyticsEvents';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
 import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
 import DappCard from '../../ProposalDapps/DappCard';
@@ -8,6 +11,10 @@ import NoDataCard from '../containers/NoDataCard';
 import { InfoBoxLoader } from '../loaders/InfoBoxLoader';
 
 export function SafeProposalDappsModal({ onClose }: { onClose: () => void }) {
+  useEffect(() => {
+    amplitude.track(analyticsEvents.SafeProposalDappsModalOpened);
+  }, []);
+
   const { t } = useTranslation(['proposalDapps']);
   const { chain } = useNetworkConfigStore();
   const { safe } = useDaoInfoStore();
