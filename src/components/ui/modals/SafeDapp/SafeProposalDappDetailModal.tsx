@@ -124,6 +124,7 @@ export function SafeProposalDappDetailModal({
       <Flex
         justifyContent="space-between"
         gap="6rem"
+        mb="1rem"
       >
         <Text
           textStyle="heading-large"
