@@ -124,10 +124,10 @@ export function SafeProposalDappDetailModal({
       <Flex
         justifyContent="space-between"
         gap="6rem"
-        mb="1rem"
+        mb="0.5rem"
       >
         <Text
-          textStyle="heading-large"
+          textStyle="heading-medium"
           color="white-0"
         >
           {appName}

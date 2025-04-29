@@ -374,7 +374,7 @@ export function ModalProvider({ children }: { children: ReactNode }) {
               onClose={closeModal}
             />
           );
-          modalSize = 'almostFull';
+          modalSize = 'max';
           break;
         case ModalType.NONE:
         default:
