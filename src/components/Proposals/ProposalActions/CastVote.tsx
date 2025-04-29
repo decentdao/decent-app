@@ -36,7 +36,6 @@ export function CastVote({ proposal }: { proposal: FractalProposal }) {
 
   const azoriusProposal = proposal as AzoriusProposal;
 
-  // @todo: (gv) Build better UX around castGaslessVotePending (and probably castVotePending)
   const { castVote, castVotePending, castGaslessVote, castGaslessVotePending, canCastGaslessVote } =
     useCastVote(proposal.proposalId, azoriusProposal.votingStrategy);
 
