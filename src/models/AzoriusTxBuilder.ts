@@ -16,168 +16,320 @@ import {
 import GnosisSafeL2Abi from '../assets/abi/GnosisSafeL2';
 import { ZodiacModuleProxyFactoryAbi } from '../assets/abi/ZodiacModuleProxyFactoryAbi';
 import { linearERC20VotingSetupParams, linearERC721VotingSetupParams } from '../constants/params';
-import { buildContractCall, buildSignatures, getRandomBytes } from '../helpers';
+import { buildContractCall, buildSignatures } from '../helpers';
 import {
   AzoriusERC20DAO,
   AzoriusERC721DAO,
   AzoriusGovernanceDAO,
+  ERC721TokenConfig,
   SafeTransaction,
   TokenLockType,
   VotingStrategyType,
 } from '../types';
+import { NetworkConfig } from '../types/network';
 import { SENTINEL_MODULE } from '../utils/address';
 import { BaseTxBuilder, ContractCallTarget } from './BaseTxBuilder';
 import { generateContractByteCodeLinear, generateSalt } from './helpers/utils';
 
+export type PredictedAddressAndInitialization = {
+  address: Address;
+  encodedSetupData: Hex;
+};
+
 export class AzoriusTxBuilder extends BaseTxBuilder {
-  private readonly safeContract: ContractCallTarget;
+  // private readonly safeContract: ContractCallTarget;
 
-  private encodedSetupTokenData: Hex | undefined;
-  private encodedStrategySetupData: Hex | undefined;
-  private encodedSetupAzoriusData: Hex | undefined;
-  private encodedSetupTokenClaimData: Hex | undefined;
+  // private encodedSetupTokenData: Hex | undefined;
+  // private encodedStrategySetupData: Hex | undefined;
+  // private encodedSetupAzoriusData: Hex | undefined;
+  // private encodedSetupTokenClaimData: Hex | undefined;
 
-  private predictedTokenAddress: Address | undefined;
-  private predictedStrategyAddress: Address | undefined;
-  private predictedAzoriusAddress: Address | undefined;
-  private predictedTokenClaimAddress: Address | undefined;
+  // private predictedTokenAddress: Address | undefined;
+  // private predictedStrategyAddress: Address | undefined;
+  // private predictedAzoriusAddress: Address | undefined;
+  // private predictedTokenClaimAddress: Address | undefined;
 
-  public linearERC20VotingAddress: Address | undefined;
-  public linearERC721VotingAddress: Address | undefined;
-  public votesTokenAddress: Address | undefined;
-  private votesErc20MasterCopy: Address;
-  private votesErc20LockableMasterCopy?: Address;
-  private zodiacModuleProxyFactory: ContractCallTarget;
-  private multiSendCallOnly: Address;
-  private claimErc20MasterCopy: Address;
-  private linearVotingErc20MasterCopy: Address;
-  private linearVotingErc721MasterCopy: Address;
-  private moduleAzoriusMasterCopy: Address;
-  private tokenNonce: bigint;
-  private strategyNonce: bigint;
-  private azoriusNonce: bigint;
-  private claimNonce: bigint;
+  // public linearERC20VotingAddress: Address | undefined;
+  // public linearERC721VotingAddress: Address | undefined;
+  // public votesTokenAddress: Address | undefined;
+  // private votesErc20MasterCopy: Address;
+  // private votesErc20LockableMasterCopy?: Address;
+  // private zodiacModuleProxyFactory: ContractCallTarget;
+  // private multiSendCallOnly: Address;
+  // private claimErc20MasterCopy: Address;
+  // private linearVotingErc20MasterCopy: Address;
+  // private linearVotingErc721MasterCopy: Address;
+  // private moduleAzoriusMasterCopy: Address;
+  // private tokenNonce: bigint;
+  // private strategyNonce: bigint;
+  // private azoriusNonce: bigint;
+  // private claimNonce: bigint;
 
-  constructor(
-    publicClient: PublicClient,
-    daoData: AzoriusERC20DAO | AzoriusERC721DAO,
-    safeContractAddress: Address,
-    votesErc20MasterCopy: Address,
-    zodiacModuleProxyFactory: Address,
-    multiSendCallOnly: Address,
-    claimErc20MasterCopy: Address,
-    linearVotingErc20MasterCopy: Address,
-    linearVotingErc721MasterCopy: Address,
-    moduleAzoriusMasterCopy: Address,
-    votesErc20LockableMasterCopy?: Address,
-    parentAddress?: Address,
-    parentTokenAddress?: Address,
-  ) {
-    super(publicClient, true, daoData, parentAddress, parentTokenAddress);
+  // constructor(
+  //   publicClient: PublicClient,
+  //   daoData: AzoriusERC20DAO | AzoriusERC721DAO,
+  //   safeContractAddress: Address,
+  //   votesErc20MasterCopy: Address,
+  //   zodiacModuleProxyFactory: Address,
+  //   multiSendCallOnly: Address,
+  //   claimErc20MasterCopy: Address,
+  //   linearVotingErc20MasterCopy: Address,
+  //   linearVotingErc721MasterCopy: Address,
+  //   moduleAzoriusMasterCopy: Address,
+  //   votesErc20LockableMasterCopy?: Address,
+  //   parentAddress?: Address,
+  //   parentTokenAddress?: Address,
+  // ) {
+  //   super(publicClient, true, daoData, parentAddress, parentTokenAddress);
 
-    this.safeContract = {
+  //   this.safeContract = {
+  //     address: safeContractAddress,
+  //     abi: GnosisSafeL2Abi,
+  //     description: 'Safe Contract',
+  //   };
+
+  //   // this.tokenNonce = getRandomBytes();
+  //   // this.claimNonce = getRandomBytes();
+  //   // this.strategyNonce = getRandomBytes();
+  //   // this.azoriusNonce = getRandomBytes();
+  //   this.votesErc20MasterCopy = votesErc20MasterCopy;
+  //   this.votesErc20LockableMasterCopy = votesErc20LockableMasterCopy;
+  //   this.zodiacModuleProxyFactory = {
+  //     address: zodiacModuleProxyFactory,
+  //     abi: ZodiacModuleProxyFactoryAbi,
+  //     description: 'Zodiac Module Proxy Factory',
+  //   };
+  //   this.multiSendCallOnly = multiSendCallOnly;
+  //   this.claimErc20MasterCopy = claimErc20MasterCopy;
+  //   this.linearVotingErc20MasterCopy = linearVotingErc20MasterCopy;
+  //   this.linearVotingErc721MasterCopy = linearVotingErc721MasterCopy;
+  //   this.moduleAzoriusMasterCopy = moduleAzoriusMasterCopy;
+
+  //   // if (daoData.votingStrategyType === VotingStrategyType.LINEAR_ERC20) {
+  //   //   daoData = daoData as AzoriusERC20DAO;
+  //   //   if (!daoData.isTokenImported) {
+  //   //     if (daoData.locked === TokenLockType.LOCKED && !votesErc20LockableMasterCopy) {
+  //   //       throw new Error('Votes Erc20 Lockable Master Copy address not set');
+  //   //     }
+  //   //     this.setEncodedSetupTokenData();
+  //   //     this.setPredictedTokenAddress();
+  //   //   } else {
+  //   //     // if (daoData.isVotesToken) {
+  //   //     //   this.predictedTokenAddress = daoData.tokenImportAddress as Address;
+  //   //     // }
+  //   //   }
+  //   // }
+  // }
+
+  // public get azoriusAddress(): Address {
+  //   if (!this.predictedAzoriusAddress) {
+  //     throw new Error('Azorius address not set');
+  //   }
+
+  //   return this.predictedAzoriusAddress;
+  // }
+
+  // public async init() {
+  //   const strategyNonce = getRandomBytes();
+  //   const azoriusNonce = getRandomBytes();
+  //   const claimNonce = getRandomBytes();
+  //   const tokenNonce = getRandomBytes();
+
+  //   const encodedSetupTokenData = this.encodeSetupTokenData();
+  //   const predictedTokenAddress = this.predictTokenAddress(encodedSetupTokenData, tokenNonce);
+  //   const predictedStrategyAddress = await this.predictStrategyAddress(
+  //     predictedTokenAddress,
+  //     strategyNonce,
+  //   );
+  //   const predictedAzoriusAddress = this.predictAzoriusAddress(
+  //     this.ensure({ data: predictedStrategyAddress, description: 'Predicted Strategy Address' }),
+  //     azoriusNonce,
+  //   );
+
+  //   if (
+  //     (this.daoData as AzoriusERC20DAO | AzoriusERC721DAO).votingStrategyType ===
+  //     VotingStrategyType.LINEAR_ERC20
+  //   ) {
+  //     const azoriusDAOData = this.daoData as AzoriusERC20DAO;
+  //     if (
+  //       this.parentTokenAddress &&
+  //       azoriusDAOData.parentAllocationAmount &&
+  //       azoriusDAOData.parentAllocationAmount !== 0n
+  //     ) {
+  //       const encodedSetupTokenClaimData = this.encodeSetupTokenClaimData(
+  //         this.parentTokenAddress,
+  //         predictedTokenAddress,
+  //       );
+  //       const predictedTokenClaimAddress = this.predictTokenClaimAddress(
+  //         encodedSetupTokenClaimData,
+  //         claimNonce,
+  //       );
+  //     }
+  //   }
+  // }
+
+  public async predict(params: {
+    publicClient: PublicClient;
+    networkConfig: NetworkConfig;
+    safeContractAddress: Address;
+    nonces: {
+      strategyNonce: bigint;
+      azoriusNonce: bigint;
+      claimNonce: bigint;
+      tokenNonce: bigint;
+    };
+    tokenData: {
+      lockType: TokenLockType;
+      name: string;
+      symbol: string;
+      supply: bigint;
+      allocations: { amount: bigint; address: string }[];
+    };
+    strategyData: {
+      votingStrategyType: VotingStrategyType;
+      votingPeriod: number;
+      erc20Data?: {
+        quorumPercentage?: bigint;
+      };
+      erc721Data?: {
+        nfts: ERC721TokenConfig<bigint>[];
+        quorumThreshold: bigint;
+      };
+    };
+    goveranceData: {
+      timelock: number;
+      executionPeriod: number;
+    };
+    parentAllocation?: {
+      tokenAddress: Address;
+      amount: bigint;
+    };
+  }): Promise<{
+    token: PredictedAddressAndInitialization;
+    strategy: PredictedAddressAndInitialization;
+    azorius: PredictedAddressAndInitialization;
+    tokenClaim?: PredictedAddressAndInitialization;
+  }> {
+    const {
+      publicClient,
+      networkConfig,
+      safeContractAddress,
+      nonces,
+      tokenData,
+      strategyData,
+      goveranceData,
+      parentAllocation,
+    } = params;
+    const encodedSetupTokenData = this.encodeSetupTokenData({ safeContractAddress, tokenData });
+    const predictedTokenAddress = this.predictTokenAddress({
+      networkConfig,
+      encodedSetupTokenData,
+      lockType: tokenData.lockType,
+      tokenNonce: nonces.tokenNonce,
+    });
+    const predictedStrategy = await this.predictStrategyAddress({
+      publicClient,
+      networkConfig,
+      safeContractAddress,
+      predictedTokenAddress,
+      strategyNonce: nonces.strategyNonce,
+      strategyData,
+    });
+    const predictedAzorius = this.predictAzorius({
+      networkConfig,
+      safeContractAddress,
+      predictedStrategyAddress: predictedStrategy.address,
+      azoriusNonce: nonces.azoriusNonce,
+      goveranceData,
+    });
+    let predictedTokenClaim = undefined;
+    if (strategyData.votingStrategyType === VotingStrategyType.LINEAR_ERC20) {
+      if (parentAllocation && parentAllocation.amount !== 0n) {
+        const encodedSetupTokenClaimData = this.encodeSetupTokenClaimData({
+          safeContractAddress,
+          parentTokenAddress: parentAllocation.tokenAddress,
+          predictedTokenAddress,
+          parentAllocationAmount: parentAllocation.amount,
+        });
+        predictedTokenClaim = {
+          address: this.predictTokenClaimAddress({
+            networkConfig,
+            encodedSetupTokenClaimData,
+            claimNonce: nonces.claimNonce,
+          }),
+          encodedSetupData: encodedSetupTokenClaimData,
+        };
+      }
+    }
+    return {
+      token: {
+        address: predictedTokenAddress,
+        encodedSetupData: encodedSetupTokenData,
+      },
+      strategy: predictedStrategy,
+      azorius: predictedAzorius,
+      tokenClaim: predictedTokenClaim,
+    };
+  }
+
+  private safeContract(safeContractAddress: Address): ContractCallTarget {
+    return {
       address: safeContractAddress,
       abi: GnosisSafeL2Abi,
       description: 'Safe Contract',
     };
+  }
 
-    this.tokenNonce = getRandomBytes();
-    this.claimNonce = getRandomBytes();
-    this.strategyNonce = getRandomBytes();
-    this.azoriusNonce = getRandomBytes();
-    this.votesErc20MasterCopy = votesErc20MasterCopy;
-    this.votesErc20LockableMasterCopy = votesErc20LockableMasterCopy;
-    this.zodiacModuleProxyFactory = {
-      address: zodiacModuleProxyFactory,
+  private zodiacModuleProxyFactory(zodiacModuleProxyFactoryAddress: Address): ContractCallTarget {
+    return {
+      address: zodiacModuleProxyFactoryAddress,
       abi: ZodiacModuleProxyFactoryAbi,
       description: 'Zodiac Module Proxy Factory',
     };
-    this.multiSendCallOnly = multiSendCallOnly;
-    this.claimErc20MasterCopy = claimErc20MasterCopy;
-    this.linearVotingErc20MasterCopy = linearVotingErc20MasterCopy;
-    this.linearVotingErc721MasterCopy = linearVotingErc721MasterCopy;
-    this.moduleAzoriusMasterCopy = moduleAzoriusMasterCopy;
-
-    if (daoData.votingStrategyType === VotingStrategyType.LINEAR_ERC20) {
-      daoData = daoData as AzoriusERC20DAO;
-      if (!daoData.isTokenImported) {
-        if (daoData.locked === TokenLockType.LOCKED && !votesErc20LockableMasterCopy) {
-          throw new Error('Votes Erc20 Lockable Master Copy address not set');
-        }
-        this.setEncodedSetupTokenData();
-        this.setPredictedTokenAddress();
-      } else {
-        if (daoData.isVotesToken) {
-          this.predictedTokenAddress = daoData.tokenImportAddress as Address;
-        }
-      }
-    }
   }
 
-  public get azoriusAddress(): Address {
-    if (!this.predictedAzoriusAddress) {
-      throw new Error('Azorius address not set');
-    }
-
-    return this.predictedAzoriusAddress;
-  }
-
-  public async init() {
-    await this.setPredictedStrategyAddress();
-    this.setPredictedAzoriusAddress();
-    this.setContracts();
-
-    if (
-      (this.daoData as AzoriusERC20DAO | AzoriusERC721DAO).votingStrategyType ===
-      VotingStrategyType.LINEAR_ERC20
-    ) {
-      const azoriusDAOData = this.daoData as AzoriusERC20DAO;
-      if (
-        this.parentTokenAddress &&
-        azoriusDAOData.parentAllocationAmount &&
-        azoriusDAOData.parentAllocationAmount !== 0n
-      ) {
-        this.setEncodedSetupTokenClaimData();
-        this.setPredictedTokenClaimAddress();
-      }
-    }
-  }
-
-  public buildRemoveOwners(owners: Address[]): SafeTransaction[] {
+  public buildRemoveOwners(params: {
+    safeContractAddress: Address;
+    multiSendCallOnly: Address;
+    owners: Address[];
+  }): SafeTransaction[] {
+    const { safeContractAddress, multiSendCallOnly, owners } = params;
+    const safeContract = this.safeContract(safeContractAddress);
     return owners.map(owner =>
       this.call({
-        target: this.safeContract,
+        target: safeContract,
         functionName: 'removeOwner',
-        args: [this.multiSendCallOnly, owner, 1n],
+        args: [multiSendCallOnly, owner, 1n],
       }),
     );
   }
 
-  public buildVotingContractSetupTx(): SafeTransaction {
-    const daoData = this.daoData as AzoriusGovernanceDAO;
-
+  public buildVotingContractSetupTx(params: {
+    networkConfig: NetworkConfig;
+    predictedAzoriusAddress: Address;
+    votingStrategyType: VotingStrategyType;
+  }): SafeTransaction {
+    const { networkConfig, predictedAzoriusAddress, votingStrategyType } = params;
     return this.call({
-      target: this._contractSetupTarget(daoData.votingStrategyType),
+      target: this._contractSetupTarget(networkConfig, votingStrategyType),
       functionName: 'setAzorius',
-      args: [
-        this.ensure({
-          data: this.predictedAzoriusAddress,
-          description: 'Predicted Azorius address',
-        }),
-      ],
+      args: [predictedAzoriusAddress],
     });
   }
 
-  private _contractSetupTarget(votingStrategyType: VotingStrategyType): ContractCallTarget {
+  private _contractSetupTarget(
+    networkConfig: NetworkConfig,
+    votingStrategyType: VotingStrategyType,
+  ): ContractCallTarget {
     if (votingStrategyType === VotingStrategyType.LINEAR_ERC20) {
       return {
-        address: this.linearERC20VotingAddress,
+        address: networkConfig.contracts.linearVotingErc20V1MasterCopy,
         abi: abis.LinearERC20VotingV1,
         description: 'Linear ERC20 Voting Address',
       };
     } else if (votingStrategyType === VotingStrategyType.LINEAR_ERC721) {
       return {
-        address: this.linearERC721VotingAddress,
+        address: networkConfig.contracts.linearVotingErc721V1MasterCopy,
         abi: abis.LinearERC721VotingV1,
         description: 'Linear ERC721 Voting Address',
       };
@@ -186,303 +338,323 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
     }
   }
 
-  public buildEnableAzoriusModuleTx(): SafeTransaction {
+  public buildEnableAzoriusModuleTx(params: {
+    safeContractAddress: Address;
+    predictedAzoriusAddress: Address;
+  }): SafeTransaction {
+    const { safeContractAddress, predictedAzoriusAddress } = params;
+    const safeContract = this.safeContract(safeContractAddress);
     return this.call({
-      target: this.safeContract,
+      target: safeContract,
       functionName: 'enableModule',
-      args: [
-        this.ensure({
-          data: this.predictedAzoriusAddress,
-          description: 'Predicted Azorius Address',
-        }),
-      ],
+      args: [predictedAzoriusAddress],
     });
   }
 
-  public buildAddAzoriusContractAsOwnerTx(): SafeTransaction {
+  public buildAddAzoriusContractAsOwnerTx(params: {
+    safeContractAddress: Address;
+    predictedAzoriusAddress: Address;
+  }): SafeTransaction {
+    const { safeContractAddress, predictedAzoriusAddress } = params;
+    const safeContract = this.safeContract(safeContractAddress);
     return this.call({
-      target: this.safeContract,
+      target: safeContract,
       functionName: 'addOwnerWithThreshold',
-      args: [
-        this.ensure({
-          data: this.predictedAzoriusAddress,
-          description: 'Predicted Azorius Address',
-        }),
-        1n,
-      ],
+      args: [predictedAzoriusAddress, 1n],
     });
   }
 
-  public buildRemoveMultiSendOwnerTx(): SafeTransaction {
+  public buildRemoveMultiSendOwnerTx(params: {
+    safeContractAddress: Address;
+    multiSendCallOnly: Address;
+    predictedAzoriusAddress: Address;
+  }): SafeTransaction {
+    const { safeContractAddress, multiSendCallOnly, predictedAzoriusAddress } = params;
+    const safeContract = this.safeContract(safeContractAddress);
     return this.call({
-      target: this.safeContract,
+      target: safeContract,
       functionName: 'removeOwner',
-      args: [
-        this.ensure({
-          data: this.predictedAzoriusAddress,
-          description: 'Predicted Azorius Address',
-        }),
-        this.ensure({
-          data: this.multiSendCallOnly,
-          description: 'MultiSend Call Only Contract',
-        }),
-        1n,
-      ],
+      args: [predictedAzoriusAddress, multiSendCallOnly, 1n],
     });
   }
 
-  public buildCreateTokenTx(): SafeTransaction {
-    const azoriusErc20DaoData = this.daoData as AzoriusERC20DAO;
-
+  public buildCreateTokenTx(params: {
+    networkConfig: NetworkConfig;
+    lockType: TokenLockType;
+    encodedSetupTokenData: `0x${string}`;
+    tokenNonce: bigint;
+  }): SafeTransaction {
+    const { networkConfig, lockType, encodedSetupTokenData, tokenNonce } = params;
     return this.call({
-      target: this.zodiacModuleProxyFactory,
+      target: this.zodiacModuleProxyFactory(networkConfig.contracts.zodiacModuleProxyFactory),
       functionName: 'deployModule',
-      args: [
-        this._votesErc20Master(azoriusErc20DaoData.locked),
-        this.ensure({
-          data: this.encodedSetupTokenData,
-          description: 'Encoded Setup Token Data',
-        }),
-        this.tokenNonce,
-      ],
+      args: [this._votesErc20Master(networkConfig, lockType), encodedSetupTokenData, tokenNonce],
     });
   }
 
-  private _votesErc20Master(lockType: TokenLockType): Address {
+  private _votesErc20Master(networkConfig: NetworkConfig, lockType: TokenLockType): Address {
     switch (lockType) {
       case TokenLockType.LOCKED:
         return this.ensure({
-          data: this.votesErc20LockableMasterCopy,
+          data: networkConfig.contracts.votesErc20LockableMasterCopy,
           description: 'Locked ERC20 Token Master Contract',
         });
 
       case TokenLockType.UNLOCKED:
-        return this.votesErc20MasterCopy;
+        return networkConfig.contracts.votesErc20MasterCopy;
     }
   }
 
-  public buildDeployStrategyTx(): SafeTransaction {
-    const daoData = this.daoData as AzoriusGovernanceDAO;
-
+  public buildDeployStrategyTx(params: {
+    networkConfig: NetworkConfig;
+    encodedStrategySetupData: `0x${string}`;
+    votingStrategyType: VotingStrategyType;
+    strategyNonce: bigint;
+  }): SafeTransaction {
+    const { networkConfig, encodedStrategySetupData, votingStrategyType, strategyNonce } = params;
     return this.call({
-      target: this.zodiacModuleProxyFactory,
+      target: this.zodiacModuleProxyFactory(networkConfig.contracts.zodiacModuleProxyFactory),
       functionName: 'deployModule',
       args: [
-        this._votingStrategyMaster(daoData.votingStrategyType),
-        this.ensure({
-          data: this.encodedStrategySetupData,
-          description: 'Encoded Strategy Setup Data',
-        }),
-        this.strategyNonce,
+        this._votingStrategyMaster(networkConfig, votingStrategyType),
+        encodedStrategySetupData,
+        strategyNonce,
       ],
     });
   }
 
-  private _votingStrategyMaster(votingStrategy: VotingStrategyType): Address {
+  private _votingStrategyMaster(
+    networkConfig: NetworkConfig,
+    votingStrategy: VotingStrategyType,
+  ): Address {
     switch (votingStrategy) {
       case VotingStrategyType.LINEAR_ERC20:
-        return this.linearVotingErc20MasterCopy;
+        return networkConfig.contracts.linearVotingErc20MasterCopy;
 
       case VotingStrategyType.LINEAR_ERC721:
-        return this.linearVotingErc721MasterCopy;
+        return networkConfig.contracts.linearVotingErc721MasterCopy;
 
       default:
         throw Error('Voting Strategy is neither ERC20 nor ERC721');
     }
   }
 
-  public buildDeployAzoriusTx(): SafeTransaction {
+  public buildDeployAzoriusTx(params: {
+    networkConfig: NetworkConfig;
+    encodedSetupAzoriusData: `0x${string}`;
+    azoriusNonce: bigint;
+  }): SafeTransaction {
+    const { networkConfig, encodedSetupAzoriusData, azoriusNonce } = params;
     return this.call({
-      target: this.zodiacModuleProxyFactory,
+      target: this.zodiacModuleProxyFactory(networkConfig.contracts.zodiacModuleProxyFactory),
       functionName: 'deployModule',
       args: [
-        this.moduleAzoriusMasterCopy,
-        this.ensure({
-          data: this.encodedSetupAzoriusData,
-          description: 'Encoded Strategy Setup Data',
-        }),
-        this.azoriusNonce,
+        networkConfig.contracts.moduleAzoriusMasterCopy,
+        encodedSetupAzoriusData,
+        azoriusNonce,
       ],
     });
   }
 
-  public buildDeployTokenClaim() {
+  public buildDeployTokenClaim(params: {
+    networConfig: NetworkConfig;
+    encodedSetupTokenClaimData: `0x${string}`;
+    claimNonce: bigint;
+  }) {
+    const { networConfig, encodedSetupTokenClaimData, claimNonce } = params;
     return this.call({
-      target: this.zodiacModuleProxyFactory,
+      target: this.zodiacModuleProxyFactory(networConfig.contracts.zodiacModuleProxyFactory),
       functionName: 'deployModule',
-      args: [
-        this.claimErc20MasterCopy,
-        this.ensure({
-          data: this.encodedSetupTokenClaimData,
-          description: 'Encoded Strategy Setup Data',
-        }),
-        this.claimNonce,
-      ],
+      args: [networConfig.contracts.claimErc20MasterCopy, encodedSetupTokenClaimData, claimNonce],
     });
   }
 
-  public buildApproveClaimAllocation() {
-    if (!this.votesTokenAddress) {
-      return;
-    }
-    if (!this.predictedTokenClaimAddress) {
-      throw new Error('Predicted token claim address not set');
-    }
-
-    const azoriusGovernanceDaoData = this.daoData as AzoriusERC20DAO;
+  public buildApproveClaimAllocation(params: {
+    votesTokenAddress: Address;
+    predictedTokenClaimAddress: Address;
+    amount: bigint;
+  }) {
+    const { votesTokenAddress, predictedTokenClaimAddress, amount } = params;
     return buildContractCall({
-      target: this.votesTokenAddress,
+      target: votesTokenAddress,
       encodedFunctionData: encodeFunctionData({
         functionName: 'approve',
-        args: [this.predictedTokenClaimAddress, azoriusGovernanceDaoData.parentAllocationAmount],
+        args: [predictedTokenClaimAddress, amount],
         abi: abis.VotesERC20,
       }),
     });
   }
 
-  public signatures(): Hex {
-    return buildSignatures(this.multiSendCallOnly);
+  public signatures(params: { multiSendCallOnlyAddress: Address }): Hex {
+    const { multiSendCallOnlyAddress } = params;
+    return buildSignatures(multiSendCallOnlyAddress);
   }
 
   private calculateTokenAllocations(
-    azoriusGovernanceDaoData: AzoriusERC20DAO,
+    safeContractAddress: Address,
+    tokenSupply: bigint,
+    tokenAllocations: { amount: bigint; address: string }[],
   ): [Address[], bigint[]] {
-    const tokenAllocationsOwners = azoriusGovernanceDaoData.tokenAllocations.map(tokenAllocation =>
+    const tokenAllocationsOwners = tokenAllocations.map(tokenAllocation =>
       getAddress(tokenAllocation.address),
     );
 
-    const tokenAllocationsValues = azoriusGovernanceDaoData.tokenAllocations.map(
-      tokenAllocation => tokenAllocation.amount,
-    );
+    const tokenAllocationsValues = tokenAllocations.map(tokenAllocation => tokenAllocation.amount);
     const tokenAllocationSum = tokenAllocationsValues.reduce((accumulator, tokenAllocation) => {
       return tokenAllocation + accumulator;
     }, 0n);
 
     // Send any un-allocated tokens to the Safe Treasury
-    if (azoriusGovernanceDaoData.tokenSupply > tokenAllocationSum) {
+    if (tokenSupply > tokenAllocationSum) {
       // TODO -- verify this doesn't need to be the predicted safe address (that they are the same)
-      tokenAllocationsOwners.push(
-        this.ensure({ data: this.safeContract.address, description: 'Safe Contract Address' }),
-      );
-      tokenAllocationsValues.push(azoriusGovernanceDaoData.tokenSupply - tokenAllocationSum);
+      tokenAllocationsOwners.push(safeContractAddress);
+      tokenAllocationsValues.push(tokenSupply - tokenAllocationSum);
     }
 
     return [tokenAllocationsOwners, tokenAllocationsValues];
   }
 
-  private setEncodedSetupTokenData() {
-    const azoriusGovernanceDaoData = this.daoData as AzoriusERC20DAO;
-    const [tokenAllocationsOwners, tokenAllocationsValues] =
-      this.calculateTokenAllocations(azoriusGovernanceDaoData);
+  private encodeSetupTokenData({
+    safeContractAddress,
+    tokenData,
+  }: {
+    safeContractAddress: Address;
+    tokenData: {
+      lockType: TokenLockType;
+      name: string;
+      symbol: string;
+      supply: bigint;
+      allocations: { amount: bigint; address: string }[];
+    };
+  }): Hex {
+    const [tokenAllocationsOwners, tokenAllocationsValues] = this.calculateTokenAllocations(
+      safeContractAddress,
+      tokenData.supply,
+      tokenData.allocations,
+    );
 
-    if (azoriusGovernanceDaoData.locked === TokenLockType.LOCKED) {
-      const encodedInitTokenData = encodeAbiParameters(
-        parseAbiParameters('address, bool, string, string, address[], uint256[]'),
-        [
-          this.ensure({ data: this.safeContract.address, description: 'Safe Contract Address' }),
-          true,
-          azoriusGovernanceDaoData.tokenName,
-          azoriusGovernanceDaoData.tokenSymbol,
-          tokenAllocationsOwners,
-          tokenAllocationsValues,
-        ],
-      );
+    switch (tokenData.lockType) {
+      case TokenLockType.LOCKED: {
+        const encodedInitTokenData = encodeAbiParameters(
+          parseAbiParameters('address, bool, string, string, address[], uint256[]'),
+          [
+            safeContractAddress,
+            true,
+            tokenData.name,
+            tokenData.symbol,
+            tokenAllocationsOwners,
+            tokenAllocationsValues,
+          ],
+        );
 
-      this.encodedSetupTokenData = encodeFunctionData({
-        abi: abis.VotesERC20LockableV1,
-        functionName: 'initialize',
-        args: [encodedInitTokenData],
-      });
-    } else {
-      const encodedInitTokenData = encodeAbiParameters(
-        parseAbiParameters('string, string, address[], uint256[]'),
-        [
-          azoriusGovernanceDaoData.tokenName,
-          azoriusGovernanceDaoData.tokenSymbol,
-          tokenAllocationsOwners,
-          tokenAllocationsValues,
-        ],
-      );
+        return encodeFunctionData({
+          abi: abis.VotesERC20LockableV1,
+          functionName: 'initialize',
+          args: [encodedInitTokenData],
+        });
+      }
 
-      this.encodedSetupTokenData = encodeFunctionData({
-        abi: abis.VotesERC20,
-        functionName: 'setUp',
-        args: [encodedInitTokenData],
-      });
+      case TokenLockType.UNLOCKED: {
+        const encodedInitTokenData = encodeAbiParameters(
+          parseAbiParameters('string, string, address[], uint256[]'),
+          [tokenData.name, tokenData.symbol, tokenAllocationsOwners, tokenAllocationsValues],
+        );
+
+        return encodeFunctionData({
+          abi: abis.VotesERC20,
+          functionName: 'setUp',
+          args: [encodedInitTokenData],
+        });
+      }
     }
   }
 
-  private setPredictedTokenAddress() {
-    const azoriusGovernanceDaoData = this.daoData as AzoriusERC20DAO;
-    if (
-      azoriusGovernanceDaoData.locked === TokenLockType.LOCKED &&
-      !this.votesErc20LockableMasterCopy
-    ) {
-      throw new Error('Votes Erc20 Lockable Master Copy address not set');
-    }
-    const tokenByteCodeLinear = generateContractByteCodeLinear(
-      azoriusGovernanceDaoData.locked === TokenLockType.LOCKED
-        ? this.votesErc20LockableMasterCopy!
-        : this.votesErc20MasterCopy,
-    );
-    const tokenSalt = generateSalt(this.encodedSetupTokenData!, this.tokenNonce);
+  private predictTokenAddress({
+    networkConfig,
+    encodedSetupTokenData,
+    lockType,
+    tokenNonce,
+  }: {
+    networkConfig: NetworkConfig;
+    encodedSetupTokenData: Hex;
+    lockType: TokenLockType;
+    tokenNonce: bigint;
+  }): Address {
+    const erc20TokenMaster = this._votesErc20Master(networkConfig, lockType);
+    const tokenByteCodeLinear = generateContractByteCodeLinear(erc20TokenMaster);
+    const tokenSalt = generateSalt(encodedSetupTokenData, tokenNonce);
 
-    this.predictedTokenAddress = getCreate2Address({
-      from: this.ensure({
-        data: this.zodiacModuleProxyFactory.address,
-        description: 'Zodiac Module Proxy Factory Address',
-      }),
+    return getCreate2Address({
+      from: networkConfig.contracts.zodiacModuleProxyFactory,
       salt: tokenSalt,
       bytecodeHash: keccak256(encodePacked(['bytes'], [tokenByteCodeLinear])),
     });
   }
 
-  private setEncodedSetupTokenClaimData() {
-    const azoriusGovernanceDaoData = this.daoData as AzoriusERC20DAO;
-    if (!this.parentTokenAddress || !this.predictedTokenAddress) {
-      throw new Error('Parent token address or predicted token address were not provided');
-    }
+  private encodeSetupTokenClaimData({
+    safeContractAddress,
+    parentTokenAddress,
+    predictedTokenAddress,
+    parentAllocationAmount,
+  }: {
+    safeContractAddress: Address;
+    parentTokenAddress: Address;
+    predictedTokenAddress: Address;
+    parentAllocationAmount: bigint;
+  }): Hex {
     const encodedInitTokenData = encodeAbiParameters(
       parseAbiParameters('uint32, address, address, address, uint256'),
       [
         0, // `deadlineBlock`, 0 means never expires, currently no UI for setting this in the app.
-        this.ensure({ data: this.safeContract.address, description: 'Safe Contract Address' }),
-        this.parentTokenAddress,
-        this.predictedTokenAddress,
-        azoriusGovernanceDaoData.parentAllocationAmount,
+        safeContractAddress,
+        parentTokenAddress,
+        predictedTokenAddress,
+        parentAllocationAmount,
       ],
     );
-    const encodedSetupTokenClaimData = encodeFunctionData({
+    return encodeFunctionData({
       abi: abis.ERC20Claim,
       functionName: 'setUp',
       args: [encodedInitTokenData],
     });
-
-    this.encodedSetupTokenClaimData = encodedSetupTokenClaimData;
   }
 
-  private setPredictedTokenClaimAddress() {
-    const tokenByteCodeLinear = generateContractByteCodeLinear(this.claimErc20MasterCopy);
+  private predictTokenClaimAddress({
+    networkConfig,
+    encodedSetupTokenClaimData,
+    claimNonce,
+  }: {
+    networkConfig: NetworkConfig;
+    encodedSetupTokenClaimData: Hex;
+    claimNonce: bigint;
+  }) {
+    const tokenByteCodeLinear = generateContractByteCodeLinear(
+      networkConfig.contracts.claimErc20MasterCopy,
+    );
+    const tokenSalt = generateSalt(encodedSetupTokenClaimData, claimNonce);
 
-    const tokenSalt = generateSalt(this.encodedSetupTokenClaimData!, this.claimNonce);
-
-    this.predictedTokenClaimAddress = getCreate2Address({
-      from: this.ensure({
-        data: this.zodiacModuleProxyFactory.address,
-        description: 'Zodiac Module Proxy Factory Address',
-      }),
+    return getCreate2Address({
+      from: networkConfig.contracts.zodiacModuleProxyFactory,
       salt: tokenSalt,
       bytecodeHash: keccak256(encodePacked(['bytes'], [tokenByteCodeLinear])),
     });
   }
 
-  private setupLinearERC20VotingStrategy(
-    safeContractAddress: Address,
-    predictedTokenAddress: Address,
-    votingPeriod: number,
-    quorumPercentage: bigint,
-    quorumDenominator: bigint,
-  ): {
+  private setupLinearERC20VotingStrategy({
+    networkConfig,
+    safeContractAddress,
+    predictedTokenAddress,
+    votingPeriod,
+    quorumPercentage,
+    quorumDenominator,
+  }: {
+    networkConfig: NetworkConfig;
+    safeContractAddress: Address;
+    predictedTokenAddress: Address;
+    votingPeriod: number;
+    quorumPercentage: bigint;
+    quorumDenominator: bigint;
+  }): {
     encodedStrategySetupData: Hex;
     strategyByteCodeLinear: Hex;
   } {
@@ -505,18 +677,28 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
       args: [encodedStrategyInitParams],
     });
 
-    const strategyByteCodeLinear = generateContractByteCodeLinear(this.linearVotingErc20MasterCopy);
+    const strategyByteCodeLinear = generateContractByteCodeLinear(
+      networkConfig.contracts.linearVotingErc20MasterCopy,
+    );
     return {
       encodedStrategySetupData,
       strategyByteCodeLinear,
     };
   }
 
-  private setupLinearERC721VotingStrategy(
-    safeContractAddress: Address,
-    daoData: AzoriusERC721DAO,
-    votingPeriod: number,
-  ): {
+  private setupLinearERC721VotingStrategy({
+    networkConfig,
+    safeContractAddress,
+    votingPeriod,
+    nfts,
+    quorumThreshold,
+  }: {
+    networkConfig: NetworkConfig;
+    safeContractAddress: Address;
+    votingPeriod: number;
+    nfts: ERC721TokenConfig<bigint>[];
+    quorumThreshold: bigint;
+  }): {
     encodedStrategySetupData: Hex;
     strategyByteCodeLinear: Hex;
   } {
@@ -524,11 +706,11 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
       parseAbiParameters(linearERC721VotingSetupParams),
       [
         safeContractAddress, // owner
-        daoData.nfts.map(nft => nft.tokenAddress!), // governance tokens addresses
-        daoData.nfts.map(nft => nft.tokenWeight), // governance tokens weights
+        nfts.map(nft => nft.tokenAddress!), // governance tokens addresses
+        nfts.map(nft => nft.tokenWeight), // governance tokens weights
         SENTINEL_MODULE, // Azorius module
         votingPeriod,
-        daoData.quorumThreshold, // quorom threshold. Since smart contract can't know total of NFTs minted - we need to provide it manually
+        quorumThreshold, // quorom threshold. Since smart contract can't know total of NFTs minted - we need to provide it manually
         1n, // proposer weight, how much is needed to create a proposal.
         500000n, // basis numerator, denominator is 1,000,000, so basis percentage is 50% (simple majority)
       ],
@@ -541,7 +723,7 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
     });
 
     const strategyByteCodeLinear = generateContractByteCodeLinear(
-      this.linearVotingErc721MasterCopy,
+      networkConfig.contracts.linearVotingErc721MasterCopy,
     );
     return {
       encodedStrategySetupData,
@@ -549,89 +731,159 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
     };
   }
 
-  private async setupVotingStrategy(): Promise<
-    | {
-        encodedStrategySetupData: Hex;
-        strategyByteCodeLinear: Hex;
+  private async setupVotingStrategy({
+    publicClient,
+    networkConfig,
+    safeContractAddress,
+    predictedTokenAddress,
+    strategyData,
+  }: {
+    publicClient: PublicClient;
+    networkConfig: NetworkConfig;
+    safeContractAddress: Address;
+    predictedTokenAddress: Address;
+    strategyData: {
+      votingStrategyType: VotingStrategyType;
+      votingPeriod: number;
+      erc20Data?: {
+        quorumPercentage?: bigint;
+      };
+      erc721Data?: {
+        nfts: ERC721TokenConfig<bigint>[];
+        quorumThreshold: bigint;
+      };
+    };
+  }): Promise<{
+    encodedStrategySetupData: Hex;
+    strategyByteCodeLinear: Hex;
+  }> {
+    switch (strategyData.votingStrategyType) {
+      case VotingStrategyType.LINEAR_ERC20: {
+        const linearERC20VotingMasterCopyContract = getContract({
+          abi: abis.LinearERC20VotingV1,
+          address: networkConfig.contracts.linearVotingErc20MasterCopy,
+          client: publicClient,
+        });
+
+        const quorumDenominator =
+          await linearERC20VotingMasterCopyContract.read.QUORUM_DENOMINATOR();
+        return this.setupLinearERC20VotingStrategy({
+          networkConfig,
+          safeContractAddress,
+          predictedTokenAddress,
+          votingPeriod: strategyData.votingPeriod,
+          quorumPercentage: this.ensure({
+            data: strategyData.erc20Data?.quorumPercentage,
+            description: 'Quorum Percentage',
+          }),
+          quorumDenominator,
+        });
       }
-    | undefined
-  > {
-    const azoriusGovernanceDaoData = this.daoData as AzoriusGovernanceDAO;
-    if (azoriusGovernanceDaoData.votingStrategyType === VotingStrategyType.LINEAR_ERC20) {
-      if (!this.predictedTokenAddress) {
-        throw new Error(
-          'Error predicting strategy address - predicted token address was not provided',
-        );
+
+      case VotingStrategyType.LINEAR_ERC721: {
+        return this.setupLinearERC721VotingStrategy({
+          networkConfig,
+          safeContractAddress,
+          votingPeriod: strategyData.votingPeriod,
+          nfts: this.ensure({
+            data: strategyData.erc721Data?.nfts,
+            description: 'ERC721 NFT Data',
+          }),
+          quorumThreshold: this.ensure({
+            data: strategyData.erc721Data?.quorumThreshold,
+            description: 'Quorum Threshold',
+          }),
+        });
       }
 
-      const linearERC20VotingMasterCopyContract = getContract({
-        abi: abis.LinearERC20VotingV1,
-        address: this.linearVotingErc20MasterCopy,
-        client: this.publicClient,
-      });
-
-      const quorumDenominator = await linearERC20VotingMasterCopyContract.read.QUORUM_DENOMINATOR();
-      return this.setupLinearERC20VotingStrategy(
-        this.ensure({ data: this.safeContract.address, description: 'Safe Contract Address' }),
-        this.predictedTokenAddress,
-        Number(azoriusGovernanceDaoData.votingPeriod),
-        azoriusGovernanceDaoData.quorumPercentage,
-        quorumDenominator,
-      );
-    } else if (azoriusGovernanceDaoData.votingStrategyType === VotingStrategyType.LINEAR_ERC721) {
-      const daoData = azoriusGovernanceDaoData as AzoriusERC721DAO;
-
-      return this.setupLinearERC721VotingStrategy(
-        this.ensure({ data: this.safeContract.address, description: 'Safe Contract Address' }),
-        daoData,
-        Number(daoData.votingPeriod),
-      );
-    } else {
-      return undefined;
+      default:
+        throw Error('Voting Strategy is neither ERC20 nor ERC721');
     }
   }
 
-  private async setPredictedStrategyAddress() {
-    const strategySetup = await this.setupVotingStrategy();
-    if (!strategySetup) {
-      return;
-    }
+  private async predictStrategyAddress({
+    publicClient,
+    networkConfig,
+    safeContractAddress,
+    predictedTokenAddress,
+    strategyNonce,
+    strategyData,
+  }: {
+    publicClient: PublicClient;
+    networkConfig: NetworkConfig;
+    safeContractAddress: Address;
+    predictedTokenAddress: Address;
+    strategyNonce: bigint;
+    strategyData: {
+      votingStrategyType: VotingStrategyType;
+      votingPeriod: number;
+      erc20Data?: {
+        quorumPercentage?: bigint;
+      };
+      erc721Data?: {
+        nfts: ERC721TokenConfig<bigint>[];
+        quorumThreshold: bigint;
+      };
+    };
+  }): Promise<PredictedAddressAndInitialization> {
+    const strategySetup = await this.setupVotingStrategy({
+      publicClient,
+      networkConfig,
+      safeContractAddress,
+      predictedTokenAddress,
+      strategyData,
+    });
     const { encodedStrategySetupData, strategyByteCodeLinear } = strategySetup;
 
     const strategySalt = keccak256(
       encodePacked(
         ['bytes32', 'uint256'],
-        [keccak256(encodePacked(['bytes'], [encodedStrategySetupData])), this.strategyNonce],
+        [keccak256(encodePacked(['bytes'], [encodedStrategySetupData])), strategyNonce],
       ),
     );
 
-    this.encodedStrategySetupData = encodedStrategySetupData;
-
-    this.predictedStrategyAddress = getCreate2Address({
-      from: this.ensure({
-        data: this.zodiacModuleProxyFactory.address,
-        description: 'Zodiac Module Proxy Factory Address',
+    return {
+      address: getCreate2Address({
+        from: this.ensure({
+          data: networkConfig.contracts.zodiacModuleProxyFactory,
+          description: 'Zodiac Module Proxy Factory Address',
+        }),
+        salt: strategySalt,
+        bytecodeHash: keccak256(encodePacked(['bytes'], [strategyByteCodeLinear])),
       }),
-      salt: strategySalt,
-      bytecodeHash: keccak256(encodePacked(['bytes'], [strategyByteCodeLinear])),
-    });
+      encodedSetupData: encodedStrategySetupData,
+    };
   }
 
-  private setPredictedAzoriusAddress() {
-    const azoriusGovernanceDaoData = this.daoData as AzoriusGovernanceDAO;
-    const safeContractAddress = this.ensure({
-      data: this.safeContract.address,
-      description: 'Safe Contract Address',
-    });
+  private predictAzorius({
+    networkConfig,
+    safeContractAddress,
+    predictedStrategyAddress,
+    azoriusNonce,
+    goveranceData,
+  }: {
+    networkConfig: NetworkConfig;
+    safeContractAddress: Address;
+    predictedStrategyAddress: Address;
+    azoriusNonce: bigint;
+    goveranceData: {
+      timelock: number;
+      executionPeriod: number;
+    };
+  }): {
+    address: Address;
+    encodedSetupData: Hex;
+  } {
+    // const azoriusGovernanceDaoData = this.daoData as AzoriusGovernanceDAO;
     const encodedInitAzoriusData = encodeAbiParameters(
       parseAbiParameters(['address, address, address, address[], uint32, uint32']),
       [
         safeContractAddress,
         safeContractAddress,
         safeContractAddress,
-        [this.predictedStrategyAddress!],
-        Number(azoriusGovernanceDaoData.timelock), // timelock period in blocks
-        Number(azoriusGovernanceDaoData.executionPeriod), // execution period in blocks
+        [predictedStrategyAddress],
+        goveranceData.timelock, // timelock period in blocks
+        goveranceData.executionPeriod, // execution period in blocks
       ],
     );
 
@@ -641,34 +893,35 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
       args: [encodedInitAzoriusData],
     });
 
-    const azoriusByteCodeLinear = generateContractByteCodeLinear(this.moduleAzoriusMasterCopy);
-    const azoriusSalt = generateSalt(encodedSetupAzoriusData, this.azoriusNonce);
+    const azoriusByteCodeLinear = generateContractByteCodeLinear(
+      networkConfig.contracts.moduleAzoriusMasterCopy,
+    );
+    const azoriusSalt = generateSalt(encodedSetupAzoriusData, azoriusNonce);
 
-    this.encodedSetupAzoriusData = encodedSetupAzoriusData;
-    this.predictedAzoriusAddress = getCreate2Address({
-      from: this.ensure({
-        data: this.zodiacModuleProxyFactory.address,
-        description: 'Zodiac Module Proxy Factory Address',
+    return {
+      address: getCreate2Address({
+        from: networkConfig.contracts.zodiacModuleProxyFactory,
+        salt: azoriusSalt,
+        bytecodeHash: keccak256(encodePacked(['bytes'], [azoriusByteCodeLinear])),
       }),
-      salt: azoriusSalt,
-      bytecodeHash: keccak256(encodePacked(['bytes'], [azoriusByteCodeLinear])),
-    });
+      encodedSetupData: encodedSetupAzoriusData,
+    };
   }
 
-  private setContracts() {
-    if (!this.predictedStrategyAddress) {
-      return;
-    }
+  // private setContracts() {
+  //   if (!this.predictedStrategyAddress) {
+  //     return;
+  //   }
 
-    const daoData = this.daoData as AzoriusGovernanceDAO;
-    if (
-      !!this.predictedTokenAddress &&
-      daoData.votingStrategyType === VotingStrategyType.LINEAR_ERC20
-    ) {
-      this.votesTokenAddress = this.predictedTokenAddress;
-      this.linearERC20VotingAddress = this.predictedStrategyAddress;
-    } else if (daoData.votingStrategyType === VotingStrategyType.LINEAR_ERC721) {
-      this.linearERC721VotingAddress = this.predictedStrategyAddress;
-    }
-  }
+  //   const daoData = this.daoData as AzoriusGovernanceDAO;
+  //   if (
+  //     !!this.predictedTokenAddress &&
+  //     daoData.votingStrategyType === VotingStrategyType.LINEAR_ERC20
+  //   ) {
+  //     this.votesTokenAddress = this.predictedTokenAddress;
+  //     this.linearERC20VotingAddress = this.predictedStrategyAddress;
+  //   } else if (daoData.votingStrategyType === VotingStrategyType.LINEAR_ERC721) {
+  //     this.linearERC721VotingAddress = this.predictedStrategyAddress;
+  //   }
+  // }
 }

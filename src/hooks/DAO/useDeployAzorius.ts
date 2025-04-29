@@ -140,6 +140,7 @@ const useDeployAzorius = () => {
 
       const txBuilderFactory = new TxBuilderFactory(
         publicClient,
+        networkConfig,
         true,
         daoData,
         compatibilityFallbackHandler,

@@ -10,6 +10,7 @@ import {
   SubDAO,
   VotingStrategyType,
 } from '../types';
+import { NetworkConfig } from '../types/network';
 import { AzoriusTxBuilder } from './AzoriusTxBuilder';
 import { BaseTxBuilder } from './BaseTxBuilder';
 import { DaoTxBuilder } from './DaoTxBuilder';
@@ -18,6 +19,7 @@ import { MultisigTxBuilder } from './MultisigTxBuilder';
 import { safeData } from './helpers/safeData';
 
 export class TxBuilderFactory extends BaseTxBuilder {
+  private networkConfig: NetworkConfig;
   private readonly saltNum: bigint;
 
   // Safe Data
@@ -45,6 +47,7 @@ export class TxBuilderFactory extends BaseTxBuilder {
 
   constructor(
     publicClient: PublicClient,
+    networkConfig: NetworkConfig,
     isAzorius: boolean,
     daoData: SafeMultisigDAO | AzoriusERC20DAO | AzoriusERC721DAO | SubDAO,
     compatibilityFallbackHandler: Address,
@@ -70,6 +73,7 @@ export class TxBuilderFactory extends BaseTxBuilder {
   ) {
     super(publicClient, isAzorius, daoData, parentAddress, parentTokenAddress);
     this.saltNum = getRandomBytes();
+    this.networkConfig = networkConfig;
 
     this.compatibilityFallbackHandler = compatibilityFallbackHandler;
     this.votesErc20MasterCopy = votesErc20MasterCopy;
@@ -133,6 +137,7 @@ export class TxBuilderFactory extends BaseTxBuilder {
   }) {
     return new DaoTxBuilder(
       this.publicClient,
+      this.networkConfig,
       this.isAzorius,
       this.daoData,
       this.saltNum,
@@ -193,14 +198,6 @@ export class TxBuilderFactory extends BaseTxBuilder {
       this.safeContractAddress!,
       this.votesErc20MasterCopy,
       this.zodiacModuleProxyFactory,
-      this.multiSendCallOnly,
-      this.claimErc20MasterCopy,
-      this.linearVotingErc20MasterCopy,
-      this.linearVotingErc721MasterCopy,
-      this.moduleAzoriusMasterCopy,
-      this.votesErc20LockableMasterCopy,
-      this.parentAddress,
-      this.parentTokenAddress,
     );
 
     await azoriusTxBuilder.init();

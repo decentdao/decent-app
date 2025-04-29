@@ -69,6 +69,7 @@ const useBuildDAOTx = () => {
 
       const txBuilderFactory = new TxBuilderFactory(
         publicClient,
+        networkConfig,
         isAzorius,
         daoData,
         compatibilityFallbackHandler,

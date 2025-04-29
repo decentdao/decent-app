@@ -1,8 +1,8 @@
 import { abis } from '@fractal-framework/fractal-contracts';
-import { Address, encodeFunctionData, Hex, PublicClient, zeroAddress } from 'viem';
+import { Address, encodeFunctionData, Hex, publicActions, PublicClient, zeroAddress } from 'viem';
 import GnosisSafeL2Abi from '../assets/abi/GnosisSafeL2';
 import MultiSendCallOnlyAbi from '../assets/abi/MultiSendCallOnly';
-import { buildContractCall, encodeMultiSend } from '../helpers';
+import { buildContractCall, encodeMultiSend, getRandomBytes } from '../helpers';
 import {
   AzoriusERC20DAO,
   AzoriusERC721DAO,
@@ -10,13 +10,16 @@ import {
   SafeTransaction,
   VotingStrategyType,
 } from '../types';
+import { NetworkConfig } from '../types/network';
 import { BaseTxBuilder } from './BaseTxBuilder';
 import { TxBuilderFactory } from './TxBuilderFactory';
 import { DecentModule, fractalModuleData } from './helpers/fractalModuleData';
 
 export class DaoTxBuilder extends BaseTxBuilder {
   private readonly saltNum;
+  private publicClient: PublicClient,
 
+  private networkConfig: NetworkConfig;
   private txBuilderFactory: TxBuilderFactory;
 
   // Safe Data
@@ -38,6 +41,7 @@ export class DaoTxBuilder extends BaseTxBuilder {
 
   constructor(
     publicClient: PublicClient,
+    networkConfig: NetworkConfig,
     isAzorius: boolean,
     daoData: SafeMultisigDAO | AzoriusERC20DAO | AzoriusERC721DAO,
     saltNum: bigint,
@@ -59,8 +63,11 @@ export class DaoTxBuilder extends BaseTxBuilder {
     parentStrategyType?: VotingStrategyType,
     parentStrategyAddress?: Address,
   ) {
-    super(publicClient, isAzorius, daoData, parentAddress, parentTokenAddress);
+    super();
     this.saltNum = saltNum;
+
+    this.publicClient = publicClient;
+    this.networkConfig = networkConfig;
 
     this.createSafeTx = createSafeTx;
     this.safeContractAddress = safeContractAddress;
@@ -100,15 +107,70 @@ export class DaoTxBuilder extends BaseTxBuilder {
       this.internalTxs = this.internalTxs.concat(this.buildUpdateDAOSnapshotENSTx());
     }
 
+    const data = this.daoData as AzoriusERC20DAO;
+
+    const strategyNonce = getRandomBytes();
+    const azoriusNonce = getRandomBytes();
+    const claimNonce = getRandomBytes();
+    const tokenNonce = getRandomBytes();
+
+    const azoriusGovernanceDaoData = this.daoData as AzoriusGovernanceDAO;
+
+    const predicted = await azoriusTxBuilder.predict({
+      publicClient: this.publicClient,
+      networkConfig: this.networkConfig,
+      safeContractAddress: this.safeContractAddress,
+      nonces: {
+        strategyNonce,
+        azoriusNonce,
+        claimNonce,
+        tokenNonce,
+      },
+      tokenData: {
+        lockType: data.locked,
+        name: data.tokenName,
+        symbol: data.tokenSymbol,
+        supply: data.tokenSupply,
+        allocations: data.tokenAllocations,
+      },
+      strategyData: {
+        votingStrategyType: data.votingStrategyType,
+        votingPeriod: Number(data.votingPeriod),
+        erc20Data: (data.votingStrategyType == VotingStrategyType.LINEAR_ERC20) ? {
+          quorumPercentage: data.quorumPercentage,
+        } : undefined,
+        erc721Data: (data.votingStrategyType == VotingStrategyType.LINEAR_ERC721) ? {
+          nfts: azoriusGovernanceDaoData.nfts,
+          quorumThreshold: azoriusGovernanceDaoData.quorumThreshold,
+        } : undefined,
+
+      },
+      goveranceData: {
+        timelock: Number(data.timelock),
+        executionPeriod: Number(data.executionPeriod),
+      },
+      // parentAllocation: {
+      //   tokenAddress: azoriusGovernanceDaoData.parentTokenAddress,
+      //   amount: data.parentAllocationAmount,
+      // },
+    });
+
     this.internalTxs = this.internalTxs.concat(
-      azoriusTxBuilder.buildVotingContractSetupTx(),
-      azoriusTxBuilder.buildEnableAzoriusModuleTx(),
+      azoriusTxBuilder.buildVotingContractSetupTx({
+        networkConfig: this.networkConfig,
+        predictedAzoriusAddress: predicted.azorius.address,
+        votingStrategyType: data.votingStrategyType,
+      }),
+      azoriusTxBuilder.buildEnableAzoriusModuleTx({
+        safeContractAddress: this.safeContractAddress,
+        predictedAzoriusAddress: predicted.azorius.address,
+      }),
     );
 
     if (this.parentAddress) {
       const freezeGuardTxBuilder = this.txBuilderFactory.createFreezeGuardTxBuilder(
-        azoriusTxBuilder.azoriusAddress,
-        azoriusTxBuilder.linearERC20VotingAddress ?? azoriusTxBuilder.linearERC721VotingAddress,
+        predicted.azorius.address,
+        predicted.strategy.address,
         this.parentStrategyType,
         this.parentStrategyAddress,
       );
@@ -124,35 +186,79 @@ export class DaoTxBuilder extends BaseTxBuilder {
         freezeGuardTxBuilder.buildDeployZodiacModuleTx(),
         freezeGuardTxBuilder.buildFreezeVotingSetupTx(),
         freezeGuardTxBuilder.buildDeployFreezeGuardTx(),
-        freezeGuardTxBuilder.buildSetGuardTx(azoriusTxBuilder.azoriusAddress!),
+        freezeGuardTxBuilder.buildSetGuardTx(predicted.azorius.address),
       );
     }
-    const data = this.daoData as AzoriusERC20DAO;
-
     this.internalTxs = this.internalTxs.concat([
-      azoriusTxBuilder.buildAddAzoriusContractAsOwnerTx(),
-      ...(!!existingSafeOwners ? azoriusTxBuilder.buildRemoveOwners(existingSafeOwners) : []),
-      azoriusTxBuilder.buildRemoveMultiSendOwnerTx(),
+      azoriusTxBuilder.buildAddAzoriusContractAsOwnerTx({
+        safeContractAddress: this.safeContractAddress,
+        predictedAzoriusAddress: predicted.azorius.address,
+      }),
+      ...(!!existingSafeOwners
+        ? azoriusTxBuilder.buildRemoveOwners({
+            safeContractAddress: this.safeContractAddress,
+            multiSendCallOnly: this.multiSendCallOnly,
+            owners: existingSafeOwners,
+          })
+        : []),
+      azoriusTxBuilder.buildRemoveMultiSendOwnerTx({
+        safeContractAddress: this.safeContractAddress,
+        multiSendCallOnly: this.multiSendCallOnly,
+        predictedAzoriusAddress: predicted.azorius.address,
+      }),
     ]);
 
     // build token if token is not imported
     if (!data.isTokenImported && data.votingStrategyType === VotingStrategyType.LINEAR_ERC20) {
-      txs.push(azoriusTxBuilder.buildCreateTokenTx());
+      txs.push(
+        azoriusTxBuilder.buildCreateTokenTx({
+          networkConfig: this.networkConfig,
+          lockType: data.locked,
+          encodedSetupTokenData: predicted.token.encodedSetupData,
+          tokenNonce,
+        }),
+      );
     }
 
-    txs.push(azoriusTxBuilder.buildDeployStrategyTx());
-    txs.push(azoriusTxBuilder.buildDeployAzoriusTx());
+    txs.push(
+      azoriusTxBuilder.buildDeployStrategyTx({
+        networkConfig: this.networkConfig,
+        encodedStrategySetupData: predicted.strategy.encodedSetupData,
+        votingStrategyType: data.votingStrategyType,
+        strategyNonce,
+      }),
+    );
+    txs.push(
+      azoriusTxBuilder.buildDeployAzoriusTx({
+        networkConfig: this.networkConfig,
+        encodedSetupAzoriusData: predicted.azorius.encodedSetupData,
+        azoriusNonce,
+      }),
+    );
 
     // If subDAO and parentAllocation, deploy claim module
     let tokenClaimTx: SafeTransaction | undefined;
     const parentAllocation = (this.daoData as AzoriusERC20DAO).parentAllocationAmount;
 
     if (this.parentTokenAddress && parentAllocation && parentAllocation !== 0n) {
-      const tokenApprovalTx = azoriusTxBuilder.buildApproveClaimAllocation();
+      const tokenApprovalTx = azoriusTxBuilder.buildApproveClaimAllocation({
+        votesTokenAddress: predicted.token.address,
+        predictedTokenClaimAddress: this.ensure({
+          data: predicted.tokenClaim?.address,
+          description: 'Token Claim Address',
+        }),
+      });
       if (!tokenApprovalTx) {
         throw new Error('buildApproveClaimAllocation returned undefined');
       }
-      tokenClaimTx = azoriusTxBuilder.buildDeployTokenClaim();
+      tokenClaimTx = azoriusTxBuilder.buildDeployTokenClaim({
+        networConfig: this.networkConfig,
+        encodedSetupTokenClaimData: this.ensure({
+          data: predicted.tokenClaim?.encodedSetupData,
+          description: 'Token Claim Setup Data',
+        }),
+        claimNonce,
+      });
       this.internalTxs.push(tokenApprovalTx);
     }
 
@@ -161,7 +267,13 @@ export class DaoTxBuilder extends BaseTxBuilder {
       txs.push(this.deployFractalModuleTx);
     }
 
-    txs.push(this.buildExecInternalSafeTx(azoriusTxBuilder.signatures()));
+    txs.push(
+      this.buildExecInternalSafeTx(
+        azoriusTxBuilder.signatures({
+          multiSendCallOnlyAddress: this.networkConfig.contracts.multiSendCallOnly,
+        }),
+      ),
+    );
 
     // token claim deployment tx is pushed at the end to ensure approval is executed first
     if (tokenClaimTx) {
