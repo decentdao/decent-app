@@ -1,0 +1,14 @@
+{
+  "connect": "Подключайтесь",
+  "connectWallet": "Подключить кошелек",
+  "disconnect": "Отключить",
+  "wallet": "Кошелек",
+  "titleManageProposalTemplate": "Управление шаблоном",
+  "optionCreateSubDAO": "Создайте SubDAO",
+  "optionInitiateFreeze": "Начать заморозку",
+  "optionInitiateClawback": "Инициировать возврат",
+  "optionRemoveTemplate": "Удалить шаблон",
+  "optionForkTemplate": "Шаблон вилки",
+  "optionModifyGovernance": "Изменить управление",
+  "optionSettings": "Настройки"
+}

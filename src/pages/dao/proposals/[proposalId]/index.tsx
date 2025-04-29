@@ -69,7 +69,7 @@ export function SafeProposalDetailsPage() {
         breadcrumbs={[
           {
             terminus: t('proposals', { ns: 'breadcrumbs' }),
-            path: DAO_ROUTES.proposals.relative(addressPrefix, safe.address),
+            path: DAO_ROUTES.dao.relative(addressPrefix, safe.address),
           },
           {
             terminus: t('proposal', {

@@ -37,7 +37,7 @@ export function ConfirmTransactionModal({
     node: { safe },
   } = useStore({ daoKey });
   const { addressPrefix } = useNetworkConfigStore();
-  const { addAction } = useProposalActionsStore();
+  const { addAction, resetActions } = useProposalActionsStore();
   const navigate = useNavigate();
 
   const { createProposalValidation } = useCreateProposalSchema();
@@ -65,7 +65,7 @@ export function ConfirmTransactionModal({
           actionType: ProposalActionType.DAPP_INTEGRATION,
           transactions: values.transactions,
         };
-
+        resetActions();
         addAction({
           ...action,
           content: <Text>{dappLabel}</Text>,

@@ -24,7 +24,7 @@ export function useDateTimeDisplay(referenceDate: Date) {
   const diffInMinutes = Math.abs(differenceInMinutes(referenceDate, now));
   const diffInMonths = Math.abs(differenceInMonths(referenceDate, now));
 
-  const { t } = useTranslation();
+  const { t } = useTranslation('common');
   if (diffInMinutes < 5) {
     return t(isCountdown ? 'labelNowishLeft' : 'labelNowishAgo');
   } else if (diffInMinutes < 60) {

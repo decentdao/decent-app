@@ -45,16 +45,12 @@ const useDeployAzorius = () => {
       moduleFractalMasterCopy,
       linearVotingErc20MasterCopy,
       linearVotingErc721MasterCopy,
-      linearVotingErc20V1MasterCopy,
-      linearVotingErc721V1MasterCopy,
       moduleAzoriusMasterCopy,
       freezeGuardAzoriusMasterCopy,
       freezeGuardMultisigMasterCopy,
       freezeVotingErc20MasterCopy,
       freezeVotingErc721MasterCopy,
       freezeVotingMultisigMasterCopy,
-      paymaster,
-      accountAbstraction,
     },
     addressPrefix,
   } = useNetworkConfigStore();
@@ -96,10 +92,9 @@ const useDeployAzorius = () => {
       opts: {
         shouldSetName: boolean;
         shouldSetSnapshot: boolean;
-        enableGaslessVoting: boolean;
       },
     ) => {
-      const { shouldSetName, shouldSetSnapshot, enableGaslessVoting } = opts;
+      const { shouldSetName, shouldSetSnapshot } = opts;
       if (!safeAddress || !canUserCreateProposal || !safe) {
         return;
       }
@@ -168,12 +163,8 @@ const useDeployAzorius = () => {
         moduleFractalMasterCopy,
         linearVotingErc20MasterCopy,
         linearVotingErc721MasterCopy,
-        linearVotingErc20V1MasterCopy,
-        linearVotingErc721V1MasterCopy,
         moduleAzoriusMasterCopy,
         votesErc20LockableMasterCopy,
-        paymaster,
-        accountAbstraction,
         subgraphInfo?.parentAddress ?? undefined,
       );
 
@@ -187,7 +178,6 @@ const useDeployAzorius = () => {
       const safeTx = await daoTxBuilder.buildAzoriusTx({
         shouldSetName,
         shouldSetSnapshot,
-        enableGaslessVoting,
         existingSafeOwners: safe.owners,
       });
 
@@ -228,7 +218,7 @@ const useDeployAzorius = () => {
         pendingToastMessage: t('modifyGovernanceSetAzoriusProposalPendingMessage'),
         successToastMessage: t('proposalCreateSuccessToastMessage', { ns: 'proposal' }),
         failedToastMessage: t('proposalCreateFailureToastMessage', { ns: 'proposal' }),
-        successCallback: () => navigate(DAO_ROUTES.proposals.relative(addressPrefix, safeAddress)),
+        successCallback: () => navigate(DAO_ROUTES.dao.relative(addressPrefix, safeAddress)),
       });
     },
     [
@@ -254,11 +244,7 @@ const useDeployAzorius = () => {
       moduleFractalMasterCopy,
       linearVotingErc20MasterCopy,
       linearVotingErc721MasterCopy,
-      linearVotingErc20V1MasterCopy,
-      linearVotingErc721V1MasterCopy,
       moduleAzoriusMasterCopy,
-      paymaster,
-      accountAbstraction,
       submitProposal,
       t,
       getParentDAOModules,

@@ -23,7 +23,7 @@ export function useCurrentDAOKey() {
 
   if (
     queryAddressPrefix === undefined ||
-    queryDaoAddress === undefined ||
+    normalizedDAOAddress === undefined ||
     !validPrefixes.has(normalizedQueryAddressPrefix)
   ) {
     return {

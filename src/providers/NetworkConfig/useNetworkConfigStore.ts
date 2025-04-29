@@ -3,10 +3,10 @@ import { NetworkConfig } from '../../types/network';
 import { networks } from './networks';
 import { mainnetConfig } from './networks/mainnet';
 
-interface NetworkConfigStore extends NetworkConfig {
+type NetworkConfigStore = NetworkConfig & {
   getConfigByChainId: (chainId?: number) => NetworkConfig;
   setCurrentConfig: (config: NetworkConfig) => void;
-}
+};
 
 export const supportedNetworks = Object.values(networks).sort((a, b) => a.order - b.order);
 export const supportedEnsNetworks = Object.values(networks)

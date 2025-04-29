@@ -31,16 +31,12 @@ const useBuildDAOTx = () => {
       moduleFractalMasterCopy,
       linearVotingErc20MasterCopy,
       linearVotingErc721MasterCopy,
-      linearVotingErc20V1MasterCopy,
-      linearVotingErc721V1MasterCopy,
       moduleAzoriusMasterCopy,
       freezeGuardAzoriusMasterCopy,
       freezeGuardMultisigMasterCopy,
       freezeVotingErc20MasterCopy,
       freezeVotingErc721MasterCopy,
       freezeVotingMultisigMasterCopy,
-      paymaster,
-      accountAbstraction,
     },
   } = useNetworkConfigStore();
   const { daoKey } = useCurrentDAOKey();
@@ -91,12 +87,8 @@ const useBuildDAOTx = () => {
         moduleFractalMasterCopy,
         linearVotingErc20MasterCopy,
         linearVotingErc721MasterCopy,
-        linearVotingErc20V1MasterCopy,
-        linearVotingErc721V1MasterCopy,
         moduleAzoriusMasterCopy,
         votesErc20LockableMasterCopy,
-        paymaster,
-        accountAbstraction,
         parentAddress,
         parentTokenAddress,
       );
@@ -122,7 +114,6 @@ const useBuildDAOTx = () => {
       const buildSafeTxParams = {
         shouldSetName: true, // We KNOW this will always be true because the Decent UI doesn't allow creating a safe without a name
         shouldSetSnapshot: daoData.snapshotENS !== '',
-        enableGaslessVoting: daoData.gaslessVoting,
       };
 
       // Build Tx bundle based on governance type (Azorius or Multisig)
@@ -156,11 +147,7 @@ const useBuildDAOTx = () => {
       moduleFractalMasterCopy,
       linearVotingErc20MasterCopy,
       linearVotingErc721MasterCopy,
-      linearVotingErc20V1MasterCopy,
-      linearVotingErc721V1MasterCopy,
       moduleAzoriusMasterCopy,
-      paymaster,
-      accountAbstraction,
       governance,
       linearVotingErc721Address,
     ],

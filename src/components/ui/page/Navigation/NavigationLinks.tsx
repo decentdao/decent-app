@@ -3,6 +3,7 @@ import { BookOpen, Coins, GitFork, House, Question, UsersThree } from '@phosphor
 import { DAO_ROUTES } from '../../../../constants/routes';
 import { URL_DOCS, URL_FAQ } from '../../../../constants/url';
 import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
+import { LanguageSwitcher } from '../../../../i18n/LanguageSwitcher';
 import { useStore } from '../../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../../providers/NetworkConfig/useNetworkConfigStore';
 import Divider from '../../utils/Divider';
@@ -38,7 +39,8 @@ function ExternalLinks({ closeDrawer }: { closeDrawer?: () => void }) {
         NavigationIcon={BookOpen}
         scope="external"
         closeDrawer={closeDrawer}
-      />
+      />{' '}
+      <LanguageSwitcher data-testid="navigation-language" />
     </Box>
   );
 }

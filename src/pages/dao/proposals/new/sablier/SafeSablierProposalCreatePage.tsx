@@ -21,6 +21,7 @@ import { useFilterSpamTokens } from '../../../../../hooks/utils/useFilterSpamTok
 import { analyticsEvents } from '../../../../../insights/analyticsEvents';
 import { useStore } from '../../../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../../../providers/NetworkConfig/useNetworkConfigStore';
+import { useProposalActionsStore } from '../../../../../store/actions/useProposalActionsStore';
 import {
   CreateProposalForm,
   CreateProposalSteps,
@@ -44,6 +45,7 @@ export function SafeSablierProposalCreatePage() {
   const filterSpamTokens = useFilterSpamTokens();
   const { t } = useTranslation('proposal');
   const navigate = useNavigate();
+  const { proposalMetadata: actionsProposalMetadata } = useProposalActionsStore();
 
   const prepareProposalData = useCallback(
     async (values: CreateProposalForm | CreateSablierProposalForm) => {
@@ -135,20 +137,27 @@ export function SafeSablierProposalCreatePage() {
       />
     );
   }
-  const sablierProposalInitialValues = {
-    ...DEFAULT_SABLIER_PROPOSAL,
+  const defaultTokenAddress = fungibleNonNativeAssetsWithBalance[0].tokenAddress;
+  const sablierProposalInitialValues: CreateSablierProposalForm = {
+    ...(actionsProposalMetadata
+      ? {
+          ...DEFAULT_SABLIER_PROPOSAL,
+          proposalMetadata: { ...actionsProposalMetadata },
+        }
+      : DEFAULT_SABLIER_PROPOSAL),
     streams: DEFAULT_SABLIER_PROPOSAL.streams.map(s => {
       return {
         ...s,
-        tokenAddress: s.tokenAddress || fungibleNonNativeAssetsWithBalance[0].tokenAddress,
+        tokenAddress: defaultTokenAddress,
       };
     }),
+    nonce: safe.nextNonce,
   };
 
   const pageHeaderBreadcrumbs = [
     {
       terminus: t('proposals', { ns: 'breadcrumbs' }),
-      path: DAO_ROUTES.proposals.relative(addressPrefix, safe.address),
+      path: DAO_ROUTES.dao.relative(addressPrefix, safe.address),
     },
     {
       terminus: t('proposalNew', { ns: 'breadcrumbs' }),
@@ -157,7 +166,7 @@ export function SafeSablierProposalCreatePage() {
   ];
 
   const pageHeaderButtonClickHandler = () => {
-    navigate(DAO_ROUTES.proposals.relative(addressPrefix, safe.address));
+    navigate(DAO_ROUTES.dao.relative(addressPrefix, safe.address));
   };
 
   const stepButtons = ({
@@ -176,10 +185,7 @@ export function SafeSablierProposalCreatePage() {
 
   return (
     <ProposalBuilder
-      initialValues={{
-        ...sablierProposalInitialValues,
-        nonce: safe.nextNonce,
-      }}
+      initialValues={sablierProposalInitialValues}
       pageHeaderTitle={t('createProposal', { ns: 'proposal' })}
       pageHeaderBreadcrumbs={pageHeaderBreadcrumbs}
       pageHeaderButtonClickHandler={pageHeaderButtonClickHandler}
@@ -196,6 +202,7 @@ export function SafeSablierProposalCreatePage() {
             pendingTransaction={pendingCreateTx}
             {...formikProps}
             values={formikProps.values as CreateSablierProposalForm}
+            defaultTokenAddress={defaultTokenAddress}
           />
         );
       }}

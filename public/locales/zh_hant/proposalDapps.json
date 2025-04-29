@@ -1,0 +1,8 @@
+{
+  "emptyProposalDapps": "此Safe尚未支援任何dApps。",
+  "connectingWalletConnect": "連接...",
+  "successConnectingWalletConnect": "已連接！",
+  "failConnectingWalletConnect": "連線失敗，請檢查uri。",
+  "labelIframeWalletConnectUri": "WalletConnect URI",
+  "helperIframeWalletConnectUri": "貼上連接"
+}

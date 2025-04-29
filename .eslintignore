@@ -2,5 +2,6 @@
 node_modules
 src/assets/typechain-types
 /docker
+/scripts
 playwright.config.ts
 vitest.config.ts

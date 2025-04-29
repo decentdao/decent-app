@@ -23,6 +23,8 @@ export const DEFAULT_PROPOSAL = {
 };
 
 export const SECONDS_IN_DAY = 60 * 60 * 24;
+export const SECONDS_IN_HOUR = 60 * 60;
+export const SECONDS_IN_MINUTE = 60;
 
 export const DEFAULT_TRANCHE: Tranche = {
   amount: {

@@ -1,0 +1,10 @@
+{
+  "actions": "アクション",
+  "addAction": "アクションを追加します",
+  "transferAssets": "譲渡資産",
+  "transferAssetsSub": "1回の支払いを作成します。",
+  "comingSoon": "近日公開...",
+  "comingSoonSub": "途中でより多くのアクション。",
+  "transactionBuilderActionCard_single": "トランザクションビルダExecute{{ functionName }} at{{ targetAddress }}.",
+  "transactionBuilderActionCard_multiple": "トランザクション・ビルダーバッチ{{ numOfTransactions }} トランザクション"
+}

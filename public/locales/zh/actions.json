@@ -1,0 +1,10 @@
+{
+  "actions": "动作",
+  "addAction": "添加动作",
+  "transferAssets": "转移资产",
+  "transferAssetsSub": "创建一次付款。",
+  "comingSoon": "即将推出...",
+  "comingSoonSub": "途中有更多动作。",
+  "transactionBuilderActionCard_single": "事务生成器：执行{{ functionName }} at{{ targetAddress }}",
+  "transactionBuilderActionCard_multiple": "事务生成器：批量{{ numOfTransactions }} 事务"
+}
