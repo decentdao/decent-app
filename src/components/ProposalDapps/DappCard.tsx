@@ -35,7 +35,7 @@ export default function DappCard({
       my="0"
       p="0"
       bg="neutral-2"
-      rounded="lg"
+      rounded="xl"
       cursor="pointer"
       _hover={{
         bg: 'neutral-3',
