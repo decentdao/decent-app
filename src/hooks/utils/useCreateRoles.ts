@@ -147,10 +147,6 @@ export default function useCreateRoles() {
       const azoriusGovernance = governance as AzoriusGovernance;
       const { votingStrategy, votesToken, erc721Tokens } = azoriusGovernance;
 
-      if (!paymaster) {
-        throw new Error('Paymaster addresses are not set');
-      }
-
       if (!azoriusGovernance.type) {
         throw new Error('Governance type is not set');
       }
@@ -189,31 +185,29 @@ export default function useCreateRoles() {
             allowFailure: false,
           });
 
-        if (gaslessVotingFeatureEnabled && !accountAbstraction) {
-          throw new Error('Account abstraction is not enabled');
-        }
-        const encodedStrategyInitParams = gaslessVotingFeatureEnabled
-          ? encodeAbiParameters(parseAbiParameters(linearERC20VotingWithWhitelistV1SetupParams), [
-              safeAddress, // owner
-              votesToken.address, // governance token
-              moduleAzoriusAddress, // Azorius module
-              existingVotingPeriod,
-              existingQuorumNumerator,
-              existingBasisNumerator,
-              hatsProtocol,
-              whitelistedHatsIds,
-              accountAbstraction!.lightAccountFactory,
-            ])
-          : encodeAbiParameters(parseAbiParameters(linearERC20VotingWithWhitelistSetupParams), [
-              safeAddress, // owner
-              votesToken.address, // governance token
-              moduleAzoriusAddress, // Azorius module
-              existingVotingPeriod,
-              existingQuorumNumerator,
-              existingBasisNumerator,
-              hatsProtocol,
-              whitelistedHatsIds,
-            ]);
+        const encodedStrategyInitParams =
+          gaslessVotingFeatureEnabled && accountAbstraction
+            ? encodeAbiParameters(parseAbiParameters(linearERC20VotingWithWhitelistV1SetupParams), [
+                safeAddress, // owner
+                votesToken.address, // governance token
+                moduleAzoriusAddress, // Azorius module
+                existingVotingPeriod,
+                existingQuorumNumerator,
+                existingBasisNumerator,
+                hatsProtocol,
+                whitelistedHatsIds,
+                accountAbstraction.lightAccountFactory,
+              ])
+            : encodeAbiParameters(parseAbiParameters(linearERC20VotingWithWhitelistSetupParams), [
+                safeAddress, // owner
+                votesToken.address, // governance token
+                moduleAzoriusAddress, // Azorius module
+                existingVotingPeriod,
+                existingQuorumNumerator,
+                existingBasisNumerator,
+                hatsProtocol,
+                whitelistedHatsIds,
+              ]);
 
         const encodedStrategySetupData = encodeFunctionData({
           abi: abis.LinearERC20VotingWithHatsProposalCreation,
@@ -304,34 +298,35 @@ export default function useCreateRoles() {
             allowFailure: false,
           });
 
-        if (gaslessVotingFeatureEnabled && !accountAbstraction) {
-          throw new Error('Account abstraction is not enabled');
-        }
+        const encodedStrategyInitParams =
+          gaslessVotingFeatureEnabled && accountAbstraction
+            ? encodeAbiParameters(
+                parseAbiParameters(linearERC721VotingWithWhitelistV1SetupParams),
+                [
+                  safeAddress, // owner
+                  erc721Tokens.map(token => token.address), // governance tokens addresses
+                  erc721Tokens.map(token => token.votingWeight), // governance tokens weights
+                  moduleAzoriusAddress, // Azorius module
+                  existingVotingPeriod,
+                  existingQuorumThreshold,
+                  existingBasisNumerator,
+                  hatsProtocol,
+                  whitelistedHatsIds,
+                  accountAbstraction.lightAccountFactory,
+                ],
+              )
+            : encodeAbiParameters(parseAbiParameters(linearERC721VotingWithWhitelistSetupParams), [
+                safeAddress, // owner
+                erc721Tokens.map(token => token.address), // governance tokens addresses
+                erc721Tokens.map(token => token.votingWeight), // governance tokens weights
+                moduleAzoriusAddress, // Azorius module
+                existingVotingPeriod,
+                existingQuorumThreshold,
+                existingBasisNumerator,
+                hatsProtocol,
+                whitelistedHatsIds,
+              ]);
 
-        const encodedStrategyInitParams = gaslessVotingFeatureEnabled
-          ? encodeAbiParameters(parseAbiParameters(linearERC721VotingWithWhitelistV1SetupParams), [
-              safeAddress, // owner
-              erc721Tokens.map(token => token.address), // governance tokens addresses
-              erc721Tokens.map(token => token.votingWeight), // governance tokens weights
-              moduleAzoriusAddress, // Azorius module
-              existingVotingPeriod,
-              existingQuorumThreshold,
-              existingBasisNumerator,
-              hatsProtocol,
-              whitelistedHatsIds,
-              accountAbstraction!.lightAccountFactory,
-            ])
-          : encodeAbiParameters(parseAbiParameters(linearERC721VotingWithWhitelistSetupParams), [
-              safeAddress, // owner
-              erc721Tokens.map(token => token.address), // governance tokens addresses
-              erc721Tokens.map(token => token.votingWeight), // governance tokens weights
-              moduleAzoriusAddress, // Azorius module
-              existingVotingPeriod,
-              existingQuorumThreshold,
-              existingBasisNumerator,
-              hatsProtocol,
-              whitelistedHatsIds,
-            ]);
         const encodedStrategySetupData = encodeFunctionData({
           abi: abis.LinearERC721VotingWithHatsProposalCreation,
           functionName: 'setUp',
@@ -1829,7 +1824,7 @@ export default function useCreateRoles() {
           failedToastMessage: t('proposalCreateFailureToastMessage', { ns: 'proposal' }),
           successCallback: () => {
             if (safeAddress) {
-              navigate(DAO_ROUTES.proposals.relative(addressPrefix, safeAddress));
+              navigate(DAO_ROUTES.dao.relative(addressPrefix, safeAddress));
             }
           },
         });

@@ -1,0 +1,18 @@
+{
+  "createNewDAO": "Crear nueva DAO",
+  "createSubDAO": "Crear SubDAO",
+  "headerTitle": "{{daoName}} {{subject}}",
+  "proposals": "Todas las propuestas",
+  "proposalNew": "Crear propuesta",
+  "nodes": "Organización",
+  "roles": "Funciones",
+  "treasury": "Tesoro",
+  "proposal": "#{{proposalId}} {{proposalTitle}}",
+  "proposalTemplates": "Plantillas de propuestas",
+  "proposalDapps": "Explorar las dApps",
+  "proposalTemplate": "{{proposalTemplateTitle}}",
+  "proposalTemplateNew": "Crear plantilla de propuesta",
+  "editDAO": "Editar DAO",
+  "parentLink": "DAO matriz",
+  "settings": "Ajustes"
+}

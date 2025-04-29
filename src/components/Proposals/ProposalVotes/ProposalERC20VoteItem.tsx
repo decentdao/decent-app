@@ -17,7 +17,9 @@ export default function ProposalERC20VoteItem({
   govTokenDecimals: number;
   govTokenSymbol: string;
 }) {
-  const { t } = useTranslation();
+  const { t: tCommon } = useTranslation('common');
+  const { t: tProposal } = useTranslation('proposal');
+
   const { displayName } = useGetAccountName(vote.voter);
   const user = useAccount();
   return (
@@ -25,12 +27,12 @@ export default function ProposalERC20VoteItem({
       <GridItem>
         <Text color="neutral-7">
           {displayName}
-          {user.address === vote.voter && t('isMeSuffix')}
+          {user.address === vote.voter && tCommon('isMeSuffix')}
         </Text>
       </GridItem>
       <GridItem>
         <StatusBox>
-          <Text color="neutral-7">{t(vote.choice.label)}</Text>
+          <Text color="neutral-7">{tProposal(vote.choice.label)}</Text>
         </StatusBox>
       </GridItem>
       <GridItem>

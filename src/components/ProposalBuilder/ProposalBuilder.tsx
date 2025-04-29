@@ -14,6 +14,7 @@ import { useCanUserCreateProposal } from '../../hooks/utils/useCanUserSubmitProp
 import { ActionsExperience } from '../../pages/dao/proposals/actions/new/ActionsExperience';
 import { useStore } from '../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
+import { useProposalActionsStore } from '../../store/actions/useProposalActionsStore';
 import { BigIntValuePair, CreateProposalSteps, ProposalExecuteData } from '../../types';
 import {
   CreateProposalForm,
@@ -112,6 +113,7 @@ export function ProposalBuilder({
   const [currentStep, setCurrentStep] = useState<CreateProposalSteps>(CreateProposalSteps.METADATA);
   const { safeAddress } = useCurrentDAOKey();
 
+  const { resetActions } = useProposalActionsStore();
   const { addressPrefix } = useNetworkConfigStore();
   const { submitProposal, pendingCreateTx } = useSubmitProposal();
   const { canUserCreateProposal } = useCanUserCreateProposal();
@@ -119,6 +121,7 @@ export function ProposalBuilder({
 
   const successCallback = () => {
     if (safeAddress) {
+      resetActions();
       // Redirecting to home page so that user will see newly created Proposal
       navigate(DAO_ROUTES.dao.relative(addressPrefix, safeAddress));
     }
@@ -127,6 +130,7 @@ export function ProposalBuilder({
   return (
     <Formik<CreateProposalForm>
       validationSchema={createProposalValidation}
+      enableReinitialize
       initialValues={initialValues}
       onSubmit={async values => {
         if (!canUserCreateProposal) {
@@ -168,11 +172,14 @@ export function ProposalBuilder({
 
         const trimmedTitle = title.trim();
 
+        const noTransactionsOrStreams =
+          transactions.length === 0 &&
+          (formikProps.values as CreateSablierProposalForm).streams?.length === 0;
         const createProposalButtonDisabled =
           !canUserCreateProposal ||
           Object.keys(formikProps.errors).length > 0 ||
           !trimmedTitle ||
-          transactions.length === 0 ||
+          noTransactionsOrStreams ||
           pendingCreateTx;
 
         const renderButtons = (step: CreateProposalSteps) => {
@@ -232,15 +239,7 @@ export function ProposalBuilder({
                         <>{mainContent(formikProps, pendingCreateTx, nonce, currentStep)}</>
                       )}
                     </Box>
-                    {showActionsExperience ? (
-                      <ActionsExperience
-                        onRemove={(index: number) => {
-                          const newActions = [...formikProps.values.transactions];
-                          newActions.splice(index, 1);
-                          formikProps.setFieldValue('transactions', newActions);
-                        }}
-                      />
-                    ) : null}
+                    {showActionsExperience ? <ActionsExperience /> : null}
                     <StepButtons
                       renderButtons={renderButtons}
                       currentStep={currentStep}

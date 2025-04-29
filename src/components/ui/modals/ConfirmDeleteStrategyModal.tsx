@@ -114,7 +114,7 @@ export function ConfirmDeleteStrategyModal({ onClose }: { onClose: () => void })
     } else {
       throw new Error('No linear voting contract found');
     }
-
+    resetActions();
     addAction({
       actionType: ProposalActionType.DELETE,
       content: (

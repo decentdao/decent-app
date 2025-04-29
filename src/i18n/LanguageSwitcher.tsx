@@ -7,7 +7,7 @@ import { supportedLanguages } from '.';
 export function LanguageSwitcher() {
   const { i18n, t } = useTranslation('languages');
 
-  const supported = Object.keys(supportedLanguages).map(function (languageCode) {
+  const supported = supportedLanguages.map(function (languageCode) {
     return {
       optionKey: languageCode,
       onClick: () => i18n.changeLanguage(languageCode),

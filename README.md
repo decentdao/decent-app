@@ -50,6 +50,27 @@ The application uses two sets of environment variables:
    - Contains Vite-injected variables for the React application
    - In production, these also need to be manually configured as "secrets" in the Cloudflare Dashboard
 
+## Localization
+
+### API Key
+
+Obtain your API key from https://www.deepl.com/pro-api?cta=header-pro-api
+Set it to VITE_APP_DEEPL_API_KEY in .env.local
+
+### Localize
+
+Run `npm run localize`
+
+Only new strings are automatically translated.
+Translations can be manually updated, based on professional reviews or community feedback.
+The script does not modify existing translations.
+
+### Localization Verifications
+
+Run `npm run localize`
+
+This script is also used by Git Action as a precheck at merge.
+
 ## Feature flags
 
 ### Setup

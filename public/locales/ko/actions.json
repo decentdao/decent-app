@@ -1,0 +1,10 @@
+{
+  "actions": "행위",
+  "addAction": "액션 추가",
+  "transferAssets": "양도 자산",
+  "transferAssetsSub": "한 번의 지불금을 만듭니다.",
+  "comingSoon": "곧 올다 ...",
+  "comingSoonSub": "도중에 더 많은 행동.",
+  "transactionBuilderActionCard_single": "트랜잭션 빌더: {{ targetAddress } }에서 {{ functionName }} 실행",
+  "transactionBuilderActionCard_multiple": "트랜잭션 빌더: 배치 {{ numOfTransactions }} 트랜잭션"
+}

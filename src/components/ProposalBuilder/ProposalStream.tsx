@@ -15,17 +15,19 @@ import {
 } from '@chakra-ui/react';
 import { CaretDown, CaretRight, MinusCircle, Plus } from '@phosphor-icons/react';
 import { Field, FieldAttributes, FieldProps } from 'formik';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Address, erc20Abi, getContract, isAddress } from 'viem';
+import { Address, erc20Abi, formatUnits, getContract, isAddress } from 'viem';
 import { useCurrentDAOKey } from '../../hooks/DAO/useCurrentDAOKey';
 import useNetworkPublicClient from '../../hooks/useNetworkPublicClient';
 import { useFilterSpamTokens } from '../../hooks/utils/useFilterSpamTokens';
 import { useStore } from '../../providers/App/AppProvider';
+import { BigIntValuePair } from '../../types';
 import { Stream } from '../../types/proposalBuilder';
 import { formatCoin } from '../../utils';
 import { scrollToBottom } from '../../utils/ui';
 import { BigIntInput } from '../ui/forms/BigIntInput';
+import DurationUnitStepperInput from '../ui/forms/DurationUnitStepperInput';
 import ExampleLabel from '../ui/forms/ExampleLabel';
 import { InputComponent, LabelComponent } from '../ui/forms/InputComponent';
 import { DisplayAddress } from '../ui/links/DisplayAddress';
@@ -60,6 +62,22 @@ export function ProposalStream({
   const fungibleNonNativeAssetsWithBalance = filterSpamTokens(assetsFungible);
   const selectedAssetIndex = fungibleNonNativeAssetsWithBalance.findIndex(
     asset => asset.tokenAddress === stream.tokenAddress,
+  );
+
+  const calcNewTotalAmount = useCallback(
+    (trancheIndex: number, addValue?: bigint | undefined) => {
+      const newTotalAmountBigIntValue =
+        stream.tranches
+          .filter((_, itemIndex) => itemIndex !== trancheIndex)
+          .map(item => item.amount.bigintValue || 0n)
+          .reduce((acc, curr) => acc + curr, 0n) + (addValue || 0n);
+      const newTotalAmount: BigIntValuePair = {
+        bigintValue: newTotalAmountBigIntValue,
+        value: formatUnits(newTotalAmountBigIntValue, tokenDecimals),
+      };
+      return newTotalAmount;
+    },
+    [stream.tranches, tokenDecimals],
   );
 
   useEffect(() => {
@@ -163,28 +181,6 @@ export function ProposalStream({
           variant="light"
           my="1rem"
         />
-        <LabelComponent
-          label={t('streamTotalAmount')}
-          helper={t('streamTotalAmountHelper')}
-          subLabel={
-            <HStack textStyle="labels-large">
-              <Text>{t('example', { ns: 'common' })}:</Text>
-              <ExampleLabel>10000</ExampleLabel>
-            </HStack>
-          }
-          isRequired
-        >
-          <BigIntInput
-            value={stream.totalAmount.bigintValue}
-            onChange={value => handleUpdateStream(index, { totalAmount: value })}
-            decimalPlaces={tokenDecimals}
-            maxValue={rawTokenBalance}
-          />
-        </LabelComponent>
-        <Divider
-          variant="light"
-          my="1rem"
-        />
         <Box>
           <Flex gap="0.5rem">
             <Checkbox
@@ -281,6 +277,7 @@ export function ProposalStream({
                                 tranches: stream.tranches.filter(
                                   (_, removedTrancheIndex) => removedTrancheIndex !== trancheIndex,
                                 ),
+                                totalAmount: calcNewTotalAmount(trancheIndex),
                               })
                             }
                             minWidth="auto"
@@ -317,14 +314,23 @@ export function ProposalStream({
                                 <BigIntInput
                                   isRequired
                                   value={tranche.amount.bigintValue}
+                                  parentFormikValue={tranche.amount}
                                   decimalPlaces={tokenDecimals}
                                   placeholder="1000"
+                                  maxValue={
+                                    rawTokenBalance -
+                                    (calcNewTotalAmount(trancheIndex).bigintValue || 0n)
+                                  }
                                   onChange={value =>
                                     handleUpdateStream(index, {
                                       tranches: stream.tranches.map((item, updatedTrancheIndex) =>
                                         updatedTrancheIndex === trancheIndex
                                           ? { ...item, amount: value }
                                           : item,
+                                      ),
+                                      totalAmount: calcNewTotalAmount(
+                                        trancheIndex,
+                                        value.bigintValue,
                                       ),
                                     })
                                   }
@@ -350,22 +356,22 @@ export function ProposalStream({
                                   </VStack>
                                 }
                               >
-                                <BigIntInput
-                                  isRequired
-                                  value={tranche.duration.bigintValue}
-                                  placeholder={(SECONDS_IN_DAY * 365).toString()}
-                                  decimalPlaces={0}
-                                  min={index === 0 ? '1' : undefined}
-                                  step={1}
-                                  onChange={value =>
+                                <DurationUnitStepperInput
+                                  minSeconds={trancheIndex === 0 ? 1 : 0}
+                                  secondsValue={Number(tranche.duration.bigintValue || 0n)}
+                                  onSecondsValueChange={value => {
+                                    const duration: BigIntValuePair = {
+                                      bigintValue: BigInt(value),
+                                      value: value.toString(),
+                                    };
                                     handleUpdateStream(index, {
                                       tranches: stream.tranches.map((item, updatedTrancheIndex) =>
                                         updatedTrancheIndex === trancheIndex
-                                          ? { ...item, duration: value }
+                                          ? { ...item, duration }
                                           : item,
                                       ),
-                                    })
-                                  }
+                                    });
+                                  }}
                                 />
                               </LabelComponent>
                             </Box>

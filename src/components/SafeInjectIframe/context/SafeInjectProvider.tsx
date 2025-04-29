@@ -1,9 +1,10 @@
-import { getSDKVersion, Methods, RPCPayload } from '@safe-global/safe-apps-sdk';
-import { PropsWithChildren, useCallback, useEffect, useRef, useState } from 'react';
+import { ChainInfo, getSDKVersion, Methods, RPCPayload } from '@safe-global/safe-apps-sdk';
+import { PropsWithChildren, useState, useRef, useCallback, useEffect } from 'react';
 import { Address, BlockTag, getAddress, Hash } from 'viem';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import useNetworkPublicClient from '../../../hooks/useNetworkPublicClient';
 import { useStore } from '../../../providers/App/AppProvider';
+import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
 import { useAppCommunicator } from '../hooks/useAppCommunicator';
 import { InterfaceMessageIds, InterfaceMessageProps, RequestId, TransactionWithId } from '../types';
 import { SafeInjectContext } from './SafeInjectContext';
@@ -41,6 +42,7 @@ export function SafeInjectProvider({
     },
     [onAppConnected],
   );
+  const { chain } = useNetworkConfigStore();
   const publicClient = useNetworkPublicClient();
   const [latestTransactions, setLatestTransactions] = useState<TransactionWithId[]>([]);
   const receivedTransactions = useCallback(
@@ -98,6 +100,21 @@ export function SafeInjectProvider({
         ret.owners = safe.owners;
         ret.threshold = safe.threshold;
       }
+      return ret;
+    });
+
+    communicator?.on(Methods.getChainInfo, async () => {
+      const ret: ChainInfo = {
+        chainId: chainId.toString(),
+        nativeCurrency: { ...chain.nativeCurrency, logoUri: '' },
+        chainName: chain.name,
+        shortName: chain.name,
+        blockExplorerUriTemplate: {
+          address: '',
+          txHash: '',
+          api: chain.blockExplorers?.default.url || '',
+        },
+      };
       return ret;
     });
 
@@ -211,6 +228,9 @@ export function SafeInjectProvider({
     receivedTransactions,
     receivedConnection,
     safe,
+    chain.nativeCurrency,
+    chain.name,
+    chain.blockExplorers?.default.url,
   ]);
 
   return (
