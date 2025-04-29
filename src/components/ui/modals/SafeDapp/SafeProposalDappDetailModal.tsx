@@ -1,5 +1,6 @@
+import * as amplitude from '@amplitude/analytics-browser';
 import { Box, CloseButton, Flex, Text } from '@chakra-ui/react';
-import { useContext, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -9,6 +10,7 @@ import { decodeTransactionsWithABI } from '../../../../helpers/transactionDecode
 import { useSupportedDapps } from '../../../../hooks/DAO/loaders/useSupportedDapps';
 import { useABI } from '../../../../hooks/utils/useABI';
 import { useDebounce } from '../../../../hooks/utils/useDebounce';
+import { analyticsEvents } from '../../../../insights/analyticsEvents';
 import { useNetworkConfigStore } from '../../../../providers/NetworkConfig/useNetworkConfigStore';
 import { useProposalActionsStore } from '../../../../store/actions/useProposalActionsStore';
 import { useDaoInfoStore } from '../../../../store/daoInfo/useDaoInfoStore';
@@ -100,6 +102,10 @@ export function SafeProposalDappDetailModal({
   appUrl: string;
   onClose: () => void;
 }) {
+  useEffect(() => {
+    amplitude.track(analyticsEvents.SafeProposalDappDetailModalOpened);
+  }, []);
+
   const { t } = useTranslation(['proposalDapps']);
   const { chain, addressPrefix } = useNetworkConfigStore();
   const { loadABI } = useABI();
