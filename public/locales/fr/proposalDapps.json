@@ -1,8 +1,14 @@
 {
+  "dappsTitle": "Explorer les dApps",
+  "dappsDescription": "Connectez-vous à vos applications web3 préférées avec votre Decent DAO, de manière sécurisée et efficace.",
   "emptyProposalDapps": "Ce coffre-fort n'a pas encore de dApps supportées.",
   "connectingWalletConnect": "Connexion...",
   "successConnectingWalletConnect": "Connecté !",
   "failConnectingWalletConnect": "Échec de la connexion, veuillez vérifier l'uri.",
   "labelIframeWalletConnectUri": "URI de WalletConnect",
-  "helperIframeWalletConnectUri": "Coller pour connecter"
+  "helperIframeWalletConnectUri": "Coller pour connecter",
+  "dappIntegrationActionLabel": "[{{appName}} Intégration]",
+  "processingTransactions": "Traiter les transactions...",
+  "successProcessingTransactions": "Transactions traitées.",
+  "errorProcessingTransactions": "Erreur dans le traitement des transactions."
 }
