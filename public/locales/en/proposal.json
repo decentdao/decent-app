@@ -192,6 +192,5 @@
   "proposalSummaryNotEnoughVotingPower": "Your voting power did not meet requirements to vote on this proposal when it was created.",
   "proposalSummaryNotEnoughVotingPowerSecondary": "Delegate voting tokens to your address to be eligible to vote on future proposals.",
   "castVoteError": "Failed to send vote",
-  "castVoteErrorTempAutoFallback": ". Falling back to paid voting...",
   "labelAddTransactionsToProposal": "Add transactions to proposal"
 }

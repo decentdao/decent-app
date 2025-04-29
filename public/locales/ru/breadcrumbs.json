@@ -9,7 +9,6 @@
   "treasury": "Казначейство",
   "proposal": "#{{proposalId}} {{proposalTitle}}",
   "proposalTemplates": "Шаблоны предложений",
-  "proposalDapps": "Изучите dApps",
   "proposalTemplate": "{{proposalTemplateTitle}}",
   "proposalTemplateNew": "Создать шаблон предложения",
   "editDAO": "Редактировать DAO",

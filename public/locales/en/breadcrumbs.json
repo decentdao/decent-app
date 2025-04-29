@@ -9,7 +9,6 @@
   "treasury": "Treasury",
   "proposal": "#{{proposalId}} {{proposalTitle}}",
   "proposalTemplates": "Proposal Templates",
-  "proposalDapps": "Explore dApps",
   "proposalTemplate": "{{proposalTemplateTitle}}",
   "proposalTemplateNew": "Create Proposal Template",
   "editDAO": "Edit DAO",

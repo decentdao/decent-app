@@ -3,7 +3,6 @@ import { Box, Button, Divider, Flex, Grid, GridItem, Icon, Show, Text } from '@c
 import { CaretDown } from '@phosphor-icons/react';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
 import { Assets } from '../../../components/DAOTreasury/components/Assets';
 import {
   PaginationButton,
@@ -12,14 +11,14 @@ import {
 } from '../../../components/DAOTreasury/components/Transactions';
 import { TitledInfoBox } from '../../../components/ui/containers/TitledInfoBox';
 import { OptionMenu } from '../../../components/ui/menus/OptionMenu';
+import { ModalType } from '../../../components/ui/modals/ModalProvider';
+import { useDecentModal } from '../../../components/ui/modals/useDecentModal';
 import PageHeader from '../../../components/ui/page/Header/PageHeader';
-import { DAO_ROUTES } from '../../../constants/routes';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import useSendAssetsActionModal from '../../../hooks/DAO/useSendAssetsActionModal';
 import { useCanUserCreateProposal } from '../../../hooks/utils/useCanUserSubmitProposal';
 import { analyticsEvents } from '../../../insights/analyticsEvents';
 import { useStore } from '../../../providers/App/AppProvider';
-import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
 
 export function SafeTreasuryPage() {
   useEffect(() => {
@@ -42,19 +41,17 @@ export function SafeTreasuryPage() {
   const totalTransfers = transfers?.length || 0;
   const showLoadMoreTransactions = totalTransfers > shownTransactions && shownTransactions < 100;
   const { openSendAssetsModal } = useSendAssetsActionModal();
-  const { addressPrefix } = useNetworkConfigStore();
   const safeAddress = safe?.address;
-  const navigate = useNavigate();
+  const openDappBrowserModal = useDecentModal(ModalType.DAPP_BROWSER, {
+    appUrl: 'https://swap.cow.fi',
+  });
 
   const options =
     safeAddress !== undefined && showSendButton
       ? [
           {
             optionKey: t('limitOrder'),
-            onClick: () =>
-              navigate(
-                DAO_ROUTES.proposalDapp.relative(addressPrefix, safeAddress, 'https://swap.cow.fi'),
-              ),
+            onClick: openDappBrowserModal,
           },
           {
             optionKey: t('transfer'),
