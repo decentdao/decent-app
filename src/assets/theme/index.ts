@@ -43,7 +43,7 @@ export const theme = mergeThemeOverride({
         almostFull: definePartsStyle({
           dialog: {
             maxW: '90vw',
-            maxH: '90vh',
+            minH: '90vh',
           },
         }),
       },

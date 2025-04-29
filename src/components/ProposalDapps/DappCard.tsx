@@ -32,7 +32,7 @@ export default function DappCard({
   return (
     <ContentBox
       containerBoxProps={{
-        flex: '0 0 calc(25% - 0.25rem)',
+        flex: '0 0 calc(25% - 1rem)',
         my: '0',
         bg: 'neutral-3',
         p: '0.5rem',
@@ -65,7 +65,7 @@ export default function DappCard({
       >
         <Markdown
           content={description}
-          collapsedLines={3}
+          collapsedLines={2}
           truncate
         />
       </Box>
