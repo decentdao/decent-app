@@ -192,6 +192,5 @@
   "proposalSummaryNotEnoughVotingPower": "Ваша кількість голосів не відповідала вимогам для голосування за цю пропозицію на момент її створення.",
   "proposalSummaryNotEnoughVotingPowerSecondary": "Делегуйте токени для голосування на свою адресу, щоб мати право голосувати за майбутні пропозиції.",
   "castVoteError": "Не вдалося відправити голос",
-  "castVoteErrorTempAutoFallback": ". Повернення до платного голосування...",
   "labelAddTransactionsToProposal": "Додайте транзакції до пропозиції"
 }
