@@ -16,4 +16,5 @@ export const analyticsEvents = {
   SafeSettingsPageOpened: 'SafeSettingsPageOpened',
   TreasuryPageOpened: 'TreasuryPageOpened',
   SablierProposalCreatePageOpened: 'SablierProposalCreatePageOpened',
+  SafeProposalDappsModalOpened: 'SafeProposalDappsModalOpened',
 };
