@@ -6,6 +6,7 @@
   "gaslessVotingDescriptionSettings": "Creare un paymaster per sponsorizzare le commissioni di rete per le votazioni delle proposte.",
   "gaslessStakingRequirement": "È necessaria una puntata di {{amount}} {{symbol}} è necessario per abilitare il voto senza gas. Se il voto senza gas è disabilitato, può essere tolto dopo 1 giorno.",
   "addGas": "Ricarica",
+  "withdrawGas": "Ritiro",
   "refillTank": "Ricarica Paymaster",
   "refillPaymasterAction": "Riempire il Paymaster con {{amount}} {{symbol}}",
   "starterPromoTitle": "PROMO STARTER",
@@ -25,5 +26,12 @@
   "depositGas": "Deposito",
   "balance": "{{balance}} Disponibile",
   "sendingHint": "Quantità di ricarica proposta",
-  "sendingHintDirectDeposit": "State inviando"
+  "sendingHintDirectDeposit": "State inviando",
+  "withdrawAmount": "Importo da prelevare",
+  "submitWithdrawAmount": "Ritiro",
+  "toDaoTreasury": "Alla tesoreria della DAO",
+  "recipientAddressRequired": "L'indirizzo del destinatario è obbligatorio",
+  "withdrawGasAction": "Prelevare {{amount}} <x>{{symbol}</x>} dal paymaster",
+  "recipientAddress": "Indirizzo del destinatario",
+  "enterRecipientAddress": "Inserire l'indirizzo del destinatario"
 }

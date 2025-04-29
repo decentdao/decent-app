@@ -6,6 +6,7 @@
   "gaslessVotingDescriptionSettings": "Створіть платіжну систему, щоб спонсорувати мережеві збори за голосування за пропозиції.",
   "gaslessStakingRequirement": "Необхідно зробити ставку в розмірі {{amount}} {{symbol}}, щоб увімкнути голосування без газу. Його можна зняти через 1 день, якщо голосування без газу вимкнено.",
   "addGas": "Поповнення",
+  "withdrawGas": "Зняти",
   "refillTank": "Поповнити Paymaster",
   "refillPaymasterAction": "Поповнити Paymaster за допомогою {{amount}} {{symbol}}",
   "starterPromoTitle": "СТАРТОВА ПРОМО-АКЦІЯ",
@@ -25,5 +26,12 @@
   "depositGas": "Депозит",
   "balance": "{{balance}} Доступно",
   "sendingHint": "Пропонована сума поповнення",
-  "sendingHintDirectDeposit": "Ви відправляєте"
+  "sendingHintDirectDeposit": "Ви відправляєте",
+  "withdrawAmount": "Сума до зняття",
+  "submitWithdrawAmount": "Зняти",
+  "toDaoTreasury": "До казни DAO",
+  "recipientAddressRequired": "Адреса одержувача є обов'язковою",
+  "withdrawGasAction": "Зняти {{amount}} <x>{{symbol}</x>} від платника",
+  "recipientAddress": "Адреса одержувача",
+  "enterRecipientAddress": "Введіть адресу одержувача"
 }

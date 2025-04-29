@@ -12,7 +12,7 @@ import { BarLoader } from '../../../../components/ui/loaders/BarLoader';
 import NestedPageHeader from '../../../../components/ui/page/Header/NestedPageHeader';
 import Divider from '../../../../components/ui/utils/Divider';
 import { DAO_ROUTES } from '../../../../constants/routes';
-import { useDepositInfo } from '../../../../hooks/DAO/accountAbstraction/useDepositInfo';
+import { usePaymasterDepositInfo } from '../../../../hooks/DAO/accountAbstraction/usePaymasterDepositInfo';
 import useSubmitProposal from '../../../../hooks/DAO/proposal/useSubmitProposal';
 import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
 import { useCanUserCreateProposal } from '../../../../hooks/utils/useCanUserSubmitProposal';
@@ -61,7 +61,7 @@ export function SafeGeneralSettingsPage() {
     contracts: { keyValuePairs, accountAbstraction, paymaster, zodiacModuleProxyFactory },
     bundlerMinimumStake,
   } = useNetworkConfigStore();
-  const { depositInfo } = useDepositInfo(paymasterAddress);
+  const { depositInfo } = usePaymasterDepositInfo();
   const accountAbstractionSupported = bundlerMinimumStake !== undefined;
   const stakingRequired = accountAbstractionSupported && bundlerMinimumStake > 0n;
 

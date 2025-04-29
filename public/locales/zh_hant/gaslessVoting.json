@@ -6,6 +6,7 @@
   "gaslessVotingDescriptionSettings": "建立付費者，贊助提案投票的網路費用。",
   "gaslessStakingRequirement": "{{amount}} } 的押記。{{symbol}} 是啟用無瓦斯投票的必要條件。如果禁用無瓦斯投票，1 天後可以取消釘住。",
   "addGas": "筆芯",
+  "withdrawGas": "退出",
   "refillTank": "補充款主",
   "refillPaymasterAction": "用{{amount}}填充Paymaster{{symbol}}",
   "starterPromoTitle": "入門促銷",
@@ -25,5 +26,12 @@
   "depositGas": "存款",
   "balance": "{{balance}}可用",
   "sendingHint": "建議補充劑量",
-  "sendingHintDirectDeposit": "您發送"
+  "sendingHintDirectDeposit": "您發送",
+  "withdrawAmount": "提款金額",
+  "submitWithdrawAmount": "退出",
+  "toDaoTreasury": "至 DAO 金庫",
+  "recipientAddressRequired": "收件人地址為必填項目",
+  "withdrawGasAction": "提款{{amount}}<x>{{symbol}</x>從收款人處",
+  "recipientAddress": "收件人地址",
+  "enterRecipientAddress": "輸入收件人地址"
 }

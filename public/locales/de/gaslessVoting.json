@@ -6,6 +6,7 @@
   "gaslessVotingDescriptionSettings": "Einrichtung eines Zahlungsverkehrsdienstleisters zur Finanzierung von Netzgebühren für die Abstimmung über Vorschläge.",
   "gaslessStakingRequirement": "Ein Einsatz von {{amount}} {{symbol}} ist erforderlich, um die gaslose Abstimmung zu aktivieren. Der Einsatz kann nach 1 Tag wieder aufgehoben werden, wenn die gaslose Abstimmung deaktiviert ist.",
   "addGas": "Nachfüllen",
+  "withdrawGas": "Zurückziehen",
   "refillTank": "Nachfüllen Paymaster",
   "refillPaymasterAction": "Paymaster mit {{amount}} auffüllen {{symbol}}",
   "starterPromoTitle": "STARTER PROMO",
@@ -25,5 +26,12 @@
   "depositGas": "Einzahlung",
   "balance": "{{balance}} Verfügbar",
   "sendingHint": "Vorgeschlagene Nachfüllmenge",
-  "sendingHintDirectDeposit": "Du schickst"
+  "sendingHintDirectDeposit": "Du schickst",
+  "withdrawAmount": "Abzuhebender Betrag",
+  "submitWithdrawAmount": "Zurückziehen",
+  "toDaoTreasury": "An die DAO-Schatzkammer",
+  "recipientAddressRequired": "Adresse des Empfängers ist erforderlich",
+  "withdrawGasAction": "Abheben {{amount}} <x>{{symbol}</x>} vom Zahlmeister",
+  "recipientAddress": "Adresse des Empfängers",
+  "enterRecipientAddress": "Empfängeradresse eingeben"
 }

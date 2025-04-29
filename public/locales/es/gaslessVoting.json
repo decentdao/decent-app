@@ -6,6 +6,7 @@
   "gaslessVotingDescriptionSettings": "Crear un pagador para patrocinar las cuotas de la red para las votaciones de propuestas.",
   "gaslessStakingRequirement": "Una apuesta de {{amount}} {{symbol}} para activar la votación sin gas. Si la votación sin gas está desactivada, se puede retirar después de 1 día.",
   "addGas": "Recarga",
+  "withdrawGas": "Retirar",
   "refillTank": "Pagador de recargas",
   "refillPaymasterAction": "Rellena Paymaster con {{amount}} {{symbol}}",
   "starterPromoTitle": "PROMOCIÓN DE INICIO",
@@ -25,5 +26,12 @@
   "depositGas": "Depósito",
   "balance": "{{balance}} Disponible",
   "sendingHint": "Cantidad de recarga propuesta",
-  "sendingHintDirectDeposit": "Estás enviando"
+  "sendingHintDirectDeposit": "Estás enviando",
+  "withdrawAmount": "Importe a retirar",
+  "submitWithdrawAmount": "Retirar",
+  "toDaoTreasury": "A la tesorería de la DAO",
+  "recipientAddressRequired": "Se requiere la dirección del destinatario",
+  "withdrawGasAction": "Retirar {{amount}} <x>{{symbol}</x>} del pagador",
+  "recipientAddress": "Dirección del destinatario",
+  "enterRecipientAddress": "Introduzca la dirección del destinatario"
 }
