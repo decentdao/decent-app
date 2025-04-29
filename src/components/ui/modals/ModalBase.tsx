@@ -18,6 +18,7 @@ interface ModuleBaseProps {
   onClose: () => void;
   children: ReactNode;
   zIndex?: number;
+  closeOnOverlayClick?: boolean;
 }
 /**
  * The base wrapper component for a modal.  This displays the Chakra components necessary to open a modal,
@@ -32,11 +33,13 @@ export function ModalBase({
   title,
   warn,
   size = 'lg',
+  closeOnOverlayClick = true,
 }: ModuleBaseProps) {
   return (
     <Modal
       isCentered
       size={size}
+      closeOnOverlayClick={closeOnOverlayClick}
       isOpen={isOpen}
       onClose={onClose}
     >
