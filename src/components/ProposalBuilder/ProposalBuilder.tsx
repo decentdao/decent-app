@@ -136,7 +136,8 @@ export function ProposalBuilder({
     if (safeAddress) {
       resetActions();
       // Redirecting to home page so that user will see newly created Proposal
-      navigate(DAO_ROUTES.dao.relative(addressPrefix, safeAddress));
+      // Small delay to ensure that the proposal is created and actions are reset
+      setTimeout(() => navigate(DAO_ROUTES.dao.relative(addressPrefix, safeAddress)), 0);
     }
   };
 
