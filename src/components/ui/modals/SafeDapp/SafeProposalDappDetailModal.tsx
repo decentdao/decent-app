@@ -1,18 +1,10 @@
 import * as amplitude from '@amplitude/analytics-browser';
-import { Box } from '@chakra-ui/react';
+import { Box, CloseButton, Flex, Text } from '@chakra-ui/react';
 import { useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useSearchParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { isAddress } from 'viem';
-import { SafeInjectContext } from '../../../../components/SafeInjectIframe/context/SafeInjectContext';
-import { SafeInjectProvider } from '../../../../components/SafeInjectIframe/context/SafeInjectProvider';
-import useWalletConnect from '../../../../components/SafeInjectIframe/hooks/useWalletConnect';
-import { InputComponent } from '../../../../components/ui/forms/InputComponent';
-import { InfoBoxLoader } from '../../../../components/ui/loaders/InfoBoxLoader';
-import { ModalType } from '../../../../components/ui/modals/ModalProvider';
-import { useDecentModal } from '../../../../components/ui/modals/useDecentModal';
-import PageHeader from '../../../../components/ui/page/Header/PageHeader';
 import { DAO_ROUTES } from '../../../../constants/routes';
 import { decodeTransactionsWithABI } from '../../../../helpers/transactionDecoder';
 import { useSupportedDapps } from '../../../../hooks/DAO/loaders/useSupportedDapps';
@@ -22,8 +14,13 @@ import { useDebounce } from '../../../../hooks/utils/useDebounce';
 import { analyticsEvents } from '../../../../insights/analyticsEvents';
 import { useStore } from '../../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../../providers/NetworkConfig/useNetworkConfigStore';
-import { CreateProposalTransaction } from '../../../../types';
-import LoadingProblem from '../../../LoadingProblem';
+import { useProposalActionsStore } from '../../../../store/actions/useProposalActionsStore';
+import { CreateProposalActionData, ProposalActionType } from '../../../../types';
+import { SafeInjectContext } from '../../../SafeInjectIframe/context/SafeInjectContext';
+import { SafeInjectProvider } from '../../../SafeInjectIframe/context/SafeInjectProvider';
+import useWalletConnect from '../../../SafeInjectIframe/hooks/useWalletConnect';
+import { InputComponent } from '../../forms/InputComponent';
+import { InfoBoxLoader } from '../../loaders/InfoBoxLoader';
 
 function Iframe({ appUrl, enableWalletConnect }: { appUrl: string; enableWalletConnect: boolean }) {
   const { t } = useTranslation(['proposalDapps']);
@@ -99,76 +96,94 @@ function Iframe({ appUrl, enableWalletConnect }: { appUrl: string; enableWalletC
   );
 }
 
-export function SafeProposalDappDetailPage() {
+export function SafeProposalDappDetailModal({
+  appUrl,
+  onClose,
+}: {
+  appUrl: string;
+  onClose: () => void;
+}) {
   useEffect(() => {
-    amplitude.track(analyticsEvents.ProposalDappsPageOpened);
+    amplitude.track(analyticsEvents.SafeProposalDappDetailModalOpened);
   }, []);
 
-  const { t } = useTranslation('breadcrumbs');
-  const { chain } = useNetworkConfigStore();
+  const { t } = useTranslation(['proposalDapps']);
+  const { chain, addressPrefix } = useNetworkConfigStore();
   const { loadABI } = useABI();
   const { daoKey } = useCurrentDAOKey();
   const {
     node: { safe },
   } = useStore({ daoKey });
-  const { addressPrefix } = useNetworkConfigStore();
   const { dapps } = useSupportedDapps(chain.id);
-  const [searchParams] = useSearchParams();
+  const { addAction, resetActions } = useProposalActionsStore();
+  const navigate = useNavigate();
 
-  const appUrl = searchParams.get('appUrl') || '';
   const safeAddress = safe?.address;
   const dapp = dapps.find(d => d.url === appUrl);
   const appName = dapp?.name || appUrl;
-
-  const [decodedTransactions, setDecodedTransactions] = useState<CreateProposalTransaction[]>([]);
-  const openConfirmTransactionModal = useDecentModal(ModalType.CONFIRM_TRANSACTION, {
-    appName,
-    transactionArray: decodedTransactions,
-  });
-
-  useEffect(() => {
-    if (decodedTransactions.length > 0) {
-      openConfirmTransactionModal();
-      setDecodedTransactions([]);
-    }
-  }, [decodedTransactions, openConfirmTransactionModal]);
-
-  if (!safeAddress) {
-    return null;
-  }
-  if (!appUrl) {
-    return <LoadingProblem type="badQueryParamAppUrl" />;
-  }
+  const dappLabel = t('dappIntegrationActionLabel', { appName });
 
   return (
-    <div>
-      <PageHeader
-        title={appName}
-        breadcrumbs={[
-          {
-            terminus: t('proposalDapps'),
-            path: DAO_ROUTES.proposalDapps.relative(addressPrefix, safeAddress),
-          },
-          {
-            terminus: appName,
-            path: '',
-          },
-        ]}
-      ></PageHeader>
+    <Box>
+      <Flex
+        justifyContent="space-between"
+        gap="6rem"
+        mb="0.5rem"
+      >
+        <Text
+          textStyle="heading-medium"
+          color="white-0"
+        >
+          {appName}
+        </Text>
+
+        <CloseButton onClick={onClose} />
+      </Flex>
+
       <SafeInjectProvider
         defaultAddress={safeAddress}
         defaultAppUrl={appUrl}
         chainId={chain.id}
-        onTransactionsReceived={transactions => {
-          (async () => {
-            if (transactions && transactions.length > 0) {
-              const { decodedTransactions: decoded } = await decodeTransactionsWithABI(
-                transactions,
-                loadABI,
-              );
-              setDecodedTransactions(decoded);
-            }
-          })();
+        onTransactionsReceived={async transactions => {
+          const id = toast.promise(
+            async () => {
+              if (!safe?.address) {
+                throw new Error('Safe address not found');
+              }
+
+              if (transactions && transactions.length > 0) {
+                const { decodedTransactions, failedTransactions } = await decodeTransactionsWithABI(
+                  transactions,
+                  loadABI,
+                );
+                if (failedTransactions.length > 0) {
+                  throw new Error('Failed to decode transactions');
+                }
+
+                const action: CreateProposalActionData = {
+                  actionType: ProposalActionType.DAPP_INTEGRATION,
+                  transactions: decodedTransactions,
+                };
+                resetActions();
+                addAction({
+                  ...action,
+                  content: <Text>{dappLabel}</Text>,
+                });
+                onClose();
+                navigate(DAO_ROUTES.proposalWithActionsNew.relative(addressPrefix, safe.address));
+                return true;
+              }
+            },
+            {
+              loading: t('processingTransactions'),
+              success: t('successProcessingTransactions'),
+              error: t('errorProcessingTransactions'),
+            },
+          );
+
+          // Return wrapped promise
+          // https://github.com/emilkowalski/sonner/pull/462
+          return (id as any).unwrap();
         }}
       >
         <Iframe
@@ -176,6 +191,6 @@ export function SafeProposalDappDetailPage() {
           enableWalletConnect={!!dapp?.enableWalletConnect}
         />
       </SafeInjectProvider>
-    </div>
+    </Box>
   );
 }

@@ -192,6 +192,5 @@
   "proposalSummaryNotEnoughVotingPower": "あなたの議決権は、この議案が作成された時点では、議決権を行使するための要件を満たしていませんでした。",
   "proposalSummaryNotEnoughVotingPowerSecondary": "今後の提案に対する投票権を得るために、あなたの住所に投票トークンを委任する。",
   "castVoteError": "投票の送信に失敗",
-  "castVoteErrorTempAutoFallback": ".有料投票に逆戻り...",
   "labelAddTransactionsToProposal": "プロポーザルに取引を追加する"
 }

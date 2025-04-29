@@ -8,6 +8,7 @@ import { createBundlerClient } from 'viem/account-abstraction';
 import { EntryPoint07Abi } from '../../../assets/abi/EntryPoint07Abi';
 import { ModalType } from '../../../components/ui/modals/ModalProvider';
 import { useDecentModal } from '../../../components/ui/modals/useDecentModal';
+import useFeatureFlag from '../../../helpers/environmentFeatureFlags';
 import { useStore } from '../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
 import { fetchMaxPriorityFeePerGas } from '../../../utils/gaslessVoting';
@@ -268,6 +269,8 @@ const useCastVote = (proposalId: string, strategy: Address) => {
   const gaslessVoteLoadingModal = useDecentModal(ModalType.GASLESS_VOTE_LOADING);
   const closeModal = useDecentModal(ModalType.NONE);
 
+  const devFeatureFlag = useFeatureFlag('flag_dev');
+
   const castGaslessVote = useCallback(
     async ({
       selectedVoteChoice,
@@ -307,7 +310,7 @@ const useCastVote = (proposalId: string, strategy: Address) => {
         closeModal();
         setCastGaslessVotePending(false);
 
-        if (error.name === 'UserRejectedRequestError') {
+        if (!devFeatureFlag && error.name === 'UserRejectedRequestError') {
           toast.error(t('userRejectedSignature', { ns: 'gaslessVoting' }));
           return;
         }
@@ -315,7 +318,14 @@ const useCastVote = (proposalId: string, strategy: Address) => {
         onError(error);
       }
     },
-    [prepareGaslessVoteOperation, prepareCastVoteData, gaslessVoteLoadingModal, closeModal, t],
+    [
+      prepareGaslessVoteOperation,
+      prepareCastVoteData,
+      gaslessVoteLoadingModal,
+      closeModal,
+      devFeatureFlag,
+      t,
+    ],
   );
 
   return {

@@ -9,7 +9,6 @@
   "treasury": "库房",
   "proposal": "#{{proposalId}} {{proposalTitle}}",
   "proposalTemplates": "提案书模板",
-  "proposalDapps": "探索 dApps",
   "proposalTemplate": "{{proposalTemplateTitle}}",
   "proposalTemplateNew": "创建提案书模板",
   "editDAO": "编辑 DAO",
