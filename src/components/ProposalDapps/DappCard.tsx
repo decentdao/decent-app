@@ -1,9 +1,7 @@
 import { Avatar, Box, Flex, Icon, Tag, TagLabel, Text } from '@chakra-ui/react';
 import { Dot } from '@phosphor-icons/react';
-import ContentBox from '../ui/containers/ContentBox';
 import { ModalType } from '../ui/modals/ModalProvider';
 import { useDecentModal } from '../ui/modals/useDecentModal';
-import Markdown from '../ui/proposal/Markdown';
 import Divider from '../ui/utils/Divider';
 
 type DappCardProps = {
@@ -28,50 +26,49 @@ export default function DappCard({
   });
 
   return (
-    <ContentBox
-      containerBoxProps={{
-        flex: '0 0 calc(25% - 1rem)',
-        my: '0',
+    <Box
+      flex="0 0 calc(25% - 1rem)"
+      my="0"
+      p="0"
+      bg="neutral-2"
+      rounded="xl"
+      cursor="pointer"
+      _hover={{
         bg: 'neutral-3',
-        p: '0.5rem',
-        _hover: {
-          bg: 'neutral-4',
-        },
       }}
+      boxShadow="0px 0px 0px var(--Spread-1, 1px) var(--black, #151217), 0px 0px 0px var(--Spread-1, 1px) var(--color-whitealpha-04, rgba(255, 255, 255, 0.04)) inset, 0px var(--Depth-1, 1px) 0px 0px var(--color-whitealpha-04, rgba(255, 255, 255, 0.04)) inset"
       onClick={() => {
         onClose();
         openDappBrowserModal();
       }}
     >
-      <Flex mb="0.5rem">
-        <Avatar
-          size="sm"
-          src={iconUrl}
-          name={title}
-          color="lilac-0"
-        />
-      </Flex>
-      <Text
-        color="white-0"
-        mb="0.5rem"
-      >
-        {title}
-      </Text>
       <Box
-        color="neutral-7"
-        mb="1rem"
+        p="12px"
+        pb="20px"
       >
-        <Markdown
-          content={description}
-          collapsedLines={2}
-          truncate
-        />
+        <Flex mb="8px">
+          <Avatar
+            width={10}
+            height={10}
+            src={iconUrl}
+            name={title}
+            color="lilac-0"
+          />
+        </Flex>
+        <Text textStyle="body-large">{title}</Text>
+        <Text
+          textStyle="labels-large"
+          color="neutral-7"
+          noOfLines={2}
+        >
+          {description}
+        </Text>
       </Box>
       {categories.length > 0 && (
         <>
-          <Divider />
+          <Divider boxShadow="0px -1px 0px 0px #000" />
           <Flex
-            mt="1rem"
+            p="12px"
             flexDirection={'row'}
             flexWrap="wrap"
             gap="0.5rem"
@@ -79,6 +76,7 @@ export default function DappCard({
             {categories.map(category => (
               <Tag
                 size="md"
+                rounded="full"
                 key={category}
                 variant="subtle"
                 bg="neutral-4"
@@ -89,7 +87,7 @@ export default function DappCard({
                   style={{ transform: 'scale(6)' }}
                 />
                 <TagLabel
-                  ml="0.5rem"
+                  ml="8px"
                   color="neutral-7"
                 >
                   {category}
@@ -99,6 +97,6 @@ export default function DappCard({
           </Flex>
         </>
       )}
-    </ContentBox>
+    </Box>
   );
 }
