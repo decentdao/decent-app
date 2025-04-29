@@ -22,7 +22,7 @@ export function SafeProposalDappsModal({ onClose }: { onClose: () => void }) {
         justifyContent="space-between"
         gap="6rem"
       >
-        <div>
+        <Box>
           <Text
             textStyle="heading-large"
             color="white-0"
@@ -30,7 +30,7 @@ export function SafeProposalDappsModal({ onClose }: { onClose: () => void }) {
             {t('dappsTitle')}
           </Text>
           <Text color="neutral-7">{t('dappsDescription')}</Text>
-        </div>
+        </Box>
 
         <CloseButton onClick={onClose} />
       </Flex>
