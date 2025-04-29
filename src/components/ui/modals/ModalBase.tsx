@@ -8,7 +8,7 @@ import {
 } from '../../../constants/common';
 import Divider from '../utils/Divider';
 
-export type ModalBaseSize = 'sm' | 'md' | 'lg' | 'xl' | '2xl' | 'almostFull';
+export type ModalBaseSize = 'sm' | 'md' | 'lg' | 'xl' | '2xl' | 'max';
 interface ModuleBaseProps {
   isSearchInputModal?: boolean;
   title?: string;

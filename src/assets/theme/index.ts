@@ -40,7 +40,7 @@ export const theme = mergeThemeOverride({
       ...defaultTheme.components.Modal,
       sizes: {
         ...defaultTheme.components.Modal.sizes,
-        almostFull: definePartsStyle({
+        max: definePartsStyle({
           dialog: {
             maxW: '90vw',
             minH: '90vh',
