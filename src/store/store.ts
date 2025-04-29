@@ -7,10 +7,8 @@ import { createNodesSlice, NodesSlice } from './slices/nodes';
 import { createTreasuriesSlice, TreasuriesSlice } from './slices/treasuries';
 
 export type StoreSlice<T> = { [daoKey: DAOKey]: T };
-export type SetState = (fn: (state: GlobalStore) => void) => void;
-export type GlobalStore = NodesSlice & GovernancesSlice;
 
-export type GlobalStore = NodesSlice & TreasuriesSlice;
+export type GlobalStore = NodesSlice & TreasuriesSlice & GovernancesSlice;
 export type StoreMiddleware = [['zustand/immer', never], ['zustand/devtools', never]];
 
 export const useGlobalStore = create<GlobalStore>()(

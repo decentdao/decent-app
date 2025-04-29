@@ -22,7 +22,6 @@ export const useLoadDAOProposals = () => {
   const loadDAOProposals = useCallback(async () => {
     clearIntervals();
     if (type === GovernanceType.AZORIUS_ERC20 || type === GovernanceType.AZORIUS_ERC721) {
-      // load Azorius proposals and strategies
       await loadAzoriusProposals(proposal => {
         action.dispatch({
           type: FractalGovernanceAction.SET_AZORIUS_PROPOSAL,
@@ -30,8 +29,6 @@ export const useLoadDAOProposals = () => {
         });
       });
     } else if (type === GovernanceType.MULTISIG) {
-      // load mulisig proposals
-      // @dev what is the point of setMethodOnInterval here?
       return setMethodOnInterval(loadSafeMultisigProposals);
     }
   }, [
