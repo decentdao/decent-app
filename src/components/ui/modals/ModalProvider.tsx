@@ -262,7 +262,9 @@ export function ModalProvider({ children }: { children: ReactNode }) {
               }}
               onKeepEditing={() => {
                 current.props.keepEditing();
-                closeModal();
+                setTimeout(() => {
+                  closeModal();
+                }, 0); // This is a workaround to avoid the modal being closed immediately
               }}
             />
           );
