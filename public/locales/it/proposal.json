@@ -192,6 +192,5 @@
   "proposalSummaryNotEnoughVotingPower": "Il vostro potere di voto non soddisfaceva i requisiti per votare su questa proposta quando è stata creata.",
   "proposalSummaryNotEnoughVotingPowerSecondary": "Delegare i gettoni di voto al proprio indirizzo per poter votare sulle proposte future.",
   "castVoteError": "Mancato invio del voto",
-  "castVoteErrorTempAutoFallback": ". Ricadere nel voto a pagamento...",
   "labelAddTransactionsToProposal": "Aggiungere transazioni alla proposta"
 }

@@ -9,7 +9,6 @@
   "treasury": "庫務署",
   "proposal": "#{{proposalId}} {{proposalTitle}}",
   "proposalTemplates": "提案範本",
-  "proposalDapps": "探索dApps",
   "proposalTemplate": "{{proposalTemplateTitle}}",
   "proposalTemplateNew": "建立提案範本",
   "editDAO": "編輯DAO",

@@ -1,8 +1,14 @@
 {
+  "dappsTitle": "dApps erforschen",
+  "dappsDescription": "Verbinden Sie sich mit Ihren bevorzugten web3 Anwendungen mit Ihrem Decent DAO, sicher und effizient.",
   "emptyProposalDapps": "Dieser Safe hat noch keine unterstützten dApps.",
   "connectingWalletConnect": "Verbinden...",
   "successConnectingWalletConnect": "Verbunden!",
   "failConnectingWalletConnect": "Die Verbindung konnte nicht hergestellt werden, bitte überprüfen Sie die uri.",
   "labelIframeWalletConnectUri": "WalletConnect URI",
-  "helperIframeWalletConnectUri": "Einfügen zum Verbinden"
+  "helperIframeWalletConnectUri": "Einfügen zum Verbinden",
+  "dappIntegrationActionLabel": "[{{appName}} Integration]",
+  "processingTransactions": "Bearbeitung von Transaktionen...",
+  "successProcessingTransactions": "Bearbeitete Vorgänge.",
+  "errorProcessingTransactions": "Fehler bei der Verarbeitung von Transaktionen."
 }

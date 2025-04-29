@@ -192,6 +192,5 @@
   "proposalSummaryNotEnoughVotingPower": "Ihr Stimmrecht entsprach nicht den Anforderungen, um über diesen Vorschlag abzustimmen, als er erstellt wurde.",
   "proposalSummaryNotEnoughVotingPowerSecondary": "Delegieren Sie Stimmzettel an Ihre Adresse, um bei künftigen Vorschlägen stimmberechtigt zu sein.",
   "castVoteError": "Abstimmung nicht abgeschickt",
-  "castVoteErrorTempAutoFallback": ". Rückgriff auf die bezahlte Stimmabgabe...",
   "labelAddTransactionsToProposal": "Transaktionen zum Vorschlag hinzufügen"
 }

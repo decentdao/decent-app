@@ -9,7 +9,6 @@
   "treasury": "재무부",
   "proposal": "#{{proposalId}} {{proposalTitle}}",
   "proposalTemplates": "제안서 템플릿",
-  "proposalDapps": "dApp 살펴보기",
   "proposalTemplate": "{{proposalTemplateTitle}}",
   "proposalTemplateNew": "제안서 템플릿 만들기",
   "editDAO": "DAO 편집",
