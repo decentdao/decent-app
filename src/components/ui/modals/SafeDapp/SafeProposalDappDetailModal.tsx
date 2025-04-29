@@ -133,11 +133,11 @@ export function SafeProposalDappDetailModal({
         defaultAddress={safeAddress}
         defaultAppUrl={appUrl}
         chainId={chain.id}
-        onTransactionsReceived={transactions => {
-          toast.promise(
+        onTransactionsReceived={async transactions => {
+          const id = toast.promise(
             async () => {
               if (!safe?.address) {
-                return;
+                throw new Error('Safe address not found');
               }
 
               if (transactions && transactions.length > 0) {
@@ -160,6 +160,7 @@ export function SafeProposalDappDetailModal({
                 });
                 onClose();
                 navigate(DAO_ROUTES.proposalWithActionsNew.relative(addressPrefix, safe.address));
+                return true;
               }
             },
             {
@@ -168,6 +169,10 @@ export function SafeProposalDappDetailModal({
               error: t('errorProcessingTransactions'),
             },
           );
+
+          // Return wrapped promise
+          // https://github.com/emilkowalski/sonner/pull/462
+          return (id as any).unwrap();
         }}
       >
         <Iframe
