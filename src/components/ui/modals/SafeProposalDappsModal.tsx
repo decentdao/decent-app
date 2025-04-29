@@ -31,12 +31,17 @@ export function SafeProposalDappsModal({ onClose }: { onClose: () => void }) {
       >
         <Box>
           <Text
-            textStyle="heading-large"
+            textStyle="heading-medium"
             color="white-0"
           >
             {t('dappsTitle')}
           </Text>
-          <Text color="neutral-7">{t('dappsDescription')}</Text>
+          <Text
+            color="neutral-7"
+            textStyle="body-small"
+          >
+            {t('dappsDescription')}
+          </Text>
         </Box>
 
         <CloseButton onClick={onClose} />
