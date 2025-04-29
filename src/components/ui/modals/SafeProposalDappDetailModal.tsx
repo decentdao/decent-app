@@ -114,7 +114,7 @@ export function SafeProposalDappDetailModal({
   const dappLabel = t('dappIntegrationActionLabel', { appName });
 
   return (
-    <div>
+    <Box>
       <Flex
         justifyContent="space-between"
         gap="6rem"
@@ -175,6 +175,6 @@ export function SafeProposalDappDetailModal({
           enableWalletConnect={!!dapp?.enableWalletConnect}
         />
       </SafeInjectProvider>
-    </div>
+    </Box>
   );
 }
