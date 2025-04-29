@@ -7,6 +7,8 @@ import { DAO_ROUTES } from '../../../../constants/routes';
 import useFeatureFlag from '../../../../helpers/environmentFeatureFlags';
 import { useNetworkConfigStore } from '../../../../providers/NetworkConfig/useNetworkConfigStore';
 import { useProposalActionsStore } from '../../../../store/actions/useProposalActionsStore';
+import { ModalType } from '../../modals/ModalProvider';
+import { useDecentModal } from '../../modals/useDecentModal';
 import { OptionMenu } from '../OptionMenu';
 import { IOption } from '../OptionMenu/types';
 
@@ -15,6 +17,7 @@ export function CreateProposalMenu({ safeAddress }: { safeAddress: Address }) {
 
   const { addressPrefix } = useNetworkConfigStore();
   const { resetActions } = useProposalActionsStore();
+  const openDappsBrowserModal = useDecentModal(ModalType.DAPPS_BROWSER);
 
   const navigate = useNavigate();
   const iframeFeatureEnabled = useFeatureFlag('flag_iframe_template');
@@ -42,7 +45,7 @@ export function CreateProposalMenu({ safeAddress }: { safeAddress: Address }) {
       optionKey: t('useDapps'),
       onClick: () => {
         resetActions();
-        navigate(DAO_ROUTES.proposalDapps.relative(addressPrefix, safeAddress));
+        openDappsBrowserModal();
       },
     });
   }
