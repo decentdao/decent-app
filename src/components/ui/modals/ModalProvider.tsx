@@ -20,6 +20,7 @@ import ForkProposalTemplateModal from './ForkProposalTemplateModal';
 import { GaslessVoteLoadingModal } from './GaslessVoting/GaslessVoteLoadingModal';
 import { GaslessVoteSuccessModal } from './GaslessVoting/GaslessVoteSuccessModal';
 import { RefillGasData, RefillGasTankModal } from './GaslessVoting/RefillGasTankModal';
+import { WithdrawGasData, WithdrawGasTankModal } from './GaslessVoting/WithdrawGasTankModal';
 import { ModalBase, ModalBaseSize } from './ModalBase';
 import PaymentCancelConfirmModal from './PaymentCancelConfirmModal';
 import { PaymentWithdrawModal } from './PaymentWithdrawModal';
@@ -51,6 +52,7 @@ export enum ModalType {
   GASLESS_VOTE_SUCCESS,
   CONFIRM_TRANSACTION,
   TRANSACTION_BUILDER,
+  WITHDRAW_GAS,
   DAPPS_BROWSER,
 }
 
@@ -107,6 +109,9 @@ export type ModalPropsTypes = {
   };
   [ModalType.REFILL_GAS]: {
     onSubmit: (refillGasData: RefillGasData) => void;
+  };
+  [ModalType.WITHDRAW_GAS]: {
+    onWithdraw: (withdrawGasData: WithdrawGasData) => void;
   };
   [ModalType.GASLESS_VOTE_LOADING]: {};
   [ModalType.GASLESS_VOTE_SUCCESS]: {};
@@ -312,7 +317,17 @@ export function ModalProvider({ children }: { children: ReactNode }) {
             />
           );
           break;
-
+        case ModalType.WITHDRAW_GAS:
+          modalContent = (
+            <WithdrawGasTankModal
+              close={closeModal}
+              withdrawGasData={(data: WithdrawGasData) => {
+                current.props.onWithdraw(data);
+                closeModal();
+              }}
+            />
+          );
+          break;
         case ModalType.GASLESS_VOTE_SUCCESS:
           modalContent = <GaslessVoteSuccessModal close={closeModal} />;
           modalSize = 'md';
@@ -440,4 +455,9 @@ export function ModalProvider({ children }: { children: ReactNode }) {
       <Portal>{display}</Portal>
     </ModalContext.Provider>
   );
+}
+
+export interface WithdrawGasModalProps {
+  availableBalance: bigint;
+  onWithdraw: (amount: bigint) => Promise<void>;
 }

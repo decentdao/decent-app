@@ -5,7 +5,7 @@ import { getContract } from 'viem';
 import { EntryPoint07Abi } from '../../assets/abi/EntryPoint07Abi';
 import { DAO_ROUTES } from '../../constants/routes';
 import useFeatureFlag from '../../helpers/environmentFeatureFlags';
-import { useDepositInfo } from '../../hooks/DAO/accountAbstraction/useDepositInfo';
+import { usePaymasterDepositInfo } from '../../hooks/DAO/accountAbstraction/usePaymasterDepositInfo';
 import useNetworkPublicClient from '../../hooks/useNetworkPublicClient';
 import { useNetworkWalletClient } from '../../hooks/useNetworkWalletClient';
 import { useCanUserCreateProposal } from '../../hooks/utils/useCanUserSubmitProposal';
@@ -14,7 +14,9 @@ import { useProposalActionsStore } from '../../store/actions/useProposalActionsS
 import { useDaoInfoStore } from '../../store/daoInfo/useDaoInfoStore';
 import { formatCoin } from '../../utils';
 import { prepareRefillPaymasterAction } from '../../utils/dao/prepareRefillPaymasterActionData';
+import { prepareWithdrawPaymasterAction } from '../../utils/dao/prepareWithdrawPaymasterActionData';
 import { RefillGasData } from '../ui/modals/GaslessVoting/RefillGasTankModal';
+import { WithdrawGasData } from '../ui/modals/GaslessVoting/WithdrawGasTankModal';
 import { ModalType } from '../ui/modals/ModalProvider';
 import { useDecentModal } from '../ui/modals/useDecentModal';
 import Divider from '../ui/utils/Divider';
@@ -74,7 +76,7 @@ function GaslessVotingToggleContent({
               textStyle={isSettings ? 'labels-large' : 'helper-text'}
               color="neutral-7"
             >
-              {t('gaslessStakingDescription', {
+              {t('gaslessStakingRequirement', {
                 amount: formattedMinStakeAmount,
                 symbol: nativeCurrency.symbol,
               })}
@@ -107,10 +109,47 @@ export function GaslessVotingToggleDAOSettings(props: GaslessVotingToggleProps) 
   const nativeCurrency = publicClient.chain.nativeCurrency;
 
   const { safe, gaslessVotingEnabled, paymasterAddress } = useDaoInfoStore();
-  const { depositInfo } = useDepositInfo(paymasterAddress);
+  const { depositInfo } = usePaymasterDepositInfo();
 
   const { addAction, resetActions } = useProposalActionsStore();
   const { data: walletClient } = useNetworkWalletClient();
+
+  const withdrawGas = useDecentModal(ModalType.WITHDRAW_GAS, {
+    onWithdraw: async (withdrawGasData: WithdrawGasData) => {
+      if (!safe?.address || !paymasterAddress) {
+        return;
+      }
+
+      const action = prepareWithdrawPaymasterAction({
+        withdrawData: withdrawGasData,
+        paymasterAddress,
+      });
+      const formattedWithdrawAmount = formatCoin(
+        withdrawGasData.withdrawAmount,
+        true,
+        nativeCurrency.decimals,
+        nativeCurrency.symbol,
+        false,
+      );
+
+      resetActions();
+      addAction({
+        ...action,
+        content: (
+          <Box>
+            <Text>
+              {t('withdrawGasAction', {
+                amount: formattedWithdrawAmount,
+                symbol: nativeCurrency.symbol,
+              })}
+            </Text>
+          </Box>
+        ),
+      });
+
+      navigate(DAO_ROUTES.proposalWithActionsNew.relative(addressPrefix, safe.address));
+    },
+  });
 
   const refillGas = useDecentModal(ModalType.REFILL_GAS, {
     onSubmit: async (refillGasData: RefillGasData) => {
@@ -239,15 +278,22 @@ export function GaslessVotingToggleDAOSettings(props: GaslessVotingToggleProps) 
             </Text>
           </Flex>
 
-          <Button
-            variant="secondary"
-            size="sm"
-            onClick={() => {
-              refillGas();
-            }}
-          >
-            {t('addGas')}
-          </Button>
+          <Flex gap="0.5rem">
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={withdrawGas}
+            >
+              {t('withdrawGas')}
+            </Button>
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={refillGas}
+            >
+              {t('addGas')}
+            </Button>
+          </Flex>
         </Flex>
       )}
 
