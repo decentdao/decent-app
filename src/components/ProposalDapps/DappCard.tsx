@@ -3,8 +3,6 @@ import { Dot } from '@phosphor-icons/react';
 import { useNavigate } from 'react-router-dom';
 import { DAO_ROUTES } from '../../constants/routes';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
-import ContentBox from '../ui/containers/ContentBox';
-import Markdown from '../ui/proposal/Markdown';
 import Divider from '../ui/utils/Divider';
 
 type DappCardProps = {
