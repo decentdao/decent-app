@@ -32,7 +32,7 @@ export default function DappCard({
   return (
     <ContentBox
       containerBoxProps={{
-        flex: '0 0 calc(50% - 0.6666666rem)',
+        flex: '0 0 calc(25% - 0.25rem)',
         my: '0',
         bg: 'neutral-3',
         p: '0.5rem',

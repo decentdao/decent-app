@@ -362,7 +362,7 @@ export function ModalProvider({ children }: { children: ReactNode }) {
           break;
         case ModalType.DAPPS_BROWSER:
           modalContent = <SafeProposalDappsModal onClose={closeModal} />;
-          modalSize = '2xl';
+          modalSize = 'almostFull';
           break;
         case ModalType.NONE:
         default:
