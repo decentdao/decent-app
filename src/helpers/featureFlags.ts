@@ -2,7 +2,6 @@ export const FEATURE_FLAGS = [
   'flag_dev',
   'flag_gasless_voting',
   'flag_iframe_template',
-  'flag_gasless_staking',
   'flag_store_v2',
   'flag_locked_token',
 ] as const;

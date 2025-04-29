@@ -416,7 +416,7 @@ export function RolePaymentDetails({
   ]);
 
   const withdraw = useDecentModal(modalType, props);
-  const { addAction } = useProposalActionsStore();
+  const { addAction, resetActions } = useProposalActionsStore();
   const { t } = useTranslation('roles');
   const { getHat } = useRolesStore();
 
@@ -444,7 +444,7 @@ export function RolePaymentDetails({
             roleHatSmartAccountAddress,
             paymentContractAddress: payment.contractAddress,
           });
-
+          resetActions();
           addAction({
             actionType: ProposalActionType.WITHDRAW_STREAM,
             content: (
@@ -477,6 +477,7 @@ export function RolePaymentDetails({
     payment.contractAddress,
     payment.streamId,
     payment.withdrawableAmount,
+    resetActions,
     roleHatId,
     roleHatSmartAccountAddress,
     roleHatWearerAddress,

@@ -1,0 +1,18 @@
+{
+  "createNewDAO": "新しいDAOを作成します",
+  "createSubDAO": "subDAOを作成します",
+  "headerTitle": "{{daoName}} {{subject}}",
+  "proposals": "すべての提案",
+  "proposalNew": "提案を作成します",
+  "nodes": "組織",
+  "roles": "役割",
+  "treasury": "財務省",
+  "proposal": "#{{proposalId}} {{proposalTitle}}",
+  "proposalTemplates": "提案テンプレート",
+  "proposalDapps": "Dappsを探索します",
+  "proposalTemplate": "{{proposalTemplateTitle}}",
+  "proposalTemplateNew": "提案テンプレートを作成します",
+  "editDAO": "Edit DAO",
+  "parentLink": "Parent DAO",
+  "settings": "Settings"
+}

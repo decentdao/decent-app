@@ -1,0 +1,20 @@
+{
+  "createChildSafe": "Criar um SubDAO",
+  "clawbackProposal": "Proposta de reembolso",
+  "clawbackDescription": "Transferir todos os fundos do cofre da criança para o cofre do pai",
+  "createProposalTemplateTitle": "Criar modelo de proposta",
+  "createProposalTemplateDescription": "A execução da presente proposta criará um novo modelo de proposta, anexado ao presente Cofre.",
+  "removeProposalTemplateTitle": "Remover modelo de proposta",
+  "removeProposalTemplateDescription": "A execução da presente proposta eliminará o modelo de proposta anexo ao presente Cofre.",
+  "updatesSafeName": "Atualizar o nome do cofre",
+  "enableGaslessVoting": "Ativar a votação sem gás",
+  "disableGaslessVoting": "Desativar a votação sem gás",
+  "topupGasTank": "Encher o depósito de combustível",
+  "updateSnapshotSpace": "Atualizar espaço de instantâneo",
+  "lidoWithdrawalTitle": "Retirada do Lido",
+  "lidoWithdrawalDescription": "Esta proposta irá queimar o seu Lido Withdrawal NFT e devolver o ETH ao seu Cofre.",
+  "unstakeStEthTitle": "Desempatar o stETH",
+  "unstakeStEthDescription": "Esta proposta irá retirar o stETH do Lido e cunhar um Lido Withdrawal NFT que pode ser usado para reivindicar seu ETH.",
+  "stakeWithLidoTitle": "Apostar em ETH com a Lido",
+  "stakeWithLidoDescription": "Esta proposta irá apostar ETH no Lido, devolvendo stETH ao teu tesouro."
+}

@@ -1,0 +1,14 @@
+{
+  "connect": "連接",
+  "connectWallet": "連接錢包",
+  "disconnect": "斷開",
+  "wallet": "錢包",
+  "titleManageProposalTemplate": "管理範本",
+  "optionCreateSubDAO": "建立SubDAO",
+  "optionInitiateFreeze": "啟動凍結",
+  "optionInitiateClawback": "啟動退貨",
+  "optionRemoveTemplate": "移除範本",
+  "optionForkTemplate": "叉子範本",
+  "optionModifyGovernance": "修改治理",
+  "optionSettings": "設定"
+}

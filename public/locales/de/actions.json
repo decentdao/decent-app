@@ -1,0 +1,10 @@
+{
+  "actions": "Aktionen",
+  "addAction": "Aktion hinzufügen",
+  "transferAssets": "Vermögenswerte übertragen",
+  "transferAssetsSub": "Erstellen Sie einmalige Zahlungen.",
+  "comingSoon": "Bald kommen ...",
+  "comingSoonSub": "Weitere Aktionen unterwegs.",
+  "transactionBuilderActionCard_single": "Transaction Builder: Ausführen {{ functionName }} auf {{ targetAddress }}",
+  "transactionBuilderActionCard_multiple": "Transaction Builder: Batch {{ numOfTransactions }} Transaktionen"
+}

@@ -95,7 +95,7 @@ export default function ProposalTemplateModal({
 
   const successCallback = () => {
     if (safe?.address) {
-      navigate(DAO_ROUTES.proposals.relative(addressPrefix, safe.address));
+      navigate(DAO_ROUTES.dao.relative(addressPrefix, safe.address));
       onClose();
     }
   };

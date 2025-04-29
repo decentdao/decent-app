@@ -1,0 +1,14 @@
+{
+  "connect": "Conectar",
+  "connectWallet": "Billetera Connect",
+  "disconnect": "Desconecte",
+  "wallet": "Cartera",
+  "titleManageProposalTemplate": "Gestionar plantilla",
+  "optionCreateSubDAO": "Crear SubDAO",
+  "optionInitiateFreeze": "Iniciar una congelación",
+  "optionInitiateClawback": "Iniciar Reclamación",
+  "optionRemoveTemplate": "Eliminar plantilla",
+  "optionForkTemplate": "Plantilla de horquilla",
+  "optionModifyGovernance": "Modificar la gobernanza",
+  "optionSettings": "Ajustes"
+}

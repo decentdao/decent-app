@@ -11,6 +11,7 @@ import {
 } from '@chakra-ui/react';
 import { CaretDown, CaretRight, MinusCircle, Plus, WarningCircle } from '@phosphor-icons/react';
 import { useTranslation } from 'react-i18next';
+import { Address } from 'viem';
 import { Stream } from '../../types/proposalBuilder';
 import { scrollToBottom } from '../../utils/ui';
 import CeleryButtonWithIcon from '../ui/utils/CeleryButtonWithIcon';
@@ -21,10 +22,12 @@ export function ProposalStreams({
   pendingTransaction,
   values: { streams },
   setFieldValue,
+  defaultTokenAddress,
 }: {
   pendingTransaction: boolean;
   values: { streams: Stream[] };
   setFieldValue: (field: string, value: any) => void;
+  defaultTokenAddress: Address;
 }) {
   const { t } = useTranslation(['proposal', 'proposalTemplate', 'common']);
   const handleRemoveStream = (streamIndex: number) => {
@@ -121,7 +124,10 @@ export function ProposalStreams({
       <Box p="1.5rem">
         <CeleryButtonWithIcon
           onClick={() => {
-            setFieldValue('streams', [...streams, DEFAULT_STREAM]);
+            setFieldValue('streams', [
+              ...streams,
+              { ...DEFAULT_STREAM, tokenAddress: defaultTokenAddress },
+            ]);
             scrollToBottom(100, 'smooth');
           }}
           isDisabled={pendingTransaction}

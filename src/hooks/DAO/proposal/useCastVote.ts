@@ -5,10 +5,12 @@ import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { Address, getContract, http } from 'viem';
 import { createBundlerClient } from 'viem/account-abstraction';
-import { useAccount } from 'wagmi';
 import { EntryPoint07Abi } from '../../../assets/abi/EntryPoint07Abi';
+import { ModalType } from '../../../components/ui/modals/ModalProvider';
+import { useDecentModal } from '../../../components/ui/modals/useDecentModal';
 import { useStore } from '../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
+import { fetchMaxPriorityFeePerGas } from '../../../utils/gaslessVoting';
 import useNetworkPublicClient from '../../useNetworkPublicClient';
 import { useNetworkWalletClient } from '../../useNetworkWalletClient';
 import { useTransaction } from '../../utils/useTransaction';
@@ -29,7 +31,7 @@ const useCastVote = (proposalId: string, strategy: Address) => {
   const {
     contracts: { accountAbstraction },
     rpcEndpoint,
-    gaslessVoting,
+    getConfigByChainId,
   } = useNetworkConfigStore();
 
   const [contractCall, castVotePending] = useTransaction();
@@ -157,39 +159,25 @@ const useCastVote = (proposalId: string, strategy: Address) => {
       strategy,
     ],
   );
-
-  const { address } = useAccount();
-
   const publicClient = useNetworkPublicClient();
 
   const prepareGaslessVoteOperation = useCallback(async () => {
-    if (!publicClient || !paymasterAddress || !walletClient || !accountAbstraction) {
+    if (!publicClient || !paymasterAddress || !walletClient) {
       return;
     }
 
-    const {
-      maxFeePerGas: maxFeePerGasEstimate,
-      maxPriorityFeePerGas: maxPriorityFeePerGasEstimate,
-    } = await publicClient.estimateFeesPerGas();
-    const castVoteCallData = prepareCastVoteData(0);
-
-    if (!gaslessVoting?.maxPriorityFeePerGasMultiplier) {
-      return;
-    }
-
-    // `maxPriorityFeePerGas` returned from `estimateFeesPerGas` needs to be multiplied by this value to match minimum requirement here https://docs.alchemy.com/reference/rundler-maxpriorityfeepergas
-    const maxPriorityFeePerGasMultiplier = gaslessVoting.maxPriorityFeePerGasMultiplier;
-
-    // Adds buffer to maxFeePerGasEstimate to ensure transaction gets included
-    const maxFeePerGasMultiplier = 50n;
-
-    const maxPriorityFeePerGas = maxPriorityFeePerGasEstimate * maxPriorityFeePerGasMultiplier;
-    const maxFeePerGas = maxFeePerGasEstimate * maxFeePerGasMultiplier;
+    const networkConfig = getConfigByChainId(publicClient.chain.id);
 
     const smartWallet = await toLightSmartAccount({
       client: publicClient,
       owner: walletClient,
       version: '2.0.0',
+
+      // DO NOT CHANGE THIS INDEX!!!
+      // For context, see:
+      // - https://docs.pimlico.io/permissionless/reference/accounts/toLightSmartAccount#index-optional
+      // - https://github.com/decentdao/decent-contracts/blob/a2fad6470015c0f59c84d8b5249dd1ee7b8a4773/contracts/account-abstraction/SmartAccountValidationV1.sol#L47
+      index: 0n,
     });
     const bundlerClient = createBundlerClient({
       account: smartWallet,
@@ -197,12 +185,22 @@ const useCastVote = (proposalId: string, strategy: Address) => {
       transport: http(rpcEndpoint),
     });
 
+    const minimumMaxPriorityFeePerGas = await fetchMaxPriorityFeePerGas(networkConfig);
+    const { maxPriorityFeePerGas: maxPriorityFeePerGasEstimate } =
+      await publicClient.estimateFeesPerGas();
+
+    // Select higher of the two
+    const maxPriorityFeePerGas =
+      maxPriorityFeePerGasEstimate > (minimumMaxPriorityFeePerGas ?? 0n)
+        ? maxPriorityFeePerGasEstimate
+        : minimumMaxPriorityFeePerGas;
+
     const userOpWithoutCallData = {
       paymaster: paymasterAddress,
       maxPriorityFeePerGas,
-      maxFeePerGas,
     };
 
+    const callDataForEstimation = prepareCastVoteData(0);
     const {
       preVerificationGas,
       verificationGasLimit,
@@ -211,33 +209,27 @@ const useCastVote = (proposalId: string, strategy: Address) => {
       paymasterPostOpGasLimit,
     } = await bundlerClient.estimateUserOperationGas({
       ...userOpWithoutCallData,
-      calls: [castVoteCallData],
+      calls: [callDataForEstimation],
     });
 
     // Calculate gas
     // check algorithm at https://github.com/alchemyplatform/rundler/blob/fae8909b34e5874c0cae2d06aa841a8a112d22a0/crates/types/src/user_operation/v0_7.rs#L206-L215
+    const { maxFeePerGas: maxFeePerGasEstimate } = await publicClient.estimateFeesPerGas();
     const gasUsed =
       preVerificationGas +
       verificationGasLimit +
       callGasLimit +
       (paymasterVerificationGasLimit ?? 0n) +
       (paymasterPostOpGasLimit ?? 0n);
-    const gasCost = maxFeePerGas * gasUsed;
-
-    const userOp = {
-      ...userOpWithoutCallData,
-      maxPriorityFeePerGas: (maxPriorityFeePerGasEstimate * 13n) / 10n,
-      maxFeePerGas: (maxFeePerGasEstimate * 13n) / 10n,
-    };
+    const gasCost = maxFeePerGasEstimate * gasUsed;
 
     return {
       gasCost,
-      userOp,
+      userOpWithoutCallData,
       bundlerClient,
     };
   }, [
-    accountAbstraction,
-    gaslessVoting?.maxPriorityFeePerGasMultiplier,
+    getConfigByChainId,
     paymasterAddress,
     prepareCastVoteData,
     publicClient,
@@ -269,18 +261,12 @@ const useCastVote = (proposalId: string, strategy: Address) => {
     };
 
     estimateGaslessVoteGas().catch(() => {
-      //const error = e as EstimateUserOperationGasErrorType;
-      //console.warn('error', error.message);
       setCanCastGaslessVote(false);
     });
-  }, [
-    accountAbstraction,
-    paymasterAddress,
-    prepareCastVoteData,
-    prepareGaslessVoteOperation,
-    publicClient,
-    rpcEndpoint,
-  ]);
+  }, [accountAbstraction, paymasterAddress, prepareGaslessVoteOperation, publicClient]);
+
+  const gaslessVoteLoadingModal = useDecentModal(ModalType.GASLESS_VOTE_LOADING);
+  const closeModal = useDecentModal(ModalType.NONE);
 
   const castGaslessVote = useCallback(
     async ({
@@ -292,10 +278,6 @@ const useCastVote = (proposalId: string, strategy: Address) => {
       onError: (error: any) => void;
       onSuccess: () => void;
     }) => {
-      if (!address || !paymasterAddress || !walletClient || !publicClient) {
-        throw new Error('Invalid state');
-      }
-
       try {
         setCastGaslessVotePending(true);
 
@@ -303,21 +285,26 @@ const useCastVote = (proposalId: string, strategy: Address) => {
         if (!gaslessVoteData) {
           return;
         }
-        const { userOp, bundlerClient } = gaslessVoteData;
+        const { userOpWithoutCallData, bundlerClient } = gaslessVoteData;
 
         const castVoteCallData = prepareCastVoteData(selectedVoteChoice);
 
+        gaslessVoteLoadingModal();
+
         // Sign and send UserOperation to bundler
         const hash = await bundlerClient.sendUserOperation({
-          ...userOp,
+          ...userOpWithoutCallData,
           calls: [castVoteCallData],
         });
 
         bundlerClient.waitForUserOperationReceipt({ hash }).then(() => {
+          closeModal();
+
           setCastGaslessVotePending(false);
           onSuccess();
         });
       } catch (error: any) {
+        closeModal();
         setCastGaslessVotePending(false);
 
         if (error.name === 'UserRejectedRequestError') {
@@ -328,15 +315,7 @@ const useCastVote = (proposalId: string, strategy: Address) => {
         onError(error);
       }
     },
-    [
-      address,
-      prepareGaslessVoteOperation,
-      paymasterAddress,
-      prepareCastVoteData,
-      publicClient,
-      t,
-      walletClient,
-    ],
+    [prepareGaslessVoteOperation, prepareCastVoteData, gaslessVoteLoadingModal, closeModal, t],
   );
 
   return {

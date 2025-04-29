@@ -14,10 +14,8 @@ import { useTranslation } from 'react-i18next';
 import useFeatureFlag from '../../../helpers/environmentFeatureFlags';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import { useStore } from '../../../providers/App/AppProvider';
-import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
 import { FractalModuleType, ICreationStepProps, VotingStrategyType } from '../../../types';
 import { DEV_VOTING_PERIOD_MINUTES } from '../../../utils/dev/devModeConstants';
-import { GaslessVotingToggleDAOCreate } from '../../GaslessVoting/GaslessVotingToggle';
 import { BigIntInput } from '../../ui/forms/BigIntInput';
 import { CustomNonceInput } from '../../ui/forms/CustomNonceInput';
 import { LabelComponent } from '../../ui/forms/InputComponent';
@@ -60,11 +58,6 @@ export function AzoriusGovernance(props: ICreationStepProps) {
   const {
     node: { safe, subgraphInfo, modules },
   } = useStore({ daoKey });
-  const {
-    contracts: { accountAbstraction },
-  } = useNetworkConfigStore();
-  const gaslessStakingFeatureEnabled = useFeatureFlag('flag_gasless_staking');
-  const gaslessVotingSupported = accountAbstraction !== undefined;
 
   const fractalModule = useMemo(() => {
     if (!modules) return null;
@@ -267,14 +260,6 @@ export function AzoriusGovernance(props: ICreationStepProps) {
             renderTrimmed={false}
           />
         </Box>
-      )}
-      {gaslessVotingSupported && !gaslessStakingFeatureEnabled && (
-        <GaslessVotingToggleDAOCreate
-          isEnabled={values.essentials.gaslessVoting}
-          onToggle={() =>
-            setFieldValue('essentials.gaslessVoting', !values.essentials.gaslessVoting)
-          }
-        />
       )}
       <StepButtons
         {...props}
