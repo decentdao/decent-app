@@ -21,7 +21,7 @@ export const EMPTY_NODE: IDAO = {
   subgraphInfo: null,
   modules: null,
   gaslessVotingEnabled: false,
-  paymasterAddress: undefined,
+  paymasterAddress: null,
 };
 
 export const createNodesSlice: StateCreator<GlobalStore, StoreMiddleware, [], NodesSlice> = (

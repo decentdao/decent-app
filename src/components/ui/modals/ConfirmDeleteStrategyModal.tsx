@@ -23,7 +23,7 @@ export function ConfirmDeleteStrategyModal({ onClose }: { onClose: () => void })
     governance,
     governanceContracts,
   } = useStore({ daoKey });
-  const { addAction } = useProposalActionsStore();
+  const { addAction, resetActions } = useProposalActionsStore();
 
   const azoriusGovernance = governance as AzoriusGovernance;
   const { getVotingStrategies } = useVotingStrategiesAddresses();
