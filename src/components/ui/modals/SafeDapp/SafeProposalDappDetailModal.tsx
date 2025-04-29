@@ -114,7 +114,6 @@ export function SafeProposalDappDetailModal({
   const {
     node: { safe },
   } = useStore({ daoKey });
-  const { addressPrefix } = useNetworkConfigStore();
   const { dapps } = useSupportedDapps(chain.id);
   const { addAction, resetActions } = useProposalActionsStore();
   const navigate = useNavigate();

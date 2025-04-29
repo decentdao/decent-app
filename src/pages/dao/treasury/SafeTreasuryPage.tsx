@@ -19,7 +19,6 @@ import useSendAssetsActionModal from '../../../hooks/DAO/useSendAssetsActionModa
 import { useCanUserCreateProposal } from '../../../hooks/utils/useCanUserSubmitProposal';
 import { analyticsEvents } from '../../../insights/analyticsEvents';
 import { useStore } from '../../../providers/App/AppProvider';
-import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
 
 export function SafeTreasuryPage() {
   useEffect(() => {
@@ -42,7 +41,6 @@ export function SafeTreasuryPage() {
   const totalTransfers = transfers?.length || 0;
   const showLoadMoreTransactions = totalTransfers > shownTransactions && shownTransactions < 100;
   const { openSendAssetsModal } = useSendAssetsActionModal();
-  const { addressPrefix } = useNetworkConfigStore();
   const safeAddress = safe?.address;
   const openDappBrowserModal = useDecentModal(ModalType.DAPP_BROWSER, {
     appUrl: 'https://swap.cow.fi',
