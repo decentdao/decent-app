@@ -51,7 +51,7 @@ export default function ProposalTemplateCard({
   const successCallback = useCallback(() => {
     if (safe?.address) {
       // Redirecting to proposals page so that user will see Proposal for Proposal Template creation
-      navigate(DAO_ROUTES.proposals.relative(addressPrefix, safe.address));
+      navigate(DAO_ROUTES.dao.relative(addressPrefix, safe.address));
     }
   }, [navigate, safe, addressPrefix]);
 

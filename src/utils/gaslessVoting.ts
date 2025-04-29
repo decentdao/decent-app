@@ -7,6 +7,7 @@ import {
   encodePacked,
   getAbiItem,
   getCreate2Address,
+  Hex,
   keccak256,
   parseAbiParameters,
   stringToHex,
@@ -14,6 +15,7 @@ import {
 } from 'viem';
 import { generateContractByteCodeLinear } from '../models/helpers/utils';
 import { FractalTokenType, GovernanceType } from '../types';
+import { NetworkConfig } from '../types/network';
 
 export const getPaymasterSaltNonce = (safeAddress: Address, chainId: number) => {
   const salt = `${safeAddress}-${chainId}`;
@@ -102,4 +104,33 @@ export const getVoteSelectorAndValidator = (
 
   const voteSelector = toFunctionSelector(voteAbiItem);
   return { voteSelector, voteValidator };
+};
+
+export const fetchMaxPriorityFeePerGas = async (networkConfig: NetworkConfig) => {
+  // Fetch minimum maxPriorityFeePerGas from Alchemy
+  try {
+    const response = await fetch(networkConfig.rpcEndpoint, {
+      method: 'POST',
+      body: JSON.stringify({ id: 1, jsonrpc: '2.0', method: 'rundler_maxPriorityFeePerGas' }),
+    });
+
+    if (!response.ok) {
+      console.error('Error fetching maxPriorityFeePerGas from Alchemy:', {
+        status: response.status,
+        statusText: response.statusText,
+        chain: networkConfig.chain.name,
+      });
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return BigInt(data.result as Hex);
+  } catch (error) {
+    console.error('Error fetching maxPriorityFeePerGas from Alchemy:', {
+      chain: networkConfig.chain.name,
+      error: error instanceof Error ? error.message : 'Unknown error',
+    });
+
+    return;
+  }
 };

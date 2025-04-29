@@ -17,7 +17,7 @@ export function SafeProposalDappsPage() {
     amplitude.track(analyticsEvents.ProposalDappsPageOpened);
   }, []);
 
-  const { t } = useTranslation();
+  const { t } = useTranslation('breadcrumbs');
   const { chain } = useNetworkConfigStore();
   const { daoKey } = useCurrentDAOKey();
   const {
@@ -31,10 +31,10 @@ export function SafeProposalDappsPage() {
   return (
     <div>
       <PageHeader
-        title={t('proposalDapps', { ns: 'breadcrumbs' })}
+        title={t('proposalDapps')}
         breadcrumbs={[
           {
-            terminus: t('proposalDapps', { ns: 'breadcrumbs' }),
+            terminus: t('proposalDapps'),
             path: '',
           },
         ]}

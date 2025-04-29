@@ -71,9 +71,13 @@ export const useSafeDecoder = () => {
           const requestFunc = ({ method, params }: { method: any; params: any }) =>
             client.request({ method, params });
           const implementationAddress = await detectProxyTarget(to, requestFunc);
-          const response = await axios.get(
-            `${etherscanAPIUrl}&module=contract&action=getabi&address=${implementationAddress || to}`,
-          );
+          const url = `${etherscanAPIUrl}&module=contract&action=getabi&address=${implementationAddress || to}`;
+          const response = await axios.get(url, {
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            timeout: 1000,
+          });
           const responseData = response.data;
           const abi = JSON.parse(responseData.result);
           const decodedData = decodeFunctionData({

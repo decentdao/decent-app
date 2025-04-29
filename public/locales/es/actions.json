@@ -1,0 +1,10 @@
+{
+  "actions": "Comportamiento",
+  "addAction": "Agregar acción",
+  "transferAssets": "Transferir activos",
+  "transferAssetsSub": "Crea pagos únicos.",
+  "comingSoon": "Muy pronto...",
+  "comingSoonSub": "Más acciones en el camino.",
+  "transactionBuilderActionCard_single": "Transaction Builder: Ejecutar {{ functionName }} en {{ targetAddress }}",
+  "transactionBuilderActionCard_multiple": "Generador de transacciones: Lote {{ numOfTransactions }} transacciones"
+}

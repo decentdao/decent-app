@@ -14,7 +14,7 @@ export function ActivityAddress({
   addComma?: boolean;
 }) {
   const { displayName } = useGetAccountName(address);
-  const { t } = useTranslation();
+  const { t } = useTranslation('common');
   return (
     <EtherscanLink
       type="address"

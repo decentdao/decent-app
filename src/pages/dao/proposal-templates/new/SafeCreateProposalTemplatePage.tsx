@@ -23,6 +23,7 @@ import { analyticsEvents } from '../../../../insights/analyticsEvents';
 import { useStore } from '../../../../providers/App/AppProvider';
 import useIPFSClient from '../../../../providers/App/hooks/useIPFSClient';
 import { useNetworkConfigStore } from '../../../../providers/NetworkConfig/useNetworkConfigStore';
+import { useProposalActionsStore } from '../../../../store/actions/useProposalActionsStore';
 import { BigIntValuePair } from '../../../../types';
 import {
   CreateProposalSteps,
@@ -36,6 +37,7 @@ export function SafeCreateProposalTemplatePage() {
   }, []);
 
   const ipfsClient = useIPFSClient();
+  const { proposalMetadata } = useProposalActionsStore();
   const [initialProposalTemplate, setInitialProposalTemplate] = useState(DEFAULT_PROPOSAL);
   const { prepareProposalTemplateProposal } = useCreateProposalTemplate();
   const [searchParams] = useSearchParams();
@@ -139,7 +141,15 @@ export function SafeCreateProposalTemplatePage() {
       templateDetails={title => <TemplateDetails title={title} />}
       streamsDetails={null}
       key={initialProposalTemplate.proposalMetadata.title}
-      initialValues={{ ...initialProposalTemplate, nonce: safe.nextNonce }}
+      initialValues={{
+        ...(proposalMetadata
+          ? {
+              ...initialProposalTemplate,
+              proposalMetadata,
+            }
+          : initialProposalTemplate),
+        nonce: safe.nextNonce,
+      }}
       prepareProposalData={prepareProposalTemplateProposal}
       mainContent={(formikProps, pendingCreateTx, _nonce, currentStep) => {
         if (currentStep !== CreateProposalSteps.TRANSACTIONS) return null;

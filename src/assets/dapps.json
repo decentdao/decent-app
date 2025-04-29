@@ -1,12 +1,91 @@
 [
   {
-    "id": 1,
+    "id": 74,
     "url": "https://swap.cow.fi",
     "name": "CoW Swap",
     "iconUrl": "https://safe-transaction-assets.safe.global/safe_apps/e0ecb7c3-93c1-4598-b9ee-c24d6a798b40/icon.png",
     "description": "CoW Swap finds the lowest prices from all decentralized exchanges and DEX aggregators & saves you more with p2p trading and protection from MEV",
     "chainIds": ["42161", "11155111", "1", "100", "8453"],
     "tags": ["Aggregator", "DAO Tooling", "MEV Protection"],
+    "features": ["BATCHED_TRANSACTIONS"],
+    "featured": false
+  },
+  {
+    "id": 46,
+    "url": "https://app.originprotocol.com/",
+    "name": "Origin Unified Defi",
+    "iconUrl": "https://safe-transaction-assets.safe.global/safe_apps/a9f39583-60b8-483c-b56a-9afae54d820c/icon.png",
+    "description": "The official dapp for Origin's groundbreaking multichain yield ecosystem",
+    "chainIds": ["1", "42161", "146", "8453"],
+    "tags": ["DeFi", "Stablecoin"],
+    "features": [],
+    "featured": false
+  },
+  {
+    "id": 93,
+    "url": "https://balancer.fi/pools",
+    "name": "Balancer",
+    "iconUrl": "https://safe-transaction-assets.safe.global/safe_apps/83174312-cd91-4721-80f6-7d4f7055e1b5/icon.png",
+    "description": "Balancer is a battle-tested toolkit for true AMM experimentation and innovation.",
+    "chainIds": ["1", "42161", "43114", "8453", "100", "10", "137", "1101"],
+    "tags": ["DeFi", "DEX", "Fundraising"],
+    "features": [],
+    "featured": false
+  },
+  {
+    "id": 200,
+    "url": "https://pool-creator.balancer.fi/",
+    "name": "Balancer Pool Creator",
+    "iconUrl": "https://safe-transaction-assets.safe.global/safe_apps/c78ecd51-196c-4470-8b85-7f3f58982b26/icon.png",
+    "description": "Create and initialize a variety of liquidity pool types with Balancer protocol",
+    "chainIds": ["11155111", "1", "42161", "100", "8453"],
+    "tags": [],
+    "features": [],
+    "featured": false
+  },
+  {
+    "id": 138,
+    "url": "https://app.spark.fi/",
+    "name": "Spark",
+    "iconUrl": "https://safe-transaction-assets.safe.global/safe_apps/6e1acc95-882d-4e84-8b0b-90bab460c4a9/icon.png",
+    "description": "Spark is an at-scale stablecoin allocation engine capturing yield across DeFi, RWAs and exchanges. This yield is provided cross-chain to Savings USDS holders.",
+    "chainIds": ["1", "100", "8453"],
+    "tags": ["DeFi"],
+    "features": [],
+    "featured": false
+  },
+  {
+    "id": 25,
+    "url": "https://embedded.paraswap.io",
+    "name": "ParaSwap",
+    "iconUrl": "https://safe-transaction-assets.safe.global/safe_apps/25/icon.png",
+    "description": "ParaSwap allows dApps and traders to get the best DEX liquidity by aggregating multiple markets and offering the best rates",
+    "chainIds": ["1", "56", "137", "43114", "42161", "10", "8453", "1101"],
+    "tags": ["Aggregator", "DeFi", "DEX"],
+    "features": ["BATCHED_TRANSACTIONS"],
+    "featured": false
+  },
+  {
+    "id": 155,
+    "url": "https://jumper.exchange",
+    "name": "Jumper Exchange",
+    "iconUrl": "https://safe-transaction-assets.safe.global/safe_apps/155/icon.png",
+    "description": "Multi-Chain Bridging & Swapping (powered by LI.FI)",
+    "chainIds": [
+      "42161",
+      "59144",
+      "5000",
+      "1",
+      "56",
+      "100",
+      "43114",
+      "324",
+      "1101",
+      "10",
+      "8453",
+      "137"
+    ],
+    "tags": ["Bridge", "DeFi"],
     "features": ["BATCHED_TRANSACTIONS"],
     "featured": false
   }

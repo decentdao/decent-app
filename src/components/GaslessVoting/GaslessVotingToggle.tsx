@@ -3,10 +3,9 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { getContract } from 'viem';
 import { EntryPoint07Abi } from '../../assets/abi/EntryPoint07Abi';
-import { DETAILS_BOX_SHADOW } from '../../constants/common';
 import { DAO_ROUTES } from '../../constants/routes';
 import useFeatureFlag from '../../helpers/environmentFeatureFlags';
-import { useDepositInfo } from '../../hooks/DAO/accountAbstraction/useDepositInfo';
+import { usePaymasterDepositInfo } from '../../hooks/DAO/accountAbstraction/usePaymasterDepositInfo';
 import { useCurrentDAOKey } from '../../hooks/DAO/useCurrentDAOKey';
 import useNetworkPublicClient from '../../hooks/useNetworkPublicClient';
 import { useNetworkWalletClient } from '../../hooks/useNetworkWalletClient';
@@ -16,11 +15,12 @@ import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkC
 import { useProposalActionsStore } from '../../store/actions/useProposalActionsStore';
 import { formatCoin } from '../../utils';
 import { prepareRefillPaymasterAction } from '../../utils/dao/prepareRefillPaymasterActionData';
+import { prepareWithdrawPaymasterAction } from '../../utils/dao/prepareWithdrawPaymasterActionData';
 import { RefillGasData } from '../ui/modals/GaslessVoting/RefillGasTankModal';
+import { WithdrawGasData } from '../ui/modals/GaslessVoting/WithdrawGasTankModal';
 import { ModalType } from '../ui/modals/ModalProvider';
 import { useDecentModal } from '../ui/modals/useDecentModal';
 import Divider from '../ui/utils/Divider';
-import { StarterPromoBanner } from './StarterPromoBanner';
 
 interface GaslessVotingToggleProps {
   isEnabled: boolean;
@@ -34,13 +34,13 @@ function GaslessVotingToggleContent({
   displayNeedStakingLabel,
 }: GaslessVotingToggleProps & { isSettings?: boolean; displayNeedStakingLabel?: boolean }) {
   const { t } = useTranslation('gaslessVoting');
-  const { gaslessVoting } = useNetworkConfigStore();
+  const { bundlerMinimumStake } = useNetworkConfigStore();
   const { canUserCreateProposal } = useCanUserCreateProposal();
 
   const publicClient = useNetworkPublicClient();
   const nativeCurrency = publicClient.chain.nativeCurrency;
   const formattedMinStakeAmount = formatCoin(
-    gaslessVoting?.bundlerMinimumStake || 0n,
+    bundlerMinimumStake || 0n,
     true,
     nativeCurrency.decimals,
     nativeCurrency.symbol,
@@ -77,7 +77,7 @@ function GaslessVotingToggleContent({
               textStyle={isSettings ? 'labels-large' : 'helper-text'}
               color="neutral-7"
             >
-              {t('gaslessStakingDescription', {
+              {t('gaslessStakingRequirement', {
                 amount: formattedMinStakeAmount,
                 symbol: nativeCurrency.symbol,
               })}
@@ -96,50 +96,13 @@ function GaslessVotingToggleContent({
   );
 }
 
-export function GaslessVotingToggleDAOCreate(props: GaslessVotingToggleProps) {
-  const gaslessFeatureEnabled = useFeatureFlag('flag_gasless_voting');
-  if (!gaslessFeatureEnabled) return null;
-
-  return (
-    <Flex
-      direction="column"
-      gap="0.5rem"
-    >
-      <Box
-        borderRadius="0.75rem"
-        bg="neutral-2"
-        p="1.5rem"
-        display="flex"
-        flexDirection="column"
-        gap="1.5rem"
-        boxShadow={DETAILS_BOX_SHADOW}
-        mt={2}
-      >
-        <Box
-          borderRadius="0.5rem"
-          border="1px solid"
-          borderColor="neutral-3"
-          px="1.5rem"
-          py="1rem"
-          display="flex"
-          flexDirection="column"
-          alignItems="flex-start"
-          mt={2}
-        >
-          <GaslessVotingToggleContent {...props} />
-        </Box>
-      </Box>
-      <StarterPromoBanner />
-    </Flex>
-  );
-}
-
 export function GaslessVotingToggleDAOSettings(props: GaslessVotingToggleProps) {
   const { t } = useTranslation('gaslessVoting');
   const {
     addressPrefix,
     contracts: { accountAbstraction },
-    gaslessVoting,
+    bundlerMinimumStake,
+    nativeTokenIcon,
   } = useNetworkConfigStore();
 
   const navigate = useNavigate();
@@ -150,10 +113,47 @@ export function GaslessVotingToggleDAOSettings(props: GaslessVotingToggleProps) 
   const {
     node: { safe, gaslessVotingEnabled, paymasterAddress },
   } = useStore({ daoKey });
-  const { depositInfo } = useDepositInfo(paymasterAddress);
+  const { depositInfo } = usePaymasterDepositInfo();
 
-  const { addAction } = useProposalActionsStore();
+  const { addAction, resetActions } = useProposalActionsStore();
   const { data: walletClient } = useNetworkWalletClient();
+
+  const withdrawGas = useDecentModal(ModalType.WITHDRAW_GAS, {
+    onWithdraw: async (withdrawGasData: WithdrawGasData) => {
+      if (!safe?.address || !paymasterAddress) {
+        return;
+      }
+
+      const action = prepareWithdrawPaymasterAction({
+        withdrawData: withdrawGasData,
+        paymasterAddress,
+      });
+      const formattedWithdrawAmount = formatCoin(
+        withdrawGasData.withdrawAmount,
+        true,
+        nativeCurrency.decimals,
+        nativeCurrency.symbol,
+        false,
+      );
+
+      resetActions();
+      addAction({
+        ...action,
+        content: (
+          <Box>
+            <Text>
+              {t('withdrawGasAction', {
+                amount: formattedWithdrawAmount,
+                symbol: nativeCurrency.symbol,
+              })}
+            </Text>
+          </Box>
+        ),
+      });
+
+      navigate(DAO_ROUTES.proposalWithActionsNew.relative(addressPrefix, safe.address));
+    },
+  });
 
   const refillGas = useDecentModal(ModalType.REFILL_GAS, {
     onSubmit: async (refillGasData: RefillGasData) => {
@@ -191,7 +191,7 @@ export function GaslessVotingToggleDAOSettings(props: GaslessVotingToggleProps) 
         nativeCurrency.symbol,
         false,
       );
-
+      resetActions();
       addAction({
         ...action,
         content: (
@@ -211,16 +211,12 @@ export function GaslessVotingToggleDAOSettings(props: GaslessVotingToggleProps) 
   });
 
   const gaslessFeatureEnabled = useFeatureFlag('flag_gasless_voting');
-  const gaslessStakingFeatureEnabled = useFeatureFlag('flag_gasless_staking');
-  const gaslessStakingEnabled =
-    gaslessVotingEnabled &&
-    gaslessStakingFeatureEnabled &&
-    gaslessVoting?.bundlerMinimumStake !== undefined;
+  const gaslessStakingEnabled = gaslessFeatureEnabled && bundlerMinimumStake !== undefined;
   if (!gaslessFeatureEnabled) return null;
 
   const paymasterBalance = depositInfo?.balance || 0n;
   const stakedAmount = depositInfo?.stake || 0n;
-  const minStakeAmount = gaslessVoting?.bundlerMinimumStake || 0n;
+  const minStakeAmount = bundlerMinimumStake || 0n;
   const formattedPaymasterBalance = formatCoin(
     paymasterBalance,
     true,
@@ -254,8 +250,6 @@ export function GaslessVotingToggleDAOSettings(props: GaslessVotingToggleProps) 
         displayNeedStakingLabel={gaslessStakingEnabled && stakedAmount < minStakeAmount}
       />
 
-      {!gaslessVotingEnabled && <StarterPromoBanner />}
-
       {gaslessVotingEnabled && (
         <Flex justifyContent="space-between">
           <Flex
@@ -276,7 +270,7 @@ export function GaslessVotingToggleDAOSettings(props: GaslessVotingToggleProps) 
             >
               {formattedPaymasterBalance}
               <Image
-                src={'/images/coin-icon-default.svg'} // @todo: (gv) Use the correct image for the token.
+                src={nativeTokenIcon}
                 fallbackSrc={'/images/coin-icon-default.svg'}
                 alt={nativeCurrency.symbol}
                 w="1.25rem"
@@ -288,15 +282,22 @@ export function GaslessVotingToggleDAOSettings(props: GaslessVotingToggleProps) 
             </Text>
           </Flex>
 
-          <Button
-            variant="secondary"
-            size="sm"
-            onClick={() => {
-              refillGas();
-            }}
-          >
-            {t('addGas')}
-          </Button>
+          <Flex gap="0.5rem">
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={withdrawGas}
+            >
+              {t('withdrawGas')}
+            </Button>
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={refillGas}
+            >
+              {t('addGas')}
+            </Button>
+          </Flex>
         </Flex>
       )}
 
@@ -320,7 +321,7 @@ export function GaslessVotingToggleDAOSettings(props: GaslessVotingToggleProps) 
             >
               {formattedPaymasterStakedAmount}
               <Image
-                src={'/images/coin-icon-default.svg'} // @todo: (gv) Use the correct image for the token.
+                src={nativeTokenIcon}
                 fallbackSrc={'/images/coin-icon-default.svg'}
                 alt={nativeCurrency.symbol}
                 w="1.25rem"

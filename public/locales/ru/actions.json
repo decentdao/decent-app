@@ -1,0 +1,10 @@
+{
+  "actions": "Действия",
+  "addAction": "Добавить действие",
+  "transferAssets": "Трансферные активы",
+  "transferAssetsSub": "Создайте однократные платежи.",
+  "comingSoon": "Вскоре...",
+  "comingSoonSub": "Больше действий на пути.",
+  "transactionBuilderActionCard_single": "Конструктор транзакций: Выполнить {{ functionName }} на {{ targetAddress }}",
+  "transactionBuilderActionCard_multiple": "Конструктор транзакций: Пакет {{ numOfTransactions }} транзакции"
+}

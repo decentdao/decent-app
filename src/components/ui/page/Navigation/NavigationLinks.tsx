@@ -4,6 +4,7 @@ import { DAO_ROUTES } from '../../../../constants/routes';
 import { URL_DOCS, URL_FAQ } from '../../../../constants/url';
 import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
 import { useStore } from '../../../../providers/App/AppProvider';
+import { LanguageSwitcher } from '../../../../i18n/LanguageSwitcher';
 import { useNetworkConfigStore } from '../../../../providers/NetworkConfig/useNetworkConfigStore';
 import Divider from '../../utils/Divider';
 import { NavigationLink } from './NavigationLink';
@@ -38,7 +39,8 @@ function ExternalLinks({ closeDrawer }: { closeDrawer?: () => void }) {
         NavigationIcon={BookOpen}
         scope="external"
         closeDrawer={closeDrawer}
-      />
+      />{' '}
+      <LanguageSwitcher data-testid="navigation-language" />
     </Box>
   );
 }
