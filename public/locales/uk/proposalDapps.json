@@ -6,5 +6,9 @@
   "successConnectingWalletConnect": "З'єднано!",
   "failConnectingWalletConnect": "Не вдалося підключитися, будь ласка, перевірте uri.",
   "labelIframeWalletConnectUri": "URI WalletConnect",
-  "helperIframeWalletConnectUri": "Вставте, щоб з'єднати"
+  "helperIframeWalletConnectUri": "Вставте, щоб з'єднати",
+  "dappIntegrationActionLabel": "[{{appName}} Інтеграція]",
+  "processingTransactions": "Обробка транзакцій...",
+  "successProcessingTransactions": "Транзакції оброблено.",
+  "errorProcessingTransactions": "Помилки при обробці транзакцій."
 }

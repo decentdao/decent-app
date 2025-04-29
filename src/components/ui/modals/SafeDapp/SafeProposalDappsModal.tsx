@@ -2,13 +2,13 @@ import * as amplitude from '@amplitude/analytics-browser';
 import { Box, CloseButton, Flex, Text } from '@chakra-ui/react';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useSupportedDapps } from '../../../hooks/DAO/loaders/useSupportedDapps';
-import { analyticsEvents } from '../../../insights/analyticsEvents';
-import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
-import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
-import DappCard from '../../ProposalDapps/DappCard';
-import NoDataCard from '../containers/NoDataCard';
-import { InfoBoxLoader } from '../loaders/InfoBoxLoader';
+import { useSupportedDapps } from '../../../../hooks/DAO/loaders/useSupportedDapps';
+import { analyticsEvents } from '../../../../insights/analyticsEvents';
+import { useNetworkConfigStore } from '../../../../providers/NetworkConfig/useNetworkConfigStore';
+import { useDaoInfoStore } from '../../../../store/daoInfo/useDaoInfoStore';
+import DappCard from '../../../ProposalDapps/DappCard';
+import NoDataCard from '../../containers/NoDataCard';
+import { InfoBoxLoader } from '../../loaders/InfoBoxLoader';
 
 export function SafeProposalDappsModal({ onClose }: { onClose: () => void }) {
   useEffect(() => {
@@ -66,7 +66,6 @@ export function SafeProposalDappsModal({ onClose }: { onClose: () => void }) {
               iconUrl={dapp.iconUrl}
               description={dapp.description}
               categories={dapp.tags}
-              safeAddress={safeAddress}
               onClose={onClose}
             />
           ))

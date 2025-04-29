@@ -6,5 +6,9 @@
   "successConnectingWalletConnect": "연결되었습니다!",
   "failConnectingWalletConnect": "연결에 실패했습니다. URL을 확인하세요.",
   "labelIframeWalletConnectUri": "월렛커넥트 URI",
-  "helperIframeWalletConnectUri": "붙여넣기하여 연결"
+  "helperIframeWalletConnectUri": "붙여넣기하여 연결",
+  "dappIntegrationActionLabel": "[{{appName}} 통합]",
+  "processingTransactions": "거래 처리 중...",
+  "successProcessingTransactions": "처리된 트랜잭션.",
+  "errorProcessingTransactions": "트랜잭션 처리 중 오류가 발생했습니다."
 }

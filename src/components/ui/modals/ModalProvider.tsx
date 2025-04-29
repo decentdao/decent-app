@@ -13,7 +13,6 @@ import AddStrategyPermissionModal from './AddStrategyPermissionModal';
 import { AirdropData, AirdropModal } from './AirdropModal/AirdropModal';
 import { ConfirmDeleteStrategyModal } from './ConfirmDeleteStrategyModal';
 import { ConfirmModifyGovernanceModal } from './ConfirmModifyGovernanceModal';
-import { ConfirmTransactionModal } from './ConfirmTransactionModal';
 import { ConfirmUrlModal } from './ConfirmUrlModal';
 import { DelegateModal } from './DelegateModal';
 import ForkProposalTemplateModal from './ForkProposalTemplateModal';
@@ -25,7 +24,8 @@ import { ModalBase, ModalBaseSize } from './ModalBase';
 import PaymentCancelConfirmModal from './PaymentCancelConfirmModal';
 import { PaymentWithdrawModal } from './PaymentWithdrawModal';
 import ProposalTemplateModal from './ProposalTemplateModal';
-import { SafeProposalDappsModal } from './SafeProposalDappsModal';
+import { SafeProposalDappDetailModal } from './SafeDapp/SafeProposalDappDetailModal';
+import { SafeProposalDappsModal } from './SafeDapp/SafeProposalDappsModal';
 import { SendAssetsModal } from './SendAssetsModal';
 import StakeModal from './Stake';
 import { UnsavedChangesWarningContent } from './UnsavedChangesWarningContent';
@@ -50,10 +50,10 @@ export enum ModalType {
   REFILL_GAS,
   GASLESS_VOTE_LOADING,
   GASLESS_VOTE_SUCCESS,
-  CONFIRM_TRANSACTION,
   TRANSACTION_BUILDER,
   WITHDRAW_GAS,
   DAPPS_BROWSER,
+  DAPP_BROWSER,
 }
 
 export type CurrentModal = {
@@ -115,14 +115,13 @@ export type ModalPropsTypes = {
   };
   [ModalType.GASLESS_VOTE_LOADING]: {};
   [ModalType.GASLESS_VOTE_SUCCESS]: {};
-  [ModalType.CONFIRM_TRANSACTION]: {
-    appName: string;
-    transactionArray: CreateProposalTransaction[];
-  };
   [ModalType.TRANSACTION_BUILDER]: {
     onSubmit?: (transactionBuilderData: FormikProps<CreateProposalTransaction[]>['values']) => void;
   };
   [ModalType.DAPPS_BROWSER]: {};
+  [ModalType.DAPP_BROWSER]: {
+    appUrl: string;
+  };
 };
 
 export interface IModalContext {
@@ -349,17 +348,6 @@ export function ModalProvider({ children }: { children: ReactNode }) {
             />
           );
           break;
-        case ModalType.CONFIRM_TRANSACTION:
-          modalTitle = t('confirmTransactionTitle');
-          modalContent = (
-            <ConfirmTransactionModal
-              appName={current.props.appName}
-              transactionArray={current.props.transactionArray}
-              close={closeModal}
-            />
-          );
-          modalSize = 'xl';
-          break;
         case ModalType.TRANSACTION_BUILDER:
           modalTitle = t('transactionBuilderTitle');
           modalContent = (
@@ -377,6 +365,15 @@ export function ModalProvider({ children }: { children: ReactNode }) {
           break;
         case ModalType.DAPPS_BROWSER:
           modalContent = <SafeProposalDappsModal onClose={closeModal} />;
+          modalSize = 'max';
+          break;
+        case ModalType.DAPP_BROWSER:
+          modalContent = (
+            <SafeProposalDappDetailModal
+              appUrl={current.props.appUrl}
+              onClose={closeModal}
+            />
+          );
           modalSize = 'max';
           break;
         case ModalType.NONE:

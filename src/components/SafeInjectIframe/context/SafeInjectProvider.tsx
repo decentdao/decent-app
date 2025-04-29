@@ -15,7 +15,7 @@ interface SafeInjectProviderProps {
   /**
    * Callback function to handle transactions received from the Safe app.
    */
-  onTransactionsReceived?: (transactions: TransactionWithId[]) => void;
+  onTransactionsReceived?: (transactions: TransactionWithId[]) => Promise<boolean>;
   /**
    * Callback function to handle app connection.
    */
@@ -47,7 +47,7 @@ export function SafeInjectProvider({
   const receivedTransactions = useCallback(
     (transactions: TransactionWithId[]) => {
       setLatestTransactions(transactions);
-      onTransactionsReceived?.(transactions);
+      return onTransactionsReceived?.(transactions);
     },
     [onTransactionsReceived],
   );
@@ -194,7 +194,7 @@ export function SafeInjectProvider({
       }
     });
 
-    communicator?.on(Methods.sendTransactions, msg => {
+    communicator?.on(Methods.sendTransactions, async msg => {
       // @ts-expect-error explore ways to fix this
       const transactions = (msg.data.params.txs as Transaction[]).map(({ to, ...rest }) => {
         if (to) {
@@ -206,7 +206,7 @@ export function SafeInjectProvider({
           return { ...rest };
         }
       });
-      receivedTransactions(
+      const handledPromise = receivedTransactions(
         transactions.map(txn => {
           return {
             id: parseInt(msg.data.id.toString()),
@@ -214,6 +214,10 @@ export function SafeInjectProvider({
           };
         }),
       );
+      if (handledPromise) {
+        const handled = await handledPromise;
+        return handled;
+      }
     });
   }, [
     communicator,

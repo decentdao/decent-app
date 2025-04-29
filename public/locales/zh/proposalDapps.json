@@ -6,5 +6,9 @@
   "successConnectingWalletConnect": "已连接！",
   "failConnectingWalletConnect": "连接失败，请检查 uri。",
   "labelIframeWalletConnectUri": "钱包连接 URI",
-  "helperIframeWalletConnectUri": "粘贴连接"
+  "helperIframeWalletConnectUri": "粘贴连接",
+  "dappIntegrationActionLabel": "[{{appName}} 整合]",
+  "processingTransactions": "处理交易...",
+  "successProcessingTransactions": "已处理的交易。",
+  "errorProcessingTransactions": "交易处理出错。"
 }
