@@ -21,11 +21,11 @@ export function GaslessVoteSuccessModal({ close }: { close: () => void }) {
       >
         <Image
           src="/images/success-box.svg"
-          alt={t('voteIsSponsoredTitle')}
+          alt={t('voteWasSponsoredTitle')}
           w="50%"
           mx="auto"
         />
-        <Text textStyle="heading-medium">{t('voteIsSponsoredTitle')}</Text>
+        <Text textStyle="heading-medium">{t('voteWasSponsoredTitle')}</Text>
         <Text
           textStyle="labels-large"
           color="neutral-7"
