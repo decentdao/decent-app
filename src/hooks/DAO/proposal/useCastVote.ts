@@ -159,8 +159,6 @@ const useCastVote = (proposalId: string, strategy: Address) => {
       strategy,
     ],
   );
-
-  const { paymasterAddress } = useDaoInfoStore();
   const publicClient = useNetworkPublicClient();
 
   const prepareGaslessVoteOperation = useCallback(async () => {

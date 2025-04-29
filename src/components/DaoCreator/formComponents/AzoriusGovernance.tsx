@@ -14,7 +14,6 @@ import { useTranslation } from 'react-i18next';
 import useFeatureFlag from '../../../helpers/environmentFeatureFlags';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import { useStore } from '../../../providers/App/AppProvider';
-import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
 import { FractalModuleType, ICreationStepProps, VotingStrategyType } from '../../../types';
 import { DEV_VOTING_PERIOD_MINUTES } from '../../../utils/dev/devModeConstants';
 import { BigIntInput } from '../../ui/forms/BigIntInput';
@@ -59,9 +58,6 @@ export function AzoriusGovernance(props: ICreationStepProps) {
   const {
     node: { safe, subgraphInfo, modules },
   } = useStore({ daoKey });
-  const {
-    contracts: { accountAbstraction },
-  } = useNetworkConfigStore();
 
   const fractalModule = useMemo(() => {
     if (!modules) return null;
