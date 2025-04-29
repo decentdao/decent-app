@@ -1,11 +1,11 @@
 import { Box, CloseButton, Flex, Text } from '@chakra-ui/react';
 import { useTranslation } from 'react-i18next';
-import { useSupportedDapps } from '../../../hooks/DAO/loaders/useSupportedDapps';
-import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
-import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
-import DappCard from '../../ProposalDapps/DappCard';
-import NoDataCard from '../containers/NoDataCard';
-import { InfoBoxLoader } from '../loaders/InfoBoxLoader';
+import { useSupportedDapps } from '../../../../hooks/DAO/loaders/useSupportedDapps';
+import { useNetworkConfigStore } from '../../../../providers/NetworkConfig/useNetworkConfigStore';
+import { useDaoInfoStore } from '../../../../store/daoInfo/useDaoInfoStore';
+import DappCard from '../../../ProposalDapps/DappCard';
+import NoDataCard from '../../containers/NoDataCard';
+import { InfoBoxLoader } from '../../loaders/InfoBoxLoader';
 
 export function SafeProposalDappsModal({ onClose }: { onClose: () => void }) {
   const { t } = useTranslation(['proposalDapps']);
