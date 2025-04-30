@@ -51,21 +51,27 @@ export function CountProgressBadge(props: { total: number; current: number }) {
 
 export function SignerThresholdBadge({
   numberOfConfirmedSigners,
+  proposalThreshold,
 }: {
   numberOfConfirmedSigners?: number;
+  proposalThreshold?: number;
 }) {
   const { safe } = useDaoInfoStore();
   const { daoKey } = useCurrentDAOKey();
   const { governance } = useStore({ daoKey });
   const { type } = governance;
 
-  if (!safe || type !== GovernanceType.MULTISIG || numberOfConfirmedSigners === undefined) {
+  if (
+    !safe ||
+    type !== GovernanceType.MULTISIG ||
+    numberOfConfirmedSigners === undefined ||
+    proposalThreshold === undefined
+  ) {
     return null;
   }
-  const { threshold } = safe;
   return (
     <CountProgressBadge
-      total={threshold}
+      total={proposalThreshold}
       current={numberOfConfirmedSigners}
     />
   );

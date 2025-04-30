@@ -71,6 +71,7 @@ function ProposalCard({ proposal }: { proposal: FractalProposal }) {
           {isAzoriusProposal && <QuorumBadge proposal={proposal as AzoriusProposal} />}
           <SignerThresholdBadge
             numberOfConfirmedSigners={(proposal as MultisigProposal).confirmations?.length}
+            proposalThreshold={(proposal as MultisigProposal).signersThreshold}
           />
         </Flex>
         <ActivityDescription activity={proposal} />
