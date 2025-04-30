@@ -165,7 +165,9 @@ export const createGovernancesSlice: StateCreator<
           return;
         }
 
-        const existingVoteIndex = azoriusProposal.votes.findIndex(v => v.voter === proposalVote.voter);
+        const existingVoteIndex = azoriusProposal.votes.findIndex(
+          v => v.voter === proposalVote.voter,
+        );
         if (existingVoteIndex !== -1) {
           azoriusProposal.votes[existingVoteIndex] = proposalVote;
         } else {
