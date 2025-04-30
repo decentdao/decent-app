@@ -1,4 +1,4 @@
-import { Box, Button, Flex, Icon, Show } from '@chakra-ui/react';
+import { Box, Button, Flex, Icon, Show, Text } from '@chakra-ui/react';
 import { CaretDown, Funnel } from '@phosphor-icons/react';
 import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -39,6 +39,21 @@ export function ProposalsHome() {
   const [filters, setFilters] = useState<FractalProposalState[]>([]);
 
   const { proposals, getProposalsTotal } = useProposalsSortedAndFiltered({ sortBy, filters });
+
+  const [groupByNonce, setGroupByNonce] = useState(type === GovernanceType.MULTISIG);
+
+  const groupedProposals = useMemo(() => {
+    if (!groupByNonce) return null;
+    const groups: Record<number, typeof proposals> = {};
+    proposals.forEach(p => {
+      if (typeof (p as any).nonce === 'number') {
+        const nonce = (p as any).nonce;
+        if (!groups[nonce]) groups[nonce] = [];
+        groups[nonce].push(p);
+      }
+    });
+    return groups;
+  }, [groupByNonce, proposals]);
 
   const { currentPage, setCurrentPage, pageSize, setPageSize, totalPages, getPaginatedItems } =
     usePagination({
@@ -116,9 +131,11 @@ export function ProposalsHome() {
       case GovernanceType.AZORIUS_ERC20:
       case GovernanceType.AZORIUS_ERC721:
         filterOptions = FILTERS_AZORIUS;
+        setGroupByNonce(false);
         break;
       case GovernanceType.MULTISIG:
       default:
+        setGroupByNonce(true);
         if (guardContracts.freezeGuardContractAddress) {
           filterOptions = FILTERS_MULTISIG_CHILD;
         } else {
@@ -132,6 +149,8 @@ export function ProposalsHome() {
     }
     setAllFilterOptions(filterOptions);
     setFilters(filterOptions);
+    if (type === GovernanceType.MULTISIG) {
+    }
   }, [subgraphInfo?.daoSnapshotENS, guardContracts.freezeGuardContractAddress, type]);
 
   const toggleFilter = (filter: FractalProposalState) => {
@@ -145,12 +164,29 @@ export function ProposalsHome() {
     setCurrentPage(1);
   };
 
-  const filterOptions = allOptions.map(state => ({
-    optionKey: state,
-    count: getProposalsTotal(state),
-    onClick: () => toggleFilter(state),
-    isSelected: filters.includes(state),
-  }));
+  type FilterOption = {
+    optionKey: FractalProposalState | 'groupByNonce';
+    count?: number;
+    onClick: () => void;
+    isSelected: boolean;
+  };
+
+  const filterOptions: FilterOption[] = [
+    ...allOptions.map(state => ({
+      optionKey: state,
+      count: getProposalsTotal(state),
+      onClick: () => toggleFilter(state),
+      isSelected: filters.includes(state),
+    })),
+  ];
+
+  if (type === GovernanceType.MULTISIG) {
+    filterOptions.unshift({
+      optionKey: 'groupByNonce',
+      onClick: () => setGroupByNonce(v => !v),
+      isSelected: groupByNonce,
+    });
+  }
 
   const handleSortChange: Dispatch<SetStateAction<SortBy>> = value => {
     if (typeof value === 'function') {
@@ -314,11 +350,34 @@ export function ProposalsHome() {
           </Show>
         </Flex>
 
-        <ProposalsList
-          proposals={paginatedProposals}
-          currentPage={currentPage}
-          totalPages={totalPages}
-        />
+        {groupByNonce && groupedProposals && Object.keys(groupedProposals).length ? (
+          Object.entries(groupedProposals)
+            .sort((a, b) => Number(b[0]) - Number(a[0]))
+            .map(([nonce, group]) => (
+              <Box
+                key={nonce}
+                mb={6}
+              >
+                <Text
+                  mb={2}
+                  textStyle="labels-large"
+                >
+                  {t('nonce')}: {nonce}
+                </Text>
+                <ProposalsList
+                  proposals={group}
+                  currentPage={1}
+                  totalPages={1}
+                />
+              </Box>
+            ))
+        ) : (
+          <ProposalsList
+            proposals={paginatedProposals}
+            currentPage={currentPage}
+            totalPages={totalPages}
+          />
+        )}
 
         {/* PAGINATION CONTROLS */}
         {proposals.length > 0 && (
