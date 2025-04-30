@@ -1,5 +1,6 @@
 import { Flex, Text, Icon as ChakraIcon } from '@chakra-ui/react';
 import { User } from '@phosphor-icons/react';
+import { useTranslation } from 'react-i18next';
 import { COLOR_TEXT_SUCCESS } from '../../../constants/common';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import { useStore } from '../../../providers/App/AppProvider';
@@ -7,6 +8,7 @@ import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
 import { GovernanceType } from '../../../types';
 
 export function CountProgressBadge(props: { total: number; current: number }) {
+  const { t } = useTranslation('proposal');
   const themeKey = props.current >= props.total ? 'green' : 'red';
 
   const colorScheme: Record<string, { color: string; borderColor: string }> = {
@@ -43,7 +45,10 @@ export function CountProgressBadge(props: { total: number; current: number }) {
         textStyle="labels-large"
         lineHeight="1"
       >
-        {props.current} out of {props.total}
+        {t('signersThresholdBadgeLabel', {
+          current: props.current,
+          total: props.total,
+        })}
       </Text>
     </Flex>
   );
