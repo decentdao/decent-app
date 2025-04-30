@@ -5,7 +5,12 @@ import { Link } from 'react-router-dom';
 import { DAO_ROUTES } from '../../../constants/routes';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
 import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
-import { AzoriusProposal, FractalProposal, SnapshotProposal } from '../../../types';
+import {
+  AzoriusProposal,
+  FractalProposal,
+  MultisigProposal,
+  SnapshotProposal,
+} from '../../../types';
 import { DEFAULT_DATE_FORMAT } from '../../../utils';
 import { ActivityDescription } from '../../Activity/ActivityDescription';
 import { Badge } from '../../ui/badges/Badge';
@@ -64,7 +69,9 @@ function ProposalCard({ proposal }: { proposal: FractalProposal }) {
             )}
           </Flex>
           {isAzoriusProposal && <QuorumBadge proposal={proposal as AzoriusProposal} />}
-          <SignerThresholdBadge />
+          <SignerThresholdBadge
+            numberOfConfirmedSigners={(proposal as MultisigProposal).confirmations?.length}
+          />
         </Flex>
         <ActivityDescription activity={proposal} />
         <Box>

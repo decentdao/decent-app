@@ -49,20 +49,24 @@ export function CountProgressBadge(props: { total: number; current: number }) {
   );
 }
 
-export function SignerThresholdBadge() {
+export function SignerThresholdBadge({
+  numberOfConfirmedSigners,
+}: {
+  numberOfConfirmedSigners?: number;
+}) {
   const { safe } = useDaoInfoStore();
   const { daoKey } = useCurrentDAOKey();
   const { governance } = useStore({ daoKey });
   const { type } = governance;
 
-  if (!safe || type !== GovernanceType.MULTISIG) {
+  if (!safe || type !== GovernanceType.MULTISIG || numberOfConfirmedSigners === undefined) {
     return null;
   }
-  const { owners, threshold } = safe;
+  const { threshold } = safe;
   return (
     <CountProgressBadge
       total={threshold}
-      current={owners.length}
+      current={numberOfConfirmedSigners}
     />
   );
 }
