@@ -3,12 +3,13 @@ import { devtools, persist } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
 import { DAOKey } from '../types';
 import { createGovernancesSlice, GovernancesSlice } from './slices/governances';
+import { createGuardSlice, GuardSlice } from './slices/guards';
 import { createNodesSlice, NodesSlice } from './slices/nodes';
 import { createTreasuriesSlice, TreasuriesSlice } from './slices/treasuries';
 
 export type StoreSlice<T> = { [daoKey: DAOKey]: T };
 
-export type GlobalStore = NodesSlice & TreasuriesSlice & GovernancesSlice;
+export type GlobalStore = NodesSlice & TreasuriesSlice & GovernancesSlice & GuardSlice;
 export type StoreMiddleware = [['zustand/immer', never], ['zustand/devtools', never]];
 
 export const useGlobalStore = create<GlobalStore>()(
@@ -18,6 +19,7 @@ export const useGlobalStore = create<GlobalStore>()(
         ...createNodesSlice(...params),
         ...createTreasuriesSlice(...params),
         ...createGovernancesSlice(...params),
+        ...createGuardSlice(...params),
       })),
     ),
     {
