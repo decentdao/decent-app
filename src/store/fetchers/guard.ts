@@ -231,7 +231,7 @@ export function useGuardFetcher() {
       _parentSafeAddress,
       freezeProposalCreatedTime,
       freezeProposalPeriod,
-      freezePeriod
+      freezePeriod,
     }: {
       account: Address;
       azoriusGuardAddress?: Address;
@@ -296,11 +296,7 @@ export function useGuardFetcher() {
               freezeProposalPeriod,
               BigInt(currentTimestamp),
             ) ||
-            isWithinFreezePeriod(
-              freezeProposalCreatedTime,
-              freezePeriod,
-              BigInt(currentTimestamp),
-            );
+            isWithinFreezePeriod(freezeProposalCreatedTime, freezePeriod, BigInt(currentTimestamp));
           userHasVotes =
             (!isFreezeActive
               ? // freeze not active
@@ -388,11 +384,7 @@ export function useGuardFetcher() {
               freezeProposalPeriod,
               BigInt(currentTimestamp),
             ) ||
-            isWithinFreezePeriod(
-              freezeProposalCreatedTime,
-              freezePeriod,
-              BigInt(currentTimestamp),
-            );
+            isWithinFreezePeriod(freezeProposalCreatedTime, freezePeriod, BigInt(currentTimestamp));
           userHasVotes =
             (!isFreezeActive
               ? // freeze not active

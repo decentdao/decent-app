@@ -2,12 +2,18 @@ import { StateCreator } from 'zustand';
 import { DAOKey, FractalGuardContracts, FreezeGuard } from '../../types';
 import { GlobalStore, StoreMiddleware, StoreSlice } from '../store';
 
-type SetGuardPayload = Omit<FreezeGuard & FractalGuardContracts, 'userHasFreezeVoted' | 'userHasVotes'>;
+type SetGuardPayload = Omit<
+  FreezeGuard & FractalGuardContracts,
+  'userHasFreezeVoted' | 'userHasVotes'
+>;
 
 export type GuardSlice = {
   guards: StoreSlice<FreezeGuard & FractalGuardContracts>;
   setGuard: (daoKey: DAOKey, guard: SetGuardPayload) => void;
-  setGuardAccountData: (daoKey: DAOKey, guardAccountData: { userHasFreezeVoted: boolean; userHasVotes: boolean }) => void;
+  setGuardAccountData: (
+    daoKey: DAOKey,
+    guardAccountData: { userHasFreezeVoted: boolean; userHasVotes: boolean },
+  ) => void;
   getGuard: (daoKey: DAOKey) => FreezeGuard & FractalGuardContracts;
 };
 
@@ -46,7 +52,10 @@ export const createGuardSlice: StateCreator<GlobalStore, StoreMiddleware, [], Gu
       'setGuard',
     );
   },
-  setGuardAccountData: (daoKey: DAOKey, guardAccountData: { userHasFreezeVoted: boolean; userHasVotes: boolean }) => {
+  setGuardAccountData: (
+    daoKey: DAOKey,
+    guardAccountData: { userHasFreezeVoted: boolean; userHasVotes: boolean },
+  ) => {
     set(
       state => {
         state.guards[daoKey].userHasFreezeVoted = guardAccountData.userHasFreezeVoted;

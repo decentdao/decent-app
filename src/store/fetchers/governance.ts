@@ -18,7 +18,7 @@ import useVotingStrategiesAddresses from '../../hooks/utils/useVotingStrategiesA
 import useIPFSClient from '../../providers/App/hooks/useIPFSClient';
 import { useSafeAPI } from '../../providers/App/hooks/useSafeAPI';
 import {
-    AzoriusProposal,
+  AzoriusProposal,
   CreateProposalMetadata,
   DecentModule,
   ERC721TokenData,
