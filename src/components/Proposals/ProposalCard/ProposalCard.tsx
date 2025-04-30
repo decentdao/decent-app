@@ -3,15 +3,42 @@ import { format } from 'date-fns';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { DAO_ROUTES } from '../../../constants/routes';
+import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
+import { useStore } from '../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
 import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
-import { AzoriusProposal, FractalProposal, SnapshotProposal } from '../../../types';
+import {
+  AzoriusProposal,
+  FractalProposal,
+  GovernanceType,
+  MultisigProposal,
+  SnapshotProposal,
+} from '../../../types';
 import { DEFAULT_DATE_FORMAT } from '../../../utils';
 import { ActivityDescription } from '../../Activity/ActivityDescription';
 import { Badge } from '../../ui/badges/Badge';
 import QuorumBadge from '../../ui/badges/QuorumBadge';
 import { SnapshotIcon } from '../../ui/badges/Snapshot';
 import { ProposalCountdown } from '../../ui/proposal/ProposalCountdown';
+
+function NonceLabel({ nonce }: { nonce: number | undefined }) {
+  const { daoKey } = useCurrentDAOKey();
+  const { governance } = useStore({ daoKey });
+  const { t } = useTranslation('proposal');
+  const isMultisig = governance.type === GovernanceType.MULTISIG;
+
+  if (!isMultisig || !nonce) return null;
+  return (
+    <Text
+      textStyle="labels-large"
+      color="neutral-7"
+    >
+      {t('nonceLabel', {
+        number: nonce,
+      })}
+    </Text>
+  );
+}
 
 function ProposalCard({ proposal }: { proposal: FractalProposal }) {
   const { safe } = useDaoInfoStore();
@@ -63,6 +90,7 @@ function ProposalCard({ proposal }: { proposal: FractalProposal }) {
             )}
           </Flex>
           {isAzoriusProposal && <QuorumBadge proposal={proposal as AzoriusProposal} />}
+          <NonceLabel nonce={(proposal as MultisigProposal).nonce} />
         </Flex>
         <ActivityDescription activity={proposal} />
         <Box>
