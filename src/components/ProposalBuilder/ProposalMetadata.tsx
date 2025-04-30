@@ -37,7 +37,6 @@ export interface ProposalMetadataProps extends FormikProps<CreateProposalForm> {
 
 export default function ProposalMetadata({
   values: { proposalMetadata },
-  setFieldValue,
   typeProps,
 }: ProposalMetadataProps) {
   const { t } = useTranslation(['proposal']);
@@ -73,7 +72,7 @@ export default function ProposalMetadata({
         placeholder={t('proposalAdditionalResourcesPlaceholder', { ns: 'proposal' })}
         helper={t('proposalAdditionalResourcesHelper', { ns: 'proposal' })}
         value={proposalMetadata.documentationUrl || ''}
-        onChange={e => setFieldValue('proposalMetadata.documentationUrl', e.target.value)}
+        onChange={e => setProposalMetadata('documentationUrl', e.target.value)}
         testId="metadata.documentationUrl"
         isRequired={false}
       />

@@ -8,7 +8,7 @@ import {
 } from '../../../constants/common';
 import Divider from '../utils/Divider';
 
-export type ModalBaseSize = 'sm' | 'md' | 'lg' | 'xl' | '2xl';
+export type ModalBaseSize = 'sm' | 'md' | 'lg' | 'xl' | '2xl' | 'max';
 interface ModuleBaseProps {
   isSearchInputModal?: boolean;
   title?: string;
@@ -18,6 +18,7 @@ interface ModuleBaseProps {
   onClose: () => void;
   children: ReactNode;
   zIndex?: number;
+  closeOnOverlayClick?: boolean;
 }
 /**
  * The base wrapper component for a modal.  This displays the Chakra components necessary to open a modal,
@@ -32,11 +33,13 @@ export function ModalBase({
   title,
   warn,
   size = 'lg',
+  closeOnOverlayClick = true,
 }: ModuleBaseProps) {
   return (
     <Modal
       isCentered
       size={size}
+      closeOnOverlayClick={closeOnOverlayClick}
       isOpen={isOpen}
       onClose={onClose}
     >

@@ -138,6 +138,7 @@ export function SafeSablierProposalCreatePage() {
       />
     );
   }
+  const defaultTokenAddress = fungibleNonNativeAssetsWithBalance[0].tokenAddress;
   const sablierProposalInitialValues: CreateSablierProposalForm = {
     ...(actionsProposalMetadata
       ? {
@@ -148,7 +149,7 @@ export function SafeSablierProposalCreatePage() {
     streams: DEFAULT_SABLIER_PROPOSAL.streams.map(s => {
       return {
         ...s,
-        tokenAddress: s.tokenAddress || fungibleNonNativeAssetsWithBalance[0].tokenAddress,
+        tokenAddress: defaultTokenAddress,
       };
     }),
     nonce: safe.nextNonce,
@@ -202,6 +203,7 @@ export function SafeSablierProposalCreatePage() {
             pendingTransaction={pendingCreateTx}
             {...formikProps}
             values={formikProps.values as CreateSablierProposalForm}
+            defaultTokenAddress={defaultTokenAddress}
           />
         );
       }}

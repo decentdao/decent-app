@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
-import { Address, getContract } from 'viem';
+import { getContract } from 'viem';
 import { EntryPoint07Abi } from '../../../assets/abi/EntryPoint07Abi';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
+import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
 import useNetworkPublicClient from '../../useNetworkPublicClient';
 
 interface DepositInfo {
@@ -12,29 +13,31 @@ interface DepositInfo {
   withdrawTime: number;
 }
 
-export function useDepositInfo(account?: Address | null) {
+export function usePaymasterDepositInfo() {
   const {
     contracts: { accountAbstraction },
   } = useNetworkConfigStore();
+  const { paymasterAddress } = useDaoInfoStore();
+
   const publicClient = useNetworkPublicClient();
 
   const [depositInfo, setDepositInfo] = useState<DepositInfo>();
 
   useEffect(() => {
     const getDepositInfo = async () => {
-      if (!account || !accountAbstraction) return;
+      if (!paymasterAddress || !accountAbstraction) return;
       const entryPoint = getContract({
         address: accountAbstraction.entryPointv07,
         abi: EntryPoint07Abi,
         client: publicClient,
       });
 
-      const ret = await entryPoint.read.getDepositInfo([account]);
+      const ret = await entryPoint.read.getDepositInfo([paymasterAddress]);
       setDepositInfo({ ...ret, balance: ret.deposit });
     };
 
     getDepositInfo();
-  }, [account, publicClient, accountAbstraction]);
+  }, [paymasterAddress, publicClient, accountAbstraction]);
 
   return {
     depositInfo,

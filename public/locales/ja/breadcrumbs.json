@@ -9,7 +9,6 @@
   "treasury": "財務省",
   "proposal": "#{{proposalId}} {{proposalTitle}}",
   "proposalTemplates": "提案テンプレート",
-  "proposalDapps": "Dappsを探索します",
   "proposalTemplate": "{{proposalTemplateTitle}}",
   "proposalTemplateNew": "提案テンプレートを作成します",
   "editDAO": "Edit DAO",

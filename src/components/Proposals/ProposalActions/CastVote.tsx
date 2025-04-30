@@ -1,8 +1,7 @@
 import { Button, Box, Text, Image, Flex, Radio, RadioGroup, Icon } from '@chakra-ui/react';
 import { Check, CheckCircle, Sparkle } from '@phosphor-icons/react';
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { toast } from 'sonner';
 import { TOOLTIP_MAXW } from '../../../constants/common';
 import useFeatureFlag from '../../../helpers/environmentFeatureFlags';
 import useSnapshotProposal from '../../../hooks/DAO/loaders/snapshot/useSnapshotProposal';
@@ -36,7 +35,6 @@ export function CastVote({ proposal }: { proposal: FractalProposal }) {
 
   const azoriusProposal = proposal as AzoriusProposal;
 
-  // @todo: (gv) Build better UX around castGaslessVotePending (and probably castVotePending)
   const { castVote, castVotePending, castGaslessVote, castGaslessVotePending, canCastGaslessVote } =
     useCastVote(proposal.proposalId, azoriusProposal.votingStrategy);
 
@@ -52,7 +50,21 @@ export function CastVote({ proposal }: { proposal: FractalProposal }) {
 
   const { gaslessVotingEnabled } = useDaoInfoStore();
 
+  const [doRetryGaslessVote, setDoRetryGaslessVote] = useState(false);
+
   const gaslessVoteSuccessModal = useDecentModal(ModalType.GASLESS_VOTE_SUCCESS);
+  const gaslessVoteFailedModal = useDecentModal(ModalType.GASLESS_VOTE_FAILED, {
+    onRetry: () => {
+      setDoRetryGaslessVote(true);
+    },
+    onFallback: () => {
+      if (!selectedVoteChoice) {
+        return;
+      }
+
+      castVote(selectedVoteChoice);
+    },
+  });
 
   // Set a reasonable minimum (slightly higher than the required amount)
   const gaslessFeatureEnabled = useFeatureFlag('flag_gasless_voting');
@@ -80,21 +92,40 @@ export function CastVote({ proposal }: { proposal: FractalProposal }) {
     hasVoted ||
     hasVotedLoading;
 
+  const castGaslessVoteCallback = useCallback(async () => {
+    (async () => {
+      if (!canVoteForFree || !selectedVoteChoice) {
+        return;
+      }
+
+      await castGaslessVote({
+        selectedVoteChoice,
+        onSuccess: gaslessVoteSuccessModal,
+        onError: (error: any) => {
+          console.error('Gasless voting error:', error);
+          gaslessVoteFailedModal();
+        },
+      });
+    })();
+  }, [
+    canVoteForFree,
+    castGaslessVote,
+    gaslessVoteFailedModal,
+    gaslessVoteSuccessModal,
+    selectedVoteChoice,
+  ]);
+
+  useEffect(() => {
+    if (doRetryGaslessVote) {
+      castGaslessVoteCallback();
+      setDoRetryGaslessVote(false);
+    }
+  }, [doRetryGaslessVote, castGaslessVoteCallback]);
+
   const handleVoteClick = async () => {
     if (selectedVoteChoice !== undefined) {
       if (canVoteForFree) {
-        await castGaslessVote({
-          selectedVoteChoice,
-          onSuccess: gaslessVoteSuccessModal,
-          onError: (error: any) => {
-            console.error('Gasless voting error:', error);
-            toast.error(`${t('castVoteError')}${t('castVoteErrorTempAutoFallback')}`);
-
-            setTimeout(() => {
-              castVote(selectedVoteChoice);
-            }, 5000);
-          },
-        });
+        await castGaslessVoteCallback();
       } else {
         await castVote(selectedVoteChoice);
       }
