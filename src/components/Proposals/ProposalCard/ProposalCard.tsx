@@ -10,6 +10,7 @@ import { DEFAULT_DATE_FORMAT } from '../../../utils';
 import { ActivityDescription } from '../../Activity/ActivityDescription';
 import { Badge } from '../../ui/badges/Badge';
 import QuorumBadge from '../../ui/badges/QuorumBadge';
+import { SignerThresholdBadge } from '../../ui/badges/SignerThresholdBadge';
 import { SnapshotIcon } from '../../ui/badges/Snapshot';
 import { ProposalCountdown } from '../../ui/proposal/ProposalCountdown';
 
@@ -63,6 +64,7 @@ function ProposalCard({ proposal }: { proposal: FractalProposal }) {
             )}
           </Flex>
           {isAzoriusProposal && <QuorumBadge proposal={proposal as AzoriusProposal} />}
+          <SignerThresholdBadge />
         </Flex>
         <ActivityDescription activity={proposal} />
         <Box>
