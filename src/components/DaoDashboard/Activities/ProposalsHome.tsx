@@ -16,6 +16,7 @@ import {
   DecentGovernance,
   FractalProposalState,
   GovernanceType,
+  MultisigProposal,
   SortBy,
 } from '../../../types';
 import { ProposalsList } from '../../Proposals/ProposalsList';
@@ -43,12 +44,18 @@ export function ProposalsHome() {
 
   const [groupByNonce, setGroupByNonce] = useState(type === GovernanceType.MULTISIG);
 
+  const isSnapshotProposal = (proposal: any) => !!proposal.snapshotProposalId;
+
   const groupedProposals = useMemo(() => {
     if (!groupByNonce) return null;
-    const groups: Record<number, typeof proposals> = {};
+    const groups: Record<string, typeof proposals> = {};
     proposals.forEach(p => {
-      if (typeof (p as any).nonce === 'number') {
-        const nonce = (p as any).nonce;
+      const multisigProposal = p as MultisigProposal;
+      if (isSnapshotProposal(p)) {
+        if (!groups.snapshot) groups.snapshot = [];
+        groups.snapshot.push(p);
+      } else if (typeof multisigProposal.nonce === 'number') {
+        const nonce = multisigProposal.nonce;
         if (!groups[nonce]) groups[nonce] = [];
         groups[nonce].push(p);
       }
@@ -370,17 +377,22 @@ export function ProposalsHome() {
 
         {groupByNonce && groupedProposals && Object.keys(groupedProposals).length ? (
           Object.entries(groupedProposals)
-            .sort((a, b) => Number(b[0]) - Number(a[0]))
-            .map(([nonce, group]) => (
+            .sort((a, b) => {
+              // Sort snapshot last, otherwise by nonce descending
+              if (a[0] === 'snapshot') return 1;
+              if (b[0] === 'snapshot') return -1;
+              return Number(b[0]) - Number(a[0]);
+            })
+            .map(([key, group]) => (
               <Box
-                key={nonce}
+                key={key}
                 mb={6}
               >
                 <Text
                   mb={2}
                   textStyle="labels-large"
                 >
-                  {t('nonce')}: {nonce}
+                  {key === 'snapshot' ? t('snapshot') : `${t('nonce')}: ${key}`}
                 </Text>
                 <ProposalsList
                   proposals={group}
