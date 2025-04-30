@@ -21,6 +21,7 @@ import {
 import { ProposalsList } from '../../Proposals/ProposalsList';
 import { CreateProposalMenu } from '../../ui/menus/CreateProposalMenu';
 import { OptionMenu } from '../../ui/menus/OptionMenu';
+import { OptionsList } from '../../ui/menus/OptionMenu/OptionsList';
 import { ModalType } from '../../ui/modals/ModalProvider';
 import { useDecentModal } from '../../ui/modals/useDecentModal';
 import { PaginationControls } from '../../ui/utils/PaginationControls';
@@ -180,12 +181,14 @@ export function ProposalsHome() {
     })),
   ];
 
+  let groupByNonceOption: FilterOption | undefined;
+
   if (type === GovernanceType.MULTISIG) {
-    filterOptions.unshift({
+    groupByNonceOption = {
       optionKey: 'groupByNonce',
       onClick: () => setGroupByNonce(v => !v),
       isSelected: groupByNonce,
-    });
+    };
   }
 
   const handleSortChange: Dispatch<SetStateAction<SortBy>> = value => {
@@ -204,11 +207,17 @@ export function ProposalsHome() {
   const handleSelectAll = () => {
     setFilters(allOptions);
     setCurrentPage(1);
+    if (type === GovernanceType.MULTISIG) {
+      setGroupByNonce(true);
+    }
   };
 
   const handleClearFilters = () => {
     setFilters([]);
     setCurrentPage(1);
+    if (type === GovernanceType.MULTISIG) {
+      setGroupByNonce(false);
+    }
   };
 
   const filterTitle =
@@ -321,6 +330,15 @@ export function ProposalsHome() {
                   </Button>
                 </Flex>
               </Box>
+              {groupByNonceOption && (
+                <OptionsList
+                  options={[groupByNonceOption]}
+                  showOptionSelected={true}
+                  closeOnSelect={false}
+                  showOptionCount={false}
+                  namespace="proposal"
+                />
+              )}
             </OptionMenu>
 
             <Sort
