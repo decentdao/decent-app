@@ -67,7 +67,7 @@ export const createNodesSlice: StateCreator<GlobalStore, StoreMiddleware, [], No
       'setDaoNode',
     );
   },
-  getDaoNode: (daoKey: DAOKey) => {
+  getDaoNode: (daoKey) => {
     const nodes = get().nodes;
     const node = nodes[daoKey];
     if (!node) {
