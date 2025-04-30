@@ -67,9 +67,11 @@ export const useStore = ({ daoKey }: { daoKey: DAOKey | undefined }): FractalSto
         isLoaded: governance.isLoaded,
         strategies: governance.strategies,
         linearVotingErc20Address: governance.linearVotingErc20Address,
-        linearVotingErc20WithHatsWhitelistingAddress: governance.linearVotingErc20WithHatsWhitelistingAddress,
+        linearVotingErc20WithHatsWhitelistingAddress:
+          governance.linearVotingErc20WithHatsWhitelistingAddress,
         linearVotingErc721Address: governance.linearVotingErc721Address,
-        linearVotingErc721WithHatsWhitelistingAddress: governance.linearVotingErc721WithHatsWhitelistingAddress,
+        linearVotingErc721WithHatsWhitelistingAddress:
+          governance.linearVotingErc721WithHatsWhitelistingAddress,
         moduleAzoriusAddress: governance.moduleAzoriusAddress,
         votesTokenAddress: governance.votesTokenAddress,
         lockReleaseAddress: governance.lockReleaseAddress,
