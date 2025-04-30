@@ -96,13 +96,13 @@ export function SafeProposalCreatePage() {
       templateDetails={null}
       streamsDetails={null}
       prepareProposalData={prepareProposal}
-      mainContent={(formikProps, pendingCreateTx, nonce, currentStep) => {
+      mainContent={(formikProps, pendingCreateTx, _nonce, currentStep) => {
         if (currentStep !== CreateProposalSteps.TRANSACTIONS) return null;
         const { setFieldValue, errors, values } = formikProps;
         return (
           <ProposalTransactionsForm
             pendingTransaction={pendingCreateTx}
-            isProposalMode={true}
+            isProposalMode
             values={values.transactions}
             setFieldValue={setFieldValue}
             errors={
