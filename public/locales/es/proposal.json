@@ -192,5 +192,6 @@
   "proposalSummaryNotEnoughVotingPower": "Su poder de voto no cumplía los requisitos para votar esta propuesta cuando se creó.",
   "proposalSummaryNotEnoughVotingPowerSecondary": "Delegue fichas de voto en su dirección para poder votar en futuras propuestas.",
   "castVoteError": "No se ha enviado el voto",
-  "labelAddTransactionsToProposal": "Añadir transacciones a la propuesta"
+  "labelAddTransactionsToProposal": "Añadir transacciones a la propuesta",
+  "signersThresholdBadgeLabel": "{{current}} fuera de {{total}}"
 }

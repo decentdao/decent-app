@@ -192,5 +192,6 @@
   "proposalSummaryNotEnoughVotingPower": "Ihr Stimmrecht entsprach nicht den Anforderungen, um über diesen Vorschlag abzustimmen, als er erstellt wurde.",
   "proposalSummaryNotEnoughVotingPowerSecondary": "Delegieren Sie Stimmzettel an Ihre Adresse, um bei künftigen Vorschlägen stimmberechtigt zu sein.",
   "castVoteError": "Abstimmung nicht abgeschickt",
-  "labelAddTransactionsToProposal": "Transaktionen zum Vorschlag hinzufügen"
+  "labelAddTransactionsToProposal": "Transaktionen zum Vorschlag hinzufügen",
+  "signersThresholdBadgeLabel": "{{current}} aus {{total}}"
 }
