@@ -124,6 +124,7 @@
   "notActiveNonceTooltip": "Uma proposta com um nonce inferior deve ser executada em primeiro lugar. Se já tiver executado todas as propostas com nonce inferior, recarregue o sistema dentro de alguns minutos.",
   "signedAlready": "Já assinou esta transação.",
   "nonce": "Nonce",
+  "nonceLabel": "Nonce: {{number}}",
   "votingTooltip": "Ainda há tempo para votar.",
   "timeLockedTooltip": "Esta proposta pode ser executada uma vez terminado o seu período de bloqueio.",
   "executableTooltip": "Prazo de execução da presente proposta",
@@ -192,5 +193,6 @@
   "proposalSummaryNotEnoughVotingPower": "O seu poder de voto não cumpria os requisitos para votar esta proposta quando ela foi criada.",
   "proposalSummaryNotEnoughVotingPowerSecondary": "Delegar tokens de votação no seu endereço para poder votar em futuras propostas.",
   "castVoteError": "Não foi possível enviar a votação",
-  "labelAddTransactionsToProposal": "Adicionar transacções à proposta"
+  "labelAddTransactionsToProposal": "Adicionar transacções à proposta",
+  "signersThresholdBadgeLabel": "{{current}} fora de {{total}}"
 }

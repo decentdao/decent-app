@@ -124,6 +124,7 @@
   "notActiveNonceTooltip": "Предложение с более низким nonce должно быть выполнено первым. Если вы уже выполнили все предложения с более низким нонсом, перезагрузитесь через несколько минут.",
   "signedAlready": "Вы уже подписали эту сделку.",
   "nonce": "Nonce",
+  "nonceLabel": "Nonce: {{number}}",
   "votingTooltip": "Осталось время, чтобы отдать свой голос.",
   "timeLockedTooltip": "Это предложение может быть выполнено по истечении срока блокировки.",
   "executableTooltip": "Время, оставшееся до выполнения данного предложения",
@@ -192,5 +193,6 @@
   "proposalSummaryNotEnoughVotingPower": "Ваше право голоса не соответствовало требованиям для голосования по этому предложению, когда оно было создано.",
   "proposalSummaryNotEnoughVotingPowerSecondary": "Делегируйте жетоны для голосования на свой адрес, чтобы иметь право голосовать по будущим предложениям.",
   "castVoteError": "Не удалось отправить голос",
-  "labelAddTransactionsToProposal": "Добавить транзакции в предложение"
+  "labelAddTransactionsToProposal": "Добавить транзакции в предложение",
+  "signersThresholdBadgeLabel": "{{current}} из {{total}}"
 }
