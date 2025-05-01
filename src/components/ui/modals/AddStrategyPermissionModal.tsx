@@ -4,15 +4,19 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { zeroAddress } from 'viem';
 import { DAO_ROUTES } from '../../../constants/routes';
+import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
+import { useStore } from '../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
-import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
 import { Card } from '../cards/Card';
 
 export default function AddStrategyPermissionModal({ closeModal }: { closeModal: () => void }) {
   const { t } = useTranslation(['settings', 'common']);
   const navigate = useNavigate();
   const { addressPrefix } = useNetworkConfigStore();
-  const { safe } = useDaoInfoStore();
+  const { daoKey } = useCurrentDAOKey();
+  const {
+    node: { safe },
+  } = useStore({ daoKey });
 
   if (!safe) {
     return null;

@@ -5,13 +5,14 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import PencilWithLineIcon from '../../assets/theme/custom/icons/PencilWithLineIcon';
 import { DAO_ROUTES } from '../../constants/routes';
+import { useCurrentDAOKey } from '../../hooks/DAO/useCurrentDAOKey';
 import { useNetworkEnsAvatar } from '../../hooks/useNetworkEnsAvatar';
 import useAddress from '../../hooks/utils/useAddress';
 import { useCanUserCreateProposal } from '../../hooks/utils/useCanUserSubmitProposal';
 import { useCopyText } from '../../hooks/utils/useCopyText';
 import { useGetAccountName } from '../../hooks/utils/useGetAccountName';
+import { useStore } from '../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
-import { useDaoInfoStore } from '../../store/daoInfo/useDaoInfoStore';
 import {
   paymentSorterByActiveStatus,
   paymentSorterByStartDate,
@@ -77,7 +78,10 @@ export default function RolesDetails({
 }: {
   roleHat: RoleDetailsDrawerRoleHatProp | RoleDetailsDrawerEditingRoleHatProp;
 }) {
-  const { safe } = useDaoInfoStore();
+  const { daoKey } = useCurrentDAOKey();
+  const {
+    node: { safe },
+  } = useStore({ daoKey });
   const navigate = useNavigate();
   const { addressPrefix } = useNetworkConfigStore();
   const permissionsContainerRef = useRef<HTMLDivElement>(null);

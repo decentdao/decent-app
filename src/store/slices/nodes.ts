@@ -13,11 +13,23 @@ export type NodesSlice = {
       modules,
     }: { safe: SafeWithNextNonce; daoInfo: DAOSubgraph; modules: DecentModule[] },
   ) => void;
+  getDaoNode: (daoKey: DAOKey) => IDAO;
 };
 
 type SetState = (fn: (state: GlobalStore) => void) => void;
 
-export const createNodesSlice: StateCreator<GlobalStore, [], [], NodesSlice> = (set: SetState) => ({
+export const EMPTY_NODE: IDAO = {
+  safe: null,
+  subgraphInfo: null,
+  modules: null,
+  gaslessVotingEnabled: false,
+  paymasterAddress: null,
+};
+
+export const createNodesSlice: StateCreator<GlobalStore, [], [], NodesSlice> = (
+  set: SetState,
+  get,
+) => ({
   nodes: {},
   setDaoNode: (
     daoKey,
@@ -52,5 +64,13 @@ export const createNodesSlice: StateCreator<GlobalStore, [], [], NodesSlice> = (
         state.nodes[daoKey].modules = modules;
       }
     });
+  },
+  getDaoNode: (daoKey: DAOKey) => {
+    const nodes = get().nodes;
+    const node = nodes[daoKey];
+    if (!node) {
+      return EMPTY_NODE;
+    }
+    return node;
   },
 });

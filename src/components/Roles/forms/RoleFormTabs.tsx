@@ -6,8 +6,8 @@ import { useTranslation } from 'react-i18next';
 import { Blocker, useNavigate } from 'react-router-dom';
 import { Hex } from 'viem';
 import { DAO_ROUTES } from '../../../constants/routes';
+import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
-import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
 import { useRolesStore } from '../../../store/roles/useRolesStore';
 import { EditBadgeStatus, RoleFormValues, RoleHatFormValue } from '../../../types/roles';
 import RoleFormInfo from './RoleFormInfo';
@@ -25,13 +25,13 @@ export function RoleFormTabs({
   blocker: Blocker;
 }) {
   const { hatsTree } = useRolesStore();
-  const { safe } = useDaoInfoStore();
+
   const navigate = useNavigate();
   const { addressPrefix } = useNetworkConfigStore();
   const { editedRoleData, isRoleUpdated, existingRoleHat } = useRoleFormEditedRole({ hatsTree });
   const { t } = useTranslation(['roles']);
   const { values, setFieldValue, errors, setTouched } = useFormikContext<RoleFormValues>();
-
+  const { safeAddress } = useCurrentDAOKey();
   useEffect(() => {
     if (values.hats.length && !values.roleEditing) {
       const role = values.hats.find(hat => hat.id === hatId);
@@ -54,7 +54,6 @@ export function RoleFormTabs({
     }
   }, [setFieldValue, values.hats, values.roleEditing, hatId]);
 
-  const safeAddress = safe?.address;
   if (!safeAddress) return null;
 
   return (
@@ -66,7 +65,7 @@ export function RoleFormTabs({
           color="lilac-0"
           pr={2}
           leftIcon={<ArrowLeft />}
-          onClick={() => navigate(DAO_ROUTES.rolesEdit.relative(addressPrefix, safe.address))}
+          onClick={() => navigate(DAO_ROUTES.rolesEdit.relative(addressPrefix, safeAddress))}
         />
       </Flex>
       <Tabs variant="twoTone">

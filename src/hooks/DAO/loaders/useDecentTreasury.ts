@@ -7,7 +7,6 @@ import useBalancesAPI from '../../../providers/App/hooks/useBalancesAPI';
 import { useSafeAPI } from '../../../providers/App/hooks/useSafeAPI';
 import { TreasuryAction } from '../../../providers/App/treasury/action';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
-import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
 import {
   TokenEventType,
   TransferDisplayData,
@@ -33,8 +32,10 @@ export const useDecentTreasury = () => {
   // tracks the current valid DAO address / chain; helps prevent unnecessary calls
   const loadKey = useRef<string | null>();
   const { daoKey } = useCurrentDAOKey();
-  const { action } = useStore({ daoKey });
-  const { safe } = useDaoInfoStore();
+  const {
+    action,
+    node: { safe },
+  } = useStore({ daoKey });
   const safeAPI = useSafeAPI();
   const { getTokenBalances, getNFTBalances, getDeFiBalances } = useBalancesAPI();
 
