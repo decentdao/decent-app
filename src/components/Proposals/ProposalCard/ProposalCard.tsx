@@ -5,11 +5,17 @@ import { Link } from 'react-router-dom';
 import { DAO_ROUTES } from '../../../constants/routes';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
-import { AzoriusProposal, FractalProposal, SnapshotProposal } from '../../../types';
+import {
+  AzoriusProposal,
+  FractalProposal,
+  MultisigProposal,
+  SnapshotProposal,
+} from '../../../types';
 import { DEFAULT_DATE_FORMAT } from '../../../utils';
 import { ActivityDescription } from '../../Activity/ActivityDescription';
 import { Badge } from '../../ui/badges/Badge';
 import QuorumBadge from '../../ui/badges/QuorumBadge';
+import { SignerThresholdBadge } from '../../ui/badges/SignerThresholdBadge';
 import { SnapshotIcon } from '../../ui/badges/Snapshot';
 import { ProposalCountdown } from '../../ui/proposal/ProposalCountdown';
 
@@ -63,6 +69,10 @@ function ProposalCard({ proposal }: { proposal: FractalProposal }) {
             )}
           </Flex>
           {isAzoriusProposal && <QuorumBadge proposal={proposal as AzoriusProposal} />}
+          <SignerThresholdBadge
+            numberOfConfirmedSigners={(proposal as MultisigProposal).confirmations?.length}
+            proposalThreshold={(proposal as MultisigProposal).signersThreshold}
+          />
         </Flex>
         <ActivityDescription activity={proposal} />
         <Box>
