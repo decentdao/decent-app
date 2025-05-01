@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
 import { getContract } from 'viem';
 import { EntryPoint07Abi } from '../../../assets/abi/EntryPoint07Abi';
+import { useStore } from '../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
-import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
 import useNetworkPublicClient from '../../useNetworkPublicClient';
+import { useCurrentDAOKey } from '../useCurrentDAOKey';
 
 interface DepositInfo {
   balance: bigint;
@@ -17,7 +18,10 @@ export function usePaymasterDepositInfo() {
   const {
     contracts: { accountAbstraction },
   } = useNetworkConfigStore();
-  const { paymasterAddress } = useDaoInfoStore();
+  const { daoKey } = useCurrentDAOKey();
+  const {
+    node: { paymasterAddress },
+  } = useStore({ daoKey });
 
   const publicClient = useNetworkPublicClient();
 

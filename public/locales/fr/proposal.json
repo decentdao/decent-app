@@ -194,5 +194,7 @@
   "proposalSummaryNotEnoughVotingPowerSecondary": "Déléguez des jetons de vote à votre adresse pour pouvoir voter sur les futures propositions.",
   "castVoteError": "N'a pas envoyé de vote",
   "labelAddTransactionsToProposal": "Ajouter des transactions à la proposition",
+  "groupByNonce": "Groupe par Nonce",
+  "snapshot": "Aperçu",
   "signersThresholdBadgeLabel": "{{current}} out of {{total}}"
 }

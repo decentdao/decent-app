@@ -2,7 +2,6 @@ import { Box, Divider, Flex, HStack, Image, Text } from '@chakra-ui/react';
 import { useTranslation } from 'react-i18next';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import { useStore } from '../../../providers/App/AppProvider';
-import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
 import { TokenBalance } from '../../../types';
 import { formatCoin, formatPercentage, formatUSD } from '../../../utils';
 import { DecentTooltip } from '../../ui/DecentTooltip';
@@ -50,9 +49,8 @@ export function CoinRow({ asset }: { asset: TokenBalance }) {
   const { daoKey } = useCurrentDAOKey();
   const {
     treasury: { totalUsdValue },
+    node: { safe },
   } = useStore({ daoKey });
-
-  const { safe } = useDaoInfoStore();
 
   const etherscanLinkValue = asset.nativeToken ? (safe?.address ?? null) : asset.tokenAddress;
 

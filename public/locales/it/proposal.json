@@ -194,5 +194,7 @@
   "proposalSummaryNotEnoughVotingPowerSecondary": "Delegare i gettoni di voto al proprio indirizzo per poter votare sulle proposte future.",
   "castVoteError": "Mancato invio del voto",
   "labelAddTransactionsToProposal": "Aggiungere transazioni alla proposta",
+  "groupByNonce": "Gruppo per Nonce",
+  "snapshot": "Istantanea",
   "signersThresholdBadgeLabel": "{{current}} da {{total}}"
 }

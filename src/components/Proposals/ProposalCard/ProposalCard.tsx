@@ -6,7 +6,6 @@ import { DAO_ROUTES } from '../../../constants/routes';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import { useStore } from '../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
-import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
 import {
   AzoriusProposal,
   FractalProposal,
@@ -18,6 +17,7 @@ import { DEFAULT_DATE_FORMAT } from '../../../utils';
 import { ActivityDescription } from '../../Activity/ActivityDescription';
 import { Badge } from '../../ui/badges/Badge';
 import QuorumBadge from '../../ui/badges/QuorumBadge';
+import { SignerThresholdBadge } from '../../ui/badges/SignerThresholdBadge';
 import { SnapshotIcon } from '../../ui/badges/Snapshot';
 import { ProposalCountdown } from '../../ui/proposal/ProposalCountdown';
 
@@ -41,11 +41,11 @@ function NonceLabel({ nonce }: { nonce: number | undefined }) {
 }
 
 function ProposalCard({ proposal }: { proposal: FractalProposal }) {
-  const { safe } = useDaoInfoStore();
+  const { safeAddress } = useCurrentDAOKey();
   const { addressPrefix } = useNetworkConfigStore();
   const { t } = useTranslation('common');
 
-  if (!safe?.address) {
+  if (!safeAddress) {
     return null;
   }
 
@@ -53,7 +53,7 @@ function ProposalCard({ proposal }: { proposal: FractalProposal }) {
   const isAzoriusProposal = !!(proposal as AzoriusProposal).votesSummary;
 
   return (
-    <Link to={DAO_ROUTES.proposal.relative(addressPrefix, safe.address, proposal.proposalId)}>
+    <Link to={DAO_ROUTES.proposal.relative(addressPrefix, safeAddress, proposal.proposalId)}>
       <Box
         minHeight="6.25rem"
         bg="neutral-2"
@@ -91,6 +91,10 @@ function ProposalCard({ proposal }: { proposal: FractalProposal }) {
           </Flex>
           {isAzoriusProposal && <QuorumBadge proposal={proposal as AzoriusProposal} />}
           <NonceLabel nonce={(proposal as MultisigProposal).nonce} />
+          <SignerThresholdBadge
+            numberOfConfirmedSigners={(proposal as MultisigProposal).confirmations?.length}
+            proposalThreshold={(proposal as MultisigProposal).signersThreshold}
+          />
         </Flex>
         <ActivityDescription activity={proposal} />
         <Box>
