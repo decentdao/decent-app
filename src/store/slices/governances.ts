@@ -23,7 +23,8 @@ export type GovernancesSlice = {
   setMultisigGovernance: (daoKey: DAOKey) => void;
   setAzoriusGovernance: (
     daoKey: DAOKey,
-    governance: Omit<FractalGovernance, 'gaslessVotingEnabled' | 'paymasterAddress'> & FractalGovernanceContracts,
+    governance: Omit<FractalGovernance, 'gaslessVotingEnabled' | 'paymasterAddress'> &
+      FractalGovernanceContracts,
   ) => void;
   setTokenClaimContractAddress: (daoKey: DAOKey, tokenClaimContractAddress: Address) => void;
   setProposals: (daoKey: DAOKey, proposals: FractalProposal[]) => void;
@@ -45,10 +46,13 @@ export type GovernancesSlice = {
     daoKey: DAOKey,
     lockReleaseAccountData: { balance: bigint; delegatee: Address },
   ) => void;
-  setGasslesVotingData: (daoKey: DAOKey, gasslesVotingData: {
-    gaslessVotingEnabled: boolean;
-    paymasterAddress: Address | null;
-  }) => void;
+  setGasslesVotingData: (
+    daoKey: DAOKey,
+    gasslesVotingData: {
+      gaslessVotingEnabled: boolean;
+      paymasterAddress: Address | null;
+    },
+  ) => void;
 };
 
 const EMPTY_GOVERNANCE: FractalGovernance & FractalGovernanceContracts = {
@@ -250,12 +254,10 @@ export const createGovernancesSlice: StateCreator<
     );
   },
   setGasslesVotingData: (daoKey, gasslesVotingData) => {
-    set(
-      state => {
-        state.governances[daoKey].gaslessVotingEnabled = gasslesVotingData.gaslessVotingEnabled;
-        state.governances[daoKey].paymasterAddress = gasslesVotingData.paymasterAddress;
-      },
-    );
+    set(state => {
+      state.governances[daoKey].gaslessVotingEnabled = gasslesVotingData.gaslessVotingEnabled;
+      state.governances[daoKey].paymasterAddress = gasslesVotingData.paymasterAddress;
+    });
   },
   getGovernance: daoKey => {
     const governance = get().governances[daoKey];

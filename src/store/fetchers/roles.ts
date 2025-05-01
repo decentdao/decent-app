@@ -6,13 +6,10 @@ import { logError } from '../../helpers/errorLogging';
 import useNetworkPublicClient from '../../hooks/useNetworkPublicClient';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
 
-export function useRolesFetcher({ safeAddress }: { safeAddress?: Address}) {
+export function useRolesFetcher({ safeAddress }: { safeAddress?: Address }) {
   const publicClient = useNetworkPublicClient();
   const {
-    contracts: {
-      keyValuePairs,
-      sablierV2LockupLinear
-    }
+    contracts: { keyValuePairs, sablierV2LockupLinear },
   } = useNetworkConfigStore();
   const getHatsTreeId = useCallback(
     ({
@@ -112,20 +109,22 @@ export function useRolesFetcher({ safeAddress }: { safeAddress?: Address}) {
       return;
     }
 
-
     const keyValuePairsContract = getContract({
       abi: abis.KeyValuePairs,
       address: keyValuePairs,
       client: publicClient,
     });
 
-    const events = await keyValuePairsContract.getEvents.ValueUpdated({ theAddress: safeAddress }, { fromBlock: 0n });
+    const events = await keyValuePairsContract.getEvents.ValueUpdated(
+      { theAddress: safeAddress },
+      { fromBlock: 0n },
+    );
 
     return {
       events,
       hatsTreeId: getHatsTreeId({ events, chainId: publicClient.chain.id }),
       streamIdsToHatIds: getStreamIdsToHatIds({ events, chainId: publicClient.chain.id }),
-    }
+    };
   }, [getHatsTreeId, getStreamIdsToHatIds, safeAddress, keyValuePairs, publicClient]);
 
   return { getHatsTreeId, getStreamIdsToHatIds, fetchHatsData };

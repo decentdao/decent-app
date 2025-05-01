@@ -28,12 +28,7 @@ export function useRolesListener({
   const storeFeatureEnabled = useFeatureFlag('flag_store_v2');
   const publicClient = useNetworkPublicClient();
   const {
-    contracts: {
-      keyValuePairs,
-      zodiacModuleProxyFactory,
-      paymaster,
-      accountAbstraction,
-    },
+    contracts: { keyValuePairs, zodiacModuleProxyFactory, paymaster, accountAbstraction },
   } = useNetworkConfigStore();
 
   useEffect(() => {

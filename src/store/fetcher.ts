@@ -84,7 +84,8 @@ export const useDAOStoreFetcher = ({
         setLoadingFirstProposal(daoKey, loading);
       const onMultisigGovernanceLoaded = () => setMultisigGovernance(daoKey);
       const onAzoriusGovernanceLoaded = (
-        governance: Omit<FractalGovernance, 'gaslessVotingEnabled' | 'paymasterAddress'> & FractalGovernanceContracts,
+        governance: Omit<FractalGovernance, 'gaslessVotingEnabled' | 'paymasterAddress'> &
+          FractalGovernanceContracts,
       ) => setAzoriusGovernance(daoKey, governance);
       const onProposalsLoaded = (proposals: FractalProposal[]) => setProposals(daoKey, proposals);
       const onProposalLoaded = (proposal: AzoriusProposal) => setProposal(daoKey, proposal);
