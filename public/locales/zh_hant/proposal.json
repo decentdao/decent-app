@@ -194,6 +194,7 @@
   "proposalSummaryNotEnoughVotingPowerSecondary": "委託投票代幣至您的地址，以便有資格就未來提案投票。",
   "castVoteError": "未能發送投票",
   "labelAddTransactionsToProposal": "新增交易至提案",
+  "createdBy": "由{{createdBy} 建立 }",
   "groupByNonce": "依 Nonce 分組",
   "snapshot": "快照",
   "signersThresholdBadgeLabel": "{{current}} out of{{total}}"

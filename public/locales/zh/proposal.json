@@ -194,6 +194,7 @@
   "proposalSummaryNotEnoughVotingPowerSecondary": "将投票代币委托给您的地址，以便有资格对未来的提案进行投票。",
   "castVoteError": "投票失败",
   "labelAddTransactionsToProposal": "将交易添加到提案中",
+  "createdBy": "由{{createdBy} 创建 }",
   "groupByNonce": "按 Nonce 分组",
   "snapshot": "快照",
   "signersThresholdBadgeLabel": "{{current}} out of{{total}}"

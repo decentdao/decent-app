@@ -194,6 +194,7 @@
   "proposalSummaryNotEnoughVotingPowerSecondary": "Delegar tokens de votação no seu endereço para poder votar em futuras propostas.",
   "castVoteError": "Não foi possível enviar a votação",
   "labelAddTransactionsToProposal": "Adicionar transacções à proposta",
+  "createdBy": "Criado por {{createdBy}}",
   "groupByNonce": "Agrupar por Nonce",
   "snapshot": "Instantâneo",
   "signersThresholdBadgeLabel": "{{current}} fora de {{total}}"
