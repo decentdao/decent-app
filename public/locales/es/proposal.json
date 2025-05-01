@@ -193,5 +193,8 @@
   "proposalSummaryNotEnoughVotingPowerSecondary": "Delegue fichas de voto en su dirección para poder votar en futuras propuestas.",
   "castVoteError": "No se ha enviado el voto",
   "labelAddTransactionsToProposal": "Añadir transacciones a la propuesta",
+  "groupByNonce": "Agrupar por Nonce",
+  "snapshot": "Instantánea",
+  "labelAddTransactionsToProposal": "Añadir transacciones a la propuesta",
   "signersThresholdBadgeLabel": "{{current}} fuera de {{total}}"
 }

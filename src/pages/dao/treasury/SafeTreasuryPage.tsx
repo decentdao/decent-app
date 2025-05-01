@@ -19,7 +19,6 @@ import useSendAssetsActionModal from '../../../hooks/DAO/useSendAssetsActionModa
 import { useCanUserCreateProposal } from '../../../hooks/utils/useCanUserSubmitProposal';
 import { analyticsEvents } from '../../../insights/analyticsEvents';
 import { useStore } from '../../../providers/App/AppProvider';
-import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
 
 export function SafeTreasuryPage() {
   useEffect(() => {
@@ -28,8 +27,8 @@ export function SafeTreasuryPage() {
   const { daoKey } = useCurrentDAOKey();
   const {
     treasury: { assetsFungible, transfers },
+    node: { subgraphInfo, safe },
   } = useStore({ daoKey });
-  const { subgraphInfo } = useDaoInfoStore();
   const [shownTransactions, setShownTransactions] = useState(20);
   const { t } = useTranslation(['treasury', 'modals']);
   const { canUserCreateProposal } = useCanUserCreateProposal();
@@ -42,8 +41,6 @@ export function SafeTreasuryPage() {
   const totalTransfers = transfers?.length || 0;
   const showLoadMoreTransactions = totalTransfers > shownTransactions && shownTransactions < 100;
   const { openSendAssetsModal } = useSendAssetsActionModal();
-
-  const { safe } = useDaoInfoStore();
   const safeAddress = safe?.address;
   const openDappBrowserModal = useDecentModal(ModalType.DAPP_BROWSER, {
     appUrl: 'https://swap.cow.fi',

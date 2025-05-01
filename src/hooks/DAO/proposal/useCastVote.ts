@@ -11,7 +11,6 @@ import { useDecentModal } from '../../../components/ui/modals/useDecentModal';
 import useFeatureFlag from '../../../helpers/environmentFeatureFlags';
 import { useStore } from '../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
-import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
 import { fetchMaxPriorityFeePerGas } from '../../../utils/gaslessVoting';
 import useNetworkPublicClient from '../../useNetworkPublicClient';
 import { useNetworkWalletClient } from '../../useNetworkWalletClient';
@@ -28,6 +27,7 @@ const useCastVote = (proposalId: string, strategy: Address) => {
       linearVotingErc721Address,
       linearVotingErc721WithHatsWhitelistingAddress,
     },
+    node: { paymasterAddress },
   } = useStore({ daoKey });
   const {
     contracts: { accountAbstraction },
@@ -160,8 +160,6 @@ const useCastVote = (proposalId: string, strategy: Address) => {
       strategy,
     ],
   );
-
-  const { paymasterAddress } = useDaoInfoStore();
   const publicClient = useNetworkPublicClient();
 
   const prepareGaslessVoteOperation = useCallback(async () => {

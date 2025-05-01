@@ -23,7 +23,6 @@ import { FractalGovernanceAction } from '../../../providers/App/governance/actio
 import useIPFSClient from '../../../providers/App/hooks/useIPFSClient';
 import { useSafeAPI } from '../../../providers/App/hooks/useSafeAPI';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
-import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
 import { CreateProposalMetadata, MetaTransaction, ProposalExecuteData } from '../../../types';
 import { getAzoriusModuleFromModules } from '../../../utils';
 import useNetworkPublicClient from '../../useNetworkPublicClient';
@@ -80,8 +79,8 @@ export default function useSubmitProposal() {
       linearVotingErc721WithHatsWhitelistingAddress,
     },
     action,
+    node: { safe, modules },
   } = useStore({ daoKey });
-  const { safe, modules } = useDaoInfoStore();
   const safeAPI = useSafeAPI();
 
   const globalAzoriusContract = useMemo(() => {

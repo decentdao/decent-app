@@ -22,7 +22,6 @@ import { analyticsEvents } from '../../../../../insights/analyticsEvents';
 import { useStore } from '../../../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../../../providers/NetworkConfig/useNetworkConfigStore';
 import { useProposalActionsStore } from '../../../../../store/actions/useProposalActionsStore';
-import { useDaoInfoStore } from '../../../../../store/daoInfo/useDaoInfoStore';
 import {
   CreateProposalForm,
   CreateProposalSteps,
@@ -37,13 +36,13 @@ export function SafeSablierProposalCreatePage() {
   const {
     governance: { type },
     treasury: { assetsFungible },
+    node: { safe },
   } = useStore({ daoKey });
   const {
     addressPrefix,
     contracts: { sablierV2Batch, sablierV2LockupTranched },
   } = useNetworkConfigStore();
   const filterSpamTokens = useFilterSpamTokens();
-  const { safe } = useDaoInfoStore();
   const { t } = useTranslation('proposal');
   const navigate = useNavigate();
   const { proposalMetadata: actionsProposalMetadata } = useProposalActionsStore();

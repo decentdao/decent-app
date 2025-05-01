@@ -3,7 +3,6 @@ import { Scroll } from '@phosphor-icons/react';
 import { useTranslation } from 'react-i18next';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import { useStore } from '../../../providers/App/AppProvider';
-import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
 import {
   FractalProposal,
   FractalProposalState,
@@ -126,8 +125,8 @@ export function InfoProposals() {
   const { daoKey } = useCurrentDAOKey();
   const {
     governance: { proposals, type },
+    node: { safe },
   } = useStore({ daoKey });
-  const { safe } = useDaoInfoStore();
 
   if (!safe?.address || !type) {
     return (

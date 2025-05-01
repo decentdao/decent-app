@@ -4,7 +4,6 @@ import { Address, getContract } from 'viem';
 import LockReleaseAbi from '../../../assets/abi/LockRelease';
 import { useStore } from '../../../providers/App/AppProvider';
 import { GovernanceContractAction } from '../../../providers/App/governanceContracts/action';
-import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
 import { DecentModule, FractalTokenType, FractalVotingStrategy } from '../../../types';
 import { getAzoriusModuleFromModules } from '../../../utils';
 import useNetworkPublicClient from '../../useNetworkPublicClient';
@@ -19,13 +18,14 @@ export const useGovernanceContracts = () => {
   // tracks the current valid DAO address; helps prevent unnecessary calls
   const currentValidAddress = useRef<string | null>();
   const { daoKey } = useCurrentDAOKey();
-  const { action } = useStore({ daoKey });
-  const node = useDaoInfoStore();
+  const {
+    action,
+    node: { safe, modules },
+  } = useStore({ daoKey });
   const publicClient = useNetworkPublicClient();
   const { getAddressContractType } = useAddressContractType();
 
   const { getVotingStrategies } = useVotingStrategyAddress();
-  const { modules, safe } = node;
 
   const safeAddress = safe?.address;
 

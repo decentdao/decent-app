@@ -6,7 +6,6 @@ import { createSablierSubgraphClient } from '../../../graphql';
 import { useStore } from '../../../providers/App/AppProvider';
 import useIPFSClient from '../../../providers/App/hooks/useIPFSClient';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
-import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
 import { DecentHatsError } from '../../../store/roles/rolesStoreUtils';
 import { useRolesStore } from '../../../store/roles/useRolesStore';
 import useNetworkPublicClient from '../../useNetworkPublicClient';
@@ -25,6 +24,7 @@ const useHatsTree = () => {
       linearVotingErc721WithHatsWhitelistingAddress,
       isLoaded: governanceContractsLoaded,
     },
+    node: { safe },
   } = useStore({ daoKey });
   const { hatsTreeId, contextChainId, setHatsTree } = useRolesStore();
 
@@ -156,8 +156,7 @@ const useHatsTree = () => {
     ],
   );
 
-  const node = useDaoInfoStore();
-  const safeAddress = node.safe?.address;
+  const safeAddress = safe?.address;
   const daoHatTreeloadKey = useRef<string | null>();
 
   useEffect(() => {

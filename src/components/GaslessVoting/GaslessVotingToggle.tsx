@@ -6,12 +6,13 @@ import { EntryPoint07Abi } from '../../assets/abi/EntryPoint07Abi';
 import { DAO_ROUTES } from '../../constants/routes';
 import useFeatureFlag from '../../helpers/environmentFeatureFlags';
 import { usePaymasterDepositInfo } from '../../hooks/DAO/accountAbstraction/usePaymasterDepositInfo';
+import { useCurrentDAOKey } from '../../hooks/DAO/useCurrentDAOKey';
 import useNetworkPublicClient from '../../hooks/useNetworkPublicClient';
 import { useNetworkWalletClient } from '../../hooks/useNetworkWalletClient';
 import { useCanUserCreateProposal } from '../../hooks/utils/useCanUserSubmitProposal';
+import { useStore } from '../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
 import { useProposalActionsStore } from '../../store/actions/useProposalActionsStore';
-import { useDaoInfoStore } from '../../store/daoInfo/useDaoInfoStore';
 import { formatCoin } from '../../utils';
 import { prepareRefillPaymasterAction } from '../../utils/dao/prepareRefillPaymasterActionData';
 import { prepareWithdrawPaymasterAction } from '../../utils/dao/prepareWithdrawPaymasterActionData';
@@ -108,7 +109,10 @@ export function GaslessVotingToggleDAOSettings(props: GaslessVotingToggleProps) 
   const publicClient = useNetworkPublicClient();
   const nativeCurrency = publicClient.chain.nativeCurrency;
 
-  const { safe, gaslessVotingEnabled, paymasterAddress } = useDaoInfoStore();
+  const { daoKey } = useCurrentDAOKey();
+  const {
+    node: { safe, gaslessVotingEnabled, paymasterAddress },
+  } = useStore({ daoKey });
   const { depositInfo } = usePaymasterDepositInfo();
 
   const { addAction, resetActions } = useProposalActionsStore();

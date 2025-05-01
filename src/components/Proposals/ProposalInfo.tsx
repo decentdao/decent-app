@@ -5,7 +5,8 @@ import { useTranslation } from 'react-i18next';
 import { Shield } from '../../assets/theme/custom/icons/Shield';
 import useSnapshotProposal from '../../hooks/DAO/loaders/snapshot/useSnapshotProposal';
 import { useGetMetadata } from '../../hooks/DAO/proposal/useGetMetadata';
-import { useDaoInfoStore } from '../../store/daoInfo/useDaoInfoStore';
+import { useCurrentDAOKey } from '../../hooks/DAO/useCurrentDAOKey';
+import { useStore } from '../../providers/App/AppProvider';
 import { ExtendedSnapshotProposal, FractalProposal } from '../../types';
 import { ActivityDescription } from '../Activity/ActivityDescription';
 import { Badge } from '../ui/badges/Badge';
@@ -23,7 +24,10 @@ export function ProposalInfo({
 }) {
   const metaData = useGetMetadata(proposal);
   const { t } = useTranslation('proposal');
-  const { subgraphInfo } = useDaoInfoStore();
+  const { daoKey } = useCurrentDAOKey();
+  const {
+    node: { subgraphInfo },
+  } = useStore({ daoKey });
   const { snapshotProposal } = useSnapshotProposal(proposal);
 
   const [modalType, props] = useMemo(() => {

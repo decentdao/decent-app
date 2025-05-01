@@ -9,7 +9,6 @@ import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import useNetworkPublicClient from '../../../hooks/useNetworkPublicClient';
 import { useTimeHelpers } from '../../../hooks/utils/useTimeHelpers';
 import { useStore } from '../../../providers/App/AppProvider';
-import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
 import { AzoriusGovernance, FreezeGuardType } from '../../../types';
 import { blocksToSeconds } from '../../../utils/contract';
 import { BarLoader } from '../../ui/loaders/BarLoader';
@@ -20,8 +19,8 @@ export function InfoGovernance({ showTitle = true }: { showTitle?: boolean }) {
   const {
     governance,
     guardContracts: { freezeGuardType, freezeGuardContractAddress },
+    node: { safe },
   } = useStore({ daoKey });
-  const { safe } = useDaoInfoStore();
   const publicClient = useNetworkPublicClient();
   const { getTimeDuration } = useTimeHelpers();
   const [timelockPeriod, setTimelockPeriod] = useState<string>();

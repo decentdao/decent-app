@@ -8,12 +8,13 @@ import { isAddress } from 'viem';
 import { DAO_ROUTES } from '../../../../constants/routes';
 import { decodeTransactionsWithABI } from '../../../../helpers/transactionDecoder';
 import { useSupportedDapps } from '../../../../hooks/DAO/loaders/useSupportedDapps';
+import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
 import { useABI } from '../../../../hooks/utils/useABI';
 import { useDebounce } from '../../../../hooks/utils/useDebounce';
 import { analyticsEvents } from '../../../../insights/analyticsEvents';
+import { useStore } from '../../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../../providers/NetworkConfig/useNetworkConfigStore';
 import { useProposalActionsStore } from '../../../../store/actions/useProposalActionsStore';
-import { useDaoInfoStore } from '../../../../store/daoInfo/useDaoInfoStore';
 import { CreateProposalActionData, ProposalActionType } from '../../../../types';
 import { SafeInjectContext } from '../../../SafeInjectIframe/context/SafeInjectContext';
 import { SafeInjectProvider } from '../../../SafeInjectIframe/context/SafeInjectProvider';
@@ -109,7 +110,10 @@ export function SafeProposalDappDetailModal({
   const { t } = useTranslation(['proposalDapps']);
   const { chain, addressPrefix } = useNetworkConfigStore();
   const { loadABI } = useABI();
-  const { safe } = useDaoInfoStore();
+  const { daoKey } = useCurrentDAOKey();
+  const {
+    node: { safe },
+  } = useStore({ daoKey });
   const { dapps } = useSupportedDapps(chain.id);
   const { addAction, resetActions } = useProposalActionsStore();
   const navigate = useNavigate();

@@ -193,5 +193,8 @@
   "proposalSummaryNotEnoughVotingPowerSecondary": "Delegieren Sie Stimmzettel an Ihre Adresse, um bei künftigen Vorschlägen stimmberechtigt zu sein.",
   "castVoteError": "Abstimmung nicht abgeschickt",
   "labelAddTransactionsToProposal": "Transaktionen zum Vorschlag hinzufügen",
+  "groupByNonce": "Gruppe nach Nonce",
+  "snapshot": "Schnappschuss",
+  "labelAddTransactionsToProposal": "Transaktionen zum Vorschlag hinzufügen",
   "signersThresholdBadgeLabel": "{{current}} aus {{total}}"
 }

@@ -5,9 +5,10 @@ import { useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Address, getAddress } from 'viem';
 import * as Yup from 'yup';
+import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
 import { useValidationAddress } from '../../../../hooks/schemas/common/useValidationAddress';
 import { useNetworkEnsAddressAsync } from '../../../../hooks/useNetworkEnsAddress';
-import { useDaoInfoStore } from '../../../../store/daoInfo/useDaoInfoStore';
+import { useStore } from '../../../../providers/App/AppProvider';
 import { validateENSName } from '../../../../utils/url';
 import SupportTooltip from '../../../ui/badges/SupportTooltip';
 import { CustomNonceInput } from '../../../ui/forms/CustomNonceInput';
@@ -25,7 +26,10 @@ function AddSignerModal({
   signers: Address[];
   currentThreshold: number;
 }) {
-  const { safe } = useDaoInfoStore();
+  const { daoKey } = useCurrentDAOKey();
+  const {
+    node: { safe },
+  } = useStore({ daoKey });
   if (!safe) {
     throw new Error('Safe not found');
   }

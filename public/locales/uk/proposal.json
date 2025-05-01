@@ -193,5 +193,8 @@
   "proposalSummaryNotEnoughVotingPowerSecondary": "Делегуйте токени для голосування на свою адресу, щоб мати право голосувати за майбутні пропозиції.",
   "castVoteError": "Не вдалося відправити голос",
   "labelAddTransactionsToProposal": "Додайте транзакції до пропозиції",
+  "groupByNonce": "Групування за нонче",
+  "snapshot": "Знімок.",
+  "labelAddTransactionsToProposal": "Додайте транзакції до пропозиції",
   "signersThresholdBadgeLabel": "{{current}} з {{total}}"
 }
