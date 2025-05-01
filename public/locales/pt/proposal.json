@@ -124,6 +124,7 @@
   "notActiveNonceTooltip": "Uma proposta com um nonce inferior deve ser executada em primeiro lugar. Se já tiver executado todas as propostas com nonce inferior, recarregue o sistema dentro de alguns minutos.",
   "signedAlready": "Já assinou esta transação.",
   "nonce": "Nonce",
+  "nonceLabel": "Nonce: {{number}}",
   "votingTooltip": "Ainda há tempo para votar.",
   "timeLockedTooltip": "Esta proposta pode ser executada uma vez terminado o seu período de bloqueio.",
   "executableTooltip": "Prazo de execução da presente proposta",
@@ -195,6 +196,5 @@
   "labelAddTransactionsToProposal": "Adicionar transacções à proposta",
   "groupByNonce": "Agrupar por Nonce",
   "snapshot": "Instantâneo",
-  "labelAddTransactionsToProposal": "Adicionar transacções à proposta",
   "signersThresholdBadgeLabel": "{{current}} fora de {{total}}"
 }

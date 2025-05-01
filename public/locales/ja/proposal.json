@@ -124,6 +124,7 @@
   "notActiveNonceTooltip": "より低い nonce を持つプロポーザルを最初に実行する必要があります。すでに下位のnonceプロポーザルをすべて実行した場合は、数分後にリロードしてください。",
   "signedAlready": "あなたはすでにこの取引に署名しています。",
   "nonce": "ノンス",
+  "nonceLabel": "ノンス：{{number}}",
   "votingTooltip": "投票の残り時間",
   "timeLockedTooltip": "このプロポーザルは、タイムロック期間が過ぎれば実行できる。",
   "executableTooltip": "本提案の実行までの残り時間",
@@ -195,6 +196,5 @@
   "labelAddTransactionsToProposal": "プロポーザルに取引を追加する",
   "groupByNonce": "ノンスによるグループ化",
   "snapshot": "スナップショット",
-  "labelAddTransactionsToProposal": "プロポーザルに取引を追加する",
   "signersThresholdBadgeLabel": "{{current}} out of{{total}}"
 }

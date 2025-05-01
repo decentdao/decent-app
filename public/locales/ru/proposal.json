@@ -124,6 +124,7 @@
   "notActiveNonceTooltip": "Предложение с более низким nonce должно быть выполнено первым. Если вы уже выполнили все предложения с более низким нонсом, перезагрузитесь через несколько минут.",
   "signedAlready": "Вы уже подписали эту сделку.",
   "nonce": "Nonce",
+  "nonceLabel": "Nonce: {{number}}",
   "votingTooltip": "Осталось время, чтобы отдать свой голос.",
   "timeLockedTooltip": "Это предложение может быть выполнено по истечении срока блокировки.",
   "executableTooltip": "Время, оставшееся до выполнения данного предложения",
@@ -195,6 +196,5 @@
   "labelAddTransactionsToProposal": "Добавить транзакции в предложение",
   "groupByNonce": "Группировка по нонсенсу",
   "snapshot": "Снимок",
-  "labelAddTransactionsToProposal": "Добавить транзакции в предложение",
   "signersThresholdBadgeLabel": "{{current}} из {{total}}"
 }

@@ -124,6 +124,7 @@
   "notActiveNonceTooltip": "必须先执行具有较低nonce的提案。如果您已经执行了所有较低的nonce提案，请在几分钟后重新加载。",
   "signedAlready": "您已签署此交易。",
   "nonce": "Nonce",
+  "nonceLabel": "Nonce：{{number}}",
   "votingTooltip": "投票剩余时间",
   "timeLockedTooltip": "该提案的锁定期一过，即可执行。",
   "executableTooltip": "执行本提案书的剩余时间",
@@ -195,6 +196,5 @@
   "labelAddTransactionsToProposal": "将交易添加到提案中",
   "groupByNonce": "按 Nonce 分组",
   "snapshot": "快照",
-  "labelAddTransactionsToProposal": "将交易添加到提案中",
   "signersThresholdBadgeLabel": "{{current}} out of{{total}}"
 }
