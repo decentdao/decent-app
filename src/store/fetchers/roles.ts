@@ -104,28 +104,31 @@ export function useRolesFetcher() {
     [sablierV2LockupLinear],
   );
 
-  const fetchRolesData = useCallback(async ({ safeAddress }: { safeAddress?: Address }) => {
-    if (!safeAddress) {
-      return;
-    }
+  const fetchRolesData = useCallback(
+    async ({ safeAddress }: { safeAddress?: Address }) => {
+      if (!safeAddress) {
+        return;
+      }
 
-    const keyValuePairsContract = getContract({
-      abi: abis.KeyValuePairs,
-      address: keyValuePairs,
-      client: publicClient,
-    });
+      const keyValuePairsContract = getContract({
+        abi: abis.KeyValuePairs,
+        address: keyValuePairs,
+        client: publicClient,
+      });
 
-    const events = await keyValuePairsContract.getEvents.ValueUpdated(
-      { theAddress: safeAddress },
-      { fromBlock: 0n },
-    );
+      const events = await keyValuePairsContract.getEvents.ValueUpdated(
+        { theAddress: safeAddress },
+        { fromBlock: 0n },
+      );
 
-    return {
-      events,
-      hatsTreeId: getHatsTreeId({ events, chainId: publicClient.chain.id }),
-      streamIdsToHatIds: getStreamIdsToHatIds({ events, chainId: publicClient.chain.id }),
-    };
-  }, [getHatsTreeId, getStreamIdsToHatIds, keyValuePairs, publicClient]);
+      return {
+        events,
+        hatsTreeId: getHatsTreeId({ events, chainId: publicClient.chain.id }),
+        streamIdsToHatIds: getStreamIdsToHatIds({ events, chainId: publicClient.chain.id }),
+      };
+    },
+    [getHatsTreeId, getStreamIdsToHatIds, keyValuePairs, publicClient],
+  );
 
   return { getHatsTreeId, getStreamIdsToHatIds, fetchRolesData };
 }
