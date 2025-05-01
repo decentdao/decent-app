@@ -34,6 +34,7 @@ export const useSnapshotProposals = () => {
               : FractalProposalState.PENDING,
         proposalId: proposal.id,
         snapshotProposalId: proposal.id,
+        proposer: proposal.author,
         targets: [],
         title: proposal.title,
         description: proposal.body,
