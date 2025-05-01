@@ -43,6 +43,7 @@ export const useDAOStoreFetcher = ({
     setProposalTemplates,
     setTokenClaimContractAddress,
     setProposals,
+    setSnapshotProposals,
     setProposal,
     setLoadingFirstProposal,
     setGuard,
@@ -52,7 +53,8 @@ export const useDAOStoreFetcher = ({
 
   const { fetchDAONode } = useNodeFetcher();
   const { fetchDAOTreasury } = useTreasuryFetcher();
-  const { fetchDAOGovernance, fetchDAOProposalTemplates } = useGovernanceFetcher();
+  const { fetchDAOGovernance, fetchDAOProposalTemplates, fetchDAOSnapshotProposals } =
+    useGovernanceFetcher();
   const { fetchDAOGuard } = useGuardFetcher();
 
   useEffect(() => {
@@ -100,13 +102,23 @@ export const useDAOStoreFetcher = ({
         onTokenClaimContractAddressLoaded,
       });
 
-      const guardData = await fetchDAOGuard({
+      fetchDAOGuard({
         guardAddress: getAddress(safe.guard),
         _azoriusModule: modules.find(module => module.moduleType === FractalModuleType.AZORIUS),
+      }).then(guardData => {
+        if (guardData) {
+          setGuard(daoKey, guardData);
+        }
       });
 
-      if (guardData) {
-        setGuard(daoKey, guardData);
+      if (daoInfo.daoSnapshotENS) {
+        fetchDAOSnapshotProposals({ daoSnapshotENS: daoInfo.daoSnapshotENS }).then(
+          snapshotProposals => {
+            if (snapshotProposals) {
+              setSnapshotProposals(daoKey, snapshotProposals);
+            }
+          },
+        );
       }
     }
 
@@ -133,6 +145,8 @@ export const useDAOStoreFetcher = ({
     setTokenClaimContractAddress,
     setLoadingFirstProposal,
     setGuard,
+    fetchDAOSnapshotProposals,
+    setSnapshotProposals,
   ]);
 
   useEffect(() => {

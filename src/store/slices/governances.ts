@@ -13,6 +13,7 @@ import {
   ProposalTemplate,
   ProposalVote,
   ProposalVotesSummary,
+  SnapshotProposal,
 } from '../../types';
 import { GlobalStore, StoreMiddleware, StoreSlice } from '../store';
 
@@ -26,6 +27,7 @@ export type GovernancesSlice = {
   ) => void;
   setTokenClaimContractAddress: (daoKey: DAOKey, tokenClaimContractAddress: Address) => void;
   setProposals: (daoKey: DAOKey, proposals: FractalProposal[]) => void;
+  setSnapshotProposals: (daoKey: DAOKey, snapshotProposals: SnapshotProposal[]) => void;
   setProposal: (daoKey: DAOKey, proposal: AzoriusProposal) => void;
   setProposalVote: (
     daoKey: DAOKey,
@@ -130,7 +132,11 @@ export const createGovernancesSlice: StateCreator<
   setProposals: (daoKey, proposals) => {
     set(
       state => {
-        state.governances[daoKey].proposals = proposals;
+        if (!state.governances[daoKey].proposals) {
+          state.governances[daoKey].proposals = proposals;
+        } else {
+          state.governances[daoKey].proposals.push(...proposals);
+        }
       },
       false,
       'setProposals',
@@ -222,6 +228,19 @@ export const createGovernancesSlice: StateCreator<
       },
       false,
       'setGovernanceLockReleaseAccountData',
+    );
+  },
+  setSnapshotProposals: (daoKey, snapshotProposals) => {
+    set(
+      state => {
+        if (!state.governances[daoKey].proposals) {
+          state.governances[daoKey].proposals = snapshotProposals;
+        } else {
+          state.governances[daoKey].proposals.push(...snapshotProposals);
+        }
+      },
+      false,
+      'setSnapshotProposals',
     );
   },
   getGovernance: daoKey => {
