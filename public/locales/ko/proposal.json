@@ -192,5 +192,9 @@
   "proposalSummaryNotEnoughVotingPower": "이 제안이 만들어졌을 때 귀하의 투표권이 이 제안에 투표할 수 있는 요건을 충족하지 못했습니다.",
   "proposalSummaryNotEnoughVotingPowerSecondary": "향후 제안에 투표할 자격을 얻으려면 투표 토큰을 주소로 위임하세요.",
   "castVoteError": "투표를 보내지 못했습니다.",
-  "labelAddTransactionsToProposal": "제안서에 트랜잭션 추가"
+  "labelAddTransactionsToProposal": "제안서에 트랜잭션 추가",
+  "groupByNonce": "논스별 그룹화",
+  "snapshot": "스냅샷",
+  "labelAddTransactionsToProposal": "제안서에 트랜잭션 추가",
+  "signersThresholdBadgeLabel": "{{current}중 {{total}}"
 }
