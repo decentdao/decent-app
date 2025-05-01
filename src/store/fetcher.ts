@@ -18,10 +18,10 @@ import { useTreasuryFetcher } from './fetchers/treasury';
 import { useGlobalStore } from './store';
 
 /**
- * useStoreFetcher orchestrates fetching all the necessary data for the DAO and updating the Global store.
+ * useDAOStoreFetcher orchestrates fetching all the necessary data for the DAO and updating the Global store.
  * Underlying fetchers could get data from whatever source(on-chain, WebSocket, etc.), which then would be reflected in the store.
  */
-export const useStoreFetcher = ({
+export const useDAOStoreFetcher = ({
   daoKey,
   safeAddress,
   invalidQuery,

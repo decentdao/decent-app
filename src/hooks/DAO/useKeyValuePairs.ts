@@ -3,7 +3,7 @@ import { hatIdToTreeId } from '@hatsprotocol/sdk-v1-core';
 import { useEffect } from 'react';
 import { Address, GetContractEventsReturnType, PublicClient, getContract } from 'viem';
 import { logError } from '../../helpers/errorLogging';
-import { useStore } from '../../providers/App/AppProvider';
+import { useDAOStore } from '../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
 import { useRolesStore } from '../../store/roles/useRolesStore';
 import { getPaymasterAddress } from '../../utils/gaslessVoting';
@@ -158,7 +158,7 @@ const useKeyValuePairs = () => {
   const { daoKey } = useCurrentDAOKey();
   const {
     node: { safe, setGaslessVotingDaoData },
-  } = useStore({ daoKey });
+  } = useDAOStore({ daoKey });
   const { setHatKeyValuePairData, resetHatsStore } = useRolesStore();
   const safeAddress = safe?.address;
 

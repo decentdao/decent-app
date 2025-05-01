@@ -2,7 +2,7 @@ import { TokenInfoResponse } from '@safe-global/api-kit';
 import { useCallback, useEffect, useRef } from 'react';
 import { toast } from 'sonner';
 import { Address, getAddress, zeroAddress } from 'viem';
-import { useStore } from '../../../providers/App/AppProvider';
+import { useDAOStore } from '../../../providers/App/AppProvider';
 import useBalancesAPI from '../../../providers/App/hooks/useBalancesAPI';
 import { useSafeAPI } from '../../../providers/App/hooks/useSafeAPI';
 import { TreasuryAction } from '../../../providers/App/treasury/action';
@@ -35,7 +35,7 @@ export const useDecentTreasury = () => {
   const {
     action,
     node: { safe },
-  } = useStore({ daoKey });
+  } = useDAOStore({ daoKey });
   const safeAPI = useSafeAPI();
   const { getTokenBalances, getNFTBalances, getDeFiBalances } = useBalancesAPI();
 

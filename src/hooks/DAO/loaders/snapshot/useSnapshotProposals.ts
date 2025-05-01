@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { createSnapshotSubgraphClient } from '../../../../graphql';
 import { ProposalsQuery, ProposalsResponse } from '../../../../graphql/SnapshotQueries';
-import { useStore } from '../../../../providers/App/AppProvider';
+import { useDAOStore } from '../../../../providers/App/AppProvider';
 import { FractalGovernanceAction } from '../../../../providers/App/governance/action';
 import { FractalProposalState, SnapshotProposal } from '../../../../types';
 import { useCurrentDAOKey } from '../../useCurrentDAOKey';
@@ -11,7 +11,7 @@ export const useSnapshotProposals = () => {
   const {
     action,
     node: { subgraphInfo },
-  } = useStore({ daoKey });
+  } = useDAOStore({ daoKey });
   const currentSnapshotENS = useRef<string | undefined>();
   const snaphshotGraphQlClient = useMemo(() => createSnapshotSubgraphClient(), []);
 

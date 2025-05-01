@@ -9,7 +9,7 @@ import {
   getContract,
 } from 'viem';
 import { logError } from '../../../../helpers/errorLogging';
-import { useStore } from '../../../../providers/App/AppProvider';
+import { useDAOStore } from '../../../../providers/App/AppProvider';
 import { FractalGovernanceAction } from '../../../../providers/App/governance/action';
 import {
   CreateProposalMetadata,
@@ -40,7 +40,7 @@ export const useAzoriusProposals = () => {
       linearVotingErc721WithHatsWhitelistingAddress,
     },
     action,
-  } = useStore({ daoKey });
+  } = useDAOStore({ daoKey });
   const decode = useSafeDecoder();
   const publicClient = useNetworkPublicClient();
   const { getAddressContractType } = useAddressContractType();

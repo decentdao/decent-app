@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DAOSearch } from '../../components/ui/menus/DAOSearch';
 import { useCurrentDAOKey } from '../../hooks/DAO/useCurrentDAOKey';
-import { useStore } from '../../providers/App/AppProvider';
+import { useDAOStore } from '../../providers/App/AppProvider';
 import { GettingStarted } from './GettingStarted';
 import { MySafes } from './MySafes';
 
@@ -12,7 +12,7 @@ export default function HomePage() {
   const {
     node: { safe },
     action,
-  } = useStore({ daoKey });
+  } = useDAOStore({ daoKey });
   const { t } = useTranslation('home');
 
   useEffect(() => {

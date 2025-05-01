@@ -11,7 +11,7 @@ import { DAO_ROUTES } from '../../constants/routes';
 import { useCurrentDAOKey } from '../../hooks/DAO/useCurrentDAOKey';
 import useNetworkPublicClient from '../../hooks/useNetworkPublicClient';
 import { useCanUserCreateProposal } from '../../hooks/utils/useCanUserSubmitProposal';
-import { useStore } from '../../providers/App/AppProvider';
+import { useDAOStore } from '../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
 import { useProposalActionsStore } from '../../store/actions/useProposalActionsStore';
 import { useRolesStore } from '../../store/roles/useRolesStore';
@@ -353,7 +353,7 @@ export function RolePaymentDetails({
   const { daoKey } = useCurrentDAOKey();
   const {
     node: { safe },
-  } = useStore({ daoKey });
+  } = useDAOStore({ daoKey });
   const { address: connectedAccount } = useAccount();
   const { addressPrefix } = useNetworkConfigStore();
   const { refreshWithdrawableAmount } = useRolesStore();

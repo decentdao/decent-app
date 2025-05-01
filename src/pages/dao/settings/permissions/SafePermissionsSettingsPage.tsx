@@ -16,7 +16,7 @@ import { NEUTRAL_2_84 } from '../../../../constants/common';
 import { DAO_ROUTES } from '../../../../constants/routes';
 import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
 import { useCanUserCreateProposal } from '../../../../hooks/utils/useCanUserSubmitProposal';
-import { useStore } from '../../../../providers/App/AppProvider';
+import { useDAOStore } from '../../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../../providers/NetworkConfig/useNetworkConfigStore';
 import { AzoriusGovernance } from '../../../../types';
 
@@ -29,7 +29,7 @@ export function SafePermissionsSettingsPage() {
     governance,
     governanceContracts: { isLoaded, linearVotingErc20Address, linearVotingErc721Address },
     node: { safe },
-  } = useStore({ daoKey });
+  } = useDAOStore({ daoKey });
 
   const { canUserCreateProposal } = useCanUserCreateProposal();
   const azoriusGovernance = governance as AzoriusGovernance;

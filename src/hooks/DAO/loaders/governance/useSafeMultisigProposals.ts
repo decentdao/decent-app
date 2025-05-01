@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 import { logError } from '../../../../helpers/errorLogging';
-import { useStore } from '../../../../providers/App/AppProvider';
+import { useDAOStore } from '../../../../providers/App/AppProvider';
 import { FractalGovernanceAction } from '../../../../providers/App/governance/action';
 import { useSafeAPI } from '../../../../providers/App/hooks/useSafeAPI';
 import { useSafeTransactions } from '../../../utils/useSafeTransactions';
@@ -11,7 +11,7 @@ export const useSafeMultisigProposals = () => {
   const {
     action,
     node: { safe },
-  } = useStore({ daoKey });
+  } = useDAOStore({ daoKey });
   const safeAPI = useSafeAPI();
   const safeAddress = safe?.address;
 

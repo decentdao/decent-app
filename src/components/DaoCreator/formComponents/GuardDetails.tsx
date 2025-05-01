@@ -13,7 +13,7 @@ import { Field, FieldAttributes, FieldProps } from 'formik';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
-import { useStore } from '../../../providers/App/AppProvider';
+import { useDAOStore } from '../../../providers/App/AppProvider';
 import { BigIntValuePair, GovernanceType, ICreationStepProps } from '../../../types';
 import { formatBigIntToHumanReadableString } from '../../../utils/numberFormats';
 import ContentBoxTitle from '../../ui/containers/ContentBox/ContentBoxTitle';
@@ -31,7 +31,7 @@ function GuardDetails(props: ICreationStepProps) {
   const {
     governance,
     node: { safe },
-  } = useStore({ daoKey });
+  } = useDAOStore({ daoKey });
   const { type } = governance;
   const [showCustomNonce, setShowCustomNonce] = useState<boolean>();
   const { t } = useTranslation(['daoCreate', 'common', 'proposal']);

@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { Link, useLocation, useMatch } from 'react-router-dom';
 import { DAO_ROUTES } from '../../constants/routes';
 import { useCurrentDAOKey } from '../../hooks/DAO/useCurrentDAOKey';
-import { useStore } from '../../providers/App/AppProvider';
+import { useDAOStore } from '../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
 import { AzoriusGovernance } from '../../types';
 import { BarLoader } from '../ui/loaders/BarLoader';
@@ -86,7 +86,7 @@ export default function SettingsNavigation() {
   const {
     governance,
     node: { safe, modules },
-  } = useStore({ daoKey });
+  } = useDAOStore({ daoKey });
   const azoriusGovernance = governance as AzoriusGovernance;
 
   return (

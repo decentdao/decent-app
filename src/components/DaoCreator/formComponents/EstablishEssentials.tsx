@@ -5,7 +5,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import { createAccountSubstring } from '../../../hooks/utils/useGetAccountName';
-import { useStore } from '../../../providers/App/AppProvider';
+import { useDAOStore } from '../../../providers/App/AppProvider';
 import {
   supportedNetworks,
   useNetworkConfigStore,
@@ -32,7 +32,7 @@ export function EstablishEssentials(props: ICreationStepProps) {
   const { daoKey } = useCurrentDAOKey();
   const {
     node: { subgraphInfo, safe },
-  } = useStore({ daoKey });
+  } = useDAOStore({ daoKey });
 
   const isEdit = mode === DAOCreateMode.EDIT;
 

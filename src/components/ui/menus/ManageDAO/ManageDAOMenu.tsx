@@ -15,7 +15,7 @@ import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
 import { useNetworkWalletClient } from '../../../../hooks/useNetworkWalletClient';
 import useBlockTimestamp from '../../../../hooks/utils/useBlockTimestamp';
 import { useCanUserCreateProposal } from '../../../../hooks/utils/useCanUserSubmitProposal';
-import { useStore } from '../../../../providers/App/AppProvider';
+import { useDAOStore } from '../../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../../providers/NetworkConfig/useNetworkConfigStore';
 import { FractalModuleType, FreezeVotingType, GovernanceType } from '../../../../types';
 import { ModalType } from '../../modals/ModalProvider';
@@ -29,7 +29,7 @@ export function ManageDAOMenu() {
     guard,
     guardContracts,
     node: { safe, subgraphInfo, modules },
-  } = useStore({ daoKey });
+  } = useDAOStore({ daoKey });
   const currentTime = BigInt(useBlockTimestamp());
   const navigate = useNavigate();
   const safeAddress = safe?.address;

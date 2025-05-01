@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { Address } from 'viem';
 import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
 import { useNetworkEnsName } from '../../../../hooks/useNetworkEnsName';
-import { useStore } from '../../../../providers/App/AppProvider';
+import { useDAOStore } from '../../../../providers/App/AppProvider';
 import { SENTINEL_MODULE } from '../../../../utils/address';
 import SupportTooltip from '../../../ui/badges/SupportTooltip';
 import { CustomNonceInput } from '../../../ui/forms/CustomNonceInput';
@@ -26,7 +26,7 @@ function RemoveSignerModal({
   const { daoKey } = useCurrentDAOKey();
   const {
     node: { safe },
-  } = useStore({ daoKey });
+  } = useDAOStore({ daoKey });
   const [thresholdOptions, setThresholdOptions] = useState<number[]>();
   const [prevSigner, setPrevSigner] = useState<Address>();
 

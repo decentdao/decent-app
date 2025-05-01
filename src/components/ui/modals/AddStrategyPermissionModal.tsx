@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { zeroAddress } from 'viem';
 import { DAO_ROUTES } from '../../../constants/routes';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
-import { useStore } from '../../../providers/App/AppProvider';
+import { useDAOStore } from '../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
 import { Card } from '../cards/Card';
 
@@ -16,7 +16,7 @@ export default function AddStrategyPermissionModal({ closeModal }: { closeModal:
   const { daoKey } = useCurrentDAOKey();
   const {
     node: { safe },
-  } = useStore({ daoKey });
+  } = useDAOStore({ daoKey });
 
   if (!safe) {
     return null;

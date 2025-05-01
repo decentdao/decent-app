@@ -7,7 +7,7 @@ import { useLoadDAOProposals } from '../../../hooks/DAO/loaders/useLoadDAOPropos
 import useUpdateProposalState from '../../../hooks/DAO/proposal/useUpdateProposalState';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import useNetworkPublicClient from '../../../hooks/useNetworkPublicClient';
-import { useStore } from '../../../providers/App/AppProvider';
+import { useDAOStore } from '../../../providers/App/AppProvider';
 import {
   AzoriusGovernance,
   AzoriusProposal,
@@ -25,7 +25,7 @@ export function useProposalCountdown(proposal: FractalProposal) {
     guardContracts: { freezeGuardContractAddress, freezeGuardType },
     governanceContracts,
     action,
-  } = useStore({ daoKey });
+  } = useDAOStore({ daoKey });
   const publicClient = useNetworkPublicClient();
 
   const [secondsLeft, setSecondsLeft] = useState<number>();
