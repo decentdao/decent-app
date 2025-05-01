@@ -10,6 +10,7 @@ import {
 } from '../types';
 import { useAccountListeners } from './listeners/account';
 import { useGovernanceListeners } from './listeners/governance';
+import { useRolesListener } from './listeners/roles';
 import { useGlobalStore } from './store';
 
 /**
@@ -26,6 +27,7 @@ export const useDAOStoreListener = ({ daoKey }: { daoKey: DAOKey | undefined }) 
     setProposal,
     setProposalVote,
     setGuardAccountData,
+    setGasslesVotingData,
   } = useGlobalStore();
 
   const governance = daoKey ? getGovernance(daoKey) : undefined;
@@ -155,5 +157,25 @@ export const useDAOStoreListener = ({ daoKey }: { daoKey: DAOKey | undefined }) 
     onGuardAccountDataLoaded,
     onGovernanceAccountDataLoaded,
     onGovernanceLockReleaseAccountDataLoaded,
+  });
+
+  const onRolesDataFetched = useCallback((rolesData: unknown) => {
+    console.log('Roles data fetched for global store', { rolesData });
+    // TODO: Implement this in scope of ENG-632
+  }, []);
+
+  const onGasslesVotingDataFetched = useCallback(
+    (gasslesVotingData: { paymasterAddress: Address | null; gaslessVotingEnabled: boolean }) => {
+      if (daoKey) {
+        setGasslesVotingData(daoKey, gasslesVotingData);
+      }
+    },
+    [daoKey, setGasslesVotingData],
+  );
+
+  useRolesListener({
+    safeAddress: node?.safe?.address,
+    onRolesDataFetched,
+    onGasslesVotingDataFetched,
   });
 };

@@ -23,12 +23,12 @@ export function useRolesListener({
     paymasterAddress: Address | null;
   }) => void;
 }) {
-  const { getStreamIdsToHatIds, getHatsTreeId } = useRolesFetcher({ safeAddress });
+  const { getStreamIdsToHatIds, getHatsTreeId } = useRolesFetcher();
   const { fetchGaslessVotingDAOData } = useGovernanceFetcher();
   const storeFeatureEnabled = useFeatureFlag('flag_store_v2');
   const publicClient = useNetworkPublicClient();
   const {
-    contracts: { keyValuePairs, zodiacModuleProxyFactory, paymaster, accountAbstraction },
+    contracts: { keyValuePairs },
   } = useNetworkConfigStore();
 
   useEffect(() => {
@@ -60,19 +60,14 @@ export function useRolesListener({
             }),
           });
 
-          if (accountAbstraction) {
-            fetchGaslessVotingDAOData({
-              events: logs,
-              safeAddress,
-              zodiacModuleProxyFactory,
-              paymasterMastercopy: paymaster.decentPaymasterV1MasterCopy,
-              accountAbstraction,
-            }).then(gaslessVotingDaoData => {
-              if (gaslessVotingDaoData) {
-                onGasslesVotingDataFetched(gaslessVotingDaoData);
-              }
-            });
-          }
+          fetchGaslessVotingDAOData({
+            events: logs,
+            safeAddress,
+          }).then(gaslessVotingDaoData => {
+            if (gaslessVotingDaoData) {
+              onGasslesVotingDataFetched(gaslessVotingDaoData);
+            }
+          });
         },
       },
     );
@@ -80,7 +75,6 @@ export function useRolesListener({
       unwatch();
     };
   }, [
-    accountAbstraction,
     fetchGaslessVotingDAOData,
     getHatsTreeId,
     getStreamIdsToHatIds,
@@ -90,7 +84,5 @@ export function useRolesListener({
     safeAddress,
     storeFeatureEnabled,
     keyValuePairs,
-    paymaster.decentPaymasterV1MasterCopy,
-    zodiacModuleProxyFactory,
   ]);
 }

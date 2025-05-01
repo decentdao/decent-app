@@ -26,6 +26,7 @@ import { useTimeHelpers } from '../../hooks/utils/useTimeHelpers';
 import useVotingStrategiesAddresses from '../../hooks/utils/useVotingStrategiesAddresses';
 import useIPFSClient from '../../providers/App/hooks/useIPFSClient';
 import { useSafeAPI } from '../../providers/App/hooks/useSafeAPI';
+import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
 import {
   AzoriusProposal,
   CreateProposalMetadata,
@@ -66,6 +67,14 @@ export function useGovernanceFetcher() {
   const safeApi = useSafeAPI();
   const { getAddressContractType } = useAddressContractType();
   const snaphshotGraphQlClient = useMemo(() => createSnapshotSubgraphClient(), []);
+
+  const {
+    contracts: {
+      zodiacModuleProxyFactory,
+      accountAbstraction,
+      paymaster: { decentPaymasterV1MasterCopy },
+    },
+  } = useNetworkConfigStore();
 
   const fetchDAOGovernance = useCallback(
     async ({
@@ -773,27 +782,16 @@ export function useGovernanceFetcher() {
     async ({
       events,
       safeAddress,
-      zodiacModuleProxyFactory,
-      paymasterMastercopy,
-      accountAbstraction: { entryPointv07, lightAccountFactory },
     }: {
       events: GetContractEventsReturnType<typeof abis.KeyValuePairs>;
       safeAddress: Address;
-      zodiacModuleProxyFactory: Address;
-      paymasterMastercopy: Address;
-      accountAbstraction: { entryPointv07: Address; lightAccountFactory: Address };
     }) => {
       // get most recent event where `gaslessVotingEnabled` was set
       const gaslessVotingEnabledEvent = events
         .filter(event => event.args.key && event.args.key === 'gaslessVotingEnabled')
         .pop();
 
-      if (
-        !gaslessVotingEnabledEvent ||
-        !entryPointv07 ||
-        !lightAccountFactory ||
-        !publicClient.chain
-      ) {
+      if (!gaslessVotingEnabledEvent || !accountAbstraction || !publicClient.chain) {
         return { gaslessVotingEnabled: false, paymasterAddress: null };
       }
 
@@ -801,9 +799,9 @@ export function useGovernanceFetcher() {
         const paymasterAddress = getPaymasterAddress({
           safeAddress,
           zodiacModuleProxyFactory,
-          paymasterMastercopy,
-          entryPoint: entryPointv07,
-          lightAccountFactory: lightAccountFactory,
+          paymasterMastercopy: decentPaymasterV1MasterCopy,
+          entryPoint: accountAbstraction.entryPointv07,
+          lightAccountFactory: accountAbstraction.lightAccountFactory,
           chainId: publicClient.chain.id,
         });
 
@@ -831,7 +829,7 @@ export function useGovernanceFetcher() {
         return;
       }
     },
-    [publicClient],
+    [publicClient, accountAbstraction, zodiacModuleProxyFactory, decentPaymasterV1MasterCopy],
   );
 
   return {

@@ -14,6 +14,7 @@ import {
 import { useGovernanceFetcher } from './fetchers/governance';
 import { useGuardFetcher } from './fetchers/guard';
 import { useNodeFetcher } from './fetchers/node';
+import { useRolesFetcher } from './fetchers/roles';
 import { useTreasuryFetcher } from './fetchers/treasury';
 import { useGlobalStore } from './store';
 
@@ -47,15 +48,21 @@ export const useDAOStoreFetcher = ({
     setProposal,
     setLoadingFirstProposal,
     setGuard,
+    setGasslesVotingData,
   } = useGlobalStore();
   const { chain, getConfigByChainId } = useNetworkConfigStore();
   const storeFeatureEnabled = useFeatureFlag('flag_store_v2');
 
   const { fetchDAONode } = useNodeFetcher();
   const { fetchDAOTreasury } = useTreasuryFetcher();
-  const { fetchDAOGovernance, fetchDAOProposalTemplates, fetchDAOSnapshotProposals } =
-    useGovernanceFetcher();
+  const {
+    fetchDAOGovernance,
+    fetchDAOProposalTemplates,
+    fetchDAOSnapshotProposals,
+    fetchGaslessVotingDAOData,
+  } = useGovernanceFetcher();
   const { fetchDAOGuard } = useGuardFetcher();
+  const { fetchRolesData } = useRolesFetcher();
 
   useEffect(() => {
     async function loadDAOData() {
@@ -121,6 +128,21 @@ export const useDAOStoreFetcher = ({
           },
         );
       }
+
+      const rolesData = await fetchRolesData({
+        safeAddress,
+      });
+
+      if (rolesData) {
+        const gaslessVotingData = await fetchGaslessVotingDAOData({
+          safeAddress,
+          events: rolesData.events,
+        });
+
+        if (gaslessVotingData) {
+          setGasslesVotingData(daoKey, gaslessVotingData);
+        }
+      }
     }
 
     loadDAOData();
@@ -148,6 +170,9 @@ export const useDAOStoreFetcher = ({
     setGuard,
     fetchDAOSnapshotProposals,
     setSnapshotProposals,
+    fetchRolesData,
+    setGasslesVotingData,
+    fetchGaslessVotingDAOData,
   ]);
 
   useEffect(() => {

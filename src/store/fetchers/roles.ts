@@ -6,7 +6,7 @@ import { logError } from '../../helpers/errorLogging';
 import useNetworkPublicClient from '../../hooks/useNetworkPublicClient';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
 
-export function useRolesFetcher({ safeAddress }: { safeAddress?: Address }) {
+export function useRolesFetcher() {
   const publicClient = useNetworkPublicClient();
   const {
     contracts: { keyValuePairs, sablierV2LockupLinear },
@@ -104,7 +104,7 @@ export function useRolesFetcher({ safeAddress }: { safeAddress?: Address }) {
     [sablierV2LockupLinear],
   );
 
-  const fetchHatsData = useCallback(async () => {
+  const fetchRolesData = useCallback(async ({ safeAddress }: { safeAddress?: Address }) => {
     if (!safeAddress) {
       return;
     }
@@ -125,7 +125,7 @@ export function useRolesFetcher({ safeAddress }: { safeAddress?: Address }) {
       hatsTreeId: getHatsTreeId({ events, chainId: publicClient.chain.id }),
       streamIdsToHatIds: getStreamIdsToHatIds({ events, chainId: publicClient.chain.id }),
     };
-  }, [getHatsTreeId, getStreamIdsToHatIds, safeAddress, keyValuePairs, publicClient]);
+  }, [getHatsTreeId, getStreamIdsToHatIds, keyValuePairs, publicClient]);
 
-  return { getHatsTreeId, getStreamIdsToHatIds, fetchHatsData };
+  return { getHatsTreeId, getStreamIdsToHatIds, fetchRolesData };
 }
