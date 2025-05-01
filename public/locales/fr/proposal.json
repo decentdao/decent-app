@@ -192,5 +192,7 @@
   "proposalSummaryNotEnoughVotingPower": "Votre droit de vote n'était pas suffisant pour voter sur cette proposition lorsqu'elle a été créée.",
   "proposalSummaryNotEnoughVotingPowerSecondary": "Déléguez des jetons de vote à votre adresse pour pouvoir voter sur les futures propositions.",
   "castVoteError": "N'a pas envoyé de vote",
-  "labelAddTransactionsToProposal": "Ajouter des transactions à la proposition"
+  "labelAddTransactionsToProposal": "Ajouter des transactions à la proposition",
+  "groupByNonce": "Groupe par Nonce",
+  "snapshot": "Aperçu"
 }
