@@ -1,4 +1,4 @@
-import { Box, Button, Flex, Icon, Show } from '@chakra-ui/react';
+import { Box, Button, Flex, Icon, Show, Text } from '@chakra-ui/react';
 import { CaretDown, Funnel } from '@phosphor-icons/react';
 import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -15,11 +15,13 @@ import {
   DecentGovernance,
   FractalProposalState,
   GovernanceType,
+  MultisigProposal,
   SortBy,
 } from '../../../types';
 import { ProposalsList } from '../../Proposals/ProposalsList';
 import { CreateProposalMenu } from '../../ui/menus/CreateProposalMenu';
 import { OptionMenu } from '../../ui/menus/OptionMenu';
+import { OptionsList } from '../../ui/menus/OptionMenu/OptionsList';
 import { ModalType } from '../../ui/modals/ModalProvider';
 import { useDecentModal } from '../../ui/modals/useDecentModal';
 import { PaginationControls } from '../../ui/utils/PaginationControls';
@@ -39,6 +41,27 @@ export function ProposalsHome() {
   const [filters, setFilters] = useState<FractalProposalState[]>([]);
 
   const { proposals, getProposalsTotal } = useProposalsSortedAndFiltered({ sortBy, filters });
+
+  const [groupByNonce, setGroupByNonce] = useState(type === GovernanceType.MULTISIG);
+
+  const isSnapshotProposal = (proposal: any) => !!proposal.snapshotProposalId;
+
+  const groupedProposals = useMemo(() => {
+    if (!groupByNonce) return null;
+    const groups: Record<string, typeof proposals> = {};
+    proposals.forEach(p => {
+      const multisigProposal = p as MultisigProposal;
+      if (isSnapshotProposal(p)) {
+        if (!groups.snapshot) groups.snapshot = [];
+        groups.snapshot.push(p);
+      } else if (typeof multisigProposal.nonce === 'number') {
+        const nonce = multisigProposal.nonce;
+        if (!groups[nonce]) groups[nonce] = [];
+        groups[nonce].push(p);
+      }
+    });
+    return groups;
+  }, [groupByNonce, proposals]);
 
   const { currentPage, setCurrentPage, pageSize, setPageSize, totalPages, getPaginatedItems } =
     usePagination({
@@ -117,9 +140,11 @@ export function ProposalsHome() {
       case GovernanceType.AZORIUS_ERC20:
       case GovernanceType.AZORIUS_ERC721:
         filterOptions = FILTERS_AZORIUS;
+        setGroupByNonce(false);
         break;
       case GovernanceType.MULTISIG:
       default:
+        setGroupByNonce(true);
         if (guardContracts.freezeGuardContractAddress) {
           filterOptions = FILTERS_MULTISIG_CHILD;
         } else {
@@ -133,6 +158,8 @@ export function ProposalsHome() {
     }
     setAllFilterOptions(filterOptions);
     setFilters(filterOptions);
+    if (type === GovernanceType.MULTISIG) {
+    }
   }, [subgraphInfo?.daoSnapshotENS, guardContracts.freezeGuardContractAddress, type]);
 
   const toggleFilter = (filter: FractalProposalState) => {
@@ -146,12 +173,31 @@ export function ProposalsHome() {
     setCurrentPage(1);
   };
 
-  const filterOptions = allOptions.map(state => ({
-    optionKey: state,
-    count: getProposalsTotal(state),
-    onClick: () => toggleFilter(state),
-    isSelected: filters.includes(state),
-  }));
+  type FilterOption = {
+    optionKey: FractalProposalState | 'groupByNonce';
+    count?: number;
+    onClick: () => void;
+    isSelected: boolean;
+  };
+
+  const filterOptions: FilterOption[] = [
+    ...allOptions.map(state => ({
+      optionKey: state,
+      count: getProposalsTotal(state),
+      onClick: () => toggleFilter(state),
+      isSelected: filters.includes(state),
+    })),
+  ];
+
+  let groupByNonceOption: FilterOption | undefined;
+
+  if (type === GovernanceType.MULTISIG) {
+    groupByNonceOption = {
+      optionKey: 'groupByNonce',
+      onClick: () => setGroupByNonce(v => !v),
+      isSelected: groupByNonce,
+    };
+  }
 
   const handleSortChange: Dispatch<SetStateAction<SortBy>> = value => {
     if (typeof value === 'function') {
@@ -169,11 +215,17 @@ export function ProposalsHome() {
   const handleSelectAll = () => {
     setFilters(allOptions);
     setCurrentPage(1);
+    if (type === GovernanceType.MULTISIG) {
+      setGroupByNonce(true);
+    }
   };
 
   const handleClearFilters = () => {
     setFilters([]);
     setCurrentPage(1);
+    if (type === GovernanceType.MULTISIG) {
+      setGroupByNonce(false);
+    }
   };
 
   const filterTitle =
@@ -286,6 +338,15 @@ export function ProposalsHome() {
                   </Button>
                 </Flex>
               </Box>
+              {groupByNonceOption && (
+                <OptionsList
+                  options={[groupByNonceOption]}
+                  showOptionSelected={true}
+                  closeOnSelect={false}
+                  showOptionCount={false}
+                  namespace="proposal"
+                />
+              )}
             </OptionMenu>
 
             <Sort
@@ -315,11 +376,39 @@ export function ProposalsHome() {
           </Show>
         </Flex>
 
-        <ProposalsList
-          proposals={paginatedProposals}
-          currentPage={currentPage}
-          totalPages={totalPages}
-        />
+        {groupByNonce && groupedProposals && Object.keys(groupedProposals).length ? (
+          Object.entries(groupedProposals)
+            .sort((a, b) => {
+              // Sort snapshot last, otherwise by nonce descending
+              if (a[0] === 'snapshot') return 1;
+              if (b[0] === 'snapshot') return -1;
+              return Number(b[0]) - Number(a[0]);
+            })
+            .map(([key, group]) => (
+              <Box
+                key={key}
+                mb={6}
+              >
+                <Text
+                  mb={2}
+                  textStyle="labels-large"
+                >
+                  {key === 'snapshot' ? t('snapshot') : `${t('nonce')}: ${key}`}
+                </Text>
+                <ProposalsList
+                  proposals={group}
+                  currentPage={1}
+                  totalPages={1}
+                />
+              </Box>
+            ))
+        ) : (
+          <ProposalsList
+            proposals={paginatedProposals}
+            currentPage={currentPage}
+            totalPages={totalPages}
+          />
+        )}
 
         {/* PAGINATION CONTROLS */}
         {proposals.length > 0 && (
