@@ -24,6 +24,8 @@ export const initialGovernanceState: FractalGovernance = {
   type: undefined,
   votingStrategy: undefined,
   votesToken: undefined,
+  gaslessVotingEnabled: false,
+  paymasterAddress: null,
 };
 
 export const initialVotesTokenAccountData = {
