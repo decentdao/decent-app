@@ -153,12 +153,6 @@ export interface IDAO {
   safe: GnosisSafe | null;
   subgraphInfo: DAOSubgraph | null;
   modules: DecentModule[] | null;
-
-  // @todo: Preferrably should live in governance store. Using here fore convenience till we refactor governance store for zustand.
-  gaslessVotingEnabled: boolean;
-
-  // null -- Paymaster contract has not been deployed at the address we expect it to be at
-  paymasterAddress: Address | null;
 }
 
 export interface GovernanceActivity extends ActivityBase {
@@ -308,6 +302,9 @@ export interface Governance {
   proposalTemplates?: ProposalTemplate[] | null;
   tokenClaimContractAddress?: Address;
   isAzorius: boolean;
+  gaslessVotingEnabled: boolean;
+  // null -- Paymaster contract has not been deployed at the address we expect it to be at
+  paymasterAddress: Address | null;
 }
 
 export interface VotingStrategyAzorius extends VotingStrategy {

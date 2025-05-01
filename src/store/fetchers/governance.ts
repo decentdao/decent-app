@@ -1,7 +1,14 @@
 import { abis } from '@fractal-framework/fractal-contracts';
 import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Address, erc721Abi, formatUnits, getContract, zeroAddress } from 'viem';
+import {
+  Address,
+  erc721Abi,
+  formatUnits,
+  getContract,
+  GetContractEventsReturnType,
+  zeroAddress,
+} from 'viem';
 import LockReleaseAbi from '../../assets/abi/LockRelease';
 import { createSnapshotSubgraphClient } from '../../graphql';
 import { ProposalsQuery, ProposalsResponse } from '../../graphql/SnapshotQueries';
@@ -22,9 +29,9 @@ import { useSafeAPI } from '../../providers/App/hooks/useSafeAPI';
 import {
   AzoriusProposal,
   CreateProposalMetadata,
+  DecentGovernance,
   DecentModule,
   ERC721TokenData,
-  FractalGovernance,
   FractalGovernanceContracts,
   FractalProposal,
   FractalProposalState,
@@ -41,6 +48,7 @@ import {
   mapProposalCreatedEventToProposal,
 } from '../../utils/azorius';
 import { blocksToSeconds } from '../../utils/contract';
+import { getPaymasterAddress } from '../../utils/gaslessVoting';
 
 /**
  * `useGovernanceFetcher` is used as an abstraction layer over logic of fetching DAO governance data
@@ -74,7 +82,10 @@ export function useGovernanceFetcher() {
       daoModules: DecentModule[];
       onMultisigGovernanceLoaded: () => void;
       onAzoriusGovernanceLoaded: (
-        governance: FractalGovernance & FractalGovernanceContracts,
+        governance: Omit<
+          DecentGovernance & FractalGovernanceContracts,
+          'gaslessVotingEnabled' | 'paymasterAddress'
+        >,
       ) => void;
       onProposalsLoaded: (proposals: FractalProposal[]) => void;
       onProposalLoaded: (proposal: AzoriusProposal) => void;
@@ -758,11 +769,77 @@ export function useGovernanceFetcher() {
     [snaphshotGraphQlClient],
   );
 
+  const fetchGaslessVotingDAOData = useCallback(
+    async ({
+      events,
+      safeAddress,
+      zodiacModuleProxyFactory,
+      paymasterMastercopy,
+      accountAbstraction: { entryPointv07, lightAccountFactory },
+    }: {
+      events: GetContractEventsReturnType<typeof abis.KeyValuePairs>;
+      safeAddress: Address;
+      zodiacModuleProxyFactory: Address;
+      paymasterMastercopy: Address;
+      accountAbstraction: { entryPointv07: Address; lightAccountFactory: Address };
+    }) => {
+      // get most recent event where `gaslessVotingEnabled` was set
+      const gaslessVotingEnabledEvent = events
+        .filter(event => event.args.key && event.args.key === 'gaslessVotingEnabled')
+        .pop();
+
+      if (
+        !gaslessVotingEnabledEvent ||
+        !entryPointv07 ||
+        !lightAccountFactory ||
+        !publicClient.chain
+      ) {
+        return { gaslessVotingEnabled: false, paymasterAddress: null };
+      }
+
+      try {
+        const paymasterAddress = getPaymasterAddress({
+          safeAddress,
+          zodiacModuleProxyFactory,
+          paymasterMastercopy,
+          entryPoint: entryPointv07,
+          lightAccountFactory: lightAccountFactory,
+          chainId: publicClient.chain.id,
+        });
+
+        const paymasterCode = await publicClient.getCode({
+          address: paymasterAddress,
+        });
+
+        const paymasterExists = !!paymasterCode && paymasterCode !== '0x';
+
+        const gaslessVotingEnabled = gaslessVotingEnabledEvent.args.value === 'true';
+        return {
+          gaslessVotingEnabled,
+          paymasterAddress: paymasterExists ? paymasterAddress : null,
+        };
+      } catch (e) {
+        logError({
+          message: 'Error getting gasless voting dao data',
+          network: publicClient.chain!.id,
+          args: {
+            transactionHash: gaslessVotingEnabledEvent.transactionHash,
+            logIndex: gaslessVotingEnabledEvent.logIndex,
+          },
+        });
+
+        return;
+      }
+    },
+    [publicClient],
+  );
+
   return {
     fetchDAOGovernance,
     fetchDAOProposalTemplates,
     fetchVotingTokenAccountData,
     fetchLockReleaseAccountData,
     fetchDAOSnapshotProposals,
+    fetchGaslessVotingDAOData,
   };
 }

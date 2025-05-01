@@ -1,4 +1,4 @@
-import { getAddress } from 'viem';
+import { Address, getAddress } from 'viem';
 import { create } from 'zustand';
 import {
   DAOSubgraph,
@@ -8,7 +8,10 @@ import {
   SafeWithNextNonce,
 } from '../../types';
 
-export const initialDaoInfoStore: IDAO = {
+export const initialDaoInfoStore: IDAO & {
+  gaslessVotingEnabled: boolean;
+  paymasterAddress: Address | null;
+} = {
   safe: null,
   subgraphInfo: null,
   modules: null,
