@@ -254,6 +254,7 @@ export function ModalProvider({ children }: { children: ReactNode }) {
           modalContent = <ConfirmModifyGovernanceModal close={closeModal} />;
           break;
         case ModalType.WARN_UNSAVED_CHANGES:
+          closeModalOnOverlayClick = false;
           modalContent = (
             <UnsavedChangesWarningContent
               onDiscard={() => {
