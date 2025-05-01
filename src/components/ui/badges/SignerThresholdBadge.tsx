@@ -1,10 +1,9 @@
-import { Flex, Text, Icon as ChakraIcon } from '@chakra-ui/react';
+import { Icon as ChakraIcon, Flex, Text } from '@chakra-ui/react';
 import { User } from '@phosphor-icons/react';
 import { useTranslation } from 'react-i18next';
 import { COLOR_TEXT_SUCCESS } from '../../../constants/common';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import { useStore } from '../../../providers/App/AppProvider';
-import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
 import { GovernanceType } from '../../../types';
 
 export function CountProgressBadge(props: { total: number; current: number }) {
@@ -61,9 +60,11 @@ export function SignerThresholdBadge({
   numberOfConfirmedSigners?: number;
   proposalThreshold?: number;
 }) {
-  const { safe } = useDaoInfoStore();
   const { daoKey } = useCurrentDAOKey();
-  const { governance } = useStore({ daoKey });
+  const {
+    governance,
+    node: { safe },
+  } = useStore({ daoKey });
   const { type } = governance;
 
   if (
