@@ -194,5 +194,7 @@
   "castVoteError": "投票失败",
   "labelAddTransactionsToProposal": "将交易添加到提案中",
   "groupByNonce": "按 Nonce 分组",
-  "snapshot": "快照"
+  "snapshot": "快照",
+  "labelAddTransactionsToProposal": "将交易添加到提案中",
+  "signersThresholdBadgeLabel": "{{current}} out of{{total}}"
 }

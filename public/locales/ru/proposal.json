@@ -194,5 +194,7 @@
   "castVoteError": "Не удалось отправить голос",
   "labelAddTransactionsToProposal": "Добавить транзакции в предложение",
   "groupByNonce": "Группировка по нонсенсу",
-  "snapshot": "Снимок"
+  "snapshot": "Снимок",
+  "labelAddTransactionsToProposal": "Добавить транзакции в предложение",
+  "signersThresholdBadgeLabel": "{{current}} из {{total}}"
 }

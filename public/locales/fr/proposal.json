@@ -194,5 +194,7 @@
   "castVoteError": "N'a pas envoyé de vote",
   "labelAddTransactionsToProposal": "Ajouter des transactions à la proposition",
   "groupByNonce": "Groupe par Nonce",
-  "snapshot": "Aperçu"
+  "snapshot": "Aperçu",
+  "labelAddTransactionsToProposal": "Ajouter des transactions à la proposition",
+  "signersThresholdBadgeLabel": "{{current}} out of {{total}}"
 }

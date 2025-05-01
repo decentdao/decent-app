@@ -194,5 +194,7 @@
   "castVoteError": "Abstimmung nicht abgeschickt",
   "labelAddTransactionsToProposal": "Transaktionen zum Vorschlag hinzufügen",
   "groupByNonce": "Gruppe nach Nonce",
-  "snapshot": "Schnappschuss"
+  "snapshot": "Schnappschuss",
+  "labelAddTransactionsToProposal": "Transaktionen zum Vorschlag hinzufügen",
+  "signersThresholdBadgeLabel": "{{current}} aus {{total}}"
 }

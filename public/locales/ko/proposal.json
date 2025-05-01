@@ -194,5 +194,7 @@
   "castVoteError": "투표를 보내지 못했습니다.",
   "labelAddTransactionsToProposal": "제안서에 트랜잭션 추가",
   "groupByNonce": "논스별 그룹화",
-  "snapshot": "스냅샷"
+  "snapshot": "스냅샷",
+  "labelAddTransactionsToProposal": "제안서에 트랜잭션 추가",
+  "signersThresholdBadgeLabel": "{{current}중 {{total}}"
 }

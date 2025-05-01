@@ -194,5 +194,7 @@
   "castVoteError": "投票の送信に失敗",
   "labelAddTransactionsToProposal": "プロポーザルに取引を追加する",
   "groupByNonce": "ノンスによるグループ化",
-  "snapshot": "スナップショット"
+  "snapshot": "スナップショット",
+  "labelAddTransactionsToProposal": "プロポーザルに取引を追加する",
+  "signersThresholdBadgeLabel": "{{current}} out of{{total}}"
 }

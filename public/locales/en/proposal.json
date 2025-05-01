@@ -194,5 +194,7 @@
   "castVoteError": "Failed to send vote",
   "labelAddTransactionsToProposal": "Add transactions to proposal",
   "groupByNonce": "Group by Nonce",
-  "snapshot": "Snapshot"
+  "snapshot": "Snapshot",
+  "labelAddTransactionsToProposal": "Add transactions to proposal",
+  "signersThresholdBadgeLabel": "{{current}} out of {{total}}"
 }
