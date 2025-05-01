@@ -7,7 +7,6 @@ import { DAO_ROUTES } from '../../constants/routes';
 import { useCurrentDAOKey } from '../../hooks/DAO/useCurrentDAOKey';
 import { useStore } from '../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
-import { useDaoInfoStore } from '../../store/daoInfo/useDaoInfoStore';
 import { AzoriusGovernance } from '../../types';
 import { BarLoader } from '../ui/loaders/BarLoader';
 import Divider from '../ui/utils/Divider';
@@ -84,8 +83,10 @@ export default function SettingsNavigation() {
   const { t } = useTranslation('settings');
   const { addressPrefix } = useNetworkConfigStore();
   const { daoKey } = useCurrentDAOKey();
-  const { governance } = useStore({ daoKey });
-  const { safe, modules } = useDaoInfoStore();
+  const {
+    governance,
+    node: { safe, modules },
+  } = useStore({ daoKey });
   const azoriusGovernance = governance as AzoriusGovernance;
 
   return (

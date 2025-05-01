@@ -11,10 +11,10 @@ import { RolesTable } from '../../../components/Roles/RolesTable';
 import NoDataCard from '../../../components/ui/containers/NoDataCard';
 import PageHeader from '../../../components/ui/page/Header/PageHeader';
 import { DAO_ROUTES } from '../../../constants/routes';
+import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import { useCanUserCreateProposal } from '../../../hooks/utils/useCanUserSubmitProposal';
 import { analyticsEvents } from '../../../insights/analyticsEvents';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
-import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
 import { useRolesStore } from '../../../store/roles/useRolesStore';
 
 export function SafeRolesPage() {
@@ -25,11 +25,10 @@ export function SafeRolesPage() {
   const { hatsTree } = useRolesStore();
   const { addressPrefix } = useNetworkConfigStore();
   const { t } = useTranslation(['roles']);
-  const { safe } = useDaoInfoStore();
+  const { safeAddress } = useCurrentDAOKey();
   const navigate = useNavigate();
 
   const { canUserCreateProposal } = useCanUserCreateProposal();
-  const safeAddress = safe?.address;
 
   if (!safeAddress) return null;
 

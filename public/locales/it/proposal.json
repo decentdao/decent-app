@@ -124,6 +124,7 @@
   "notActiveNonceTooltip": "Una proposta con un nonce inferiore deve essere eseguita per prima. Se avete già eseguito tutte le proposte con nonce inferiore, ricaricate tra qualche minuto.",
   "signedAlready": "Avete già firmato questa transazione.",
   "nonce": "Nonce",
+  "nonceLabel": "Nonce: {{number}}",
   "votingTooltip": "Il tempo rimanente per esprimere il proprio voto.",
   "timeLockedTooltip": "Questa proposta può essere eseguita una volta trascorso il periodo di blocco temporale.",
   "executableTooltip": "Tempo rimanente per l'esecuzione della proposta",
@@ -193,5 +194,8 @@
   "proposalSummaryNotEnoughVotingPowerSecondary": "Delegare i gettoni di voto al proprio indirizzo per poter votare sulle proposte future.",
   "castVoteError": "Mancato invio del voto",
   "labelAddTransactionsToProposal": "Aggiungere transazioni alla proposta",
-  "createdBy": "Creato da {{createdBy}}"
+  "createdBy": "Creato da {{createdBy}}",
+  "groupByNonce": "Gruppo per Nonce",
+  "snapshot": "Istantanea",
+  "signersThresholdBadgeLabel": "{{current}} da {{total}}"
 }

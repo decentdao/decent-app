@@ -6,9 +6,10 @@ import { useNavigate } from 'react-router-dom';
 import { DAO_ROUTES } from '../../constants/routes';
 import useRemoveProposalTemplate from '../../hooks/DAO/proposal/useRemoveProposalTemplate';
 import useSubmitProposal from '../../hooks/DAO/proposal/useSubmitProposal';
+import { useCurrentDAOKey } from '../../hooks/DAO/useCurrentDAOKey';
 import { useCanUserCreateProposal } from '../../hooks/utils/useCanUserSubmitProposal';
+import { useStore } from '../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
-import { useDaoInfoStore } from '../../store/daoInfo/useDaoInfoStore';
 import { ProposalTemplate } from '../../types/proposalBuilder';
 import ContentBox from '../ui/containers/ContentBox';
 import { OptionMenu } from '../ui/menus/OptionMenu';
@@ -27,7 +28,10 @@ export default function ProposalTemplateCard({
 }: ProposalTemplateCardProps) {
   const navigate = useNavigate();
   const { t } = useTranslation('proposalTemplate');
-  const { safe } = useDaoInfoStore();
+  const { daoKey } = useCurrentDAOKey();
+  const {
+    node: { safe },
+  } = useStore({ daoKey });
 
   const { addressPrefix } = useNetworkConfigStore();
 

@@ -1,21 +1,23 @@
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { devtools, persist } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
 import { DAOKey } from '../types';
 import { createNodesSlice, NodesSlice } from './slices/nodes';
+import { createTreasuriesSlice, TreasuriesSlice } from './slices/treasuries';
 
 export type StoreSlice<T> = { [daoKey: DAOKey]: T };
 
-export type GlobalStore = NodesSlice;
-
-export type GetState = (state: GlobalStore) => GlobalStore;
-export type SetState = () => GlobalStore;
+export type GlobalStore = NodesSlice & TreasuriesSlice;
+export type StoreMiddleware = [['zustand/immer', never], ['zustand/devtools', never]];
 
 export const useGlobalStore = create<GlobalStore>()(
   persist(
-    immer((...params) => ({
-      ...createNodesSlice(...params),
-    })),
+    devtools(
+      immer((...params) => ({
+        ...createNodesSlice(...params),
+        ...createTreasuriesSlice(...params),
+      })),
+    ),
     {
       name: 'global-store',
     },

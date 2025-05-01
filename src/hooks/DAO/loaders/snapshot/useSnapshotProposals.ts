@@ -3,14 +3,15 @@ import { createSnapshotSubgraphClient } from '../../../../graphql';
 import { ProposalsQuery, ProposalsResponse } from '../../../../graphql/SnapshotQueries';
 import { useStore } from '../../../../providers/App/AppProvider';
 import { FractalGovernanceAction } from '../../../../providers/App/governance/action';
-import { useDaoInfoStore } from '../../../../store/daoInfo/useDaoInfoStore';
 import { FractalProposalState, SnapshotProposal } from '../../../../types';
 import { useCurrentDAOKey } from '../../useCurrentDAOKey';
 
 export const useSnapshotProposals = () => {
   const { daoKey } = useCurrentDAOKey();
-  const { action } = useStore({ daoKey });
-  const { subgraphInfo } = useDaoInfoStore();
+  const {
+    action,
+    node: { subgraphInfo },
+  } = useStore({ daoKey });
   const currentSnapshotENS = useRef<string | undefined>();
   const snaphshotGraphQlClient = useMemo(() => createSnapshotSubgraphClient(), []);
 

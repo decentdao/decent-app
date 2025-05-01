@@ -5,13 +5,21 @@ import { Link } from 'react-router-dom';
 import { Address } from 'viem';
 import { DAO_ROUTES } from '../../../constants/routes';
 import { useDateTimeDisplay } from '../../../helpers/dateTime';
+import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import { useGetAccountName } from '../../../hooks/utils/useGetAccountName';
+import { useStore } from '../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
-import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
-import { AzoriusProposal, FractalProposal, SnapshotProposal } from '../../../types';
+import {
+  AzoriusProposal,
+  FractalProposal,
+  SnapshotProposal,
+  GovernanceType,
+  MultisigProposal,
+} from '../../../types';
 import { ActivityDescription } from '../../Activity/ActivityDescription';
 import { Badge } from '../../ui/badges/Badge';
 import QuorumBadge from '../../ui/badges/QuorumBadge';
+import { SignerThresholdBadge } from '../../ui/badges/SignerThresholdBadge';
 import { SnapshotIcon } from '../../ui/badges/Snapshot';
 import { ProposalCountdown } from '../../ui/proposal/ProposalCountdown';
 
@@ -51,10 +59,30 @@ function ProposalCreatedBy({ createdBy }: { createdBy: Address }) {
   );
 }
 
+function NonceLabel({ nonce }: { nonce: number | undefined }) {
+  const { daoKey } = useCurrentDAOKey();
+  const { governance } = useStore({ daoKey });
+  const { t } = useTranslation('proposal');
+  const isMultisig = governance.type === GovernanceType.MULTISIG;
+
+  if (!isMultisig || !nonce) return null;
+  return (
+    <Text
+      textStyle="labels-large"
+      color="neutral-7"
+    >
+      {t('nonceLabel', {
+        number: nonce,
+      })}
+    </Text>
+  );
+}
+
 function ProposalCard({ proposal }: { proposal: FractalProposal }) {
-  const { safe } = useDaoInfoStore();
+  const { safeAddress } = useCurrentDAOKey();
   const { addressPrefix } = useNetworkConfigStore();
-  if (!safe?.address) {
+
+  if (!safeAddress) {
     return null;
   }
 
@@ -62,7 +90,7 @@ function ProposalCard({ proposal }: { proposal: FractalProposal }) {
   const isAzoriusProposal = !!(proposal as AzoriusProposal).votesSummary;
 
   return (
-    <Link to={DAO_ROUTES.proposal.relative(addressPrefix, safe.address, proposal.proposalId)}>
+    <Link to={DAO_ROUTES.proposal.relative(addressPrefix, safeAddress, proposal.proposalId)}>
       <Box
         minHeight="6.25rem"
         bg="neutral-2"
@@ -99,6 +127,11 @@ function ProposalCard({ proposal }: { proposal: FractalProposal }) {
             )}
           </Flex>
           {isAzoriusProposal && <QuorumBadge proposal={proposal as AzoriusProposal} />}
+          <NonceLabel nonce={(proposal as MultisigProposal).nonce} />
+          <SignerThresholdBadge
+            numberOfConfirmedSigners={(proposal as MultisigProposal).confirmations?.length}
+            proposalThreshold={(proposal as MultisigProposal).signersThreshold}
+          />
         </Flex>
         <ActivityDescription activity={proposal} />
         <Flex

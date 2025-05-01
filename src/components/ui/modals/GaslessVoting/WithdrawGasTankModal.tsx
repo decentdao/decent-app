@@ -5,8 +5,9 @@ import { useTranslation } from 'react-i18next';
 import { Address, getAddress } from 'viem';
 import * as Yup from 'yup';
 import { usePaymasterDepositInfo } from '../../../../hooks/DAO/accountAbstraction/usePaymasterDepositInfo';
+import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
 import { useValidationAddress } from '../../../../hooks/schemas/common/useValidationAddress';
-import { useDaoInfoStore } from '../../../../store/daoInfo/useDaoInfoStore';
+import { useStore } from '../../../../providers/App/AppProvider';
 import { BigIntValuePair } from '../../../../types';
 import { formatCoinUnits } from '../../../../utils/numberFormats';
 import { BigIntInput } from '../../forms/BigIntInput';
@@ -38,7 +39,10 @@ export function WithdrawGasTankModal({
   const { isValidating, validateAddress } = useValidationAddress();
   const [recipientAddress, setRecipientAddress] = useState<Address | undefined>(undefined);
 
-  const { safe } = useDaoInfoStore();
+  const { daoKey } = useCurrentDAOKey();
+  const {
+    node: { safe },
+  } = useStore({ daoKey });
 
   const withdrawGasValidationSchema = Yup.object().shape({
     inputAmount: Yup.object()
