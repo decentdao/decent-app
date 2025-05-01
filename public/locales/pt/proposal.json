@@ -192,5 +192,9 @@
   "proposalSummaryNotEnoughVotingPower": "O seu poder de voto não cumpria os requisitos para votar esta proposta quando ela foi criada.",
   "proposalSummaryNotEnoughVotingPowerSecondary": "Delegar tokens de votação no seu endereço para poder votar em futuras propostas.",
   "castVoteError": "Não foi possível enviar a votação",
-  "labelAddTransactionsToProposal": "Adicionar transacções à proposta"
+  "labelAddTransactionsToProposal": "Adicionar transacções à proposta",
+  "groupByNonce": "Agrupar por Nonce",
+  "snapshot": "Instantâneo",
+  "labelAddTransactionsToProposal": "Adicionar transacções à proposta",
+  "signersThresholdBadgeLabel": "{{current}} fora de {{total}}"
 }
