@@ -74,6 +74,7 @@ export function ModalBase({
           borderRadius="0.75rem"
           boxShadow="0px 0px 0px 1px #100414, 0px 0px 0px 1px rgba(248, 244, 252, 0.04) inset, 0px 1px 0px 0px rgba(248, 244, 252, 0.04) inset"
           padding={contentStyle?.padding ?? '1.5rem'}
+          backdropFilter="blur(25px)"
           containerProps={
             zIndex
               ? {

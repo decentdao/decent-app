@@ -3,6 +3,7 @@ import { FormikProps } from 'formik';
 import { createContext, ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Address } from 'viem';
+import { NEUTRAL_2_50_TRANSPARENT } from '../../../constants/common';
 import { SafeSettingsModal } from '../../../pages/dao/settings/SafeSettingsModal';
 import { CreateProposalTransaction, ProposalTemplate } from '../../../types';
 import { SendAssetsData } from '../../../utils/dao/prepareSendAssetsActionData';
@@ -411,6 +412,10 @@ export function ModalProvider({ children }: { children: ReactNode }) {
       case ModalType.SAFE_SETTINGS:
         modalContent = <SafeSettingsModal />;
         modalSize = 'max';
+        modalContentStyle = {
+          backgroundColor: NEUTRAL_2_50_TRANSPARENT,
+          padding: '0',
+        };
         break;
       case ModalType.NONE:
       default:
