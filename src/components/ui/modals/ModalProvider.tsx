@@ -4,7 +4,6 @@ import { createContext, ReactNode, useCallback, useEffect, useMemo, useState } f
 import { useTranslation } from 'react-i18next';
 import { Address } from 'viem';
 import { NEUTRAL_2_50_TRANSPARENT } from '../../../constants/common';
-import { SafeSettingsModal } from '../../../pages/dao/settings/SafeSettingsModal';
 import { CreateProposalTransaction, ProposalTemplate } from '../../../types';
 import { SendAssetsData } from '../../../utils/dao/prepareSendAssetsActionData';
 import { ProposalTransactionsFormModal } from '../../ProposalBuilder/ProposalTransactionsForm';
@@ -29,6 +28,7 @@ import { PaymentWithdrawModal } from './PaymentWithdrawModal';
 import ProposalTemplateModal from './ProposalTemplateModal';
 import { SafeProposalDappDetailModal } from './SafeDapp/SafeProposalDappDetailModal';
 import { SafeProposalDappsModal } from './SafeDapp/SafeProposalDappsModal';
+import { SafeSettingsModal } from './SafeSettingsModal';
 import { SendAssetsModal } from './SendAssetsModal';
 import StakeModal from './Stake';
 import { UnsavedChangesWarningContent } from './UnsavedChangesWarningContent';

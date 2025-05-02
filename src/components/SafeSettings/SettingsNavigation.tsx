@@ -4,6 +4,7 @@ import { PropsWithChildren, ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useLocation, useMatch } from 'react-router-dom';
 import { DAO_ROUTES } from '../../constants/routes';
+import useFeatureFlag from '../../helpers/environmentFeatureFlags';
 import { useCurrentDAOKey } from '../../hooks/DAO/useCurrentDAOKey';
 import { useStore } from '../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
@@ -79,7 +80,7 @@ function SettingsLink({
   );
 }
 
-export default function SettingsNavigation() {
+export function SettingsNavigation() {
   const { t } = useTranslation('settings');
   const { addressPrefix } = useNetworkConfigStore();
   const { daoKey } = useCurrentDAOKey();
@@ -89,9 +90,11 @@ export default function SettingsNavigation() {
   } = useStore({ daoKey });
   const azoriusGovernance = governance as AzoriusGovernance;
 
+  const isSettingsV1Enabled = useFeatureFlag('flag_settings_v1');
+
   return (
     <Flex
-      backgroundColor="neutral-2"
+      backgroundColor={isSettingsV1Enabled ? 'transparent' : 'neutral-1'}
       p={{ base: '1rem', md: '0.25rem' }}
       gap="0.25rem"
       flexDirection="column"
