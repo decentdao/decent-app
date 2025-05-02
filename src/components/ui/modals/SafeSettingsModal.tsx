@@ -1,6 +1,6 @@
 import { Box, Button, Flex } from '@chakra-ui/react';
-import { t } from 'i18next';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useCanUserCreateProposal } from '../../../hooks/utils/useCanUserSubmitProposal';
 import { SafeGeneralSettingsPage } from '../../../pages/dao/settings/general/SafeGeneralSettingsPage';
 import { SettingsNavigation } from '../../SafeSettings/SettingsNavigation';
@@ -14,6 +14,8 @@ export function SafeSettingsModal({ closeModal }: { closeModal: () => void }) {
   };
 
   const { canUserCreateProposal } = useCanUserCreateProposal();
+
+  const { t } = useTranslation(['modals', 'common']);
 
   return (
     <>
@@ -45,9 +47,10 @@ export function SafeSettingsModal({ closeModal }: { closeModal: () => void }) {
           <Button
             variant="tertiary"
             size="sm"
+            px="2rem"
             onClick={closeModal}
           >
-            {t('discardChanges')}
+            {t('discardChanges', { ns: 'common' })}
           </Button>
           {canUserCreateProposal && (
             <Button
@@ -57,7 +60,7 @@ export function SafeSettingsModal({ closeModal }: { closeModal: () => void }) {
                 console.log('go to builder');
               }}
             >
-              {t('proposeChanges')}
+              {t('createProposal')}
             </Button>
           )}
         </Flex>
