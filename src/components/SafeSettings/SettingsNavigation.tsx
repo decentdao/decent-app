@@ -9,7 +9,7 @@ import { useCurrentDAOKey } from '../../hooks/DAO/useCurrentDAOKey';
 import { SafeGeneralSettingsPage } from '../../pages/dao/settings/general/SafeGeneralSettingsPage';
 import { SafeGovernanceSettingsPage } from '../../pages/dao/settings/governance/SafeGovernanceSettingsPage';
 import { SafeModulesSettingsPage } from '../../pages/dao/settings/modules-and-guard/SafeModulesSettingsPage';
-import { SafePermissionsSettingsPage } from '../../pages/dao/settings/permissions/SafePermissionsSettingsPage';
+import { SafePermissionsSettingsContent } from '../../pages/dao/settings/permissions/SafePermissionsSettingsContent';
 import { useStore } from '../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
 import { AzoriusGovernance } from '../../types';
@@ -254,7 +254,7 @@ export function SettingsNavigation({
               currentItem={currentItem}
               showDivider={false}
               onClick={() => {
-                onSettingsNavigationClick(<SafePermissionsSettingsPage />);
+                onSettingsNavigationClick(<SafePermissionsSettingsContent />);
                 setCurrentItem('permissions');
               }}
             >
