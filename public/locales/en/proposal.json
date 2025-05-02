@@ -194,7 +194,7 @@
   "proposalSummaryNotEnoughVotingPowerSecondary": "Delegate voting tokens to your address to be eligible to vote on future proposals.",
   "castVoteError": "Failed to send vote",
   "labelAddTransactionsToProposal": "Add transactions to proposal",
-  "createdBy": "Created by {{createdBy}}",
+  "by": "By",
   "groupByNonce": "Group by Nonce",
   "snapshot": "Snapshot",
   "signersThresholdBadgeLabel": "{{current}} out of {{total}}"

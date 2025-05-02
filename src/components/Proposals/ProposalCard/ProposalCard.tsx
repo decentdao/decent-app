@@ -6,6 +6,7 @@ import { Address } from 'viem';
 import { DAO_ROUTES } from '../../../constants/routes';
 import { useDateTimeDisplay } from '../../../helpers/dateTime';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
+import { useNetworkEnsAvatar } from '../../../hooks/useNetworkEnsAvatar';
 import { useGetAccountName } from '../../../hooks/utils/useGetAccountName';
 import { useStore } from '../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
@@ -21,6 +22,7 @@ import { Badge } from '../../ui/badges/Badge';
 import QuorumBadge from '../../ui/badges/QuorumBadge';
 import { SignerThresholdBadge } from '../../ui/badges/SignerThresholdBadge';
 import { SnapshotIcon } from '../../ui/badges/Snapshot';
+import Avatar from '../../ui/page/Header/Avatar';
 import { ProposalCountdown } from '../../ui/proposal/ProposalCountdown';
 
 function ProposalCreatedDate({ date }: { date: Date }) {
@@ -41,9 +43,11 @@ function ProposalCreatedDate({ date }: { date: Date }) {
     </Flex>
   );
 }
+
 function ProposalCreatedBy({ createdBy }: { createdBy: Address }) {
   const { t } = useTranslation('proposal');
   const { displayName } = useGetAccountName(createdBy, true);
+  const { data: avatarURL } = useNetworkEnsAvatar({ name: displayName });
   return (
     <Flex
       gap="2"
@@ -53,7 +57,15 @@ function ProposalCreatedBy({ createdBy }: { createdBy: Address }) {
         textStyle="labels-small"
         color="neutral-7"
       >
-        {t('createdBy', { createdBy: displayName })}
+        <Flex gap="1">
+          {t('by')}
+          <Avatar
+            size="sm"
+            address={createdBy}
+            url={avatarURL}
+          />
+          {displayName}
+        </Flex>
       </Text>
     </Flex>
   );
