@@ -12,7 +12,7 @@ import { ModalType } from '../../../../components/ui/modals/ModalProvider';
 import { useDecentModal } from '../../../../components/ui/modals/useDecentModal';
 import NestedPageHeader from '../../../../components/ui/page/Header/NestedPageHeader';
 import Divider from '../../../../components/ui/utils/Divider';
-import { NEUTRAL_2_84 } from '../../../../constants/common';
+import { NEUTRAL_2_82_TRANSPARENT } from '../../../../constants/common';
 import { DAO_ROUTES } from '../../../../constants/routes';
 import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
 import { useCanUserCreateProposal } from '../../../../hooks/utils/useCanUserSubmitProposal';
@@ -90,7 +90,7 @@ export function SafePermissionsSettingsPage() {
         flexDirection="column"
         gap={{ base: 4, md: 6 }}
         display="flex"
-        bg={{ base: 'transparent', md: NEUTRAL_2_84 }}
+        bg={{ base: 'transparent', md: NEUTRAL_2_82_TRANSPARENT }}
       >
         {!isLoaded ? (
           <Card

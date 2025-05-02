@@ -10,6 +10,7 @@ import Divider from '../utils/Divider';
 
 export type ModalBaseSize = 'sm' | 'md' | 'lg' | 'xl' | '2xl' | 'max';
 interface ModuleBaseProps {
+  // @todo: remove (https://linear.app/decent-labs/issue/ENG-793/remove-issearchinputmodal)
   isSearchInputModal?: boolean;
   title?: string;
   warn?: boolean;
