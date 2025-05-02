@@ -32,7 +32,9 @@ export function SafeSettingsPage() {
         />
       )}
       <Flex flexDirection={{ base: 'column', md: 'row' }}>
-        {(!isMobile || isIndexSettingsPage) && <SettingsNavigation />}
+        {(!isMobile || isIndexSettingsPage) && (
+          <SettingsNavigation onSettingsNavigationClick={() => {}} />
+        )}
         {(!isMobile || (isMobile && !isIndexSettingsPage)) && <Outlet />}
       </Flex>
     </>
