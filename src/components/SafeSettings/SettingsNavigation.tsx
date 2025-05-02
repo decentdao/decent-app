@@ -190,7 +190,10 @@ export function SettingsNavigation({
       borderRadius="0.75rem"
       borderTopRightRadius={{ base: '0.75rem', md: '0' }}
       borderBottomRightRadius={{ base: '0.75rem', md: '0' }}
-      borderRight={{ base: 'none', md: '1px solid var(--colors-neutral-3)' }}
+      borderRight={{
+        base: 'none',
+        md: !isSettingsV1Enabled ? '1px solid var(--colors-neutral-3)' : 'none',
+      }}
       borderColor="neutral-3"
       boxShadow="1px 0px 0px 0px #100414"
       minWidth="220px"

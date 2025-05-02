@@ -410,7 +410,7 @@ export function ModalProvider({ children }: { children: ReactNode }) {
         modalSize = 'max';
         break;
       case ModalType.SAFE_SETTINGS:
-        modalContent = <SafeSettingsModal />;
+        modalContent = <SafeSettingsModal closeModal={closeModal} />;
         modalSize = 'max';
         modalContentStyle = {
           backgroundColor: NEUTRAL_2_50_TRANSPARENT,
