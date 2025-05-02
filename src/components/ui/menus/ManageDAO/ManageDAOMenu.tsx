@@ -134,6 +134,7 @@ export function ManageDAOMenu() {
       onClick: handleClawBack,
     };
 
+    // @todo: Remove after feature flag is removed (https://linear.app/decent-labs/issue/ENG-796/remove-modifygovernanceoption-completely)
     const modifyGovernanceOption = {
       optionKey: 'optionModifyGovernance',
       onClick: handleModifyGovernance,
@@ -156,7 +157,7 @@ export function ManageDAOMenu() {
       !isWithinFreezePeriod(guard.freezeProposalCreatedTime, guard.freezePeriod, currentTime) &&
       guard.userHasVotes
     ) {
-      if (type === GovernanceType.MULTISIG) {
+      if (!settingsV1FeatureEnabled && type === GovernanceType.MULTISIG) {
         return [settingsOption, freezeOption, modifyGovernanceOption];
       } else {
         return [settingsOption, freezeOption];
@@ -179,7 +180,7 @@ export function ManageDAOMenu() {
     } else {
       return [
         settingsOption,
-        ...(canUserCreateProposal && type === GovernanceType.MULTISIG
+        ...(!settingsV1FeatureEnabled && canUserCreateProposal && type === GovernanceType.MULTISIG
           ? [modifyGovernanceOption]
           : []),
       ];
@@ -189,6 +190,7 @@ export function ManageDAOMenu() {
     currentTime,
     type,
     handleClawBack,
+    settingsV1FeatureEnabled,
     handleModifyGovernance,
     handleNavigateToSettings,
     freezeOption,
