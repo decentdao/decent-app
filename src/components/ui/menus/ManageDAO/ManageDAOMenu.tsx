@@ -5,6 +5,7 @@ import { useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getContract } from 'viem';
 import { DAO_ROUTES } from '../../../../constants/routes';
+import useFeatureFlag from '../../../../helpers/environmentFeatureFlags';
 import {
   isWithinFreezePeriod,
   isWithinFreezeProposalPeriod,
@@ -45,11 +46,19 @@ export function ManageDAOMenu() {
 
   const { addressPrefix } = useNetworkConfigStore();
 
+  const openSettingsModal = useDecentModal(ModalType.SAFE_SETTINGS);
+
+  const settingsV1FeatureEnabled = useFeatureFlag('flag_settings_v1');
+
   const handleNavigateToSettings = useCallback(() => {
     if (safeAddress) {
-      navigate(DAO_ROUTES.settings.relative(addressPrefix, safeAddress));
+      if (settingsV1FeatureEnabled) {
+        openSettingsModal();
+      } else {
+        navigate(DAO_ROUTES.settings.relative(addressPrefix, safeAddress));
+      }
     }
-  }, [navigate, addressPrefix, safeAddress]);
+  }, [safeAddress, settingsV1FeatureEnabled, openSettingsModal, navigate, addressPrefix]);
 
   const handleModifyGovernance = useDecentModal(ModalType.CONFIRM_MODIFY_GOVERNANCE);
 

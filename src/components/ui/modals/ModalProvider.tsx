@@ -3,6 +3,7 @@ import { FormikProps } from 'formik';
 import { createContext, ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Address } from 'viem';
+import { SafeSettingsModal } from '../../../pages/dao/settings/SafeSettingsModal';
 import { CreateProposalTransaction, ProposalTemplate } from '../../../types';
 import { SendAssetsData } from '../../../utils/dao/prepareSendAssetsActionData';
 import { ProposalTransactionsFormModal } from '../../ProposalBuilder/ProposalTransactionsForm';
@@ -56,6 +57,7 @@ export enum ModalType {
   WITHDRAW_GAS,
   DAPPS_BROWSER,
   DAPP_BROWSER,
+  SAFE_SETTINGS,
 }
 
 export type CurrentModal = {
@@ -128,6 +130,7 @@ export type ModalPropsTypes = {
   [ModalType.DAPP_BROWSER]: {
     appUrl: string;
   };
+  [ModalType.SAFE_SETTINGS]: {};
 };
 
 export interface IModalContext {
@@ -395,6 +398,10 @@ export function ModalProvider({ children }: { children: ReactNode }) {
           );
           modalSize = 'max';
           break;
+        case ModalType.SAFE_SETTINGS:
+          modalContent = <SafeSettingsModal />;
+          modalSize = 'max';
+          break;
         case ModalType.NONE:
         default:
           modalTitle = '';
@@ -432,6 +439,7 @@ export function ModalProvider({ children }: { children: ReactNode }) {
     current.type === ModalType.ADD_PERMISSION ||
     current.type === ModalType.CONFIRM_DELETE_STRATEGY ||
     current.type === ModalType.GASLESS_VOTE_LOADING ||
+    current.type === ModalType.GASLESS_VOTE_FAILED ||
     current.type === ModalType.GASLESS_VOTE_SUCCESS
   ) {
     display = (

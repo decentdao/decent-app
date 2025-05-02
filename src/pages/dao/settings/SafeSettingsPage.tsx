@@ -6,6 +6,7 @@ import PageHeader from '../../../components/ui/page/Header/PageHeader';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import { useStore } from '../../../providers/App/AppProvider';
 
+/**  @deprecated */
 export function SafeSettingsPage() {
   const { t } = useTranslation(['settings']);
   const { daoKey } = useCurrentDAOKey();
