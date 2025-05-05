@@ -13,6 +13,7 @@
     "@hatsprotocol/sdk-v1-core": "^0.9.0",
     "@hatsprotocol/sdk-v1-subgraph": "^1.0.0",
     "@hotjar/browser": "^1.0.9",
+    "@nance/nance-editor": "^1.8.4",
     "@phosphor-icons/react": "^2.1.4",
     "@reown/walletkit": "^1.2.2",
     "@safe-global/api-kit": "^2.4.2",
