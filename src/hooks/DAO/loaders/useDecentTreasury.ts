@@ -213,6 +213,7 @@ export const useDecentTreasury = () => {
     getTokenBalances,
     getNFTBalances,
     getDeFiBalances,
+    filterSpamTokens,
     action,
     chain.nativeCurrency.name,
     chain.nativeCurrency.symbol,
