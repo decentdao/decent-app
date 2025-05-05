@@ -26,7 +26,7 @@ import {
   VotingStrategyType,
 } from '../types';
 import { SENTINEL_MODULE } from '../utils/address';
-import { BaseTxBuilder, ContractCallTarget } from './BaseTxBuilder';
+import { BaseTxBuilder, call, ContractCallTarget, ensure } from './BaseTxBuilder';
 import { generateContractByteCodeLinear, generateSalt } from './helpers/utils';
 
 export class AzoriusTxBuilder extends BaseTxBuilder {
@@ -145,7 +145,7 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
 
   public buildRemoveOwners(owners: Address[]): SafeTransaction[] {
     return owners.map(owner =>
-      this.call({
+      call({
         target: this.safeContract,
         functionName: 'removeOwner',
         args: [this.multiSendCallOnly, owner, 1n],
@@ -156,11 +156,11 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
   public buildVotingContractSetupTx(): SafeTransaction {
     const daoData = this.daoData as AzoriusGovernanceDAO;
 
-    return this.call({
+    return call({
       target: this._contractSetupTarget(daoData.votingStrategyType),
       functionName: 'setAzorius',
       args: [
-        this.ensure({
+        ensure({
           data: this.predictedAzoriusAddress,
           description: 'Predicted Azorius address',
         }),
@@ -187,11 +187,11 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
   }
 
   public buildEnableAzoriusModuleTx(): SafeTransaction {
-    return this.call({
+    return call({
       target: this.safeContract,
       functionName: 'enableModule',
       args: [
-        this.ensure({
+        ensure({
           data: this.predictedAzoriusAddress,
           description: 'Predicted Azorius Address',
         }),
@@ -200,11 +200,11 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
   }
 
   public buildAddAzoriusContractAsOwnerTx(): SafeTransaction {
-    return this.call({
+    return call({
       target: this.safeContract,
       functionName: 'addOwnerWithThreshold',
       args: [
-        this.ensure({
+        ensure({
           data: this.predictedAzoriusAddress,
           description: 'Predicted Azorius Address',
         }),
@@ -214,15 +214,15 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
   }
 
   public buildRemoveMultiSendOwnerTx(): SafeTransaction {
-    return this.call({
+    return call({
       target: this.safeContract,
       functionName: 'removeOwner',
       args: [
-        this.ensure({
+        ensure({
           data: this.predictedAzoriusAddress,
           description: 'Predicted Azorius Address',
         }),
-        this.ensure({
+        ensure({
           data: this.multiSendCallOnly,
           description: 'MultiSend Call Only Contract',
         }),
@@ -234,12 +234,12 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
   public buildCreateTokenTx(): SafeTransaction {
     const azoriusErc20DaoData = this.daoData as AzoriusERC20DAO;
 
-    return this.call({
+    return call({
       target: this.zodiacModuleProxyFactory,
       functionName: 'deployModule',
       args: [
         this._votesErc20Master(azoriusErc20DaoData.locked),
-        this.ensure({
+        ensure({
           data: this.encodedSetupTokenData,
           description: 'Encoded Setup Token Data',
         }),
@@ -251,7 +251,7 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
   private _votesErc20Master(lockType: TokenLockType): Address {
     switch (lockType) {
       case TokenLockType.LOCKED:
-        return this.ensure({
+        return ensure({
           data: this.votesErc20LockableMasterCopy,
           description: 'Locked ERC20 Token Master Contract',
         });
@@ -264,12 +264,12 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
   public buildDeployStrategyTx(): SafeTransaction {
     const daoData = this.daoData as AzoriusGovernanceDAO;
 
-    return this.call({
+    return call({
       target: this.zodiacModuleProxyFactory,
       functionName: 'deployModule',
       args: [
         this._votingStrategyMaster(daoData.votingStrategyType),
-        this.ensure({
+        ensure({
           data: this.encodedStrategySetupData,
           description: 'Encoded Strategy Setup Data',
         }),
@@ -292,12 +292,12 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
   }
 
   public buildDeployAzoriusTx(): SafeTransaction {
-    return this.call({
+    return call({
       target: this.zodiacModuleProxyFactory,
       functionName: 'deployModule',
       args: [
         this.moduleAzoriusMasterCopy,
-        this.ensure({
+        ensure({
           data: this.encodedSetupAzoriusData,
           description: 'Encoded Strategy Setup Data',
         }),
@@ -307,12 +307,12 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
   }
 
   public buildDeployTokenClaim() {
-    return this.call({
+    return call({
       target: this.zodiacModuleProxyFactory,
       functionName: 'deployModule',
       args: [
         this.claimErc20MasterCopy,
-        this.ensure({
+        ensure({
           data: this.encodedSetupTokenClaimData,
           description: 'Encoded Strategy Setup Data',
         }),
@@ -362,7 +362,7 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
     if (azoriusGovernanceDaoData.tokenSupply > tokenAllocationSum) {
       // TODO -- verify this doesn't need to be the predicted safe address (that they are the same)
       tokenAllocationsOwners.push(
-        this.ensure({ data: this.safeContract.address, description: 'Safe Contract Address' }),
+        ensure({ data: this.safeContract.address, description: 'Safe Contract Address' }),
       );
       tokenAllocationsValues.push(azoriusGovernanceDaoData.tokenSupply - tokenAllocationSum);
     }
@@ -379,7 +379,7 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
       const encodedInitTokenData = encodeAbiParameters(
         parseAbiParameters('address, bool, string, string, address[], uint256[]'),
         [
-          this.ensure({ data: this.safeContract.address, description: 'Safe Contract Address' }),
+          ensure({ data: this.safeContract.address, description: 'Safe Contract Address' }),
           true,
           azoriusGovernanceDaoData.tokenName,
           azoriusGovernanceDaoData.tokenSymbol,
@@ -428,7 +428,7 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
     const tokenSalt = generateSalt(this.encodedSetupTokenData!, this.tokenNonce);
 
     this.predictedTokenAddress = getCreate2Address({
-      from: this.ensure({
+      from: ensure({
         data: this.zodiacModuleProxyFactory.address,
         description: 'Zodiac Module Proxy Factory Address',
       }),
@@ -446,7 +446,7 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
       parseAbiParameters('uint32, address, address, address, uint256'),
       [
         0, // `deadlineBlock`, 0 means never expires, currently no UI for setting this in the app.
-        this.ensure({ data: this.safeContract.address, description: 'Safe Contract Address' }),
+        ensure({ data: this.safeContract.address, description: 'Safe Contract Address' }),
         this.parentTokenAddress,
         this.predictedTokenAddress,
         azoriusGovernanceDaoData.parentAllocationAmount,
@@ -467,7 +467,7 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
     const tokenSalt = generateSalt(this.encodedSetupTokenClaimData!, this.claimNonce);
 
     this.predictedTokenClaimAddress = getCreate2Address({
-      from: this.ensure({
+      from: ensure({
         data: this.zodiacModuleProxyFactory.address,
         description: 'Zodiac Module Proxy Factory Address',
       }),
@@ -572,7 +572,7 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
 
       const quorumDenominator = await linearERC20VotingMasterCopyContract.read.QUORUM_DENOMINATOR();
       return this.setupLinearERC20VotingStrategy(
-        this.ensure({ data: this.safeContract.address, description: 'Safe Contract Address' }),
+        ensure({ data: this.safeContract.address, description: 'Safe Contract Address' }),
         this.predictedTokenAddress,
         Number(azoriusGovernanceDaoData.votingPeriod),
         azoriusGovernanceDaoData.quorumPercentage,
@@ -582,7 +582,7 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
       const daoData = azoriusGovernanceDaoData as AzoriusERC721DAO;
 
       return this.setupLinearERC721VotingStrategy(
-        this.ensure({ data: this.safeContract.address, description: 'Safe Contract Address' }),
+        ensure({ data: this.safeContract.address, description: 'Safe Contract Address' }),
         daoData,
         Number(daoData.votingPeriod),
       );
@@ -608,7 +608,7 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
     this.encodedStrategySetupData = encodedStrategySetupData;
 
     this.predictedStrategyAddress = getCreate2Address({
-      from: this.ensure({
+      from: ensure({
         data: this.zodiacModuleProxyFactory.address,
         description: 'Zodiac Module Proxy Factory Address',
       }),
@@ -619,7 +619,7 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
 
   private setPredictedAzoriusAddress() {
     const azoriusGovernanceDaoData = this.daoData as AzoriusGovernanceDAO;
-    const safeContractAddress = this.ensure({
+    const safeContractAddress = ensure({
       data: this.safeContract.address,
       description: 'Safe Contract Address',
     });
@@ -646,7 +646,7 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
 
     this.encodedSetupAzoriusData = encodedSetupAzoriusData;
     this.predictedAzoriusAddress = getCreate2Address({
-      from: this.ensure({
+      from: ensure({
         data: this.zodiacModuleProxyFactory.address,
         description: 'Zodiac Module Proxy Factory Address',
       }),
