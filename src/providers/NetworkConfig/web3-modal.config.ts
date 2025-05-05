@@ -50,8 +50,8 @@ const siweConfig = createSIWEConfig({
   },
   getMessageParams: async () => {
     const siweArgs = {
-      domain: import.meta.env.VITE_APP_SITE_URL,
-      uri: import.meta.env.VITE_APP_SITE_URL,
+      domain: 'feature-eng-575-integrate-si.decent-interface.pages.dev',
+      uri: 'https://feature-eng-575-integrate-si.decent-interface.pages.dev',
       chains: supportedWagmiChains.map(chain => chain.id),
     };
     return siweArgs;
