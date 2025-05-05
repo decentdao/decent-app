@@ -36,7 +36,7 @@ export type PredictedAddressAndInitialization = {
   encodedSetupData: Hex;
 };
 
-export class AzoriusTxBuilder extends BaseTxBuilder {
+export class AzoriusTxBuilder {
   // private readonly safeContract: ContractCallTarget;
 
   // private encodedSetupTokenData: Hex | undefined;
