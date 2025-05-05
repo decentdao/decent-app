@@ -1,7 +1,10 @@
 import { QueryClient } from '@tanstack/react-query';
+import { createSIWEConfig } from "@web3modal/siwe";
 import { createWeb3Modal } from '@web3modal/wagmi/react';
 import { defaultWagmiConfig } from '@web3modal/wagmi/react/config';
+import { getNonce, verify, me, logout } from 'decent-sdk';
 import { HttpTransport } from 'viem';
+import { createSiweMessage } from 'viem/siwe'
 import { http } from 'wagmi';
 import { Chain } from 'wagmi/chains';
 import { NetworkConfig } from '../../types/network';
@@ -35,6 +38,49 @@ export const wagmiConfig = defaultWagmiConfig({
   transports: supportedNetworks.reduce(transportsReducer, {}),
 });
 
+const siweConfig = createSIWEConfig({
+  enabled: true,
+  getNonce: async () => {
+    const nonce = await getNonce();
+    return nonce;
+  },
+  createMessage: (args) => {
+    const address = args.address.split(':')[2];
+    return createSiweMessage({ ...args, address: address as `0x${string}`});
+  },
+  getMessageParams: async () => {
+    const siweArgs = {
+      domain: import.meta.env.VITE_APP_SITE_URL,
+      uri: import.meta.env.VITE_APP_SITE_URL,
+      chains: supportedWagmiChains.map(chain => chain.id),
+    };
+    return siweArgs;
+  },
+  verifyMessage: async ({ message, signature }) => {
+    const user = await verify({
+      message,
+      signature: signature as `0x${string}`,
+    });
+    return Boolean(user);
+  },
+  getSession: async () => {
+    const user = await me();
+    return {
+      address: user.address,
+      chainId: 1,
+    };
+  },
+  signOut: async () => {
+    const result = await logout();
+    return result === 'ok';
+  },
+});
+
 if (walletConnectProjectId) {
-  createWeb3Modal({ wagmiConfig, projectId: walletConnectProjectId, metadata: metadata });
+  createWeb3Modal({
+    wagmiConfig,
+    projectId: walletConnectProjectId,
+    metadata,
+    siweConfig,
+  });
 }
