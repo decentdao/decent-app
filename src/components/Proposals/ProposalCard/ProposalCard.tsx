@@ -65,7 +65,7 @@ function NonceLabel({ nonce }: { nonce: number | undefined }) {
   const { t } = useTranslation('proposal');
   const isMultisig = governance.type === GovernanceType.MULTISIG;
 
-  if (!isMultisig || !nonce) return null;
+  if (!isMultisig || nonce === undefined) return null;
   return (
     <Text
       textStyle="labels-large"
