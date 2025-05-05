@@ -194,7 +194,7 @@
   "proposalSummaryNotEnoughVotingPowerSecondary": "今後の提案に対する投票権を得るために、あなたの住所に投票トークンを委任する。",
   "castVoteError": "投票の送信に失敗",
   "labelAddTransactionsToProposal": "プロポーザルに取引を追加する",
-  "createdBy": "作成者：{{createdBy}}",
+  "by": "による",
   "groupByNonce": "ノンスによるグループ化",
   "snapshot": "スナップショット",
   "signersThresholdBadgeLabel": "{{current}} out of{{total}}"
