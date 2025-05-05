@@ -39,8 +39,9 @@ export function useFilterSpamTokens(options: TokenListFilterOptions = {}) {
         const passSpamCheck = voteTokens.includes(asset.tokenAddress) || !asset.possibleSpam;
         const passNativeCheck = includeNativeToken || !asset.nativeToken;
         const passBalanceCheck = includeZeroBalanceToken || parseFloat(asset.balance) > 0;
+        const passAsciiNameCheck = Array.from(asset.symbol).every(char => char.charCodeAt(0) < 128);
 
-        return passSpamCheck && passBalanceCheck && passNativeCheck;
+        return passSpamCheck && passBalanceCheck && passNativeCheck && passAsciiNameCheck;
       });
     },
     [includeNativeToken, voteTokens, includeZeroBalanceToken],
