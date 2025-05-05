@@ -16,6 +16,7 @@ import {
 import { formatCoin } from '../../../utils';
 import { CacheExpiry, CacheKeys } from '../../utils/cache/cacheDefaults';
 import { setValue } from '../../utils/cache/useLocalStorage';
+import { useFilterSpamTokens } from '../../utils/useFilterSpamTokens';
 import { useCurrentDAOKey } from '../useCurrentDAOKey';
 
 function getTransferEventType(transferFrom: string, safeAddress: Address | undefined) {
@@ -36,6 +37,10 @@ export const useDecentTreasury = () => {
     action,
     node: { safe },
   } = useStore({ daoKey });
+  const filterSpamTokens = useFilterSpamTokens({
+    includeNativeToken: true,
+    includeZeroBalanceToken: true,
+  });
   const safeAPI = useSafeAPI();
   const { getTokenBalances, getNFTBalances, getDeFiBalances } = useBalancesAPI();
 
@@ -99,7 +104,7 @@ export const useDecentTreasury = () => {
     if (defiBalancesError) {
       toast.warning(defiBalancesError, { duration: 2000 });
     }
-    const assetsFungible = tokenBalances || [];
+    const assetsFungible = filterSpamTokens(tokenBalances || []);
     const assetsNonFungible = nftBalances || [];
     const assetsDeFi = defiBalances || [];
 
