@@ -10,12 +10,12 @@ import { logError } from '../../helpers/errorLogging';
 import useSubmitProposal from '../../hooks/DAO/proposal/useSubmitProposal';
 import { useCurrentDAOKey } from '../../hooks/DAO/useCurrentDAOKey';
 import useCreateProposalSchema from '../../hooks/schemas/proposalBuilder/useCreateProposalSchema';
+import { useUnsavedChangesBlocker } from '../../hooks/useUnsavedChangesBlocker';
 import { useCanUserCreateProposal } from '../../hooks/utils/useCanUserSubmitProposal';
 import { ActionsExperience } from '../../pages/dao/proposals/actions/new/ActionsExperience';
 import { useStore } from '../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
 import { useProposalActionsStore } from '../../store/actions/useProposalActionsStore';
-import { useDaoInfoStore } from '../../store/daoInfo/useDaoInfoStore';
 import { BigIntValuePair, CreateProposalSteps, ProposalExecuteData } from '../../types';
 import {
   CreateProposalForm,
@@ -112,8 +112,7 @@ export function ProposalBuilder({
   const navigate = useNavigate();
   const { t } = useTranslation(['proposalTemplate', 'proposal']);
   const [currentStep, setCurrentStep] = useState<CreateProposalSteps>(CreateProposalSteps.METADATA);
-  const { safe } = useDaoInfoStore();
-  const safeAddress = safe?.address;
+  const { safeAddress } = useCurrentDAOKey();
 
   const { resetActions } = useProposalActionsStore();
   const { addressPrefix } = useNetworkConfigStore();
@@ -121,11 +120,22 @@ export function ProposalBuilder({
   const { canUserCreateProposal } = useCanUserCreateProposal();
   const { createProposalValidation } = useCreateProposalSchema();
 
+  useUnsavedChangesBlocker({
+    when:
+      initialValues.transactions.length > 0 ||
+      !!initialValues.proposalMetadata.title ||
+      !!initialValues.proposalMetadata.description,
+    onDiscardChanges: () => {
+      resetActions();
+      navigate(DAO_ROUTES.dao.relative(addressPrefix, safeAddress!));
+    },
+  });
   const successCallback = () => {
     if (safeAddress) {
       resetActions();
       // Redirecting to home page so that user will see newly created Proposal
-      navigate(DAO_ROUTES.dao.relative(addressPrefix, safeAddress));
+      // Small delay to ensure that the proposal is created and actions are reset
+      setTimeout(() => navigate(DAO_ROUTES.dao.relative(addressPrefix, safeAddress)), 0);
     }
   };
 

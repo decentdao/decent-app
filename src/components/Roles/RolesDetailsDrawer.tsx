@@ -16,12 +16,13 @@ import { RefObject, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import PencilWithLineIcon from '../../assets/theme/custom/icons/PencilWithLineIcon';
 import { BACKGROUND_SEMI_TRANSPARENT } from '../../constants/common';
+import { useCurrentDAOKey } from '../../hooks/DAO/useCurrentDAOKey';
 import { useNetworkEnsAvatar } from '../../hooks/useNetworkEnsAvatar';
 import useAddress from '../../hooks/utils/useAddress';
 import { useCanUserCreateProposal } from '../../hooks/utils/useCanUserSubmitProposal';
 import { useCopyText } from '../../hooks/utils/useCopyText';
 import { useGetAccountName } from '../../hooks/utils/useGetAccountName';
-import { useDaoInfoStore } from '../../store/daoInfo/useDaoInfoStore';
+import { useStore } from '../../providers/App/AppProvider';
 import {
   paymentSorterByActiveStatus,
   paymentSorterByStartDate,
@@ -84,7 +85,10 @@ export default function RolesDetailsDrawer({
   isOpen = true,
   onEdit,
 }: RoleDetailsDrawerProps) {
-  const { safe } = useDaoInfoStore();
+  const { daoKey } = useCurrentDAOKey();
+  const {
+    node: { safe },
+  } = useStore({ daoKey });
   const permissionsContainerRef = useRef<HTMLDivElement>(null);
 
   const roleHatWearer = 'wearer' in roleHat ? roleHat.wearer : roleHat.wearerAddress;

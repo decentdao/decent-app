@@ -4,7 +4,6 @@ import { Address, getContract } from 'viem';
 import { useAccount } from 'wagmi';
 import { useStore } from '../../providers/App/AppProvider';
 import { useSafeAPI } from '../../providers/App/hooks/useSafeAPI';
-import { useDaoInfoStore } from '../../store/daoInfo/useDaoInfoStore';
 import { GovernanceType } from '../../types';
 import { isDemoMode } from '../../utils/demoMode';
 import { useCurrentDAOKey } from '../DAO/useCurrentDAOKey';
@@ -21,9 +20,9 @@ export function useCanUserCreateProposal() {
       linearVotingErc721Address,
       linearVotingErc721WithHatsWhitelistingAddress,
     },
+    node: { safe },
   } = useStore({ daoKey });
   const user = useAccount();
-  const { safe } = useDaoInfoStore();
   const safeAPI = useSafeAPI();
   const [canUserCreateProposal, setCanUserCreateProposal] = useState<boolean>();
   const publicClient = useNetworkPublicClient();

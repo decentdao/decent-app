@@ -124,6 +124,7 @@
   "notActiveNonceTooltip": "Une proposition avec un nonce inférieur doit être exécutée en premier. Si vous avez déjà exécuté toutes les propositions avec un nonce inférieur, veuillez recharger dans quelques minutes.",
   "signedAlready": "Vous avez déjà signé cette transaction.",
   "nonce": "Nonce",
+  "nonceLabel": "Nonce : {{number}}",
   "votingTooltip": "Il reste du temps pour voter.",
   "timeLockedTooltip": "Cette proposition peut être exécutée une fois que la période de blocage est écoulée.",
   "executableTooltip": "Délai restant pour l'exécution de la présente proposition",
@@ -192,6 +193,9 @@
   "proposalSummaryNotEnoughVotingPower": "Votre droit de vote n'était pas suffisant pour voter sur cette proposition lorsqu'elle a été créée.",
   "proposalSummaryNotEnoughVotingPowerSecondary": "Déléguez des jetons de vote à votre adresse pour pouvoir voter sur les futures propositions.",
   "castVoteError": "N'a pas envoyé de vote",
-  "castVoteErrorTempAutoFallback": ". Se rabattre sur le vote rémunéré...",
-  "labelAddTransactionsToProposal": "Ajouter des transactions à la proposition"
+  "labelAddTransactionsToProposal": "Ajouter des transactions à la proposition",
+  "by": "Par",
+  "groupByNonce": "Groupe par Nonce",
+  "snapshot": "Aperçu",
+  "signersThresholdBadgeLabel": "{{current}} out of {{total}}"
 }
