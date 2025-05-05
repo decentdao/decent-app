@@ -1,8 +1,14 @@
 {
+  "dappsTitle": "dAppsを探る",
+  "dappsDescription": "お気に入りのWeb3アプリケーションにDecent DAOで安全かつ効率的に接続しましょう。",
   "emptyProposalDapps": "このSafeにはまだサポートされているdAppsがありません。",
   "connectingWalletConnect": "接続...",
   "successConnectingWalletConnect": "つながっている！",
   "failConnectingWalletConnect": "接続に失敗しました。",
   "labelIframeWalletConnectUri": "ウォレットコネクトURI",
-  "helperIframeWalletConnectUri": "ペーストで接続"
+  "helperIframeWalletConnectUri": "ペーストで接続",
+  "dappIntegrationActionLabel": "[{{appName}} 統合]] 。",
+  "processingTransactions": "トランザクションの処理...",
+  "successProcessingTransactions": "処理された取引。",
+  "errorProcessingTransactions": "トランザクション処理のエラー。"
 }

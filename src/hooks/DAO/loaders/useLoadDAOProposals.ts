@@ -1,7 +1,6 @@
 import { useCallback } from 'react';
 import { useStore } from '../../../providers/App/AppProvider';
 import { FractalGovernanceAction } from '../../../providers/App/governance/action';
-import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
 import { GovernanceType } from '../../../types';
 import { useUpdateTimer } from '../../utils/useUpdateTimer';
 import { useCurrentDAOKey } from '../useCurrentDAOKey';
@@ -13,8 +12,8 @@ export const useLoadDAOProposals = () => {
   const {
     governance: { type },
     action,
+    node: { safe },
   } = useStore({ daoKey });
-  const { safe } = useDaoInfoStore();
 
   const { setMethodOnInterval, clearIntervals } = useUpdateTimer(safe?.address);
   const loadAzoriusProposals = useAzoriusProposals();

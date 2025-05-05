@@ -18,11 +18,12 @@ import { useHeaderHeight } from '../../../../constants/common';
 import { DAO_ROUTES } from '../../../../constants/routes';
 import { logError } from '../../../../helpers/errorLogging';
 import useCreateProposalTemplate from '../../../../hooks/DAO/proposal/useCreateProposalTemplate';
+import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
 import { analyticsEvents } from '../../../../insights/analyticsEvents';
+import { useStore } from '../../../../providers/App/AppProvider';
 import useIPFSClient from '../../../../providers/App/hooks/useIPFSClient';
 import { useNetworkConfigStore } from '../../../../providers/NetworkConfig/useNetworkConfigStore';
 import { useProposalActionsStore } from '../../../../store/actions/useProposalActionsStore';
-import { useDaoInfoStore } from '../../../../store/daoInfo/useDaoInfoStore';
 import { BigIntValuePair } from '../../../../types';
 import {
   CreateProposalSteps,
@@ -48,7 +49,10 @@ export function SafeCreateProposalTemplatePage() {
     () => searchParams?.get('templateIndex'),
     [searchParams],
   );
-  const { safe } = useDaoInfoStore();
+  const { daoKey } = useCurrentDAOKey();
+  const {
+    node: { safe },
+  } = useStore({ daoKey });
   const { addressPrefix } = useNetworkConfigStore();
 
   useEffect(() => {
@@ -147,7 +151,7 @@ export function SafeCreateProposalTemplatePage() {
         nonce: safe.nextNonce,
       }}
       prepareProposalData={prepareProposalTemplateProposal}
-      mainContent={(formikProps, pendingCreateTx, nonce, currentStep) => {
+      mainContent={(formikProps, pendingCreateTx, _nonce, currentStep) => {
         if (currentStep !== CreateProposalSteps.TRANSACTIONS) return null;
         const { setFieldValue, errors, values } = formikProps;
         return (

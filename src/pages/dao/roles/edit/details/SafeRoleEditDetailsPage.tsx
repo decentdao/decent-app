@@ -8,9 +8,10 @@ import { isHex } from 'viem';
 import { RoleFormTabs } from '../../../../../components/Roles/forms/RoleFormTabs';
 import PageHeader from '../../../../../components/ui/page/Header/PageHeader';
 import { DAO_ROUTES } from '../../../../../constants/routes';
+import { useCurrentDAOKey } from '../../../../../hooks/DAO/useCurrentDAOKey';
 import { useNavigationBlocker } from '../../../../../hooks/utils/useNavigationBlocker';
+import { useStore } from '../../../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../../../providers/NetworkConfig/useNetworkConfigStore';
-import { useDaoInfoStore } from '../../../../../store/daoInfo/useDaoInfoStore';
 import {
   EditBadgeStatus,
   EditedRole,
@@ -20,7 +21,10 @@ import {
 
 export function SafeRoleEditDetailsPage() {
   const { t } = useTranslation(['roles']);
-  const { safe } = useDaoInfoStore();
+  const { daoKey } = useCurrentDAOKey();
+  const {
+    node: { safe },
+  } = useStore({ daoKey });
   const { addressPrefix } = useNetworkConfigStore();
   const navigate = useNavigate();
 

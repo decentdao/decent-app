@@ -30,6 +30,7 @@ export const MOBILE_DRAWER_OVERLAY = '#161219D6';
 export const BACKGROUND_SEMI_TRANSPARENT = '#16121980';
 export const NEUTRAL_2_82_TRANSPARENT = '#221D25D6';
 export const NEUTRAL_2_84 = 'rgba(34, 29, 37, 0.84)';
+export const COLOR_TEXT_SUCCESS = '#59CA9C';
 export const SEXY_BOX_SHADOW_T_T =
   '0px 0px 0px 1px rgba(248, 244, 252, 0.04) inset, 0px 1px 0px 0px rgba(248, 244, 252, 0.04) inset, 0px 0px 0px 1px #100414';
 

@@ -9,24 +9,27 @@ import { useFractalGuardContracts } from '../../hooks/DAO/loaders/useFractalGuar
 import { useFractalNode } from '../../hooks/DAO/loaders/useFractalNode';
 import { useGovernanceContracts } from '../../hooks/DAO/loaders/useGovernanceContracts';
 import { useHatsTree } from '../../hooks/DAO/loaders/useHatsTree';
+import { useCurrentDAOKey } from '../../hooks/DAO/useCurrentDAOKey';
 import { useKeyValuePairs } from '../../hooks/DAO/useKeyValuePairs';
-import { useParseSafeAddress } from '../../hooks/DAO/useParseSafeAddress';
 import { useAutomaticSwitchChain } from '../../hooks/utils/useAutomaticSwitchChain';
 import { usePageTitle } from '../../hooks/utils/usePageTitle';
 import { useTemporaryProposals } from '../../hooks/utils/useTemporaryProposals';
 import { useUpdateSafeData } from '../../hooks/utils/useUpdateSafeData';
-import { useDaoInfoStore } from '../../store/daoInfo/useDaoInfoStore';
+import { useStore } from '../../providers/App/AppProvider';
+import { useGlobalStoreFetcher } from '../../store/fetcher';
 import LoadingProblem from '../LoadingProblem';
 
 export function SafeController() {
-  const { invalidQuery, wrongNetwork, addressPrefix, safeAddress } = useParseSafeAddress();
+  const { invalidQuery, wrongNetwork, addressPrefix, safeAddress, daoKey } = useCurrentDAOKey();
   useAutomaticSwitchChain({ urlAddressPrefix: addressPrefix });
 
   useUpdateSafeData(safeAddress);
   usePageTitle();
   useTemporaryProposals();
 
-  const { subgraphInfo } = useDaoInfoStore();
+  const {
+    node: { subgraphInfo },
+  } = useStore({ daoKey });
 
   const { errorLoading } = useFractalNode({
     addressPrefix,
@@ -46,6 +49,8 @@ export function SafeController() {
 
   useKeyValuePairs();
   useHatsTree();
+
+  useGlobalStoreFetcher();
 
   // the order of the if blocks of these next three error states matters
   if (invalidQuery) {

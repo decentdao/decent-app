@@ -1,22 +1,68 @@
 import { Context, createContext, ReactNode, useContext, useMemo, useReducer } from 'react';
 import useFeatureFlag from '../../helpers/environmentFeatureFlags';
-import { useDaoInfoStore } from '../../store/daoInfo/useDaoInfoStore';
-import { DAOKey, FractalStore, StoreAction } from '../../types';
+import { DaoInfoStore, useDaoInfoStore } from '../../store/daoInfo/useDaoInfoStore';
+import { useGlobalStore } from '../../store/store';
+import {
+  DAOKey,
+  DAOSubgraph,
+  DecentModule,
+  FractalStore,
+  SafeWithNextNonce,
+  StoreAction,
+} from '../../types';
 import { combinedReducer, initialState } from './combinedReducer';
+
 export const FractalContext = createContext<FractalStore | null>(null);
 
-export const useStore = ({ daoKey }: { daoKey: DAOKey | undefined }): FractalStore => {
+type FractalStoreWithNode = FractalStore & {
+  node: DaoInfoStore;
+};
+
+export const useStore = ({ daoKey }: { daoKey: DAOKey | undefined }): FractalStoreWithNode => {
   const storeFeatureEnabled = useFeatureFlag('flag_store_v2');
   const context = useContext(FractalContext as Context<FractalStore>);
+  const { getDaoNode, setDaoNode, getTreasury } = useGlobalStore();
   if (storeFeatureEnabled) {
     if (!daoKey) {
-      throw new Error('DAO key is required to access the Fractal store');
+      throw new Error('DAO key is required to access global store');
     }
     // Returning complete data from Zustand store will be handled in future tickets under following project:
     // https://linear.app/decent-labs/project/architecture-zustand-dao-addresses-as-keys-809cf9fe41b0
-    return context;
+    const node = getDaoNode(daoKey);
+    const treasury = getTreasury(daoKey);
+    return {
+      ...context,
+      node: {
+        // TODO: Will be cleaned up in scope of https://linear.app/decent-labs/issue/ENG-630/cleanup-types-from-old-store-structure
+        ...getDaoNode(daoKey),
+        setSafeInfo: (safe: SafeWithNextNonce) => {
+          setDaoNode(daoKey, { safe, daoInfo: node.subgraphInfo!, modules: node.modules! });
+        },
+        setDaoInfo: (daoInfo: DAOSubgraph) => {
+          setDaoNode(daoKey, {
+            safe: node.safe! as unknown as SafeWithNextNonce,
+            daoInfo,
+            modules: node.modules!,
+          });
+        },
+        setDecentModules: (modules: DecentModule[]) => {
+          setDaoNode(daoKey, {
+            safe: node.safe! as unknown as SafeWithNextNonce,
+            daoInfo: node.subgraphInfo!,
+            modules,
+          });
+        },
+        resetDaoInfoStore: () => {
+          // Do nothing - global store currently not supposed to reset anything
+        },
+        setGaslessVotingDaoData: () => {
+          // Do nothing - this is handled in governance slice
+        },
+      },
+      treasury,
+    };
   } else {
-    return context;
+    return context as FractalStoreWithNode;
   }
 };
 

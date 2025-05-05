@@ -1,10 +1,8 @@
-import { Avatar, Box, Flex, Tag, TagLabel, Text } from '@chakra-ui/react';
+import { Avatar, Box, Flex, Icon, Tag, TagLabel, Text } from '@chakra-ui/react';
 import { Dot } from '@phosphor-icons/react';
-import { useNavigate } from 'react-router-dom';
-import { DAO_ROUTES } from '../../constants/routes';
-import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
-import ContentBox from '../ui/containers/ContentBox';
-import Markdown from '../ui/proposal/Markdown';
+import { ModalType } from '../ui/modals/ModalProvider';
+import { useDecentModal } from '../ui/modals/useDecentModal';
+import Divider from '../ui/utils/Divider';
 
 type DappCardProps = {
   title: string;
@@ -12,7 +10,7 @@ type DappCardProps = {
   iconUrl: string;
   description: string;
   categories: string[];
-  safeAddress: string;
+  onClose: () => void;
 };
 
 export default function DappCard({
@@ -21,64 +19,84 @@ export default function DappCard({
   iconUrl,
   description,
   categories,
-  safeAddress,
+  onClose,
 }: DappCardProps) {
-  const navigate = useNavigate();
-  const { addressPrefix } = useNetworkConfigStore();
+  const openDappBrowserModal = useDecentModal(ModalType.DAPP_BROWSER, {
+    appUrl,
+  });
 
   return (
-    <ContentBox
-      containerBoxProps={{ flex: '0 0 calc(33.333333% - 0.6666666rem)', my: '0' }}
-      onClick={() => navigate(DAO_ROUTES.proposalDapp.relative(addressPrefix, safeAddress, appUrl))}
+    <Box
+      flex="0 0 calc(25% - 1rem)"
+      my="0"
+      p="0"
+      bg="neutral-2"
+      rounded="xl"
+      cursor="pointer"
+      _hover={{
+        bg: 'neutral-3',
+      }}
+      boxShadow="0px 0px 0px var(--Spread-1, 1px) var(--black, #151217), 0px 0px 0px var(--Spread-1, 1px) var(--color-whitealpha-04, rgba(255, 255, 255, 0.04)) inset, 0px var(--Depth-1, 1px) 0px 0px var(--color-whitealpha-04, rgba(255, 255, 255, 0.04)) inset"
+      onClick={() => {
+        onClose();
+        openDappBrowserModal();
+      }}
     >
-      <Flex
-        justifyContent="center"
-        mb="1rem"
-      >
-        <Avatar
-          size="xl"
-          src={iconUrl}
-          name={title}
-          color="lilac-0"
-        />
-      </Flex>
-      <Text
-        textStyle="heading-small"
-        color="white-0"
-        align="center"
-        mb="1rem"
-      >
-        {title}
-      </Text>
       <Box
-        color="neutral-7"
-        textAlign="center"
-        mb="1rem"
+        p="12px"
+        pb="20px"
       >
-        <Markdown content={description} />
+        <Flex mb="8px">
+          <Avatar
+            width={10}
+            height={10}
+            src={iconUrl}
+            name={title}
+            color="lilac-0"
+          />
+        </Flex>
+        <Text textStyle="body-large">{title}</Text>
+        <Text
+          textStyle="labels-large"
+          color="neutral-7"
+          noOfLines={2}
+        >
+          {description}
+        </Text>
       </Box>
-      <Flex
-        flexDirection={'row'}
-        flexWrap="wrap"
-        gap="0.5rem"
-        color="neutral-7"
-      >
-        {categories.map(category => (
-          <Tag
-            size="md"
-            key={category}
-            variant="subtle"
-            colorScheme="cyan"
+      {categories.length > 0 && (
+        <>
+          <Divider boxShadow="0px -1px 0px 0px #000" />
+          <Flex
+            p="12px"
+            flexDirection={'row'}
+            flexWrap="wrap"
+            gap="0.5rem"
           >
-            <Dot
-              size={12}
-              style={{ transform: 'scale(6)' }}
-            />
-
-            <TagLabel ml="0.5rem">{category}</TagLabel>
-          </Tag>
-        ))}
-      </Flex>
-    </ContentBox>
+            {categories.map(category => (
+              <Tag
+                size="md"
+                rounded="full"
+                key={category}
+                variant="subtle"
+                bg="neutral-4"
+              >
+                <Icon
+                  color="neutral-7"
+                  as={Dot}
+                  style={{ transform: 'scale(6)' }}
+                />
+                <TagLabel
+                  ml="8px"
+                  color="neutral-7"
+                >
+                  {category}
+                </TagLabel>
+              </Tag>
+            ))}
+          </Flex>
+        </>
+      )}
+    </Box>
   );
 }

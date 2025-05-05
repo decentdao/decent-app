@@ -1,8 +1,14 @@
 {
+  "dappsTitle": "Изучите dApps",
+  "dappsDescription": "Безопасно и эффективно подключайтесь к своим любимым web3-приложениям с помощью Decent DAO.",
   "emptyProposalDapps": "У этого сейфа пока нет ни одного поддерживаемого dApp.",
   "connectingWalletConnect": "Подключение...",
   "successConnectingWalletConnect": "Подключено!",
   "failConnectingWalletConnect": "Не удалось подключиться, проверьте uri.",
   "labelIframeWalletConnectUri": "URI WalletConnect",
-  "helperIframeWalletConnectUri": "Вставьте, чтобы соединить"
+  "helperIframeWalletConnectUri": "Вставьте, чтобы соединить",
+  "dappIntegrationActionLabel": "[{{appName}} Интеграция].",
+  "processingTransactions": "Обработка транзакций...",
+  "successProcessingTransactions": "Обработка транзакций.",
+  "errorProcessingTransactions": "Ошибка при обработке транзакций."
 }

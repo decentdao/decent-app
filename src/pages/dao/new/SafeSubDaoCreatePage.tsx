@@ -5,8 +5,9 @@ import DaoCreator from '../../../components/DaoCreator';
 import { DAOCreateMode } from '../../../components/DaoCreator/formComponents/EstablishEssentials';
 import { DAO_ROUTES } from '../../../constants/routes';
 import { useCreateSubDAOProposal } from '../../../hooks/DAO/useCreateSubDAOProposal';
+import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import { analyticsEvents } from '../../../insights/analyticsEvents';
-import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
+import { useStore } from '../../../providers/App/AppProvider';
 import { AzoriusGovernanceDAO, SafeMultisigDAO, SubDAO } from '../../../types';
 
 export function SafeSubDaoCreatePage() {
@@ -16,7 +17,10 @@ export function SafeSubDaoCreatePage() {
 
   const navigate = useNavigate();
   const [redirectPending, setRedirectPending] = useState(false);
-  const { safe } = useDaoInfoStore();
+  const { daoKey } = useCurrentDAOKey();
+  const {
+    node: { safe },
+  } = useStore({ daoKey });
 
   const successCallback = async (addressPrefix: string, safeAddress: string) => {
     setRedirectPending(true);

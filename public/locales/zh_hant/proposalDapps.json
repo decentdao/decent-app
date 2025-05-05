@@ -1,8 +1,14 @@
 {
+  "dappsTitle": "探索 dApps",
+  "dappsDescription": "使用 Decent DAO 安全有效地連線至您最喜愛的 web3 應用程式。",
   "emptyProposalDapps": "此Safe尚未支援任何dApps。",
   "connectingWalletConnect": "連接...",
   "successConnectingWalletConnect": "已連接！",
   "failConnectingWalletConnect": "連線失敗，請檢查uri。",
   "labelIframeWalletConnectUri": "WalletConnect URI",
-  "helperIframeWalletConnectUri": "貼上連接"
+  "helperIframeWalletConnectUri": "貼上連接",
+  "dappIntegrationActionLabel": "[{{appName}} 整合]",
+  "processingTransactions": "處理交易...",
+  "successProcessingTransactions": "已處理的交易。",
+  "errorProcessingTransactions": "錯誤處理交易。"
 }

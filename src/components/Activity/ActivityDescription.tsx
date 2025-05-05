@@ -10,11 +10,7 @@ interface IActivityDescription {
   showAuthor?: boolean;
 }
 
-export function ActivityDescription({
-  activity,
-  showFullDescription,
-  showAuthor = true,
-}: IActivityDescription) {
+export function ActivityDescription({ activity, showFullDescription }: IActivityDescription) {
   const metaData = useGetMetadata(activity);
 
   const snapshotProposal = activity as SnapshotProposal;
@@ -26,10 +22,7 @@ export function ActivityDescription({
       mr="1rem"
       mt="0.5rem"
     >
-      <ProposalTitle
-        activity={activity}
-        showAuthor={showAuthor}
-      />
+      <ProposalTitle activity={activity} />
       {description && (
         <Box
           mt={2}

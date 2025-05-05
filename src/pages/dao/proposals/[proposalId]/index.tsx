@@ -16,7 +16,6 @@ import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
 import { analyticsEvents } from '../../../../insights/analyticsEvents';
 import { useStore } from '../../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../../providers/NetworkConfig/useNetworkConfigStore';
-import { useDaoInfoStore } from '../../../../store/daoInfo/useDaoInfoStore';
 import { AzoriusProposal, SnapshotProposal } from '../../../../types';
 
 export function SafeProposalDetailsPage() {
@@ -28,8 +27,8 @@ export function SafeProposalDetailsPage() {
   const { daoKey } = useCurrentDAOKey();
   const {
     governance: { proposals, loadingProposals, allProposalsLoaded, isAzorius },
+    node: { safe },
   } = useStore({ daoKey });
-  const { safe } = useDaoInfoStore();
   const { addressPrefix } = useNetworkConfigStore();
   const { proposalId } = useParams();
 

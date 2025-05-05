@@ -40,7 +40,7 @@ export default function ProposalTransactionsForm(props: ProposalTransactionsForm
         expandedIndecies={expandedIndecies}
         setExpandedIndecies={setExpandedIndecies}
         removeTransaction={removeTransaction}
-        setFieldValue={(field: string, value: any) => {
+        setFieldValue={(field: string, value: unknown) => {
           setFieldValue(`transactions.${field}`, value);
         }}
       />
@@ -70,16 +70,7 @@ export function ProposalTransactionsFormModal({
   const { transactionValidationSchema } = useCreateProposalSchema();
   return (
     <Formik<CreateProposalTransaction[]>
-      initialValues={[
-        {
-          targetAddress: '',
-          functionName: '',
-          parameters: [],
-          ethValue: {
-            value: '0',
-          },
-        },
-      ]}
+      initialValues={[DEFAULT_PROPOSAL_TRANSACTION]}
       validateOnMount
       validationSchema={transactionValidationSchema}
       onSubmit={values => {

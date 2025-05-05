@@ -12,7 +12,8 @@ import { WarningCircle } from '@phosphor-icons/react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import useFeatureFlag from '../../../helpers/environmentFeatureFlags';
-import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
+import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
+import { useStore } from '../../../providers/App/AppProvider';
 import { FractalModuleType, ICreationStepProps, VotingStrategyType } from '../../../types';
 import { DEV_VOTING_PERIOD_MINUTES } from '../../../utils/dev/devModeConstants';
 import { BigIntInput } from '../../ui/forms/BigIntInput';
@@ -53,7 +54,10 @@ function DayStepperInput({
 export function AzoriusGovernance(props: ICreationStepProps) {
   const { values, setFieldValue, isSubmitting, transactionPending, isSubDAO, mode } = props;
 
-  const { safe, subgraphInfo, modules } = useDaoInfoStore();
+  const { daoKey } = useCurrentDAOKey();
+  const {
+    node: { safe, subgraphInfo, modules },
+  } = useStore({ daoKey });
 
   const fractalModule = useMemo(() => {
     if (!modules) return null;

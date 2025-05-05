@@ -13,17 +13,20 @@ import AddStrategyPermissionModal from './AddStrategyPermissionModal';
 import { AirdropData, AirdropModal } from './AirdropModal/AirdropModal';
 import { ConfirmDeleteStrategyModal } from './ConfirmDeleteStrategyModal';
 import { ConfirmModifyGovernanceModal } from './ConfirmModifyGovernanceModal';
-import { ConfirmTransactionModal } from './ConfirmTransactionModal';
 import { ConfirmUrlModal } from './ConfirmUrlModal';
 import { DelegateModal } from './DelegateModal';
 import ForkProposalTemplateModal from './ForkProposalTemplateModal';
+import { GaslessVoteFailedModal } from './GaslessVoting/GaslessVoteFailedModal';
 import { GaslessVoteLoadingModal } from './GaslessVoting/GaslessVoteLoadingModal';
 import { GaslessVoteSuccessModal } from './GaslessVoting/GaslessVoteSuccessModal';
 import { RefillGasData, RefillGasTankModal } from './GaslessVoting/RefillGasTankModal';
+import { WithdrawGasData, WithdrawGasTankModal } from './GaslessVoting/WithdrawGasTankModal';
 import { ModalBase, ModalBaseSize } from './ModalBase';
 import PaymentCancelConfirmModal from './PaymentCancelConfirmModal';
 import { PaymentWithdrawModal } from './PaymentWithdrawModal';
 import ProposalTemplateModal from './ProposalTemplateModal';
+import { SafeProposalDappDetailModal } from './SafeDapp/SafeProposalDappDetailModal';
+import { SafeProposalDappsModal } from './SafeDapp/SafeProposalDappsModal';
 import { SendAssetsModal } from './SendAssetsModal';
 import StakeModal from './Stake';
 import { UnsavedChangesWarningContent } from './UnsavedChangesWarningContent';
@@ -48,8 +51,11 @@ export enum ModalType {
   REFILL_GAS,
   GASLESS_VOTE_LOADING,
   GASLESS_VOTE_SUCCESS,
-  CONFIRM_TRANSACTION,
+  GASLESS_VOTE_FAILED,
   TRANSACTION_BUILDER,
+  WITHDRAW_GAS,
+  DAPPS_BROWSER,
+  DAPP_BROWSER,
 }
 
 export type CurrentModal = {
@@ -106,14 +112,21 @@ export type ModalPropsTypes = {
   [ModalType.REFILL_GAS]: {
     onSubmit: (refillGasData: RefillGasData) => void;
   };
+  [ModalType.WITHDRAW_GAS]: {
+    onWithdraw: (withdrawGasData: WithdrawGasData) => void;
+  };
   [ModalType.GASLESS_VOTE_LOADING]: {};
   [ModalType.GASLESS_VOTE_SUCCESS]: {};
-  [ModalType.CONFIRM_TRANSACTION]: {
-    appName: string;
-    transactionArray: CreateProposalTransaction[];
+  [ModalType.GASLESS_VOTE_FAILED]: {
+    onRetry: () => void;
+    onFallback: () => void;
   };
   [ModalType.TRANSACTION_BUILDER]: {
     onSubmit?: (transactionBuilderData: FormikProps<CreateProposalTransaction[]>['values']) => void;
+  };
+  [ModalType.DAPPS_BROWSER]: {};
+  [ModalType.DAPP_BROWSER]: {
+    appUrl: string;
   };
 };
 
@@ -241,6 +254,7 @@ export function ModalProvider({ children }: { children: ReactNode }) {
           modalContent = <ConfirmModifyGovernanceModal close={closeModal} />;
           break;
         case ModalType.WARN_UNSAVED_CHANGES:
+          closeModalOnOverlayClick = false;
           modalContent = (
             <UnsavedChangesWarningContent
               onDiscard={() => {
@@ -249,7 +263,9 @@ export function ModalProvider({ children }: { children: ReactNode }) {
               }}
               onKeepEditing={() => {
                 current.props.keepEditing();
-                closeModal();
+                setTimeout(() => {
+                  closeModal();
+                }, 0); // This is a workaround to avoid the modal being closed immediately
               }}
             />
           );
@@ -309,9 +325,29 @@ export function ModalProvider({ children }: { children: ReactNode }) {
             />
           );
           break;
-
+        case ModalType.WITHDRAW_GAS:
+          modalContent = (
+            <WithdrawGasTankModal
+              close={closeModal}
+              withdrawGasData={(data: WithdrawGasData) => {
+                current.props.onWithdraw(data);
+                closeModal();
+              }}
+            />
+          );
+          break;
         case ModalType.GASLESS_VOTE_SUCCESS:
           modalContent = <GaslessVoteSuccessModal close={closeModal} />;
+          modalSize = 'md';
+          break;
+        case ModalType.GASLESS_VOTE_FAILED:
+          modalContent = (
+            <GaslessVoteFailedModal
+              close={closeModal}
+              onRetry={current.props.onRetry}
+              onFallback={current.props.onFallback}
+            />
+          );
           modalSize = 'md';
           break;
         case ModalType.GASLESS_VOTE_LOADING:
@@ -331,17 +367,6 @@ export function ModalProvider({ children }: { children: ReactNode }) {
             />
           );
           break;
-        case ModalType.CONFIRM_TRANSACTION:
-          modalTitle = t('confirmTransactionTitle');
-          modalContent = (
-            <ConfirmTransactionModal
-              appName={current.props.appName}
-              transactionArray={current.props.transactionArray}
-              close={closeModal}
-            />
-          );
-          modalSize = 'xl';
-          break;
         case ModalType.TRANSACTION_BUILDER:
           modalTitle = t('transactionBuilderTitle');
           modalContent = (
@@ -356,6 +381,19 @@ export function ModalProvider({ children }: { children: ReactNode }) {
             />
           );
           modalSize = '2xl';
+          break;
+        case ModalType.DAPPS_BROWSER:
+          modalContent = <SafeProposalDappsModal onClose={closeModal} />;
+          modalSize = 'max';
+          break;
+        case ModalType.DAPP_BROWSER:
+          modalContent = (
+            <SafeProposalDappDetailModal
+              appUrl={current.props.appUrl}
+              onClose={closeModal}
+            />
+          );
+          modalSize = 'max';
           break;
         case ModalType.NONE:
         default:
@@ -433,4 +471,9 @@ export function ModalProvider({ children }: { children: ReactNode }) {
       <Portal>{display}</Portal>
     </ModalContext.Provider>
   );
+}
+
+export interface WithdrawGasModalProps {
+  availableBalance: bigint;
+  onWithdraw: (amount: bigint) => Promise<void>;
 }

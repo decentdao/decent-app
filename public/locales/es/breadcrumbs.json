@@ -9,7 +9,6 @@
   "treasury": "Tesoro",
   "proposal": "#{{proposalId}} {{proposalTitle}}",
   "proposalTemplates": "Plantillas de propuestas",
-  "proposalDapps": "Explorar las dApps",
   "proposalTemplate": "{{proposalTemplateTitle}}",
   "proposalTemplateNew": "Crear plantilla de propuesta",
   "editDAO": "Editar DAO",

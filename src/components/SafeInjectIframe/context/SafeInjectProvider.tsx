@@ -1,9 +1,10 @@
 import { ChainInfo, getSDKVersion, Methods, RPCPayload } from '@safe-global/safe-apps-sdk';
 import { PropsWithChildren, useState, useRef, useCallback, useEffect } from 'react';
 import { Address, BlockTag, getAddress, Hash } from 'viem';
+import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import useNetworkPublicClient from '../../../hooks/useNetworkPublicClient';
+import { useStore } from '../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
-import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
 import { useAppCommunicator } from '../hooks/useAppCommunicator';
 import { InterfaceMessageIds, InterfaceMessageProps, RequestId, TransactionWithId } from '../types';
 import { SafeInjectContext } from './SafeInjectContext';
@@ -15,7 +16,7 @@ interface SafeInjectProviderProps {
   /**
    * Callback function to handle transactions received from the Safe app.
    */
-  onTransactionsReceived?: (transactions: TransactionWithId[]) => void;
+  onTransactionsReceived?: (transactions: TransactionWithId[]) => Promise<boolean>;
   /**
    * Callback function to handle app connection.
    */
@@ -47,14 +48,17 @@ export function SafeInjectProvider({
   const receivedTransactions = useCallback(
     (transactions: TransactionWithId[]) => {
       setLatestTransactions(transactions);
-      onTransactionsReceived?.(transactions);
+      return onTransactionsReceived?.(transactions);
     },
     [onTransactionsReceived],
   );
 
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const communicator = useAppCommunicator(iframeRef);
-  const { safe } = useDaoInfoStore();
+  const { daoKey } = useCurrentDAOKey();
+  const {
+    node: { safe },
+  } = useStore({ daoKey });
 
   const sendMessageToIFrame = useCallback(
     function <T extends InterfaceMessageIds>(
@@ -194,7 +198,7 @@ export function SafeInjectProvider({
       }
     });
 
-    communicator?.on(Methods.sendTransactions, msg => {
+    communicator?.on(Methods.sendTransactions, async msg => {
       // @ts-expect-error explore ways to fix this
       const transactions = (msg.data.params.txs as Transaction[]).map(({ to, ...rest }) => {
         if (to) {
@@ -206,7 +210,7 @@ export function SafeInjectProvider({
           return { ...rest };
         }
       });
-      receivedTransactions(
+      const handledPromise = receivedTransactions(
         transactions.map(txn => {
           return {
             id: parseInt(msg.data.id.toString()),
@@ -214,6 +218,10 @@ export function SafeInjectProvider({
           };
         }),
       );
+      if (handledPromise) {
+        const handled = await handledPromise;
+        return handled;
+      }
     });
   }, [
     communicator,

@@ -124,6 +124,7 @@
   "notActiveNonceTooltip": "Ein Vorschlag mit einer niedrigeren Nonce muss zuerst ausgeführt werden. Wenn Sie bereits alle Vorschläge mit niedrigerem Nonce ausgeführt haben, laden Sie bitte in ein paar Minuten neu.",
   "signedAlready": "Sie haben diese Transaktion bereits unterzeichnet.",
   "nonce": "Nonce",
+  "nonceLabel": "Nonce: {{number}}",
   "votingTooltip": "Sie haben noch Zeit, Ihre Stimme abzugeben.",
   "timeLockedTooltip": "Dieser Vorschlag kann ausgeführt werden, sobald seine Sperrfrist abgelaufen ist.",
   "executableTooltip": "Verbleibende Zeit bis zur Ausführung dieses Vorschlags",
@@ -192,6 +193,9 @@
   "proposalSummaryNotEnoughVotingPower": "Ihr Stimmrecht entsprach nicht den Anforderungen, um über diesen Vorschlag abzustimmen, als er erstellt wurde.",
   "proposalSummaryNotEnoughVotingPowerSecondary": "Delegieren Sie Stimmzettel an Ihre Adresse, um bei künftigen Vorschlägen stimmberechtigt zu sein.",
   "castVoteError": "Abstimmung nicht abgeschickt",
-  "castVoteErrorTempAutoFallback": ". Rückgriff auf die bezahlte Stimmabgabe...",
-  "labelAddTransactionsToProposal": "Transaktionen zum Vorschlag hinzufügen"
+  "labelAddTransactionsToProposal": "Transaktionen zum Vorschlag hinzufügen",
+  "by": "Unter",
+  "groupByNonce": "Gruppe nach Nonce",
+  "snapshot": "Schnappschuss",
+  "signersThresholdBadgeLabel": "{{current}} aus {{total}}"
 }

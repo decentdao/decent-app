@@ -12,7 +12,7 @@ import { BarLoader } from '../../../../components/ui/loaders/BarLoader';
 import NestedPageHeader from '../../../../components/ui/page/Header/NestedPageHeader';
 import Divider from '../../../../components/ui/utils/Divider';
 import { DAO_ROUTES } from '../../../../constants/routes';
-import { useDepositInfo } from '../../../../hooks/DAO/accountAbstraction/useDepositInfo';
+import { usePaymasterDepositInfo } from '../../../../hooks/DAO/accountAbstraction/usePaymasterDepositInfo';
 import useSubmitProposal from '../../../../hooks/DAO/proposal/useSubmitProposal';
 import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
 import { useCanUserCreateProposal } from '../../../../hooks/utils/useCanUserSubmitProposal';
@@ -20,7 +20,6 @@ import { createAccountSubstring } from '../../../../hooks/utils/useGetAccountNam
 import { useInstallVersionedVotingStrategy } from '../../../../hooks/utils/useInstallVersionedVotingStrategy';
 import { useStore } from '../../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../../providers/NetworkConfig/useNetworkConfigStore';
-import { useDaoInfoStore } from '../../../../store/daoInfo/useDaoInfoStore';
 import { GovernanceType, ProposalExecuteData } from '../../../../types';
 import {
   getPaymasterAddress,
@@ -35,7 +34,12 @@ export function SafeGeneralSettingsPage() {
   const [snapshotENS, setSnapshotENS] = useState('');
   const [snapshotENSValid, setSnapshotENSValid] = useState<boolean>();
 
-  const { gaslessVotingEnabled, paymasterAddress } = useDaoInfoStore();
+  const { daoKey } = useCurrentDAOKey();
+  const {
+    governanceContracts: { strategies },
+    governance: { type: votingStrategyType },
+    node: { subgraphInfo, safe, gaslessVotingEnabled, paymasterAddress },
+  } = useStore({ daoKey });
 
   const [isGaslessVotingEnabledToggled, setIsGaslessVotingEnabledToggled] =
     useState(gaslessVotingEnabled);
@@ -44,24 +48,17 @@ export function SafeGeneralSettingsPage() {
     setIsGaslessVotingEnabledToggled(gaslessVotingEnabled);
   }, [gaslessVotingEnabled]);
 
-  const { daoKey } = useCurrentDAOKey();
-  const {
-    governanceContracts: { strategies },
-    governance: { type: votingStrategyType },
-  } = useStore({ daoKey });
-
   const navigate = useNavigate();
 
   const { submitProposal } = useSubmitProposal();
   const { canUserCreateProposal } = useCanUserCreateProposal();
-  const { subgraphInfo, safe } = useDaoInfoStore();
   const {
     addressPrefix,
     chain: { id: chainId },
     contracts: { keyValuePairs, accountAbstraction, paymaster, zodiacModuleProxyFactory },
     bundlerMinimumStake,
   } = useNetworkConfigStore();
-  const { depositInfo } = useDepositInfo(paymasterAddress);
+  const { depositInfo } = usePaymasterDepositInfo();
   const accountAbstractionSupported = bundlerMinimumStake !== undefined;
   const stakingRequired = accountAbstractionSupported && bundlerMinimumStake > 0n;
 

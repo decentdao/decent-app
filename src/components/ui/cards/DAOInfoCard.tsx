@@ -2,29 +2,32 @@ import { Box, Center, Flex, Image, Link, Text } from '@chakra-ui/react';
 import { Link as RouterLink } from 'react-router-dom';
 import { DAO_ROUTES } from '../../../constants/routes';
 import { useAccountFavorites } from '../../../hooks/DAO/loaders/useFavorites';
+import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import { useGetAccountName } from '../../../hooks/utils/useGetAccountName';
+import { useStore } from '../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
-import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
 import { getNetworkIcon } from '../../../utils/url';
 import { SnapshotButton } from '../badges/Snapshot';
 import { FavoriteIcon } from '../icons/FavoriteIcon';
 import AddressCopier from '../links/AddressCopier';
 import { BarLoader } from '../loaders/BarLoader';
 import { ManageDAOMenu } from '../menus/ManageDAO/ManageDAOMenu';
-
 /**
  * Info card used on the DAO homepage.
  */
 export function DAOInfoCard() {
-  const node = useDaoInfoStore();
+  const { daoKey } = useCurrentDAOKey();
+  const {
+    node: { safe, subgraphInfo },
+  } = useStore({ daoKey });
   const { addressPrefix } = useNetworkConfigStore();
   // for non Fractal Safes
-  const displayedAddress = node.safe?.address;
+  const displayedAddress = safe?.address;
   const { displayName } = useGetAccountName(displayedAddress);
   const { toggleFavorite, isFavorite } = useAccountFavorites();
 
   // node hasn't loaded yet
-  if (!node || !displayedAddress) {
+  if (!safe || !displayedAddress) {
     return (
       <Flex
         w="full"
@@ -37,7 +40,7 @@ export function DAOInfoCard() {
     );
   }
 
-  const daoName = node.subgraphInfo?.daoName || displayName;
+  const daoName = subgraphInfo?.daoName || displayName;
 
   return (
     <Box>
@@ -57,7 +60,7 @@ export function DAOInfoCard() {
           >
             <Image src={getNetworkIcon(addressPrefix)} />
             {/* PARENT TAG */}
-            {!!node.subgraphInfo && node.subgraphInfo.childAddresses.length > 0 && (
+            {!!subgraphInfo && subgraphInfo.childAddresses.length > 0 && (
               <Link
                 to={DAO_ROUTES.hierarchy.relative(addressPrefix, displayedAddress)}
                 as={RouterLink}
@@ -105,8 +108,8 @@ export function DAOInfoCard() {
         <AddressCopier address={displayedAddress} />
 
         {/* SNAPSHOT ICON LINK */}
-        {node.subgraphInfo?.daoSnapshotENS && (
-          <SnapshotButton snapshotENS={node.subgraphInfo.daoSnapshotENS} />
+        {subgraphInfo?.daoSnapshotENS && (
+          <SnapshotButton snapshotENS={subgraphInfo.daoSnapshotENS} />
         )}
       </Flex>
     </Box>

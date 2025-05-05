@@ -4,8 +4,8 @@ import { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { BASE_ROUTES, DAO_ROUTES } from '../../constants/routes';
+import { useCurrentDAOKey } from '../../hooks/DAO/useCurrentDAOKey';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
-import { useDaoInfoStore } from '../../store/daoInfo/useDaoInfoStore';
 import { CreatorSteps } from '../../types';
 import PageHeader from '../ui/page/Header/PageHeader';
 import { DAOCreateMode } from './formComponents/EstablishEssentials';
@@ -49,7 +49,7 @@ export function StepWrapper({
   stepNumber,
   shouldWrapChildren = true,
 }: IStepWrapper) {
-  const { safe } = useDaoInfoStore();
+  const { safeAddress } = useCurrentDAOKey();
   const { addressPrefix } = useNetworkConfigStore();
   const { t } = useTranslation(['breadcrumbs']);
   const navigate = useNavigate();
@@ -103,9 +103,9 @@ export function StepWrapper({
             isDisabled: isFormSubmitting,
             onClick: () =>
               navigate(
-                !isSubDAO || !safe?.address
+                !isSubDAO || !safeAddress
                   ? BASE_ROUTES.landing
-                  : DAO_ROUTES.dao.relative(addressPrefix, safe.address),
+                  : DAO_ROUTES.dao.relative(addressPrefix, safeAddress),
               ),
           }}
         />

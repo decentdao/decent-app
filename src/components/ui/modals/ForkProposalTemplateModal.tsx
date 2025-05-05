@@ -1,14 +1,15 @@
 import { Box, Button } from '@chakra-ui/react';
-import { ChangeEventHandler, useState, useCallback, useEffect } from 'react';
+import { ChangeEventHandler, useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { getAddress } from 'viem';
 import { DAO_ROUTES } from '../../../constants/routes';
+import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import { useIsSafe } from '../../../hooks/safe/useIsSafe';
 import { useValidationAddress } from '../../../hooks/schemas/common/useValidationAddress';
 import { useCanUserCreateProposal } from '../../../hooks/utils/useCanUserSubmitProposal';
+import { useStore } from '../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
-import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
 import { ProposalTemplate } from '../../../types/proposalBuilder';
 import { InputComponent } from '../forms/InputComponent';
 import Divider from '../utils/Divider';
@@ -31,7 +32,10 @@ export default function ForkProposalTemplateModal({
   const { t } = useTranslation('proposalTemplate');
   const navigate = useNavigate();
   const { chain, addressPrefix } = useNetworkConfigStore();
-  const { subgraphInfo } = useDaoInfoStore();
+  const { daoKey } = useCurrentDAOKey();
+  const {
+    node: { subgraphInfo },
+  } = useStore({ daoKey });
   const { validateAddress } = useValidationAddress();
 
   const { isSafe, isSafeLoading } = useIsSafe(targetDAOAddress);

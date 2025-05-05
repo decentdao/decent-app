@@ -9,7 +9,6 @@
   "treasury": "Schatzamt",
   "proposal": "#{{proposalId}} {{proposalTitle}}",
   "proposalTemplates": "Vorlagen für Vorschläge",
-  "proposalDapps": "dApps erforschen",
   "proposalTemplate": "{{proposalTemplateTitle}}",
   "proposalTemplateNew": "Vorschlagsvorlage erstellen",
   "editDAO": "DAO bearbeiten",

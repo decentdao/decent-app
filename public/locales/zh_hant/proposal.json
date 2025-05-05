@@ -124,6 +124,7 @@
   "notActiveNonceTooltip": "必須先執行具有較低nonce的提案。如果您已經執行了所有較低的nonce提案，請在幾分鐘內重新載入。",
   "signedAlready": "您已簽署此交易。",
   "nonce": "Nonce",
+  "nonceLabel": "Nonce：{{number}}",
   "votingTooltip": "投票剩餘時間。",
   "timeLockedTooltip": "此提案的時間鎖定期限一過，即可執行。",
   "executableTooltip": "執行此提案的剩餘時間",
@@ -192,6 +193,9 @@
   "proposalSummaryNotEnoughVotingPower": "您的投票權在此提案成立時未符合對其進行投票的要求。",
   "proposalSummaryNotEnoughVotingPowerSecondary": "委託投票代幣至您的地址，以便有資格就未來提案投票。",
   "castVoteError": "未能發送投票",
-  "castVoteErrorTempAutoFallback": ".倒向付費投票...",
-  "labelAddTransactionsToProposal": "新增交易至提案"
+  "labelAddTransactionsToProposal": "新增交易至提案",
+  "by": "按",
+  "groupByNonce": "依 Nonce 分組",
+  "snapshot": "快照",
+  "signersThresholdBadgeLabel": "{{current}} out of{{total}}"
 }
