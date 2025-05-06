@@ -47,8 +47,9 @@ export function CustomNonceInput({
     };
   } = {};
   for (const p of (proposals ?? []) as MultisigProposal[]) {
-    const key = p.nonce ?? 'error';
+    if (p.nonce === undefined) continue; // should never happen
     if (p.nonce === safe.nextNonce) continue;
+    const key = p.nonce.toString();
     pByNonce[key] = {
       numberOfProposals: (pByNonce[key]?.numberOfProposals ?? 0) + 1,
       latestProposalId: p.proposalId,
