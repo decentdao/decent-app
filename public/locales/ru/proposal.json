@@ -197,5 +197,10 @@
   "by": "По ссылке",
   "groupByNonce": "Группировка по нонсенсу",
   "snapshot": "Снимок",
-  "signersThresholdBadgeLabel": "{{current}} из {{total}}"
+  "signersThresholdBadgeLabel": "{{current}} из {{total}}",
+  "nonceLabelMultipleTransactions": "Многократные транзакции",
+  "nonceLabelSingleTransaction": "Транзакция #{{proposalId}}",
+  "nonceLabelRecommended": "{{nonce}} - Новая транзакция",
+  "nonceLabelRecommendedTitle": "Рекомендуемый нонс",
+  "nonceLabelReplaceActiveTitle": "Заменить активный"
 }

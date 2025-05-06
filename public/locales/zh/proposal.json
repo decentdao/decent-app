@@ -197,5 +197,10 @@
   "by": "由",
   "groupByNonce": "按 Nonce 分组",
   "snapshot": "快照",
-  "signersThresholdBadgeLabel": "{{current}} out of{{total}}"
+  "signersThresholdBadgeLabel": "{{current}} out of{{total}}",
+  "nonceLabelMultipleTransactions": "多重交易",
+  "nonceLabelSingleTransaction": "事务 #{{proposalId}}",
+  "nonceLabelRecommended": "{{nonce}}- 新事务",
+  "nonceLabelRecommendedTitle": "建议使用的 nonce",
+  "nonceLabelReplaceActiveTitle": "更换活动"
 }

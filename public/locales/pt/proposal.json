@@ -197,5 +197,10 @@
   "by": "Por",
   "groupByNonce": "Agrupar por Nonce",
   "snapshot": "Instantâneo",
-  "signersThresholdBadgeLabel": "{{current}} fora de {{total}}"
+  "signersThresholdBadgeLabel": "{{current}} fora de {{total}}",
+  "nonceLabelMultipleTransactions": "Transacções múltiplas",
+  "nonceLabelSingleTransaction": "Transação #{{proposalId}}",
+  "nonceLabelRecommended": "{{nonce}} - Nova transação",
+  "nonceLabelRecommendedTitle": "Nonce recomendado",
+  "nonceLabelReplaceActiveTitle": "Substituir ativo"
 }

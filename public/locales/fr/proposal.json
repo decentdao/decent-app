@@ -197,5 +197,10 @@
   "by": "Par",
   "groupByNonce": "Groupe par Nonce",
   "snapshot": "Aperçu",
-  "signersThresholdBadgeLabel": "{{current}} out of {{total}}"
+  "signersThresholdBadgeLabel": "{{current}} out of {{total}}",
+  "nonceLabelMultipleTransactions": "Transactions multiples",
+  "nonceLabelSingleTransaction": "Transaction #{{proposalId}}",
+  "nonceLabelRecommended": "{{nonce}} - Nouvelle transaction",
+  "nonceLabelRecommendedTitle": "Nonce recommandé",
+  "nonceLabelReplaceActiveTitle": "Remplacer les actifs"
 }
