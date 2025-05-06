@@ -11,7 +11,7 @@ export default function HomePage() {
   const { daoKey } = useCurrentDAOKey();
   const { t } = useTranslation('home');
   const storeFeatureEnabled = useFeatureFlag('flag_store_v2');
-  
+
   const content = (
     <Flex
       direction="column"

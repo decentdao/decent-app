@@ -1,7 +1,7 @@
-import { useEffect } from "react";
-import useFeatureFlag from "../../helpers/environmentFeatureFlags";
-import { useCurrentDAOKey } from "../../hooks/DAO/useCurrentDAOKey";
-import { useStore } from "../../providers/App/AppProvider";
+import { useEffect } from 'react';
+import useFeatureFlag from '../../helpers/environmentFeatureFlags';
+import { useCurrentDAOKey } from '../../hooks/DAO/useCurrentDAOKey';
+import { useStore } from '../../providers/App/AppProvider';
 
 // TODO: This is a temporary wrapper to reset the safe state when the store feature is not enabled.
 // This should be removed once the store feature is fully rolled out.
