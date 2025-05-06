@@ -63,8 +63,8 @@ export function CustomNonceInput({
     const isSingleTransaction = pInfo.numberOfProposals === 1;
     const asterisk = !isSingleTransaction ? '*' : '';
     const label = isSingleTransaction
-      ? `Transaction #${pInfo.latestProposalId.slice(0, 4)}`
-      : 'Multiple transactions';
+      ? t('nonceLabelSingleTransaction', { proposalId: pInfo.latestProposalId.slice(0, 4) })
+      : t('nonceLabelMultipleTransactions');
     return {
       onClick: () => {
         onChange(n);
@@ -157,7 +157,7 @@ export function CustomNonceInput({
           <OptionsList
             options={[
               {
-                optionKey: recommendedNonce + ' - New Transaction',
+                optionKey: t('nonceLabelRecommended', { nonce: recommendedNonce }),
                 onClick: () => {
                   onChange(recommendedNonce);
                   setShowNonceMenu(false);
@@ -167,14 +167,14 @@ export function CustomNonceInput({
             showOptionSelected={false}
             closeOnSelect={true}
             namespace="proposal"
-            titleKey={'Recommended nonce'}
+            titleKey={'nonceLabelRecommendedTitle'}
           />
           <OptionsList
             options={activeProposalOptions}
             showOptionSelected={false}
             closeOnSelect={true}
             namespace="proposal"
-            titleKey={'Replace active'}
+            titleKey={'nonceLabelReplaceActiveTitle'}
           />
         </Box>
       </MenuList>
