@@ -1,9 +1,10 @@
-import { Box, Button, Flex, Hide, HStack, Icon, Show, Text } from '@chakra-ui/react';
+import { Box, Button, Flex, Hide, HStack, Icon, Show, Text, Image } from '@chakra-ui/react';
 import { MinusCircle, PlusCircle } from '@phosphor-icons/react';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Address, getAddress } from 'viem';
 import { useAccount } from 'wagmi';
+import useFeatureFlag from '../../../helpers/environmentFeatureFlags';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import { useStore } from '../../../providers/App/AppProvider';
 import { DisplayAddress } from '../../ui/links/DisplayAddress';
@@ -104,8 +105,62 @@ export function SignersContainer() {
     setUserIsSigner(account && signers.includes(account));
   }, [account, signers]);
 
+  const isSettingsV1FeatureEnabled = useFeatureFlag('flag_settings_v1');
+
   return (
     <Box width="100%">
+      {/* LAUNCH TOKEN BANNER */}
+      {isSettingsV1FeatureEnabled && (
+        <Flex
+          flexDirection="row"
+          bg="cosmic-nebula-5"
+          p={4}
+          borderRadius="0.75rem"
+          mb="1.5rem"
+          justifyContent="space-between"
+          alignItems="center"
+        >
+          <Flex
+            flexDirection="row"
+            gap={4}
+            alignItems="center"
+          >
+            <Image
+              src="/images/token-banner.svg"
+              w="3.52244rem"
+              h="3.75rem"
+            />
+            <Flex
+              mt={4}
+              flexDirection="column"
+            >
+              <Text
+                textStyle="labels-small"
+                color="cosmic-nebula-0"
+                fontWeight="bold"
+              >
+                TOKENIZE YOUR GOVERNANCE
+              </Text>
+              <Text
+                textStyle="labels-large"
+                color="cosmic-nebula-0"
+                mb="1rem"
+              >
+                Launch your own governance token and pass proposals through token voting.
+              </Text>
+            </Flex>
+          </Flex>
+          <Button
+            variant="primary"
+            bg="white-0"
+            size="sm"
+            onClick={() => {}}
+          >
+            Launch Token
+          </Button>
+        </Flex>
+      )}
+
       <Flex justifyContent="space-between">
         <Text>{t('signers', { ns: 'common' })}</Text>
         {userIsSigner && (
