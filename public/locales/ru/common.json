@@ -123,5 +123,9 @@
   "recipients_other": "получатели",
   "airdrop": "Airdrop",
   "pageXofY": "Страница {{current}} из {{total}}",
-  "network": "Сеть"
+  "network": "Сеть",
+  "unsavedChanges": "Несохраненные изменения",
+  "unsavedChangesDescription": "У вас есть несохраненные изменения, которые будут потеряны, если вы продолжите работу. Вы хотите отменить изменения?",
+  "discardChanges": "Выбросить",
+  "keepEditing": "Продолжайте редактировать"
 }

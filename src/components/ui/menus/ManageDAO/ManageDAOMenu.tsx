@@ -1,10 +1,11 @@
-import { Icon, IconButton } from '@chakra-ui/react';
+import { Icon, IconButton, useBreakpointValue } from '@chakra-ui/react';
 import { abis } from '@fractal-framework/fractal-contracts';
 import { GearFine } from '@phosphor-icons/react';
 import { useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getContract } from 'viem';
 import { DAO_ROUTES } from '../../../../constants/routes';
+import useFeatureFlag from '../../../../helpers/environmentFeatureFlags';
 import {
   isWithinFreezePeriod,
   isWithinFreezeProposalPeriod,
@@ -45,11 +46,20 @@ export function ManageDAOMenu() {
 
   const { addressPrefix } = useNetworkConfigStore();
 
+  const openSettingsModal = useDecentModal(ModalType.SAFE_SETTINGS);
+
+  const settingsV1FeatureEnabled = useFeatureFlag('flag_settings_v1');
+  const isMobile = useBreakpointValue({ base: true, md: false });
+
   const handleNavigateToSettings = useCallback(() => {
     if (safeAddress) {
-      navigate(DAO_ROUTES.settings.relative(addressPrefix, safeAddress));
+      if (!isMobile && settingsV1FeatureEnabled) {
+        openSettingsModal();
+      } else {
+        navigate(DAO_ROUTES.settings.relative(addressPrefix, safeAddress));
+      }
     }
-  }, [navigate, addressPrefix, safeAddress]);
+  }, [safeAddress, isMobile, settingsV1FeatureEnabled, navigate, addressPrefix, openSettingsModal]);
 
   const handleModifyGovernance = useDecentModal(ModalType.CONFIRM_MODIFY_GOVERNANCE);
 
