@@ -2,7 +2,7 @@ import { Box, Button, Flex, HStack, IconButton, Select, Text } from '@chakra-ui/
 import { CaretDown, MinusCircle, Plus } from '@phosphor-icons/react';
 import { Field, FieldAttributes, FieldProps, Form, Formik } from 'formik';
 import { useTranslation } from 'react-i18next';
-import { Address, getAddress, isAddress } from 'viem';
+import { Address, getAddress, isAddress, parseUnits } from 'viem';
 import * as Yup from 'yup';
 import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
 import useNetworkPublicClient from '../../../../hooks/useNetworkPublicClient';
@@ -191,9 +191,20 @@ export function AirdropModal({
                         iconSize="1.5rem"
                         icon={<CaretDown />}
                         onChange={e => {
+                          const newAsset = fungibleAssetsWithBalance[Number(e.target.value)];
+                          setFieldValue('selectedAsset', newAsset);
+                          const newDecimals = newAsset.decimals;
                           setFieldValue(
-                            'selectedAsset',
-                            fungibleAssetsWithBalance[Number(e.target.value)],
+                            'recipients',
+                            values.recipients.map(r => {
+                              return {
+                                ...r,
+                                amount: {
+                                  value: r.amount.value,
+                                  bigintValue: parseUnits(r.amount.value, newDecimals),
+                                },
+                              };
+                            }),
                           );
                         }}
                         value={selectedAssetIndex}
