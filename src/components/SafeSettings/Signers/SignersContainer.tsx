@@ -1,6 +1,7 @@
 import { Box, Button, Flex, Icon, Input, Show, Text, Image } from '@chakra-ui/react';
 import { MinusCircle, PlusCircle } from '@phosphor-icons/react';
-import { useEffect, useMemo, useState } from 'react';
+import { useFormik } from 'formik';
+import { useEffect, useMemo, useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Address } from 'viem';
 import { useAccount } from 'wagmi';
@@ -26,10 +27,20 @@ type NewSignerItem = SignerItem & {
   isAdding: true;
 };
 
-function Signer({ signer, onRemove }: { signer: SignerItem; onRemove: (() => void) | null }) {
+function Signer({
+  signer,
+  onRemove,
+  formik,
+}: {
+  signer: SignerItem;
+  onRemove: (() => void) | null;
+  formik: any;
+}) {
   if (!signer.isAdding && !signer.address) {
     throw new Error('Signer does not have an address');
   }
+
+  const inputRef = useRef<HTMLInputElement>(null);
 
   return (
     <Flex
@@ -45,9 +56,22 @@ function Signer({ signer, onRemove }: { signer: SignerItem; onRemove: (() => voi
         py={2}
       >
         <Input
+          ref={inputRef}
           value={signer.address}
           isDisabled={!signer.isAdding}
           color={signer.isAdding ? 'white-0' : 'neutral-3'}
+          onChange={e => {
+            if (signer.isAdding) {
+              // Find and overwrite the address prop of this new signer with the input value
+              const newSigners = formik.values.newSigners.map((s: NewSignerItem) =>
+                s.key === signer.key ? { ...s, address: e.target.value } : s,
+              );
+
+              formik.setFieldValue('newSigners', newSigners);
+
+              setTimeout(() => inputRef.current?.focus(), 10);
+            }
+          }}
         />
 
         {onRemove && (
@@ -79,7 +103,16 @@ export function SignersContainer() {
   const [userIsSigner, setUserIsSigner] = useState(false);
 
   const [signers, setSigners] = useState<ExistingSignerItem[]>([]);
-  const [newSigners, setNewSigners] = useState<NewSignerItem[]>([]);
+
+  const formik = useFormik<{ newSigners: NewSignerItem[] }>({
+    initialValues: {
+      newSigners: [] as NewSignerItem[],
+    },
+    onSubmit: values => {
+      // Handle form submission
+      console.log(values);
+    },
+  });
 
   const [addSignerModalType, addSignerModalProps] = useMemo(() => {
     if (safe?.threshold === undefined) {
@@ -146,10 +179,6 @@ export function SignersContainer() {
       setRemovingSigner(undefined);
     }
   }, [removingSigner, showRemoveSignerModal]);
-
-  const removeNewSigner = (signer: SignerItem) => {
-    setNewSigners(prevSigners => prevSigners.filter(s => s.key !== signer.key));
-  };
 
   return (
     <Box width="100%">
@@ -222,13 +251,20 @@ export function SignersContainer() {
             key={signer.key}
             signer={signer}
             onRemove={enableRemove ? () => setRemovingSigner(signer) : null}
+            formik={null}
           />
         ))}
-        {newSigners.map(signer => (
+        {formik.values.newSigners.map(signer => (
           <Signer
             key={signer.key}
             signer={signer}
-            onRemove={() => removeNewSigner(signer)}
+            onRemove={() => {
+              formik.setFieldValue(
+                'newSigners',
+                formik.values.newSigners.filter(s => s.key !== signer.key),
+              );
+            }}
+            formik={formik}
           />
         ))}
 
@@ -244,12 +280,10 @@ export function SignersContainer() {
               size="sm"
               onClick={() => {
                 if (isSettingsV1FeatureEnabled) {
-                  setNewSigners(prevSigners => [
-                    ...prevSigners,
-                    {
-                      isAdding: true,
-                      key: genSignerItemKey(),
-                    },
+                  const key = genSignerItemKey();
+                  formik.setFieldValue('newSigners', [
+                    ...formik.values.newSigners,
+                    { key, address: '', isAdding: true },
                   ]);
                 } else {
                   showAddSignerModal();
