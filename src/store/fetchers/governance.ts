@@ -76,6 +76,7 @@ export function useGovernanceFetcher() {
     }) => {
       const azoriusModule = getAzoriusModuleFromModules(daoModules);
 
+      console.log('Fetch DAO Governance');
       if (!azoriusModule) {
         onMultisigGovernanceLoaded();
         const multisigTransactions = await safeApi.getMultisigTransactions(daoAddress);

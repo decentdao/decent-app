@@ -104,8 +104,10 @@ export const useStoreFetcher = ({
         totalProposals: number,
       ) => {
         setProposal(daoKey, proposal);
-        if (index === totalProposals - 1) {
+        if (index !== 0) {
           setLoadingFirstProposal(daoKey, false);
+        }
+        if (index === totalProposals - 1) {
           setAllProposalsLoaded(daoKey, true);
         }
       };
