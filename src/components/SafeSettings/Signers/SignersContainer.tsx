@@ -222,6 +222,8 @@ export function SignersContainer() {
     }
   }, [removingSigner, showRemoveSignerModal]);
 
+  const handleModifyGovernance = useDecentModal(ModalType.CONFIRM_MODIFY_GOVERNANCE);
+
   return (
     <Box width="100%">
       {/* LAUNCH TOKEN BANNER */}
@@ -266,10 +268,10 @@ export function SignersContainer() {
             </Flex>
           </Flex>
           <Button
-            variant="primary"
             bg="white-0"
+            _hover={{ bg: 'white-0' }}
             size="sm"
-            onClick={() => {}}
+            onClick={handleModifyGovernance}
           >
             {t('launchToken', { ns: 'daoEdit' })}
           </Button>
