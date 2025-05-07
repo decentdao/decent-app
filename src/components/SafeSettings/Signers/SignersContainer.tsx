@@ -116,7 +116,7 @@ export function SignersContainer() {
           bg="cosmic-nebula-5"
           p={4}
           borderRadius="0.75rem"
-          mb="1.5rem"
+          mb={12}
           justifyContent="space-between"
           alignItems="center"
         >
@@ -161,8 +161,13 @@ export function SignersContainer() {
         </Flex>
       )}
 
+      <Text
+        ml={6}
+        textStyle="body-large"
+      >
+        {t('owners', { ns: 'common' })}
+      </Text>
       <Flex justifyContent="space-between">
-        <Text>{t('signers', { ns: 'common' })}</Text>
         {userIsSigner && (
           <Flex gap="0.5rem">
             <Button
@@ -179,6 +184,7 @@ export function SignersContainer() {
           </Flex>
         )}
       </Flex>
+
       {signers &&
         signers.map(signer => (
           <Signer
