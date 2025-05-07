@@ -166,7 +166,9 @@ export const createGovernancesSlice: StateCreator<
   setLoadingFirstProposal: (daoKey, loading) => {
     set(
       state => {
-        state.governances[daoKey].loadingProposals = loading;
+        if (!state.governances[daoKey].proposals?.length) {
+          state.governances[daoKey].loadingProposals = loading;
+        }
       },
       false,
       'setLoadingFirstProposal',
@@ -210,6 +212,7 @@ export const createGovernancesSlice: StateCreator<
     set(
       state => {
         state.governances[daoKey].allProposalsLoaded = loaded;
+        state.governances[daoKey].loadingProposals = false;
       },
       false,
       'setAllProposalsLoaded',
