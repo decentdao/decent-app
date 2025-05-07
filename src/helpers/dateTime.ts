@@ -19,6 +19,7 @@ export function useDateTimeDisplay(referenceDate: Date) {
 
   // if this is a future date, the display will be a countdown, e.g. "{time} left",
   // otherwise it will display as "{time} ago"
+
   const isCountdown = referenceDate.getTime() > now.getTime();
 
   const diffInMinutes = Math.abs(differenceInMinutes(referenceDate, now));

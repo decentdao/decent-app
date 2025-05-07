@@ -123,5 +123,9 @@
   "recipients_other": "одержувачі",
   "airdrop": "Десантування",
   "pageXofY": "Сторінка {{current}} з {{total}}.",
-  "network": "Мережа"
+  "network": "Мережа",
+  "unsavedChanges": "Незбережені зміни",
+  "unsavedChangesDescription": "У вас є незбережені зміни, які будуть втрачені, якщо ви продовжите. Ви хочете скасувати зміни?",
+  "discardChanges": "Викинути",
+  "keepEditing": "Продовжуйте редагувати"
 }

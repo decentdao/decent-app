@@ -17,6 +17,7 @@ import {
 import { useAccount } from 'wagmi';
 import GnosisSafeL2Abi from '../assets/abi/GnosisSafeL2';
 import LockReleaseAbi from '../assets/abi/LockRelease';
+import { SENTINEL_ADDRESS } from '../constants/common';
 import { createDecentSubgraphClient } from '../graphql';
 import { DAOQuery, DAOQueryResponse } from '../graphql/DAOQueries';
 import useFeatureFlag from '../helpers/environmentFeatureFlags';
@@ -34,7 +35,6 @@ import {
 import { useSafeDecoder } from '../hooks/utils/useSafeDecoder';
 import { useSafeTransactions } from '../hooks/utils/useSafeTransactions';
 import { useTimeHelpers } from '../hooks/utils/useTimeHelpers';
-import useVotingStrategiesAddresses from '../hooks/utils/useVotingStrategiesAddresses';
 import useBalancesAPI from '../providers/App/hooks/useBalancesAPI';
 import useIPFSClient from '../providers/App/hooks/useIPFSClient';
 import { useSafeAPI } from '../providers/App/hooks/useSafeAPI';
@@ -52,6 +52,7 @@ import {
   FractalVotingStrategy,
   FreezeGuardType,
   FreezeVotingType,
+  GovernanceType,
   ProposalTemplate,
   TokenEventType,
   TransferDisplayData,
@@ -108,13 +109,13 @@ export const useGlobalStoreFetcher = ({
     setProposal,
     setLoadingFirstProposal,
     setGuard,
+    setAllProposalsLoaded,
   } = useGlobalStore();
   const { t } = useTranslation(['dashboard']);
   const { chain, getConfigByChainId, nativeTokenIcon } = useNetworkConfigStore();
   const storeFeatureEnabled = useFeatureFlag('flag_store_v2');
   const { getAddressContractType } = useAddressContractType();
   const publicClient = useNetworkPublicClient();
-  const { getVotingStrategies } = useVotingStrategiesAddresses();
   const ipfsClient = useIPFSClient();
   const { address: account } = useAccount();
   const { getTimeDuration } = useTimeHelpers();
@@ -181,6 +182,8 @@ export const useGlobalStoreFetcher = ({
     [ipfsClient, setProposalTemplates],
   );
 
+  useEffect(() => {}, []);
+
   const fetchDAOGovernance = useCallback(
     async ({
       daoAddress,
@@ -197,14 +200,30 @@ export const useGlobalStoreFetcher = ({
         setMultisigGovernance(_daoKey);
         const multisigTransactions = await safeApi.getMultisigTransactions(daoAddress);
         const activities = await parseTransactions(multisigTransactions);
+        setLoadingFirstProposal(_daoKey, false);
         setProposals(_daoKey, activities);
+        setAllProposalsLoaded(_daoKey, true);
       } else {
         const azoriusContract = getContract({
           abi: abis.Azorius,
           address: azoriusModule.moduleAddress,
           client: publicClient,
         });
-        const votingStrategies = await getVotingStrategies(daoAddress);
+        const [strateiges, nextStrategy] = await azoriusContract.read.getStrategies([
+          SENTINEL_ADDRESS,
+          3n,
+        ]);
+        const votingStrategies = await Promise.all(
+          [...strateiges, nextStrategy]
+            .filter(
+              strategyAddress =>
+                strategyAddress !== SENTINEL_ADDRESS && strategyAddress !== zeroAddress,
+            )
+            .map(async strategyAddress => ({
+              ...(await getAddressContractType(strategyAddress)),
+              strategyAddress,
+            })),
+        );
         let votesTokenAddress: Address | undefined;
         let lockReleaseAddress: Address | undefined;
 
@@ -288,11 +307,6 @@ export const useGlobalStoreFetcher = ({
           } else {
             return undefined;
           }
-        };
-
-        const completeOneProposalLoadProcess = (proposal: AzoriusProposal) => {
-          setProposal(_daoKey, proposal);
-          setLoadingFirstProposal(_daoKey, false);
         };
 
         if (!votingStrategies) {
@@ -444,6 +458,7 @@ export const useGlobalStoreFetcher = ({
 
             setAzoriusGovernance(_daoKey, {
               votesToken: tokenData,
+              erc721Tokens: undefined,
               linearVotingErc20Address,
               linearVotingErc20WithHatsWhitelistingAddress,
               linearVotingErc721Address,
@@ -451,12 +466,9 @@ export const useGlobalStoreFetcher = ({
               isLoaded: true,
               strategies,
               votingStrategy: votingData,
-              loadingProposals: false,
-              allProposalsLoaded: false,
-              proposals: null,
-              pendingProposals: null,
               isAzorius: true,
               lockedVotesToken: lockedVotesTokenData,
+              type: GovernanceType.AZORIUS_ERC20,
             });
 
             // Fetch Claiming Contract
@@ -483,12 +495,22 @@ export const useGlobalStoreFetcher = ({
               await azoriusContract.getEvents.ProposalCreated({ fromBlock: 0n })
             ).reverse();
 
+            const completeOneProposalLoadProcess = (proposal: AzoriusProposal, index: number) => {
+              setProposal(_daoKey, proposal);
+              setLoadingFirstProposal(_daoKey, false);
+
+              if (index === proposalCreatedEvents.length - 1) {
+                setAllProposalsLoaded(_daoKey, true);
+              }
+            };
+
             if (!proposalCreatedEvents.length) {
               setLoadingFirstProposal(_daoKey, false);
+              setAllProposalsLoaded(_daoKey, true);
               return;
             }
 
-            for (const proposalCreatedEvent of proposalCreatedEvents) {
+            for (const [index, proposalCreatedEvent] of proposalCreatedEvents.entries()) {
               if (proposalCreatedEvent.args.proposalId === undefined) {
                 continue;
               }
@@ -500,7 +522,7 @@ export const useGlobalStoreFetcher = ({
               });
 
               if (cachedProposal) {
-                completeOneProposalLoadProcess(cachedProposal);
+                completeOneProposalLoadProcess(cachedProposal, index);
                 continue;
               }
 
@@ -566,7 +588,7 @@ export const useGlobalStoreFetcher = ({
                 proposalData,
               );
 
-              completeOneProposalLoadProcess(proposal);
+              completeOneProposalLoadProcess(proposal, index);
 
               const isProposalFossilized =
                 proposal.state === FractalProposalState.CLOSED ||
@@ -655,11 +677,8 @@ export const useGlobalStoreFetcher = ({
               isLoaded: true,
               strategies,
               votingStrategy: votingData,
-              loadingProposals: false,
-              allProposalsLoaded: false,
-              proposals: null,
-              pendingProposals: null,
               isAzorius: true,
+              type: GovernanceType.AZORIUS_ERC721,
             });
 
             // Now - fetch proposals
@@ -678,10 +697,20 @@ export const useGlobalStoreFetcher = ({
 
             if (!proposalCreatedEvents.length) {
               setLoadingFirstProposal(_daoKey, false);
+              setAllProposalsLoaded(_daoKey, true);
               return;
             }
 
-            for (const proposalCreatedEvent of proposalCreatedEvents) {
+            const completeOneProposalLoadProcess = (proposal: AzoriusProposal, index: number) => {
+              setProposal(_daoKey, proposal);
+              setLoadingFirstProposal(_daoKey, false);
+
+              if (index === proposalCreatedEvents.length - 1) {
+                setAllProposalsLoaded(_daoKey, true);
+              }
+            };
+
+            for (const [index, proposalCreatedEvent] of proposalCreatedEvents.entries()) {
               if (proposalCreatedEvent.args.proposalId === undefined) {
                 continue;
               }
@@ -693,7 +722,7 @@ export const useGlobalStoreFetcher = ({
               });
 
               if (cachedProposal) {
-                completeOneProposalLoadProcess(cachedProposal);
+                completeOneProposalLoadProcess(cachedProposal, index);
                 continue;
               }
 
@@ -759,7 +788,7 @@ export const useGlobalStoreFetcher = ({
                 proposalData,
               );
 
-              completeOneProposalLoadProcess(proposal);
+              completeOneProposalLoadProcess(proposal, index);
 
               const isProposalFossilized =
                 proposal.state === FractalProposalState.CLOSED ||
@@ -787,7 +816,6 @@ export const useGlobalStoreFetcher = ({
     [
       getAddressContractType,
       publicClient,
-      getVotingStrategies,
       account,
       getTimeDuration,
       setMultisigGovernance,
@@ -799,6 +827,7 @@ export const useGlobalStoreFetcher = ({
       setProposal,
       t,
       setLoadingFirstProposal,
+      setAllProposalsLoaded,
       decode,
     ],
   );
