@@ -1,4 +1,4 @@
-import { Box, Button, Flex, Link } from '@chakra-ui/react';
+import { Box, Button, Flex, Link, Text } from '@chakra-ui/react';
 import { ArrowUpRight } from '@phosphor-icons/react';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -7,9 +7,10 @@ import useSnapshotProposal from '../../hooks/DAO/loaders/snapshot/useSnapshotPro
 import { useGetMetadata } from '../../hooks/DAO/proposal/useGetMetadata';
 import { useCurrentDAOKey } from '../../hooks/DAO/useCurrentDAOKey';
 import { useStore } from '../../providers/App/AppProvider';
-import { ExtendedSnapshotProposal, FractalProposal } from '../../types';
+import { ExtendedSnapshotProposal, FractalProposal, MultisigProposal } from '../../types';
 import { ActivityDescription } from '../Activity/ActivityDescription';
 import { Badge } from '../ui/badges/Badge';
+import { SignerThresholdBadge } from '../ui/badges/SignerThresholdBadge';
 import { SnapshotButton } from '../ui/badges/Snapshot';
 import { ModalType } from '../ui/modals/ModalProvider';
 import { useDecentModal } from '../ui/modals/useDecentModal';
@@ -54,42 +55,65 @@ export function ProposalInfo({
       <Flex
         gap={2}
         alignItems="center"
+        justifyContent="space-between"
       >
-        {proposal.state && (
-          <Badge
-            size="base"
-            labelKey={proposal.state}
-          />
-        )}
-        <ProposalCountdown
-          proposal={proposal}
-          showIcon={false}
-          textColor="neutral-7"
-        />
-        {snapshotProposal && subgraphInfo && (
-          <>
-            <SnapshotButton
-              snapshotENS={`${subgraphInfo.daoSnapshotENS}/proposal/${snapshotProposal.proposalId}`}
+        <Flex
+          gap={2}
+          alignItems="center"
+        >
+          {proposal.state && (
+            <Badge
+              size="base"
+              labelKey={proposal.state}
             />
-            {(proposal as ExtendedSnapshotProposal).privacy === 'shutter' && (
-              <Button
-                as={Link}
-                target="_blank"
-                href="https://blog.shutter.network/announcing-shutter-governance-shielded-voting-for-daos/"
-                variant="secondary"
-                h={6}
-                w={32}
-              >
-                <Shield
-                  width="16px"
-                  height="16px"
-                  mr={1}
-                />
-                {t('shutterPrivacy')}
-              </Button>
-            )}
-          </>
-        )}
+          )}
+          <ProposalCountdown
+            proposal={proposal}
+            showIcon={false}
+            textColor="neutral-7"
+          />
+          {snapshotProposal && subgraphInfo && (
+            <>
+              <SnapshotButton
+                snapshotENS={`${subgraphInfo.daoSnapshotENS}/proposal/${snapshotProposal.proposalId}`}
+              />
+              {(proposal as ExtendedSnapshotProposal).privacy === 'shutter' && (
+                <Button
+                  as={Link}
+                  target="_blank"
+                  href="https://blog.shutter.network/announcing-shutter-governance-shielded-voting-for-daos/"
+                  variant="secondary"
+                  h={6}
+                  w={32}
+                >
+                  <Shield
+                    width="16px"
+                    height="16px"
+                    mr={1}
+                  />
+                  {t('shutterPrivacy')}
+                </Button>
+              )}
+            </>
+          )}
+        </Flex>
+        <Flex
+          gap={4}
+          alignItems="center"
+        >
+          <Text
+            textStyle="labels-large"
+            color="neutral-7"
+          >
+            {t('nonceLabel', {
+              number: (proposal as MultisigProposal).nonce,
+            })}
+          </Text>
+          <SignerThresholdBadge
+            numberOfConfirmedSigners={(proposal as MultisigProposal).confirmations?.length}
+            proposalThreshold={(proposal as MultisigProposal).signersThreshold}
+          />
+        </Flex>
       </Flex>
       <Box mt={4}>
         <ActivityDescription
