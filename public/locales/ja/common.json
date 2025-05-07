@@ -88,6 +88,8 @@
   "404Title": "ページが見つかりません",
   "404Button": "まともなアプリ ホーム",
   "owners": "オーナー",
+  "threshold": "しきい値",
+  "thresholdDescription": "提案の承認に必要な所有者の数。",
   "daoDetails": "詳細",
   "ownersRequired": "所有者が必要",
   "ownersDescription": "プロポーザルの実行に必要なオーナーの数。オーナーを追加または削除するには、プロポーザルが必要です。",

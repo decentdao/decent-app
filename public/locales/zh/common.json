@@ -88,6 +88,8 @@
   "404Title": "页面未找到",
   "404Button": "体面应用程序主页",
   "owners": "业主",
+  "threshold": "阈值",
+  "thresholdDescription": "批准提案所需的业主人数。",
   "daoDetails": "安全详细信息",
   "ownersRequired": "需要业主",
   "ownersDescription": "执行提案所需的所有者人数。增加或删除所有者都需要提案。",

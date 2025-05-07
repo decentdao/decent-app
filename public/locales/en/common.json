@@ -88,6 +88,8 @@
   "404Title": "Page not found",
   "404Button": "Decent App Home",
   "owners": "Owners",
+  "threshold": "Threshold",
+  "thresholdDescription": "Number of owners needed to approve a proposal.",
   "daoDetails": "Safe details",
   "ownersRequired": "Owners Required",
   "ownersDescription": "The number of owners required to execute a proposal. Adding or removing an owner will require a proposal.",

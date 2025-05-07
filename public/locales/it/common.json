@@ -88,6 +88,8 @@
   "404Title": "Pagina non trovata",
   "404Button": "App decente Home",
   "owners": "Proprietari",
+  "threshold": "Soglia",
+  "thresholdDescription": "Numero di proprietari necessari per approvare una proposta.",
   "daoDetails": "Dettagli sicuri",
   "ownersRequired": "Proprietari richiesti",
   "ownersDescription": "Il numero di proprietari richiesto per l'esecuzione di una proposta. L'aggiunta o la rimozione di un proprietario richiede una proposta.",

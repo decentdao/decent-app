@@ -88,6 +88,8 @@
   "404Title": "페이지를 찾을 수 없습니다.",
   "404Button": "괜찮은 앱 홈",
   "owners": "소유자",
+  "threshold": "임계값",
+  "thresholdDescription": "제안을 승인하는 데 필요한 소유자 수입니다.",
   "daoDetails": "안전한 세부 정보",
   "ownersRequired": "소유자 필수",
   "ownersDescription": "제안을 실행하는 데 필요한 소유자 수입니다. 소유자를 추가하거나 제거하려면 제안이 필요합니다.",

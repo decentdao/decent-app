@@ -88,6 +88,8 @@
   "404Title": "Página não encontrada",
   "404Button": "Início da aplicação decente",
   "owners": "Proprietários",
+  "threshold": "Limiar",
+  "thresholdDescription": "Número de proprietários necessários para aprovar uma proposta.",
   "daoDetails": "Detalhes seguros",
   "ownersRequired": "Proprietários necessários",
   "ownersDescription": "O número de proprietários necessário para executar uma proposta. Para acrescentar ou retirar um proprietário, é necessário apresentar uma proposta.",

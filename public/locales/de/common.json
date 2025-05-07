@@ -88,6 +88,8 @@
   "404Title": "Seite nicht gefunden",
   "404Button": "Anständige App Home",
   "owners": "Eigentümer",
+  "threshold": "Schwellenwert",
+  "thresholdDescription": "Anzahl der Eigentümer, die erforderlich sind, um einen Vorschlag zu genehmigen.",
   "daoDetails": "Sichere Details",
   "ownersRequired": "Eigentümer erforderlich",
   "ownersDescription": "Die Anzahl der Eigentümer, die erforderlich ist, um einen Vorschlag auszuführen. Das Hinzufügen oder Entfernen eines Eigentümers erfordert einen Vorschlag.",

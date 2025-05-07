@@ -9,6 +9,7 @@ import useFeatureFlag from '../../../helpers/environmentFeatureFlags';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import { useValidationAddress } from '../../../hooks/schemas/common/useValidationAddress';
 import { useStore } from '../../../providers/App/AppProvider';
+import { NumberStepperInput } from '../../ui/forms/NumberStepperInput';
 import { ModalType } from '../../ui/modals/ModalProvider';
 import { useDecentModal } from '../../ui/modals/useDecentModal';
 import Divider from '../../ui/utils/Divider';
@@ -120,9 +121,10 @@ export function SignersContainer() {
   const { t } = useTranslation(['common', 'breadcrumbs', 'daoEdit']);
   const { validateAddress } = useValidationAddress();
 
-  const formik = useFormik<{ newSigners: NewSignerItem[] }>({
+  const formik = useFormik<{ newSigners: NewSignerItem[]; threshold: number }>({
     initialValues: {
       newSigners: [] as NewSignerItem[],
+      threshold: safe?.threshold ?? 1,
     },
     validate: async values => {
       const errors: NewSignerFormikErrors = {};
@@ -277,6 +279,7 @@ export function SignersContainer() {
       <Text
         ml={6}
         textStyle="body-large"
+        mb={0.5}
       >
         {t('owners', { ns: 'common' })}
       </Text>
@@ -338,6 +341,46 @@ export function SignersContainer() {
             </Button>
           </Flex>
         )}
+      </Box>
+
+      <Box
+        border="1px solid"
+        borderColor="neutral-3"
+        borderRadius="0.75rem"
+        mt={3}
+        px={6}
+        py={3}
+      >
+        <Flex
+          flexDirection="row"
+          gap={3}
+          justifyContent="space-between"
+          alignItems="center"
+        >
+          <Flex flexDirection="column">
+            <Text
+              textStyle="body-large"
+              mb={0.5}
+            >
+              {t('threshold', { ns: 'common' })}
+            </Text>
+            <Text
+              textStyle="body-small"
+              color="neutral-7"
+            >
+              {t('thresholdDescription', { ns: 'common' })}
+            </Text>
+          </Flex>
+
+          {/* stepper */}
+          <Flex w="200px">
+            <NumberStepperInput
+              onChange={value => formik.setFieldValue('threshold', value)}
+              value={formik.values.threshold}
+              disabled // @todo: Disabled until ready to propagate edit actions into a final proposal
+            />
+          </Flex>
+        </Flex>
       </Box>
     </Box>
   );

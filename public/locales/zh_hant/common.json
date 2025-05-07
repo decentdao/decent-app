@@ -88,6 +88,8 @@
   "404Title": "未找到頁面",
   "404Button": "正派應用程式首頁",
   "owners": "業主",
+  "threshold": "臨界值",
+  "thresholdDescription": "批准提案所需的業主數量。",
   "daoDetails": "安全詳細資訊",
   "ownersRequired": "需要業主",
   "ownersDescription": "執行提案所需的所有者人數。增加或刪除所有者需要提案。",
