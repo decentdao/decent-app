@@ -34,7 +34,7 @@ export function ConfirmModifyGovernanceModal({ close }: { close: () => void }) {
         textStyle="label-large"
         color="neutral-7"
       >
-        {t('confirmModifyGovernanceDescription')}
+        {t('confirmModifyGovernanceDesc')}
       </Text>
 
       <Flex

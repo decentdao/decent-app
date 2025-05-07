@@ -46,7 +46,7 @@
   "wrapTokenButton": "Wrap",
   "updateSignersTooltip": "The number of signers required to pass future proposals",
   "confirmModifyGovernanceTitle": "Heads up, this is a big deal!",
-  "confirmModifyGovernanceDescription": "Converting to token governance will permanently change your DAO operations. This action cannot be undone. Are you sure you want to continue?",
+  "confirmModifyGovernanceDesc": "Converting to token governance will permanently change your DAO operations. This action cannot be undone. Are you sure you want to continue?",
   "stakeTitle": "Stake",
   "removeSignerWarning": "The signer will be removed from the organization.",
   "add": "Add",
