@@ -1,3 +1,6 @@
 {
-  "cannotModifyGovernance": "You do not have permissions to modify this Safe's governance."
+  "cannotModifyGovernance": "You do not have permissions to modify this Safe's governance.",
+  "launchToken": "Launch Token",
+  "launchTokenTitle": "TOKENIZE YOUR GOVERNANCE",
+  "launchTokenDescription": "Launch your own governance token and pass proposals through token voting."
 }

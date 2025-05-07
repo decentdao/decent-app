@@ -89,7 +89,7 @@ export function SignersContainer() {
   }, [signers, safe?.threshold]);
 
   const addSigner = useDecentModal(modalType, props);
-  const { t } = useTranslation(['common', 'breadcrumbs']);
+  const { t } = useTranslation(['common', 'breadcrumbs', 'daoEdit']);
   const { address: account } = useAccount();
   const enableRemove = userIsSigner && signers && signers?.length > 1;
 
@@ -139,14 +139,14 @@ export function SignersContainer() {
                 color="cosmic-nebula-0"
                 fontWeight="bold"
               >
-                TOKENIZE YOUR GOVERNANCE
+                {t('launchTokenTitle', { ns: 'daoEdit' })}
               </Text>
               <Text
                 textStyle="labels-large"
                 color="cosmic-nebula-0"
                 mb="1rem"
               >
-                Launch your own governance token and pass proposals through token voting.
+                {t('launchTokenDescription', { ns: 'daoEdit' })}
               </Text>
             </Flex>
           </Flex>
@@ -156,7 +156,7 @@ export function SignersContainer() {
             size="sm"
             onClick={() => {}}
           >
-            Launch Token
+            {t('launchToken', { ns: 'daoEdit' })}
           </Button>
         </Flex>
       )}
