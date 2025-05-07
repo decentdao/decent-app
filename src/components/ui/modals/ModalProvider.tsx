@@ -421,6 +421,7 @@ export function ModalProvider({ children }: { children: ReactNode }) {
       default:
         modalTitle = '';
         modalContent = null;
+        onClose();
     }
 
     return {
@@ -433,7 +434,7 @@ export function ModalProvider({ children }: { children: ReactNode }) {
       closeOnOverlayClick: closeModalOnOverlayClick,
       contentStyle: modalContentStyle,
     };
-  }, [closeModal, current.props, current.type, t]);
+  }, [closeModal, current.props, current.type, onClose, t]);
 
   let display = content ? (
     <ModalBase
