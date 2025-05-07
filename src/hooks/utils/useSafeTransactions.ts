@@ -1,7 +1,7 @@
 import { abis } from '@fractal-framework/fractal-contracts';
 import { SafeMultisigTransactionListResponse } from '@safe-global/api-kit';
 import { useCallback } from 'react';
-import { Address, getAddress, getContract } from 'viem';
+import { Address, getAddress, getContract, isAddress } from 'viem';
 import { isApproved, isRejected } from '../../helpers/activity';
 import { isMultisigRejectionProposal } from '../../helpers/multisigProposal';
 import { useStore } from '../../providers/App/AppProvider';
@@ -155,6 +155,12 @@ export const useSafeTransactions = () => {
             isMultisigRejectionTx,
             proposalId: eventSafeTxHash,
             targets,
+            // @dev proposer can be null when its the first transaction
+            proposer: isAddress(transaction.proposer)
+              ? getAddress(transaction.proposer)
+              : transaction.nonce === 0 && transaction.executor && isAddress(transaction.executor)
+                ? getAddress(transaction.executor)
+                : null,
             // @todo typing for `multiSigTransaction.transactionHash` is misleading, as ` multiSigTransaction.transactionHash` is not always defined (if ever). Need to tighten up the typing here.
             // ! @todo This is why we are showing the two different hashes
             transactionHash: transaction.transactionHash ?? transaction.safeTxHash,

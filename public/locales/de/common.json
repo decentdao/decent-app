@@ -123,5 +123,9 @@
   "recipients_other": "Empfänger",
   "airdrop": "Airdrop",
   "pageXofY": "Seite {{current}} von {{total}}",
-  "network": "Netzwerk"
+  "network": "Netzwerk",
+  "unsavedChanges": "Nicht gespeicherte Änderungen",
+  "unsavedChangesDescription": "Sie haben ungespeicherte Änderungen, die verloren gehen, wenn Sie fortfahren. Möchten Sie Ihre Änderungen verwerfen?",
+  "discardChanges": "Ablegen",
+  "keepEditing": "Weiter bearbeiten"
 }
