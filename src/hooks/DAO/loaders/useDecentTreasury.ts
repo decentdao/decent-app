@@ -2,6 +2,7 @@ import { TokenInfoResponse } from '@safe-global/api-kit';
 import { useCallback, useEffect, useRef } from 'react';
 import { toast } from 'sonner';
 import { Address, getAddress, zeroAddress } from 'viem';
+import useFeatureFlag from '../../../helpers/environmentFeatureFlags';
 import { useStore } from '../../../providers/App/AppProvider';
 import useBalancesAPI from '../../../providers/App/hooks/useBalancesAPI';
 import { useSafeAPI } from '../../../providers/App/hooks/useSafeAPI';
@@ -45,6 +46,7 @@ export const useDecentTreasury = () => {
   const { getTokenBalances, getNFTBalances, getDeFiBalances } = useBalancesAPI();
 
   const { chain, nativeTokenIcon } = useNetworkConfigStore();
+  const storeFeatureEnabled = useFeatureFlag('flag_store_v2');
   const safeAddress = safe?.address;
 
   const formatTransfer = useCallback(
@@ -77,7 +79,7 @@ export const useDecentTreasury = () => {
   );
 
   const loadTreasury = useCallback(async () => {
-    if (!safeAddress || !safeAPI) {
+    if (!safeAddress || !safeAPI || storeFeatureEnabled) {
       return;
     }
 
@@ -220,9 +222,14 @@ export const useDecentTreasury = () => {
     chain.nativeCurrency.decimals,
     nativeTokenIcon,
     formatTransfer,
+    storeFeatureEnabled,
   ]);
 
   useEffect(() => {
+    if (storeFeatureEnabled) {
+      return;
+    }
+
     if (!safeAddress) {
       loadKey.current = null;
       return;
@@ -233,7 +240,7 @@ export const useDecentTreasury = () => {
       loadKey.current = newLoadKey;
       loadTreasury();
     }
-  }, [action, chain.id, safeAddress, loadTreasury]);
+  }, [action, chain.id, safeAddress, loadTreasury, storeFeatureEnabled]);
 
   return;
 };
