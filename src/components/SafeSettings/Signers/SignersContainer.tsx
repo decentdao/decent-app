@@ -26,6 +26,7 @@ type ExistingSignerItem = SignerItem & {
 
 type NewSignerItem = SignerItem & {
   isAdding: true;
+  inputValue: string;
 };
 
 type NewSignerFormikErrors = { newSigners?: { key: string; error: string }[] };
@@ -45,10 +46,9 @@ function Signer({
 
   const inputRef = useRef<HTMLInputElement>(null);
 
+  const newSigner = signer.isAdding ? (signer as NewSignerItem) : null;
   const isInvalid =
-    !!formik &&
-    signer.isAdding &&
-    signer.address &&
+    !!newSigner?.inputValue &&
     (formik.errors as NewSignerFormikErrors).newSigners?.some(error => error.key === signer.key);
 
   return (
@@ -66,21 +66,24 @@ function Signer({
       >
         <Input
           ref={inputRef}
-          value={signer.address}
-          isDisabled={!signer.isAdding}
-          color={signer.isAdding ? 'white-0' : 'neutral-3'}
+          value={!!newSigner ? newSigner.inputValue : signer.address}
+          isDisabled={!newSigner}
+          color={!!newSigner ? 'white-0' : 'neutral-3'}
           isInvalid={isInvalid}
           onChange={e => {
-            if (signer.isAdding) {
-              // Find and overwrite the address prop of this new signer with the input value
-              const newSigners = formik.values.newSigners.map((s: NewSignerItem) =>
-                s.key === signer.key ? { ...s, address: e.target.value } : s,
-              );
+            // Find and overwrite the address input value of this new signer with the input value
+            const newSigners = formik.values.newSigners.map((s: NewSignerItem) =>
+              s.key === signer.key
+                ? {
+                    ...s,
+                    inputValue: e.target.value,
+                  }
+                : s,
+            );
 
-              formik.setFieldValue('newSigners', newSigners);
+            formik.setFieldValue('newSigners', newSigners);
 
-              setTimeout(() => inputRef.current?.focus(), 10);
-            }
+            setTimeout(() => inputRef.current?.focus(), 10);
           }}
         />
 
@@ -127,11 +130,11 @@ export function SignersContainer() {
       if (values.newSigners.length > 0) {
         const signerErrors = await Promise.all(
           values.newSigners.map(async signer => {
-            if (!signer.address) {
+            if (!signer.inputValue) {
               return { key: signer.key, error: t('addressRequired', { ns: 'common' }) };
             }
 
-            const validation = await validateAddress({ address: signer.address });
+            const validation = await validateAddress({ address: signer.inputValue });
             if (!validation.validation.isValidAddress) {
               return { key: signer.key, error: t('invalidAddress', { ns: 'common' }) };
             }
