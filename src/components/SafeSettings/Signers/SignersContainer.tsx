@@ -1,4 +1,4 @@
-import { Box, Button, Flex, Hide, HStack, Icon, Show, Text, Image } from '@chakra-ui/react';
+import { Box, Button, Flex, Icon, Input, Show, Text, Image } from '@chakra-ui/react';
 import { MinusCircle, PlusCircle } from '@phosphor-icons/react';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -7,20 +7,20 @@ import { useAccount } from 'wagmi';
 import useFeatureFlag from '../../../helpers/environmentFeatureFlags';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import { useStore } from '../../../providers/App/AppProvider';
-import { DisplayAddress } from '../../ui/links/DisplayAddress';
 import { ModalType } from '../../ui/modals/ModalProvider';
 import { useDecentModal } from '../../ui/modals/useDecentModal';
+import Divider from '../../ui/utils/Divider';
 
 function Signer({
   signer,
   signers,
   threshold,
-  disabled,
+  enableRemove,
 }: {
   signer: Address;
   signers: Address[];
   threshold: number | undefined;
-  disabled: boolean;
+  enableRemove: boolean;
 }) {
   const [modalType, props] = useMemo(() => {
     if (!signers || !threshold) {
@@ -37,39 +37,44 @@ function Signer({
   }, [signer, signers, threshold]);
 
   const removeSigner = useDecentModal(modalType, props);
+
   return (
-    <HStack
-      key={signer}
-      my="1rem"
-      justifyContent="space-between"
+    <Flex
+      flexDirection="column"
+      alignItems="stretch"
     >
-      <Show above="md">
-        <DisplayAddress
-          address={signer}
-          truncate={false}
+      <Flex
+        flexDirection="row"
+        alignItems="center"
+        gap={4}
+        key={signer}
+        px={6}
+        py={2}
+      >
+        <Input
+          value={signer}
+          isDisabled
+          color="neutral-7"
         />
-      </Show>
-      <Hide above="md">
-        <DisplayAddress
-          address={signer}
-          truncate
-        />
-      </Hide>
-      {!disabled && (
-        <Button
-          variant="tertiary"
-          aria-label="Remove Signer"
-          padding="0.5rem"
-          h="fit-content"
-          onClick={removeSigner}
-        >
-          <Icon
-            as={MinusCircle}
-            boxSize="1.25rem"
-          />
-        </Button>
-      )}
-    </HStack>
+
+        {enableRemove && (
+          <Button
+            variant="tertiary"
+            aria-label="Remove Signer"
+            h="1.5rem"
+            p="0"
+            onClick={removeSigner}
+          >
+            <Icon
+              as={MinusCircle}
+              boxSize="1.5rem"
+              color="lilac-0"
+            />
+          </Button>
+        )}
+      </Flex>
+      <Divider />
+    </Flex>
   );
 }
 
@@ -79,7 +84,7 @@ export function SignersContainer() {
     node: { safe },
   } = useStore({ daoKey });
   const [signers, setSigners] = useState<Address[]>();
-  const [userIsSigner, setUserIsSigner] = useState<boolean>();
+  const [userIsSigner, setUserIsSigner] = useState(false);
 
   const [modalType, props] = useMemo(() => {
     if (!signers) {
@@ -91,7 +96,7 @@ export function SignersContainer() {
   const addSigner = useDecentModal(modalType, props);
   const { t } = useTranslation(['common', 'breadcrumbs', 'daoEdit']);
   const { address: account } = useAccount();
-  const enableRemove = userIsSigner && signers && signers?.length > 1;
+  const enableRemove = userIsSigner && !!signers && signers?.length > 1;
 
   useEffect(() => {
     setSigners(safe?.owners.map(owner => getAddress(owner)));
@@ -102,7 +107,7 @@ export function SignersContainer() {
       return;
     }
 
-    setUserIsSigner(account && signers.includes(account));
+    setUserIsSigner(account !== undefined && signers.includes(account));
   }, [account, signers]);
 
   const isSettingsV1FeatureEnabled = useFeatureFlag('flag_settings_v1');
@@ -167,9 +172,29 @@ export function SignersContainer() {
       >
         {t('owners', { ns: 'common' })}
       </Text>
-      <Flex justifyContent="space-between">
+
+      <Box
+        border="1px solid"
+        borderColor="neutral-3"
+        borderRadius="0.75rem"
+      >
+        {signers &&
+          signers.map(signer => (
+            <Signer
+              key={signer}
+              signer={signer}
+              signers={signers}
+              enableRemove={enableRemove}
+              threshold={safe?.threshold}
+            />
+          ))}
         {userIsSigner && (
-          <Flex gap="0.5rem">
+          <Flex
+            gap="0.5rem"
+            justifyContent="flex-end"
+            px={6}
+            py={2}
+          >
             <Button
               variant="secondary"
               size="sm"
@@ -183,18 +208,7 @@ export function SignersContainer() {
             </Button>
           </Flex>
         )}
-      </Flex>
-
-      {signers &&
-        signers.map(signer => (
-          <Signer
-            key={signer}
-            signer={signer}
-            signers={signers}
-            disabled={!enableRemove}
-            threshold={safe?.threshold}
-          />
-        ))}
+      </Box>
     </Box>
   );
 }
