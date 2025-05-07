@@ -19,7 +19,7 @@ const localStorageSerializer = {
 
 const devToolsMiddlewareConfig = {
   enabled: true,
-  serialize: localStorageSerializer
+  serialize: localStorageSerializer,
 };
 
 const persistMiddlewareConfig = {

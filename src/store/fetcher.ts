@@ -100,7 +100,7 @@ export const useGlobalStoreFetcher = ({
     setProposals,
     setProposal,
     setLoadingFirstProposal,
-    setAllProposalsLoaded
+    setAllProposalsLoaded,
   } = useGlobalStore();
   const { t } = useTranslation(['dashboard']);
   const { chain, getConfigByChainId, nativeTokenIcon } = useNetworkConfigStore();
@@ -448,6 +448,7 @@ export const useGlobalStoreFetcher = ({
 
             setAzoriusGovernance(_daoKey, {
               votesToken: tokenData,
+              erc721Tokens: undefined,
               linearVotingErc20Address,
               linearVotingErc20WithHatsWhitelistingAddress,
               linearVotingErc721Address,
@@ -455,13 +456,9 @@ export const useGlobalStoreFetcher = ({
               isLoaded: true,
               strategies,
               votingStrategy: votingData,
-              loadingProposals: false,
-              allProposalsLoaded: false,
-              proposals: null,
-              pendingProposals: null,
               isAzorius: true,
               lockedVotesToken: lockedVotesTokenData,
-              type: GovernanceType.AZORIUS_ERC20
+              type: GovernanceType.AZORIUS_ERC20,
             });
 
             // Fetch Claiming Contract
@@ -491,7 +488,7 @@ export const useGlobalStoreFetcher = ({
             const completeOneProposalLoadProcess = (proposal: AzoriusProposal, index: number) => {
               setProposal(_daoKey, proposal);
               setLoadingFirstProposal(_daoKey, false);
-    
+
               if (index === proposalCreatedEvents.length - 1) {
                 setAllProposalsLoaded(_daoKey, true);
               }
@@ -670,12 +667,8 @@ export const useGlobalStoreFetcher = ({
               isLoaded: true,
               strategies,
               votingStrategy: votingData,
-              loadingProposals: false,
-              allProposalsLoaded: false,
-              proposals: null,
-              pendingProposals: null,
               isAzorius: true,
-              type: GovernanceType.AZORIUS_ERC721
+              type: GovernanceType.AZORIUS_ERC721,
             });
 
             // Now - fetch proposals
@@ -701,7 +694,7 @@ export const useGlobalStoreFetcher = ({
             const completeOneProposalLoadProcess = (proposal: AzoriusProposal, index: number) => {
               setProposal(_daoKey, proposal);
               setLoadingFirstProposal(_daoKey, false);
-    
+
               if (index === proposalCreatedEvents.length - 1) {
                 setAllProposalsLoaded(_daoKey, true);
               }

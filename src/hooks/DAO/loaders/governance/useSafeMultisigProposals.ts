@@ -43,7 +43,7 @@ export const useSafeMultisigProposals = () => {
     } catch (e) {
       logError(e);
     }
-  }, [safeAddress, safeAPI, parseTransactions, action]);
+  }, [safeAddress, safeAPI, parseTransactions, action, storeFeatureEnabled]);
 
   return { loadSafeMultisigProposals };
 };
