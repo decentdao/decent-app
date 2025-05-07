@@ -1,10 +1,9 @@
-import { Box, Button, Text } from '@chakra-ui/react';
+import { Button, Flex, Text, Image } from '@chakra-ui/react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { DAO_ROUTES } from '../../../constants/routes';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
-import Divider from '../utils/Divider';
 
 export function ConfirmModifyGovernanceModal({ close }: { close: () => void }) {
   const { t } = useTranslation('modals');
@@ -16,31 +15,55 @@ export function ConfirmModifyGovernanceModal({ close }: { close: () => void }) {
   }
 
   return (
-    <Box>
-      <Text marginBottom="1rem">{t('confirmModifyGovernanceDescription')}</Text>
-      <Divider marginBottom="1rem" />
+    <Flex
+      flexDirection="column"
+      gap={4}
+      pt={2}
+      alignItems="center"
+    >
+      <Image
+        src="/images/warning-yellow.svg"
+        w="2rem"
+        h="2rem"
+      />
+
+      <Text textStyle="heading-medium">{t('confirmModifyGovernanceTitle')}</Text>
+
       <Text
         marginBottom="1rem"
-        textStyle="heading-medium"
+        textStyle="label-large"
+        color="neutral-7"
       >
-        {t('confirmAction')}
+        {t('confirmModifyGovernanceDescription')}
       </Text>
-      <Link to={DAO_ROUTES.modifyGovernance.relative(addressPrefix, safeAddress)}>
+
+      <Flex
+        flexDirection="row"
+        gap={4}
+        alignItems="center"
+      >
         <Button
+          size="md"
+          px={8}
+          py={3}
           width="100%"
+          variant="secondary"
           onClick={close}
         >
-          {t('modalContinue')}
+          {t('modalCancel')}
         </Button>
-      </Link>
-      <Button
-        marginTop="0.5rem"
-        width="100%"
-        variant="tertiary"
-        onClick={close}
-      >
-        {t('modalCancel')}
-      </Button>
-    </Box>
+        <Link to={DAO_ROUTES.modifyGovernance.relative(addressPrefix, safeAddress)}>
+          <Button
+            size="md"
+            px={8}
+            py={3}
+            width="100%"
+            onClick={close}
+          >
+            {t('modalContinue')}
+          </Button>
+        </Link>
+      </Flex>
+    </Flex>
   );
 }
