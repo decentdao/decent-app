@@ -23,6 +23,7 @@ export type GovernancesSlice = {
   setProposals: (daoKey: DAOKey, proposals: FractalProposal[]) => void;
   setProposal: (daoKey: DAOKey, proposal: AzoriusProposal) => void;
   setLoadingFirstProposal: (daoKey: DAOKey, loading: boolean) => void;
+  setAllProposalsLoaded: (daoKey: DAOKey, loaded: boolean) => void;
   getGovernance: (daoKey: DAOKey) => FractalGovernance & FractalGovernanceContracts;
 };
 
@@ -146,6 +147,15 @@ export const createGovernancesSlice: StateCreator<
       },
       false,
       'setLoadingFirstProposal',
+    );
+  },
+  setAllProposalsLoaded: (daoKey: DAOKey, loaded: boolean) => {
+    set(
+      state => {
+        state.governances[daoKey].allProposalsLoaded = loaded;
+      },
+      false,
+      'setAllProposalsLoaded',
     );
   },
   getGovernance: daoKey => {

@@ -44,6 +44,7 @@ import {
   FractalProposalState,
   FractalTokenType,
   FractalVotingStrategy,
+  GovernanceType,
   ProposalTemplate,
   TokenEventType,
   TransferDisplayData,
@@ -99,6 +100,7 @@ export const useGlobalStoreFetcher = ({
     setProposals,
     setProposal,
     setLoadingFirstProposal,
+    setAllProposalsLoaded
   } = useGlobalStore();
   const { t } = useTranslation(['dashboard']);
   const { chain, getConfigByChainId, nativeTokenIcon } = useNetworkConfigStore();
@@ -188,7 +190,9 @@ export const useGlobalStoreFetcher = ({
         setMultisigGovernance(_daoKey);
         const multisigTransactions = await safeApi.getMultisigTransactions(daoAddress);
         const activities = await parseTransactions(multisigTransactions);
+        setLoadingFirstProposal(_daoKey, false);
         setProposals(_daoKey, activities);
+        setAllProposalsLoaded(_daoKey, true);
       } else {
         const azoriusContract = getContract({
           abi: abis.Azorius,
@@ -293,11 +297,6 @@ export const useGlobalStoreFetcher = ({
           } else {
             return undefined;
           }
-        };
-
-        const completeOneProposalLoadProcess = (proposal: AzoriusProposal) => {
-          setProposal(_daoKey, proposal);
-          setLoadingFirstProposal(_daoKey, false);
         };
 
         if (!votingStrategies) {
@@ -462,6 +461,7 @@ export const useGlobalStoreFetcher = ({
               pendingProposals: null,
               isAzorius: true,
               lockedVotesToken: lockedVotesTokenData,
+              type: GovernanceType.AZORIUS_ERC20
             });
 
             // Fetch Claiming Contract
@@ -488,12 +488,22 @@ export const useGlobalStoreFetcher = ({
               await azoriusContract.getEvents.ProposalCreated({ fromBlock: 0n })
             ).reverse();
 
+            const completeOneProposalLoadProcess = (proposal: AzoriusProposal, index: number) => {
+              setProposal(_daoKey, proposal);
+              setLoadingFirstProposal(_daoKey, false);
+    
+              if (index === proposalCreatedEvents.length - 1) {
+                setAllProposalsLoaded(_daoKey, true);
+              }
+            };
+
             if (!proposalCreatedEvents.length) {
               setLoadingFirstProposal(_daoKey, false);
+              setAllProposalsLoaded(_daoKey, true);
               return;
             }
 
-            for (const proposalCreatedEvent of proposalCreatedEvents) {
+            for (const [index, proposalCreatedEvent] of proposalCreatedEvents.entries()) {
               if (proposalCreatedEvent.args.proposalId === undefined) {
                 continue;
               }
@@ -505,7 +515,7 @@ export const useGlobalStoreFetcher = ({
               });
 
               if (cachedProposal) {
-                completeOneProposalLoadProcess(cachedProposal);
+                completeOneProposalLoadProcess(cachedProposal, index);
                 continue;
               }
 
@@ -571,7 +581,7 @@ export const useGlobalStoreFetcher = ({
                 proposalData,
               );
 
-              completeOneProposalLoadProcess(proposal);
+              completeOneProposalLoadProcess(proposal, index);
 
               const isProposalFossilized =
                 proposal.state === FractalProposalState.CLOSED ||
@@ -665,6 +675,7 @@ export const useGlobalStoreFetcher = ({
               proposals: null,
               pendingProposals: null,
               isAzorius: true,
+              type: GovernanceType.AZORIUS_ERC721
             });
 
             // Now - fetch proposals
@@ -683,10 +694,20 @@ export const useGlobalStoreFetcher = ({
 
             if (!proposalCreatedEvents.length) {
               setLoadingFirstProposal(_daoKey, false);
+              setAllProposalsLoaded(_daoKey, true);
               return;
             }
 
-            for (const proposalCreatedEvent of proposalCreatedEvents) {
+            const completeOneProposalLoadProcess = (proposal: AzoriusProposal, index: number) => {
+              setProposal(_daoKey, proposal);
+              setLoadingFirstProposal(_daoKey, false);
+    
+              if (index === proposalCreatedEvents.length - 1) {
+                setAllProposalsLoaded(_daoKey, true);
+              }
+            };
+
+            for (const [index, proposalCreatedEvent] of proposalCreatedEvents.entries()) {
               if (proposalCreatedEvent.args.proposalId === undefined) {
                 continue;
               }
@@ -698,7 +719,7 @@ export const useGlobalStoreFetcher = ({
               });
 
               if (cachedProposal) {
-                completeOneProposalLoadProcess(cachedProposal);
+                completeOneProposalLoadProcess(cachedProposal, index);
                 continue;
               }
 
@@ -764,7 +785,7 @@ export const useGlobalStoreFetcher = ({
                 proposalData,
               );
 
-              completeOneProposalLoadProcess(proposal);
+              completeOneProposalLoadProcess(proposal, index);
 
               const isProposalFossilized =
                 proposal.state === FractalProposalState.CLOSED ||
@@ -803,6 +824,7 @@ export const useGlobalStoreFetcher = ({
       setProposal,
       t,
       setLoadingFirstProposal,
+      setAllProposalsLoaded,
       decode,
     ],
   );
