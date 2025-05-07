@@ -41,8 +41,11 @@ export const useValidationAddress = () => {
       validation: { address: string; isValidAddress: boolean };
       isValid: boolean;
     }> => {
+      console.log('validateAddress', address);
       if (checkENS && !isAddress(address)) {
+        console.log('checkENS', address);
         const resolvedAddress = await getEnsAddress({ name: normalize(address) });
+        console.log('resolvedAddress', resolvedAddress);
         if (resolvedAddress) {
           return {
             validation: {

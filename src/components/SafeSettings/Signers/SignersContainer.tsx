@@ -7,6 +7,7 @@ import { Address } from 'viem';
 import { useAccount } from 'wagmi';
 import useFeatureFlag from '../../../helpers/environmentFeatureFlags';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
+import { useValidationAddress } from '../../../hooks/schemas/common/useValidationAddress';
 import { useStore } from '../../../providers/App/AppProvider';
 import { ModalType } from '../../ui/modals/ModalProvider';
 import { useDecentModal } from '../../ui/modals/useDecentModal';
@@ -27,6 +28,8 @@ type NewSignerItem = SignerItem & {
   isAdding: true;
 };
 
+type NewSignerFormikErrors = { newSigners?: { key: string; error: string }[] };
+
 function Signer({
   signer,
   onRemove,
@@ -42,6 +45,12 @@ function Signer({
 
   const inputRef = useRef<HTMLInputElement>(null);
 
+  const isInvalid =
+    !!formik &&
+    signer.isAdding &&
+    signer.address &&
+    (formik.errors as NewSignerFormikErrors).newSigners?.some(error => error.key === signer.key);
+
   return (
     <Flex
       flexDirection="column"
@@ -51,7 +60,7 @@ function Signer({
         flexDirection="row"
         alignItems="center"
         gap={4}
-        key={signer.address}
+        key={signer.key}
         px={6}
         py={2}
       >
@@ -60,6 +69,7 @@ function Signer({
           value={signer.address}
           isDisabled={!signer.isAdding}
           color={signer.isAdding ? 'white-0' : 'neutral-3'}
+          isInvalid={isInvalid}
           onChange={e => {
             if (signer.isAdding) {
               // Find and overwrite the address prop of this new signer with the input value
@@ -104,9 +114,37 @@ export function SignersContainer() {
 
   const [signers, setSigners] = useState<ExistingSignerItem[]>([]);
 
+  const { t } = useTranslation(['common', 'breadcrumbs', 'daoEdit']);
+  const { validateAddress } = useValidationAddress();
+
   const formik = useFormik<{ newSigners: NewSignerItem[] }>({
     initialValues: {
       newSigners: [] as NewSignerItem[],
+    },
+    validate: async values => {
+      const errors: NewSignerFormikErrors = {};
+
+      if (values.newSigners.length > 0) {
+        const signerErrors = await Promise.all(
+          values.newSigners.map(async signer => {
+            if (!signer.address) {
+              return { key: signer.key, error: t('addressRequired', { ns: 'common' }) };
+            }
+
+            const validation = await validateAddress({ address: signer.address });
+            if (!validation.validation.isValidAddress) {
+              return { key: signer.key, error: t('invalidAddress', { ns: 'common' }) };
+            }
+            return null;
+          }),
+        );
+
+        if (signerErrors.some(error => error !== null)) {
+          errors.newSigners = signerErrors.filter(error => error !== null);
+        }
+      }
+
+      return errors;
     },
     onSubmit: values => {
       // Handle form submission
@@ -126,7 +164,6 @@ export function SignersContainer() {
   }, [signers, safe?.threshold]);
   const showAddSignerModal = useDecentModal(addSignerModalType, addSignerModalProps);
 
-  const { t } = useTranslation(['common', 'breadcrumbs', 'daoEdit']);
   const { address: account } = useAccount();
   const enableRemove = userIsSigner && signers.length > 1;
 
