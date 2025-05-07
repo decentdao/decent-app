@@ -89,11 +89,19 @@ export const useAzoriusProposals = () => {
     }
 
     return events;
-  }, [linearVotingErc20Address, linearVotingErc20WithHatsWhitelistingAddress, publicClient, storeFeatureEnabled]);
+  }, [
+    linearVotingErc20Address,
+    linearVotingErc20WithHatsWhitelistingAddress,
+    publicClient,
+    storeFeatureEnabled,
+  ]);
 
   const erc721VotedEvents = useMemo(async () => {
     let events: GetContractEventsReturnType<typeof abis.LinearERC721Voting, 'Voted'> | undefined;
-    if ((!linearVotingErc721Address && !linearVotingErc721WithHatsWhitelistingAddress) || storeFeatureEnabled) {
+    if (
+      (!linearVotingErc721Address && !linearVotingErc721WithHatsWhitelistingAddress) ||
+      storeFeatureEnabled
+    ) {
       return;
     }
 
@@ -120,7 +128,12 @@ export const useAzoriusProposals = () => {
     }
 
     return events;
-  }, [linearVotingErc721Address, linearVotingErc721WithHatsWhitelistingAddress, publicClient, storeFeatureEnabled]);
+  }, [
+    linearVotingErc721Address,
+    linearVotingErc721WithHatsWhitelistingAddress,
+    publicClient,
+    storeFeatureEnabled,
+  ]);
 
   const executedEvents = useMemo(async () => {
     if (!azoriusContract || storeFeatureEnabled) {
