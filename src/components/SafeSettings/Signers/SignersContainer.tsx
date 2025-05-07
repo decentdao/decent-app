@@ -118,7 +118,7 @@ export function SignersContainer() {
               iconSpacing="0"
             >
               <Show above="sm">
-                <Text>{t('add')}</Text>
+                <Text>{t('addOwner')}</Text>
               </Show>
             </Button>
           </Flex>
