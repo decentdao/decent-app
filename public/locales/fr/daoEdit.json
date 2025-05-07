@@ -1,6 +1,6 @@
 {
   "cannotModifyGovernance": "Vous n'avez pas le droit de modifier la gouvernance de ce coffre-fort.",
   "launchToken": "Jeton de lancement",
-  "launchTokenTitle": "TOKENIZE YOUR GOVERNANCE",
+  "launchTokenTitle": "TOKENISEZ VOTRE GOUVERNANCE",
   "launchTokenDescription": "Lancez votre propre jeton de gouvernance et faites voter les propositions par jeton."
 }

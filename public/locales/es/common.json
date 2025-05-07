@@ -91,7 +91,7 @@
   "threshold": "Umbral",
   "thresholdDescription": "Número de propietarios necesarios para aprobar una propuesta.",
   "daoDetails": "Detalles de seguridad",
-  "ownersRequired": "Propietarios Obligatorio",
+  "ownersRequired": "Propietarios Obligatorios",
   "ownersDescription": "El número de propietarios necesario para ejecutar una propuesta. Añadir o eliminar un propietario requerirá una propuesta.",
   "etherscanTip": "Abrir en Etherscan",
   "max": "Max",
