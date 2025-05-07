@@ -16,7 +16,7 @@ import { usePageTitle } from '../../hooks/utils/usePageTitle';
 import { useTemporaryProposals } from '../../hooks/utils/useTemporaryProposals';
 import { useUpdateSafeData } from '../../hooks/utils/useUpdateSafeData';
 import { useStore } from '../../providers/App/AppProvider';
-import { useGlobalStoreFetcher } from '../../store/fetcher';
+import { useStoreFetcher } from '../../store/fetcher';
 import LoadingProblem from '../LoadingProblem';
 
 export function SafeController() {
@@ -50,7 +50,7 @@ export function SafeController() {
   useKeyValuePairs();
   useHatsTree();
 
-  useGlobalStoreFetcher();
+  useStoreFetcher({ daoKey, safeAddress, invalidQuery, wrongNetwork });
 
   // the order of the if blocks of these next three error states matters
   if (invalidQuery) {
