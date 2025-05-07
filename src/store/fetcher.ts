@@ -14,6 +14,7 @@ import {
 } from 'viem';
 import { useAccount } from 'wagmi';
 import LockReleaseAbi from '../assets/abi/LockRelease';
+import { SENTINEL_ADDRESS } from '../constants/common';
 import { createDecentSubgraphClient } from '../graphql';
 import { DAOQuery, DAOQueryResponse } from '../graphql/DAOQueries';
 import useFeatureFlag from '../helpers/environmentFeatureFlags';
@@ -29,7 +30,6 @@ import {
 import { useSafeDecoder } from '../hooks/utils/useSafeDecoder';
 import { useSafeTransactions } from '../hooks/utils/useSafeTransactions';
 import { useTimeHelpers } from '../hooks/utils/useTimeHelpers';
-import useVotingStrategiesAddresses from '../hooks/utils/useVotingStrategiesAddresses';
 import useBalancesAPI from '../providers/App/hooks/useBalancesAPI';
 import useIPFSClient from '../providers/App/hooks/useIPFSClient';
 import { useSafeAPI } from '../providers/App/hooks/useSafeAPI';
@@ -105,7 +105,6 @@ export const useGlobalStoreFetcher = ({
   const storeFeatureEnabled = useFeatureFlag('flag_store_v2');
   const { getAddressContractType } = useAddressContractType();
   const publicClient = useNetworkPublicClient();
-  const { getVotingStrategies } = useVotingStrategiesAddresses();
   const ipfsClient = useIPFSClient();
   const { address: account } = useAccount();
   const { getTimeDuration } = useTimeHelpers();
@@ -171,6 +170,8 @@ export const useGlobalStoreFetcher = ({
     [ipfsClient, setProposalTemplates],
   );
 
+  useEffect(() => {}, []);
+
   const fetchDAOGovernance = useCallback(
     async ({
       daoAddress,
@@ -194,7 +195,21 @@ export const useGlobalStoreFetcher = ({
           address: azoriusModule.moduleAddress,
           client: publicClient,
         });
-        const votingStrategies = await getVotingStrategies(daoAddress);
+        const [strateiges, nextStrategy] = await azoriusContract.read.getStrategies([
+          SENTINEL_ADDRESS,
+          3n,
+        ]);
+        const votingStrategies = await Promise.all(
+          [...strateiges, nextStrategy]
+            .filter(
+              strategyAddress =>
+                strategyAddress !== SENTINEL_ADDRESS && strategyAddress !== zeroAddress,
+            )
+            .map(async strategyAddress => ({
+              ...(await getAddressContractType(strategyAddress)),
+              strategyAddress,
+            })),
+        );
         let votesTokenAddress: Address | undefined;
         let lockReleaseAddress: Address | undefined;
 
@@ -777,7 +792,6 @@ export const useGlobalStoreFetcher = ({
     [
       getAddressContractType,
       publicClient,
-      getVotingStrategies,
       account,
       getTimeDuration,
       setMultisigGovernance,
