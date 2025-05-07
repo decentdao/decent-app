@@ -8,6 +8,7 @@ import {
   PublicClient,
   getContract,
 } from 'viem';
+import useFeatureFlag from '../../../../helpers/environmentFeatureFlags';
 import { logError } from '../../../../helpers/errorLogging';
 import { useStore } from '../../../../providers/App/AppProvider';
 import { FractalGovernanceAction } from '../../../../providers/App/governance/action';
@@ -44,6 +45,7 @@ export const useAzoriusProposals = () => {
   const decode = useSafeDecoder();
   const publicClient = useNetworkPublicClient();
   const { getAddressContractType } = useAddressContractType();
+  const storeFeatureEnabled = useFeatureFlag('flag_store_v2');
 
   const azoriusContract = useMemo(() => {
     if (!moduleAzoriusAddress) {
@@ -166,7 +168,7 @@ export const useAzoriusProposals = () => {
       ) => Promise<DecodedTransaction[]>,
       _proposalLoaded: OnProposalLoaded,
     ) => {
-      if (!_azoriusContract || !_publicClient) {
+      if (!_azoriusContract || !_publicClient || storeFeatureEnabled) {
         return;
       }
       const proposalCreatedEvents = (
@@ -339,7 +341,7 @@ export const useAzoriusProposals = () => {
         payload: true,
       });
     },
-    [action, moduleAzoriusAddress, t, getAddressContractType],
+    [action, moduleAzoriusAddress, t, getAddressContractType, storeFeatureEnabled],
   );
 
   return async (proposalLoaded: OnProposalLoaded) =>

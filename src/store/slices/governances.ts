@@ -5,26 +5,43 @@ import {
   AzoriusProposal,
   DAOKey,
   DecentGovernance,
+  ERC721TokenData,
   FractalGovernance,
   FractalGovernanceContracts,
   FractalProposal,
+  FractalVotingStrategy,
   GovernanceType,
   ProposalTemplate,
+  VotesTokenData,
+  VotingStrategy,
 } from '../../types';
 import { GlobalStore, StoreMiddleware, StoreSlice } from '../store';
+
+type SetAzoriusGovernancePayload = {
+  votesToken: VotesTokenData | undefined;
+  erc721Tokens: ERC721TokenData[] | undefined;
+  linearVotingErc20Address?: Address;
+  linearVotingErc20WithHatsWhitelistingAddress?: Address;
+  linearVotingErc721Address?: Address;
+  linearVotingErc721WithHatsWhitelistingAddress?: Address;
+  isLoaded: boolean;
+  strategies: FractalVotingStrategy[];
+  votingStrategy: VotingStrategy;
+  isAzorius: boolean;
+  lockedVotesToken?: VotesTokenData;
+  type: GovernanceType;
+};
 
 export type GovernancesSlice = {
   governances: StoreSlice<FractalGovernance & FractalGovernanceContracts>;
   setProposalTemplates: (daoKey: DAOKey, proposalTemplates: ProposalTemplate[]) => void;
   setMultisigGovernance: (daoKey: DAOKey) => void;
-  setAzoriusGovernance: (
-    daoKey: DAOKey,
-    governance: FractalGovernance & FractalGovernanceContracts,
-  ) => void;
+  setAzoriusGovernance: (daoKey: DAOKey, payload: SetAzoriusGovernancePayload) => void;
   setTokenClaimContractAddress: (daoKey: DAOKey, tokenClaimContractAddress: Address) => void;
   setProposals: (daoKey: DAOKey, proposals: FractalProposal[]) => void;
   setProposal: (daoKey: DAOKey, proposal: AzoriusProposal) => void;
   setLoadingFirstProposal: (daoKey: DAOKey, loading: boolean) => void;
+  setAllProposalsLoaded: (daoKey: DAOKey, loaded: boolean) => void;
   getGovernance: (daoKey: DAOKey) => FractalGovernance & FractalGovernanceContracts;
   setGovernanceAccountData: (
     daoKey: DAOKey,
@@ -53,7 +70,7 @@ export const createGovernancesSlice: StateCreator<
   GovernancesSlice
 > = (set, get) => ({
   governances: {},
-  setProposalTemplates: (daoKey: DAOKey, proposalTemplates: ProposalTemplate[]) => {
+  setProposalTemplates: (daoKey, proposalTemplates) => {
     set(
       state => {
         if (!state.governances[daoKey]) {
@@ -69,7 +86,7 @@ export const createGovernancesSlice: StateCreator<
       'setProposalTemplates',
     );
   },
-  setMultisigGovernance: (daoKey: DAOKey) => {
+  setMultisigGovernance: daoKey => {
     set(
       state => {
         if (!state.governances[daoKey]) {
@@ -85,24 +102,21 @@ export const createGovernancesSlice: StateCreator<
       'setMultisigGovernance',
     );
   },
-  setAzoriusGovernance: (
-    daoKey: DAOKey,
-    governance: FractalGovernance & FractalGovernanceContracts,
-  ) => {
+  setAzoriusGovernance: (daoKey, payload) => {
     set(
       state => {
         if (!state.governances[daoKey]) {
           state.governances[daoKey] = {
             ...EMPTY_GOVERNANCE,
-            ...governance,
+            ...payload,
           };
         } else {
-          for (const governanceProperty in governance) {
+          for (const governanceProperty in payload) {
             // TODO: Is there a better way to "assign all properties"
-            const typedGovernanceProperty = governanceProperty as keyof typeof governance;
+            const typedGovernanceProperty = governanceProperty as keyof typeof payload;
             const typedStoreGovernanceProperty =
               governanceProperty as keyof (typeof state.governances)[typeof daoKey];
-            state.governances[daoKey][typedStoreGovernanceProperty] = governance[
+            state.governances[daoKey][typedStoreGovernanceProperty] = payload[
               typedGovernanceProperty
             ] as never;
           }
@@ -112,7 +126,7 @@ export const createGovernancesSlice: StateCreator<
       'setAzoriusGovernance',
     );
   },
-  setTokenClaimContractAddress: (daoKey: DAOKey, tokenClaimContractAddress: Address) => {
+  setTokenClaimContractAddress: (daoKey, tokenClaimContractAddress) => {
     set(
       state => {
         state.governances[daoKey].tokenClaimContractAddress = tokenClaimContractAddress;
@@ -121,7 +135,7 @@ export const createGovernancesSlice: StateCreator<
       'setTokenClaimContractAddress',
     );
   },
-  setProposals: (daoKey: DAOKey, proposals: FractalProposal[]) => {
+  setProposals: (daoKey, proposals) => {
     set(
       state => {
         state.governances[daoKey].proposals = proposals;
@@ -130,7 +144,7 @@ export const createGovernancesSlice: StateCreator<
       'setProposals',
     );
   },
-  setProposal: (daoKey: DAOKey, proposal: AzoriusProposal) => {
+  setProposal: (daoKey, proposal) => {
     set(
       state => {
         if (!state.governances[daoKey].proposals) {
@@ -149,7 +163,7 @@ export const createGovernancesSlice: StateCreator<
       'setProposal',
     );
   },
-  setLoadingFirstProposal: (daoKey: DAOKey, loading: boolean) => {
+  setLoadingFirstProposal: (daoKey, loading) => {
     set(
       state => {
         state.governances[daoKey].loadingProposals = loading;
@@ -191,6 +205,15 @@ export const createGovernancesSlice: StateCreator<
       decentGovernance.lockedVotesToken.balance = lockReleaseAccountData.balance;
       decentGovernance.lockedVotesToken.delegatee = lockReleaseAccountData.delegatee;
     });
+  },
+  setAllProposalsLoaded: (daoKey, loaded) => {
+    set(
+      state => {
+        state.governances[daoKey].allProposalsLoaded = loaded;
+      },
+      false,
+      'setAllProposalsLoaded',
+    );
   },
   getGovernance: daoKey => {
     const governance = get().governances[daoKey];

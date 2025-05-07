@@ -4,8 +4,6 @@ import { DAO_ROUTES } from '../../../../constants/routes';
 import { URL_DOCS, URL_FAQ } from '../../../../constants/url';
 import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
 import { LanguageSwitcher } from '../../../../i18n/LanguageSwitcher';
-import { useStore } from '../../../../providers/App/AppProvider';
-import { useNetworkConfigStore } from '../../../../providers/NetworkConfig/useNetworkConfigStore';
 import Divider from '../../utils/Divider';
 import { NavigationLink } from './NavigationLink';
 
@@ -46,13 +44,7 @@ function ExternalLinks({ closeDrawer }: { closeDrawer?: () => void }) {
 }
 
 function InternalLinks({ closeDrawer }: { closeDrawer?: () => void }) {
-  const { daoKey } = useCurrentDAOKey();
-  const {
-    node: { safe },
-  } = useStore({ daoKey });
-  const { addressPrefix } = useNetworkConfigStore();
-
-  const safeAddress = safe?.address;
+  const { safeAddress, addressPrefix } = useCurrentDAOKey();
 
   if (!safeAddress) {
     return null;
