@@ -1,6 +1,7 @@
 import { abis } from '@fractal-framework/fractal-contracts';
 import { useEffect, useMemo } from 'react';
 import { getContract } from 'viem';
+import useFeatureFlag from '../../../../helpers/environmentFeatureFlags';
 import { logError } from '../../../../helpers/errorLogging';
 import { useStore } from '../../../../providers/App/AppProvider';
 import { FractalGovernanceAction } from '../../../../providers/App/governance/action';
@@ -31,6 +32,8 @@ export const useAzoriusListeners = () => {
   const decode = useSafeDecoder();
   const publicClient = useNetworkPublicClient();
   const { getAddressContractType } = useAddressContractType();
+
+  const storeFeatureEnabled = useFeatureFlag('flag_store_v2');
 
   const azoriusContract = useMemo(() => {
     if (!moduleAzoriusAddress) {
@@ -93,7 +96,7 @@ export const useAzoriusListeners = () => {
   }, [linearVotingErc721WithHatsWhitelistingAddress, publicClient]);
 
   useEffect(() => {
-    if (!azoriusContract) {
+    if (!azoriusContract || storeFeatureEnabled) {
       return;
     }
 
@@ -177,10 +180,10 @@ export const useAzoriusListeners = () => {
     return () => {
       unwatch();
     };
-  }, [action, azoriusContract, decode, publicClient, getAddressContractType]);
+  }, [action, azoriusContract, decode, publicClient, getAddressContractType, storeFeatureEnabled]);
 
   useEffect(() => {
-    if (!erc20StrategyContract) {
+    if (!erc20StrategyContract || storeFeatureEnabled) {
       return;
     }
 
@@ -214,10 +217,10 @@ export const useAzoriusListeners = () => {
     return () => {
       unwatch();
     };
-  }, [action, erc20StrategyContract]);
+  }, [action, erc20StrategyContract, storeFeatureEnabled]);
 
   useEffect(() => {
-    if (!erc20WithHatsProposalCreationStrategyContract) {
+    if (!erc20WithHatsProposalCreationStrategyContract || storeFeatureEnabled) {
       return;
     }
 
@@ -251,10 +254,10 @@ export const useAzoriusListeners = () => {
     return () => {
       unwatch();
     };
-  }, [action, erc20WithHatsProposalCreationStrategyContract]);
+  }, [action, erc20WithHatsProposalCreationStrategyContract, storeFeatureEnabled]);
 
   useEffect(() => {
-    if (!erc721StrategyContract) {
+    if (!erc721StrategyContract || storeFeatureEnabled) {
       return;
     }
 
@@ -295,10 +298,10 @@ export const useAzoriusListeners = () => {
     return () => {
       unwatch();
     };
-  }, [action, erc721StrategyContract]);
+  }, [action, erc721StrategyContract, storeFeatureEnabled]);
 
   useEffect(() => {
-    if (!erc721WithHatsProposalCreationStrategyContract) {
+    if (!erc721WithHatsProposalCreationStrategyContract || storeFeatureEnabled) {
       return;
     }
 
@@ -339,5 +342,5 @@ export const useAzoriusListeners = () => {
     return () => {
       unwatch();
     };
-  }, [action, erc721WithHatsProposalCreationStrategyContract]);
+  }, [action, erc721WithHatsProposalCreationStrategyContract, storeFeatureEnabled]);
 };
