@@ -50,7 +50,7 @@ export function SafeController() {
   useKeyValuePairs();
   useHatsTree();
 
-  useGlobalStoreFetcher();
+  useGlobalStoreFetcher({ daoKey, safeAddress, invalidQuery, wrongNetwork });
 
   // the order of the if blocks of these next three error states matters
   if (invalidQuery) {

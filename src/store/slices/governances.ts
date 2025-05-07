@@ -1,0 +1,181 @@
+import { Address } from 'viem';
+import { StateCreator } from 'zustand';
+import {
+  AzoriusProposal,
+  DAOKey,
+  ERC721TokenData,
+  FractalGovernance,
+  FractalGovernanceContracts,
+  FractalProposal,
+  FractalVotingStrategy,
+  GovernanceType,
+  ProposalTemplate,
+  VotesTokenData,
+  VotingStrategy,
+} from '../../types';
+import { GlobalStore, StoreMiddleware, StoreSlice } from '../store';
+
+type SetAzoriusGovernancePayload = {
+  votesToken: VotesTokenData | undefined;
+  erc721Tokens: ERC721TokenData[] | undefined;
+  linearVotingErc20Address?: Address;
+  linearVotingErc20WithHatsWhitelistingAddress?: Address;
+  linearVotingErc721Address?: Address;
+  linearVotingErc721WithHatsWhitelistingAddress?: Address;
+  isLoaded: boolean;
+  strategies: FractalVotingStrategy[];
+  votingStrategy: VotingStrategy;
+  isAzorius: boolean;
+  lockedVotesToken?: VotesTokenData;
+  type: GovernanceType;
+};
+
+export type GovernancesSlice = {
+  governances: StoreSlice<FractalGovernance & FractalGovernanceContracts>;
+  setProposalTemplates: (daoKey: DAOKey, proposalTemplates: ProposalTemplate[]) => void;
+  setMultisigGovernance: (daoKey: DAOKey) => void;
+  setAzoriusGovernance: (daoKey: DAOKey, payload: SetAzoriusGovernancePayload) => void;
+  setTokenClaimContractAddress: (daoKey: DAOKey, tokenClaimContractAddress: Address) => void;
+  setProposals: (daoKey: DAOKey, proposals: FractalProposal[]) => void;
+  setProposal: (daoKey: DAOKey, proposal: AzoriusProposal) => void;
+  setLoadingFirstProposal: (daoKey: DAOKey, loading: boolean) => void;
+  setAllProposalsLoaded: (daoKey: DAOKey, loaded: boolean) => void;
+  getGovernance: (daoKey: DAOKey) => FractalGovernance & FractalGovernanceContracts;
+};
+
+const EMPTY_GOVERNANCE: FractalGovernance & FractalGovernanceContracts = {
+  loadingProposals: false,
+  allProposalsLoaded: false,
+  proposals: null,
+  pendingProposals: null,
+  isAzorius: false,
+  isLoaded: false,
+  strategies: [],
+};
+
+export const createGovernancesSlice: StateCreator<
+  GlobalStore,
+  StoreMiddleware,
+  [],
+  GovernancesSlice
+> = (set, get) => ({
+  governances: {},
+  setProposalTemplates: (daoKey, proposalTemplates) => {
+    set(
+      state => {
+        if (!state.governances[daoKey]) {
+          state.governances[daoKey] = {
+            ...EMPTY_GOVERNANCE,
+            proposalTemplates,
+          };
+        } else {
+          state.governances[daoKey].proposalTemplates = proposalTemplates;
+        }
+      },
+      false,
+      'setProposalTemplates',
+    );
+  },
+  setMultisigGovernance: daoKey => {
+    set(
+      state => {
+        if (!state.governances[daoKey]) {
+          state.governances[daoKey] = {
+            ...EMPTY_GOVERNANCE,
+            type: GovernanceType.MULTISIG,
+          };
+        } else {
+          state.governances[daoKey].type = GovernanceType.MULTISIG;
+        }
+      },
+      false,
+      'setMultisigGovernance',
+    );
+  },
+  setAzoriusGovernance: (daoKey, payload) => {
+    set(
+      state => {
+        if (!state.governances[daoKey]) {
+          state.governances[daoKey] = {
+            ...EMPTY_GOVERNANCE,
+            ...payload,
+          };
+        } else {
+          for (const governanceProperty in payload) {
+            // TODO: Is there a better way to "assign all properties"
+            const typedGovernanceProperty = governanceProperty as keyof typeof payload;
+            const typedStoreGovernanceProperty =
+              governanceProperty as keyof (typeof state.governances)[typeof daoKey];
+            state.governances[daoKey][typedStoreGovernanceProperty] = payload[
+              typedGovernanceProperty
+            ] as never;
+          }
+        }
+      },
+      false,
+      'setAzoriusGovernance',
+    );
+  },
+  setTokenClaimContractAddress: (daoKey, tokenClaimContractAddress) => {
+    set(
+      state => {
+        state.governances[daoKey].tokenClaimContractAddress = tokenClaimContractAddress;
+      },
+      false,
+      'setTokenClaimContractAddress',
+    );
+  },
+  setProposals: (daoKey, proposals) => {
+    set(
+      state => {
+        state.governances[daoKey].proposals = proposals;
+      },
+      false,
+      'setProposals',
+    );
+  },
+  setProposal: (daoKey, proposal) => {
+    set(
+      state => {
+        if (!state.governances[daoKey].proposals) {
+          state.governances[daoKey].proposals = [];
+        }
+        const existingProposalIndex = state.governances[daoKey].proposals.findIndex(
+          p => p.proposalId === proposal.proposalId,
+        );
+        if (existingProposalIndex !== -1) {
+          state.governances[daoKey].proposals[existingProposalIndex] = proposal;
+        } else {
+          state.governances[daoKey].proposals.push(proposal);
+        }
+      },
+      false,
+      'setProposal',
+    );
+  },
+  setLoadingFirstProposal: (daoKey, loading) => {
+    set(
+      state => {
+        state.governances[daoKey].loadingProposals = loading;
+      },
+      false,
+      'setLoadingFirstProposal',
+    );
+  },
+  setAllProposalsLoaded: (daoKey, loaded) => {
+    set(
+      state => {
+        state.governances[daoKey].allProposalsLoaded = loaded;
+      },
+      false,
+      'setAllProposalsLoaded',
+    );
+  },
+  getGovernance: daoKey => {
+    const governance = get().governances[daoKey];
+    if (!governance) {
+      return EMPTY_GOVERNANCE;
+    }
+    return governance;
+  },
+});
