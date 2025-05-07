@@ -29,7 +29,7 @@ import {
 import { validateENSName } from '../../../../utils/url';
 
 export function SafeGeneralSettingsPage() {
-  const { t } = useTranslation(['settings', 'settingsMetadata']);
+  const { t } = useTranslation('settings');
   const [name, setName] = useState('');
   const [snapshotENS, setSnapshotENS] = useState('');
   const [snapshotENSValid, setSnapshotENSValid] = useState<boolean>();
