@@ -61,7 +61,10 @@ export const useAzoriusProposals = () => {
 
   const erc20VotedEvents = useMemo(async () => {
     let events: GetContractEventsReturnType<typeof abis.LinearERC20Voting, 'Voted'> | undefined;
-    if (!linearVotingErc20Address && !linearVotingErc20WithHatsWhitelistingAddress) {
+    if (
+      (!linearVotingErc20Address && !linearVotingErc20WithHatsWhitelistingAddress) ||
+      storeFeatureEnabled
+    ) {
       return;
     }
 
@@ -86,11 +89,11 @@ export const useAzoriusProposals = () => {
     }
 
     return events;
-  }, [linearVotingErc20Address, linearVotingErc20WithHatsWhitelistingAddress, publicClient]);
+  }, [linearVotingErc20Address, linearVotingErc20WithHatsWhitelistingAddress, publicClient, storeFeatureEnabled]);
 
   const erc721VotedEvents = useMemo(async () => {
     let events: GetContractEventsReturnType<typeof abis.LinearERC721Voting, 'Voted'> | undefined;
-    if (!linearVotingErc721Address && !linearVotingErc721WithHatsWhitelistingAddress) {
+    if ((!linearVotingErc721Address && !linearVotingErc721WithHatsWhitelistingAddress) || storeFeatureEnabled) {
       return;
     }
 
@@ -117,16 +120,16 @@ export const useAzoriusProposals = () => {
     }
 
     return events;
-  }, [linearVotingErc721Address, linearVotingErc721WithHatsWhitelistingAddress, publicClient]);
+  }, [linearVotingErc721Address, linearVotingErc721WithHatsWhitelistingAddress, publicClient, storeFeatureEnabled]);
 
   const executedEvents = useMemo(async () => {
-    if (!azoriusContract) {
+    if (!azoriusContract || storeFeatureEnabled) {
       return;
     }
 
     const events = await azoriusContract.getEvents.ProposalExecuted({ fromBlock: 0n });
     return events;
-  }, [azoriusContract]);
+  }, [azoriusContract, storeFeatureEnabled]);
 
   useEffect(() => {
     if (!moduleAzoriusAddress) {

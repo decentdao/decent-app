@@ -17,7 +17,7 @@ import {
 } from '../../types';
 import { GlobalStore, StoreMiddleware, StoreSlice } from '../store';
 
-type SetAzoriusGovernancePayload = {
+export type SetAzoriusGovernancePayload = {
   votesToken: VotesTokenData | undefined;
   erc721Tokens: ERC721TokenData[] | undefined;
   linearVotingErc20Address?: Address;
