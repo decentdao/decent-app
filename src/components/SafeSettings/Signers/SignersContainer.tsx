@@ -2,7 +2,7 @@ import { Box, Button, Flex, Icon, Input, Show, Text, Image } from '@chakra-ui/re
 import { MinusCircle, PlusCircle } from '@phosphor-icons/react';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Address, getAddress } from 'viem';
+import { Address } from 'viem';
 import { useAccount } from 'wagmi';
 import useFeatureFlag from '../../../helpers/environmentFeatureFlags';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
@@ -11,32 +11,25 @@ import { ModalType } from '../../ui/modals/ModalProvider';
 import { useDecentModal } from '../../ui/modals/useDecentModal';
 import Divider from '../../ui/utils/Divider';
 
-function Signer({
-  signer,
-  signers,
-  threshold,
-  enableRemove,
-}: {
-  signer: Address;
-  signers: Address[];
-  threshold: number | undefined;
-  enableRemove: boolean;
-}) {
-  const [modalType, props] = useMemo(() => {
-    if (!signers || !threshold) {
-      return [ModalType.NONE] as const;
-    }
-    return [
-      ModalType.REMOVE_SIGNER,
-      {
-        selectedSigner: signer,
-        signers: signers,
-        currentThreshold: threshold,
-      },
-    ] as const;
-  }, [signer, signers, threshold]);
+type SignerItem = {
+  key: string;
+  address?: Address;
+  isAdding: boolean;
+};
 
-  const removeSigner = useDecentModal(modalType, props);
+type ExistingSignerItem = SignerItem & {
+  address: Address;
+  isAdding: false;
+};
+
+type NewSignerItem = SignerItem & {
+  isAdding: true;
+};
+
+function Signer({ signer, onRemove }: { signer: SignerItem; onRemove: (() => void) | null }) {
+  if (!signer.isAdding && !signer.address) {
+    throw new Error('Signer does not have an address');
+  }
 
   return (
     <Flex
@@ -47,23 +40,23 @@ function Signer({
         flexDirection="row"
         alignItems="center"
         gap={4}
-        key={signer}
+        key={signer.address}
         px={6}
         py={2}
       >
         <Input
-          value={signer}
-          isDisabled
-          color="neutral-7"
+          value={signer.address}
+          isDisabled={!signer.isAdding}
+          color={signer.isAdding ? 'white-0' : 'neutral-3'}
         />
 
-        {enableRemove && (
+        {onRemove && (
           <Button
             variant="tertiary"
             aria-label="Remove Signer"
             h="1.5rem"
             p="0"
-            onClick={removeSigner}
+            onClick={onRemove}
           >
             <Icon
               as={MinusCircle}
@@ -83,34 +76,80 @@ export function SignersContainer() {
   const {
     node: { safe },
   } = useStore({ daoKey });
-  const [signers, setSigners] = useState<Address[]>();
   const [userIsSigner, setUserIsSigner] = useState(false);
 
-  const [modalType, props] = useMemo(() => {
-    if (!signers) {
+  const [signers, setSigners] = useState<ExistingSignerItem[]>([]);
+  const [newSigners, setNewSigners] = useState<NewSignerItem[]>([]);
+
+  const [addSignerModalType, addSignerModalProps] = useMemo(() => {
+    if (safe?.threshold === undefined) {
       return [ModalType.NONE] as const;
     }
-    return [ModalType.ADD_SIGNER, { signers, currentThreshold: safe?.threshold }] as const;
-  }, [signers, safe?.threshold]);
 
-  const addSigner = useDecentModal(modalType, props);
+    return [
+      ModalType.ADD_SIGNER,
+      { signers: signers.map(s => s.address), currentThreshold: safe.threshold },
+    ] as const;
+  }, [signers, safe?.threshold]);
+  const showAddSignerModal = useDecentModal(addSignerModalType, addSignerModalProps);
+
   const { t } = useTranslation(['common', 'breadcrumbs', 'daoEdit']);
   const { address: account } = useAccount();
-  const enableRemove = userIsSigner && !!signers && signers?.length > 1;
+  const enableRemove = userIsSigner && signers.length > 1;
+
+  const genSignerItemKey = () => Math.random().toString(36).substring(2, 15);
 
   useEffect(() => {
-    setSigners(safe?.owners.map(owner => getAddress(owner)));
-  }, [safe?.owners]);
-
-  useEffect(() => {
-    if (!signers) {
+    if (!safe?.owners) {
       return;
     }
 
-    setUserIsSigner(account !== undefined && signers.includes(account));
+    setSigners(
+      safe.owners.map(owner => ({
+        key: genSignerItemKey(),
+        address: owner,
+        isAdding: false,
+      })),
+    );
+  }, [safe?.owners]);
+
+  useEffect(() => {
+    setUserIsSigner(
+      account !== undefined &&
+        signers.some(signer => !signer.isAdding && signer.address === account),
+    );
   }, [account, signers]);
 
   const isSettingsV1FeatureEnabled = useFeatureFlag('flag_settings_v1');
+
+  const [removingSigner, setRemovingSigner] = useState<SignerItem>();
+
+  const [removeSignerModalType, removeSignerModalProps] = useMemo(() => {
+    if (!safe?.threshold || !removingSigner?.address) {
+      return [ModalType.NONE] as const;
+    }
+
+    return [
+      ModalType.REMOVE_SIGNER,
+      {
+        selectedSigner: removingSigner.address,
+        signers: signers.map(s => s.address),
+        currentThreshold: safe.threshold,
+      },
+    ] as const;
+  }, [removingSigner, signers, safe?.threshold]);
+  const showRemoveSignerModal = useDecentModal(removeSignerModalType, removeSignerModalProps);
+
+  useEffect(() => {
+    if (removingSigner) {
+      showRemoveSignerModal();
+      setRemovingSigner(undefined);
+    }
+  }, [removingSigner, showRemoveSignerModal]);
+
+  const removeNewSigner = (signer: SignerItem) => {
+    setNewSigners(prevSigners => prevSigners.filter(s => s.key !== signer.key));
+  };
 
   return (
     <Box width="100%">
@@ -178,16 +217,21 @@ export function SignersContainer() {
         borderColor="neutral-3"
         borderRadius="0.75rem"
       >
-        {signers &&
-          signers.map(signer => (
-            <Signer
-              key={signer}
-              signer={signer}
-              signers={signers}
-              enableRemove={enableRemove}
-              threshold={safe?.threshold}
-            />
-          ))}
+        {signers.map(signer => (
+          <Signer
+            key={signer.key}
+            signer={signer}
+            onRemove={enableRemove ? () => setRemovingSigner(signer) : null}
+          />
+        ))}
+        {newSigners.map(signer => (
+          <Signer
+            key={signer.key}
+            signer={signer}
+            onRemove={() => removeNewSigner(signer)}
+          />
+        ))}
+
         {userIsSigner && (
           <Flex
             gap="0.5rem"
@@ -198,7 +242,19 @@ export function SignersContainer() {
             <Button
               variant="secondary"
               size="sm"
-              onClick={addSigner}
+              onClick={() => {
+                if (isSettingsV1FeatureEnabled) {
+                  setNewSigners(prevSigners => [
+                    ...prevSigners,
+                    {
+                      isAdding: true,
+                      key: genSignerItemKey(),
+                    },
+                  ]);
+                } else {
+                  showAddSignerModal();
+                }
+              }}
               leftIcon={<PlusCircle size="16" />}
               iconSpacing="0"
             >
