@@ -14,7 +14,7 @@ import {
   toFunctionSelector,
 } from 'viem';
 import { generateContractByteCodeLinear } from '../models/helpers/utils';
-import { FractalTokenType, GovernanceType } from '../types';
+import { GovernanceType, TokenType } from '../types';
 import { NetworkConfig } from '../types/network';
 
 export const getPaymasterSaltNonce = (safeAddress: Address, chainId: number) => {
@@ -74,7 +74,7 @@ export const getPaymasterAddress = (args: {
 };
 
 export const getVoteSelectorAndValidator = (
-  strategyType: FractalTokenType | GovernanceType,
+  strategyType: TokenType | GovernanceType,
   paymaster: {
     linearERC20VotingV1ValidatorV1: Address;
     linearERC721VotingV1ValidatorV1: Address;
@@ -83,14 +83,14 @@ export const getVoteSelectorAndValidator = (
   let voteAbiItem: AbiItem;
   let voteValidator: Address;
 
-  if (strategyType === FractalTokenType.erc20 || strategyType === GovernanceType.AZORIUS_ERC20) {
+  if (strategyType === TokenType.ERC20 || strategyType === GovernanceType.AZORIUS_ERC20) {
     voteAbiItem = getAbiItem({
       name: 'vote',
       abi: abis.LinearERC20VotingV1,
     });
     voteValidator = paymaster.linearERC20VotingV1ValidatorV1;
   } else if (
-    strategyType === FractalTokenType.erc721 ||
+    strategyType === TokenType.ERC721 ||
     strategyType === GovernanceType.AZORIUS_ERC721
   ) {
     voteAbiItem = getAbiItem({

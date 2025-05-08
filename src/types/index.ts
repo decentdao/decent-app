@@ -2,7 +2,6 @@ export * from './account';
 export * from './common';
 export * from './createDAO';
 export * from './daoGeneral';
-export * from './daoGovernance';
 export * from './daoProposal';
 export * from './daoTreasury';
 export * from './dapp';

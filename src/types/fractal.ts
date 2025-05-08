@@ -4,7 +4,14 @@ import { Address } from 'viem';
 import { ERC721TokenData, VotesTokenData } from './account';
 import { FreezeGuardType, FreezeVotingType } from './daoGeneral';
 import { AzoriusProposal, MultisigProposal, ProposalData } from './daoProposal';
-import { DefiBalance, NFTBalance, TokenBalance, TokenEventType, TransferType } from './daoTreasury';
+import {
+  DefiBalance,
+  NFTBalance,
+  TokenBalance,
+  TokenEventType,
+  TokenType,
+  TransferType,
+} from './daoTreasury';
 import { ProposalTemplate } from './proposalBuilder';
 import { SafeInfoResponseWithGuard } from './safeGlobal';
 import { SnapshotProposal } from './snapshot';
@@ -16,7 +23,7 @@ import { SnapshotProposal } from './snapshot';
  * including casing and ordering.  States not specific to Azorius must be placed at the end
  * of this enum.
  */
-export enum FractalProposalState {
+export enum ProposalState {
   /**
    * Proposal is created and can be voted on.  This is the initial state of all
    * newly created proposals.
@@ -99,13 +106,13 @@ export enum FractalProposalState {
 
   /**
    * The proposal is pending, meaning it has been created, but voting has not yet begun. This state
-   * has nothing to do with Fractal, and is used for Snapshot proposals only, which appear if the
+   * has nothing to do with Azorius / Safe{Wallet}, and is used for Snapshot proposals only, which appear if the
    * DAO's snapshotENS is set.
    */
   PENDING = 'statePending',
 
   /**
-   * The proposal is closed, and no longer able to be signed. This state has nothing to do with Fractal,
+   * The proposal is closed, and no longer able to be signed. This state has nothing to do with Azorius / Safe{Wallet},
    * and is used for Snapshot proposals only, which appear if the DAO's snapshotENS is set.
    */
   CLOSED = 'stateClosed',
@@ -132,14 +139,6 @@ export interface DAOSubgraph {
   gasTankAddress?: Address;
 }
 
-// @todo should we add other Decent Module types here?
-export enum DecentModuleType {
-  // replaces FractalModuleType
-  AZORIUS, // Token Module
-  FRACTAL, // CHILD GOVERNANCE MODULE
-  UNKNOWN, // NON-DECENT MODULE
-}
-
 // @todo better typing here, SUBGRAPH has DAO type name,
 export interface IDAO {
   // replaces DaoInfo
@@ -150,7 +149,7 @@ export interface IDAO {
 
 export interface GovernanceActivity extends ActivityBase {
   proposer: Address | null;
-  state: FractalProposalState | null;
+  state: ProposalState | null;
   proposalId: string;
   targets: Address[];
   data?: ProposalData;
@@ -174,25 +173,20 @@ export interface ITokenAccount {
 }
 export interface DAOStore {
   guard: FreezeGuard;
-  governance: FractalGovernance;
+  governance: DecentGovernance | AzoriusGovernance | SafeMultisigGovernance;
   treasury: DecentTreasury;
-  governanceContracts: FractalGovernanceContracts;
-  guardContracts: FractalGuardContracts;
-}
-
-export enum FractalTokenType {
-  erc20 = 'ERC20',
-  erc721 = 'ERC721',
+  governanceContracts: GovernanceContracts;
+  guardContracts: GuardContracts;
 }
 
 export type RawVotingStrategy = {
   address: Address;
-  type: FractalTokenType;
+  type: TokenType;
   withWhitelist: boolean;
   version?: number;
 };
 
-export type FractalGovernanceContracts = {
+export type GovernanceContracts = {
   linearVotingErc20Address?: Address;
   linearVotingErc20WithHatsWhitelistingAddress?: Address;
   linearVotingErc721Address?: Address;
@@ -220,16 +214,16 @@ export interface DaoHierarchyInfo {
 
 export interface DecentModule {
   moduleAddress: Address;
-  moduleType: FractalModuleType;
+  moduleType: ModuleType;
 }
 
-export enum FractalModuleType {
-  AZORIUS,
-  FRACTAL,
-  UNKNOWN,
+export enum ModuleType {
+  AZORIUS, // Token Module
+  FRACTAL, // CHILD GOVERNANCE MODULE
+  UNKNOWN, // NON-DECENT MODULE
 }
 
-export interface FractalGuardContracts {
+export interface GuardContracts {
   freezeGuardContractAddress?: Address;
   freezeVotingContractAddress?: Address;
   freezeGuardType: FreezeGuardType | null;
@@ -257,8 +251,6 @@ export interface DecentTreasury {
   transfers: TransferDisplayData[] | null;
 }
 
-export type FractalGovernance = AzoriusGovernance | DecentGovernance | SafeMultisigGovernance;
-
 export interface AzoriusGovernance extends Governance {
   votingStrategy: VotingStrategyAzorius | undefined;
   votesToken: VotesTokenData | undefined;
@@ -274,7 +266,7 @@ export interface Governance {
   type?: GovernanceType;
   loadingProposals: boolean;
   allProposalsLoaded: boolean;
-  proposals: FractalProposal[] | null;
+  proposals: Proposal[] | null;
   pendingProposals: string[] | null;
   proposalTemplates?: ProposalTemplate[] | null;
   tokenClaimContractAddress?: Address;
@@ -314,7 +306,7 @@ export enum VotingStrategyType {
   LINEAR_ERC721_HATS_WHITELISTING = 'labelLinearErc721WithWhitelisting',
 }
 
-export type FractalProposal = AzoriusProposal | MultisigProposal | SnapshotProposal;
+export type Proposal = AzoriusProposal | MultisigProposal | SnapshotProposal;
 
 export interface TransferDisplayData {
   eventType: TokenEventType;

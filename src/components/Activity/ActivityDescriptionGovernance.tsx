@@ -1,6 +1,6 @@
 import { Box, Flex, Text } from '@chakra-ui/react';
 import { useGetMetadata } from '../../hooks/DAO/proposal/useGetMetadata';
-import { GovernanceActivity, SnapshotProposal, FractalProposal } from '../../types';
+import { GovernanceActivity, SnapshotProposal, Proposal } from '../../types';
 
 const formatId = (proposalId: string) => {
   if (proposalId.startsWith('0x')) {
@@ -12,7 +12,7 @@ const formatId = (proposalId: string) => {
   }
 };
 
-export function ProposalTitle({ activity }: { activity: FractalProposal }) {
+export function ProposalTitle({ activity }: { activity: Proposal }) {
   const metaData = useGetMetadata(activity);
 
   // Check if it's a SnapshotProposal and set variables accordingly

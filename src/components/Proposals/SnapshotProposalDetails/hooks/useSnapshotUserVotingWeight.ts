@@ -1,11 +1,11 @@
-import { useState, useEffect } from 'react';
-import useSnapshotProposal from '../../../../hooks/DAO/loaders/snapshot/useSnapshotProposal';
-import { FractalProposal } from '../../../../types';
+import { useEffect, useState } from 'react';
+import useSnapshotProposal from '../../../../hooks/DAO/loaders/useSnapshotProposal';
+import { Proposal } from '../../../../types';
 
 export default function useSnapshotUserVotingWeight({
   proposal,
 }: {
-  proposal: FractalProposal | null | undefined;
+  proposal: Proposal | null | undefined;
 }) {
   const [votingWeight, setVotingWeight] = useState(0);
   const { loadVotingWeight } = useSnapshotProposal(proposal);

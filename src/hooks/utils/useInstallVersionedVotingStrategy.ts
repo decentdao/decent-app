@@ -24,7 +24,7 @@ import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkC
 import {
   AzoriusGovernance,
   ERC721TokenData,
-  FractalTokenType,
+  TokenType,
   RawVotingStrategy,
 } from '../../types';
 import { SENTINEL_MODULE } from '../../utils/address';
@@ -340,7 +340,7 @@ export const useInstallVersionedVotingStrategy = () => {
       tokenAddress?: Address,
       erc721TokenAddresses?: ERC721TokenData[],
     ): Promise<EncodeAbiParametersReturnType> => {
-      if (strategyToRemove.type === FractalTokenType.erc20) {
+      if (strategyToRemove.type === TokenType.ERC20) {
         if (!tokenAddress) {
           throw new Error('Expected token address');
         }
@@ -382,7 +382,7 @@ export const useInstallVersionedVotingStrategy = () => {
 
   const getMasterCopyAddress = useCallback(
     (strategyToRemove: RawVotingStrategy): Address => {
-      if (strategyToRemove.type === FractalTokenType.erc20) {
+      if (strategyToRemove.type === TokenType.ERC20) {
         if (strategyToRemove.withWhitelist) {
           return linearVotingErc20HatsWhitelistingV1MasterCopy;
         } else {

@@ -205,7 +205,7 @@ This section describes the process during the initial creation of a new DAO.
 ### 3.3. DAO Member: Voting on a Proposal
 
 1.  **Navigate to Proposal:**
-    - `**Current Behavior:**` User views an active proposal (`FractalProposalState.ACTIVE`).
+    - `**Current Behavior:**` User views an active proposal (`ProposalState.ACTIVE`).
 2.  **Voting Interface (`CastVote`):**
     - `**Current Behavior:**` User interacts with the voting options (e.g., For, Against, Abstain).
 3.  **System Check (Behind the Scenes):**

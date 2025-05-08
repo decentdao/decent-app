@@ -32,9 +32,9 @@ import {
   CreateProposalMetadata,
   DecentModule,
   ERC721TokenData,
-  FractalProposal,
-  FractalProposalState,
-  FractalTokenType,
+  Proposal,
+  ProposalState,
+  TokenType,
   RawVotingStrategy,
   GovernanceType,
   ProposalTemplate,
@@ -90,7 +90,7 @@ export function useGovernanceFetcher() {
       daoModules: DecentModule[];
       onMultisigGovernanceLoaded: () => void;
       onAzoriusGovernanceLoaded: (governance: SetAzoriusGovernancePayload) => void;
-      onProposalsLoaded: (proposals: FractalProposal[]) => void;
+      onProposalsLoaded: (proposals: Proposal[]) => void;
       onProposalLoaded: (proposal: AzoriusProposal, index: number, totalProposals: number) => void;
       onTokenClaimContractAddressLoaded: (tokenClaimContractAddress: Address) => void;
       onLoadingFirstProposalStateChanged: (loading: boolean) => void;
@@ -180,17 +180,17 @@ export function useGovernanceFetcher() {
 
         const tokenType = (
           votingStrategy: ContractTypeWithVersion,
-        ): FractalTokenType | undefined => {
+        ): TokenType | undefined => {
           if (
             votingStrategy.isLinearVotingErc20 ||
             votingStrategy.isLinearVotingErc20WithHatsProposalCreation
           ) {
-            return FractalTokenType.erc20;
+            return TokenType.ERC20;
           } else if (
             votingStrategy.isLinearVotingErc721 ||
             votingStrategy.isLinearVotingErc721WithHatsProposalCreation
           ) {
-            return FractalTokenType.erc721;
+            return TokenType.ERC721;
           } else {
             return undefined;
           }
@@ -226,7 +226,7 @@ export function useGovernanceFetcher() {
               };
               strategies.push(strategy);
             }
-            if (type == FractalTokenType.erc20) {
+            if (type == TokenType.ERC20) {
               await setGovTokenAddress(votingStrategy.strategyAddress);
             }
           }),
@@ -234,16 +234,16 @@ export function useGovernanceFetcher() {
 
         if (strategies.length > 0) {
           let linearVotingErc20Address = strategies.find(strategy => {
-            return strategy.type == FractalTokenType.erc20 && strategy.withWhitelist == false;
+            return strategy.type == TokenType.ERC20 && strategy.withWhitelist == false;
           })?.address;
           let linearVotingErc20WithHatsWhitelistingAddress = strategies.find(strategy => {
-            return strategy.type == FractalTokenType.erc20 && strategy.withWhitelist == true;
+            return strategy.type == TokenType.ERC20 && strategy.withWhitelist == true;
           })?.address;
           let linearVotingErc721Address = strategies.find(strategy => {
-            return strategy.type == FractalTokenType.erc721 && strategy.withWhitelist == false;
+            return strategy.type == TokenType.ERC721 && strategy.withWhitelist == false;
           })?.address;
           let linearVotingErc721WithHatsWhitelistingAddress = strategies.find(strategy => {
-            return strategy.type == FractalTokenType.erc721 && strategy.withWhitelist == true;
+            return strategy.type == TokenType.ERC721 && strategy.withWhitelist == true;
           })?.address;
 
           const erc20VotingStrategyAddress =
@@ -459,11 +459,11 @@ export function useGovernanceFetcher() {
               onProposalLoaded(proposal, index, proposalCreatedEvents.length);
 
               const isProposalFossilized =
-                proposal.state === FractalProposalState.CLOSED ||
-                proposal.state === FractalProposalState.EXECUTED ||
-                proposal.state === FractalProposalState.FAILED ||
-                proposal.state === FractalProposalState.EXPIRED ||
-                proposal.state === FractalProposalState.REJECTED;
+                proposal.state === ProposalState.CLOSED ||
+                proposal.state === ProposalState.EXECUTED ||
+                proposal.state === ProposalState.FAILED ||
+                proposal.state === ProposalState.EXPIRED ||
+                proposal.state === ProposalState.REJECTED;
 
               if (isProposalFossilized) {
                 setValue(
@@ -652,11 +652,11 @@ export function useGovernanceFetcher() {
               onProposalLoaded(proposal, index, proposalCreatedEvents.length);
 
               const isProposalFossilized =
-                proposal.state === FractalProposalState.CLOSED ||
-                proposal.state === FractalProposalState.EXECUTED ||
-                proposal.state === FractalProposalState.FAILED ||
-                proposal.state === FractalProposalState.EXPIRED ||
-                proposal.state === FractalProposalState.REJECTED;
+                proposal.state === ProposalState.CLOSED ||
+                proposal.state === ProposalState.EXECUTED ||
+                proposal.state === ProposalState.FAILED ||
+                proposal.state === ProposalState.EXPIRED ||
+                proposal.state === ProposalState.REJECTED;
 
               if (isProposalFossilized) {
                 setValue(
@@ -752,10 +752,10 @@ export function useGovernanceFetcher() {
           eventDate: new Date(proposal.start * 1000),
           state:
             proposal.state === 'active'
-              ? FractalProposalState.ACTIVE
+              ? ProposalState.ACTIVE
               : proposal.state === 'closed'
-                ? FractalProposalState.CLOSED
-                : FractalProposalState.PENDING,
+                ? ProposalState.CLOSED
+                : ProposalState.PENDING,
           proposalId: proposal.id,
           snapshotProposalId: proposal.id,
           targets: [],

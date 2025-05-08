@@ -11,7 +11,7 @@ import {
 } from 'react';
 import { erc721Abi, getContract, Hex, toHex } from 'viem';
 import { useAccount } from 'wagmi';
-import useSnapshotProposal from '../../../../hooks/DAO/loaders/snapshot/useSnapshotProposal';
+import useSnapshotProposal from '../../../../hooks/DAO/loaders/useSnapshotProposal';
 import useUserERC721VotingTokens from '../../../../hooks/DAO/proposal/useUserERC721VotingTokens';
 import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
 import useNetworkPublicClient from '../../../../hooks/useNetworkPublicClient';
@@ -20,9 +20,9 @@ import {
   AzoriusGovernance,
   AzoriusProposal,
   ExtendedSnapshotProposal,
-  FractalProposal,
   GovernanceType,
   MultisigProposal,
+  Proposal,
 } from '../../../../types';
 
 interface IVoteContext {
@@ -49,7 +49,7 @@ export function VoteContextProvider({
   children,
   extendedSnapshotProposal,
 }: {
-  proposal: FractalProposal;
+  proposal: Proposal;
   extendedSnapshotProposal?: ExtendedSnapshotProposal;
   children: ReactNode;
 }) {

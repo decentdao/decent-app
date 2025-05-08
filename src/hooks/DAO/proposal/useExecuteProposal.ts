@@ -3,7 +3,7 @@ import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Address, Hex, getContract } from 'viem';
 import { useDAOStore } from '../../../providers/App/AppProvider';
-import { AzoriusProposal, FractalProposal, MetaTransaction } from '../../../types';
+import { AzoriusProposal, Proposal, MetaTransaction } from '../../../types';
 import { useNetworkWalletClient } from '../../useNetworkWalletClient';
 import { useTransaction } from '../../utils/useTransaction';
 import { useCurrentDAOKey } from '../useCurrentDAOKey';
@@ -19,7 +19,7 @@ export default function useExecuteProposal() {
   const [contractCall, pending] = useTransaction();
 
   const executeProposal = useCallback(
-    (proposal: FractalProposal) => {
+    (proposal: Proposal) => {
       const azoriusProposal = proposal as AzoriusProposal;
       if (
         !moduleAzoriusAddress ||

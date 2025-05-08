@@ -3,11 +3,11 @@ import { ArrowUpRight } from '@phosphor-icons/react';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Shield } from '../../assets/theme/custom/icons/Shield';
-import useSnapshotProposal from '../../hooks/DAO/loaders/snapshot/useSnapshotProposal';
+import useSnapshotProposal from '../../hooks/DAO/loaders/useSnapshotProposal';
 import { useGetMetadata } from '../../hooks/DAO/proposal/useGetMetadata';
 import { useCurrentDAOKey } from '../../hooks/DAO/useCurrentDAOKey';
 import { useDAOStore } from '../../providers/App/AppProvider';
-import { ExtendedSnapshotProposal, FractalProposal } from '../../types';
+import { ExtendedSnapshotProposal, Proposal } from '../../types';
 import { ActivityDescription } from '../Activity/ActivityDescription';
 import { Badge } from '../ui/badges/Badge';
 import { SnapshotButton } from '../ui/badges/Snapshot';
@@ -17,11 +17,7 @@ import { ProposalCountdown } from '../ui/proposal/ProposalCountdown';
 import ProposalExecutableCode from '../ui/proposal/ProposalExecutableCode';
 import CeleryButtonWithIcon from '../ui/utils/CeleryButtonWithIcon';
 
-export function ProposalInfo({
-  proposal,
-}: {
-  proposal: FractalProposal | ExtendedSnapshotProposal;
-}) {
+export function ProposalInfo({ proposal }: { proposal: Proposal | ExtendedSnapshotProposal }) {
   const metaData = useGetMetadata(proposal);
   const { t } = useTranslation('proposal');
   const { daoKey } = useCurrentDAOKey();

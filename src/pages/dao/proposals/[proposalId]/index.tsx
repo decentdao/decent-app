@@ -10,7 +10,7 @@ import NoDataCard from '../../../../components/ui/containers/NoDataCard';
 import { InfoBoxLoader } from '../../../../components/ui/loaders/InfoBoxLoader';
 import PageHeader from '../../../../components/ui/page/Header/PageHeader';
 import { DAO_ROUTES } from '../../../../constants/routes';
-import useSnapshotProposal from '../../../../hooks/DAO/loaders/snapshot/useSnapshotProposal';
+import useSnapshotProposal from '../../../../hooks/DAO/loaders/useSnapshotProposal';
 import { useGetMetadata } from '../../../../hooks/DAO/proposal/useGetMetadata';
 import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
 import { analyticsEvents } from '../../../../insights/analyticsEvents';

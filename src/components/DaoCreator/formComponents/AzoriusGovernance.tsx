@@ -14,7 +14,7 @@ import { useTranslation } from 'react-i18next';
 import useFeatureFlag from '../../../helpers/environmentFeatureFlags';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import { useDAOStore } from '../../../providers/App/AppProvider';
-import { FractalModuleType, ICreationStepProps, VotingStrategyType } from '../../../types';
+import { ModuleType, ICreationStepProps, VotingStrategyType } from '../../../types';
 import { DEV_VOTING_PERIOD_MINUTES } from '../../../utils/dev/devModeConstants';
 import { BigIntInput } from '../../ui/forms/BigIntInput';
 import { CustomNonceInput } from '../../ui/forms/CustomNonceInput';
@@ -61,7 +61,7 @@ export function AzoriusGovernance(props: ICreationStepProps) {
 
   const fractalModule = useMemo(() => {
     if (!modules) return null;
-    return modules.find(_module => _module.moduleType === FractalModuleType.FRACTAL);
+    return modules.find(_module => _module.moduleType === ModuleType.FRACTAL);
   }, [modules]);
 
   const [showCustomNonce, setShowCustomNonce] = useState<boolean>();

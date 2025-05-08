@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useState } from 'react';
 import { useAccount } from 'wagmi';
-import { createSnapshotSubgraphClient } from '../../../../graphql';
+import { createSnapshotSubgraphClient } from '../../../graphql';
 import {
   ExtendedSnapshotProposalQuery,
   ExtendedSnapshotProposalResponse,
@@ -9,20 +9,20 @@ import {
   SnapshotVote,
   UserVotingWeightQuery,
   UserVotingWeightResponse,
-} from '../../../../graphql/SnapshotQueries';
-import { logError } from '../../../../helpers/errorLogging';
-import { useDAOStore } from '../../../../providers/App/AppProvider';
+} from '../../../graphql/SnapshotQueries';
+import { logError } from '../../../helpers/errorLogging';
+import { useDAOStore } from '../../../providers/App/AppProvider';
 import {
   DecentSnapshotVote,
   ExtendedSnapshotProposal,
-  FractalProposal,
-  FractalProposalState,
+  Proposal,
+  ProposalState,
   SnapshotProposal,
   SnapshotWeightedVotingChoice,
-} from '../../../../types';
-import { useCurrentDAOKey } from '../../useCurrentDAOKey';
+} from '../../../types';
+import { useCurrentDAOKey } from '../useCurrentDAOKey';
 
-export default function useSnapshotProposal(proposal: FractalProposal | null | undefined) {
+export default function useSnapshotProposal(proposal: Proposal | null | undefined) {
   const [extendedSnapshotProposal, setExtendedSnapshotProposal] =
     useState<ExtendedSnapshotProposal | null>(null);
   const { address } = useAccount();
@@ -103,7 +103,7 @@ export default function useSnapshotProposal(proposal: FractalProposal | null | u
       }
 
       const isShielded = privacy === 'shutter';
-      const isClosed = snapshotProposal.state === FractalProposalState.CLOSED;
+      const isClosed = snapshotProposal.state === ProposalState.CLOSED;
 
       if (!(isShielded && !isClosed)) {
         votes.forEach((vote: DecentSnapshotVote) => {

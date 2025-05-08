@@ -9,19 +9,18 @@ import {
   getAddress,
   getContract,
 } from 'viem';
-import { strategyFractalProposalStates } from '../constants/strategy';
 
 import {
   AzoriusProposal,
   DataDecoded,
+  DecentModule,
   DecodedTransaction,
   ERC721ProposalVote,
-  DecentModule,
-  FractalModuleType,
-  FractalProposalState,
   MetaTransaction,
+  ModuleType,
   Parameter,
   ProposalData,
+  ProposalState,
   ProposalVote,
   ProposalVotesSummary,
   VotingStrategyType,
@@ -29,12 +28,14 @@ import {
 } from '../types';
 import { getTimeStamp } from './contract';
 
+const strategyProposalStates = Object.values(ProposalState);
+
 export const getAzoriusProposalState = async (
   azoriusContract: GetContractReturnType<typeof abis.Azorius, PublicClient>,
   proposalId: number,
-): Promise<FractalProposalState> => {
+): Promise<ProposalState> => {
   const state = await azoriusContract.read.proposalState([proposalId]);
-  return strategyFractalProposalStates[state];
+  return strategyProposalStates[state];
 };
 
 const getQuorum = async ({
@@ -245,7 +246,7 @@ export const mapProposalCreatedEventToProposal = async (
   const targets = data ? data.decodedTransactions.map(tx => tx.target) : [];
 
   let transactionHash: string | undefined;
-  if (state === FractalProposalState.EXECUTED) {
+  if (state === ProposalState.EXECUTED) {
     const executedEvent = executedEvents?.find(event => event.args.proposalId === proposalId);
     if (executedEvent) {
       transactionHash = executedEvent?.transactionHash;
@@ -335,7 +336,7 @@ export const parseDecodedData = (
 };
 
 export function getAzoriusModuleFromModules(modules: DecentModule[]) {
-  return modules.find(module => module.moduleType === FractalModuleType.AZORIUS);
+  return modules.find(module => module.moduleType === ModuleType.AZORIUS);
 }
 
 export const decodeTransactions = async (

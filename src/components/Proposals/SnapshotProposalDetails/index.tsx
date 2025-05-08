@@ -1,7 +1,7 @@
 import { GridItem } from '@chakra-ui/react';
 import { useEffect } from 'react';
 import { useAccount } from 'wagmi';
-import useSnapshotProposal from '../../../hooks/DAO/loaders/snapshot/useSnapshotProposal';
+import useSnapshotProposal from '../../../hooks/DAO/loaders/useSnapshotProposal';
 import { SnapshotProposal } from '../../../types';
 import { ProposalDetailsGrid } from '../../ui/containers/ProposalDetailsGrid';
 import { useProposalCountdown } from '../../ui/proposal/useProposalCountdown';

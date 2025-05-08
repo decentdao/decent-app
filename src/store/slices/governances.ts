@@ -7,15 +7,15 @@ import {
   DecentGovernance,
   ERC721ProposalVote,
   ERC721TokenData,
-  FractalGovernance,
-  FractalGovernanceContracts,
-  FractalProposal,
-  FractalProposalState,
-  RawVotingStrategy,
+  GovernanceContracts,
   GovernanceType,
+  Proposal,
+  ProposalState,
   ProposalTemplate,
   ProposalVote,
   ProposalVotesSummary,
+  RawVotingStrategy,
+  SafeMultisigGovernance,
   SnapshotProposal,
   VotesTokenData,
   VotingStrategy,
@@ -37,13 +37,14 @@ export type SetAzoriusGovernancePayload = {
   type: GovernanceType;
 };
 
+type CombinedGovernance = AzoriusGovernance | SafeMultisigGovernance | DecentGovernance;
 export type GovernancesSlice = {
-  governances: StoreSlice<FractalGovernance & FractalGovernanceContracts>;
+  governances: StoreSlice<CombinedGovernance & GovernanceContracts>;
   setProposalTemplates: (daoKey: DAOKey, proposalTemplates: ProposalTemplate[]) => void;
   setMultisigGovernance: (daoKey: DAOKey) => void;
   setAzoriusGovernance: (daoKey: DAOKey, payload: SetAzoriusGovernancePayload) => void;
   setTokenClaimContractAddress: (daoKey: DAOKey, tokenClaimContractAddress: Address) => void;
-  setProposals: (daoKey: DAOKey, proposals: FractalProposal[]) => void;
+  setProposals: (daoKey: DAOKey, proposals: Proposal[]) => void;
   setSnapshotProposals: (daoKey: DAOKey, snapshotProposals: SnapshotProposal[]) => void;
   setProposal: (daoKey: DAOKey, proposal: AzoriusProposal) => void;
   setPendingProposal: (daoKey: DAOKey, txHash: string) => void;
@@ -53,10 +54,10 @@ export type GovernancesSlice = {
     votesSummary: ProposalVotesSummary,
     proposalVote: ProposalVote | ERC721ProposalVote,
   ) => void;
-  setProposalState: (daoKey: DAOKey, proposalId: string, state: FractalProposalState) => void;
+  setProposalState: (daoKey: DAOKey, proposalId: string, state: ProposalState) => void;
   setLoadingFirstProposal: (daoKey: DAOKey, loading: boolean) => void;
   setAllProposalsLoaded: (daoKey: DAOKey, loaded: boolean) => void;
-  getGovernance: (daoKey: DAOKey) => FractalGovernance & FractalGovernanceContracts;
+  getGovernance: (daoKey: DAOKey) => CombinedGovernance & GovernanceContracts;
   setGovernanceAccountData: (
     daoKey: DAOKey,
     governanceAccountData: { balance: bigint; delegatee: Address },
@@ -74,7 +75,7 @@ export type GovernancesSlice = {
   ) => void;
 };
 
-const EMPTY_GOVERNANCE: FractalGovernance & FractalGovernanceContracts = {
+const EMPTY_GOVERNANCE: CombinedGovernance & GovernanceContracts = {
   loadingProposals: false,
   allProposalsLoaded: false,
   proposals: null,
@@ -311,10 +312,14 @@ export const createGovernancesSlice: StateCreator<
     );
   },
   setGaslessVotingData: (daoKey, gasslesVotingData) => {
-    set(state => {
-      state.governances[daoKey].gaslessVotingEnabled = gasslesVotingData.gaslessVotingEnabled;
-      state.governances[daoKey].paymasterAddress = gasslesVotingData.paymasterAddress;
-    });
+    set(
+      state => {
+        state.governances[daoKey].gaslessVotingEnabled = gasslesVotingData.gaslessVotingEnabled;
+        state.governances[daoKey].paymasterAddress = gasslesVotingData.paymasterAddress;
+      },
+      false,
+      'setGaslessVotingData',
+    );
   },
   getGovernance: daoKey => {
     const governance = get().governances[daoKey];
