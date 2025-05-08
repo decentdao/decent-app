@@ -156,7 +156,11 @@ export const useSafeTransactions = () => {
             proposalId: eventSafeTxHash,
             targets,
             // @dev proposer can be null when its the first transaction
-            proposer: isAddress(transaction.proposer) ? getAddress(transaction.proposer) : null,
+            proposer: isAddress(transaction.proposer)
+              ? getAddress(transaction.proposer)
+              : transaction.nonce === 0 && transaction.executor && isAddress(transaction.executor)
+                ? getAddress(transaction.executor)
+                : null,
             // @todo typing for `multiSigTransaction.transactionHash` is misleading, as ` multiSigTransaction.transactionHash` is not always defined (if ever). Need to tighten up the typing here.
             // ! @todo This is why we are showing the two different hashes
             transactionHash: transaction.transactionHash ?? transaction.safeTxHash,
