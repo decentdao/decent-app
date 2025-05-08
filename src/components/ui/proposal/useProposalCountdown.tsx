@@ -1,6 +1,7 @@
 import { abis } from '@fractal-framework/fractal-contracts';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { getContract } from 'viem';
+import useFeatureFlag from '../../../helpers/environmentFeatureFlags';
 import { logError } from '../../../helpers/errorLogging';
 import useSnapshotProposal from '../../../hooks/DAO/loaders/snapshot/useSnapshotProposal';
 import { useLoadDAOProposals } from '../../../hooks/DAO/loaders/useLoadDAOProposals';
@@ -30,7 +31,7 @@ export function useProposalCountdown(proposal: FractalProposal) {
 
   const [secondsLeft, setSecondsLeft] = useState<number>();
   const { snapshotProposal } = useSnapshotProposal(proposal);
-
+  const storeFeatureEnabled = useFeatureFlag('flag_store_v2');
   const azoriusGovernance = governance as AzoriusGovernance;
 
   const loadDAOProposals = useLoadDAOProposals();
@@ -43,6 +44,8 @@ export function useProposalCountdown(proposal: FractalProposal) {
   let countdownInterval = useRef<ReturnType<typeof setInterval> | undefined>();
   useEffect(() => {
     // if it's not a state that requires a countdown, clear the interval and return
+
+    if (storeFeatureEnabled) return;
     if (
       !(
         proposal.state === FractalProposalState.ACTIVE ||
@@ -83,7 +86,14 @@ export function useProposalCountdown(proposal: FractalProposal) {
         clearInterval(updateStateInterval.current);
       }
     };
-  }, [secondsLeft, loadDAOProposals, proposal, updateProposalState, governance.isAzorius]);
+  }, [
+    secondsLeft,
+    loadDAOProposals,
+    proposal,
+    updateProposalState,
+    governance.isAzorius,
+    storeFeatureEnabled,
+  ]);
 
   const startCountdown = useCallback((initialTimeMs: number) => {
     countdownInterval.current = setInterval(() => {

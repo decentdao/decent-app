@@ -123,5 +123,9 @@
   "recipients_other": "destinatarios",
   "airdrop": "Airdrop",
   "pageXofY": "Página {{current}} de {{total}}",
-  "network": "Red"
+  "network": "Red",
+  "unsavedChanges": "Cambios no guardados",
+  "unsavedChangesDescription": "Tienes cambios sin guardar que se perderán si continúas. ¿Desea descartar los cambios?",
+  "discardChanges": "Descartar",
+  "keepEditing": "Seguir editando"
 }
