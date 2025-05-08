@@ -41,7 +41,6 @@ export const useProposalActionsStore = create<ProposalActionsStore>()((set, get)
       } else {
         metadata[field] = value.toString();
       }
-      console.log('🚀 ~ metadata:', metadata);
       return {
         ...state,
         proposalMetadata: metadata,
