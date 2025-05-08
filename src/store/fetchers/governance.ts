@@ -746,6 +746,7 @@ export function useGovernanceFetcher() {
           description: proposal.body,
           startTime: proposal.start,
           endTime: proposal.end,
+          proposer: proposal.author,
           author: proposal.author,
           transactionHash: '', // Required by SnapshotProposal type
         }));
