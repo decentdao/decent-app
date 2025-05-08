@@ -10,7 +10,7 @@
   "governanceTokenSupplyLabel": "供应总量",
   "noModulesAttached": "未连接模块",
   "noGuardAttached": "无护罩",
-  "daoModulesAndGuard": "模块和防护装置",
+  "modulesTitle": "模块",
   "guardTitle": "警卫",
   "modulesAndGuardsTitle": "模块和防护装置",
   "permissionsTitle": "权限",

@@ -10,7 +10,7 @@
   "governanceTokenSupplyLabel": "총 공급량",
   "noModulesAttached": "연결된 모듈 없음",
   "noGuardAttached": "가드 미부착",
-  "daoModulesAndGuard": "모듈 및 가드",
+  "modulesTitle": "모듈",
   "guardTitle": "Guard",
   "modulesAndGuardsTitle": "모듈 및 가드",
   "permissionsTitle": "권한",

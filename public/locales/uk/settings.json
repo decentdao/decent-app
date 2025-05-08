@@ -10,7 +10,7 @@
   "governanceTokenSupplyLabel": "Загальна пропозиція",
   "noModulesAttached": "Модулі не приєднані",
   "noGuardAttached": "Охорони немає.",
-  "daoModulesAndGuard": "Модулі та охорона",
+  "modulesTitle": "Модулі",
   "guardTitle": "Охорона!",
   "modulesAndGuardsTitle": "Модулі та огорожі",
   "permissionsTitle": "Дозволи",

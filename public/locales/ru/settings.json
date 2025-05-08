@@ -10,7 +10,7 @@
   "governanceTokenSupplyLabel": "Общее предложение",
   "noModulesAttached": "Модули не прилагаются",
   "noGuardAttached": "Охранник не прикреплен",
-  "daoModulesAndGuard": "Модули и охрана",
+  "modulesTitle": "Модули",
   "guardTitle": "Охранник",
   "modulesAndGuardsTitle": "Модули и защитные устройства",
   "permissionsTitle": "Разрешения",

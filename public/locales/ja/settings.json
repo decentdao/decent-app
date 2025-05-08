@@ -10,7 +10,7 @@
   "governanceTokenSupplyLabel": "総供給量",
   "noModulesAttached": "モジュールなし",
   "noGuardAttached": "ガードなし",
-  "daoModulesAndGuard": "モジュールとガード",
+  "modulesTitle": "モジュール",
   "guardTitle": "ガード",
   "modulesAndGuardsTitle": "モジュールとガード",
   "permissionsTitle": "アクセス許可",

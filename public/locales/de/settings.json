@@ -10,7 +10,7 @@
   "governanceTokenSupplyLabel": "Gesamtangebot",
   "noModulesAttached": "Keine Module angebracht",
   "noGuardAttached": "Kein Schutz angebracht",
-  "daoModulesAndGuard": "Module & Wächter",
+  "modulesTitle": "Module",
   "guardTitle": "Wache",
   "modulesAndGuardsTitle": "Module und Schutzvorrichtungen",
   "permissionsTitle": "Berechtigungen",

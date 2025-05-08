@@ -10,7 +10,7 @@
   "governanceTokenSupplyLabel": "Total Supply",
   "noModulesAttached": "No modules attached",
   "noGuardAttached": "No guard attached",
-  "daoModulesAndGuard": "Modules & Guard",
+  "modulesTitle": "Modules",
   "guardTitle": "Guard",
   "modulesAndGuardsTitle": "Modules and Guards",
   "permissionsTitle": "Permissions",
