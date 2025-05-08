@@ -30,7 +30,6 @@ import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkC
 import {
   AzoriusProposal,
   CreateProposalMetadata,
-  DecentGovernance,
   DecentModule,
   ERC721TokenData,
   FractalProposal,
@@ -49,8 +48,8 @@ import {
   mapProposalCreatedEventToProposal,
 } from '../../utils/azorius';
 import { blocksToSeconds } from '../../utils/contract';
-import { SetAzoriusGovernancePayload } from '../slices/governances';
 import { getPaymasterAddress } from '../../utils/gaslessVoting';
+import { SetAzoriusGovernancePayload } from '../slices/governances';
 
 /**
  * `useGovernanceFetcher` is used as an abstraction layer over logic of fetching DAO governance data
