@@ -74,6 +74,9 @@ export default function DurationUnitStepperInput({
           <NumberInputField min={0} />
           <InputRightElement minWidth="fit-content">
             <Select
+              bgColor="neutral-1"
+              borderColor="neutral-3"
+              rounded="lg"
               cursor="pointer"
               border="none"
               sx={{
