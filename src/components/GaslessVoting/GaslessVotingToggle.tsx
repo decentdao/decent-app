@@ -236,7 +236,6 @@ export function GaslessVotingToggleDAOSettings(props: GaslessVotingToggleProps) 
 
   return (
     <Flex
-      // gap="1.5rem"
       display="flex"
       flexDirection="column"
       border="1px solid"
