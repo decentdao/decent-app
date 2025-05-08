@@ -339,7 +339,7 @@ export function SafeGeneralSettingsPage() {
                   placeholder="Amazing DAO"
                   testId="daoSettings.name"
                   inputContainerProps={{
-                    width: '16rem',
+                    width: { base: '100%', md: '16rem' },
                   }}
                 />
               </Flex>
@@ -364,7 +364,7 @@ export function SafeGeneralSettingsPage() {
                   placeholder="example.eth"
                   testId="daoSettings.snapshotENS"
                   inputContainerProps={{
-                    width: '16rem',
+                    width: { base: '100%', md: '16rem' },
                   }}
                 />
               </Flex>
@@ -373,20 +373,22 @@ export function SafeGeneralSettingsPage() {
             <Box h={12} />
 
             {/* SPONSORED VOTING */}
-            <Text
-              ml={6}
-              mb={0.5}
-              textStyle="body-large"
-            >
-              {t('gaslessVotingLabelSettings', { ns: 'gaslessVoting' })}
-            </Text>
             {gaslessVotingSupported && (
-              <GaslessVotingToggleDAOSettings
-                isEnabled={isGaslessVotingEnabledToggled}
-                onToggle={() => {
-                  setIsGaslessVotingEnabledToggled(!isGaslessVotingEnabledToggled);
-                }}
-              />
+              <>
+                <Text
+                  ml={6}
+                  mb={0.5}
+                  textStyle="body-large"
+                >
+                  {t('gaslessVotingLabelSettings', { ns: 'gaslessVoting' })}
+                </Text>
+                <GaslessVotingToggleDAOSettings
+                  isEnabled={isGaslessVotingEnabledToggled}
+                  onToggle={() => {
+                    setIsGaslessVotingEnabledToggled(!isGaslessVotingEnabledToggled);
+                  }}
+                />
+              </>
             )}
           </Flex>
 
