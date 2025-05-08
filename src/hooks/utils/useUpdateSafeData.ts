@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import { Address } from 'viem';
-import { useStore } from '../../providers/App/AppProvider';
+import { useDAOStore } from '../../providers/App/AppProvider';
 import { useSafeAPI } from '../../providers/App/hooks/useSafeAPI';
 import { useCurrentDAOKey } from '../DAO/useCurrentDAOKey';
 
@@ -12,7 +12,7 @@ export const useUpdateSafeData = (safeAddress?: Address) => {
   const { daoKey } = useCurrentDAOKey();
   const {
     node: { setSafeInfo },
-  } = useStore({ daoKey });
+  } = useDAOStore({ daoKey });
 
   useEffect(() => {
     if (!safeAPI || !safeAddress) {

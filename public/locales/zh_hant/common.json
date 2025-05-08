@@ -123,5 +123,9 @@
   "recipients_other": "受助人",
   "airdrop": "空投",
   "pageXofY": "第{{current}}頁，共{{total}}頁",
-  "network": "網路"
+  "network": "網路",
+  "unsavedChanges": "未儲存的變更",
+  "unsavedChangesDescription": "如果繼續，您尚未儲存的變更將會遺失。您要放棄您的變更嗎？",
+  "discardChanges": "丟棄",
+  "keepEditing": "繼續編輯"
 }

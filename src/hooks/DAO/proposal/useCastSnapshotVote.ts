@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { logError } from '../../../helpers/errorLogging';
-import { useStore } from '../../../providers/App/AppProvider';
+import { useDAOStore } from '../../../providers/App/AppProvider';
 import { ExtendedSnapshotProposal } from '../../../types';
 import encryptWithShutter from '../../../utils/shutter';
 import { submitSnapshotVote } from '../../../utils/snapshotVote';
@@ -15,7 +15,7 @@ const useCastSnapshotVote = (extendedSnapshotProposal: ExtendedSnapshotProposal 
   const { daoKey } = useCurrentDAOKey();
   const {
     node: { subgraphInfo },
-  } = useStore({ daoKey });
+  } = useDAOStore({ daoKey });
 
   const { data: walletClient } = useNetworkWalletClient();
 

@@ -1,5 +1,6 @@
 import { useCallback } from 'react';
-import { useStore } from '../../../providers/App/AppProvider';
+import useFeatureFlag from '../../../helpers/environmentFeatureFlags';
+import { useDAOStore } from '../../../providers/App/AppProvider';
 import { FractalGovernanceAction } from '../../../providers/App/governance/action';
 import { GovernanceType } from '../../../types';
 import { useUpdateTimer } from '../../utils/useUpdateTimer';
@@ -13,16 +14,17 @@ export const useLoadDAOProposals = () => {
     governance: { type },
     action,
     node: { safe },
-  } = useStore({ daoKey });
+  } = useDAOStore({ daoKey });
+  const storeFeatureEnabled = useFeatureFlag('flag_store_v2');
 
   const { setMethodOnInterval, clearIntervals } = useUpdateTimer(safe?.address);
   const loadAzoriusProposals = useAzoriusProposals();
   const { loadSafeMultisigProposals } = useSafeMultisigProposals();
 
   const loadDAOProposals = useCallback(async () => {
+    if (storeFeatureEnabled) return;
     clearIntervals();
     if (type === GovernanceType.AZORIUS_ERC20 || type === GovernanceType.AZORIUS_ERC721) {
-      // load Azorius proposals and strategies
       await loadAzoriusProposals(proposal => {
         action.dispatch({
           type: FractalGovernanceAction.SET_AZORIUS_PROPOSAL,
@@ -30,8 +32,6 @@ export const useLoadDAOProposals = () => {
         });
       });
     } else if (type === GovernanceType.MULTISIG) {
-      // load mulisig proposals
-      // @dev what is the point of setMethodOnInterval here?
       return setMethodOnInterval(loadSafeMultisigProposals);
     }
   }, [
@@ -41,6 +41,7 @@ export const useLoadDAOProposals = () => {
     action,
     setMethodOnInterval,
     loadSafeMultisigProposals,
+    storeFeatureEnabled,
   ]);
 
   return loadDAOProposals;

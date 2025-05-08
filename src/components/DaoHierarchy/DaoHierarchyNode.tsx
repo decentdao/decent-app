@@ -15,7 +15,7 @@ import useNetworkPublicClient from '../../hooks/useNetworkPublicClient';
 import { CacheKeys } from '../../hooks/utils/cache/cacheDefaults';
 import { getValue, setValue } from '../../hooks/utils/cache/useLocalStorage';
 import { useAddressContractType } from '../../hooks/utils/useAddressContractType';
-import { useStore } from '../../providers/App/AppProvider';
+import { useDAOStore } from '../../providers/App/AppProvider';
 import { useSafeAPI } from '../../providers/App/hooks/useSafeAPI';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
 import { DaoHierarchyInfo, DaoHierarchyStrategyType, DecentModule } from '../../types';
@@ -43,7 +43,7 @@ export function DaoHierarchyNode({
   const { daoKey } = useCurrentDAOKey();
   const {
     node: { safe: currentSafe },
-  } = useStore({ daoKey });
+  } = useDAOStore({ daoKey });
   const { t } = useTranslation('common');
   const safeApi = useSafeAPI();
   const [hierarchyNode, setHierarchyNode] = useState<DaoHierarchyInfo>();

@@ -2,7 +2,8 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { Address, getAddress, isAddress } from 'viem';
 import { createDecentSubgraphClient } from '../../../graphql';
 import { DAOQuery, DAOQueryResponse } from '../../../graphql/DAOQueries';
-import { useStore } from '../../../providers/App/AppProvider';
+import useFeatureFlag from '../../../helpers/environmentFeatureFlags';
+import { useDAOStore } from '../../../providers/App/AppProvider';
 import { useSafeAPI } from '../../../providers/App/hooks/useSafeAPI';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
 import { useCurrentDAOKey } from '../useCurrentDAOKey';
@@ -29,7 +30,9 @@ export const useFractalNode = ({
   const {
     action,
     node: { setDaoInfo, setSafeInfo, setDecentModules },
-  } = useStore({ daoKey });
+  } = useDAOStore({ daoKey });
+
+  const storeFeatureEnabled = useFeatureFlag('flag_store_v2');
 
   const reset = useCallback(
     ({ error }: { error: boolean }) => {
@@ -41,7 +44,7 @@ export const useFractalNode = ({
   );
 
   const setDAO = useCallback(async () => {
-    if (addressPrefix && safeAddress) {
+    if (addressPrefix && safeAddress && !storeFeatureEnabled) {
       currentValidSafe.current = `${addressPrefix}${safeAddress}`;
       setErrorLoading(false);
 
@@ -103,18 +106,20 @@ export const useFractalNode = ({
     setDecentModules,
     setDaoInfo,
     reset,
+    storeFeatureEnabled,
   ]);
 
   useEffect(() => {
     if (
       `${addressPrefix}${safeAddress}` !== currentValidSafe.current &&
       !wrongNetwork &&
-      !invalidQuery
+      !invalidQuery &&
+      !storeFeatureEnabled
     ) {
       reset({ error: false });
       setDAO();
     }
-  }, [addressPrefix, safeAddress, setDAO, reset, wrongNetwork, invalidQuery]);
+  }, [addressPrefix, safeAddress, setDAO, reset, wrongNetwork, invalidQuery, storeFeatureEnabled]);
 
   return { errorLoading };
 };

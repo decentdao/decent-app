@@ -3,7 +3,7 @@ import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { NEUTRAL_2_82_TRANSPARENT } from '../../../constants/common';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
-import { useStore } from '../../../providers/App/AppProvider';
+import { useDAOStore } from '../../../providers/App/AppProvider';
 import { FractalProposalState, MultisigProposal } from '../../../types';
 import SupportTooltip from '../badges/SupportTooltip';
 import { OptionsList } from '../menus/OptionMenu/OptionsList';
@@ -28,7 +28,7 @@ export function CustomNonceInput({
   const {
     governance: { isAzorius, proposals },
     node: { safe },
-  } = useStore({ daoKey });
+  } = useDAOStore({ daoKey });
   const { t } = useTranslation(['proposal', 'common']);
   const errorMessage =
     nonce !== undefined && safe && nonce < safe.nonce ? t('customNonceError') : undefined;

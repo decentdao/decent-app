@@ -2,7 +2,8 @@ import { abis } from '@fractal-framework/fractal-contracts';
 import { useCallback, useEffect, useRef } from 'react';
 import { Address, getContract } from 'viem';
 import LockReleaseAbi from '../../../assets/abi/LockRelease';
-import { useStore } from '../../../providers/App/AppProvider';
+import useFeatureFlag from '../../../helpers/environmentFeatureFlags';
+import { useDAOStore } from '../../../providers/App/AppProvider';
 import { GovernanceContractAction } from '../../../providers/App/governanceContracts/action';
 import { DecentModule, FractalTokenType, FractalVotingStrategy } from '../../../types';
 import { getAzoriusModuleFromModules } from '../../../utils';
@@ -21,9 +22,10 @@ export const useGovernanceContracts = () => {
   const {
     action,
     node: { safe, modules },
-  } = useStore({ daoKey });
+  } = useDAOStore({ daoKey });
   const publicClient = useNetworkPublicClient();
   const { getAddressContractType } = useAddressContractType();
+  const storeFeatureEnabled = useFeatureFlag('flag_store_v2');
 
   const { getVotingStrategies } = useVotingStrategyAddress();
 
@@ -173,7 +175,8 @@ export const useGovernanceContracts = () => {
     if (
       safeAddress !== undefined &&
       currentValidAddress.current !== safeAddress &&
-      modules !== null
+      modules !== null &&
+      !storeFeatureEnabled
     ) {
       loadGovernanceContracts(modules);
       currentValidAddress.current = safeAddress;
@@ -181,5 +184,5 @@ export const useGovernanceContracts = () => {
     if (!safeAddress) {
       currentValidAddress.current = null;
     }
-  }, [modules, loadGovernanceContracts, safeAddress]);
+  }, [modules, loadGovernanceContracts, safeAddress, storeFeatureEnabled]);
 };

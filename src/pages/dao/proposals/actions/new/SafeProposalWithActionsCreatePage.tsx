@@ -14,7 +14,7 @@ import { DAO_ROUTES } from '../../../../../constants/routes';
 import { usePrepareProposal } from '../../../../../hooks/DAO/proposal/usePrepareProposal';
 import { useCurrentDAOKey } from '../../../../../hooks/DAO/useCurrentDAOKey';
 import { analyticsEvents } from '../../../../../insights/analyticsEvents';
-import { useStore } from '../../../../../providers/App/AppProvider';
+import { useDAOStore } from '../../../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../../../providers/NetworkConfig/useNetworkConfigStore';
 import { useProposalActionsStore } from '../../../../../store/actions/useProposalActionsStore';
 import { CreateProposalSteps } from '../../../../../types';
@@ -27,7 +27,7 @@ export function SafeProposalWithActionsCreatePage() {
   const {
     governance: { type },
     node: { safe },
-  } = useStore({ daoKey });
+  } = useDAOStore({ daoKey });
 
   const { prepareProposal } = usePrepareProposal();
   const { getTransactions, actions, proposalMetadata } = useProposalActionsStore();

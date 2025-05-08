@@ -8,7 +8,7 @@ import * as Yup from 'yup';
 import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
 import { useValidationAddress } from '../../../../hooks/schemas/common/useValidationAddress';
 import { useNetworkEnsAddressAsync } from '../../../../hooks/useNetworkEnsAddress';
-import { useStore } from '../../../../providers/App/AppProvider';
+import { useDAOStore } from '../../../../providers/App/AppProvider';
 import { validateENSName } from '../../../../utils/url';
 import SupportTooltip from '../../../ui/badges/SupportTooltip';
 import { CustomNonceInput } from '../../../ui/forms/CustomNonceInput';
@@ -29,7 +29,7 @@ function AddSignerModal({
   const { daoKey } = useCurrentDAOKey();
   const {
     node: { safe },
-  } = useStore({ daoKey });
+  } = useDAOStore({ daoKey });
   if (!safe) {
     throw new Error('Safe not found');
   }
