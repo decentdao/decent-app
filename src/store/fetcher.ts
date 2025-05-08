@@ -9,6 +9,7 @@ import { useGuardFetcher } from './fetchers/guard';
 import { useNodeFetcher } from './fetchers/node';
 import { useRolesFetcher } from './fetchers/roles';
 import { useTreasuryFetcher } from './fetchers/treasury';
+import { useRolesStore } from './roles/useRolesStore';
 import { SetAzoriusGovernancePayload } from './slices/governances';
 import { useGlobalStore } from './store';
 
@@ -58,6 +59,7 @@ export const useDAOStoreFetcher = ({
   } = useGovernanceFetcher();
   const { fetchDAOGuard } = useGuardFetcher();
   const { fetchRolesData } = useRolesFetcher();
+  const { setHatKeyValuePairData } = useRolesStore();
 
   useEffect(() => {
     async function loadDAOData() {
@@ -145,6 +147,11 @@ export const useDAOStoreFetcher = ({
         });
 
         if (rolesData) {
+          setHatKeyValuePairData({
+            contextChainId: chain.id,
+            hatsTreeId: rolesData.hatsTreeId,
+            streamIdsToHatIds: rolesData.streamIdsToHatIds,
+          });
           const gaslessVotingData = await fetchGaslessVotingDAOData({
             safeAddress,
             events: rolesData.events,
@@ -188,6 +195,7 @@ export const useDAOStoreFetcher = ({
     fetchRolesData,
     setGaslessVotingData,
     fetchGaslessVotingDAOData,
+    setHatKeyValuePairData,
   ]);
 
   useEffect(() => {
