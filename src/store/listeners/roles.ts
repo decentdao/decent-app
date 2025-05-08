@@ -10,7 +10,7 @@ import { useRolesFetcher } from '../fetchers/roles';
 export function useRolesListener({
   safeAddress,
   onRolesDataFetched,
-  onGasslesVotingDataFetched,
+  onGaslessVotingDataFetched,
 }: {
   safeAddress?: Address;
   onRolesDataFetched: (rolesData: {
@@ -18,7 +18,7 @@ export function useRolesListener({
     hatsTreeId: number | null | undefined;
     streamIdsToHatIds: { hatId: bigint; streamId: string }[];
   }) => void;
-  onGasslesVotingDataFetched: (gasslesVotingData: {
+  onGaslessVotingDataFetched: (gasslesVotingData: {
     gaslessVotingEnabled: boolean;
     paymasterAddress: Address | null;
   }) => void;
@@ -65,7 +65,7 @@ export function useRolesListener({
             safeAddress,
           }).then(gaslessVotingDaoData => {
             if (gaslessVotingDaoData) {
-              onGasslesVotingDataFetched(gaslessVotingDaoData);
+              onGaslessVotingDataFetched(gaslessVotingDaoData);
             }
           });
         },
@@ -78,7 +78,7 @@ export function useRolesListener({
     fetchGaslessVotingDAOData,
     getHatsTreeId,
     getStreamIdsToHatIds,
-    onGasslesVotingDataFetched,
+    onGaslessVotingDataFetched,
     onRolesDataFetched,
     publicClient,
     safeAddress,

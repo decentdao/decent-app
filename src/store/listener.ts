@@ -164,7 +164,7 @@ export const useDAOStoreListener = ({ daoKey }: { daoKey: DAOKey | undefined }) 
     // TODO: Implement this in scope of ENG-632
   }, []);
 
-  const onGasslesVotingDataFetched = useCallback(
+  const onGaslessVotingDataFetched = useCallback(
     (gasslesVotingData: { paymasterAddress: Address | null; gaslessVotingEnabled: boolean }) => {
       if (daoKey) {
         setGaslessVotingData(daoKey, gasslesVotingData);
@@ -176,6 +176,6 @@ export const useDAOStoreListener = ({ daoKey }: { daoKey: DAOKey | undefined }) 
   useRolesListener({
     safeAddress: node?.safe?.address,
     onRolesDataFetched,
-    onGasslesVotingDataFetched,
+    onGaslessVotingDataFetched,
   });
 };
