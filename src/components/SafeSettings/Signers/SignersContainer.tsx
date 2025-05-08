@@ -1,7 +1,7 @@
 import { Box, Button, Flex, Icon, Input, Show, Text, Image } from '@chakra-ui/react';
 import { MinusCircle, PlusCircle } from '@phosphor-icons/react';
-import { useFormik } from 'formik';
-import { useEffect, useMemo, useState, useRef } from 'react';
+import { FormikProps, useFormik } from 'formik';
+import { useEffect, useMemo, useState, useRef, ChangeEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Address } from 'viem';
 import { useAccount } from 'wagmi';
@@ -32,6 +32,8 @@ type NewSignerItem = SignerItem & {
 
 type NewSignerFormikErrors = { newSigners?: { key: string; error: string }[] };
 
+type NewSignersFormikValues = { newSigners: NewSignerItem[]; threshold: number };
+
 function Signer({
   signer,
   onRemove,
@@ -39,10 +41,14 @@ function Signer({
 }: {
   signer: SignerItem;
   onRemove: (() => void) | null;
-  formik: any;
+  formik: FormikProps<NewSignersFormikValues> | null;
 }) {
   if (!signer.isAdding && !signer.address) {
     throw new Error('Signer does not have an address');
+  }
+
+  if (signer.isAdding && !formik) {
+    throw new Error('New signer formik is null');
   }
 
   const inputRef = useRef<HTMLInputElement>(null);
@@ -50,7 +56,27 @@ function Signer({
   const newSigner = signer.isAdding ? (signer as NewSignerItem) : null;
   const isInvalid =
     !!newSigner?.inputValue &&
+    formik !== null &&
     (formik.errors as NewSignerFormikErrors).newSigners?.some(error => error.key === signer.key);
+
+  const onNewSignerInputChange =
+    formik !== null
+      ? (e: ChangeEvent<HTMLInputElement>) => {
+          // Find and overwrite the address input value of this new signer with the input value
+          const newSigners = formik.values.newSigners.map((s: NewSignerItem) =>
+            s.key === signer.key
+              ? {
+                  ...s,
+                  inputValue: e.target.value,
+                }
+              : s,
+          );
+
+          formik.setFieldValue('newSigners', newSigners);
+
+          setTimeout(() => inputRef.current?.focus(), 10);
+        }
+      : undefined;
 
   return (
     <Flex
@@ -71,21 +97,7 @@ function Signer({
           isDisabled={!newSigner}
           color={!!newSigner ? 'white-0' : 'neutral-3'}
           isInvalid={isInvalid}
-          onChange={e => {
-            // Find and overwrite the address input value of this new signer with the input value
-            const newSigners = formik.values.newSigners.map((s: NewSignerItem) =>
-              s.key === signer.key
-                ? {
-                    ...s,
-                    inputValue: e.target.value,
-                  }
-                : s,
-            );
-
-            formik.setFieldValue('newSigners', newSigners);
-
-            setTimeout(() => inputRef.current?.focus(), 10);
-          }}
+          onChange={onNewSignerInputChange}
         />
 
         {onRemove && (
@@ -121,7 +133,7 @@ export function SignersContainer() {
   const { t } = useTranslation(['common', 'breadcrumbs', 'daoEdit']);
   const { validateAddress } = useValidationAddress();
 
-  const formik = useFormik<{ newSigners: NewSignerItem[]; threshold: number }>({
+  const formik = useFormik<NewSignersFormikValues>({
     initialValues: {
       newSigners: [] as NewSignerItem[],
       threshold: safe?.threshold ?? 1,
