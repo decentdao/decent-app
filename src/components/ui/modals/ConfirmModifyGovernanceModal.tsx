@@ -21,14 +21,9 @@ export function ConfirmModifyGovernanceModal({ close }: { close: () => void }) {
       pt={2}
       alignItems="center"
     >
-      <Image
-        src="/images/warning-yellow.svg"
-        w="2rem"
-        h="2rem"
-      />
+      <Image src="/images/warning-yellow.svg" />
 
       <Text textStyle="heading-medium">{t('confirmModifyGovernanceTitle')}</Text>
-
       <Text
         marginBottom="1rem"
         textStyle="label-large"
