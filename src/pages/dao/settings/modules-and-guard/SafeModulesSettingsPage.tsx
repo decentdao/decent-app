@@ -87,7 +87,10 @@ export function SafeModulesSettingsPage() {
           </Box>
         </Flex>
         <Flex
-          flexDir="column"
+          px={6}
+          py={2}
+          flexDirection="column"
+          gap="1rem"
           mt="2rem"
         >
           <Text
@@ -96,18 +99,32 @@ export function SafeModulesSettingsPage() {
           >
             {t('guardTitle')}
           </Text>
-          {safe?.guard && safe?.guard !== zeroAddress ? (
-            <Flex>
-              <DisplayAddress address={safe.guard}>
-                {safe.guard}
-                {!!freezeGuardContractAddress || !!freezeVotingContractAddress
-                  ? ' (Freeze Guard)'
-                  : ''}
-              </DisplayAddress>
-            </Flex>
-          ) : (
-            <Text color="neutral-5">{t('noGuardAttached')}</Text>
-          )}
+
+          <Box
+            border="1px solid"
+            borderColor="neutral-3"
+            borderRadius="0.75rem"
+            p={4}
+          >
+            {safe?.guard && safe?.guard !== zeroAddress ? (
+              <Flex flexDirection="column">
+                <Text textStyle="body-small">
+                  {!!freezeGuardContractAddress || !!freezeVotingContractAddress
+                    ? 'Freeze Guard'
+                    : 'Guard'}
+                </Text>
+                <DisplayAddress
+                  ml={-3.5}
+                  address={safe.guard}
+                >
+                  <Hide above="xl">{createAccountSubstring(safe.guard)}</Hide>
+                  <Show above="xl">{safe.guard}</Show>
+                </DisplayAddress>
+              </Flex>
+            ) : (
+              <Text color="neutral-5">{t('noGuardAttached')}</Text>
+            )}
+          </Box>
         </Flex>
       </SettingsContentBox>
     </>

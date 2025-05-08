@@ -11,7 +11,7 @@
   "noModulesAttached": "연결된 모듈 없음",
   "noGuardAttached": "가드 미부착",
   "modulesTitle": "모듈",
-  "guardTitle": "Guard",
+  "guardsTitle": "가드",
   "modulesAndGuardsTitle": "모듈 및 가드",
   "permissionsTitle": "권한",
   "daoSettingsGeneral": "일반",

@@ -11,7 +11,7 @@
   "noModulesAttached": "モジュールなし",
   "noGuardAttached": "ガードなし",
   "modulesTitle": "モジュール",
-  "guardTitle": "ガード",
+  "guardsTitle": "ガード",
   "modulesAndGuardsTitle": "モジュールとガード",
   "permissionsTitle": "アクセス許可",
   "daoSettingsGeneral": "一般",
