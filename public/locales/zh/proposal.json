@@ -164,6 +164,7 @@
   "addStream": "添加流",
   "removeStream": "移除水流",
   "streamStartNotice": "流将在执行提案时启动。为了\n为了 \"模拟 \"流启动的延迟 - 第一档的金额应设置为\n0 和所需的 \"延迟 \"时间。",
+  "streamOnSablierNotice": "该提案将使用 Sablier 创建支付流。执行后，收款人将需要使用 Sablier 来管理这些付款流。",
   "streamedTokenAddress": "流媒体令牌地址",
   "streamedTokenAddressHelper": "国库余额：{{balance}}",
   "recipientAddress": "收件人地址",

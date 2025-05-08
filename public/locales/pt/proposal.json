@@ -164,6 +164,7 @@
   "addStream": "Adicionar fluxo",
   "removeStream": "Remover fluxo",
   "streamStartNotice": "O fluxo será iniciado no momento da execução da proposta. Para\n\"emular\" o atraso do início do fluxo - a primeira fração deve ter o montante definido para\n0 com a duração desejada do \"atraso\".",
+  "streamOnSablierNotice": "A presente proposta criará fluxos de pagamento utilizando o Sablier. Após a sua execução, os destinatários terão de utilizar o Sablier para gerir esses fluxos.",
   "streamedTokenAddress": "Endereço do Token em fluxo contínuo",
   "streamedTokenAddressHelper": "Saldo de tesouraria: {{balance}}",
   "recipientAddress": "Endereço do destinatário",
