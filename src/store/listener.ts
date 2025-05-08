@@ -27,7 +27,7 @@ export const useDAOStoreListener = ({ daoKey }: { daoKey: DAOKey | undefined }) 
     setProposal,
     setProposalVote,
     setGuardAccountData,
-    setGasslesVotingData,
+    setGaslessVotingData,
   } = useGlobalStore();
 
   const governance = daoKey ? getGovernance(daoKey) : undefined;
@@ -167,10 +167,10 @@ export const useDAOStoreListener = ({ daoKey }: { daoKey: DAOKey | undefined }) 
   const onGasslesVotingDataFetched = useCallback(
     (gasslesVotingData: { paymasterAddress: Address | null; gaslessVotingEnabled: boolean }) => {
       if (daoKey) {
-        setGasslesVotingData(daoKey, gasslesVotingData);
+        setGaslessVotingData(daoKey, gasslesVotingData);
       }
     },
-    [daoKey, setGasslesVotingData],
+    [daoKey, setGaslessVotingData],
   );
 
   useRolesListener({

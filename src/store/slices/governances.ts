@@ -62,7 +62,7 @@ export type GovernancesSlice = {
     daoKey: DAOKey,
     lockReleaseAccountData: { balance: bigint; delegatee: Address },
   ) => void;
-  setGasslesVotingData: (
+  setGaslessVotingData: (
     daoKey: DAOKey,
     gasslesVotingData: {
       gaslessVotingEnabled: boolean;
@@ -281,7 +281,7 @@ export const createGovernancesSlice: StateCreator<
       'setSnapshotProposals',
     );
   },
-  setGasslesVotingData: (daoKey, gasslesVotingData) => {
+  setGaslessVotingData: (daoKey, gasslesVotingData) => {
     set(state => {
       state.governances[daoKey].gaslessVotingEnabled = gasslesVotingData.gaslessVotingEnabled;
       state.governances[daoKey].paymasterAddress = gasslesVotingData.paymasterAddress;

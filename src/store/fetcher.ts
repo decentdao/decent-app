@@ -42,7 +42,7 @@ export const useDAOStoreFetcher = ({
     setProposal,
     setLoadingFirstProposal,
     setGuard,
-    setGasslesVotingData,
+    setGaslessVotingData,
     setAllProposalsLoaded,
   } = useGlobalStore();
   const { chain, getConfigByChainId } = useNetworkConfigStore();
@@ -149,7 +149,7 @@ export const useDAOStoreFetcher = ({
         });
 
         if (gaslessVotingData) {
-          setGasslesVotingData(daoKey, gaslessVotingData);
+          setGaslessVotingData(daoKey, gaslessVotingData);
         }
       }
     }
@@ -181,7 +181,7 @@ export const useDAOStoreFetcher = ({
     fetchDAOSnapshotProposals,
     setSnapshotProposals,
     fetchRolesData,
-    setGasslesVotingData,
+    setGaslessVotingData,
     fetchGaslessVotingDAOData,
   ]);
 
