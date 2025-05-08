@@ -4,7 +4,7 @@ import { useCallback } from 'react';
 import { Address, Hex, encodeFunctionData, erc20Abi, getAddress, zeroAddress } from 'viem';
 import GnosisSafeL2 from '../../assets/abi/GnosisSafeL2';
 import SablierV2BatchAbi from '../../assets/abi/SablierV2Batch';
-import { useStore } from '../../providers/App/AppProvider';
+import { useDAOStore } from '../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
 import { PreparedNewStreamData } from '../../types/roles';
 import { SENTINEL_MODULE } from '../../utils/address';
@@ -24,7 +24,7 @@ export default function useCreateSablierStream() {
   const { daoKey } = useCurrentDAOKey();
   const {
     node: { safe },
-  } = useStore({ daoKey });
+  } = useDAOStore({ daoKey });
 
   const safeAddress = safe?.address;
 

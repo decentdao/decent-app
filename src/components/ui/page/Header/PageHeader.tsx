@@ -5,7 +5,7 @@ import { CONTENT_MAXW } from '../../../../constants/common';
 import { DAO_ROUTES } from '../../../../constants/routes';
 import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
 import { createAccountSubstring } from '../../../../hooks/utils/useGetAccountName';
-import { useStore } from '../../../../providers/App/AppProvider';
+import { useDAOStore } from '../../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../../providers/NetworkConfig/useNetworkConfigStore';
 import AddressCopier from '../../links/AddressCopier';
 import Divider from '../../utils/Divider';
@@ -36,7 +36,7 @@ function PageHeader({
   const { daoKey } = useCurrentDAOKey();
   const {
     node: { safe, subgraphInfo },
-  } = useStore({ daoKey });
+  } = useDAOStore({ daoKey });
 
   const { addressPrefix } = useNetworkConfigStore();
   const safeAddress = safe?.address;

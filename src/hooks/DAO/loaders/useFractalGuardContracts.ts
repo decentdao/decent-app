@@ -1,7 +1,7 @@
 import { abis } from '@fractal-framework/fractal-contracts';
 import { useCallback, useEffect, useRef } from 'react';
 import { getContract, zeroAddress } from 'viem';
-import { useStore } from '../../../providers/App/AppProvider';
+import { useDAOStore } from '../../../providers/App/AppProvider';
 import { GuardContractAction } from '../../../providers/App/guardContracts/action';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
 import { FreezeGuardType, FreezeVotingType } from '../../../types';
@@ -17,7 +17,7 @@ export const useFractalGuardContracts = ({ loadOnMount = true }: { loadOnMount?:
   const {
     action,
     node: { safe, subgraphInfo, modules },
-  } = useStore({ daoKey });
+  } = useDAOStore({ daoKey });
 
   const safeAddress = safe?.address;
 

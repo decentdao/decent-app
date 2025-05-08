@@ -3,7 +3,7 @@ import { useCallback, useEffect, useRef } from 'react';
 import { Address, getContract } from 'viem';
 import LockReleaseAbi from '../../../assets/abi/LockRelease';
 import useFeatureFlag from '../../../helpers/environmentFeatureFlags';
-import { useStore } from '../../../providers/App/AppProvider';
+import { useDAOStore } from '../../../providers/App/AppProvider';
 import { GovernanceContractAction } from '../../../providers/App/governanceContracts/action';
 import { DecentModule, FractalTokenType, FractalVotingStrategy } from '../../../types';
 import { getAzoriusModuleFromModules } from '../../../utils';
@@ -22,7 +22,7 @@ export const useGovernanceContracts = () => {
   const {
     action,
     node: { safe, modules },
-  } = useStore({ daoKey });
+  } = useDAOStore({ daoKey });
   const publicClient = useNetworkPublicClient();
   const { getAddressContractType } = useAddressContractType();
   const storeFeatureEnabled = useFeatureFlag('flag_store_v2');

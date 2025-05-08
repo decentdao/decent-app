@@ -9,7 +9,7 @@ import useCastSnapshotVote from '../../../hooks/DAO/proposal/useCastSnapshotVote
 import useCastVote from '../../../hooks/DAO/proposal/useCastVote';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import useCurrentBlockNumber from '../../../hooks/utils/useCurrentBlockNumber';
-import { useStore } from '../../../providers/App/AppProvider';
+import { useDAOStore } from '../../../providers/App/AppProvider';
 import {
   AzoriusProposal,
   FractalProposal,
@@ -29,7 +29,7 @@ export function CastVote({ proposal }: { proposal: FractalProposal }) {
   const { daoKey } = useCurrentDAOKey();
   const {
     node: { gaslessVotingEnabled },
-  } = useStore({ daoKey });
+  } = useDAOStore({ daoKey });
 
   const { snapshotProposal, extendedSnapshotProposal, loadSnapshotProposal } =
     useSnapshotProposal(proposal);

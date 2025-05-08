@@ -1,6 +1,6 @@
 import { useCallback, useMemo } from 'react';
 import { Address } from 'viem';
-import { useStore } from '../../providers/App/AppProvider';
+import { useDAOStore } from '../../providers/App/AppProvider';
 import { AzoriusGovernance, GovernanceType, TokenBalance } from '../../types';
 import { useCurrentDAOKey } from '../DAO/useCurrentDAOKey';
 
@@ -15,7 +15,7 @@ interface TokenListFilterOptions {
 export function useFilterSpamTokens(options: TokenListFilterOptions = {}) {
   const { includeNativeToken = false, includeZeroBalanceToken = false } = options;
   const { daoKey } = useCurrentDAOKey();
-  const { governance } = useStore({ daoKey });
+  const { governance } = useDAOStore({ daoKey });
   const voteTokens: Address[] = useMemo(() => {
     const tokens: Address[] = [];
     if (governance.type === GovernanceType.AZORIUS_ERC20) {

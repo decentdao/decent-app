@@ -6,7 +6,7 @@ import { useAccount, useBalance } from 'wagmi';
 import * as Yup from 'yup';
 import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
 import { useCanUserCreateProposal } from '../../../../hooks/utils/useCanUserSubmitProposal';
-import { useStore } from '../../../../providers/App/AppProvider';
+import { useDAOStore } from '../../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../../providers/NetworkConfig/useNetworkConfigStore';
 import { BigIntValuePair } from '../../../../types';
 import { formatCoinUnits } from '../../../../utils/numberFormats';
@@ -38,7 +38,7 @@ function RefillForm({ onSubmit, onClose, isDirectDeposit, showNonceInput }: Refi
   const { daoKey } = useCurrentDAOKey();
   const {
     node: { safe },
-  } = useStore({ daoKey });
+  } = useDAOStore({ daoKey });
   const [nonceInput, setNonceInput] = useState<number | undefined>(safe?.nextNonce);
   const { chain } = useNetworkConfigStore();
 

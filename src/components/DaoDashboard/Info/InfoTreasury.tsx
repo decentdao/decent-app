@@ -2,7 +2,7 @@ import { Box, Flex, Text } from '@chakra-ui/react';
 import { Coins } from '@phosphor-icons/react';
 import { useTranslation } from 'react-i18next';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
-import { useStore } from '../../../providers/App/AppProvider';
+import { useDAOStore } from '../../../providers/App/AppProvider';
 import { formatUSD } from '../../../utils';
 import { BarLoader } from '../../ui/loaders/BarLoader';
 
@@ -11,7 +11,7 @@ export function InfoTreasury() {
   const {
     treasury: { totalUsdValue },
     node: { safe },
-  } = useStore({ daoKey });
+  } = useDAOStore({ daoKey });
 
   const { t } = useTranslation('dashboard');
 

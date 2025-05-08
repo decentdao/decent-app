@@ -1,7 +1,7 @@
 import { Box, Flex, Grid, GridItem, Text } from '@chakra-ui/react';
 import { useTranslation } from 'react-i18next';
 import { useCurrentDAOKey } from '../../hooks/DAO/useCurrentDAOKey';
-import { useStore } from '../../providers/App/AppProvider';
+import { useDAOStore } from '../../providers/App/AppProvider';
 import { AzoriusGovernance } from '../../types';
 import { DisplayAddress } from '../ui/links/DisplayAddress';
 import { BarLoader } from '../ui/loaders/BarLoader';
@@ -9,7 +9,7 @@ import { BarLoader } from '../ui/loaders/BarLoader';
 export function ERC721TokensContainer() {
   const { t } = useTranslation(['settings']);
   const { daoKey } = useCurrentDAOKey();
-  const { governance } = useStore({ daoKey });
+  const { governance } = useDAOStore({ daoKey });
 
   const azoriusGovernance = governance as AzoriusGovernance;
   const { erc721Tokens } = azoriusGovernance;

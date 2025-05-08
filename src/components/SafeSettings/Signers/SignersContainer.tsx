@@ -8,7 +8,7 @@ import { useAccount } from 'wagmi';
 import useFeatureFlag from '../../../helpers/environmentFeatureFlags';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import { useValidationAddress } from '../../../hooks/schemas/common/useValidationAddress';
-import { useStore } from '../../../providers/App/AppProvider';
+import { useDAOStore } from '../../../providers/App/AppProvider';
 import { NumberStepperInput } from '../../ui/forms/NumberStepperInput';
 import { ModalType } from '../../ui/modals/ModalProvider';
 import { useDecentModal } from '../../ui/modals/useDecentModal';
@@ -125,7 +125,7 @@ export function SignersContainer() {
   const { daoKey } = useCurrentDAOKey();
   const {
     node: { safe },
-  } = useStore({ daoKey });
+  } = useDAOStore({ daoKey });
   const [userIsSigner, setUserIsSigner] = useState(false);
 
   const [signers, setSigners] = useState<ExistingSignerItem[]>([]);
