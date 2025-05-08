@@ -123,5 +123,9 @@
   "recipients_other": "受助人",
   "airdrop": "空投",
   "pageXofY": "第{{current}}页，共{{total}}页",
-  "network": "网络"
+  "network": "网络",
+  "unsavedChanges": "未保存的更改",
+  "unsavedChangesDescription": "如果继续，您未保存的更改将丢失。您想放弃更改吗？",
+  "discardChanges": "丢弃",
+  "keepEditing": "继续编辑"
 }

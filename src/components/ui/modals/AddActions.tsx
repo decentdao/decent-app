@@ -36,6 +36,7 @@ function ActionCard({
       _hover={!isDisabled ? { bg: 'neutral-3' } : undefined}
       _active={!isDisabled ? { bg: 'neutral-2' } : undefined}
       transition="all ease-out 300ms"
+      justifyContent="flex-start"
     >
       <Flex
         p="1.5rem"

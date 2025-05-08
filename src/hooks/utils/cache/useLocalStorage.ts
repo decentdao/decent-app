@@ -7,7 +7,7 @@ import {
   CACHE_VERSIONS,
 } from './cacheDefaults';
 
-function bigintReplacer(_: any, value: any) {
+export function localStorageReplacer(_: any, value: any) {
   return typeof value === 'bigint'
     ? `bigint:${value.toString()}`
     : value instanceof Date
@@ -15,7 +15,7 @@ function bigintReplacer(_: any, value: any) {
       : value;
 }
 
-function proposalObjectReviver(_: any, value: any) {
+export function localStorageReviver(_: any, value: any) {
   if (typeof value === 'string') {
     if (value.startsWith('bigint:')) return BigInt(value.substring(7));
     const isoStringRegex = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/;
@@ -39,7 +39,7 @@ export const setValue = (
   };
   localStorage.setItem(
     JSON.stringify({ ...key, version: CACHE_VERSIONS[key.cacheName] }),
-    JSON.stringify(val, bigintReplacer),
+    JSON.stringify(val, localStorageReplacer),
   );
 };
 
@@ -50,7 +50,7 @@ export const getValue = <T extends CacheKeyType>(
   const version = specificVersion ?? CACHE_VERSIONS[key.cacheName];
   const rawVal = localStorage.getItem(JSON.stringify({ ...key, version }));
   if (rawVal) {
-    const parsed: CacheValue = JSON.parse(rawVal, proposalObjectReviver);
+    const parsed: CacheValue = JSON.parse(rawVal, localStorageReviver);
     if (parsed.e === CacheExpiry.NEVER || parsed.e >= Date.now()) {
       return parsed.v as CacheValueType<T>;
     } else {

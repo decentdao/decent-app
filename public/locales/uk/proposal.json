@@ -124,6 +124,7 @@
   "notActiveNonceTooltip": "Пропозиція з нижчим номером nonce повинна бути виконана першою. Якщо ви вже виконали всі пропозиції з нижчими номерами, будь ласка, перезавантажте через кілька хвилин.",
   "signedAlready": "Ви вже підписали цю угоду.",
   "nonce": "Ніколи.",
+  "nonceLabel": "Ніколи: {{number}}",
   "votingTooltip": "Залишився час, щоб віддати свій голос.",
   "timeLockedTooltip": "Ця пропозиція може бути виконана, як тільки закінчиться період її тайм-блокування.",
   "executableTooltip": "Час, що залишився для виконання цієї пропозиції",
@@ -193,8 +194,8 @@
   "proposalSummaryNotEnoughVotingPowerSecondary": "Делегуйте токени для голосування на свою адресу, щоб мати право голосувати за майбутні пропозиції.",
   "castVoteError": "Не вдалося відправити голос",
   "labelAddTransactionsToProposal": "Додайте транзакції до пропозиції",
+  "by": "By",
   "groupByNonce": "Групування за нонче",
   "snapshot": "Знімок.",
-  "labelAddTransactionsToProposal": "Додайте транзакції до пропозиції",
   "signersThresholdBadgeLabel": "{{current}} з {{total}}"
 }
