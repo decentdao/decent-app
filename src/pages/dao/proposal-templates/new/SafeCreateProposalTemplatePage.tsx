@@ -63,8 +63,9 @@ export function SafeCreateProposalTemplatePage() {
           const initialTemplate: ProposalTemplate = proposalTemplates[defaultProposalTemplateIndex];
           if (initialTemplate) {
             const newInitialValue = {
-              nonce: undefined,
+              ...DEFAULT_PROPOSAL,
               proposalMetadata: {
+                ...DEFAULT_PROPOSAL.proposalMetadata,
                 title: initialTemplate.title,
                 description: initialTemplate.description || '',
               },
@@ -142,13 +143,12 @@ export function SafeCreateProposalTemplatePage() {
       streamsDetails={null}
       key={initialProposalTemplate.proposalMetadata.title}
       initialValues={{
-        ...(proposalMetadata
-          ? {
-              ...initialProposalTemplate,
-              proposalMetadata,
-            }
-          : initialProposalTemplate),
-        nonce: safe.nextNonce,
+        ...initialProposalTemplate,
+        proposalMetadata: {
+          ...initialProposalTemplate.proposalMetadata,
+          ...(proposalMetadata && { ...proposalMetadata }),
+          nonce: safe.nextNonce,
+        },
       }}
       prepareProposalData={prepareProposalTemplateProposal}
       mainContent={(formikProps, pendingCreateTx, _nonce, currentStep) => {

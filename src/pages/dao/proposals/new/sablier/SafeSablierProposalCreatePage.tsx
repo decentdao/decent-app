@@ -139,19 +139,18 @@ export function SafeSablierProposalCreatePage() {
   }
   const defaultTokenAddress = fungibleNonNativeAssetsWithBalance[0].tokenAddress;
   const sablierProposalInitialValues: CreateSablierProposalForm = {
-    ...(actionsProposalMetadata
-      ? {
-          ...DEFAULT_SABLIER_PROPOSAL,
-          proposalMetadata: { ...actionsProposalMetadata },
-        }
-      : DEFAULT_SABLIER_PROPOSAL),
+    ...DEFAULT_SABLIER_PROPOSAL,
+    proposalMetadata: {
+      ...DEFAULT_SABLIER_PROPOSAL.proposalMetadata,
+      nonce: safe.nextNonce,
+      ...(actionsProposalMetadata && { ...actionsProposalMetadata }),
+    },
     streams: DEFAULT_SABLIER_PROPOSAL.streams.map(s => {
       return {
         ...s,
         tokenAddress: defaultTokenAddress,
       };
     }),
-    nonce: safe.nextNonce,
   };
 
   const pageHeaderBreadcrumbs = [
