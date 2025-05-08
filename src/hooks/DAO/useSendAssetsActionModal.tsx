@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { ModalType } from '../../components/ui/modals/ModalProvider';
 import { useDecentModal } from '../../components/ui/modals/useDecentModal';
 import { DAO_ROUTES } from '../../constants/routes';
-import { useStore } from '../../providers/App/AppProvider';
+import { useDAOStore } from '../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
 import { useProposalActionsStore } from '../../store/actions/useProposalActionsStore';
 import {
@@ -16,7 +16,7 @@ export default function useSendAssetsActionModal() {
   const { daoKey } = useCurrentDAOKey();
   const {
     node: { safe },
-  } = useStore({ daoKey });
+  } = useDAOStore({ daoKey });
   const { addressPrefix } = useNetworkConfigStore();
   const { t } = useTranslation(['modals']);
   const { addAction, resetActions } = useProposalActionsStore();

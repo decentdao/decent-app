@@ -8,7 +8,7 @@ import useRemoveProposalTemplate from '../../hooks/DAO/proposal/useRemoveProposa
 import useSubmitProposal from '../../hooks/DAO/proposal/useSubmitProposal';
 import { useCurrentDAOKey } from '../../hooks/DAO/useCurrentDAOKey';
 import { useCanUserCreateProposal } from '../../hooks/utils/useCanUserSubmitProposal';
-import { useStore } from '../../providers/App/AppProvider';
+import { useDAOStore } from '../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
 import { ProposalTemplate } from '../../types/proposalBuilder';
 import ContentBox from '../ui/containers/ContentBox';
@@ -31,7 +31,7 @@ export default function ProposalTemplateCard({
   const { daoKey } = useCurrentDAOKey();
   const {
     node: { safe },
-  } = useStore({ daoKey });
+  } = useDAOStore({ daoKey });
 
   const { addressPrefix } = useNetworkConfigStore();
 

@@ -2,7 +2,7 @@ import { Flex, HStack, Text, VStack } from '@chakra-ui/react';
 import { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
-import { useStore } from '../../../providers/App/AppProvider';
+import { useDAOStore } from '../../../providers/App/AppProvider';
 import SupportTooltip from '../badges/SupportTooltip';
 import ExampleLabel from './ExampleLabel';
 import { InputComponent } from './InputComponent';
@@ -24,7 +24,7 @@ export function CustomNonceInput({
   const {
     governance: { isAzorius },
     node: { safe },
-  } = useStore({ daoKey });
+  } = useDAOStore({ daoKey });
   const { t } = useTranslation(['proposal', 'common']);
   const errorMessage =
     nonce !== undefined && safe && nonce < safe.nonce ? t('customNonceError') : undefined;

@@ -13,10 +13,10 @@ import { useGovernanceListeners } from './listeners/governance';
 import { useGlobalStore } from './store';
 
 /**
- * useStoreListener orchestrates communication between various real-time listeners and Global store.
+ * useDAOStoreListener orchestrates communication between various real-time listeners and Global store.
  * Underlying listeners could get updates from whatever source(on-chain, WebSocket, etc.), which then would be reflected in the store.
  */
-export const useStoreListener = ({ daoKey }: { daoKey: DAOKey | undefined }) => {
+export const useDAOStoreListener = ({ daoKey }: { daoKey: DAOKey | undefined }) => {
   const {
     setGovernanceAccountData,
     setGovernanceLockReleaseAccountData,

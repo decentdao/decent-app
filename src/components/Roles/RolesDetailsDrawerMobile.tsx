@@ -5,7 +5,7 @@ import PencilWithLineIcon from '../../assets/theme/custom/icons/PencilWithLineIc
 import { useCurrentDAOKey } from '../../hooks/DAO/useCurrentDAOKey';
 import useAddress from '../../hooks/utils/useAddress';
 import { useCanUserCreateProposal } from '../../hooks/utils/useCanUserSubmitProposal';
-import { useStore } from '../../providers/App/AppProvider';
+import { useDAOStore } from '../../providers/App/AppProvider';
 import {
   paymentSorterByActiveStatus,
   paymentSorterByStartDate,
@@ -29,7 +29,7 @@ export default function RolesDetailsDrawerMobile({
   const { daoKey } = useCurrentDAOKey();
   const {
     node: { safe },
-  } = useStore({ daoKey });
+  } = useDAOStore({ daoKey });
   const { t } = useTranslation('roles');
   const { hatsTree } = useRolesStore();
   const permissionsContainerRef = useRef<HTMLDivElement>(null);

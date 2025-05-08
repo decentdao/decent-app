@@ -8,7 +8,7 @@ import { useDateTimeDisplay } from '../../../helpers/dateTime';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import { useNetworkEnsAvatar } from '../../../hooks/useNetworkEnsAvatar';
 import { useGetAccountName } from '../../../hooks/utils/useGetAccountName';
-import { useStore } from '../../../providers/App/AppProvider';
+import { useDAOStore } from '../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
 import {
   AzoriusProposal,
@@ -73,7 +73,7 @@ function ProposalCreatedBy({ createdBy }: { createdBy: Address }) {
 
 function NonceLabel({ nonce }: { nonce: number | undefined }) {
   const { daoKey } = useCurrentDAOKey();
-  const { governance } = useStore({ daoKey });
+  const { governance } = useDAOStore({ daoKey });
   const { t } = useTranslation('proposal');
   const isMultisig = governance.type === GovernanceType.MULTISIG;
 

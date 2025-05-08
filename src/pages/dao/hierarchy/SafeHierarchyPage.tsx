@@ -11,7 +11,7 @@ import { DAO_ROUTES } from '../../../constants/routes';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import { useCanUserCreateProposal } from '../../../hooks/utils/useCanUserSubmitProposal';
 import { analyticsEvents } from '../../../insights/analyticsEvents';
-import { useStore } from '../../../providers/App/AppProvider';
+import { useDAOStore } from '../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
 
 export function SafeHierarchyPage() {
@@ -22,7 +22,7 @@ export function SafeHierarchyPage() {
   const { daoKey } = useCurrentDAOKey();
   const {
     node: { safe, subgraphInfo },
-  } = useStore({ daoKey });
+  } = useDAOStore({ daoKey });
 
   const { t } = useTranslation('breadcrumbs');
 

@@ -18,7 +18,7 @@ type FractalStoreWithNode = FractalStore & {
   node: DaoInfoStore;
 };
 
-export const useStore = ({ daoKey }: { daoKey: DAOKey | undefined }): FractalStoreWithNode => {
+export const useDAOStore = ({ daoKey }: { daoKey: DAOKey | undefined }): FractalStoreWithNode => {
   const storeFeatureEnabled = useFeatureFlag('flag_store_v2');
   const context = useContext(FractalContext as Context<FractalStore>);
   const { getDaoNode, setDaoNode, getTreasury, getGovernance, getGuard } = useGlobalStore();
