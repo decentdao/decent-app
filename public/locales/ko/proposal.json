@@ -197,5 +197,10 @@
   "by": "으로",
   "groupByNonce": "논스별 그룹화",
   "snapshot": "스냅샷",
-  "signersThresholdBadgeLabel": "{{current}중 {{total}}"
+  "signersThresholdBadgeLabel": "{{current}중 {{total}}",
+  "nonceLabelMultipleTransactions": "여러 거래",
+  "nonceLabelSingleTransaction": "트랜잭션 #{{proposalId}}",
+  "nonceLabelRecommended": "{{nonce}} - 새 거래",
+  "nonceLabelRecommendedTitle": "권장 논스",
+  "nonceLabelReplaceActiveTitle": "활성 바꾸기"
 }

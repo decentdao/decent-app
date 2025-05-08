@@ -197,5 +197,10 @@
   "by": "By",
   "groupByNonce": "Групування за нонче",
   "snapshot": "Знімок.",
-  "signersThresholdBadgeLabel": "{{current}} з {{total}}"
+  "signersThresholdBadgeLabel": "{{current}} з {{total}}",
+  "nonceLabelMultipleTransactions": "Кілька транзакцій",
+  "nonceLabelSingleTransaction": "Транзакція #{{proposalId}}",
+  "nonceLabelRecommended": "{{nonce}} - Нова транзакція",
+  "nonceLabelRecommendedTitle": "Рекомендований нонсенс",
+  "nonceLabelReplaceActiveTitle": "Замінити активний"
 }

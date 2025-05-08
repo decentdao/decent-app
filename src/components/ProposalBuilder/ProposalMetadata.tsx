@@ -4,6 +4,7 @@ import { TFunction } from 'i18next';
 import { useTranslation } from 'react-i18next';
 import { useProposalActionsStore } from '../../store/actions/useProposalActionsStore';
 import { CreateProposalForm } from '../../types/proposalBuilder';
+import { CustomNonceInput } from '../ui/forms/CustomNonceInput';
 import { InputComponent, TextareaComponent } from '../ui/forms/InputComponent';
 
 export interface ProposalMetadataTypeProps {
@@ -36,17 +37,25 @@ export interface ProposalMetadataProps extends FormikProps<CreateProposalForm> {
 }
 
 export default function ProposalMetadata({
-  values: { proposalMetadata },
+  values,
   typeProps,
+  setFieldValue,
 }: ProposalMetadataProps) {
   const { t } = useTranslation(['proposal']);
   const { setProposalMetadata } = useProposalActionsStore();
+  const { proposalMetadata } = values;
   return (
     <VStack
       align="left"
       spacing={8}
       p="1.5rem"
     >
+      <CustomNonceInput
+        nonce={values.nonce}
+        onChange={newNonce => setFieldValue('nonce', newNonce)}
+        align="end"
+        renderTrimmed={false}
+      />
       <InputComponent
         label={typeProps.titleLabel}
         helper={typeProps.titleHelper}

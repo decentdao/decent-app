@@ -197,5 +197,10 @@
   "by": "による",
   "groupByNonce": "ノンスによるグループ化",
   "snapshot": "スナップショット",
-  "signersThresholdBadgeLabel": "{{current}} out of{{total}}"
+  "signersThresholdBadgeLabel": "{{current}} out of{{total}}",
+  "nonceLabelMultipleTransactions": "複数の取引",
+  "nonceLabelSingleTransaction": "取引番号{{proposalId}}",
+  "nonceLabelRecommended": "{{nonce}}- 新規取引",
+  "nonceLabelRecommendedTitle": "推奨ノンス",
+  "nonceLabelReplaceActiveTitle": "アクティブを置き換える"
 }
