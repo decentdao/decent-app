@@ -1,7 +1,6 @@
 import { useEffect } from 'react';
 import { Address } from 'viem';
 import { useAccount } from 'wagmi';
-import useFeatureFlag from '../../helpers/environmentFeatureFlags';
 import { FreezeVotingType } from '../../types';
 import { useGovernanceFetcher } from '../fetchers/governance';
 import { useGuardFetcher } from '../fetchers/guard';

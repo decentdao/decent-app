@@ -3,7 +3,6 @@ import { useCallback, useEffect } from 'react';
 import { Address, getContract } from 'viem';
 import { useAccount } from 'wagmi';
 import LockReleaseAbi from '../../assets/abi/LockRelease';
-import useFeatureFlag from '../../helpers/environmentFeatureFlags';
 import { logError } from '../../helpers/errorLogging';
 import useNetworkPublicClient from '../../hooks/useNetworkPublicClient';
 import { useAddressContractType } from '../../hooks/utils/useAddressContractType';
