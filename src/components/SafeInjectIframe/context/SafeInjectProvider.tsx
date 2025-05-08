@@ -1,9 +1,9 @@
 import { ChainInfo, getSDKVersion, Methods, RPCPayload } from '@safe-global/safe-apps-sdk';
-import { PropsWithChildren, useState, useRef, useCallback, useEffect } from 'react';
+import { PropsWithChildren, useCallback, useEffect, useRef, useState } from 'react';
 import { Address, BlockTag, getAddress, Hash } from 'viem';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import useNetworkPublicClient from '../../../hooks/useNetworkPublicClient';
-import { useStore } from '../../../providers/App/AppProvider';
+import { useDAOStore } from '../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
 import { useAppCommunicator } from '../hooks/useAppCommunicator';
 import { InterfaceMessageIds, InterfaceMessageProps, RequestId, TransactionWithId } from '../types';
@@ -58,7 +58,7 @@ export function SafeInjectProvider({
   const { daoKey } = useCurrentDAOKey();
   const {
     node: { safe },
-  } = useStore({ daoKey });
+  } = useDAOStore({ daoKey });
 
   const sendMessageToIFrame = useCallback(
     function <T extends InterfaceMessageIds>(

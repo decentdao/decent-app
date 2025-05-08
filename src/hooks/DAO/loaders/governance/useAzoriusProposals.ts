@@ -8,8 +8,9 @@ import {
   PublicClient,
   getContract,
 } from 'viem';
+import useFeatureFlag from '../../../../helpers/environmentFeatureFlags';
 import { logError } from '../../../../helpers/errorLogging';
-import { useStore } from '../../../../providers/App/AppProvider';
+import { useDAOStore } from '../../../../providers/App/AppProvider';
 import { FractalGovernanceAction } from '../../../../providers/App/governance/action';
 import {
   CreateProposalMetadata,
@@ -40,10 +41,11 @@ export const useAzoriusProposals = () => {
       linearVotingErc721WithHatsWhitelistingAddress,
     },
     action,
-  } = useStore({ daoKey });
+  } = useDAOStore({ daoKey });
   const decode = useSafeDecoder();
   const publicClient = useNetworkPublicClient();
   const { getAddressContractType } = useAddressContractType();
+  const storeFeatureEnabled = useFeatureFlag('flag_store_v2');
 
   const azoriusContract = useMemo(() => {
     if (!moduleAzoriusAddress) {
@@ -59,7 +61,10 @@ export const useAzoriusProposals = () => {
 
   const erc20VotedEvents = useMemo(async () => {
     let events: GetContractEventsReturnType<typeof abis.LinearERC20Voting, 'Voted'> | undefined;
-    if (!linearVotingErc20Address && !linearVotingErc20WithHatsWhitelistingAddress) {
+    if (
+      (!linearVotingErc20Address && !linearVotingErc20WithHatsWhitelistingAddress) ||
+      storeFeatureEnabled
+    ) {
       return;
     }
 
@@ -84,11 +89,19 @@ export const useAzoriusProposals = () => {
     }
 
     return events;
-  }, [linearVotingErc20Address, linearVotingErc20WithHatsWhitelistingAddress, publicClient]);
+  }, [
+    linearVotingErc20Address,
+    linearVotingErc20WithHatsWhitelistingAddress,
+    publicClient,
+    storeFeatureEnabled,
+  ]);
 
   const erc721VotedEvents = useMemo(async () => {
     let events: GetContractEventsReturnType<typeof abis.LinearERC721Voting, 'Voted'> | undefined;
-    if (!linearVotingErc721Address && !linearVotingErc721WithHatsWhitelistingAddress) {
+    if (
+      (!linearVotingErc721Address && !linearVotingErc721WithHatsWhitelistingAddress) ||
+      storeFeatureEnabled
+    ) {
       return;
     }
 
@@ -115,16 +128,21 @@ export const useAzoriusProposals = () => {
     }
 
     return events;
-  }, [linearVotingErc721Address, linearVotingErc721WithHatsWhitelistingAddress, publicClient]);
+  }, [
+    linearVotingErc721Address,
+    linearVotingErc721WithHatsWhitelistingAddress,
+    publicClient,
+    storeFeatureEnabled,
+  ]);
 
   const executedEvents = useMemo(async () => {
-    if (!azoriusContract) {
+    if (!azoriusContract || storeFeatureEnabled) {
       return;
     }
 
     const events = await azoriusContract.getEvents.ProposalExecuted({ fromBlock: 0n });
     return events;
-  }, [azoriusContract]);
+  }, [azoriusContract, storeFeatureEnabled]);
 
   useEffect(() => {
     if (!moduleAzoriusAddress) {
@@ -166,7 +184,7 @@ export const useAzoriusProposals = () => {
       ) => Promise<DecodedTransaction[]>,
       _proposalLoaded: OnProposalLoaded,
     ) => {
-      if (!_azoriusContract || !_publicClient) {
+      if (!_azoriusContract || !_publicClient || storeFeatureEnabled) {
         return;
       }
       const proposalCreatedEvents = (
@@ -339,7 +357,7 @@ export const useAzoriusProposals = () => {
         payload: true,
       });
     },
-    [action, moduleAzoriusAddress, t, getAddressContractType],
+    [action, moduleAzoriusAddress, t, getAddressContractType, storeFeatureEnabled],
   );
 
   return async (proposalLoaded: OnProposalLoaded) =>

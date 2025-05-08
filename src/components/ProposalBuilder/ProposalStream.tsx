@@ -21,7 +21,7 @@ import { Address, erc20Abi, formatUnits, getContract, isAddress } from 'viem';
 import { useCurrentDAOKey } from '../../hooks/DAO/useCurrentDAOKey';
 import useNetworkPublicClient from '../../hooks/useNetworkPublicClient';
 import { useFilterSpamTokens } from '../../hooks/utils/useFilterSpamTokens';
-import { useStore } from '../../providers/App/AppProvider';
+import { useDAOStore } from '../../providers/App/AppProvider';
 import { BigIntValuePair } from '../../types';
 import { Stream } from '../../types/proposalBuilder';
 import { formatCoin } from '../../utils';
@@ -54,7 +54,7 @@ export function ProposalStream({
   const {
     treasury: { assetsFungible },
     node: { safe },
-  } = useStore({ daoKey });
+  } = useDAOStore({ daoKey });
   const filterSpamTokens = useFilterSpamTokens();
   const { t } = useTranslation(['proposal', 'common']);
 

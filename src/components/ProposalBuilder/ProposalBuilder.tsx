@@ -13,7 +13,7 @@ import useCreateProposalSchema from '../../hooks/schemas/proposalBuilder/useCrea
 import { useUnsavedChangesBlocker } from '../../hooks/useUnsavedChangesBlocker';
 import { useCanUserCreateProposal } from '../../hooks/utils/useCanUserSubmitProposal';
 import { ActionsExperience } from '../../pages/dao/proposals/actions/new/ActionsExperience';
-import { useStore } from '../../providers/App/AppProvider';
+import { useDAOStore } from '../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
 import { useProposalActionsStore } from '../../store/actions/useProposalActionsStore';
 import { BigIntValuePair, CreateProposalSteps, ProposalExecuteData } from '../../types';
@@ -40,7 +40,7 @@ export function ShowNonceInputOnMultisig({
   const { daoKey } = useCurrentDAOKey();
   const {
     governance: { isAzorius },
-  } = useStore({ daoKey });
+  } = useDAOStore({ daoKey });
 
   if (isAzorius) {
     return null;
@@ -183,16 +183,28 @@ export function ProposalBuilder({
         }
 
         const trimmedTitle = title.trim();
+        let createProposalButtonDisabled = false;
 
-        const noTransactionsOrStreams =
-          transactions.length === 0 &&
-          (formikProps.values as CreateSablierProposalForm).streams?.length === 0;
-        const createProposalButtonDisabled =
-          !canUserCreateProposal ||
+        // check sablier streams length if details are available
+        if (streamsDetails !== null) {
+          if ((formikProps.values as CreateSablierProposalForm).streams?.length === 0) {
+            createProposalButtonDisabled = true;
+          }
+        } else {
+          // otherwise check transactions length
+          if (transactions.length === 0) {
+            createProposalButtonDisabled = true;
+          }
+        }
+        // check form errors, title, description and pending create tx
+        if (
           Object.keys(formikProps.errors).length > 0 ||
           !trimmedTitle ||
-          noTransactionsOrStreams ||
-          pendingCreateTx;
+          !description ||
+          pendingCreateTx
+        ) {
+          createProposalButtonDisabled = true;
+        }
 
         const renderButtons = (step: CreateProposalSteps) => {
           const buttons = stepButtons({

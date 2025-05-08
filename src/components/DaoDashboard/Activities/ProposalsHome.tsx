@@ -8,7 +8,7 @@ import { useProposalsSortedAndFiltered } from '../../../hooks/DAO/proposal/usePr
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import { useCanUserCreateProposal } from '../../../hooks/utils/useCanUserSubmitProposal';
 import { usePagination } from '../../../hooks/utils/usePagination';
-import { useStore } from '../../../providers/App/AppProvider';
+import { useDAOStore } from '../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
 import {
   AzoriusGovernance,
@@ -35,7 +35,7 @@ export function ProposalsHome() {
     guard,
     governance: { type },
     node: { subgraphInfo },
-  } = useStore({ daoKey });
+  } = useDAOStore({ daoKey });
 
   const [sortBy, setSortBy] = useState<SortBy>(SortBy.Newest);
   const [filters, setFilters] = useState<FractalProposalState[]>([]);
@@ -78,7 +78,7 @@ export function ProposalsHome() {
     governance,
     guardContracts,
     node: { safe },
-  } = useStore({ daoKey });
+  } = useDAOStore({ daoKey });
 
   const { addressPrefix } = useNetworkConfigStore();
   const azoriusGovernance = governance as AzoriusGovernance;
@@ -379,10 +379,16 @@ export function ProposalsHome() {
         {groupByNonce && groupedProposals && Object.keys(groupedProposals).length ? (
           Object.entries(groupedProposals)
             .sort((a, b) => {
-              // Sort snapshot last, otherwise by nonce descending
+              // Sort snapshot last, otherwise by nonce ascending/descending based on sortBy
               if (a[0] === 'snapshot') return 1;
               if (b[0] === 'snapshot') return -1;
-              return Number(b[0]) - Number(a[0]);
+              const aNonce = Number(a[0]);
+              const bNonce = Number(b[0]);
+              // When sortBy is Oldest, sort nonce ascending; otherwise sort descending
+              if (sortBy === SortBy.Oldest) {
+                return aNonce - bNonce;
+              }
+              return bNonce - aNonce;
             })
             .map(([key, group]) => (
               <Box

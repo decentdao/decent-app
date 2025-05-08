@@ -10,7 +10,7 @@ import { useCurrentDAOKey } from '../../hooks/DAO/useCurrentDAOKey';
 import useNetworkPublicClient from '../../hooks/useNetworkPublicClient';
 import { useNetworkWalletClient } from '../../hooks/useNetworkWalletClient';
 import { useCanUserCreateProposal } from '../../hooks/utils/useCanUserSubmitProposal';
-import { useStore } from '../../providers/App/AppProvider';
+import { useDAOStore } from '../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
 import { useProposalActionsStore } from '../../store/actions/useProposalActionsStore';
 import { formatCoin } from '../../utils';
@@ -112,7 +112,7 @@ export function GaslessVotingToggleDAOSettings(props: GaslessVotingToggleProps) 
   const { daoKey } = useCurrentDAOKey();
   const {
     node: { safe, gaslessVotingEnabled, paymasterAddress },
-  } = useStore({ daoKey });
+  } = useDAOStore({ daoKey });
   const { depositInfo } = usePaymasterDepositInfo();
 
   const { addAction, resetActions } = useProposalActionsStore();

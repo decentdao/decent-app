@@ -1,124 +1,129 @@
-import { TokenInfoResponse } from '@safe-global/api-kit';
-import { useCallback, useEffect } from 'react';
-import { toast } from 'sonner';
-import { Address, getAddress, isAddress, zeroAddress } from 'viem';
-import { createDecentSubgraphClient } from '../graphql';
-import { DAOQuery, DAOQueryResponse } from '../graphql/DAOQueries';
+import { useEffect } from 'react';
+import { Address, getAddress } from 'viem';
 import useFeatureFlag from '../helpers/environmentFeatureFlags';
 import { useDecentModules } from '../hooks/DAO/loaders/useDecentModules';
-import { useCurrentDAOKey } from '../hooks/DAO/useCurrentDAOKey';
-import { CacheExpiry, CacheKeys } from '../hooks/utils/cache/cacheDefaults';
-import { setValue } from '../hooks/utils/cache/useLocalStorage';
-import useBalancesAPI from '../providers/App/hooks/useBalancesAPI';
-import { useSafeAPI } from '../providers/App/hooks/useSafeAPI';
 import { useNetworkConfigStore } from '../providers/NetworkConfig/useNetworkConfigStore';
-import {
-  DAOSubgraph,
-  TokenEventType,
-  TransferDisplayData,
-  TransferType,
-  TransferWithTokenInfo,
-} from '../types';
-import { formatCoin } from '../utils';
+import { AzoriusProposal, DAOKey, FractalModuleType, FractalProposal } from '../types';
+import { useGovernanceFetcher } from './fetchers/governance';
+import { useGuardFetcher } from './fetchers/guard';
+import { useNodeFetcher } from './fetchers/node';
+import { useTreasuryFetcher } from './fetchers/treasury';
+import { SetAzoriusGovernancePayload } from './slices/governances';
 import { useGlobalStore } from './store';
 
-function getTransferEventType(transferFrom: string, safeAddress: Address | undefined) {
-  if (transferFrom === zeroAddress) {
-    return TokenEventType.MINT;
-  }
-  if (transferFrom === safeAddress) {
-    return TokenEventType.WITHDRAW;
-  } else {
-    return TokenEventType.DEPOSIT;
-  }
-}
-
-// TODO: This will be split into multiple fetchers and invoking those fetchers, much like SafeController does
-export const useGlobalStoreFetcher = () => {
-  const safeApi = useSafeAPI();
-  const { getTokenBalances, getNFTBalances, getDeFiBalances } = useBalancesAPI();
+/**
+ * useDAOStoreFetcher orchestrates fetching all the necessary data for the DAO and updating the Global store.
+ * Underlying fetchers could get data from whatever source(on-chain, WebSocket, etc.), which then would be reflected in the store.
+ */
+export const useDAOStoreFetcher = ({
+  daoKey,
+  safeAddress,
+  invalidQuery,
+  wrongNetwork,
+}: {
+  daoKey: DAOKey | undefined;
+  safeAddress: Address | undefined;
+  invalidQuery: boolean;
+  wrongNetwork: boolean;
+}) => {
   const lookupModules = useDecentModules();
-  const { daoKey, safeAddress, invalidQuery, wrongNetwork } = useCurrentDAOKey();
-  const { setDaoNode, setTransfers, setTreasury, setTransfer } = useGlobalStore();
-  const { chain, getConfigByChainId, nativeTokenIcon } = useNetworkConfigStore();
+  const {
+    setDaoNode,
+    setTransfers,
+    setTreasury,
+    setTransfer,
+    setMultisigGovernance,
+    setAzoriusGovernance,
+    setProposalTemplates,
+    setTokenClaimContractAddress,
+    setProposals,
+    setProposal,
+    setLoadingFirstProposal,
+    setGuard,
+    setAllProposalsLoaded,
+  } = useGlobalStore();
+  const { chain, getConfigByChainId } = useNetworkConfigStore();
   const storeFeatureEnabled = useFeatureFlag('flag_store_v2');
 
-  const formatTransfer = useCallback(
-    ({ transfer, isLast }: { transfer: TransferWithTokenInfo; isLast: boolean }) => {
-      const symbol = transfer.tokenInfo.symbol;
-      const decimals = transfer.tokenInfo.decimals;
-
-      const formattedTransfer: TransferDisplayData = {
-        eventType: getTransferEventType(transfer.from, safeAddress),
-        transferType: transfer.type as TransferType,
-        executionDate: transfer.executionDate,
-        image: transfer.tokenInfo.logoUri ?? '/images/coin-icon-default.svg',
-        assetDisplay:
-          transfer.type === TransferType.ERC721_TRANSFER
-            ? `${transfer.tokenInfo.name} #${transfer.tokenId}`
-            : formatCoin(transfer.value, true, decimals, symbol),
-        fullCoinTotal:
-          transfer.type === TransferType.ERC721_TRANSFER
-            ? undefined
-            : formatCoin(transfer.value, false, decimals, symbol),
-        transferAddress: safeAddress === transfer.from ? transfer.to : transfer.from,
-        transactionHash: transfer.transactionHash,
-        tokenId: transfer.tokenId,
-        tokenInfo: transfer.tokenInfo,
-        isLast,
-      };
-      return formattedTransfer;
-    },
-    [safeAddress],
-  );
+  const { fetchDAONode } = useNodeFetcher();
+  const { fetchDAOTreasury } = useTreasuryFetcher();
+  const { fetchDAOGovernance, fetchDAOProposalTemplates } = useGovernanceFetcher();
+  const { fetchDAOGuard } = useGuardFetcher();
 
   useEffect(() => {
-    async function fetchDaoNode() {
+    async function loadDAOData() {
       if (!daoKey || !safeAddress || invalidQuery || wrongNetwork || !storeFeatureEnabled) return;
-
-      const safeInfo = await safeApi.getSafeData(safeAddress);
-      const modules = await lookupModules(safeInfo.modules);
-
-      const client = createDecentSubgraphClient(getConfigByChainId(chain.id));
-      const graphRawNodeData = await client.query<DAOQueryResponse>(DAOQuery, { safeAddress });
-
-      if (graphRawNodeData.error) {
-        console.error('Failed to fetch DAO data', graphRawNodeData.error);
-        return;
-      }
-
-      const graphDAOData = graphRawNodeData.data?.daos[0];
-
-      if (!graphDAOData) {
-        console.error('No graph data found');
-        return;
-      }
-
-      const daoInfo: DAOSubgraph = {
-        parentAddress:
-          graphDAOData?.parentAddress && isAddress(graphDAOData.parentAddress)
-            ? getAddress(graphDAOData.parentAddress)
-            : null,
-        childAddresses:
-          graphDAOData?.hierarchy?.map((child: { address: string }) => getAddress(child.address)) ??
-          [],
-        daoName: graphDAOData?.name ?? null,
-        daoSnapshotENS: graphDAOData?.snapshotENS ?? null,
-        proposalTemplatesHash: graphDAOData?.proposalTemplatesHash ?? null,
-      };
+      const { safe, daoInfo, modules } = await fetchDAONode({
+        safeAddress,
+        chainId: chain.id,
+      });
 
       setDaoNode(daoKey, {
-        safe: safeInfo,
+        safe,
         daoInfo,
-        modules: modules,
+        modules,
       });
+
+      if (daoInfo.proposalTemplatesHash) {
+        const proposalTemplates = await fetchDAOProposalTemplates({
+          proposalTemplatesHash: daoInfo.proposalTemplatesHash,
+        });
+        if (proposalTemplates) {
+          setProposalTemplates(daoKey, proposalTemplates);
+        }
+      }
+
+      const onLoadingFirstProposalStateChanged = (loading: boolean) =>
+        setLoadingFirstProposal(daoKey, loading);
+      const onMultisigGovernanceLoaded = () => setMultisigGovernance(daoKey);
+      const onAzoriusGovernanceLoaded = (governance: SetAzoriusGovernancePayload) =>
+        setAzoriusGovernance(daoKey, governance);
+      const onProposalsLoaded = (proposals: FractalProposal[]) => {
+        setProposals(daoKey, proposals);
+        setLoadingFirstProposal(daoKey, false);
+        setAllProposalsLoaded(daoKey, true);
+      };
+      const onProposalLoaded = (
+        proposal: AzoriusProposal,
+        index: number,
+        totalProposals: number,
+      ) => {
+        setProposal(daoKey, proposal);
+        if (index !== 0) {
+          setLoadingFirstProposal(daoKey, false);
+        }
+        if (index === totalProposals - 1) {
+          setAllProposalsLoaded(daoKey, true);
+        }
+      };
+      const onTokenClaimContractAddressLoaded = (tokenClaimContractAddress: Address) =>
+        setTokenClaimContractAddress(daoKey, tokenClaimContractAddress);
+
+      fetchDAOGovernance({
+        daoAddress: safeAddress,
+        daoModules: modules,
+        onLoadingFirstProposalStateChanged,
+        onMultisigGovernanceLoaded,
+        onAzoriusGovernanceLoaded,
+        onProposalsLoaded,
+        onProposalLoaded,
+        onTokenClaimContractAddressLoaded,
+      });
+
+      const guardData = await fetchDAOGuard({
+        guardAddress: getAddress(safe.guard),
+        _azoriusModule: modules.find(module => module.moduleType === FractalModuleType.AZORIUS),
+      });
+
+      if (guardData) {
+        setGuard(daoKey, guardData);
+      }
     }
 
-    fetchDaoNode();
+    loadDAOData();
   }, [
     safeAddress,
     daoKey,
-    safeApi,
     lookupModules,
     chain,
     setDaoNode,
@@ -126,161 +131,43 @@ export const useGlobalStoreFetcher = () => {
     invalidQuery,
     wrongNetwork,
     storeFeatureEnabled,
+    fetchDAOProposalTemplates,
+    fetchDAOGovernance,
+    fetchDAOGuard,
+    fetchDAONode,
+    setProposalTemplates,
+    setMultisigGovernance,
+    setAzoriusGovernance,
+    setProposals,
+    setProposal,
+    setTokenClaimContractAddress,
+    setLoadingFirstProposal,
+    setGuard,
+    setAllProposalsLoaded,
   ]);
 
   useEffect(() => {
-    async function fetchDaoTreasury() {
-      if (
-        !daoKey ||
-        !safeAddress ||
-        invalidQuery ||
-        wrongNetwork ||
-        !storeFeatureEnabled ||
-        !safeApi
-      )
-        return;
+    async function loadDAOTreasury() {
+      if (!daoKey || !safeAddress || invalidQuery || wrongNetwork || !storeFeatureEnabled) return;
 
-      const [
-        transfers,
-        { data: tokenBalances, error: tokenBalancesError },
-        { data: nftBalances, error: nftBalancesError },
-        { data: defiBalances, error: defiBalancesError },
-      ] = await Promise.all([
-        safeApi.getTransfers(safeAddress),
-        getTokenBalances(safeAddress),
-        getNFTBalances(safeAddress),
-        getDeFiBalances(safeAddress),
-      ]);
-
-      if (tokenBalancesError) {
-        toast.warning(tokenBalancesError, { duration: 2000 });
-      }
-      if (nftBalancesError) {
-        toast.warning(nftBalancesError, { duration: 2000 });
-      }
-      if (defiBalancesError) {
-        toast.warning(defiBalancesError, { duration: 2000 });
-      }
-      const assetsFungible = tokenBalances || [];
-      const assetsNonFungible = nftBalances || [];
-      const assetsDeFi = defiBalances || [];
-
-      const totalAssetsFungibleUsd = assetsFungible.reduce(
-        (prev, curr) => prev + (curr.usdValue || 0),
-        0,
-      );
-      const totalAssetsDeFiUsd = assetsDeFi.reduce(
-        (prev, curr) => prev + (curr.position?.balanceUsd || 0),
-        0,
-      );
-
-      const totalUsdValue = totalAssetsFungibleUsd + totalAssetsDeFiUsd;
-
-      const treasuryData = {
-        assetsFungible,
-        assetsDeFi,
-        assetsNonFungible,
-        totalUsdValue,
-        transfers: null, // transfers not yet loaded. these are setup below
-      };
-
-      setTreasury(daoKey, treasuryData);
-
-      if (transfers.length === 0) {
-        setTransfers(daoKey, []);
-        return;
-      }
-
-      const tokenAddressesOfTransfers = transfers
-        // map down to just the addresses, with a type of `string | undefined`
-        .map(transfer => transfer.tokenAddress)
-        // no undefined or null addresses
-        .filter(address => address !== undefined && address !== null)
-        // make unique
-        .filter((value, index, self) => self.indexOf(value) === index)
-        // turn them into Address type
-        .map(address => getAddress(address));
-
-      const transfersTokenInfo = await Promise.all(
-        tokenAddressesOfTransfers.map(async address => {
-          const fallbackTokenBalance = tokenBalances?.find(
-            tokenBalanceData => getAddress(tokenBalanceData.tokenAddress) === address,
-          );
-
-          if (fallbackTokenBalance) {
-            const fallbackTokenInfo = {
-              address,
-              name: fallbackTokenBalance.name,
-              symbol: fallbackTokenBalance.symbol,
-              decimals: fallbackTokenBalance.decimals,
-              logoUri: fallbackTokenBalance.logo,
-            };
-            setValue(
-              { cacheName: CacheKeys.TOKEN_INFO, tokenAddress: address },
-              fallbackTokenInfo,
-              CacheExpiry.NEVER,
-            );
-            return fallbackTokenInfo;
-          }
-
-          const tokenInfo = await safeApi.getToken(address);
-          setValue(
-            { cacheName: CacheKeys.TOKEN_INFO, tokenAddress: address },
-            tokenInfo,
-            CacheExpiry.NEVER,
-          );
-          return tokenInfo;
-        }),
-      );
-
-      transfers
-        .sort((a, b) => b.blockNumber - a.blockNumber)
-        .forEach(async (transfer, index, _transfers) => {
-          // @note assume native token if no token address
-          let tokenInfo: TokenInfoResponse = {
-            address: '',
-            name: chain.nativeCurrency.name,
-            symbol: chain.nativeCurrency.symbol,
-            decimals: chain.nativeCurrency.decimals,
-            logoUri: nativeTokenIcon,
-          };
-          const transferTokenAddress = transfer.tokenAddress;
-          if (transferTokenAddress) {
-            const tokenData = transfersTokenInfo.find(
-              _token => _token && getAddress(_token.address) === getAddress(transferTokenAddress),
-            );
-            if (tokenData) {
-              tokenInfo = tokenData;
-            }
-          }
-
-          const formattedTransfer: TransferDisplayData = formatTransfer({
-            transfer: { ...transfer, tokenInfo },
-            isLast: _transfers.length - 1 === index,
-          });
-
-          setTransfer(daoKey, formattedTransfer);
-        });
+      fetchDAOTreasury({
+        safeAddress,
+        onTreasuryLoaded: treasuryData => setTreasury(daoKey, treasuryData),
+        onTransfersLoaded: transfers => setTransfers(daoKey, transfers),
+        onTransferLoaded: transfer => setTransfer(daoKey, transfer),
+      });
     }
 
-    fetchDaoTreasury();
+    loadDAOTreasury();
   }, [
     daoKey,
     safeAddress,
     invalidQuery,
     wrongNetwork,
     storeFeatureEnabled,
-    safeApi,
-    getTokenBalances,
-    getNFTBalances,
-    getDeFiBalances,
+    fetchDAOTreasury,
     setTreasury,
     setTransfers,
     setTransfer,
-    chain.nativeCurrency.decimals,
-    chain.nativeCurrency.name,
-    chain.nativeCurrency.symbol,
-    nativeTokenIcon,
-    formatTransfer,
   ]);
 };

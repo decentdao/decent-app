@@ -2,11 +2,11 @@ import { Box, Button, Flex, HStack, IconButton, Select, Text } from '@chakra-ui/
 import { CaretDown, MinusCircle, Plus } from '@phosphor-icons/react';
 import { Field, FieldAttributes, FieldProps, Form, Formik } from 'formik';
 import { useTranslation } from 'react-i18next';
-import { Address, getAddress, isAddress } from 'viem';
+import { Address, getAddress, isAddress, parseUnits } from 'viem';
 import * as Yup from 'yup';
 import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
 import useNetworkPublicClient from '../../../../hooks/useNetworkPublicClient';
-import { useStore } from '../../../../providers/App/AppProvider';
+import { useDAOStore } from '../../../../providers/App/AppProvider';
 import { BigIntValuePair, TokenBalance } from '../../../../types';
 import { formatCoinFromAsset } from '../../../../utils';
 import { validateENSName } from '../../../../utils/url';
@@ -45,7 +45,7 @@ export function AirdropModal({
   const { daoKey } = useCurrentDAOKey();
   const {
     treasury: { assetsFungible },
-  } = useStore({ daoKey });
+  } = useDAOStore({ daoKey });
 
   const publicClient = useNetworkPublicClient();
   const { t } = useTranslation(['modals', 'common']);
@@ -191,9 +191,20 @@ export function AirdropModal({
                         iconSize="1.5rem"
                         icon={<CaretDown />}
                         onChange={e => {
+                          const newAsset = fungibleAssetsWithBalance[Number(e.target.value)];
+                          setFieldValue('selectedAsset', newAsset);
+                          const newDecimals = newAsset.decimals;
                           setFieldValue(
-                            'selectedAsset',
-                            fungibleAssetsWithBalance[Number(e.target.value)],
+                            'recipients',
+                            values.recipients.map(r => {
+                              return {
+                                ...r,
+                                amount: {
+                                  value: r.amount.value,
+                                  bigintValue: parseUnits(r.amount.value, newDecimals),
+                                },
+                              };
+                            }),
                           );
                         }}
                         value={selectedAssetIndex}

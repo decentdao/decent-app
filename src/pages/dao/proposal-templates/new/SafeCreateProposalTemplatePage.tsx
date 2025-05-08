@@ -20,7 +20,7 @@ import { logError } from '../../../../helpers/errorLogging';
 import useCreateProposalTemplate from '../../../../hooks/DAO/proposal/useCreateProposalTemplate';
 import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
 import { analyticsEvents } from '../../../../insights/analyticsEvents';
-import { useStore } from '../../../../providers/App/AppProvider';
+import { useDAOStore } from '../../../../providers/App/AppProvider';
 import useIPFSClient from '../../../../providers/App/hooks/useIPFSClient';
 import { useNetworkConfigStore } from '../../../../providers/NetworkConfig/useNetworkConfigStore';
 import { useProposalActionsStore } from '../../../../store/actions/useProposalActionsStore';
@@ -52,7 +52,7 @@ export function SafeCreateProposalTemplatePage() {
   const { daoKey } = useCurrentDAOKey();
   const {
     node: { safe },
-  } = useStore({ daoKey });
+  } = useDAOStore({ daoKey });
   const { addressPrefix } = useNetworkConfigStore();
 
   useEffect(() => {

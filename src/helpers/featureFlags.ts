@@ -5,6 +5,7 @@ export const FEATURE_FLAGS = [
   'flag_store_v2',
   'flag_locked_token',
   'flag_markdown_editor',
+  'flag_settings_v1',
 ] as const;
 
 export type FeatureFlagKeys = typeof FEATURE_FLAGS;

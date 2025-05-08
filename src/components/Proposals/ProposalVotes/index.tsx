@@ -2,7 +2,7 @@ import { Box, Flex, Grid, Text } from '@chakra-ui/react';
 import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
-import { useStore } from '../../../providers/App/AppProvider';
+import { useDAOStore } from '../../../providers/App/AppProvider';
 import {
   AzoriusGovernance,
   AzoriusProposal,
@@ -117,7 +117,7 @@ function ProposalVotes({ proposal }: { proposal: AzoriusProposal }) {
     votes,
   } = proposal;
   const { daoKey } = useCurrentDAOKey();
-  const { governance } = useStore({ daoKey });
+  const { governance } = useDAOStore({ daoKey });
 
   const azoriusGovernance = governance as AzoriusGovernance;
   const { t } = useTranslation('proposal');
