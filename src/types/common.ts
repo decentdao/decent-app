@@ -5,5 +5,3 @@ export interface BigIntValuePair {
   /** The actual, unformatted `bigint` value. */
   bigintValue?: bigint;
 }
-
-export type WithError = { error?: string };

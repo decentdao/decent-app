@@ -211,7 +211,7 @@ This section describes the process during the initial creation of a new DAO.
 3.  **System Check (Behind the Scenes):**
     - `**Current Behavior:**` The system determines if the vote can be sponsored by evaluating `canVoteForFree` in `CastVote.tsx`. This involves several checks:
       - **Global Feature Flag:** Checks if `flag_gasless_voting` is enabled globally (`useFeatureFlag`).
-      - **DAO KV Setting:** Checks if the DAO has `gaslessVotingEnabled` set to `true` (on-chain state from `KeyValuePairs` via `useDaoInfoStore`).
+      - **DAO KV Setting:** Checks if the DAO has `gaslessVotingEnabled` set to `true` (on-chain state from `KeyValuePairs` via `governances` slice in `useGlobalStore`).
       - **Paymaster Readiness (via `useCastVote` -> `canCastGaslessVote` state):**
         - A `paymasterAddress` must exist for the DAO.
         - The `estimateGaslessVoteGas` function within `useCastVote` is called.

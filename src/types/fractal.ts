@@ -1,20 +1,13 @@
 import { TokenInfoResponse, TransferResponse } from '@safe-global/api-kit';
 import { SafeMultisigTransactionResponse } from '@safe-global/safe-core-sdk-types';
-import { Dispatch } from 'react';
 import { Address } from 'viem';
-import { FractalGovernanceActions } from '../providers/App/governance/action';
-import { GovernanceContractActions } from '../providers/App/governanceContracts/action';
-import { FractalGuardActions } from '../providers/App/guard/action';
-import { GuardContractActions } from '../providers/App/guardContracts/action';
-import { TreasuryActions } from '../providers/App/treasury/action';
 import { ERC721TokenData, VotesTokenData } from './account';
-import { FreezeGuardType, FreezeVotingType } from './daoGovernance';
+import { FreezeGuardType, FreezeVotingType } from './daoGeneral';
 import { AzoriusProposal, MultisigProposal, ProposalData } from './daoProposal';
 import { DefiBalance, NFTBalance, TokenBalance, TokenEventType, TransferType } from './daoTreasury';
 import { ProposalTemplate } from './proposalBuilder';
 import { SafeInfoResponseWithGuard } from './safeGlobal';
 import { SnapshotProposal } from './snapshot';
-
 /**
  * The possible states of a DAO proposal, for both Token Voting (Azorius) and Multisignature
  * (Safe) governance, as well as Snapshot specific states.
@@ -179,24 +172,7 @@ export interface ITokenAccount {
   votingWeight?: bigint;
   votingWeightString: string | undefined;
 }
-
-export interface FractalStore extends Fractal {
-  action: {
-    dispatch: Dispatch<FractalActions>;
-    resetSafeState: () => Promise<void>;
-  };
-}
-export enum StoreAction {
-  RESET = 'RESET',
-}
-export type FractalActions =
-  | { type: StoreAction.RESET }
-  | FractalGuardActions
-  | FractalGovernanceActions
-  | TreasuryActions
-  | GovernanceContractActions
-  | GuardContractActions;
-export interface Fractal {
+export interface DAOStore {
   guard: FreezeGuard;
   governance: FractalGovernance;
   treasury: DecentTreasury;
@@ -209,7 +185,7 @@ export enum FractalTokenType {
   erc721 = 'ERC721',
 }
 
-export type FractalVotingStrategy = {
+export type RawVotingStrategy = {
   address: Address;
   type: FractalTokenType;
   withWhitelist: boolean;
@@ -225,7 +201,7 @@ export type FractalGovernanceContracts = {
   votesTokenAddress?: Address;
   lockReleaseAddress?: Address;
   isLoaded: boolean;
-  strategies: FractalVotingStrategy[];
+  strategies: RawVotingStrategy[];
 };
 
 export type SafeWithNextNonce = SafeInfoResponseWithGuard & { nextNonce: number };

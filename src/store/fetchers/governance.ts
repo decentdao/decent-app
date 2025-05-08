@@ -35,7 +35,7 @@ import {
   FractalProposal,
   FractalProposalState,
   FractalTokenType,
-  FractalVotingStrategy,
+  RawVotingStrategy,
   GovernanceType,
   ProposalTemplate,
   SnapshotProposal,
@@ -163,7 +163,7 @@ export function useGovernanceFetcher() {
           }
         };
 
-        let strategies: FractalVotingStrategy[] = [];
+        let strategies: RawVotingStrategy[] = [];
 
         const parseProposalMetadata = (metadata: string): CreateProposalMetadata => {
           try {

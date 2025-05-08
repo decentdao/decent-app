@@ -12,12 +12,9 @@ import useUpdateProposalState from './useUpdateProposalState';
 export default function useExecuteProposal() {
   const { t } = useTranslation('transaction');
   const { daoKey } = useCurrentDAOKey();
-  const { governanceContracts, action } = useDAOStore({ daoKey });
+  const { governanceContracts } = useDAOStore({ daoKey });
   const { moduleAzoriusAddress } = governanceContracts;
-  const updateProposalState = useUpdateProposalState({
-    governanceContracts,
-    governanceDispatch: action.dispatch,
-  });
+  const updateProposalState = useUpdateProposalState();
   const { data: walletClient } = useNetworkWalletClient();
   const [contractCall, pending] = useTransaction();
 
@@ -63,8 +60,7 @@ export default function useExecuteProposal() {
         pendingMessage: t('pendingExecute'),
         failedMessage: t('failedExecute'),
         successMessage: t('successExecute'),
-        successCallback: async () => {
-          // @todo may need to re-add a loader here
+        successCallback: () => {
           updateProposalState(Number(proposal.proposalId));
         },
       });

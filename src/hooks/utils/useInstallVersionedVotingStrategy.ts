@@ -25,7 +25,7 @@ import {
   AzoriusGovernance,
   ERC721TokenData,
   FractalTokenType,
-  FractalVotingStrategy,
+  RawVotingStrategy,
 } from '../../types';
 import { SENTINEL_MODULE } from '../../utils/address';
 import { useCurrentDAOKey } from '../DAO/useCurrentDAOKey';
@@ -67,7 +67,7 @@ export const useInstallVersionedVotingStrategy = () => {
 
   const linearErc20SetupParams = useCallback(
     async (
-      strategyToRemove: FractalVotingStrategy,
+      strategyToRemove: RawVotingStrategy,
       tokenAddress: Address,
       moduleAzoriusAddress: Address,
     ): Promise<EncodeAbiParametersReturnType> => {
@@ -132,7 +132,7 @@ export const useInstallVersionedVotingStrategy = () => {
 
   const linearErc20WithWhitelistSetupParams = useCallback(
     async (
-      strategyToRemove: FractalVotingStrategy,
+      strategyToRemove: RawVotingStrategy,
       tokenAddress: Address,
       moduleAzoriusAddress: Address,
     ): Promise<EncodeAbiParametersReturnType> => {
@@ -202,7 +202,7 @@ export const useInstallVersionedVotingStrategy = () => {
 
   const linearErc721SetupParams = useCallback(
     async (
-      strategyToRemove: FractalVotingStrategy,
+      strategyToRemove: RawVotingStrategy,
       erc721TokenAddresses: ERC721TokenData[],
       moduleAzoriusAddress: Address,
     ): Promise<EncodeAbiParametersReturnType> => {
@@ -268,7 +268,7 @@ export const useInstallVersionedVotingStrategy = () => {
 
   const linearErc721WithWhitelistSetupParams = useCallback(
     async (
-      strategyToRemove: FractalVotingStrategy,
+      strategyToRemove: RawVotingStrategy,
       erc721TokenAddresses: ERC721TokenData[],
       moduleAzoriusAddress: Address,
     ): Promise<EncodeAbiParametersReturnType> => {
@@ -335,7 +335,7 @@ export const useInstallVersionedVotingStrategy = () => {
 
   const setupParams = useCallback(
     async (
-      strategyToRemove: FractalVotingStrategy,
+      strategyToRemove: RawVotingStrategy,
       moduleAzoriusAddress: Address,
       tokenAddress?: Address,
       erc721TokenAddresses?: ERC721TokenData[],
@@ -381,7 +381,7 @@ export const useInstallVersionedVotingStrategy = () => {
   );
 
   const getMasterCopyAddress = useCallback(
-    (strategyToRemove: FractalVotingStrategy): Address => {
+    (strategyToRemove: RawVotingStrategy): Address => {
       if (strategyToRemove.type === FractalTokenType.erc20) {
         if (strategyToRemove.withWhitelist) {
           return linearVotingErc20HatsWhitelistingV1MasterCopy;
@@ -406,14 +406,14 @@ export const useInstallVersionedVotingStrategy = () => {
 
   const getAddAndEnableStrategyTxs = useCallback(
     async (
-      strategyToRemove: FractalVotingStrategy,
+      strategyToRemove: RawVotingStrategy,
       moduleAzoriusAddress: Address,
       tokenAddress?: Address,
       erc721TokenAddresses?: ERC721TokenData[],
     ): Promise<{
       deployTx: TargetAddressAndCalldata;
       enableTx: TargetAddressAndCalldata;
-      newStrategy: FractalVotingStrategy;
+      newStrategy: RawVotingStrategy;
     }> => {
       const encodedStrategySetupData = await setupParams(
         strategyToRemove,
@@ -466,7 +466,7 @@ export const useInstallVersionedVotingStrategy = () => {
 
   const buildInstallVersionedVotingStrategies = useCallback(async (): Promise<{
     installVersionedStrategyTxDatas: TargetAddressAndCalldata[];
-    newStrategies: FractalVotingStrategy[];
+    newStrategies: RawVotingStrategy[];
   }> => {
     const { moduleAzoriusAddress, strategies } = governanceContracts;
     if (!safeAddress) {
@@ -487,7 +487,7 @@ export const useInstallVersionedVotingStrategy = () => {
     if (strategiesToRemove.length > 0) {
       let installVersionedStrategyTxDatas: TargetAddressAndCalldata[] = [];
 
-      const getDisableStrategyTx = (strategy: FractalVotingStrategy): TargetAddressAndCalldata => {
+      const getDisableStrategyTx = (strategy: RawVotingStrategy): TargetAddressAndCalldata => {
         // Find the previous strategy for the one to disable
         let prevStrategy: Address = SENTINEL_MODULE;
         for (let j = 0; j < strategies.length; j++) {

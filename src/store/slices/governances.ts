@@ -10,14 +10,15 @@ import {
   FractalGovernance,
   FractalGovernanceContracts,
   FractalProposal,
-  FractalVotingStrategy,
+  FractalProposalState,
+  RawVotingStrategy,
   GovernanceType,
   ProposalTemplate,
   ProposalVote,
   ProposalVotesSummary,
+  SnapshotProposal,
   VotesTokenData,
   VotingStrategy,
-  SnapshotProposal,
 } from '../../types';
 import { GlobalStore, StoreMiddleware, StoreSlice } from '../store';
 
@@ -29,7 +30,7 @@ export type SetAzoriusGovernancePayload = {
   linearVotingErc721Address?: Address;
   linearVotingErc721WithHatsWhitelistingAddress?: Address;
   isLoaded: boolean;
-  strategies: FractalVotingStrategy[];
+  strategies: RawVotingStrategy[];
   votingStrategy: VotingStrategy;
   isAzorius: boolean;
   lockedVotesToken?: VotesTokenData;
@@ -45,12 +46,14 @@ export type GovernancesSlice = {
   setProposals: (daoKey: DAOKey, proposals: FractalProposal[]) => void;
   setSnapshotProposals: (daoKey: DAOKey, snapshotProposals: SnapshotProposal[]) => void;
   setProposal: (daoKey: DAOKey, proposal: AzoriusProposal) => void;
+  setPendingProposal: (daoKey: DAOKey, txHash: string) => void;
   setProposalVote: (
     daoKey: DAOKey,
     proposalId: string,
     votesSummary: ProposalVotesSummary,
     proposalVote: ProposalVote | ERC721ProposalVote,
   ) => void;
+  setProposalState: (daoKey: DAOKey, proposalId: string, state: FractalProposalState) => void;
   setLoadingFirstProposal: (daoKey: DAOKey, loading: boolean) => void;
   setAllProposalsLoaded: (daoKey: DAOKey, loaded: boolean) => void;
   getGovernance: (daoKey: DAOKey) => FractalGovernance & FractalGovernanceContracts;
@@ -211,6 +214,20 @@ export const createGovernancesSlice: StateCreator<
       'setProposalVote',
     );
   },
+  setProposalState: (daoKey, proposalId, newState) => {
+    set(
+      state => {
+        const foundProposal = state.governances[daoKey].proposals?.find(
+          p => p.proposalId === proposalId,
+        );
+        if (foundProposal) {
+          foundProposal.state = newState;
+        }
+      },
+      false,
+      'setProposalState',
+    );
+  },
   setLoadingFirstProposal: (daoKey, loading) => {
     set(
       state => {
@@ -256,6 +273,18 @@ export const createGovernancesSlice: StateCreator<
       },
       false,
       'setGovernanceLockReleaseAccountData',
+    );
+  },
+  setPendingProposal: (daoKey, txHash) => {
+    set(
+      state => {
+        if (!state.governances[daoKey].pendingProposals) {
+          state.governances[daoKey].pendingProposals = [];
+        }
+        state.governances[daoKey].pendingProposals.push(txHash);
+      },
+      false,
+      'setPendingProposal',
     );
   },
   setAllProposalsLoaded: (daoKey, loaded) => {
