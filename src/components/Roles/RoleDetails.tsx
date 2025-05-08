@@ -11,7 +11,7 @@ import useAddress from '../../hooks/utils/useAddress';
 import { useCanUserCreateProposal } from '../../hooks/utils/useCanUserSubmitProposal';
 import { useCopyText } from '../../hooks/utils/useCopyText';
 import { useGetAccountName } from '../../hooks/utils/useGetAccountName';
-import { useStore } from '../../providers/App/AppProvider';
+import { useDAOStore } from '../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
 import {
   paymentSorterByActiveStatus,
@@ -81,7 +81,7 @@ export default function RolesDetails({
   const { daoKey } = useCurrentDAOKey();
   const {
     node: { safe },
-  } = useStore({ daoKey });
+  } = useDAOStore({ daoKey });
   const navigate = useNavigate();
   const { addressPrefix } = useNetworkConfigStore();
   const permissionsContainerRef = useRef<HTMLDivElement>(null);

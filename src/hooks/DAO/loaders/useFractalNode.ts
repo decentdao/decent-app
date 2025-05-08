@@ -3,7 +3,7 @@ import { Address, getAddress, isAddress } from 'viem';
 import { createDecentSubgraphClient } from '../../../graphql';
 import { DAOQuery, DAOQueryResponse } from '../../../graphql/DAOQueries';
 import useFeatureFlag from '../../../helpers/environmentFeatureFlags';
-import { useStore } from '../../../providers/App/AppProvider';
+import { useDAOStore } from '../../../providers/App/AppProvider';
 import { useSafeAPI } from '../../../providers/App/hooks/useSafeAPI';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
 import { useCurrentDAOKey } from '../useCurrentDAOKey';
@@ -30,7 +30,7 @@ export const useFractalNode = ({
   const {
     action,
     node: { setDaoInfo, setSafeInfo, setDecentModules },
-  } = useStore({ daoKey });
+  } = useDAOStore({ daoKey });
 
   const storeFeatureEnabled = useFeatureFlag('flag_store_v2');
 

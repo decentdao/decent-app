@@ -2,7 +2,7 @@ import { abis } from '@fractal-framework/fractal-contracts';
 import { useCallback } from 'react';
 import { Address, getContract, zeroAddress } from 'viem';
 import { SENTINEL_ADDRESS } from '../../constants/common';
-import { useStore } from '../../providers/App/AppProvider';
+import { useDAOStore } from '../../providers/App/AppProvider';
 import { useSafeAPI } from '../../providers/App/hooks/useSafeAPI';
 import { DecentModule } from '../../types';
 import { getAzoriusModuleFromModules } from '../../utils';
@@ -19,7 +19,7 @@ const useVotingStrategiesAddresses = () => {
   const { daoKey } = useCurrentDAOKey();
   const {
     node: { modules },
-  } = useStore({ daoKey });
+  } = useDAOStore({ daoKey });
 
   const getVotingStrategies = useCallback(
     async (safeAddress?: Address) => {

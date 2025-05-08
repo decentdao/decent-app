@@ -13,7 +13,7 @@ import useCreateProposalSchema from '../../hooks/schemas/proposalBuilder/useCrea
 import { useUnsavedChangesBlocker } from '../../hooks/useUnsavedChangesBlocker';
 import { useCanUserCreateProposal } from '../../hooks/utils/useCanUserSubmitProposal';
 import { ActionsExperience } from '../../pages/dao/proposals/actions/new/ActionsExperience';
-import { useStore } from '../../providers/App/AppProvider';
+import { useDAOStore } from '../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
 import { useProposalActionsStore } from '../../store/actions/useProposalActionsStore';
 import { BigIntValuePair, CreateProposalSteps, ProposalExecuteData } from '../../types';
@@ -40,7 +40,7 @@ export function ShowNonceInputOnMultisig({
   const { daoKey } = useCurrentDAOKey();
   const {
     governance: { isAzorius },
-  } = useStore({ daoKey });
+  } = useDAOStore({ daoKey });
 
   if (isAzorius) {
     return null;

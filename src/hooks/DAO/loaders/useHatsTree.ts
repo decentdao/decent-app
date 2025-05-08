@@ -3,7 +3,7 @@ import { useCallback, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { createSablierSubgraphClient } from '../../../graphql';
-import { useStore } from '../../../providers/App/AppProvider';
+import { useDAOStore } from '../../../providers/App/AppProvider';
 import useIPFSClient from '../../../providers/App/hooks/useIPFSClient';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
 import { DecentHatsError } from '../../../store/roles/rolesStoreUtils';
@@ -25,7 +25,7 @@ const useHatsTree = () => {
       isLoaded: governanceContractsLoaded,
     },
     node: { safe },
-  } = useStore({ daoKey });
+  } = useDAOStore({ daoKey });
   const { hatsTreeId, contextChainId, setHatsTree } = useRolesStore();
 
   const ipfsClient = useIPFSClient();

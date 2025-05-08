@@ -2,7 +2,7 @@ import { Box, Flex, Text } from '@chakra-ui/react';
 import { Scroll } from '@phosphor-icons/react';
 import { useTranslation } from 'react-i18next';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
-import { useStore } from '../../../providers/App/AppProvider';
+import { useDAOStore } from '../../../providers/App/AppProvider';
 import {
   FractalProposal,
   FractalProposalState,
@@ -126,7 +126,7 @@ export function InfoProposals() {
   const {
     governance: { proposals, type },
     node: { safe },
-  } = useStore({ daoKey });
+  } = useDAOStore({ daoKey });
 
   if (!safe?.address || !type) {
     return (

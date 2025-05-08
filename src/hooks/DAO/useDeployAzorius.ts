@@ -9,7 +9,7 @@ import MultiSendCallOnlyAbi from '../../assets/abi/MultiSendCallOnly';
 import { SENTINEL_ADDRESS } from '../../constants/common';
 import { DAO_ROUTES } from '../../constants/routes';
 import { TxBuilderFactory } from '../../models/TxBuilderFactory';
-import { useStore } from '../../providers/App/AppProvider';
+import { useDAOStore } from '../../providers/App/AppProvider';
 import { useSafeAPI } from '../../providers/App/hooks/useSafeAPI';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
 import {
@@ -58,7 +58,7 @@ const useDeployAzorius = () => {
   const { daoKey } = useCurrentDAOKey();
   const {
     node: { safe, subgraphInfo },
-  } = useStore({ daoKey });
+  } = useDAOStore({ daoKey });
 
   const { t } = useTranslation(['transaction', 'proposalMetadata']);
   const { submitProposal } = useSubmitProposal();
