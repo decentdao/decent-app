@@ -1,21 +1,21 @@
 import { StateCreator } from 'zustand';
-import { DAOKey, FractalGuardContracts, FreezeGuard } from '../../types';
+import { DAOKey, FreezeGuard, GuardContracts } from '../../types';
 import { GlobalStore, StoreMiddleware, StoreSlice } from '../store';
 
 export type GuardSlice = {
-  guards: StoreSlice<FreezeGuard & FractalGuardContracts>;
+  guards: StoreSlice<FreezeGuard & GuardContracts>;
   setGuard: (
     daoKey: DAOKey,
-    guard: Omit<FreezeGuard & FractalGuardContracts, 'userHasFreezeVoted' | 'userHasVotes'>,
+    guard: Omit<FreezeGuard & GuardContracts, 'userHasFreezeVoted' | 'userHasVotes'>,
   ) => void;
   setGuardAccountData: (
     daoKey: DAOKey,
     guardAccountData: { userHasFreezeVoted: boolean; userHasVotes: boolean },
   ) => void;
-  getGuard: (daoKey: DAOKey) => FreezeGuard & FractalGuardContracts;
+  getGuard: (daoKey: DAOKey) => FreezeGuard & GuardContracts;
 };
 
-const EMPTY_GUARD: FreezeGuard & FractalGuardContracts = {
+const EMPTY_GUARD: FreezeGuard & GuardContracts = {
   freezeGuardType: null,
   freezeVotingType: null,
   isGuardLoaded: false,

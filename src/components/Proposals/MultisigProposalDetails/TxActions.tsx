@@ -11,7 +11,6 @@ import { BACKGROUND_SEMI_TRANSPARENT } from '../../../constants/common';
 import { buildSafeTransaction, buildSignatureBytes, EIP712_SAFE_TX_TYPE } from '../../../helpers';
 import { logError } from '../../../helpers/errorLogging';
 import { findMostConfirmedMultisigRejectionProposal } from '../../../helpers/multisigProposal';
-import { useSafeMultisigProposals } from '../../../hooks/DAO/loaders/governance/useSafeMultisigProposals';
 import useSubmitProposal from '../../../hooks/DAO/proposal/useSubmitProposal';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import { useNetworkWalletClient } from '../../../hooks/useNetworkWalletClient';
@@ -20,7 +19,7 @@ import { useTransaction } from '../../../hooks/utils/useTransaction';
 import { useDAOStore } from '../../../providers/App/AppProvider';
 import { useSafeAPI } from '../../../providers/App/hooks/useSafeAPI';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
-import { FractalProposalState, MultisigProposal } from '../../../types';
+import { MultisigProposal, ProposalState } from '../../../types';
 import { DecentTooltip } from '../../ui/DecentTooltip';
 import ContentBox from '../../ui/containers/ContentBox';
 import { ProposalCountdown } from '../../ui/proposal/ProposalCountdown';
@@ -43,15 +42,12 @@ function VoterActions({
   onApproval: () => Promise<void>;
 }) {
   const { t } = useTranslation(['proposal', 'common']);
-  if (
-    proposal.state !== FractalProposalState.EXECUTABLE &&
-    proposal.state !== FractalProposalState.ACTIVE
-  ) {
+  if (proposal.state !== ProposalState.EXECUTABLE && proposal.state !== ProposalState.ACTIVE) {
     return null;
   }
 
   // if both thresholds are passed, don't show sign area
-  if (isRejectedProposalPassThreshold && proposal.state === FractalProposalState.EXECUTABLE) {
+  if (isRejectedProposalPassThreshold && proposal.state === ProposalState.EXECUTABLE) {
     return null;
   }
 
@@ -61,7 +57,7 @@ function VoterActions({
         <Text>{t('signTitle')}</Text>
         <ProposalCountdown proposal={proposal} />
       </Flex>
-      {proposal.state !== FractalProposalState.EXECUTABLE && (
+      {proposal.state !== ProposalState.EXECUTABLE && (
         <Box marginTop={4}>
           <DecentTooltip
             placement="top-start"
@@ -114,12 +110,11 @@ export function TxActions({ proposal }: { proposal: MultisigProposal }) {
   const [isSubmitDisabled, setIsSubmitDisabled] = useState(false);
 
   const wasTimelocked = useRef(
-    proposal.state === FractalProposalState.TIMELOCKABLE ||
-      proposal.state === FractalProposalState.TIMELOCKED,
+    proposal.state === ProposalState.TIMELOCKABLE || proposal.state === ProposalState.TIMELOCKED,
   );
 
   useEffect(() => {
-    if (wasTimelocked.current && proposal.state === FractalProposalState.EXECUTABLE) {
+    if (wasTimelocked.current && proposal.state === ProposalState.EXECUTABLE) {
       setIsSubmitDisabled(false);
     }
   }, [proposal.state]);
@@ -129,7 +124,6 @@ export function TxActions({ proposal }: { proposal: MultisigProposal }) {
 
   const [asyncRequest, asyncRequestPending] = useAsyncRequest();
   const [contractCall, contractCallPending] = useTransaction();
-  const { loadSafeMultisigProposals } = useSafeMultisigProposals();
   const { data: walletClient } = useNetworkWalletClient();
 
   const rejectionProposal = findMostConfirmedMultisigRejectionProposal(
@@ -195,7 +189,6 @@ export function TxActions({ proposal }: { proposal: MultisigProposal }) {
         successMessage: t('successSign'),
         successCallback: async (signature: string) => {
           await safeAPI.confirmTransaction(proposalId, signature);
-          await loadSafeMultisigProposals();
         },
       });
     } catch (e) {
@@ -261,7 +254,6 @@ export function TxActions({ proposal }: { proposal: MultisigProposal }) {
         successMessage: t('successExecute', { ns: 'transaction' }),
         successCallback: async () => {
           setIsSubmitDisabled(true);
-          await loadSafeMultisigProposals();
         },
       });
     } catch (e) {
@@ -329,7 +321,6 @@ export function TxActions({ proposal }: { proposal: MultisigProposal }) {
         successMessage: t('successExecute', { ns: 'transaction' }),
         successCallback: async () => {
           setIsSubmitDisabled(true);
-          await loadSafeMultisigProposals();
         },
       });
     } catch (e) {
@@ -396,7 +387,6 @@ export function TxActions({ proposal }: { proposal: MultisigProposal }) {
         successMessage: t('successRejectionExecution', { ns: 'transaction' }),
         successCallback: async () => {
           setIsSubmitDisabled(true);
-          await loadSafeMultisigProposals();
         },
       });
     } catch (e) {
@@ -413,10 +403,10 @@ export function TxActions({ proposal }: { proposal: MultisigProposal }) {
 
   const isPending = asyncRequestPending || contractCallPending;
   if (
-    (proposal.state === FractalProposalState.ACTIVE && !isOwner) ||
-    proposal.state === FractalProposalState.REJECTED ||
-    proposal.state === FractalProposalState.EXECUTED ||
-    proposal.state === FractalProposalState.EXPIRED
+    (proposal.state === ProposalState.ACTIVE && !isOwner) ||
+    proposal.state === ProposalState.REJECTED ||
+    proposal.state === ProposalState.EXECUTED ||
+    proposal.state === ProposalState.EXPIRED
   ) {
     return null;
   }
@@ -432,18 +422,18 @@ export function TxActions({ proposal }: { proposal: MultisigProposal }) {
 
   // @TODO Typing is actually ButtonProps | undefined. Component needs some TLC. https://linear.app/decent-labs/issue/ENG-461/refactor-txactionstsx
   const buttonProps: ButtonProps = {
-    [FractalProposalState.EXECUTABLE]: {
+    [ProposalState.EXECUTABLE]: {
       action: executeTransaction,
       text: 'execute',
       pageTitle: 'executeTitle',
       icon: <Check boxSize="1.5rem" />,
     },
-    [FractalProposalState.TIMELOCKABLE]: {
+    [ProposalState.TIMELOCKABLE]: {
       action: timelockTransaction,
       text: 'timelock',
       pageTitle: 'timelockTitle',
     },
-    [FractalProposalState.TIMELOCKED]: {
+    [ProposalState.TIMELOCKED]: {
       action: async () => {},
       text: 'execute',
       pageTitle: 'executeTitle',
@@ -452,7 +442,7 @@ export function TxActions({ proposal }: { proposal: MultisigProposal }) {
 
   const isActiveNonce = !!safe && proposal.transaction.nonce === safe.nonce;
   const isApprovalDisabled =
-    isSubmitDisabled || isPending || proposal.state === FractalProposalState.TIMELOCKED;
+    isSubmitDisabled || isPending || proposal.state === ProposalState.TIMELOCKED;
   const isExecutionDisabled = isApprovalDisabled || !isActiveNonce;
 
   if (isRejectedProposalPassThreshold) {
@@ -466,11 +456,11 @@ export function TxActions({ proposal }: { proposal: MultisigProposal }) {
         <Box marginTop={4}>
           <Button
             w="full"
-            rightIcon={buttonProps[FractalProposalState.EXECUTABLE].icon}
+            rightIcon={buttonProps[ProposalState.EXECUTABLE].icon}
             isDisabled={isExecutionDisabled}
             onClick={executeRejectedProposal}
           >
-            {t(buttonProps[FractalProposalState.EXECUTABLE].text, { ns: 'common' })}
+            {t(buttonProps[ProposalState.EXECUTABLE].text, { ns: 'common' })}
           </Button>
         </Box>
       </ContentBox>
@@ -508,7 +498,7 @@ export function TxActions({ proposal }: { proposal: MultisigProposal }) {
               })
         }
       />
-      {proposal.state !== FractalProposalState.ACTIVE && (
+      {proposal.state !== ProposalState.ACTIVE && (
         <ContentBox containerBoxProps={{ bg: BACKGROUND_SEMI_TRANSPARENT }}>
           <Flex justifyContent="space-between">
             <Text>{t(buttonProps[proposal.state!].pageTitle)}</Text>

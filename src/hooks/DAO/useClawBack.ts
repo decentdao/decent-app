@@ -13,7 +13,7 @@ import {
 import { logError } from '../../helpers/errorLogging';
 import useBalancesAPI from '../../providers/App/hooks/useBalancesAPI';
 import { useSafeAPI } from '../../providers/App/hooks/useSafeAPI';
-import { FractalModuleType, DecentModule } from '../../types';
+import { DecentModule, ModuleType } from '../../types';
 import { useCanUserCreateProposal } from '../utils/useCanUserSubmitProposal';
 import useSubmitProposal from './proposal/useSubmitProposal';
 
@@ -52,7 +52,7 @@ export default function useClawBack({ childSafeInfo, parentAddress }: IUseClawBa
 
         if (canUserCreateProposal && parentAddress && parentSafeInfo && childSafeInfo.modules) {
           const fractalModule = childSafeInfo.modules!.find(
-            module => module.moduleType === FractalModuleType.FRACTAL,
+            module => module.moduleType === ModuleType.FRACTAL,
           );
 
           if (fractalModule) {

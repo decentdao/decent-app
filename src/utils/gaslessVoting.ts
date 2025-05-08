@@ -89,10 +89,7 @@ export const getVoteSelectorAndValidator = (
       abi: abis.LinearERC20VotingV1,
     });
     voteValidator = paymaster.linearERC20VotingV1ValidatorV1;
-  } else if (
-    strategyType === TokenType.ERC721 ||
-    strategyType === GovernanceType.AZORIUS_ERC721
-  ) {
+  } else if (strategyType === TokenType.ERC721 || strategyType === GovernanceType.AZORIUS_ERC721) {
     voteAbiItem = getAbiItem({
       name: 'vote',
       abi: abis.LinearERC721VotingV1,

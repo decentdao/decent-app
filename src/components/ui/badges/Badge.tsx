@@ -2,7 +2,7 @@ import { Box, Flex, Text } from '@chakra-ui/react';
 import { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { TOOLTIP_MAXW } from '../../../constants/common';
-import { FractalProposalState, DAOState } from '../../../types';
+import { DAOState, ProposalState } from '../../../types';
 import { DecentTooltip } from '../DecentTooltip';
 
 type BadgeType = {
@@ -13,70 +13,70 @@ type BadgeType = {
 };
 
 const BADGE_MAPPING: Record<
-  FractalProposalState | DAOState | 'ownerApproved' | 'ownerRejected',
+  ProposalState | DAOState | 'ownerApproved' | 'ownerRejected',
   BadgeType
 > = {
-  [FractalProposalState.ACTIVE]: {
+  [ProposalState.ACTIVE]: {
     tooltipKey: 'stateActiveTip',
     bg: 'lilac-0',
     textColor: 'cosmic-nebula-0',
     _hover: { bg: 'lilac--1', textColor: 'cosmic-nebula-0' },
   },
-  [FractalProposalState.TIMELOCKED]: {
+  [ProposalState.TIMELOCKED]: {
     tooltipKey: 'stateTimelockedTip',
     bg: 'neutral-8',
     textColor: 'neutral-4',
     _hover: { bg: 'neutral-7', textColor: 'neutral-4' },
   },
-  [FractalProposalState.EXECUTED]: {
+  [ProposalState.EXECUTED]: {
     tooltipKey: 'stateExecutedTip',
     bg: 'celery--5',
     textColor: 'white-0',
     _hover: { bg: 'celery--6', textColor: 'white-0' },
   },
-  [FractalProposalState.EXECUTABLE]: {
+  [ProposalState.EXECUTABLE]: {
     tooltipKey: 'stateExecutableTip',
     bg: 'celery--2',
     textColor: 'black-0',
     _hover: { bg: 'celery--3', textColor: 'black-0' },
   },
-  [FractalProposalState.FAILED]: {
+  [ProposalState.FAILED]: {
     tooltipKey: 'stateFailedTip',
     bg: 'red-0',
     textColor: 'red-4',
     _hover: { bg: 'red--1', textColor: 'red-4' },
   },
-  [FractalProposalState.TIMELOCKABLE]: {
+  [ProposalState.TIMELOCKABLE]: {
     tooltipKey: 'stateTimelockableTip',
     bg: 'lilac-0',
     textColor: 'cosmic-nebula-0',
     _hover: { bg: 'lilac--1', textColor: 'cosmic-nebula-0' },
   },
-  [FractalProposalState.MODULE]: {
+  [ProposalState.MODULE]: {
     tooltipKey: 'stateModuleTip',
     bg: 'lilac-0',
     textColor: 'cosmic-nebula-0',
     _hover: { bg: 'lilac--1', textColor: 'cosmic-nebula-0' },
   },
-  [FractalProposalState.EXPIRED]: {
+  [ProposalState.EXPIRED]: {
     tooltipKey: 'stateExpiredTip',
     bg: 'neutral-4',
     textColor: 'neutral-7',
     _hover: { bg: 'neutral-2', textColor: 'neutral-7' },
   },
-  [FractalProposalState.REJECTED]: {
+  [ProposalState.REJECTED]: {
     tooltipKey: 'stateRejectedTip',
     bg: 'red-0',
     textColor: 'red-4',
     _hover: { bg: 'red--1', textColor: 'red-4' },
   },
-  [FractalProposalState.PENDING]: {
+  [ProposalState.PENDING]: {
     tooltipKey: 'statePendingTip',
     bg: 'yellow-0',
     textColor: 'black-0',
     _hover: { bg: 'yellow-0', textColor: 'yellow--2' },
   },
-  [FractalProposalState.CLOSED]: {
+  [ProposalState.CLOSED]: {
     tooltipKey: 'stateClosedTip',
     bg: 'neutral-8',
     textColor: 'neutral-4',

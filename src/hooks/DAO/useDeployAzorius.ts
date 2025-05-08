@@ -15,7 +15,7 @@ import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkC
 import {
   AzoriusERC20DAO,
   AzoriusERC721DAO,
-  FractalModuleType,
+  ModuleType,
   ProposalExecuteData,
   SubDAO,
   VotingStrategyType,
@@ -112,7 +112,7 @@ const useDeployAzorius = () => {
         } else {
           parentModules = loadedParentModule;
           const parentAzoriusModule = parentModules.find(
-            fractalModule => fractalModule.moduleType === FractalModuleType.AZORIUS,
+            fractalModule => fractalModule.moduleType === ModuleType.AZORIUS,
           );
           if (parentAzoriusModule) {
             const azoriusContract = getContract({
@@ -134,7 +134,7 @@ const useDeployAzorius = () => {
           }
 
           const parentFractalModule = parentModules.find(
-            fractalModule => fractalModule.moduleType === FractalModuleType.FRACTAL,
+            fractalModule => fractalModule.moduleType === ModuleType.FRACTAL,
           );
           if (!parentFractalModule) {
             // If FractalModule is not attached - we'll need to attach it only if it was specified through user input

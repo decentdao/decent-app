@@ -21,12 +21,7 @@ import { getRandomBytes } from '../../helpers';
 import { generateContractByteCodeLinear, generateSalt } from '../../models/helpers/utils';
 import { useDAOStore } from '../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
-import {
-  AzoriusGovernance,
-  ERC721TokenData,
-  TokenType,
-  RawVotingStrategy,
-} from '../../types';
+import { AzoriusGovernance, ERC721TokenData, TokenType, RawVotingStrategy } from '../../types';
 import { SENTINEL_MODULE } from '../../utils/address';
 import { useCurrentDAOKey } from '../DAO/useCurrentDAOKey';
 import useNetworkPublicClient from '../useNetworkPublicClient';

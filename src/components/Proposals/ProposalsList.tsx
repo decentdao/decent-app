@@ -2,13 +2,13 @@ import { Box, Flex } from '@chakra-ui/react';
 import { CONTENT_MAXW } from '../../constants/common';
 import { useCurrentDAOKey } from '../../hooks/DAO/useCurrentDAOKey';
 import { useDAOStore } from '../../providers/App/AppProvider';
-import { FractalProposal } from '../../types';
+import { Proposal } from '../../types';
 import NoDataCard from '../ui/containers/NoDataCard';
 import { InfoBoxLoader } from '../ui/loaders/InfoBoxLoader';
 import ProposalCard from './ProposalCard/ProposalCard';
 
 interface ProposalsListProps {
-  proposals: FractalProposal[];
+  proposals: Proposal[];
   currentPage: number;
   totalPages: number;
 }

@@ -77,7 +77,7 @@ function HeaderLogo() {
                 <Link
                   data-testid="navigationLogo-homeLink"
                   to={BASE_ROUTES.landing}
-                  aria-label={t('ariaLabelFractalBrand')}
+                  aria-label={t('ariaLabelDecentBrand')}
                   onClick={onClose}
                 >
                   <DecentLogo
@@ -105,7 +105,7 @@ function HeaderLogo() {
         <Link
           data-testid="navigationLogo-homeLink"
           to={BASE_ROUTES.landing}
-          aria-label={t('ariaLabelFractalBrand')}
+          aria-label={t('ariaLabelDecentBrand')}
         >
           <DecentSignature
             aria-hidden

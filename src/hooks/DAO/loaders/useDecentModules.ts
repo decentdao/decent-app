@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 import { getAddress } from 'viem';
-import { DecentModule, FractalModuleType } from '../../../types';
+import { DecentModule, ModuleType } from '../../../types';
 import { useAddressContractType } from '../../utils/useAddressContractType';
 
 export const useDecentModules = () => {
@@ -18,17 +18,17 @@ export const useDecentModules = () => {
           if (masterCopyData.isModuleAzorius) {
             safeModule = {
               moduleAddress: moduleAddress,
-              moduleType: FractalModuleType.AZORIUS,
+              moduleType: ModuleType.AZORIUS,
             };
           } else if (masterCopyData.isModuleFractal) {
             safeModule = {
               moduleAddress: moduleAddress,
-              moduleType: FractalModuleType.FRACTAL,
+              moduleType: ModuleType.FRACTAL,
             };
           } else {
             safeModule = {
               moduleAddress: moduleAddress,
-              moduleType: FractalModuleType.UNKNOWN,
+              moduleType: ModuleType.UNKNOWN,
             };
           }
 

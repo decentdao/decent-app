@@ -178,9 +178,7 @@ export function useGovernanceFetcher() {
           }
         };
 
-        const tokenType = (
-          votingStrategy: ContractTypeWithVersion,
-        ): TokenType | undefined => {
+        const tokenType = (votingStrategy: ContractTypeWithVersion): TokenType | undefined => {
           if (
             votingStrategy.isLinearVotingErc20 ||
             votingStrategy.isLinearVotingErc20WithHatsProposalCreation

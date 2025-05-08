@@ -14,7 +14,7 @@ import { useTranslation } from 'react-i18next';
 import { isAddress } from 'viem';
 import { Info } from '../../../assets/theme/custom/icons/Info';
 import { ADDRESS_MULTISIG_METADATA } from '../../../constants/common';
-import { DecodedTransaction, FractalProposal } from '../../../types';
+import { DecodedTransaction, Proposal } from '../../../types';
 import EtherscanLink from '../links/EtherscanLink';
 
 function TransactionRow({ paramKey, value }: { paramKey: string; value: string }) {
@@ -142,7 +142,7 @@ function TransactionBlock({ transaction }: { transaction: DecodedTransaction }) 
   );
 }
 
-export default function ProposalExecutableCode({ proposal }: { proposal: FractalProposal }) {
+export default function ProposalExecutableCode({ proposal }: { proposal: Proposal }) {
   const { t } = useTranslation('proposal');
   if (!proposal.data) {
     return null;

@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { decodeAbiParameters, parseAbiParameters, Hash } from 'viem';
+import { decodeAbiParameters, Hash, parseAbiParameters } from 'viem';
 import useIPFSClient from '../../../providers/App/hooks/useIPFSClient';
-import { FractalProposal, CreateProposalMetadata } from '../../../types';
+import { CreateProposalMetadata, Proposal } from '../../../types';
 import { CacheKeys } from '../../utils/cache/cacheDefaults';
 import { DBObjectKeys, useIndexedDB } from '../../utils/cache/useLocalDB';
 
@@ -18,7 +18,7 @@ interface Transaction {
   data: Hash;
 }
 
-const useGetMultisigMetadata = (proposal: FractalProposal | null | undefined) => {
+const useGetMultisigMetadata = (proposal: Proposal | null | undefined) => {
   const ipfsClient = useIPFSClient();
   const [multisigMetadata, setMultisigMetadata] = useState<
     CreateProposalMetadata | null | undefined
@@ -76,9 +76,7 @@ const useGetMultisigMetadata = (proposal: FractalProposal | null | undefined) =>
   return { multisigMetadata };
 };
 
-export const useGetMetadata = (
-  proposal: FractalProposal | null | undefined,
-): CreateProposalMetadata => {
+export const useGetMetadata = (proposal: Proposal | null | undefined): CreateProposalMetadata => {
   const { multisigMetadata } = useGetMultisigMetadata(proposal);
   const { t } = useTranslation('dashboard');
 
