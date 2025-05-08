@@ -1,5 +1,5 @@
 import { useCallback, useMemo } from 'react';
-import { useDAOStore } from '../../../providers/App/AppProvider';
+import { useDAOStore } from '../../../store/store';
 import { MultisigProposal, ProposalState, SortBy } from '../../../types';
 import { useCurrentDAOKey } from '../useCurrentDAOKey';
 

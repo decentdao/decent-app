@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { getContract } from 'viem';
 import { EntryPoint07Abi } from '../../../assets/abi/EntryPoint07Abi';
-import { useDAOStore } from '../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
+import { useDAOStore } from '../../../store/store';
 import useNetworkPublicClient from '../../useNetworkPublicClient';
 import { useCurrentDAOKey } from '../useCurrentDAOKey';
 

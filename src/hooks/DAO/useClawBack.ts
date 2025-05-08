@@ -11,11 +11,11 @@ import {
   parseAbiParameters,
 } from 'viem';
 import { logError } from '../../helpers/errorLogging';
-import useBalancesAPI from '../../providers/App/hooks/useBalancesAPI';
-import { useSafeAPI } from '../../providers/App/hooks/useSafeAPI';
 import { DecentModule, ModuleType } from '../../types';
+import { useSafeAPI } from '../safe/useSafeAPI';
 import { useCanUserCreateProposal } from '../utils/useCanUserSubmitProposal';
 import useSubmitProposal from './proposal/useSubmitProposal';
+import useBalancesAPI from './useBalancesAPI';
 
 interface IUseClawBack {
   childSafeInfo: {

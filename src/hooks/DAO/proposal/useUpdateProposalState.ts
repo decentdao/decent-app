@@ -1,8 +1,7 @@
 import { abis } from '@fractal-framework/fractal-contracts';
 import { useCallback } from 'react';
 import { getContract } from 'viem';
-import { useDAOStore } from '../../../providers/App/AppProvider';
-import { useGlobalStore } from '../../../store/store';
+import { useDAOStore, useGlobalStore } from '../../../store/store';
 import { getAzoriusProposalState } from '../../../utils';
 import useNetworkPublicClient from '../../useNetworkPublicClient';
 import { useCurrentDAOKey } from '../useCurrentDAOKey';

@@ -9,9 +9,8 @@ import MultiSendCallOnlyAbi from '../../assets/abi/MultiSendCallOnly';
 import { SENTINEL_ADDRESS } from '../../constants/common';
 import { DAO_ROUTES } from '../../constants/routes';
 import { TxBuilderFactory } from '../../models/TxBuilderFactory';
-import { useDAOStore } from '../../providers/App/AppProvider';
-import { useSafeAPI } from '../../providers/App/hooks/useSafeAPI';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
+import { useDAOStore } from '../../store/store';
 import {
   AzoriusERC20DAO,
   AzoriusERC721DAO,
@@ -20,6 +19,7 @@ import {
   SubDAO,
   VotingStrategyType,
 } from '../../types';
+import { useSafeAPI } from '../safe/useSafeAPI';
 import useNetworkPublicClient from '../useNetworkPublicClient';
 import { useAddressContractType } from '../utils/useAddressContractType';
 import { useCanUserCreateProposal } from '../utils/useCanUserSubmitProposal';

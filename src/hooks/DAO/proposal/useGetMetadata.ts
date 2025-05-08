@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { decodeAbiParameters, Hash, parseAbiParameters } from 'viem';
-import useIPFSClient from '../../../providers/App/hooks/useIPFSClient';
 import { CreateProposalMetadata, Proposal } from '../../../types';
 import { CacheKeys } from '../../utils/cache/cacheDefaults';
 import { DBObjectKeys, useIndexedDB } from '../../utils/cache/useLocalDB';
+import useIPFSClient from '../../utils/useIPFSClient';
 
 interface DataDecoded {
   parameters: Parameter[];

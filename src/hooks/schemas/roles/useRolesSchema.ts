@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { getAddress } from 'viem';
 import * as Yup from 'yup';
-import { useDAOStore } from '../../../providers/App/AppProvider';
+import { useDAOStore } from '../../../store/store';
 import { RoleFormValues, RoleHatFormValue, SablierPaymentFormValues } from '../../../types/roles';
 import { useCurrentDAOKey } from '../../DAO/useCurrentDAOKey';
 import { useValidationAddress } from '../common/useValidationAddress';

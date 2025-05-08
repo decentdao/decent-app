@@ -3,14 +3,14 @@ import { useCallback, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { createSablierSubgraphClient } from '../../../graphql';
-import { useDAOStore } from '../../../providers/App/AppProvider';
-import useIPFSClient from '../../../providers/App/hooks/useIPFSClient';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
 import { DecentHatsError } from '../../../store/roles/rolesStoreUtils';
 import { useRolesStore } from '../../../store/roles/useRolesStore';
+import { useDAOStore } from '../../../store/store';
 import useNetworkPublicClient from '../../useNetworkPublicClient';
 import { CacheExpiry, CacheKeys } from '../../utils/cache/cacheDefaults';
 import { getValue, setValue } from '../../utils/cache/useLocalStorage';
+import useIPFSClient from '../../utils/useIPFSClient';
 import { useCurrentDAOKey } from '../useCurrentDAOKey';
 
 const hatsSubgraphClient = new HatsSubgraphClient({});

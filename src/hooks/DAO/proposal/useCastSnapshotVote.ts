@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { logError } from '../../../helpers/errorLogging';
-import { useDAOStore } from '../../../providers/App/AppProvider';
+import { useDAOStore } from '../../../store/store';
 import { ExtendedSnapshotProposal } from '../../../types';
 import encryptWithShutter from '../../../utils/shutter';
 import { submitSnapshotVote } from '../../../utils/snapshotVote';

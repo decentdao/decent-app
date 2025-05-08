@@ -3,14 +3,14 @@ import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { encodeFunctionData } from 'viem';
 import { normalize } from 'viem/ens';
-import { useDAOStore } from '../../../providers/App/AppProvider';
-import useIPFSClient from '../../../providers/App/hooks/useIPFSClient';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
+import { useDAOStore } from '../../../store/store';
 import { ProposalExecuteData } from '../../../types';
 import { CreateProposalForm } from '../../../types/proposalBuilder';
 import { bigintSerializer } from '../../../utils/bigintSerializer';
 import { validateENSName } from '../../../utils/url';
 import { useNetworkEnsAddressAsync } from '../../useNetworkEnsAddress';
+import useIPFSClient from '../../utils/useIPFSClient';
 import { useCurrentDAOKey } from '../useCurrentDAOKey';
 
 export default function useCreateProposalTemplate() {

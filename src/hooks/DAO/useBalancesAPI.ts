@@ -1,8 +1,8 @@
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Address } from 'viem';
-import { DefiBalance, NFTBalance, TokenBalance } from '../../../types';
-import { useNetworkConfigStore } from '../../NetworkConfig/useNetworkConfigStore';
+import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
+import { DefiBalance, NFTBalance, TokenBalance } from '../../types';
 
 type BalanceResponse = {
   tokens?: { data: TokenBalance[] };

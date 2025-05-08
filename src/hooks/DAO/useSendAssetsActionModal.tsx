@@ -3,9 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import { ModalType } from '../../components/ui/modals/ModalProvider';
 import { useDecentModal } from '../../components/ui/modals/useDecentModal';
 import { DAO_ROUTES } from '../../constants/routes';
-import { useDAOStore } from '../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
 import { useProposalActionsStore } from '../../store/actions/useProposalActionsStore';
+import { useDAOStore } from '../../store/store';
 import {
   prepareSendAssetsActionData,
   SendAssetsData,

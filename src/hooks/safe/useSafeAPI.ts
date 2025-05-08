@@ -18,11 +18,11 @@ import {
   PublicClient,
   zeroAddress,
 } from 'viem';
-import GnosisSafeL2Abi from '../../../assets/abi/GnosisSafeL2';
-import { SENTINEL_ADDRESS } from '../../../constants/common';
-import { SafeWithNextNonce } from '../../../types';
-import { NetworkConfig } from '../../../types/network';
-import { useNetworkConfigStore } from '../../NetworkConfig/useNetworkConfigStore';
+import GnosisSafeL2Abi from '../../assets/abi/GnosisSafeL2';
+import { SENTINEL_ADDRESS } from '../../constants/common';
+import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
+import { SafeWithNextNonce } from '../../types';
+import { NetworkConfig } from '../../types/network';
 
 /*
 Interface to map the response from Safe Client's transactions/history
