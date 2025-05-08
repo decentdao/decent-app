@@ -1,4 +1,5 @@
 import { useCallback } from 'react';
+import useFeatureFlag from '../../../helpers/environmentFeatureFlags';
 import { useDAOStore } from '../../../providers/App/AppProvider';
 import { FractalGovernanceAction } from '../../../providers/App/governance/action';
 import { GovernanceType } from '../../../types';
@@ -14,12 +15,14 @@ export const useLoadDAOProposals = () => {
     action,
     node: { safe },
   } = useDAOStore({ daoKey });
+  const storeFeatureEnabled = useFeatureFlag('flag_store_v2');
 
   const { setMethodOnInterval, clearIntervals } = useUpdateTimer(safe?.address);
   const loadAzoriusProposals = useAzoriusProposals();
   const { loadSafeMultisigProposals } = useSafeMultisigProposals();
 
   const loadDAOProposals = useCallback(async () => {
+    if (storeFeatureEnabled) return;
     clearIntervals();
     if (type === GovernanceType.AZORIUS_ERC20 || type === GovernanceType.AZORIUS_ERC721) {
       await loadAzoriusProposals(proposal => {
@@ -38,6 +41,7 @@ export const useLoadDAOProposals = () => {
     action,
     setMethodOnInterval,
     loadSafeMultisigProposals,
+    storeFeatureEnabled,
   ]);
 
   return loadDAOProposals;

@@ -11,7 +11,7 @@ export function UnsavedChangesWarningContent({
   onDiscard,
   onKeepEditing,
 }: UnsavedChangesWarningContentProps) {
-  const { t } = useTranslation(['roles']);
+  const { t } = useTranslation(['common']);
   return (
     <>
       <Flex

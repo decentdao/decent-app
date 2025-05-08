@@ -1,8 +1,7 @@
-import { Box, Button, Flex, IconButton, Show, Text, useBreakpointValue } from '@chakra-ui/react';
+import { Box, Button, Flex, IconButton, Text } from '@chakra-ui/react';
 import { Coins, Plus } from '@phosphor-icons/react';
 import { useTranslation } from 'react-i18next';
-import { Outlet, useNavigate, useSearchParams } from 'react-router-dom';
-import { zeroAddress } from 'viem';
+import { useNavigate } from 'react-router-dom';
 import PencilWithLineIcon from '../../../../assets/theme/custom/icons/PencilWithLineIcon';
 import { SettingsContentBox } from '../../../../components/SafeSettings/SettingsContentBox';
 import { Card } from '../../../../components/ui/cards/Card';
@@ -10,7 +9,6 @@ import NoDataCard from '../../../../components/ui/containers/NoDataCard';
 import { BarLoader } from '../../../../components/ui/loaders/BarLoader';
 import { ModalType } from '../../../../components/ui/modals/ModalProvider';
 import { useDecentModal } from '../../../../components/ui/modals/useDecentModal';
-import NestedPageHeader from '../../../../components/ui/page/Header/NestedPageHeader';
 import Divider from '../../../../components/ui/utils/Divider';
 import { NEUTRAL_2_82_TRANSPARENT } from '../../../../constants/common';
 import { DAO_ROUTES } from '../../../../constants/routes';
@@ -20,7 +18,8 @@ import { useDAOStore } from '../../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../../providers/NetworkConfig/useNetworkConfigStore';
 import { AzoriusGovernance } from '../../../../types';
 
-export function SafePermissionsSettingsPage() {
+// @todo: Near-duplicate of SafePermissionsSettingsPage.tsx. Pending refactor and/or cleanup.
+export function SafePermissionsSettingsContent() {
   const { t } = useTranslation(['settings', 'common']);
   const navigate = useNavigate();
   const { addressPrefix } = useNetworkConfigStore();
@@ -35,15 +34,7 @@ export function SafePermissionsSettingsPage() {
   const azoriusGovernance = governance as AzoriusGovernance;
   const { votesToken, erc721Tokens } = azoriusGovernance;
 
-  const isMobile = useBreakpointValue({ base: true, md: false });
-  const [searchParams] = useSearchParams();
-  const votingStrategyAddress = searchParams.get('votingStrategy');
-
   const openAddPermissionModal = useDecentModal(ModalType.ADD_PERMISSION);
-
-  if (isMobile && votingStrategyAddress) {
-    return <Outlet />;
-  }
 
   if (!safe) {
     return null;
@@ -53,39 +44,6 @@ export function SafePermissionsSettingsPage() {
 
   return (
     <>
-      <Show below="md">
-        <NestedPageHeader
-          title={t('permissionsTitle')}
-          backButton={{
-            text: t('settings'),
-            href: DAO_ROUTES.settings.relative(addressPrefix, safe.address),
-          }}
-        >
-          {!linearVotingErc20Address && !linearVotingErc721Address && (
-            <Flex
-              width="25%"
-              justifyContent="flex-end"
-            >
-              <IconButton
-                aria-label={t('add', { ns: 'common' })}
-                size="icon-md"
-                variant="ghost"
-                color="neutral-6"
-                icon={<Plus size={24} />}
-                onClick={() =>
-                  navigate(
-                    DAO_ROUTES.settingsPermissionsCreateProposal.relative(
-                      addressPrefix,
-                      safe.address,
-                      zeroAddress,
-                    ),
-                  )
-                }
-              />
-            </Flex>
-          )}
-        </NestedPageHeader>
-      </Show>
       <SettingsContentBox
         flexDirection="column"
         gap={{ base: 4, md: 6 }}
@@ -193,7 +151,6 @@ export function SafePermissionsSettingsPage() {
           </Flex>
         )}
       </SettingsContentBox>
-      <Outlet />
     </>
   );
 }

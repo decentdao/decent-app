@@ -6,26 +6,41 @@ import {
   DAOKey,
   DecentGovernance,
   ERC721ProposalVote,
+  ERC721TokenData,
   FractalGovernance,
   FractalGovernanceContracts,
   FractalProposal,
+  FractalVotingStrategy,
   GovernanceType,
   ProposalTemplate,
   ProposalVote,
   ProposalVotesSummary,
+  VotesTokenData,
+  VotingStrategy,
   SnapshotProposal,
 } from '../../types';
 import { GlobalStore, StoreMiddleware, StoreSlice } from '../store';
+
+export type SetAzoriusGovernancePayload = {
+  votesToken: VotesTokenData | undefined;
+  erc721Tokens: ERC721TokenData[] | undefined;
+  linearVotingErc20Address?: Address;
+  linearVotingErc20WithHatsWhitelistingAddress?: Address;
+  linearVotingErc721Address?: Address;
+  linearVotingErc721WithHatsWhitelistingAddress?: Address;
+  isLoaded: boolean;
+  strategies: FractalVotingStrategy[];
+  votingStrategy: VotingStrategy;
+  isAzorius: boolean;
+  lockedVotesToken?: VotesTokenData;
+  type: GovernanceType;
+};
 
 export type GovernancesSlice = {
   governances: StoreSlice<FractalGovernance & FractalGovernanceContracts>;
   setProposalTemplates: (daoKey: DAOKey, proposalTemplates: ProposalTemplate[]) => void;
   setMultisigGovernance: (daoKey: DAOKey) => void;
-  setAzoriusGovernance: (
-    daoKey: DAOKey,
-    governance: Omit<FractalGovernance, 'gaslessVotingEnabled' | 'paymasterAddress'> &
-      FractalGovernanceContracts,
-  ) => void;
+  setAzoriusGovernance: (daoKey: DAOKey, payload: SetAzoriusGovernancePayload) => void;
   setTokenClaimContractAddress: (daoKey: DAOKey, tokenClaimContractAddress: Address) => void;
   setProposals: (daoKey: DAOKey, proposals: FractalProposal[]) => void;
   setSnapshotProposals: (daoKey: DAOKey, snapshotProposals: SnapshotProposal[]) => void;
@@ -37,6 +52,7 @@ export type GovernancesSlice = {
     proposalVote: ProposalVote | ERC721ProposalVote,
   ) => void;
   setLoadingFirstProposal: (daoKey: DAOKey, loading: boolean) => void;
+  setAllProposalsLoaded: (daoKey: DAOKey, loaded: boolean) => void;
   getGovernance: (daoKey: DAOKey) => FractalGovernance & FractalGovernanceContracts;
   setGovernanceAccountData: (
     daoKey: DAOKey,
@@ -106,21 +122,21 @@ export const createGovernancesSlice: StateCreator<
       'setMultisigGovernance',
     );
   },
-  setAzoriusGovernance: (daoKey, governance) => {
+  setAzoriusGovernance: (daoKey, payload) => {
     set(
       state => {
         if (!state.governances[daoKey]) {
           state.governances[daoKey] = {
             ...EMPTY_GOVERNANCE,
-            ...governance,
+            ...payload,
           };
         } else {
-          for (const governanceProperty in governance) {
+          for (const governanceProperty in payload) {
             // TODO: Is there a better way to "assign all properties"
-            const typedGovernanceProperty = governanceProperty as keyof typeof governance;
+            const typedGovernanceProperty = governanceProperty as keyof typeof payload;
             const typedStoreGovernanceProperty =
               governanceProperty as keyof (typeof state.governances)[typeof daoKey];
-            state.governances[daoKey][typedStoreGovernanceProperty] = governance[
+            state.governances[daoKey][typedStoreGovernanceProperty] = payload[
               typedGovernanceProperty
             ] as never;
           }
@@ -198,7 +214,9 @@ export const createGovernancesSlice: StateCreator<
   setLoadingFirstProposal: (daoKey, loading) => {
     set(
       state => {
-        state.governances[daoKey].loadingProposals = loading;
+        if (!state.governances[daoKey].proposals?.length) {
+          state.governances[daoKey].loadingProposals = loading;
+        }
       },
       false,
       'setLoadingFirstProposal',
@@ -238,6 +256,16 @@ export const createGovernancesSlice: StateCreator<
       },
       false,
       'setGovernanceLockReleaseAccountData',
+    );
+  },
+  setAllProposalsLoaded: (daoKey, loaded) => {
+    set(
+      state => {
+        state.governances[daoKey].allProposalsLoaded = loaded;
+        state.governances[daoKey].loadingProposals = false;
+      },
+      false,
+      'setAllProposalsLoaded',
     );
   },
   setSnapshotProposals: (daoKey, snapshotProposals) => {

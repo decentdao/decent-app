@@ -3,19 +3,13 @@ import { Address, getAddress } from 'viem';
 import useFeatureFlag from '../helpers/environmentFeatureFlags';
 import { useDecentModules } from '../hooks/DAO/loaders/useDecentModules';
 import { useNetworkConfigStore } from '../providers/NetworkConfig/useNetworkConfigStore';
-import {
-  AzoriusProposal,
-  DAOKey,
-  FractalGovernance,
-  FractalGovernanceContracts,
-  FractalModuleType,
-  FractalProposal,
-} from '../types';
+import { AzoriusProposal, DAOKey, FractalModuleType, FractalProposal } from '../types';
 import { useGovernanceFetcher } from './fetchers/governance';
 import { useGuardFetcher } from './fetchers/guard';
 import { useNodeFetcher } from './fetchers/node';
 import { useRolesFetcher } from './fetchers/roles';
 import { useTreasuryFetcher } from './fetchers/treasury';
+import { SetAzoriusGovernancePayload } from './slices/governances';
 import { useGlobalStore } from './store';
 
 /**
@@ -49,6 +43,7 @@ export const useDAOStoreFetcher = ({
     setLoadingFirstProposal,
     setGuard,
     setGasslesVotingData,
+    setAllProposalsLoaded,
   } = useGlobalStore();
   const { chain, getConfigByChainId } = useNetworkConfigStore();
   const storeFeatureEnabled = useFeatureFlag('flag_store_v2');
@@ -90,12 +85,26 @@ export const useDAOStoreFetcher = ({
       const onLoadingFirstProposalStateChanged = (loading: boolean) =>
         setLoadingFirstProposal(daoKey, loading);
       const onMultisigGovernanceLoaded = () => setMultisigGovernance(daoKey);
-      const onAzoriusGovernanceLoaded = (
-        governance: Omit<FractalGovernance, 'gaslessVotingEnabled' | 'paymasterAddress'> &
-          FractalGovernanceContracts,
-      ) => setAzoriusGovernance(daoKey, governance);
-      const onProposalsLoaded = (proposals: FractalProposal[]) => setProposals(daoKey, proposals);
-      const onProposalLoaded = (proposal: AzoriusProposal) => setProposal(daoKey, proposal);
+      const onAzoriusGovernanceLoaded = (governance: SetAzoriusGovernancePayload) =>
+        setAzoriusGovernance(daoKey, governance);
+      const onProposalsLoaded = (proposals: FractalProposal[]) => {
+        setProposals(daoKey, proposals);
+        setLoadingFirstProposal(daoKey, false);
+        setAllProposalsLoaded(daoKey, true);
+      };
+      const onProposalLoaded = (
+        proposal: AzoriusProposal,
+        index: number,
+        totalProposals: number,
+      ) => {
+        setProposal(daoKey, proposal);
+        if (index !== 0) {
+          setLoadingFirstProposal(daoKey, false);
+        }
+        if (index === totalProposals - 1) {
+          setAllProposalsLoaded(daoKey, true);
+        }
+      };
       const onTokenClaimContractAddressLoaded = (tokenClaimContractAddress: Address) =>
         setTokenClaimContractAddress(daoKey, tokenClaimContractAddress);
 
@@ -168,6 +177,7 @@ export const useDAOStoreFetcher = ({
     setTokenClaimContractAddress,
     setLoadingFirstProposal,
     setGuard,
+    setAllProposalsLoaded,
     fetchDAOSnapshotProposals,
     setSnapshotProposals,
     fetchRolesData,

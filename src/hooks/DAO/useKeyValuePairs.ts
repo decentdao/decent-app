@@ -2,6 +2,7 @@ import { abis } from '@fractal-framework/fractal-contracts';
 import { hatIdToTreeId } from '@hatsprotocol/sdk-v1-core';
 import { useEffect } from 'react';
 import { Address, GetContractEventsReturnType, PublicClient, getContract } from 'viem';
+import useFeatureFlag from '../../helpers/environmentFeatureFlags';
 import { logError } from '../../helpers/errorLogging';
 import { useDAOStore } from '../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
@@ -162,8 +163,10 @@ const useKeyValuePairs = () => {
   const { setHatKeyValuePairData, resetHatsStore } = useRolesStore();
   const safeAddress = safe?.address;
 
+  const storeFeatureEnabled = useFeatureFlag('flag_store_v2');
+
   useEffect(() => {
-    if (!safeAddress || !publicClient.chain) {
+    if (!safeAddress || !publicClient.chain || storeFeatureEnabled) {
       return;
     }
 
@@ -256,13 +259,14 @@ const useKeyValuePairs = () => {
     accountAbstraction,
     paymaster,
     zodiacModuleProxyFactory,
+    storeFeatureEnabled,
   ]);
 
   useEffect(() => {
-    if (safeAddress === undefined) {
+    if (safeAddress === undefined && !storeFeatureEnabled) {
       resetHatsStore();
     }
-  }, [resetHatsStore, safeAddress]);
+  }, [resetHatsStore, safeAddress, storeFeatureEnabled]);
 };
 
 export { useKeyValuePairs };

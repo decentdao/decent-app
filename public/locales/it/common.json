@@ -123,5 +123,9 @@
   "recipients_other": "destinatari",
   "airdrop": "Airdrop",
   "pageXofY": "Pagina {{current}} di {{total}}",
-  "network": "Rete"
+  "network": "Rete",
+  "unsavedChanges": "Modifiche non salvate",
+  "unsavedChangesDescription": "Le modifiche non salvate andranno perse se si continua. Volete eliminare le modifiche?",
+  "discardChanges": "Scartare",
+  "keepEditing": "Continuare a modificare"
 }

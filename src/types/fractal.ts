@@ -156,6 +156,7 @@ export interface IDAO {
 }
 
 export interface GovernanceActivity extends ActivityBase {
+  proposer: Address | null;
   state: FractalProposalState | null;
   proposalId: string;
   targets: Address[];
