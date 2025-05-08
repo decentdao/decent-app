@@ -1,6 +1,7 @@
 import { MenuList } from '@chakra-ui/react';
 import { Link, Plugs } from '@phosphor-icons/react';
 import { useWeb3Modal } from '@web3modal/wagmi/react';
+import { logout } from 'decent-sdk';
 import { useTranslation } from 'react-i18next';
 import { useAccount, useDisconnect } from 'wagmi';
 import { NEUTRAL_2_82_TRANSPARENT } from '../../../../constants/common';
@@ -45,7 +46,12 @@ export function WalletMenu() {
           testId="accountMenu-disconnect"
           label={t('disconnect')}
           Icon={Plugs}
-          onClick={disconnect}
+          onClick={() => {
+            logout();
+            // clear cookie decent-session
+            document.cookie = 'decent-session=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+            disconnect();
+          }}
         />
       )}
     </MenuList>
