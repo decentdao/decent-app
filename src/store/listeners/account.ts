@@ -42,13 +42,12 @@ export function useAccountListeners({
     userHasVotes: boolean;
   }) => void;
 }) {
-  const storeFeatureEnabled = useFeatureFlag('flag_store_v2');
   const { address: account } = useAccount();
   const { fetchVotingTokenAccountData, fetchLockReleaseAccountData } = useGovernanceFetcher();
   const { fetchGuardAccountData } = useGuardFetcher();
   useEffect(() => {
     async function loadAccountData() {
-      if (!account || !votesTokenAddress || !storeFeatureEnabled) {
+      if (!account || !votesTokenAddress) {
         return;
       }
 
@@ -75,7 +74,6 @@ export function useAccountListeners({
     fetchLockReleaseAccountData,
     onGovernanceAccountDataLoaded,
     onGovernanceLockReleaseAccountDataLoaded,
-    storeFeatureEnabled,
   ]);
 
   useEffect(() => {
@@ -86,8 +84,7 @@ export function useAccountListeners({
         !freezeVotingAddress ||
         typeof freezeProposalCreatedTime === 'undefined' ||
         typeof freezeProposalPeriod === 'undefined' ||
-        typeof freezePeriod === 'undefined' ||
-        !storeFeatureEnabled
+        typeof freezePeriod === 'undefined'
       ) {
         return;
       }
@@ -122,6 +119,5 @@ export function useAccountListeners({
     freezeProposalCreatedTime,
     freezeProposalPeriod,
     freezePeriod,
-    storeFeatureEnabled,
   ]);
 }

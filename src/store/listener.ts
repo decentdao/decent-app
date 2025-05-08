@@ -11,6 +11,7 @@ import {
 import { useAccountListeners } from './listeners/account';
 import { useGovernanceListeners } from './listeners/governance';
 import { useRolesListener } from './listeners/roles';
+import { useRolesStore } from './roles/useRolesStore';
 import { useGlobalStore } from './store';
 
 /**
@@ -29,6 +30,8 @@ export const useDAOStoreListener = ({ daoKey }: { daoKey: DAOKey | undefined }) 
     setGuardAccountData,
     setGaslessVotingData,
   } = useGlobalStore();
+
+  const { setHatKeyValuePairData } = useRolesStore();
 
   const governance = daoKey ? getGovernance(daoKey) : undefined;
   const lockedVotesTokenAddress = governance?.lockReleaseAddress;
@@ -159,10 +162,25 @@ export const useDAOStoreListener = ({ daoKey }: { daoKey: DAOKey | undefined }) 
     onGovernanceLockReleaseAccountDataLoaded,
   });
 
-  const onRolesDataFetched = useCallback((rolesData: unknown) => {
-    console.log('Roles data fetched for global store', { rolesData });
-    // TODO: Implement this in scope of ENG-632
-  }, []);
+  const onRolesDataFetched = useCallback(
+    ({
+      contextChainId,
+      hatsTreeId,
+      streamIdsToHatIds,
+    }: {
+      contextChainId: number;
+      hatsTreeId: number | null | undefined;
+      streamIdsToHatIds: { hatId: bigint; streamId: string }[];
+    }) => {
+      // TODO: Implement setting to global store in scope of ENG-632
+      setHatKeyValuePairData({
+        contextChainId,
+        hatsTreeId,
+        streamIdsToHatIds,
+      });
+    },
+    [setHatKeyValuePairData],
+  );
 
   const onGaslessVotingDataFetched = useCallback(
     (gasslesVotingData: { paymasterAddress: Address | null; gaslessVotingEnabled: boolean }) => {

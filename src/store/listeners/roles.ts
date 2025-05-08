@@ -1,7 +1,6 @@
 import { abis } from '@fractal-framework/fractal-contracts';
 import { useEffect } from 'react';
 import { Address, getContract } from 'viem';
-import useFeatureFlag from '../../helpers/environmentFeatureFlags';
 import useNetworkPublicClient from '../../hooks/useNetworkPublicClient';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
 import { useGovernanceFetcher } from '../fetchers/governance';
@@ -25,14 +24,13 @@ export function useRolesListener({
 }) {
   const { getStreamIdsToHatIds, getHatsTreeId } = useRolesFetcher();
   const { fetchGaslessVotingDAOData } = useGovernanceFetcher();
-  const storeFeatureEnabled = useFeatureFlag('flag_store_v2');
   const publicClient = useNetworkPublicClient();
   const {
     contracts: { keyValuePairs },
   } = useNetworkConfigStore();
 
   useEffect(() => {
-    if (!storeFeatureEnabled || !safeAddress) {
+    if (!safeAddress) {
       return;
     }
 
@@ -82,7 +80,6 @@ export function useRolesListener({
     onRolesDataFetched,
     publicClient,
     safeAddress,
-    storeFeatureEnabled,
     keyValuePairs,
   ]);
 }
