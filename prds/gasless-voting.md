@@ -205,13 +205,13 @@ This section describes the process during the initial creation of a new DAO.
 ### 3.3. DAO Member: Voting on a Proposal
 
 1.  **Navigate to Proposal:**
-    - `**Current Behavior:**` User views an active proposal (`FractalProposalState.ACTIVE`).
+    - `**Current Behavior:**` User views an active proposal (`ProposalState.ACTIVE`).
 2.  **Voting Interface (`CastVote`):**
     - `**Current Behavior:**` User interacts with the voting options (e.g., For, Against, Abstain).
 3.  **System Check (Behind the Scenes):**
     - `**Current Behavior:**` The system determines if the vote can be sponsored by evaluating `canVoteForFree` in `CastVote.tsx`. This involves several checks:
       - **Global Feature Flag:** Checks if `flag_gasless_voting` is enabled globally (`useFeatureFlag`).
-      - **DAO KV Setting:** Checks if the DAO has `gaslessVotingEnabled` set to `true` (on-chain state from `KeyValuePairs` via `useDaoInfoStore`).
+      - **DAO KV Setting:** Checks if the DAO has `gaslessVotingEnabled` set to `true` (on-chain state from `KeyValuePairs` via `governances` slice in `useGlobalStore`).
       - **Paymaster Readiness (via `useCastVote` -> `canCastGaslessVote` state):**
         - A `paymasterAddress` must exist for the DAO.
         - The `estimateGaslessVoteGas` function within `useCastVote` is called.
@@ -274,6 +274,6 @@ This section describes the process during the initial creation of a new DAO.
 - **Core Components:** `GaslessVotingToggleDAOSettings` (needs redesign -> becomes PaymasterStatus component), `CastVote` component, `useCastVote` hook, `RefillGasTankModal`.
 - **Key Hooks:** `useDepositInfo`, ~~`useKeyValuePairs`~~ (KV logic removed), `useSubmitProposal`.
 - **Contracts:** Paymaster (`DecentPaymasterV1` mastercopy deployed via `ZodiacModuleProxyFactory`), `EntryPoint07`, ~~`KeyValuePairs`~~ (KV logic removed), Voting Strategy Validators (`LinearERC20VotingV1ValidatorV1`, `LinearERC721VotingV1ValidatorV1`).
-- **State Management:** `useDaoInfoStore` (remove `gaslessVotingEnabled` state, keep `paymasterAddress`).
+- **State Management:** `governances` slice in `useGlobalStore`.
 - **Utils:** `gaslessVoting.ts` (e.g., `getPaymasterAddress`), `prepareRefillPaymasterActionData.ts`.
 - **Backend/Infrastructure:** Relies on an ERC-4337 Bundler service (RPC endpoint configured via `rpcEndpoint`).

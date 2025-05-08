@@ -11,7 +11,7 @@ import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
 import { createAccountSubstring } from '../../../../hooks/utils/useGetAccountName';
 import { useDAOStore } from '../../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../../providers/NetworkConfig/useNetworkConfigStore';
-import { FractalModuleType } from '../../../../types';
+import { ModuleType } from '../../../../types';
 
 export function SafeModulesSettingsPage() {
   const { t } = useTranslation('settings');
@@ -47,9 +47,9 @@ export function SafeModulesSettingsPage() {
             modules.length > 0 ? (
               modules.map(({ moduleAddress, moduleType }) => {
                 const moduleHelper =
-                  moduleType === FractalModuleType.AZORIUS
+                  moduleType === ModuleType.AZORIUS
                     ? ' (Azorius Module)'
-                    : moduleType === FractalModuleType.FRACTAL
+                    : moduleType === ModuleType.FRACTAL
                       ? ' (Fractal Module)' // @todo rename this after renaming and redeploying contracts
                       : '';
                 return (

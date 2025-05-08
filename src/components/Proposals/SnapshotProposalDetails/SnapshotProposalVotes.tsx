@@ -1,6 +1,6 @@
 import { Box, Flex, Grid, GridItem, Text } from '@chakra-ui/react';
 import { useTranslation } from 'react-i18next';
-import { ExtendedSnapshotProposal, FractalProposalState } from '../../../types';
+import { ExtendedSnapshotProposal, ProposalState } from '../../../types';
 import StatusBox from '../../ui/badges/StatusBox';
 import ContentBox from '../../ui/containers/ContentBox';
 import { ProposalCountdown } from '../../ui/proposal/ProposalCountdown';
@@ -90,7 +90,7 @@ export default function SnapshotProposalVotes({ proposal }: ISnapshotProposalVot
             flexWrap="wrap"
             gap={4}
           >
-            {privacy === 'shutter' && state !== FractalProposalState.CLOSED ? (
+            {privacy === 'shutter' && state !== ProposalState.CLOSED ? (
               <Flex
                 justifyContent="center"
                 width="100%"

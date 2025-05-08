@@ -1,27 +1,22 @@
 import { abis } from '@fractal-framework/fractal-contracts';
-import { useCallback, Dispatch } from 'react';
+import { useCallback } from 'react';
 import { getContract } from 'viem';
-import {
-  FractalGovernanceAction,
-  FractalGovernanceActions,
-} from '../../../providers/App/governance/action';
-import { FractalGovernanceContracts } from '../../../types';
+import { useDAOStore } from '../../../providers/App/AppProvider';
+import { useGlobalStore } from '../../../store/store';
 import { getAzoriusProposalState } from '../../../utils';
 import useNetworkPublicClient from '../../useNetworkPublicClient';
+import { useCurrentDAOKey } from '../useCurrentDAOKey';
 
-interface IUseUpdateProposalState {
-  governanceContracts: FractalGovernanceContracts;
-  governanceDispatch: Dispatch<FractalGovernanceActions>;
-}
-
-export default function useUpdateProposalState({
-  governanceContracts: { moduleAzoriusAddress },
-  governanceDispatch,
-}: IUseUpdateProposalState) {
+export default function useUpdateProposalState() {
+  const { daoKey } = useCurrentDAOKey();
+  const {
+    governanceContracts: { moduleAzoriusAddress },
+  } = useDAOStore({ daoKey });
+  const { setProposalState } = useGlobalStore();
   const publicClient = useNetworkPublicClient();
   const updateProposalState = useCallback(
     async (proposalId: number) => {
-      if (!moduleAzoriusAddress) {
+      if (!moduleAzoriusAddress || !daoKey) {
         return;
       }
       const azoriusContract = getContract({
@@ -31,12 +26,9 @@ export default function useUpdateProposalState({
       });
 
       const newState = await getAzoriusProposalState(azoriusContract, proposalId);
-      governanceDispatch({
-        type: FractalGovernanceAction.UPDATE_PROPOSAL_STATE,
-        payload: { proposalId: proposalId.toString(), state: newState },
-      });
+      setProposalState(daoKey, proposalId.toString(), newState);
     },
-    [moduleAzoriusAddress, governanceDispatch, publicClient],
+    [moduleAzoriusAddress, publicClient, setProposalState, daoKey],
   );
 
   return updateProposalState;

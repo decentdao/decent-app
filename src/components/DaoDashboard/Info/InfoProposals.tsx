@@ -3,31 +3,23 @@ import { Scroll } from '@phosphor-icons/react';
 import { useTranslation } from 'react-i18next';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import { useDAOStore } from '../../../providers/App/AppProvider';
-import {
-  FractalProposal,
-  FractalProposalState,
-  GovernanceType,
-  SnapshotProposal,
-} from '../../../types';
+import { Proposal, ProposalState, GovernanceType, SnapshotProposal } from '../../../types';
 import { BarLoader } from '../../ui/loaders/BarLoader';
 
-const isSnapshotProposal = (proposal: FractalProposal) => {
+const isSnapshotProposal = (proposal: Proposal) => {
   const snapshotProposal = proposal as SnapshotProposal;
   return !!snapshotProposal.snapshotProposalId;
 };
 
-const snapshotProposals = (proposals: FractalProposal[]) => {
+const snapshotProposals = (proposals: Proposal[]) => {
   return proposals.filter(proposal => isSnapshotProposal(proposal));
 };
 
-const nonSnapshotProposals = (proposals: FractalProposal[]) => {
+const nonSnapshotProposals = (proposals: Proposal[]) => {
   return proposals.filter(proposal => !isSnapshotProposal(proposal));
 };
 
-const totalProposalsCount = (
-  proposals: FractalProposal[] | null,
-  type: GovernanceType | undefined,
-) => {
+const totalProposalsCount = (proposals: Proposal[] | null, type: GovernanceType | undefined) => {
   if (!proposals) {
     return undefined;
   }
@@ -63,23 +55,20 @@ const totalProposalsCount = (
   }
 };
 
-const isActiveProposal = (proposal: FractalProposal) => {
-  return (
-    proposal.state === FractalProposalState.ACTIVE ||
-    proposal.state === FractalProposalState.EXECUTABLE
-  );
+const isActiveProposal = (proposal: Proposal) => {
+  return proposal.state === ProposalState.ACTIVE || proposal.state === ProposalState.EXECUTABLE;
 };
 
-const activeProposals = (proposals: FractalProposal[]) => {
+const activeProposals = (proposals: Proposal[]) => {
   return proposals.filter(proposal => isActiveProposal(proposal));
 };
 
-const nonActiveProposals = (proposals: FractalProposal[]) => {
+const nonActiveProposals = (proposals: Proposal[]) => {
   return proposals.filter(proposal => !isActiveProposal(proposal));
 };
 
 const allActiveProposalsCount = (
-  proposals: FractalProposal[] | null,
+  proposals: Proposal[] | null,
   type: GovernanceType | undefined,
 ) => {
   if (!proposals) {

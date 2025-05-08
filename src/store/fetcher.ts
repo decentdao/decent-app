@@ -3,7 +3,7 @@ import { Address, getAddress } from 'viem';
 import { logError } from '../helpers/errorLogging';
 import { useDecentModules } from '../hooks/DAO/loaders/useDecentModules';
 import { useNetworkConfigStore } from '../providers/NetworkConfig/useNetworkConfigStore';
-import { AzoriusProposal, DAOKey, FractalModuleType, FractalProposal } from '../types';
+import { AzoriusProposal, DAOKey, ModuleType, Proposal } from '../types';
 import { useGovernanceFetcher } from './fetchers/governance';
 import { useGuardFetcher } from './fetchers/guard';
 import { useNodeFetcher } from './fetchers/node';
@@ -91,7 +91,7 @@ export const useDAOStoreFetcher = ({
         const onMultisigGovernanceLoaded = () => setMultisigGovernance(daoKey);
         const onAzoriusGovernanceLoaded = (governance: SetAzoriusGovernancePayload) =>
           setAzoriusGovernance(daoKey, governance);
-        const onProposalsLoaded = (proposals: FractalProposal[]) => {
+        const onProposalsLoaded = (proposals: Proposal[]) => {
           setProposals(daoKey, proposals);
           setLoadingFirstProposal(daoKey, false);
           setAllProposalsLoaded(daoKey, true);
@@ -125,7 +125,7 @@ export const useDAOStoreFetcher = ({
 
         fetchDAOGuard({
           guardAddress: getAddress(safe.guard),
-          _azoriusModule: modules.find(module => module.moduleType === FractalModuleType.AZORIUS),
+          _azoriusModule: modules.find(module => module.moduleType === ModuleType.AZORIUS),
         }).then(guardData => {
           if (guardData) {
             setGuard(daoKey, guardData);

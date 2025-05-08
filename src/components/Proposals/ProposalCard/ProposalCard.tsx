@@ -12,7 +12,7 @@ import { useDAOStore } from '../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
 import {
   AzoriusProposal,
-  FractalProposal,
+  Proposal,
   SnapshotProposal,
   GovernanceType,
   MultisigProposal,
@@ -90,7 +90,7 @@ function NonceLabel({ nonce }: { nonce: number | undefined }) {
   );
 }
 
-function ProposalCard({ proposal }: { proposal: FractalProposal }) {
+function ProposalCard({ proposal }: { proposal: Proposal }) {
   const { safeAddress } = useCurrentDAOKey();
   const { addressPrefix } = useNetworkConfigStore();
 

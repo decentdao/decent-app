@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { formatUnits } from 'viem';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import { useDAOStore } from '../../../providers/App/AppProvider';
-import { AzoriusGovernance, GovernanceType } from '../../../types/fractal';
+import { AzoriusGovernance, GovernanceType } from '../../../types';
 
 export const useParentSafeVotingWeight = () => {
   const { daoKey } = useCurrentDAOKey();

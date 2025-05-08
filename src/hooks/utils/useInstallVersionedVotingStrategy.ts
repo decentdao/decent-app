@@ -21,12 +21,7 @@ import { getRandomBytes } from '../../helpers';
 import { generateContractByteCodeLinear, generateSalt } from '../../models/helpers/utils';
 import { useDAOStore } from '../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
-import {
-  AzoriusGovernance,
-  ERC721TokenData,
-  FractalTokenType,
-  FractalVotingStrategy,
-} from '../../types';
+import { AzoriusGovernance, ERC721TokenData, TokenType, RawVotingStrategy } from '../../types';
 import { SENTINEL_MODULE } from '../../utils/address';
 import { useCurrentDAOKey } from '../DAO/useCurrentDAOKey';
 import useNetworkPublicClient from '../useNetworkPublicClient';
@@ -67,7 +62,7 @@ export const useInstallVersionedVotingStrategy = () => {
 
   const linearErc20SetupParams = useCallback(
     async (
-      strategyToRemove: FractalVotingStrategy,
+      strategyToRemove: RawVotingStrategy,
       tokenAddress: Address,
       moduleAzoriusAddress: Address,
     ): Promise<EncodeAbiParametersReturnType> => {
@@ -132,7 +127,7 @@ export const useInstallVersionedVotingStrategy = () => {
 
   const linearErc20WithWhitelistSetupParams = useCallback(
     async (
-      strategyToRemove: FractalVotingStrategy,
+      strategyToRemove: RawVotingStrategy,
       tokenAddress: Address,
       moduleAzoriusAddress: Address,
     ): Promise<EncodeAbiParametersReturnType> => {
@@ -202,7 +197,7 @@ export const useInstallVersionedVotingStrategy = () => {
 
   const linearErc721SetupParams = useCallback(
     async (
-      strategyToRemove: FractalVotingStrategy,
+      strategyToRemove: RawVotingStrategy,
       erc721TokenAddresses: ERC721TokenData[],
       moduleAzoriusAddress: Address,
     ): Promise<EncodeAbiParametersReturnType> => {
@@ -268,7 +263,7 @@ export const useInstallVersionedVotingStrategy = () => {
 
   const linearErc721WithWhitelistSetupParams = useCallback(
     async (
-      strategyToRemove: FractalVotingStrategy,
+      strategyToRemove: RawVotingStrategy,
       erc721TokenAddresses: ERC721TokenData[],
       moduleAzoriusAddress: Address,
     ): Promise<EncodeAbiParametersReturnType> => {
@@ -335,12 +330,12 @@ export const useInstallVersionedVotingStrategy = () => {
 
   const setupParams = useCallback(
     async (
-      strategyToRemove: FractalVotingStrategy,
+      strategyToRemove: RawVotingStrategy,
       moduleAzoriusAddress: Address,
       tokenAddress?: Address,
       erc721TokenAddresses?: ERC721TokenData[],
     ): Promise<EncodeAbiParametersReturnType> => {
-      if (strategyToRemove.type === FractalTokenType.erc20) {
+      if (strategyToRemove.type === TokenType.ERC20) {
         if (!tokenAddress) {
           throw new Error('Expected token address');
         }
@@ -381,8 +376,8 @@ export const useInstallVersionedVotingStrategy = () => {
   );
 
   const getMasterCopyAddress = useCallback(
-    (strategyToRemove: FractalVotingStrategy): Address => {
-      if (strategyToRemove.type === FractalTokenType.erc20) {
+    (strategyToRemove: RawVotingStrategy): Address => {
+      if (strategyToRemove.type === TokenType.ERC20) {
         if (strategyToRemove.withWhitelist) {
           return linearVotingErc20HatsWhitelistingV1MasterCopy;
         } else {
@@ -406,14 +401,14 @@ export const useInstallVersionedVotingStrategy = () => {
 
   const getAddAndEnableStrategyTxs = useCallback(
     async (
-      strategyToRemove: FractalVotingStrategy,
+      strategyToRemove: RawVotingStrategy,
       moduleAzoriusAddress: Address,
       tokenAddress?: Address,
       erc721TokenAddresses?: ERC721TokenData[],
     ): Promise<{
       deployTx: TargetAddressAndCalldata;
       enableTx: TargetAddressAndCalldata;
-      newStrategy: FractalVotingStrategy;
+      newStrategy: RawVotingStrategy;
     }> => {
       const encodedStrategySetupData = await setupParams(
         strategyToRemove,
@@ -466,7 +461,7 @@ export const useInstallVersionedVotingStrategy = () => {
 
   const buildInstallVersionedVotingStrategies = useCallback(async (): Promise<{
     installVersionedStrategyTxDatas: TargetAddressAndCalldata[];
-    newStrategies: FractalVotingStrategy[];
+    newStrategies: RawVotingStrategy[];
   }> => {
     const { moduleAzoriusAddress, strategies } = governanceContracts;
     if (!safeAddress) {
@@ -487,7 +482,7 @@ export const useInstallVersionedVotingStrategy = () => {
     if (strategiesToRemove.length > 0) {
       let installVersionedStrategyTxDatas: TargetAddressAndCalldata[] = [];
 
-      const getDisableStrategyTx = (strategy: FractalVotingStrategy): TargetAddressAndCalldata => {
+      const getDisableStrategyTx = (strategy: RawVotingStrategy): TargetAddressAndCalldata => {
         // Find the previous strategy for the one to disable
         let prevStrategy: Address = SENTINEL_MODULE;
         for (let j = 0; j < strategies.length; j++) {

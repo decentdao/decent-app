@@ -13,7 +13,7 @@ import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetwo
 import {
   AzoriusGovernance,
   DecentGovernance,
-  FractalProposalState,
+  ProposalState,
   GovernanceType,
   MultisigProposal,
   SortBy,
@@ -38,7 +38,7 @@ export function ProposalsHome() {
   } = useDAOStore({ daoKey });
 
   const [sortBy, setSortBy] = useState<SortBy>(SortBy.Newest);
-  const [filters, setFilters] = useState<FractalProposalState[]>([]);
+  const [filters, setFilters] = useState<ProposalState[]>([]);
 
   const { proposals, getProposalsTotal } = useProposalsSortedAndFiltered({ sortBy, filters });
 
@@ -99,7 +99,7 @@ export function ProposalsHome() {
   }, [azoriusGovernance]);
 
   const { canUserCreateProposal } = useCanUserCreateProposal();
-  const [allOptions, setAllFilterOptions] = useState<FractalProposalState[]>([]);
+  const [allOptions, setAllFilterOptions] = useState<ProposalState[]>([]);
 
   const { t } = useTranslation(['proposal', 'common']);
 
@@ -108,32 +108,32 @@ export function ProposalsHome() {
     if (!type) return;
 
     const FILTERS_AZORIUS = [
-      FractalProposalState.ACTIVE,
-      FractalProposalState.TIMELOCKED,
-      FractalProposalState.EXECUTABLE,
-      FractalProposalState.EXECUTED,
-      FractalProposalState.FAILED,
-      FractalProposalState.EXPIRED,
+      ProposalState.ACTIVE,
+      ProposalState.TIMELOCKED,
+      ProposalState.EXECUTABLE,
+      ProposalState.EXECUTED,
+      ProposalState.FAILED,
+      ProposalState.EXPIRED,
     ];
 
     const FILTERS_MULTISIG_BASE = [
-      FractalProposalState.ACTIVE,
-      FractalProposalState.EXECUTABLE,
-      FractalProposalState.EXECUTED,
-      FractalProposalState.REJECTED,
+      ProposalState.ACTIVE,
+      ProposalState.EXECUTABLE,
+      ProposalState.EXECUTED,
+      ProposalState.REJECTED,
     ];
 
     const FILTERS_MULTISIG_CHILD = [
-      FractalProposalState.ACTIVE,
-      FractalProposalState.TIMELOCKABLE,
-      FractalProposalState.TIMELOCKED,
-      FractalProposalState.EXECUTABLE,
-      FractalProposalState.EXECUTED,
-      FractalProposalState.REJECTED,
-      FractalProposalState.EXPIRED,
+      ProposalState.ACTIVE,
+      ProposalState.TIMELOCKABLE,
+      ProposalState.TIMELOCKED,
+      ProposalState.EXECUTABLE,
+      ProposalState.EXECUTED,
+      ProposalState.REJECTED,
+      ProposalState.EXPIRED,
     ];
 
-    const FILTERS_SNAPSHOT = [FractalProposalState.CLOSED, FractalProposalState.PENDING];
+    const FILTERS_SNAPSHOT = [ProposalState.CLOSED, ProposalState.PENDING];
 
     let filterOptions;
     switch (type) {
@@ -162,7 +162,7 @@ export function ProposalsHome() {
     }
   }, [subgraphInfo?.daoSnapshotENS, guardContracts.freezeGuardContractAddress, type]);
 
-  const toggleFilter = (filter: FractalProposalState) => {
+  const toggleFilter = (filter: ProposalState) => {
     setFilters(prevState => {
       if (prevState.includes(filter)) {
         return prevState.filter(state => state !== filter);
@@ -174,7 +174,7 @@ export function ProposalsHome() {
   };
 
   type FilterOption = {
-    optionKey: FractalProposalState | 'groupByNonce';
+    optionKey: ProposalState | 'groupByNonce';
     count?: number;
     onClick: () => void;
     isSelected: boolean;

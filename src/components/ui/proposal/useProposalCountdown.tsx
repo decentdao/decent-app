@@ -1,10 +1,8 @@
 import { abis } from '@fractal-framework/fractal-contracts';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { getContract } from 'viem';
-import useFeatureFlag from '../../../helpers/environmentFeatureFlags';
 import { logError } from '../../../helpers/errorLogging';
-import useSnapshotProposal from '../../../hooks/DAO/loaders/snapshot/useSnapshotProposal';
-import { useLoadDAOProposals } from '../../../hooks/DAO/loaders/useLoadDAOProposals';
+import useSnapshotProposal from '../../../hooks/DAO/loaders/useSnapshotProposal';
 import useUpdateProposalState from '../../../hooks/DAO/proposal/useUpdateProposalState';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import useNetworkPublicClient from '../../../hooks/useNetworkPublicClient';
@@ -12,45 +10,37 @@ import { useDAOStore } from '../../../providers/App/AppProvider';
 import {
   AzoriusGovernance,
   AzoriusProposal,
-  FractalProposal,
-  FractalProposalState,
+  Proposal,
+  ProposalState,
   FreezeGuardType,
 } from '../../../types';
 import { blocksToSeconds } from '../../../utils/contract';
 import { getTxTimelockedTimestamp } from '../../../utils/guard';
 
-export function useProposalCountdown(proposal: FractalProposal) {
+export function useProposalCountdown(proposal: Proposal) {
   const { daoKey } = useCurrentDAOKey();
   const {
     governance,
     guardContracts: { freezeGuardContractAddress, freezeGuardType },
-    governanceContracts,
-    action,
   } = useDAOStore({ daoKey });
   const publicClient = useNetworkPublicClient();
 
   const [secondsLeft, setSecondsLeft] = useState<number>();
   const { snapshotProposal } = useSnapshotProposal(proposal);
-  const storeFeatureEnabled = useFeatureFlag('flag_store_v2');
   const azoriusGovernance = governance as AzoriusGovernance;
 
-  const loadDAOProposals = useLoadDAOProposals();
-  const updateProposalState = useUpdateProposalState({
-    governanceContracts,
-    governanceDispatch: action.dispatch,
-  });
+  const updateProposalState = useUpdateProposalState();
 
   let updateStateInterval = useRef<ReturnType<typeof setInterval> | undefined>();
   let countdownInterval = useRef<ReturnType<typeof setInterval> | undefined>();
   useEffect(() => {
     // if it's not a state that requires a countdown, clear the interval and return
 
-    if (storeFeatureEnabled) return;
     if (
       !(
-        proposal.state === FractalProposalState.ACTIVE ||
-        proposal.state === FractalProposalState.TIMELOCKED ||
-        proposal.state === FractalProposalState.EXECUTABLE
+        proposal.state === ProposalState.ACTIVE ||
+        proposal.state === ProposalState.TIMELOCKED ||
+        proposal.state === ProposalState.EXECUTABLE
       )
     ) {
       clearInterval(updateStateInterval.current);
@@ -67,7 +57,7 @@ export function useProposalCountdown(proposal: FractalProposal) {
             if (governance.isAzorius) {
               await updateProposalState(Number(proposal.proposalId));
             } else {
-              await loadDAOProposals();
+              // TODO: Refetch multisig proposals
             }
           } catch (error) {
             logError('Error updating proposal state:', error);
@@ -86,14 +76,7 @@ export function useProposalCountdown(proposal: FractalProposal) {
         clearInterval(updateStateInterval.current);
       }
     };
-  }, [
-    secondsLeft,
-    loadDAOProposals,
-    proposal,
-    updateProposalState,
-    governance.isAzorius,
-    storeFeatureEnabled,
-  ]);
+  }, [secondsLeft, proposal, updateProposalState, governance.isAzorius]);
 
   const startCountdown = useCallback((initialTimeMs: number) => {
     countdownInterval.current = setInterval(() => {
@@ -118,19 +101,19 @@ export function useProposalCountdown(proposal: FractalProposal) {
     const votingDeadlineMs = (proposal as AzoriusProposal).deadlineMs;
 
     // If the proposal is active and has a deadline, start the countdown (for Azorius proposals)
-    if (proposal.state === FractalProposalState.ACTIVE && votingDeadlineMs) {
+    if (proposal.state === ProposalState.ACTIVE && votingDeadlineMs) {
       startCountdown(votingDeadlineMs);
       return;
     } else if (
       // If the proposal is timelocked and has a deadline, start the countdown (for Azorius proposals)
-      proposal.state === FractalProposalState.TIMELOCKED &&
+      proposal.state === ProposalState.TIMELOCKED &&
       votingDeadlineMs &&
       timeLockPeriod
     ) {
       startCountdown(votingDeadlineMs + Number(timeLockPeriod.value) * 1000);
       // If the proposal is timelocked start the countdown (for safe multisig proposals with guards)
       return;
-    } else if (proposal.state === FractalProposalState.TIMELOCKED && freezeGuard && isSafeGuard) {
+    } else if (proposal.state === ProposalState.TIMELOCKED && freezeGuard && isSafeGuard) {
       const safeGuard = freezeGuard;
 
       const [timelockedTimestamp, timelockPeriod] = await Promise.all([
@@ -143,7 +126,7 @@ export function useProposalCountdown(proposal: FractalProposal) {
 
       // If the proposal is executable start the countdown (for safe multisig proposals with guards)
       return;
-    } else if (proposal.state === FractalProposalState.EXECUTABLE && freezeGuard) {
+    } else if (proposal.state === ProposalState.EXECUTABLE && freezeGuard) {
       let guardTimelockPeriod: number = 0;
       if (isSafeGuard) {
         const safeGuard = freezeGuard;
@@ -162,7 +145,7 @@ export function useProposalCountdown(proposal: FractalProposal) {
       }
       startCountdown(guardTimelockPeriod);
       return;
-    } else if (snapshotProposal !== null && proposal.state === FractalProposalState.PENDING) {
+    } else if (snapshotProposal !== null && proposal.state === ProposalState.PENDING) {
       startCountdown(snapshotProposal.startTime * 1000);
       return;
     } else if (snapshotProposal !== null) {

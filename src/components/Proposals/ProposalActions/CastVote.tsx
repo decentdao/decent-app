@@ -4,25 +4,20 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { TOOLTIP_MAXW } from '../../../constants/common';
 import useFeatureFlag from '../../../helpers/environmentFeatureFlags';
-import useSnapshotProposal from '../../../hooks/DAO/loaders/snapshot/useSnapshotProposal';
+import useSnapshotProposal from '../../../hooks/DAO/loaders/useSnapshotProposal';
 import useCastSnapshotVote from '../../../hooks/DAO/proposal/useCastSnapshotVote';
 import useCastVote from '../../../hooks/DAO/proposal/useCastVote';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import useCurrentBlockNumber from '../../../hooks/utils/useCurrentBlockNumber';
 import { useDAOStore } from '../../../providers/App/AppProvider';
-import {
-  AzoriusProposal,
-  FractalProposal,
-  FractalProposalState,
-  VOTE_CHOICES,
-} from '../../../types';
+import { AzoriusProposal, Proposal, ProposalState, VOTE_CHOICES } from '../../../types';
 import { DecentTooltip } from '../../ui/DecentTooltip';
 import WeightedInput from '../../ui/forms/WeightedInput';
 import { ModalType } from '../../ui/modals/ModalProvider';
 import { useDecentModal } from '../../ui/modals/useDecentModal';
 import { useVoteContext } from '../ProposalVotes/context/VoteContext';
 
-export function CastVote({ proposal }: { proposal: FractalProposal }) {
+export function CastVote({ proposal }: { proposal: Proposal }) {
   const [selectedVoteChoice, setVoiceChoice] = useState<number>();
   const { t } = useTranslation(['proposal', 'transaction', 'gaslessVoting']);
   const { isLoaded: isCurrentBlockLoaded, currentBlockNumber } = useCurrentBlockNumber();
@@ -87,7 +82,7 @@ export function CastVote({ proposal }: { proposal: FractalProposal }) {
   const disabled =
     castVotePending ||
     castGaslessVotePending ||
-    azoriusProposal.state !== FractalProposalState.ACTIVE ||
+    azoriusProposal.state !== ProposalState.ACTIVE ||
     proposalStartBlockNotFinalized ||
     canVoteLoading ||
     hasVoted ||

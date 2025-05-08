@@ -4,8 +4,8 @@ import { useTranslation } from 'react-i18next';
 import { Execute } from '../../../assets/theme/custom/icons/Execute';
 import { Lock } from '../../../assets/theme/custom/icons/Lock';
 import { Vote } from '../../../assets/theme/custom/icons/Vote';
-import useSnapshotProposal from '../../../hooks/DAO/loaders/snapshot/useSnapshotProposal';
-import { FractalProposal, FractalProposalState } from '../../../types';
+import useSnapshotProposal from '../../../hooks/DAO/loaders/useSnapshotProposal';
+import { Proposal, ProposalState } from '../../../types';
 import { DecentTooltip } from '../DecentTooltip';
 import { useProposalCountdown } from './useProposalCountdown';
 
@@ -26,7 +26,7 @@ export function ProposalCountdown({
   showIcon = true,
   textColor = 'white-0',
 }: {
-  proposal: FractalProposal;
+  proposal: Proposal;
   showIcon?: boolean;
   // custom text color and style
   textColor?: string;
@@ -34,35 +34,35 @@ export function ProposalCountdown({
   const totalSecondsLeft = useProposalCountdown(proposal);
   const { t } = useTranslation('proposal');
 
-  const state: FractalProposalState | null = useMemo(() => proposal.state, [proposal]);
+  const state: ProposalState | null = useMemo(() => proposal.state, [proposal]);
 
   const { snapshotProposal } = useSnapshotProposal(proposal);
   const showCountdown =
     !!totalSecondsLeft &&
     totalSecondsLeft > 0 &&
-    (state === FractalProposalState.ACTIVE ||
-      state === FractalProposalState.TIMELOCKED ||
-      state === FractalProposalState.EXECUTABLE ||
+    (state === ProposalState.ACTIVE ||
+      state === ProposalState.TIMELOCKED ||
+      state === ProposalState.EXECUTABLE ||
       !!snapshotProposal);
 
   if (!showCountdown) return null;
 
   const tooltipLabel = t(
-    state === FractalProposalState.ACTIVE
+    state === ProposalState.ACTIVE
       ? 'votingTooltip'
-      : state === FractalProposalState.TIMELOCKED
+      : state === ProposalState.TIMELOCKED
         ? 'timeLockedTooltip'
-        : state === FractalProposalState.EXECUTABLE
+        : state === ProposalState.EXECUTABLE
           ? 'executableTooltip'
           : '',
   );
 
   const Icon: ComponentWithAs<'svg', IconProps> | null =
-    state === FractalProposalState.ACTIVE || !!snapshotProposal
+    state === ProposalState.ACTIVE || !!snapshotProposal
       ? Vote
-      : state === FractalProposalState.TIMELOCKED
+      : state === ProposalState.TIMELOCKED
         ? Lock
-        : state === FractalProposalState.EXECUTABLE
+        : state === ProposalState.EXECUTABLE
           ? Execute
           : null;
 

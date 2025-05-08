@@ -18,7 +18,7 @@ import useBlockTimestamp from '../../../../hooks/utils/useBlockTimestamp';
 import { useCanUserCreateProposal } from '../../../../hooks/utils/useCanUserSubmitProposal';
 import { useDAOStore } from '../../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../../providers/NetworkConfig/useNetworkConfigStore';
-import { FractalModuleType, FreezeVotingType, GovernanceType } from '../../../../types';
+import { FreezeVotingType, GovernanceType, ModuleType } from '../../../../types';
 import { ModalType } from '../../modals/ModalProvider';
 import { useDecentModal } from '../../modals/useDecentModal';
 import { OptionMenu } from '../OptionMenu';
@@ -170,7 +170,7 @@ export function ManageDAOMenu() {
       guard.userHasVotes
     ) {
       const fractalModule = (modules ?? []).find(
-        module => module.moduleType === FractalModuleType.FRACTAL,
+        module => module.moduleType === ModuleType.FRACTAL,
       );
       if (fractalModule) {
         return [settingsOption, clawBackOption];

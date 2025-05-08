@@ -1,5 +1,5 @@
 import { SafeMultisigTransactionResponse } from '@safe-global/safe-core-sdk-types';
-import { FractalProposal, MultisigProposal } from '../types';
+import { MultisigProposal, Proposal } from '../types';
 
 export function isMultisigRejectionProposal(
   safeAddress: string | undefined,
@@ -18,7 +18,7 @@ export function isMultisigRejectionProposal(
 export function findMostConfirmedMultisigRejectionProposal(
   safeAddress: string | undefined,
   nonce: number | undefined,
-  proposals: FractalProposal[] | null,
+  proposals: Proposal[] | null,
 ): MultisigProposal | undefined {
   const multisigRejectionProposals = proposals?.filter(p =>
     isMultisigRejectionProposal(safeAddress, nonce, p.transaction),

@@ -5,7 +5,7 @@ import { Address, getAddress, getContract, isAddress } from 'viem';
 import { isApproved, isRejected } from '../../helpers/activity';
 import { isMultisigRejectionProposal } from '../../helpers/multisigProposal';
 import { useDAOStore } from '../../providers/App/AppProvider';
-import { FractalProposal, FractalProposalState } from '../../types';
+import { Proposal, ProposalState } from '../../types';
 import { parseDecodedData } from '../../utils';
 import { getAverageBlockTime } from '../../utils/contract';
 import { getTxTimelockedTimestamp } from '../../utils/guard';
@@ -27,7 +27,7 @@ export const useSafeTransactions = () => {
 
   const getState = useCallback(
     async (
-      activities: FractalProposal[],
+      activities: Proposal[],
       freezeGuardAddress?: Address,
       freezeGuardData?: FreezeGuardData,
     ) => {
@@ -38,15 +38,15 @@ export const useSafeTransactions = () => {
               return activity;
             }
 
-            let state: FractalProposalState;
+            let state: ProposalState;
 
             if (activity.transaction.isExecuted) {
               // the transaction has already been executed
-              state = FractalProposalState.EXECUTED;
+              state = ProposalState.EXECUTED;
             } else if (isRejected(activityArr, activity.transaction)) {
               // a different transaction with the same nonce has already
               // been executed, so this is no longer valid
-              state = FractalProposalState.REJECTED;
+              state = ProposalState.REJECTED;
             } else {
               // it's not executed or rejected, so we need to check the timelock status
               const timelockedTimestampMs =
@@ -55,10 +55,10 @@ export const useSafeTransactions = () => {
                 // not yet timelocked
                 if (isApproved(activity.transaction)) {
                   // the proposal has enough signatures, so it can now be timelocked
-                  state = FractalProposalState.TIMELOCKABLE;
+                  state = ProposalState.TIMELOCKABLE;
                 } else {
                   // not enough signatures on the proposal, it's still active
-                  state = FractalProposalState.ACTIVE;
+                  state = ProposalState.ACTIVE;
                 }
               } else {
                 // the proposal has been timelocked
@@ -72,14 +72,14 @@ export const useSafeTransactions = () => {
                     timeLockPeriodEndMs + Number(freezeGuardData.guardExecutionPeriodMs);
                   if (nowMs < executionPeriodEndMs) {
                     // Within execution period
-                    state = FractalProposalState.EXECUTABLE;
+                    state = ProposalState.EXECUTABLE;
                   } else {
                     // Execution period has ended
-                    state = FractalProposalState.EXPIRED;
+                    state = ProposalState.EXPIRED;
                   }
                 } else {
                   // Still within timelock period
-                  state = FractalProposalState.TIMELOCKED;
+                  state = ProposalState.TIMELOCKED;
                 }
               }
             }
@@ -94,13 +94,13 @@ export const useSafeTransactions = () => {
 
           let state;
           if (activity.transaction.isExecuted) {
-            state = FractalProposalState.EXECUTED;
+            state = ProposalState.EXECUTED;
           } else if (isRejected(activityArr, activity.transaction)) {
-            state = FractalProposalState.REJECTED;
+            state = ProposalState.REJECTED;
           } else if (isApproved(activity.transaction)) {
-            state = FractalProposalState.EXECUTABLE;
+            state = ProposalState.EXECUTABLE;
           } else {
-            state = FractalProposalState.ACTIVE;
+            state = ProposalState.ACTIVE;
           }
           return { ...activity, state };
         });
@@ -147,7 +147,7 @@ export const useSafeTransactions = () => {
             ? [...data.decodedTransactions.map(tx => tx.target)]
             : [getAddress(transaction.to)];
 
-          const activity: FractalProposal = {
+          const activity: Proposal = {
             transaction,
             eventDate,
             confirmations,
