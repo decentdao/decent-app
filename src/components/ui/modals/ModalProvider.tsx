@@ -264,7 +264,6 @@ export function ModalProvider({ children }: { children: ReactNode }) {
         break;
       case ModalType.CONFIRM_MODIFY_GOVERNANCE:
         hasWarning = true;
-        modalTitle = t('confirmModifyGovernanceTitle');
         modalContent = <ConfirmModifyGovernanceModal close={closeModal} />;
         break;
       case ModalType.WARN_UNSAVED_CHANGES:
