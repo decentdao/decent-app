@@ -1,16 +1,9 @@
 import { useEffect } from 'react';
 import { Address, getAddress } from 'viem';
-import { useAccount } from 'wagmi';
 import useFeatureFlag from '../helpers/environmentFeatureFlags';
 import { useDecentModules } from '../hooks/DAO/loaders/useDecentModules';
 import { useNetworkConfigStore } from '../providers/NetworkConfig/useNetworkConfigStore';
-import {
-  AzoriusProposal,
-  DAOKey,
-  FractalModuleType,
-  FractalProposal,
-  GovernanceType,
-} from '../types';
+import { AzoriusProposal, DAOKey, FractalModuleType, FractalProposal } from '../types';
 import { useGovernanceFetcher } from './fetchers/governance';
 import { useGuardFetcher } from './fetchers/guard';
 import { useNodeFetcher } from './fetchers/node';
@@ -18,6 +11,10 @@ import { useTreasuryFetcher } from './fetchers/treasury';
 import { SetAzoriusGovernancePayload } from './slices/governances';
 import { useGlobalStore } from './store';
 
+/**
+ * useStoreFetcher orchestrates fetching all the necessary data for the DAO and updating the Global store.
+ * Underlying fetchers could get data from whatever source(on-chain, WebSocket, etc.), which then would be reflected in the store.
+ */
 export const useStoreFetcher = ({
   daoKey,
   safeAddress,
@@ -43,27 +40,15 @@ export const useStoreFetcher = ({
     setProposal,
     setLoadingFirstProposal,
     setGuard,
-    setGuardAccountData,
-    getGuard,
-    getDaoNode,
-    getGovernance,
-    setGovernanceAccountData,
-    setGovernanceLockReleaseAccountData,
     setAllProposalsLoaded,
   } = useGlobalStore();
   const { chain, getConfigByChainId } = useNetworkConfigStore();
   const storeFeatureEnabled = useFeatureFlag('flag_store_v2');
-  const { address: account } = useAccount();
 
   const { fetchDAONode } = useNodeFetcher();
   const { fetchDAOTreasury } = useTreasuryFetcher();
-  const {
-    fetchDAOGovernance,
-    fetchDAOProposalTemplates,
-    fetchVotingTokenAccountData,
-    fetchLockReleaseAccountData,
-  } = useGovernanceFetcher();
-  const { fetchDAOGuard, fetchGuardAccountData } = useGuardFetcher();
+  const { fetchDAOGovernance, fetchDAOProposalTemplates } = useGovernanceFetcher();
+  const { fetchDAOGuard } = useGuardFetcher();
 
   useEffect(() => {
     async function loadDAOData() {
@@ -184,120 +169,5 @@ export const useStoreFetcher = ({
     setTreasury,
     setTransfers,
     setTransfer,
-  ]);
-
-  useEffect(() => {
-    async function loadAccountData() {
-      if (
-        !daoKey ||
-        !safeAddress ||
-        invalidQuery ||
-        wrongNetwork ||
-        !storeFeatureEnabled ||
-        !account
-      )
-        return;
-
-      const governance = getGovernance(daoKey);
-      if (governance.type === GovernanceType.AZORIUS_ERC20) {
-        if (governance.votesTokenAddress) {
-          const { balance, delegatee } = await fetchVotingTokenAccountData(
-            governance.votesTokenAddress,
-            account,
-          );
-          setGovernanceAccountData(daoKey, {
-            balance,
-            delegatee,
-          });
-        }
-
-        if (governance.lockReleaseAddress) {
-          const { balance, delegatee } = await fetchLockReleaseAccountData(
-            governance.lockReleaseAddress,
-            account,
-          );
-          setGovernanceLockReleaseAccountData(daoKey, {
-            balance,
-            delegatee,
-          });
-        }
-      }
-    }
-
-    loadAccountData();
-  }, [
-    daoKey,
-    safeAddress,
-    invalidQuery,
-    wrongNetwork,
-    storeFeatureEnabled,
-    account,
-    getGovernance,
-    fetchVotingTokenAccountData,
-    fetchLockReleaseAccountData,
-    setGovernanceAccountData,
-    setGovernanceLockReleaseAccountData,
-  ]);
-
-  useEffect(() => {
-    async function loadGuardAccountData() {
-      if (
-        !daoKey ||
-        !safeAddress ||
-        invalidQuery ||
-        wrongNetwork ||
-        !storeFeatureEnabled ||
-        !account
-      )
-        return;
-
-      const nodeData = getDaoNode(daoKey);
-      const guardData = getGuard(daoKey);
-      const governanceData = getGovernance(daoKey);
-
-      if (
-        guardData.isGuardLoaded &&
-        guardData.freezeGuardContractAddress &&
-        guardData.freezeVotingType &&
-        guardData.freezeVotingContractAddress
-      ) {
-        const guardAccountData = await fetchGuardAccountData({
-          account,
-          azoriusGuardAddress:
-            governanceData.type === GovernanceType.AZORIUS_ERC20 ||
-            governanceData.type === GovernanceType.AZORIUS_ERC721
-              ? guardData.freezeGuardContractAddress
-              : undefined,
-          multisigGuardAddress:
-            governanceData.type === GovernanceType.MULTISIG
-              ? guardData.freezeGuardContractAddress
-              : undefined,
-          freezeVotingType: guardData.freezeVotingType,
-          freezeVotingAddress: guardData.freezeVotingContractAddress,
-          freezeProposalCreatedTime: guardData.freezeProposalCreatedTime || 0n,
-          freezeProposalPeriod: guardData.freezeProposalPeriod || 0n,
-          freezePeriod: guardData.freezePeriod || 0n,
-          _parentSafeAddress: nodeData.subgraphInfo?.parentAddress || null,
-        });
-
-        if (guardAccountData) {
-          setGuardAccountData(daoKey, guardAccountData);
-        }
-      }
-    }
-
-    loadGuardAccountData();
-  }, [
-    daoKey,
-    safeAddress,
-    invalidQuery,
-    wrongNetwork,
-    storeFeatureEnabled,
-    account,
-    getGuard,
-    fetchGuardAccountData,
-    setGuardAccountData,
-    getDaoNode,
-    getGovernance,
   ]);
 };
