@@ -117,7 +117,7 @@ export function ProposalBuilder({
           if (proposalData) {
             submitProposal({
               proposalData,
-              nonce: values?.nonce,
+              nonce: values?.proposalMetadata?.nonce,
               pendingToastMessage: t('proposalCreatePendingToastMessage', { ns: 'proposal' }),
               successToastMessage: t('proposalCreateSuccessToastMessage', { ns: 'proposal' }),
               failedToastMessage: t('proposalCreateFailureToastMessage', { ns: 'proposal' }),
@@ -134,9 +134,8 @@ export function ProposalBuilder({
         const {
           handleSubmit,
           values: {
-            proposalMetadata: { title, description },
+            proposalMetadata: { title, description, nonce },
             transactions,
-            nonce,
           },
           errors,
         } = formikProps;
