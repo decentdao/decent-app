@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { Address } from 'viem';
 import { useAccount } from 'wagmi';
+import useFeatureFlag from '../../helpers/environmentFeatureFlags';
 import { FreezeVotingType } from '../../types';
 import { useGovernanceFetcher } from '../fetchers/governance';
 import { useGuardFetcher } from '../fetchers/guard';
@@ -41,12 +42,13 @@ export function useAccountListeners({
     userHasVotes: boolean;
   }) => void;
 }) {
+  const storeFeatureEnabled = useFeatureFlag('flag_store_v2');
   const { address: account } = useAccount();
   const { fetchVotingTokenAccountData, fetchLockReleaseAccountData } = useGovernanceFetcher();
   const { fetchGuardAccountData } = useGuardFetcher();
   useEffect(() => {
     async function loadAccountData() {
-      if (!account || !votesTokenAddress) {
+      if (!account || !votesTokenAddress || !storeFeatureEnabled) {
         return;
       }
 
@@ -73,6 +75,7 @@ export function useAccountListeners({
     fetchLockReleaseAccountData,
     onGovernanceAccountDataLoaded,
     onGovernanceLockReleaseAccountDataLoaded,
+    storeFeatureEnabled,
   ]);
 
   useEffect(() => {
@@ -83,7 +86,8 @@ export function useAccountListeners({
         !freezeVotingAddress ||
         typeof freezeProposalCreatedTime === 'undefined' ||
         typeof freezeProposalPeriod === 'undefined' ||
-        typeof freezePeriod === 'undefined'
+        typeof freezePeriod === 'undefined' ||
+        !storeFeatureEnabled
       ) {
         return;
       }
@@ -118,5 +122,6 @@ export function useAccountListeners({
     freezeProposalCreatedTime,
     freezeProposalPeriod,
     freezePeriod,
+    storeFeatureEnabled,
   ]);
 }

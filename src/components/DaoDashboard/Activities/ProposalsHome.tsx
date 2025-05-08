@@ -379,10 +379,16 @@ export function ProposalsHome() {
         {groupByNonce && groupedProposals && Object.keys(groupedProposals).length ? (
           Object.entries(groupedProposals)
             .sort((a, b) => {
-              // Sort snapshot last, otherwise by nonce descending
+              // Sort snapshot last, otherwise by nonce ascending/descending based on sortBy
               if (a[0] === 'snapshot') return 1;
               if (b[0] === 'snapshot') return -1;
-              return Number(b[0]) - Number(a[0]);
+              const aNonce = Number(a[0]);
+              const bNonce = Number(b[0]);
+              // When sortBy is Oldest, sort nonce ascending; otherwise sort descending
+              if (sortBy === SortBy.Oldest) {
+                return aNonce - bNonce;
+              }
+              return bNonce - aNonce;
             })
             .map(([key, group]) => (
               <Box

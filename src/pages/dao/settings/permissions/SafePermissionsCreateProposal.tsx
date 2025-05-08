@@ -395,6 +395,7 @@ export function SafePermissionsCreateProposal() {
         <ModalBase
           isOpen
           onClose={handleClose}
+          closeOnOverlayClick
         >
           <Flex
             height="376px" // @dev - fixed height from design

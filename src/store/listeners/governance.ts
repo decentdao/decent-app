@@ -3,6 +3,7 @@ import { useCallback, useEffect } from 'react';
 import { Address, getContract } from 'viem';
 import { useAccount } from 'wagmi';
 import LockReleaseAbi from '../../assets/abi/LockRelease';
+import useFeatureFlag from '../../helpers/environmentFeatureFlags';
 import { logError } from '../../helpers/errorLogging';
 import useNetworkPublicClient from '../../hooks/useNetworkPublicClient';
 import { useAddressContractType } from '../../hooks/utils/useAddressContractType';
@@ -58,6 +59,7 @@ export function useGovernanceListeners({
     vote: ERC721ProposalVote,
   ) => void;
 }) {
+  const storeFeatureEnabled = useFeatureFlag('flag_store_v2');
   const { fetchVotingTokenAccountData, fetchLockReleaseAccountData } = useGovernanceFetcher();
   const { address } = useAccount();
   const publicClient = useNetworkPublicClient();
@@ -92,7 +94,7 @@ export function useGovernanceListeners({
     /**
      * Watch locked token votes when delegation changes.
      */
-    if (!address || !lockedVotesTokenAddress) {
+    if (!address || !lockedVotesTokenAddress || !storeFeatureEnabled) {
       return;
     }
 
@@ -120,13 +122,13 @@ export function useGovernanceListeners({
       unwatchToDelegate();
       unwatchFromDelegate();
     };
-  }, [address, lockedVotesTokenAddress, loadLockedVotesToken, publicClient]);
+  }, [address, lockedVotesTokenAddress, loadLockedVotesToken, publicClient, storeFeatureEnabled]);
 
   useEffect(() => {
     /**
      * Load ERC-20 token votes when delegation changes.
      */
-    if (!address || !votesTokenAddress) {
+    if (!address || !votesTokenAddress || !storeFeatureEnabled) {
       return;
     }
 
@@ -154,13 +156,13 @@ export function useGovernanceListeners({
       unwatchFromDelegate();
       unwatchToDelegate();
     };
-  }, [address, loadERC20TokenAccountData, publicClient, votesTokenAddress]);
+  }, [address, loadERC20TokenAccountData, publicClient, votesTokenAddress, storeFeatureEnabled]);
 
   useEffect(() => {
     /**
      * Listen for proposal creation events.
      */
-    if (!azoriusModuleAddress) {
+    if (!azoriusModuleAddress || !storeFeatureEnabled) {
       return;
     }
 
@@ -245,13 +247,20 @@ export function useGovernanceListeners({
     });
 
     return unwatch;
-  }, [getAddressContractType, publicClient, decode, onProposalCreated, azoriusModuleAddress]);
+  }, [
+    getAddressContractType,
+    publicClient,
+    decode,
+    onProposalCreated,
+    azoriusModuleAddress,
+    storeFeatureEnabled,
+  ]);
 
   useEffect(() => {
     /**
      * Listen for proposal vote events for ERC-20 strategy.
      */
-    if (!erc20StrategyAddress) {
+    if (!erc20StrategyAddress || !storeFeatureEnabled) {
       return;
     }
 
@@ -284,13 +293,20 @@ export function useGovernanceListeners({
     });
 
     return unwatch;
-  }, [erc20StrategyAddress, onERC20VoteCreated, getAddressContractType, publicClient, decode]);
+  }, [
+    erc20StrategyAddress,
+    onERC20VoteCreated,
+    getAddressContractType,
+    publicClient,
+    decode,
+    storeFeatureEnabled,
+  ]);
 
   useEffect(() => {
     /**
      * Listen for proposal vote events for ERC-721 strategy.
      */
-    if (!erc721StrategyAddress) {
+    if (!erc721StrategyAddress || !storeFeatureEnabled) {
       return;
     }
 
@@ -334,5 +350,12 @@ export function useGovernanceListeners({
     });
 
     return unwatch;
-  }, [getAddressContractType, publicClient, decode, onERC721VoteCreated, erc721StrategyAddress]);
+  }, [
+    getAddressContractType,
+    publicClient,
+    decode,
+    onERC721VoteCreated,
+    erc721StrategyAddress,
+    storeFeatureEnabled,
+  ]);
 }

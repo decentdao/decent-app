@@ -3,6 +3,7 @@ import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Address, erc721Abi, formatUnits, getContract, zeroAddress } from 'viem';
 import LockReleaseAbi from '../../assets/abi/LockRelease';
+import { SENTINEL_ADDRESS } from '../../constants/common';
 import { createSnapshotSubgraphClient } from '../../graphql';
 import { ProposalsQuery, ProposalsResponse } from '../../graphql/SnapshotQueries';
 import { logError } from '../../helpers/errorLogging';
@@ -16,7 +17,6 @@ import {
 import { useSafeDecoder } from '../../hooks/utils/useSafeDecoder';
 import { useSafeTransactions } from '../../hooks/utils/useSafeTransactions';
 import { useTimeHelpers } from '../../hooks/utils/useTimeHelpers';
-import useVotingStrategiesAddresses from '../../hooks/utils/useVotingStrategiesAddresses';
 import useIPFSClient from '../../providers/App/hooks/useIPFSClient';
 import { useSafeAPI } from '../../providers/App/hooks/useSafeAPI';
 import {
@@ -24,12 +24,11 @@ import {
   CreateProposalMetadata,
   DecentModule,
   ERC721TokenData,
-  FractalGovernance,
-  FractalGovernanceContracts,
   FractalProposal,
   FractalProposalState,
   FractalTokenType,
   FractalVotingStrategy,
+  GovernanceType,
   ProposalTemplate,
   SnapshotProposal,
   VotesTokenData,
@@ -41,6 +40,7 @@ import {
   mapProposalCreatedEventToProposal,
 } from '../../utils/azorius';
 import { blocksToSeconds } from '../../utils/contract';
+import { SetAzoriusGovernancePayload } from '../slices/governances';
 
 /**
  * `useGovernanceFetcher` is used as an abstraction layer over logic of fetching DAO governance data
@@ -52,7 +52,6 @@ export function useGovernanceFetcher() {
   const decode = useSafeDecoder();
   const { getTimeDuration } = useTimeHelpers();
   const { parseTransactions } = useSafeTransactions();
-  const { getVotingStrategies } = useVotingStrategiesAddresses();
   const { t } = useTranslation(['dashboard']);
   const publicClient = useNetworkPublicClient();
   const safeApi = useSafeAPI();
@@ -73,16 +72,15 @@ export function useGovernanceFetcher() {
       daoAddress: Address;
       daoModules: DecentModule[];
       onMultisigGovernanceLoaded: () => void;
-      onAzoriusGovernanceLoaded: (
-        governance: FractalGovernance & FractalGovernanceContracts,
-      ) => void;
+      onAzoriusGovernanceLoaded: (governance: SetAzoriusGovernancePayload) => void;
       onProposalsLoaded: (proposals: FractalProposal[]) => void;
-      onProposalLoaded: (proposal: AzoriusProposal) => void;
+      onProposalLoaded: (proposal: AzoriusProposal, index: number, totalProposals: number) => void;
       onTokenClaimContractAddressLoaded: (tokenClaimContractAddress: Address) => void;
       onLoadingFirstProposalStateChanged: (loading: boolean) => void;
     }) => {
       const azoriusModule = getAzoriusModuleFromModules(daoModules);
 
+      console.log('Fetch DAO Governance');
       if (!azoriusModule) {
         onMultisigGovernanceLoaded();
         const multisigTransactions = await safeApi.getMultisigTransactions(daoAddress);
@@ -94,7 +92,21 @@ export function useGovernanceFetcher() {
           address: azoriusModule.moduleAddress,
           client: publicClient,
         });
-        const votingStrategies = await getVotingStrategies(daoAddress);
+        const [strategiesAddresses, nextStrategy] = await azoriusContract.read.getStrategies([
+          SENTINEL_ADDRESS,
+          3n,
+        ]);
+        const votingStrategies = await Promise.all(
+          [...strategiesAddresses, nextStrategy]
+            .filter(
+              strategyAddress =>
+                strategyAddress !== SENTINEL_ADDRESS && strategyAddress !== zeroAddress,
+            )
+            .map(async strategyAddress => ({
+              ...(await getAddressContractType(strategyAddress)),
+              strategyAddress,
+            })),
+        );
         let votesTokenAddress: Address | undefined;
         let lockReleaseAddress: Address | undefined;
 
@@ -307,6 +319,7 @@ export function useGovernanceFetcher() {
 
             onAzoriusGovernanceLoaded({
               votesToken: tokenData,
+              erc721Tokens: undefined,
               linearVotingErc20Address,
               linearVotingErc20WithHatsWhitelistingAddress,
               linearVotingErc721Address,
@@ -314,12 +327,9 @@ export function useGovernanceFetcher() {
               isLoaded: true,
               strategies,
               votingStrategy: votingData,
-              loadingProposals: false,
-              allProposalsLoaded: false,
-              proposals: null,
-              pendingProposals: null,
               isAzorius: true,
               lockedVotesToken: lockedVotesTokenData,
+              type: GovernanceType.AZORIUS_ERC20,
             });
 
             // Fetch Claiming Contract
@@ -351,7 +361,7 @@ export function useGovernanceFetcher() {
               return;
             }
 
-            for (const proposalCreatedEvent of proposalCreatedEvents) {
+            for (const [index, proposalCreatedEvent] of proposalCreatedEvents.entries()) {
               if (proposalCreatedEvent.args.proposalId === undefined) {
                 continue;
               }
@@ -363,7 +373,7 @@ export function useGovernanceFetcher() {
               });
 
               if (cachedProposal) {
-                onProposalLoaded(cachedProposal);
+                onProposalLoaded(cachedProposal, index, proposalCreatedEvents.length);
                 continue;
               }
 
@@ -429,7 +439,7 @@ export function useGovernanceFetcher() {
                 proposalData,
               );
 
-              onProposalLoaded(proposal);
+              onProposalLoaded(proposal, index, proposalCreatedEvents.length);
 
               const isProposalFossilized =
                 proposal.state === FractalProposalState.CLOSED ||
@@ -521,11 +531,8 @@ export function useGovernanceFetcher() {
               isLoaded: true,
               strategies,
               votingStrategy: votingData,
-              loadingProposals: false,
-              allProposalsLoaded: false,
-              proposals: null,
-              pendingProposals: null,
               isAzorius: true,
+              type: GovernanceType.AZORIUS_ERC721,
             });
 
             // Now - fetch proposals
@@ -547,7 +554,7 @@ export function useGovernanceFetcher() {
               return;
             }
 
-            for (const proposalCreatedEvent of proposalCreatedEvents) {
+            for (const [index, proposalCreatedEvent] of proposalCreatedEvents.entries()) {
               if (proposalCreatedEvent.args.proposalId === undefined) {
                 continue;
               }
@@ -559,7 +566,7 @@ export function useGovernanceFetcher() {
               });
 
               if (cachedProposal) {
-                onProposalLoaded(cachedProposal);
+                onProposalLoaded(cachedProposal, index, proposalCreatedEvents.length);
                 continue;
               }
 
@@ -625,7 +632,7 @@ export function useGovernanceFetcher() {
                 proposalData,
               );
 
-              onProposalLoaded(proposal);
+              onProposalLoaded(proposal, index, proposalCreatedEvents.length);
 
               const isProposalFossilized =
                 proposal.state === FractalProposalState.CLOSED ||
@@ -650,16 +657,7 @@ export function useGovernanceFetcher() {
         }
       }
     },
-    [
-      getAddressContractType,
-      publicClient,
-      getVotingStrategies,
-      getTimeDuration,
-      parseTransactions,
-      safeApi,
-      t,
-      decode,
-    ],
+    [getAddressContractType, publicClient, getTimeDuration, parseTransactions, safeApi, t, decode],
   );
 
   const fetchDAOProposalTemplates = useCallback(
