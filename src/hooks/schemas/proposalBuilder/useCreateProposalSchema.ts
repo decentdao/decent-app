@@ -120,10 +120,10 @@ const useCreateProposalSchema = () => {
             title: Yup.string().trim().required().max(50),
             description: Yup.string().trim().notRequired(),
             documentationUrl: Yup.string().trim().notRequired(),
+            nonce: Yup.number()
+              .required()
+              .moreThan((!!safe && safe.nonce - 1) || 0),
           }),
-          nonce: Yup.number()
-            .required()
-            .moreThan((!!safe && safe.nonce - 1) || 0),
         })
         .test('at-least-one-transactions-or-streams', t('atLeastOneRequired'), value => {
           return !!(
