@@ -274,6 +274,6 @@ This section describes the process during the initial creation of a new DAO.
 - **Core Components:** `GaslessVotingToggleDAOSettings` (needs redesign -> becomes PaymasterStatus component), `CastVote` component, `useCastVote` hook, `RefillGasTankModal`.
 - **Key Hooks:** `useDepositInfo`, ~~`useKeyValuePairs`~~ (KV logic removed), `useSubmitProposal`.
 - **Contracts:** Paymaster (`DecentPaymasterV1` mastercopy deployed via `ZodiacModuleProxyFactory`), `EntryPoint07`, ~~`KeyValuePairs`~~ (KV logic removed), Voting Strategy Validators (`LinearERC20VotingV1ValidatorV1`, `LinearERC721VotingV1ValidatorV1`).
-- **State Management:** `useDaoInfoStore` (remove `gaslessVotingEnabled` state, keep `paymasterAddress`).
+- **State Management:** `governances` slice in `useGlobalStore`.
 - **Utils:** `gaslessVoting.ts` (e.g., `getPaymasterAddress`), `prepareRefillPaymasterActionData.ts`.
 - **Backend/Infrastructure:** Relies on an ERC-4337 Bundler service (RPC endpoint configured via `rpcEndpoint`).
