@@ -1,7 +1,7 @@
 import axios from 'axios';
 import detectProxyTarget from 'evm-proxy-detection';
 import { useCallback, useEffect, useState } from 'react';
-import { Address, getAddress, Hex, isAddress, PublicClient, zeroAddress } from 'viem';
+import { getAddress, isAddress, PublicClient, zeroAddress } from 'viem';
 import { logError } from '../../helpers/errorLogging';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
 import { useNetworkEnsAddress } from '../useNetworkEnsAddress';
@@ -22,7 +22,7 @@ async function getSafeFallbackHandlerAddress(publicClient: PublicClient, contrac
 
   try {
     const rawStorageValue = await publicClient.getStorageAt({
-      address: contractAddress as Address,
+      address: getAddress(contractAddress),
       slot: FALLBACK_HANDLER_STORAGE_SLOT,
     });
     const fallbackHandler = `0x${rawStorageValue?.slice(-40)}`;
