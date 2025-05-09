@@ -27,7 +27,7 @@ const useCastVote = (proposalId: string, strategy: Address) => {
       linearVotingErc721Address,
       linearVotingErc721WithHatsWhitelistingAddress,
     },
-    node: { paymasterAddress },
+    governance: { paymasterAddress },
   } = useDAOStore({ daoKey });
   const {
     contracts: { accountAbstraction },

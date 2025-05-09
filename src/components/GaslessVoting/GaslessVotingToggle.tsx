@@ -111,7 +111,8 @@ export function GaslessVotingToggleDAOSettings(props: GaslessVotingToggleProps) 
 
   const { daoKey } = useCurrentDAOKey();
   const {
-    node: { safe, gaslessVotingEnabled, paymasterAddress },
+    node: { safe },
+    governance: { gaslessVotingEnabled, paymasterAddress },
   } = useDAOStore({ daoKey });
   const { depositInfo } = usePaymasterDepositInfo();
 

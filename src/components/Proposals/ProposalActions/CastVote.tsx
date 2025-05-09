@@ -28,7 +28,7 @@ export function CastVote({ proposal }: { proposal: FractalProposal }) {
   const { isLoaded: isCurrentBlockLoaded, currentBlockNumber } = useCurrentBlockNumber();
   const { daoKey } = useCurrentDAOKey();
   const {
-    node: { gaslessVotingEnabled },
+    governance: { gaslessVotingEnabled },
   } = useDAOStore({ daoKey });
 
   const { snapshotProposal, extendedSnapshotProposal, loadSnapshotProposal } =

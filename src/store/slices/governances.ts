@@ -62,6 +62,13 @@ export type GovernancesSlice = {
     daoKey: DAOKey,
     lockReleaseAccountData: { balance: bigint; delegatee: Address },
   ) => void;
+  setGaslessVotingData: (
+    daoKey: DAOKey,
+    gasslesVotingData: {
+      gaslessVotingEnabled: boolean;
+      paymasterAddress: Address | null;
+    },
+  ) => void;
 };
 
 const EMPTY_GOVERNANCE: FractalGovernance & FractalGovernanceContracts = {
@@ -72,6 +79,8 @@ const EMPTY_GOVERNANCE: FractalGovernance & FractalGovernanceContracts = {
   isAzorius: false,
   isLoaded: false,
   strategies: [],
+  gaslessVotingEnabled: false,
+  paymasterAddress: null,
 };
 
 export const createGovernancesSlice: StateCreator<
@@ -271,6 +280,12 @@ export const createGovernancesSlice: StateCreator<
       false,
       'setSnapshotProposals',
     );
+  },
+  setGaslessVotingData: (daoKey, gasslesVotingData) => {
+    set(state => {
+      state.governances[daoKey].gaslessVotingEnabled = gasslesVotingData.gaslessVotingEnabled;
+      state.governances[daoKey].paymasterAddress = gasslesVotingData.paymasterAddress;
+    });
   },
   getGovernance: daoKey => {
     const governance = get().governances[daoKey];

@@ -20,7 +20,7 @@ export function usePaymasterDepositInfo() {
   } = useNetworkConfigStore();
   const { daoKey } = useCurrentDAOKey();
   const {
-    node: { paymasterAddress },
+    governance: { paymasterAddress },
   } = useDAOStore({ daoKey });
 
   const publicClient = useNetworkPublicClient();

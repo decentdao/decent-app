@@ -7,6 +7,7 @@ import { AzoriusProposal, DAOKey, FractalModuleType, FractalProposal } from '../
 import { useGovernanceFetcher } from './fetchers/governance';
 import { useGuardFetcher } from './fetchers/guard';
 import { useNodeFetcher } from './fetchers/node';
+import { useRolesFetcher } from './fetchers/roles';
 import { useTreasuryFetcher } from './fetchers/treasury';
 import { SetAzoriusGovernancePayload } from './slices/governances';
 import { useGlobalStore } from './store';
@@ -41,6 +42,7 @@ export const useDAOStoreFetcher = ({
     setProposal,
     setLoadingFirstProposal,
     setGuard,
+    setGaslessVotingData,
     setAllProposalsLoaded,
   } = useGlobalStore();
   const { chain, getConfigByChainId } = useNetworkConfigStore();
@@ -48,9 +50,14 @@ export const useDAOStoreFetcher = ({
 
   const { fetchDAONode } = useNodeFetcher();
   const { fetchDAOTreasury } = useTreasuryFetcher();
-  const { fetchDAOGovernance, fetchDAOProposalTemplates, fetchDAOSnapshotProposals } =
-    useGovernanceFetcher();
+  const {
+    fetchDAOGovernance,
+    fetchDAOProposalTemplates,
+    fetchDAOSnapshotProposals,
+    fetchGaslessVotingDAOData,
+  } = useGovernanceFetcher();
   const { fetchDAOGuard } = useGuardFetcher();
+  const { fetchRolesData } = useRolesFetcher();
 
   useEffect(() => {
     async function loadDAOData() {
@@ -130,6 +137,21 @@ export const useDAOStoreFetcher = ({
           },
         );
       }
+
+      const rolesData = await fetchRolesData({
+        safeAddress,
+      });
+
+      if (rolesData) {
+        const gaslessVotingData = await fetchGaslessVotingDAOData({
+          safeAddress,
+          events: rolesData.events,
+        });
+
+        if (gaslessVotingData) {
+          setGaslessVotingData(daoKey, gaslessVotingData);
+        }
+      }
     }
 
     loadDAOData();
@@ -158,6 +180,9 @@ export const useDAOStoreFetcher = ({
     setAllProposalsLoaded,
     fetchDAOSnapshotProposals,
     setSnapshotProposals,
+    fetchRolesData,
+    setGaslessVotingData,
+    fetchGaslessVotingDAOData,
   ]);
 
   useEffect(() => {

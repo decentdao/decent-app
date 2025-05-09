@@ -1,7 +1,14 @@
 import { abis } from '@fractal-framework/fractal-contracts';
 import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Address, erc721Abi, formatUnits, getContract, zeroAddress } from 'viem';
+import {
+  Address,
+  erc721Abi,
+  formatUnits,
+  getContract,
+  GetContractEventsReturnType,
+  zeroAddress,
+} from 'viem';
 import LockReleaseAbi from '../../assets/abi/LockRelease';
 import { SENTINEL_ADDRESS } from '../../constants/common';
 import { createSnapshotSubgraphClient } from '../../graphql';
@@ -19,6 +26,7 @@ import { useSafeTransactions } from '../../hooks/utils/useSafeTransactions';
 import { useTimeHelpers } from '../../hooks/utils/useTimeHelpers';
 import useIPFSClient from '../../providers/App/hooks/useIPFSClient';
 import { useSafeAPI } from '../../providers/App/hooks/useSafeAPI';
+import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
 import {
   AzoriusProposal,
   CreateProposalMetadata,
@@ -40,6 +48,7 @@ import {
   mapProposalCreatedEventToProposal,
 } from '../../utils/azorius';
 import { blocksToSeconds } from '../../utils/contract';
+import { getPaymasterAddress } from '../../utils/gaslessVoting';
 import { SetAzoriusGovernancePayload } from '../slices/governances';
 
 /**
@@ -57,6 +66,14 @@ export function useGovernanceFetcher() {
   const safeApi = useSafeAPI();
   const { getAddressContractType } = useAddressContractType();
   const snaphshotGraphQlClient = useMemo(() => createSnapshotSubgraphClient(), []);
+
+  const {
+    contracts: {
+      zodiacModuleProxyFactory,
+      accountAbstraction,
+      paymaster: { decentPaymasterV1MasterCopy },
+    },
+  } = useNetworkConfigStore();
 
   const fetchDAOGovernance = useCallback(
     async ({
@@ -757,11 +774,66 @@ export function useGovernanceFetcher() {
     [snaphshotGraphQlClient],
   );
 
+  const fetchGaslessVotingDAOData = useCallback(
+    async ({
+      events,
+      safeAddress,
+    }: {
+      events: GetContractEventsReturnType<typeof abis.KeyValuePairs>;
+      safeAddress: Address;
+    }) => {
+      // get most recent event where `gaslessVotingEnabled` was set
+      const gaslessVotingEnabledEvent = events
+        .filter(event => event.args.key && event.args.key === 'gaslessVotingEnabled')
+        .pop();
+
+      if (!gaslessVotingEnabledEvent || !accountAbstraction || !publicClient.chain) {
+        return { gaslessVotingEnabled: false, paymasterAddress: null };
+      }
+
+      try {
+        const paymasterAddress = getPaymasterAddress({
+          safeAddress,
+          zodiacModuleProxyFactory,
+          paymasterMastercopy: decentPaymasterV1MasterCopy,
+          entryPoint: accountAbstraction.entryPointv07,
+          lightAccountFactory: accountAbstraction.lightAccountFactory,
+          chainId: publicClient.chain.id,
+        });
+
+        const paymasterCode = await publicClient.getCode({
+          address: paymasterAddress,
+        });
+
+        const paymasterExists = !!paymasterCode && paymasterCode !== '0x';
+
+        const gaslessVotingEnabled = gaslessVotingEnabledEvent.args.value === 'true';
+        return {
+          gaslessVotingEnabled,
+          paymasterAddress: paymasterExists ? paymasterAddress : null,
+        };
+      } catch (e) {
+        logError({
+          message: 'Error getting gasless voting dao data',
+          network: publicClient.chain!.id,
+          args: {
+            transactionHash: gaslessVotingEnabledEvent.transactionHash,
+            logIndex: gaslessVotingEnabledEvent.logIndex,
+          },
+        });
+
+        return;
+      }
+    },
+    [publicClient, accountAbstraction, zodiacModuleProxyFactory, decentPaymasterV1MasterCopy],
+  );
+
   return {
     fetchDAOGovernance,
     fetchDAOProposalTemplates,
     fetchVotingTokenAccountData,
     fetchLockReleaseAccountData,
     fetchDAOSnapshotProposals,
+    fetchGaslessVotingDAOData,
   };
 }

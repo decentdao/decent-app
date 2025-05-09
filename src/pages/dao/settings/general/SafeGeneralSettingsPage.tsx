@@ -37,8 +37,8 @@ export function SafeGeneralSettingsPage() {
   const { daoKey } = useCurrentDAOKey();
   const {
     governanceContracts: { strategies },
-    governance: { type: votingStrategyType },
-    node: { subgraphInfo, safe, gaslessVotingEnabled, paymasterAddress },
+    governance: { type: votingStrategyType, gaslessVotingEnabled, paymasterAddress },
+    node: { subgraphInfo, safe },
   } = useDAOStore({ daoKey });
 
   const [isGaslessVotingEnabledToggled, setIsGaslessVotingEnabledToggled] =
