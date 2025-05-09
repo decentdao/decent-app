@@ -73,7 +73,8 @@ export function MultisigConflictingProposals({ proposal }: { proposal: MultisigP
   const isMultisigProposal =
     type === GovernanceType.MULTISIG && !(proposal as SnapshotProposal)?.snapshotProposalId;
 
-  if (!isMultisigProposal || !proposals) return null;
+  if (!isMultisigProposal || !proposals || proposal.state === FractalProposalState.EXECUTED)
+    return null;
   const multisigProposal = proposal as MultisigProposal;
   const proposalNonce = multisigProposal.nonce;
 
