@@ -50,15 +50,19 @@ export function CustomNonceInput({
     if (p.nonce === undefined) continue; // should never happen
     if (p.nonce === safe.nextNonce) continue;
     const key = p.nonce.toString();
+    const isRejection = p.state === FractalProposalState.REJECTED;
+    const currentNumberOfProposals = pByNonce[key]?.numberOfProposals ?? 0;
     pByNonce[key] = {
-      numberOfProposals: (pByNonce[key]?.numberOfProposals ?? 0) + 1,
+      numberOfProposals: !isRejection ? currentNumberOfProposals + 1 : currentNumberOfProposals,
       latestProposalId: p.proposalId,
       isNonceUsed:
         pByNonce[key]?.isNonceUsed ??
         (p.state === FractalProposalState.EXECUTED || p.state === FractalProposalState.REJECTED),
     };
   }
-  const sortedPByNonce = Object.entries(pByNonce).sort((a, b) => Number(b[0]) - Number(a[0]));
+  const sortedPByNonce = Object.entries(pByNonce)
+    .sort((a, b) => Number(b[0]) - Number(a[0]))
+    .slice(0, 5);
   const activeProposalOptions: IOption[] = sortedPByNonce.map(([n, pInfo]) => {
     const isSingleTransaction = pInfo.numberOfProposals === 1;
     const label = isSingleTransaction
