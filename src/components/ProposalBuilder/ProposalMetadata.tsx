@@ -36,11 +36,7 @@ export interface ProposalMetadataProps extends FormikProps<CreateProposalForm> {
   typeProps: ProposalMetadataTypeProps;
 }
 
-export default function ProposalMetadata({
-  values,
-  typeProps,
-  setFieldValue,
-}: ProposalMetadataProps) {
+export default function ProposalMetadata({ values, typeProps }: ProposalMetadataProps) {
   const { t } = useTranslation(['proposal']);
   const { setProposalMetadata } = useProposalActionsStore();
   const { proposalMetadata } = values;
@@ -51,8 +47,8 @@ export default function ProposalMetadata({
       p="1.5rem"
     >
       <CustomNonceInput
-        nonce={values.nonce}
-        onChange={newNonce => setFieldValue('nonce', newNonce)}
+        nonce={values.proposalMetadata.nonce}
+        onChange={newNonce => setProposalMetadata('nonce', newNonce)}
         align="end"
         renderTrimmed={false}
       />
