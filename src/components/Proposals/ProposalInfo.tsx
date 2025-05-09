@@ -7,7 +7,12 @@ import useSnapshotProposal from '../../hooks/DAO/loaders/snapshot/useSnapshotPro
 import { useGetMetadata } from '../../hooks/DAO/proposal/useGetMetadata';
 import { useCurrentDAOKey } from '../../hooks/DAO/useCurrentDAOKey';
 import { useDAOStore } from '../../providers/App/AppProvider';
-import { ExtendedSnapshotProposal, FractalProposal, MultisigProposal } from '../../types';
+import {
+  ExtendedSnapshotProposal,
+  FractalProposal,
+  FractalProposalState,
+  MultisigProposal,
+} from '../../types';
 import { ActivityDescription } from '../Activity/ActivityDescription';
 import { Badge } from '../ui/badges/Badge';
 import { SignerThresholdBadge } from '../ui/badges/SignerThresholdBadge';
@@ -112,6 +117,7 @@ export function ProposalInfo({
           <SignerThresholdBadge
             numberOfConfirmedSigners={(proposal as MultisigProposal).confirmations?.length}
             proposalThreshold={(proposal as MultisigProposal).signersThreshold}
+            isRejected={proposal.state === FractalProposalState.REJECTED}
           />
         </Flex>
       </Flex>
