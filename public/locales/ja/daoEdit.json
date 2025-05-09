@@ -1,3 +1,6 @@
 {
-  "cannotModifyGovernance": "このセーフのガバナンスを変更する権限はありません。"
+  "cannotModifyGovernance": "このセーフのガバナンスを変更する権限はありません。",
+  "launchToken": "ローンチ・トークン",
+  "launchTokenTitle": "ガバナンスのトークン化",
+  "launchTokenDescription": "独自のガバナンス・トークンを立ち上げ、トークン投票を通じて提案を通す。"
 }

@@ -67,7 +67,7 @@ export function SafePermissionsSettingsPage() {
               justifyContent="flex-end"
             >
               <IconButton
-                aria-label={t('add', { ns: 'common' })}
+                aria-label={t('addOwner', { ns: 'common' })}
                 size="icon-md"
                 variant="ghost"
                 color="neutral-6"
