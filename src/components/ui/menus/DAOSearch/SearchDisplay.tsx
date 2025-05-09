@@ -1,5 +1,4 @@
-import { Flex, Icon, Spinner, Text } from '@chakra-ui/react';
-import { WarningCircle } from '@phosphor-icons/react';
+import { Flex, Spinner, Text } from '@chakra-ui/react';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Address } from 'viem';
@@ -12,19 +11,12 @@ import { MySafesErrorFallback } from '../../utils/MySafesErrorFallback';
 
 interface ISearchDisplay {
   loading: boolean;
-  errorMessage: string | undefined;
   address: Address | undefined;
   onClickView: Function;
   chainId: number;
 }
 
-export function SearchDisplay({
-  loading,
-  errorMessage,
-  address,
-  onClickView,
-  chainId,
-}: ISearchDisplay) {
+export function SearchDisplay({ loading, address, onClickView, chainId }: ISearchDisplay) {
   const { t } = useTranslation(['common', 'dashboard']);
   const { daoKey } = useCurrentDAOKey();
   const {
@@ -50,28 +42,6 @@ export function SearchDisplay({
           color="neutral-7"
           size="lg"
         />
-      </Flex>
-    );
-  }
-
-  if (errorMessage) {
-    return (
-      <Flex
-        alignItems="center"
-        gap="2"
-        p="0.5rem 1rem"
-      >
-        <Icon
-          as={WarningCircle}
-          color="red-1"
-          boxSize="1.5rem"
-        />
-        <Text
-          textStyle="heading-small"
-          color="red-1"
-        >
-          {errorMessage}
-        </Text>
       </Flex>
     );
   }

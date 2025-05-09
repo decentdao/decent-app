@@ -13,7 +13,6 @@ import useCreateProposalSchema from '../../hooks/schemas/proposalBuilder/useCrea
 import { useUnsavedChangesBlocker } from '../../hooks/useUnsavedChangesBlocker';
 import { useCanUserCreateProposal } from '../../hooks/utils/useCanUserSubmitProposal';
 import { ActionsExperience } from '../../pages/dao/proposals/actions/new/ActionsExperience';
-import { useDAOStore } from '../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
 import { useProposalActionsStore } from '../../store/actions/useProposalActionsStore';
 import { BigIntValuePair, CreateProposalSteps, ProposalExecuteData } from '../../types';
@@ -23,47 +22,11 @@ import {
   CreateSablierProposalForm,
   Stream,
 } from '../../types/proposalBuilder';
-import { CustomNonceInput } from '../ui/forms/CustomNonceInput';
 import { Crumb } from '../ui/page/Header/Breadcrumbs';
 import PageHeader from '../ui/page/Header/PageHeader';
 import ProposalDetails from './ProposalDetails';
 import ProposalMetadata, { ProposalMetadataTypeProps } from './ProposalMetadata';
 import StepButtons from './StepButtons';
-
-export function ShowNonceInputOnMultisig({
-  nonce,
-  nonceOnChange,
-}: {
-  nonce: number | undefined;
-  nonceOnChange: (nonce?: string) => void;
-}) {
-  const { daoKey } = useCurrentDAOKey();
-  const {
-    governance: { isAzorius },
-  } = useDAOStore({ daoKey });
-
-  if (isAzorius) {
-    return null;
-  }
-
-  return (
-    <Flex
-      alignItems="center"
-      justifyContent="space-between"
-      marginBottom="2rem"
-      rounded="lg"
-      p="1.5rem"
-      bg="neutral-2"
-    >
-      <CustomNonceInput
-        nonce={nonce}
-        onChange={nonceOnChange}
-        align="end"
-        renderTrimmed={false}
-      />
-    </Flex>
-  );
-}
 
 interface ProposalBuilderProps {
   pageHeaderTitle: string;
@@ -253,10 +216,6 @@ export function ProposalBuilder({
                           <ProposalMetadata
                             typeProps={proposalMetadataTypeProps}
                             {...formikProps}
-                          />
-                          <ShowNonceInputOnMultisig
-                            nonce={nonce}
-                            nonceOnChange={newNonce => formikProps.setFieldValue('nonce', newNonce)}
                           />
                         </>
                       ) : (

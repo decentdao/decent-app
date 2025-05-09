@@ -164,6 +164,7 @@
   "addStream": "스트림 추가",
   "removeStream": "스트림 제거",
   "streamStartNotice": "스트림은 제안이 실행되는 순간 시작됩니다. 이를 위해\n스트림 시작 지연 \"에뮬레이션\" - 첫 번째 트랜치에는 원하는 \"지연\" 기간을\n0으로 설정하고 원하는 \"지연\" 기간을 설정합니다.",
+  "streamOnSablierNotice": "이 제안은 Sablier를 사용하여 결제 스트림을 생성합니다. 제안이 실행된 후에는 수신자가 Sablier를 사용하여 해당 스트림을 관리해야 합니다.",
   "streamedTokenAddress": "스트리밍 토큰 주소",
   "streamedTokenAddressHelper": "재무 잔액: {{balance}}",
   "recipientAddress": "수신자 주소",
@@ -197,5 +198,10 @@
   "by": "으로",
   "groupByNonce": "논스별 그룹화",
   "snapshot": "스냅샷",
-  "signersThresholdBadgeLabel": "{{current}중 {{total}}"
+  "signersThresholdBadgeLabel": "{{current}중 {{total}}",
+  "nonceLabelMultipleTransactions": "여러 거래",
+  "nonceLabelSingleTransaction": "트랜잭션 #{{proposalId}}",
+  "nonceLabelRecommended": "{{nonce}} - 새 거래",
+  "nonceLabelRecommendedTitle": "권장 논스",
+  "nonceLabelReplaceActiveTitle": "활성 바꾸기"
 }
