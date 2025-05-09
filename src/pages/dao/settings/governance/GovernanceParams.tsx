@@ -1,9 +1,10 @@
-import { Box, Flex, Text } from '@chakra-ui/react';
+import { Box, Flex, Input } from '@chakra-ui/react';
 import { abis } from '@fractal-framework/fractal-contracts';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { getContract } from 'viem';
 
+import { LabelComponent } from '../../../../components/ui/forms/InputComponent';
 import { BarLoader } from '../../../../components/ui/loaders/BarLoader';
 import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
 import useNetworkPublicClient from '../../../../hooks/useNetworkPublicClient';
@@ -52,13 +53,13 @@ export function GovernanceParams() {
         }
       } else if (governanceAzorius !== null) {
         const timelock = governanceAzorius.votingStrategy?.timeLockPeriod;
+        const execution = governanceAzorius.votingStrategy?.executionPeriod;
         if (timelock?.formatted) {
           setTimelockPeriod(timelock.formatted);
         }
-        // TODO Azorius execution period
-        // We don't have room to fit a 5th row on this card currently,
-        // so leaving this off until we can have a discussion with design
-        // setExecutionPeriod(await freezeGuard.executionPeriod());
+        if (execution?.formatted) {
+          setExecutionPeriod(execution.formatted);
+        }
       }
       return () => {
         setTimelockPeriod(undefined);
@@ -93,24 +94,22 @@ export function GovernanceParams() {
 
   return (
     <Box data-testid="dashboard-daoGovernance">
-      <Flex
-        alignItems="center"
-        justifyContent="space-between"
-        mb="0.25rem"
-        gap="0.5rem"
-      >
-        <Text color="neutral-7">{t('titleType')}</Text>
-        <Text textAlign="right">
-          {governance.type
-            ? t(governance.type.toString(), {
-                ns: 'daoCreate',
-                threshold: safe.threshold,
-                totalSigners: safe.owners.length,
-              })
-            : t('loading', { ns: 'common' })}
-        </Text>
-      </Flex>
-
+      {governanceAzorius?.votingStrategy?.quorumPercentage && (
+        <Flex
+          alignItems="center"
+          justifyContent="space-between"
+        >
+          <LabelComponent
+            isRequired={false}
+            label={t('titleQuorum')}
+          >
+            <Input
+              value={governanceAzorius.votingStrategy.quorumPercentage.formatted}
+              minWidth="100%"
+            />
+          </LabelComponent>
+        </Flex>
+      )}
       {governanceAzorius?.votingStrategy?.votingPeriod && (
         <Flex
           alignItems="center"
@@ -118,21 +117,15 @@ export function GovernanceParams() {
           mb="0.25rem"
           gap="0.5rem"
         >
-          <Text color="neutral-7">{t('titleVotingPeriod')}</Text>
-          <Text textAlign="right">{governanceAzorius.votingStrategy.votingPeriod.formatted}</Text>
-        </Flex>
-      )}
-      {governanceAzorius?.votingStrategy?.quorumPercentage && (
-        <Flex
-          alignItems="center"
-          justifyContent="space-between"
-          mb="0.25rem"
-          gap="0.5rem"
-        >
-          <Text color="neutral-7">{t('titleQuorum')}</Text>
-          <Text textAlign="right">
-            {governanceAzorius.votingStrategy.quorumPercentage.formatted}
-          </Text>
+          <LabelComponent
+            isRequired={false}
+            label={t('titleVotingPeriod')}
+          >
+            <Input
+              value={governanceAzorius.votingStrategy.votingPeriod.formatted}
+              minWidth="100%"
+            />
+          </LabelComponent>
         </Flex>
       )}
       {governanceAzorius?.votingStrategy?.quorumThreshold && (
@@ -142,10 +135,15 @@ export function GovernanceParams() {
           mb="0.25rem"
           gap="0.5rem"
         >
-          <Text color="neutral-7">{t('titleQuorum')}</Text>
-          <Text textAlign="right">
-            {governanceAzorius.votingStrategy.quorumThreshold.formatted}
-          </Text>
+          <LabelComponent
+            isRequired={false}
+            label={t('titleQuorum')}
+          >
+            <Input
+              value={governanceAzorius.votingStrategy.quorumThreshold.formatted}
+              minWidth="100%"
+            />
+          </LabelComponent>
         </Flex>
       )}
       {timelockPeriod && (
@@ -155,8 +153,15 @@ export function GovernanceParams() {
           mb="0.25rem"
           gap="0.5rem"
         >
-          <Text color="neutral-7">{t('timelock', { ns: 'common' })}</Text>
-          <Text textAlign="right">{timelockPeriod}</Text>
+          <LabelComponent
+            isRequired={false}
+            label={t('timelock', { ns: 'common' })}
+          >
+            <Input
+              value={timelockPeriod}
+              minWidth="100%"
+            />
+          </LabelComponent>
         </Flex>
       )}
       {executionPeriod && (
@@ -166,8 +171,15 @@ export function GovernanceParams() {
           mb="0.25rem"
           gap="0.5rem"
         >
-          <Text color="neutral-7">{t('execution', { ns: 'common' })}</Text>
-          <Text textAlign="right">{executionPeriod}</Text>
+          <LabelComponent
+            isRequired={false}
+            label={t('execution', { ns: 'common' })}
+          >
+            <Input
+              value={executionPeriod}
+              minWidth="100%"
+            />
+          </LabelComponent>
         </Flex>
       )}
     </Box>

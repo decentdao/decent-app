@@ -59,11 +59,9 @@ export function SafeGovernanceSettingsPage() {
               {t('daoSettingsGovernanceParameters')}
             </Text>
             <Box
-              p="1.5rem"
               borderWidth="0.06rem"
               borderColor="neutral-3"
               borderRadius="0.75rem"
-              mx={0}
             >
               <GovernanceParams />
             </Box>
