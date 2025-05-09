@@ -22,8 +22,3 @@ export const useDecentModal = <T extends ModalType>(modal: T, props?: ModalProps
     pushModal(modalObject);
   };
 };
-
-export const useCloseDecentModal = () => {
-  const { popModal } = useContext<IModalContext>(ModalContext);
-  return () => popModal();
-};
