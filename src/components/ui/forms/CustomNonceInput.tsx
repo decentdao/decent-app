@@ -61,7 +61,6 @@ export function CustomNonceInput({
   const sortedPByNonce = Object.entries(pByNonce).sort((a, b) => Number(b[0]) - Number(a[0]));
   const activeProposalOptions: IOption[] = sortedPByNonce.map(([n, pInfo]) => {
     const isSingleTransaction = pInfo.numberOfProposals === 1;
-    const asterisk = !isSingleTransaction ? '*' : '';
     const label = isSingleTransaction
       ? t('nonceLabelSingleTransaction', { proposalId: pInfo.latestProposalId.slice(0, 4) })
       : t('nonceLabelMultipleTransactions');
@@ -70,7 +69,7 @@ export function CustomNonceInput({
         onChange(n);
         setShowNonceMenu(false);
       },
-      optionKey: `${n}${asterisk} - ${label}`,
+      optionKey: `${n} - ${label}`,
       isDisabled: pInfo.isNonceUsed,
     };
   });
