@@ -104,12 +104,11 @@ export function GovernanceParams() {
     <Box data-testid="dashboard-daoGovernance">
       {governanceAzorius?.votingStrategy?.quorumPercentage && (
         <>
-          <Divider />
           <Flex alignItems="center">
             <LabelComponent
               isRequired={false}
               label={t('titleQuorum')}
-              helper={t('helperQuorum', { ns: 'daoCreate' })}
+              helper={t('helperQuorumERC20', { ns: 'daoCreate' })}
               gridContainerProps={inputGridContainerProps}
             >
               <Input
@@ -118,12 +117,12 @@ export function GovernanceParams() {
               />
             </LabelComponent>
           </Flex>
+          <Divider />
         </>
       )}
 
       {governanceAzorius?.votingStrategy?.quorumThreshold && (
         <>
-          <Divider />
           <Flex
             alignItems="center"
             justifyContent="space-between"
@@ -142,11 +141,11 @@ export function GovernanceParams() {
               />
             </LabelComponent>
           </Flex>
+          <Divider />
         </>
       )}
       {governanceAzorius?.votingStrategy?.votingPeriod && (
         <>
-          <Divider />
           <Flex
             alignItems="center"
             justifyContent="space-between"
@@ -165,11 +164,11 @@ export function GovernanceParams() {
               />
             </LabelComponent>
           </Flex>
+          <Divider />
         </>
       )}
       {timelockPeriod && (
         <>
-          <Divider />
           <Flex
             alignItems="center"
             justifyContent="space-between"
@@ -188,11 +187,11 @@ export function GovernanceParams() {
               />
             </LabelComponent>
           </Flex>
+          <Divider />
         </>
       )}
       {executionPeriod && (
         <>
-          <Divider />
           <Flex
             alignItems="center"
             justifyContent="space-between"
