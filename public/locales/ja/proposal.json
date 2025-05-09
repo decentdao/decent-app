@@ -203,5 +203,9 @@
   "nonceLabelSingleTransaction": "取引番号{{proposalId}}",
   "nonceLabelRecommended": "{{nonce}}- 新規取引",
   "nonceLabelRecommendedTitle": "推奨ノンス",
-  "nonceLabelReplaceActiveTitle": "アクティブを置き換える"
+  "nonceLabelReplaceActiveTitle": "アクティブを置き換える",
+  "nonceLabelBannerActive": "{{confirmations} {{signersThreshold}}の署名者は、Nonce }を拒否したい。｝{{nonce}",
+  "nonceLabelBannerRejected": "Nonce{{nonce}} は拒否された。",
+  "conflictingProposals": "相反する提案",
+  "executableCode": "実行可能コード"
 }
