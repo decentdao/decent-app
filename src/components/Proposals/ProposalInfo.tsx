@@ -17,6 +17,8 @@ import { useDecentModal } from '../ui/modals/useDecentModal';
 import { ProposalCountdown } from '../ui/proposal/ProposalCountdown';
 import ProposalExecutableCode from '../ui/proposal/ProposalExecutableCode';
 import CeleryButtonWithIcon from '../ui/utils/CeleryButtonWithIcon';
+import Divider from '../ui/utils/Divider';
+import { MultisigConflictingProposals } from './MultisigProposalDetails/MultisigConflictingProposals';
 
 export function ProposalInfo({
   proposal,
@@ -130,6 +132,11 @@ export function ProposalInfo({
           />
         )}
         <ProposalExecutableCode proposal={proposal} />
+        <Divider
+          variant="dark"
+          my={4}
+        />
+        <MultisigConflictingProposals proposal={proposal} />
       </Box>
     </Box>
   );
