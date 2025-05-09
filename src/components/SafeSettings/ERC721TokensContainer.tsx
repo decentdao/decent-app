@@ -22,7 +22,7 @@ export function ERC721TokensContainer() {
       borderColor="neutral-3"
       borderRadius="0.75rem"
     >
-      <Text>{t('governanceERC721TokenTitle')}</Text>
+      <Text textStyle="body-large">{t('governanceTokenInfoTitle')}</Text>
       {erc721Tokens ? (
         <Flex flexWrap="wrap">
           <Grid
@@ -35,7 +35,7 @@ export function ERC721TokensContainer() {
                 textStyle="labels-small"
                 color="neutral-7"
               >
-                {t('governanceTokenNameLabel')}
+                {t('governanceTokenNameTitle')}
               </Text>
             </GridItem>
             <GridItem colSpan={1}>

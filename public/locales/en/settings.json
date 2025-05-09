@@ -1,9 +1,8 @@
 {
   "settings": "Settings",
   "settingsPageTitle": "{{daoName}} Settings",
-  "governanceTokenTitle": "Governance Token",
-  "governanceERC721TokenTitle": "Governance NFT Token(s)",
-  "governanceTokenNameLabel": "Name",
+  "governanceTokenInfoTitle": "Token Information",
+  "governanceTokenNameTitle": "Token Name",
   "governanceTokenSymbolLabel": "Symbol",
   "governanceTokenWeightLabel": "Token Weight",
   "governanceTokenTotalWeightLabel": "Total Weight",

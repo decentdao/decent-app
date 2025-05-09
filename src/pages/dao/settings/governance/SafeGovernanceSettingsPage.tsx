@@ -40,8 +40,16 @@ export function SafeGovernanceSettingsPage() {
       <SettingsContentBox
         display="flex"
         flexDirection="column"
-        gap="1.5rem"
+        gap={12}
+        px={0}
       >
+        {isERC20Governance ? (
+          <ERC20TokenContainer />
+        ) : isERC721Governance ? (
+          <ERC721TokensContainer />
+        ) : isMultisigGovernance ? (
+          <SignersContainer />
+        ) : null}
         {(isERC20Governance || isERC721Governance) && (
           <Box width="100%">
             <Text
@@ -61,13 +69,6 @@ export function SafeGovernanceSettingsPage() {
             </Box>
           </Box>
         )}
-        {isERC20Governance ? (
-          <ERC20TokenContainer />
-        ) : isERC721Governance ? (
-          <ERC721TokensContainer />
-        ) : isMultisigGovernance ? (
-          <SignersContainer />
-        ) : null}
       </SettingsContentBox>
     </>
   );
