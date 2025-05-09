@@ -10,6 +10,7 @@ import {
   SnapshotProposal,
 } from '../../../types';
 import { AccordionDropdown } from '../../ui/containers/AccordionDropdown';
+import Divider from '../../ui/utils/Divider';
 import { SimpleProposalCard } from '../ProposalCard/SimpleProposalCard';
 
 function RejectionBanner({ rejectionProposal }: { rejectionProposal: MultisigProposal }) {
@@ -91,25 +92,31 @@ export function MultisigConflictingProposals({ proposal }: { proposal: MultisigP
   );
 
   return (
-    <AccordionDropdown
-      sectionTitle="Conflicting Proposals"
-      // @dev expands if there is a rejection proposal
-      defaultExpandedIndecies={rejectionProposal ? [0] : undefined}
-      contentCount={conflictingProposals.length}
-      content={
-        <Box mt={4}>
-          <NonceLabel nonce={proposalNonce} />
-          {rejectionProposal && <RejectionBanner rejectionProposal={rejectionProposal} />}
-          {conflictingProposalsOnlyNonRejections.map((p: MultisigProposal) => (
-            <Box
-              key={p.proposalId}
-              mb={2}
-            >
-              <SimpleProposalCard proposal={p} />
-            </Box>
-          ))}
-        </Box>
-      }
-    />
+    <>
+      <Divider
+        variant="dark"
+        my={4}
+      />
+      <AccordionDropdown
+        sectionTitle="Conflicting Proposals"
+        // @dev expands if there is a rejection proposal
+        defaultExpandedIndecies={rejectionProposal ? [0] : undefined}
+        contentCount={conflictingProposals.length}
+        content={
+          <Box mt={4}>
+            <NonceLabel nonce={proposalNonce} />
+            {rejectionProposal && <RejectionBanner rejectionProposal={rejectionProposal} />}
+            {conflictingProposalsOnlyNonRejections.map((p: MultisigProposal) => (
+              <Box
+                key={p.proposalId}
+                mb={2}
+              >
+                <SimpleProposalCard proposal={p} />
+              </Box>
+            ))}
+          </Box>
+        }
+      />
+    </>
   );
 }
