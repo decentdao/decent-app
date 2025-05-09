@@ -77,7 +77,7 @@ export const useERC20LinearStrategy = () => {
       },
       quorumPercentage: {
         value: quorumPercentage,
-        formatted: quorumPercentage.toString() + '%',
+        formatted: quorumPercentage.toString(),
       },
       timeLockPeriod: {
         value: BigInt(timeLockPeriodValue),

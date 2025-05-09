@@ -141,7 +141,7 @@ export function InfoGovernance() {
         >
           <Text color="neutral-7">{t('titleQuorum')}</Text>
           <Text textAlign="right">
-            {governanceAzorius.votingStrategy.quorumPercentage.formatted}
+            {`${governanceAzorius.votingStrategy.quorumPercentage.formatted}%`}
           </Text>
         </Flex>
       )}

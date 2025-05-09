@@ -304,7 +304,7 @@ export function useGovernanceFetcher() {
               },
               quorumPercentage: {
                 value: quorumPercentage,
-                formatted: `${quorumPercentage}%`,
+                formatted: `${quorumPercentage}`,
               },
               timeLockPeriod: {
                 value: BigInt(timeLockPeriodValue),
