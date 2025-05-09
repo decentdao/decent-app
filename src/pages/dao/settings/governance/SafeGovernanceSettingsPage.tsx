@@ -1,7 +1,6 @@
 import { Box, Show, Text } from '@chakra-ui/react';
 import { useTranslation } from 'react-i18next';
 import { zeroAddress } from 'viem';
-import { InfoGovernance } from '../../../../components/DaoDashboard/Info/InfoGovernance';
 import { ERC20TokenContainer } from '../../../../components/SafeSettings/ERC20TokenContainer';
 import { ERC721TokensContainer } from '../../../../components/SafeSettings/ERC721TokensContainer';
 import { SettingsContentBox } from '../../../../components/SafeSettings/SettingsContentBox';
@@ -12,6 +11,7 @@ import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
 import { useStore } from '../../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../../providers/NetworkConfig/useNetworkConfigStore';
 import { GovernanceType } from '../../../../types';
+import { GovernanceParams } from './GovernanceParams';
 
 export function SafeGovernanceSettingsPage() {
   const { t } = useTranslation('settings');
@@ -56,7 +56,7 @@ export function SafeGovernanceSettingsPage() {
               textStyle="heading-small"
               mb={4}
             >
-              {t('daoSettingsGovernance')}
+              {t('daoSettingsGovernanceParameters')}
             </Text>
             <Box
               p="1.5rem"
@@ -65,7 +65,7 @@ export function SafeGovernanceSettingsPage() {
               borderRadius="0.75rem"
               mx={0}
             >
-              <InfoGovernance showTitle={false} />
+              <GovernanceParams />
             </Box>
           </Box>
         )}

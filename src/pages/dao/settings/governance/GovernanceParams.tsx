@@ -1,19 +1,18 @@
 import { Box, Flex, Text } from '@chakra-ui/react';
 import { abis } from '@fractal-framework/fractal-contracts';
-import { Bank } from '@phosphor-icons/react';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { getContract } from 'viem';
 
-import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
-import useNetworkPublicClient from '../../../hooks/useNetworkPublicClient';
-import { useTimeHelpers } from '../../../hooks/utils/useTimeHelpers';
-import { useStore } from '../../../providers/App/AppProvider';
-import { AzoriusGovernance, FreezeGuardType } from '../../../types';
-import { blocksToSeconds } from '../../../utils/contract';
-import { BarLoader } from '../../ui/loaders/BarLoader';
+import { BarLoader } from '../../../../components/ui/loaders/BarLoader';
+import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
+import useNetworkPublicClient from '../../../../hooks/useNetworkPublicClient';
+import { useTimeHelpers } from '../../../../hooks/utils/useTimeHelpers';
+import { useStore } from '../../../../providers/App/AppProvider';
+import { AzoriusGovernance, FreezeGuardType } from '../../../../types';
+import { blocksToSeconds } from '../../../../utils/contract';
 
-export function InfoGovernance() {
+export function GovernanceParams() {
   const { t } = useTranslation(['dashboard', 'daoCreate', 'common']);
   const { daoKey } = useCurrentDAOKey();
   const {
@@ -94,15 +93,6 @@ export function InfoGovernance() {
 
   return (
     <Box data-testid="dashboard-daoGovernance">
-      <Flex
-        alignItems="center"
-        gap="0.4rem"
-        mb="0.5rem"
-      >
-        <Bank size="1.5rem" />
-        <Text textStyle="heading-small">{t('titleGovernance')}</Text>
-      </Flex>
-
       <Flex
         alignItems="center"
         justifyContent="space-between"

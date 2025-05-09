@@ -15,6 +15,7 @@
   "permissionsTitle": "Permissions",
   "daoSettingsGeneral": "General",
   "daoSettingsGovernance": "Governance",
+  "daoSettingsGovernanceParameters": "Parameters",
   "daoMetadataName": "DAO Name",
   "daoMetadataSnapshot": "Snapshot Space",
   "daoMetadataConnectSnapshot": "Connect to Snapshot Space",
