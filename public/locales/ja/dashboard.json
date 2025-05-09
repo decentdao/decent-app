@@ -7,6 +7,8 @@
   "titleGovernance": "ガバナンス",
   "titleType": "タイプ",
   "titleVotingPeriod": "投票期間",
+  "titleExecutionPeriod": "実行期間",
+  "titleTimelockPeriod": "タイムロック期間",
   "titleQuorum": "定足数",
   "titleProposals": "プロポーザル",
   "titleActive": "アクティブ",

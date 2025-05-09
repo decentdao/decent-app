@@ -7,6 +7,8 @@
   "titleGovernance": "管理",
   "titleType": "类型",
   "titleVotingPeriod": "投票期",
+  "titleExecutionPeriod": "执行期",
+  "titleTimelockPeriod": "计时器周期",
   "titleQuorum": "法定人数",
   "titleProposals": "提案",
   "titleActive": "活跃",

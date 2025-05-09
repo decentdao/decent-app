@@ -325,6 +325,7 @@ export interface VotingStrategy<Type = BIFormattedPair> {
   quorumPercentage?: Type;
   quorumThreshold?: Type;
   timeLockPeriod?: Type;
+  executionPeriod?: Type;
   proposerThreshold?: Type;
 }
 
