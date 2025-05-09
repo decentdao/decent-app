@@ -16,6 +16,7 @@ import {
   SnapshotProposal,
   GovernanceType,
   MultisigProposal,
+  FractalProposalState,
 } from '../../../types';
 import { ActivityDescription } from '../../Activity/ActivityDescription';
 import { Badge } from '../../ui/badges/Badge';
@@ -143,6 +144,7 @@ function ProposalCard({ proposal }: { proposal: FractalProposal }) {
           <SignerThresholdBadge
             numberOfConfirmedSigners={(proposal as MultisigProposal).confirmations?.length}
             proposalThreshold={(proposal as MultisigProposal).signersThreshold}
+            isRejected={proposal.state === FractalProposalState.REJECTED}
           />
         </Flex>
         <ActivityDescription activity={proposal} />
