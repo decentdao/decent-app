@@ -396,6 +396,7 @@ const getModalData = (args: {
     default:
       modalTitle = '';
       modalContent = null;
+    // @todo - confirm behaviour of NONE modal type, potentially remove. (https://linear.app/decent-labs/issue/ENG-826/confirm-behaviour-of-none-modal-type-potentially-remove)
     // onClose();
     // closeModal();
   }
@@ -440,7 +441,7 @@ function ModalDisplay({
       title={title}
       warn={warn}
       isOpen={isOpen}
-      onClose={() => onSetClosed()}
+      onClose={onSetClosed}
       isSearchInputModal={isSearchInputModal}
       size={size}
       contentStyle={contentStyle}
