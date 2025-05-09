@@ -164,6 +164,7 @@
   "addStream": "Stream hinzufügen",
   "removeStream": "Stream entfernen",
   "streamStartNotice": "Der Stream wird im Moment der Ausführung des Vorschlags gestartet. Um eine\nVerzögerung des Streamstarts zu \"emulieren\" - sollte der Betrag der ersten Tranche auf\n0 mit der gewünschten \"Verzögerungs\"-Dauer.",
+  "streamOnSablierNotice": "Mit diesem Vorschlag werden Zahlungsströme mit Sablier erstellt. Nach der Ausführung des Vorschlags müssen die Empfänger Sablier zur Verwaltung dieser Zahlungsströme verwenden.",
   "streamedTokenAddress": "Gestreamte Token-Adresse",
   "streamedTokenAddressHelper": "Saldo des Schatzamtes: {{balance}}",
   "recipientAddress": "Adresse des Empfängers",

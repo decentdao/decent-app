@@ -164,6 +164,7 @@
   "addStream": "新增串流",
   "removeStream": "移除串流",
   "streamStartNotice": "串流會在提案執行時啟動。為了\n為了「模擬 」串流開始的延遲-第一筆付款的金額應設定為\n0和所需的「延遲 」時間。",
+  "streamOnSablierNotice": "本提案將使用 Sablier 建立付款流。執行後，收款人將需要使用 Sablier 來管理這些付款流。",
   "streamedTokenAddress": "串流代幣位址",
   "streamedTokenAddressHelper": "庫房結餘：{{balance}}",
   "recipientAddress": "收件人地址",

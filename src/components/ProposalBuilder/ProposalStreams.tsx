@@ -115,6 +115,25 @@ export function ProposalStreams({
                     </Text>
                   </Alert>
                 </Box>
+                <Box
+                  mt="1.5rem"
+                  px="1.5rem"
+                >
+                  <Alert status="info">
+                    <Box
+                      width="1.5rem"
+                      height="1.5rem"
+                    >
+                      <WarningCircle size="24" />
+                    </Box>
+                    <Text
+                      whiteSpace="pre-wrap"
+                      ml="1rem"
+                    >
+                      {t('streamOnSablierNotice')}
+                    </Text>
+                  </Alert>
+                </Box>
               </Box>
             )}
           </AccordionItem>
