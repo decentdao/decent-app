@@ -158,11 +158,14 @@ interface ModalData {
   type: ModalType;
 }
 
-const getModalData = (
-  current: ModalTypeWithProps,
-  popModal: () => void,
-  t: (key: string) => string,
-): ModalData => {
+const getModalData = (args: {
+  current: ModalTypeWithProps;
+  popModal: () => void;
+  closeAll: () => void;
+  t: (key: string) => string;
+}): ModalData => {
+  const { current, popModal, closeAll, t } = args;
+
   let modalSize: ModalBaseSize = 'lg';
   let modalTitle: string | undefined;
   let hasWarning = false;
@@ -232,7 +235,12 @@ const getModalData = (
       break;
     case ModalType.CONFIRM_MODIFY_GOVERNANCE:
       hasWarning = true;
-      modalContent = <ConfirmModifyGovernanceModal close={popModal} />;
+      modalContent = (
+        <ConfirmModifyGovernanceModal
+          onClose={popModal}
+          closeAll={closeAll}
+        />
+      );
       break;
     case ModalType.WARN_UNSAVED_CHANGES:
       closeModalOnOverlayClick = false;
@@ -515,7 +523,15 @@ export function ModalProvider({ children }: { children: ReactNode }) {
   }, [openModals.length, onOpen, onClose]);
 
   const modalDisplays = openModals.map((modal, i) => {
-    const modalData = getModalData(modal, popModal, t);
+    const modalData = getModalData({
+      current: modal,
+      popModal,
+      closeAll: () => {
+        setOpenModals([]);
+        onClose();
+      },
+      t,
+    });
     return (
       <ModalDisplay
         key={i}
