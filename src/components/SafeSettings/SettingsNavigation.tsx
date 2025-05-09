@@ -235,7 +235,7 @@ export function SettingsNavigation({
             </Text>
           </SettingsNavigationItem>
           <SettingsNavigationItem
-            title={t('daoModulesAndGuard')}
+            title={t('modulesAndGuardsTitle')}
             leftIcon={<Stack fontSize="1.5rem" />}
             item="modulesAndGuard"
             currentItem={currentItem}
@@ -282,7 +282,7 @@ export function SettingsNavigation({
           <SettingsLink
             path={DAO_ROUTES.settingsModulesAndGuard.relative(addressPrefix, safe.address)}
             leftIcon={<Stack fontSize="1.5rem" />}
-            title={t('daoModulesAndGuard')}
+            title={t('modulesAndGuardsTitle')}
           >
             <Text color="neutral-7">{(modules ?? []).length + (safe?.guard ? 1 : 0)}</Text>
           </SettingsLink>
