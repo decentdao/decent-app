@@ -133,12 +133,13 @@ function TransactionBlock({ transaction }: { transaction: DecodedTransaction }) 
 }
 
 export default function ProposalExecutableCode({ proposal }: { proposal: FractalProposal }) {
+  const { t } = useTranslation('proposal');
   if (!proposal.data) {
     return null;
   }
   return (
     <AccordionDropdown
-      sectionTitle="Executable Code"
+      sectionTitle={t('executableCode')}
       content={
         <Flex
           mt={2}

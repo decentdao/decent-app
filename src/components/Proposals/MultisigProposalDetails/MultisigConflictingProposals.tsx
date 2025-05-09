@@ -72,6 +72,7 @@ export function MultisigConflictingProposals({ proposal }: { proposal: MultisigP
   } = useDAOStore({ daoKey });
   const isMultisigProposal =
     type === GovernanceType.MULTISIG && !(proposal as SnapshotProposal)?.snapshotProposalId;
+  const { t } = useTranslation('proposal');
 
   if (!isMultisigProposal || !proposals || proposal.state === FractalProposalState.EXECUTED)
     return null;
@@ -99,7 +100,7 @@ export function MultisigConflictingProposals({ proposal }: { proposal: MultisigP
         my={4}
       />
       <AccordionDropdown
-        sectionTitle="Conflicting Proposals"
+        sectionTitle={t('conflictingProposals')}
         // @dev expands if there is a rejection proposal
         defaultExpandedIndecies={rejectionProposal ? [0] : undefined}
         contentCount={conflictingProposals.length}
