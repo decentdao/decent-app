@@ -1,9 +1,11 @@
 import { abis } from '@fractal-framework/fractal-contracts';
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Address, erc721Abi, formatUnits, getContract, zeroAddress } from 'viem';
 import LockReleaseAbi from '../../assets/abi/LockRelease';
 import { SENTINEL_ADDRESS } from '../../constants/common';
+import { createSnapshotSubgraphClient } from '../../graphql';
+import { ProposalsQuery, ProposalsResponse } from '../../graphql/SnapshotQueries';
 import { logError } from '../../helpers/errorLogging';
 import useNetworkPublicClient from '../../hooks/useNetworkPublicClient';
 import { CacheExpiry, CacheKeys } from '../../hooks/utils/cache/cacheDefaults';
@@ -28,6 +30,7 @@ import {
   FractalVotingStrategy,
   GovernanceType,
   ProposalTemplate,
+  SnapshotProposal,
   VotesTokenData,
   VotingStrategyType,
 } from '../../types';
@@ -53,6 +56,7 @@ export function useGovernanceFetcher() {
   const publicClient = useNetworkPublicClient();
   const safeApi = useSafeAPI();
   const { getAddressContractType } = useAddressContractType();
+  const snaphshotGraphQlClient = useMemo(() => createSnapshotSubgraphClient(), []);
 
   const fetchDAOGovernance = useCallback(
     async ({
@@ -716,10 +720,48 @@ export function useGovernanceFetcher() {
     [publicClient],
   );
 
+  const fetchDAOSnapshotProposals = useCallback(
+    async ({ daoSnapshotENS }: { daoSnapshotENS: string }) => {
+      if (snaphshotGraphQlClient) {
+        const result = await snaphshotGraphQlClient
+          .query<ProposalsResponse>(ProposalsQuery, { spaceIn: [daoSnapshotENS] })
+          .toPromise();
+
+        if (!result.data?.proposals) {
+          return;
+        }
+
+        const proposals: SnapshotProposal[] = result.data.proposals.map(proposal => ({
+          eventDate: new Date(proposal.start * 1000),
+          state:
+            proposal.state === 'active'
+              ? FractalProposalState.ACTIVE
+              : proposal.state === 'closed'
+                ? FractalProposalState.CLOSED
+                : FractalProposalState.PENDING,
+          proposalId: proposal.id,
+          snapshotProposalId: proposal.id,
+          targets: [],
+          title: proposal.title,
+          description: proposal.body,
+          startTime: proposal.start,
+          endTime: proposal.end,
+          proposer: proposal.author,
+          author: proposal.author,
+          transactionHash: '', // Required by SnapshotProposal type
+        }));
+
+        return proposals;
+      }
+    },
+    [snaphshotGraphQlClient],
+  );
+
   return {
     fetchDAOGovernance,
     fetchDAOProposalTemplates,
     fetchVotingTokenAccountData,
     fetchLockReleaseAccountData,
+    fetchDAOSnapshotProposals,
   };
 }
