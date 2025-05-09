@@ -6,6 +6,7 @@ import { getContract } from 'viem';
 
 import { LabelComponent } from '../../../../components/ui/forms/InputComponent';
 import { BarLoader } from '../../../../components/ui/loaders/BarLoader';
+import Divider from '../../../../components/ui/utils/Divider';
 import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
 import useNetworkPublicClient from '../../../../hooks/useNetworkPublicClient';
 import { useTimeHelpers } from '../../../../hooks/utils/useTimeHelpers';
@@ -92,95 +93,125 @@ export function GovernanceParams() {
     );
   }
 
+  const inputGridContainerProps = {
+    width: '100%',
+    px: 6,
+    mt: 2,
+    templateColumns: { base: '1fr', md: '2fr 1fr' },
+  };
+
   return (
     <Box data-testid="dashboard-daoGovernance">
       {governanceAzorius?.votingStrategy?.quorumPercentage && (
-        <Flex
-          alignItems="center"
-          justifyContent="space-between"
-        >
-          <LabelComponent
-            isRequired={false}
-            label={t('titleQuorum')}
+        <>
+          <Divider />
+          <Flex alignItems="center">
+            <LabelComponent
+              isRequired={false}
+              label={t('titleQuorum')}
+              helper={t('helperQuorum', { ns: 'daoCreate' })}
+              gridContainerProps={inputGridContainerProps}
+            >
+              <Input
+                value={governanceAzorius.votingStrategy.quorumPercentage.formatted}
+                minWidth="100%"
+              />
+            </LabelComponent>
+          </Flex>
+        </>
+      )}
+
+      {governanceAzorius?.votingStrategy?.quorumThreshold && (
+        <>
+          <Divider />
+          <Flex
+            alignItems="center"
+            justifyContent="space-between"
+            mb="0.25rem"
+            gap="0.5rem"
           >
-            <Input
-              value={governanceAzorius.votingStrategy.quorumPercentage.formatted}
-              minWidth="100%"
-            />
-          </LabelComponent>
-        </Flex>
+            <LabelComponent
+              isRequired={false}
+              label={t('titleQuorum')}
+              helper={t('helperQuorumERC721', { ns: 'daoCreate' })}
+              gridContainerProps={inputGridContainerProps}
+            >
+              <Input
+                value={governanceAzorius.votingStrategy.quorumThreshold.formatted}
+                minWidth="100%"
+              />
+            </LabelComponent>
+          </Flex>
+        </>
       )}
       {governanceAzorius?.votingStrategy?.votingPeriod && (
-        <Flex
-          alignItems="center"
-          justifyContent="space-between"
-          mb="0.25rem"
-          gap="0.5rem"
-        >
-          <LabelComponent
-            isRequired={false}
-            label={t('titleVotingPeriod')}
+        <>
+          <Divider />
+          <Flex
+            alignItems="center"
+            justifyContent="space-between"
+            mb="0.25rem"
+            gap="0.5rem"
           >
-            <Input
-              value={governanceAzorius.votingStrategy.votingPeriod.formatted}
-              minWidth="100%"
-            />
-          </LabelComponent>
-        </Flex>
-      )}
-      {governanceAzorius?.votingStrategy?.quorumThreshold && (
-        <Flex
-          alignItems="center"
-          justifyContent="space-between"
-          mb="0.25rem"
-          gap="0.5rem"
-        >
-          <LabelComponent
-            isRequired={false}
-            label={t('titleQuorum')}
-          >
-            <Input
-              value={governanceAzorius.votingStrategy.quorumThreshold.formatted}
-              minWidth="100%"
-            />
-          </LabelComponent>
-        </Flex>
+            <LabelComponent
+              isRequired={false}
+              label={t('titleVotingPeriod')}
+              helper={t('helperVotingPeriod', { ns: 'daoCreate' })}
+              gridContainerProps={inputGridContainerProps}
+            >
+              <Input
+                value={governanceAzorius.votingStrategy.votingPeriod.formatted}
+                minWidth="100%"
+              />
+            </LabelComponent>
+          </Flex>
+        </>
       )}
       {timelockPeriod && (
-        <Flex
-          alignItems="center"
-          justifyContent="space-between"
-          mb="0.25rem"
-          gap="0.5rem"
-        >
-          <LabelComponent
-            isRequired={false}
-            label={t('timelock', { ns: 'common' })}
+        <>
+          <Divider />
+          <Flex
+            alignItems="center"
+            justifyContent="space-between"
+            mb="0.25rem"
+            gap="0.5rem"
           >
-            <Input
-              value={timelockPeriod}
-              minWidth="100%"
-            />
-          </LabelComponent>
-        </Flex>
+            <LabelComponent
+              isRequired={false}
+              label={t('titleTimelockPeriod')}
+              helper={t('helperTimelockPeriod', { ns: 'daoCreate' })}
+              gridContainerProps={inputGridContainerProps}
+            >
+              <Input
+                value={timelockPeriod}
+                minWidth="100%"
+              />
+            </LabelComponent>
+          </Flex>
+        </>
       )}
       {executionPeriod && (
-        <Flex
-          alignItems="center"
-          justifyContent="space-between"
-          mb="0.25rem"
-          gap="0.5rem"
-        >
-          <LabelComponent
-            isRequired={false}
-            label={t('execution', { ns: 'common' })}
+        <>
+          <Divider />
+          <Flex
+            alignItems="center"
+            justifyContent="space-between"
+            mb="0.25rem"
+            gap="0.5rem"
           >
-            <Input
-              value={executionPeriod}
-              minWidth="100%"
-            />
-          </LabelComponent>
-        </Flex>
+            <LabelComponent
+              isRequired={false}
+              label={t('titleExecutionPeriod')}
+              helper={t('helperExecutionPeriod', { ns: 'daoCreate' })}
+              gridContainerProps={inputGridContainerProps}
+            >
+              <Input
+                value={executionPeriod}
+                minWidth="100%"
+              />
+            </LabelComponent>
+          </Flex>
+        </>
       )}
     </Box>
   );

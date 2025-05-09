@@ -7,6 +7,8 @@
   "titleGovernance": "治理",
   "titleType": "類型",
   "titleVotingPeriod": "投票期間",
+  "titleExecutionPeriod": "執行期間",
+  "titleTimelockPeriod": "時間鎖定週期",
   "titleQuorum": "法定人數",
   "titleProposals": "建議",
   "titleActive": "活躍",
