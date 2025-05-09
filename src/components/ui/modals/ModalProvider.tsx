@@ -61,10 +61,6 @@ export enum ModalType {
   SAFE_SETTINGS,
 }
 
-export type CurrentModal = {
-  [K in ModalType]: { type: K; props: ModalPropsTypes[K] };
-}[ModalType];
-
 export type ModalPropsTypes = {
   [ModalType.NONE]: {};
   [ModalType.DELEGATE]: {};
@@ -134,21 +130,23 @@ export type ModalPropsTypes = {
   [ModalType.SAFE_SETTINGS]: {};
 };
 
+export type ModalTypeWithProps = {
+  [K in ModalType]: { type: K; props: ModalPropsTypes[K] };
+}[ModalType];
+
 export interface IModalContext {
-  openModals: CurrentModal[];
-  // setCurrent: (modal: CurrentModal) => void;
-  pushModal: (modal: CurrentModal) => void;
+  openModals: ModalTypeWithProps[];
+  pushModal: (modal: ModalTypeWithProps) => void;
   popModal: () => void;
 }
 
 export const ModalContext = createContext<IModalContext>({
   openModals: [],
-  // setCurrent: () => {},
   pushModal: () => {},
   popModal: () => {},
 });
 
-interface ModalUI {
+interface ModalData {
   title?: string;
   warn: boolean;
   content: ReactNode | null;
@@ -157,13 +155,14 @@ interface ModalUI {
   size: ModalBaseSize;
   closeOnOverlayClick: boolean;
   contentStyle?: ModalContentStyle;
+  type: ModalType;
 }
 
-const getModalUI = (
-  current: CurrentModal,
+const getModalData = (
+  current: ModalTypeWithProps,
   popModal: () => void,
   t: (key: string) => string,
-): ModalUI => {
+): ModalData => {
   let modalSize: ModalBaseSize = 'lg';
   let modalTitle: string | undefined;
   let hasWarning = false;
@@ -402,15 +401,16 @@ const getModalUI = (
     size: modalSize,
     closeOnOverlayClick: closeModalOnOverlayClick,
     contentStyle: modalContentStyle,
+    type: current.type,
   };
 };
 
 function ModalDisplay({
-  modalUI,
+  modalData,
   isOpen,
   openModal,
 }: {
-  modalUI: ModalUI & { type: ModalType };
+  modalData: ModalData;
   isOpen: boolean;
   openModal: () => void;
 }) {
@@ -424,7 +424,7 @@ function ModalDisplay({
     contentStyle,
     onSetClosed,
     type,
-  } = modalUI;
+  } = modalData;
 
   let display = content ? (
     <ModalBase
@@ -494,11 +494,11 @@ function ModalDisplay({
  *  4. Utilize the useDecentModal hook to get a click listener to open your new modal.
  */
 export function ModalProvider({ children }: { children: ReactNode }) {
-  const [openModals, setOpenModals] = useState<CurrentModal[]>([]);
+  const [openModals, setOpenModals] = useState<ModalTypeWithProps[]>([]);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { t } = useTranslation('modals');
 
-  const pushModal = useCallback((modal: CurrentModal) => {
+  const pushModal = useCallback((modal: ModalTypeWithProps) => {
     setOpenModals(prev => [...prev, modal]);
   }, []);
 
@@ -515,11 +515,11 @@ export function ModalProvider({ children }: { children: ReactNode }) {
   }, [openModals.length, onOpen, onClose]);
 
   const modalDisplays = openModals.map((modal, i) => {
-    const openModalUI = getModalUI(modal, popModal, t);
+    const modalData = getModalData(modal, popModal, t);
     return (
       <ModalDisplay
         key={i}
-        modalUI={{ ...openModalUI, type: modal.type }}
+        modalData={modalData}
         isOpen={isOpen}
         openModal={onOpen}
       />
@@ -529,21 +529,7 @@ export function ModalProvider({ children }: { children: ReactNode }) {
   return (
     <ModalContext.Provider value={{ openModals, pushModal, popModal }}>
       {children}
-      <Portal>
-        {modalDisplays}
-        {/* <ModalDisplay
-          modalUI={{ ...modalUI, type: current.type }}
-          isOpen={isOpen}
-          onClose={onClose}
-          openModal={onOpen}
-        /> */}
-      </Portal>
+      <Portal>{modalDisplays}</Portal>
     </ModalContext.Provider>
   );
-}
-
-// @todo why the hell's this here, Kelvin???
-export interface WithdrawGasModalProps {
-  availableBalance: bigint;
-  onWithdraw: (amount: bigint) => Promise<void>;
 }

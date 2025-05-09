@@ -1,6 +1,6 @@
 import { useContext } from 'react';
 import {
-  CurrentModal,
+  ModalTypeWithProps,
   IModalContext,
   ModalContext,
   ModalPropsTypes,
@@ -17,7 +17,7 @@ import {
 export const useDecentModal = <T extends ModalType>(modal: T, props?: ModalPropsTypes[T]) => {
   const { pushModal } = useContext<IModalContext>(ModalContext);
   return () => {
-    const modalObject = { type: modal, props: props ?? {} } as CurrentModal;
+    const modalObject = { type: modal, props: props ?? {} } as ModalTypeWithProps;
 
     pushModal(modalObject);
   };
