@@ -2,11 +2,16 @@ import { Box, Button, Flex } from '@chakra-ui/react';
 import { Formik, Form } from 'formik';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import { useValidationAddress } from '../../../hooks/schemas/common/useValidationAddress';
 import { useCanUserCreateProposal } from '../../../hooks/utils/useCanUserSubmitProposal';
 import { SafeGeneralSettingsPage } from '../../../pages/dao/settings/general/SafeGeneralSettingsPage';
+import { useStore } from '../../../providers/App/AppProvider';
 import { SettingsNavigation } from '../../SafeSettings/SettingsNavigation';
-import { NewSignerFormikErrors, NewSignerItem } from '../../SafeSettings/Signers/SignersContainer';
+import {
+  MultisigEditGovernanceFormikErrors,
+  NewSignerItem,
+} from '../../SafeSettings/Signers/SignersContainer';
 import Divider from '../utils/Divider';
 
 export type SafeSettingsEdits = {
@@ -18,6 +23,12 @@ export type SafeSettingsEdits = {
 };
 
 export function SafeSettingsModal({ closeModal }: { closeModal: () => void }) {
+  const { daoKey } = useCurrentDAOKey();
+
+  const {
+    node: { safe },
+  } = useStore({ daoKey });
+
   const [settingsContent, setSettingsContent] = useState(<SafeGeneralSettingsPage />);
 
   const handleSettingsNavigationClick = (content: JSX.Element) => {
@@ -35,15 +46,10 @@ export function SafeSettingsModal({ closeModal }: { closeModal: () => void }) {
       initialValues={{}}
       validate={async values => {
         if (values.multisig) {
-          console.log('values.multisig', values.multisig);
-          const errors: NewSignerFormikErrors = {};
-          const { newSigners, signerThreshold } = values.multisig;
+          const errors: MultisigEditGovernanceFormikErrors = {};
+          const { newSigners, signerThreshold, removedSigners } = values.multisig;
 
-          if (!newSigners) {
-            return errors;
-          }
-
-          if (newSigners.length > 0) {
+          if (newSigners && newSigners.length > 0) {
             const signerErrors = await Promise.all(
               newSigners.map(async signer => {
                 if (!signer.inputValue) {
@@ -60,6 +66,21 @@ export function SafeSettingsModal({ closeModal }: { closeModal: () => void }) {
 
             if (signerErrors.some(error => error !== null)) {
               errors.newSigners = signerErrors.filter(error => error !== null);
+            }
+          }
+
+          if (signerThreshold && signerThreshold < 1) {
+            errors.threshold = t('errorLowSignerThreshold', { ns: 'daoCreate' });
+          }
+
+          if (signerThreshold) {
+            const totalResultingSigners =
+              (safe?.owners?.length ?? 0) -
+              (removedSigners?.length ?? 0) +
+              (newSigners?.length ?? 0);
+
+            if (signerThreshold > totalResultingSigners) {
+              errors.threshold = t('errorHighSignerThreshold', { ns: 'daoCreate' });
             }
           }
 

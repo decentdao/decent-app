@@ -1,13 +1,12 @@
 import { Box, Button, Flex, Icon, Input, Show, Text, Image } from '@chakra-ui/react';
 import { MinusCircle, PlusCircle } from '@phosphor-icons/react';
-import { useFormik, useFormikContext } from 'formik';
+import { useFormikContext } from 'formik';
 import { useEffect, useMemo, useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Address } from 'viem';
 import { useAccount } from 'wagmi';
 import useFeatureFlag from '../../../helpers/environmentFeatureFlags';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
-import { useValidationAddress } from '../../../hooks/schemas/common/useValidationAddress';
 import { useStore } from '../../../providers/App/AppProvider';
 import { NumberStepperInput } from '../../ui/forms/NumberStepperInput';
 import { ModalType } from '../../ui/modals/ModalProvider';
@@ -31,7 +30,10 @@ export type NewSignerItem = SignerItem & {
   inputValue: string;
 };
 
-export type NewSignerFormikErrors = { newSigners?: { key: string; error: string }[] };
+export type MultisigEditGovernanceFormikErrors = {
+  newSigners?: { key: string; error: string }[];
+  threshold?: string;
+};
 
 function Signer({ signer, onRemove }: { signer: SignerItem; onRemove: (() => void) | null }) {
   if (!signer.isAdding && !signer.address) {
@@ -44,7 +46,9 @@ function Signer({ signer, onRemove }: { signer: SignerItem; onRemove: (() => voi
   const newSigner = signer.isAdding ? (signer as NewSignerItem) : null;
   const isInvalid =
     !!newSigner?.inputValue &&
-    (errors as NewSignerFormikErrors).newSigners?.some(error => error.key === signer.key);
+    (errors as MultisigEditGovernanceFormikErrors).newSigners?.some(
+      error => error.key === signer.key,
+    );
 
   return (
     <Flex
@@ -114,45 +118,8 @@ export function SignersContainer() {
   const [signers, setSigners] = useState<ExistingSignerItem[]>([]);
 
   const { t } = useTranslation(['common', 'breadcrumbs', 'daoEdit']);
-  const { validateAddress } = useValidationAddress();
 
-  const { setFieldValue, values } = useFormikContext<SafeSettingsEdits>();
-
-  const formik = useFormik<{ newSigners: NewSignerItem[]; threshold: number }>({
-    initialValues: {
-      newSigners: [] as NewSignerItem[],
-      threshold: safe?.threshold ?? 1,
-    },
-    validate: async vals => {
-      const errors: NewSignerFormikErrors = {};
-
-      if (vals.newSigners.length > 0) {
-        const signerErrors = await Promise.all(
-          vals.newSigners.map(async signer => {
-            if (!signer.inputValue) {
-              return { key: signer.key, error: t('addressRequired', { ns: 'common' }) };
-            }
-
-            const validation = await validateAddress({ address: signer.inputValue });
-            if (!validation.validation.isValidAddress) {
-              return { key: signer.key, error: t('invalidAddress', { ns: 'common' }) };
-            }
-            return null;
-          }),
-        );
-
-        if (signerErrors.some(error => error !== null)) {
-          errors.newSigners = signerErrors.filter(error => error !== null);
-        }
-      }
-
-      return errors;
-    },
-    onSubmit: vals => {
-      // Handle form submission
-      console.log(vals);
-    },
-  });
+  const { setFieldValue, values, errors } = useFormikContext<SafeSettingsEdits>();
 
   const [addSignerModalType, addSignerModalProps] = useMemo(() => {
     if (safe?.threshold === undefined) {
@@ -373,7 +340,8 @@ export function SignersContainer() {
           <Flex w="200px">
             <NumberStepperInput
               onChange={value => setFieldValue('multisig.signerThreshold', value)}
-              value={values.multisig?.signerThreshold}
+              value={values.multisig?.signerThreshold ?? safe?.threshold}
+              isInvalid={!!(errors as MultisigEditGovernanceFormikErrors)?.threshold}
             />
           </Flex>
         </Flex>
