@@ -71,15 +71,14 @@ function Signer({ signer, onRemove }: { signer: SignerItem; onRemove: (() => voi
           isInvalid={isInvalid}
           onChange={e => {
             // Find and overwrite the address input value of this new signer with the input value
-            const newSigners =
-              values.multisig?.newSigners?.map((s: NewSignerItem) =>
-                s.key === signer.key
-                  ? {
-                      ...s,
-                      inputValue: e.target.value,
-                    }
-                  : s,
-              ) ?? [];
+            const newSigners = values.multisig?.newSigners?.map((s: NewSignerItem) =>
+              s.key === signer.key
+                ? {
+                    ...s,
+                    inputValue: e.target.value,
+                  }
+                : s,
+            );
 
             setFieldValue('multisig.newSigners', newSigners);
 
@@ -120,6 +119,16 @@ export function SignersContainer() {
   const { t } = useTranslation(['common', 'breadcrumbs', 'daoEdit']);
 
   const { setFieldValue, values, errors } = useFormikContext<SafeSettingsEdits>();
+
+  useEffect(() => {
+    if (
+      values.multisig &&
+      !values.multisig.newSigners?.length &&
+      !values.multisig.signerThreshold
+    ) {
+      setFieldValue('multisig', undefined);
+    }
+  }, [setFieldValue, values.multisig]);
 
   const [addSignerModalType, addSignerModalProps] = useMemo(() => {
     if (safe?.threshold === undefined) {
@@ -339,7 +348,13 @@ export function SignersContainer() {
           {/* stepper */}
           <Flex w="200px">
             <NumberStepperInput
-              onChange={value => setFieldValue('multisig.signerThreshold', value)}
+              onChange={value => {
+                let updatedValue;
+                if (value !== `${safe?.threshold}`) {
+                  updatedValue = value;
+                }
+                setFieldValue('multisig.signerThreshold', updatedValue);
+              }}
               value={values.multisig?.signerThreshold ?? safe?.threshold}
               isInvalid={!!(errors as MultisigEditGovernanceFormikErrors)?.threshold}
             />
