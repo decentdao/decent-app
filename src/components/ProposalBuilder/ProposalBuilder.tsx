@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { DAO_ROUTES } from '../../constants/routes';
+import useFeatureFlag from '../../helpers/environmentFeatureFlags';
 import { logError } from '../../helpers/errorLogging';
 import useSubmitProposal from '../../hooks/DAO/proposal/useSubmitProposal';
 import { useCurrentDAOKey } from '../../hooks/DAO/useCurrentDAOKey';
@@ -74,6 +75,7 @@ export function ProposalBuilder({
 }: ProposalBuilderProps) {
   const navigate = useNavigate();
   const { t } = useTranslation(['proposalTemplate', 'proposal']);
+  const markdownEditorFeatureEnabled = useFeatureFlag('flag_markdown_editor');
   const [currentStep, setCurrentStep] = useState<CreateProposalSteps>(CreateProposalSteps.METADATA);
   const { safeAddress } = useCurrentDAOKey();
 
@@ -194,7 +196,9 @@ export function ProposalBuilder({
               <Grid
                 gap={4}
                 marginTop="3rem"
-                templateColumns={{ base: '1fr', lg: '2fr 1fr' }}
+                templateColumns={
+                  !markdownEditorFeatureEnabled ? { base: '1fr', lg: '2fr 1fr' } : { base: '1fr' }
+                }
                 templateAreas={{
                   base: '"content" "details"',
                   lg: '"content details"',
@@ -230,24 +234,28 @@ export function ProposalBuilder({
                     />
                   </Flex>
                 </GridItem>
-                <GridItem
-                  area="details"
-                  w="100%"
-                >
-                  <ProposalDetails
-                    title={trimmedTitle}
-                    description={description}
-                    transactionsDetails={
-                      transactionsDetails ? transactionsDetails(transactions) : null
-                    }
-                    templateDetails={templateDetails ? templateDetails(trimmedTitle) : null}
-                    streamsDetails={
-                      streamsDetails
-                        ? streamsDetails((formikProps.values as CreateSablierProposalForm).streams)
-                        : null
-                    }
-                  />
-                </GridItem>
+                {!markdownEditorFeatureEnabled && (
+                  <GridItem
+                    area="details"
+                    w="100%"
+                  >
+                    <ProposalDetails
+                      title={trimmedTitle}
+                      description={description}
+                      transactionsDetails={
+                        transactionsDetails ? transactionsDetails(transactions) : null
+                      }
+                      templateDetails={templateDetails ? templateDetails(trimmedTitle) : null}
+                      streamsDetails={
+                        streamsDetails
+                          ? streamsDetails(
+                              (formikProps.values as CreateSablierProposalForm).streams,
+                            )
+                          : null
+                      }
+                    />
+                  </GridItem>
+                )}
               </Grid>
             </Box>
           </form>

@@ -125,7 +125,7 @@ export function MarkdownProposalMetadata({
       <Container
         margin={0}
         padding={0}
-        maxW={{ base: '350px', sm: '600px', md: '700px', lg: '800px' }}
+        maxW={{ base: '350px', sm: '440px', md: '768px', lg: '1100px', xl: '1200px' }}
       >
         <NanceEditor
           initialValue={initialDescription}
