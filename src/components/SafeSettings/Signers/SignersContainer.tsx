@@ -35,7 +35,15 @@ export type MultisigEditGovernanceFormikErrors = {
   threshold?: string;
 };
 
-function Signer({ signer, onRemove }: { signer: SignerItem; onRemove: (() => void) | null }) {
+function Signer({
+  signer,
+  onRemove,
+  markedForRemoval,
+}: {
+  signer: SignerItem;
+  onRemove: (() => void) | null;
+  markedForRemoval?: boolean;
+}) {
   if (!signer.isAdding && !signer.address) {
     throw new Error('Signer does not have an address');
   }
@@ -67,6 +75,7 @@ function Signer({ signer, onRemove }: { signer: SignerItem; onRemove: (() => voi
           ref={inputRef}
           value={!!newSigner ? newSigner.inputValue : signer.address}
           isDisabled={!newSigner}
+          textDecoration={markedForRemoval ? 'line-through' : 'none'}
           color={!!newSigner ? 'white-0' : 'neutral-3'}
           isInvalid={isInvalid}
           onChange={e => {
@@ -86,7 +95,7 @@ function Signer({ signer, onRemove }: { signer: SignerItem; onRemove: (() => voi
           }}
         />
 
-        {onRemove && (
+        {onRemove && !markedForRemoval && (
           <Button
             variant="tertiary"
             aria-label="Remove Signer"
@@ -96,6 +105,28 @@ function Signer({ signer, onRemove }: { signer: SignerItem; onRemove: (() => voi
           >
             <Icon
               as={MinusCircle}
+              boxSize="1.5rem"
+              color="lilac-0"
+            />
+          </Button>
+        )}
+
+        {markedForRemoval && (
+          <Button
+            variant="tertiary"
+            aria-label="Remove Signer"
+            h="1.5rem"
+            p="0"
+            onClick={() => {
+              setFieldValue('multisig.removedSigners', [
+                ...(values.multisig?.removedSigners ?? []).filter(
+                  (s: string) => s !== signer.address,
+                ),
+              ]);
+            }}
+          >
+            <Icon
+              as={PlusCircle}
               boxSize="1.5rem"
               color="lilac-0"
             />
@@ -124,6 +155,7 @@ export function SignersContainer() {
     if (
       values.multisig &&
       !values.multisig.newSigners?.length &&
+      !values.multisig.removedSigners?.length &&
       !values.multisig.signerThreshold
     ) {
       setFieldValue('multisig', undefined);
@@ -268,7 +300,17 @@ export function SignersContainer() {
           <Signer
             key={signer.key}
             signer={signer}
-            onRemove={enableRemove ? () => setRemovingSigner(signer) : null}
+            markedForRemoval={values.multisig?.removedSigners?.includes(signer.address) ?? false}
+            onRemove={
+              enableRemove
+                ? () => {
+                    setFieldValue('multisig.removedSigners', [
+                      ...(values.multisig?.removedSigners ?? []),
+                      signer.address,
+                    ]);
+                  }
+                : null
+            }
           />
         ))}
         {values.multisig?.newSigners?.map(signer => (
