@@ -228,7 +228,7 @@ export function useGuardFetcher() {
       multisigGuardAddress,
       freezeVotingType,
       freezeVotingAddress,
-      _parentSafeAddress,
+      parentSafeAddress,
       freezeProposalCreatedTime,
       freezeProposalPeriod,
       freezePeriod,
@@ -238,7 +238,7 @@ export function useGuardFetcher() {
       multisigGuardAddress?: Address;
       freezeVotingType: FreezeVotingType;
       freezeVotingAddress: Address;
-      _parentSafeAddress: Address | null;
+      parentSafeAddress?: Address;
       freezeProposalCreatedTime: bigint;
       freezeProposalPeriod: bigint;
       freezePeriod: bigint;
@@ -308,7 +308,7 @@ export function useGuardFetcher() {
                 ])) > 0n;
         } else if (freezeVotingType === FreezeVotingType.ERC721) {
           const { totalVotingTokenAddresses } = await getUserERC721VotingTokens(
-            _parentSafeAddress,
+            parentSafeAddress || null,
             null,
           );
           userHasVotes = totalVotingTokenAddresses.length > 0;
@@ -396,7 +396,7 @@ export function useGuardFetcher() {
                 ])) > 0n;
         } else if (freezeVotingType === FreezeVotingType.ERC721) {
           const { totalVotingTokenAddresses } = await getUserERC721VotingTokens(
-            _parentSafeAddress,
+            parentSafeAddress || null,
             null,
           );
           userHasVotes = totalVotingTokenAddresses.length > 0;

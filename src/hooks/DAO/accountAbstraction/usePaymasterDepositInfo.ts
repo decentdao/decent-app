@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { getContract } from 'viem';
 import { EntryPoint07Abi } from '../../../assets/abi/EntryPoint07Abi';
-import { useStore } from '../../../providers/App/AppProvider';
+import { useDAOStore } from '../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
 import useNetworkPublicClient from '../../useNetworkPublicClient';
 import { useCurrentDAOKey } from '../useCurrentDAOKey';
@@ -20,8 +20,8 @@ export function usePaymasterDepositInfo() {
   } = useNetworkConfigStore();
   const { daoKey } = useCurrentDAOKey();
   const {
-    node: { paymasterAddress },
-  } = useStore({ daoKey });
+    governance: { paymasterAddress },
+  } = useDAOStore({ daoKey });
 
   const publicClient = useNetworkPublicClient();
 

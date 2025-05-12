@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 import useFeatureFlag from '../../../helpers/environmentFeatureFlags';
-import { useStore } from '../../../providers/App/AppProvider';
+import { useDAOStore } from '../../../providers/App/AppProvider';
 import { FractalGovernanceAction } from '../../../providers/App/governance/action';
 import { GovernanceType } from '../../../types';
 import { useUpdateTimer } from '../../utils/useUpdateTimer';
@@ -14,7 +14,7 @@ export const useLoadDAOProposals = () => {
     governance: { type },
     action,
     node: { safe },
-  } = useStore({ daoKey });
+  } = useDAOStore({ daoKey });
   const storeFeatureEnabled = useFeatureFlag('flag_store_v2');
 
   const { setMethodOnInterval, clearIntervals } = useUpdateTimer(safe?.address);

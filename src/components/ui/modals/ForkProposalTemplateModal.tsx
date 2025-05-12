@@ -8,7 +8,7 @@ import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import { useIsSafe } from '../../../hooks/safe/useIsSafe';
 import { useValidationAddress } from '../../../hooks/schemas/common/useValidationAddress';
 import { useCanUserCreateProposal } from '../../../hooks/utils/useCanUserSubmitProposal';
-import { useStore } from '../../../providers/App/AppProvider';
+import { useDAOStore } from '../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
 import { ProposalTemplate } from '../../../types/proposalBuilder';
 import { InputComponent } from '../forms/InputComponent';
@@ -35,7 +35,7 @@ export default function ForkProposalTemplateModal({
   const { daoKey } = useCurrentDAOKey();
   const {
     node: { subgraphInfo },
-  } = useStore({ daoKey });
+  } = useDAOStore({ daoKey });
   const { validateAddress } = useValidationAddress();
 
   const { isSafe, isSafeLoading } = useIsSafe(targetDAOAddress);

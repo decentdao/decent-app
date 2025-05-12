@@ -5,7 +5,7 @@ import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import useLidoStaking from '../../../hooks/stake/lido/useLidoStaking';
 import useNetworkPublicClient from '../../../hooks/useNetworkPublicClient';
 import { useCanUserCreateProposal } from '../../../hooks/utils/useCanUserSubmitProposal';
-import { useStore } from '../../../providers/App/AppProvider';
+import { useDAOStore } from '../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
 import { ModalType } from '../../ui/modals/ModalProvider';
 import { useDecentModal } from '../../ui/modals/useDecentModal';
@@ -14,7 +14,7 @@ export default function useTreasuryLidoInteractions() {
   const { daoKey } = useCurrentDAOKey();
   const {
     treasury: { assetsFungible, assetsNonFungible },
-  } = useStore({ daoKey });
+  } = useDAOStore({ daoKey });
   const ethAsset = assetsFungible.find(asset => !asset.tokenAddress);
   const { handleUnstake, handleClaimUnstakedETH } = useLidoStaking();
   const { canUserCreateProposal } = useCanUserCreateProposal();

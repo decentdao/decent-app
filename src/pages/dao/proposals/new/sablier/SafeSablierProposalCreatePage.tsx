@@ -19,7 +19,7 @@ import { DAO_ROUTES } from '../../../../../constants/routes';
 import { useCurrentDAOKey } from '../../../../../hooks/DAO/useCurrentDAOKey';
 import { useFilterSpamTokens } from '../../../../../hooks/utils/useFilterSpamTokens';
 import { analyticsEvents } from '../../../../../insights/analyticsEvents';
-import { useStore } from '../../../../../providers/App/AppProvider';
+import { useDAOStore } from '../../../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../../../providers/NetworkConfig/useNetworkConfigStore';
 import { useProposalActionsStore } from '../../../../../store/actions/useProposalActionsStore';
 import {
@@ -37,7 +37,7 @@ export function SafeSablierProposalCreatePage() {
     governance: { type },
     treasury: { assetsFungible },
     node: { safe },
-  } = useStore({ daoKey });
+  } = useDAOStore({ daoKey });
   const {
     addressPrefix,
     contracts: { sablierV2Batch, sablierV2LockupTranched },
@@ -139,19 +139,18 @@ export function SafeSablierProposalCreatePage() {
   }
   const defaultTokenAddress = fungibleNonNativeAssetsWithBalance[0].tokenAddress;
   const sablierProposalInitialValues: CreateSablierProposalForm = {
-    ...(actionsProposalMetadata
-      ? {
-          ...DEFAULT_SABLIER_PROPOSAL,
-          proposalMetadata: { ...actionsProposalMetadata },
-        }
-      : DEFAULT_SABLIER_PROPOSAL),
+    ...DEFAULT_SABLIER_PROPOSAL,
+    proposalMetadata: {
+      ...DEFAULT_SABLIER_PROPOSAL.proposalMetadata,
+      nonce: safe.nextNonce,
+      ...(actionsProposalMetadata && { ...actionsProposalMetadata }),
+    },
     streams: DEFAULT_SABLIER_PROPOSAL.streams.map(s => {
       return {
         ...s,
         tokenAddress: defaultTokenAddress,
       };
     }),
-    nonce: safe.nextNonce,
   };
 
   const pageHeaderBreadcrumbs = [

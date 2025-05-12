@@ -6,7 +6,7 @@ import { toast } from 'sonner';
 import { DAO_ROUTES } from '../../../constants/routes';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import useVotingStrategiesAddresses from '../../../hooks/utils/useVotingStrategiesAddresses';
-import { useStore } from '../../../providers/App/AppProvider';
+import { useDAOStore } from '../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
 import { useProposalActionsStore } from '../../../store/actions/useProposalActionsStore';
 import { AzoriusGovernance, CreateProposalTransaction, ProposalActionType } from '../../../types';
@@ -22,7 +22,7 @@ export function ConfirmDeleteStrategyModal({ onClose }: { onClose: () => void })
     node: { safe },
     governance,
     governanceContracts,
-  } = useStore({ daoKey });
+  } = useDAOStore({ daoKey });
   const { addAction, resetActions } = useProposalActionsStore();
 
   const azoriusGovernance = governance as AzoriusGovernance;

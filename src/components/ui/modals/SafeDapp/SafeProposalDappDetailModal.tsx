@@ -12,7 +12,7 @@ import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
 import { useABI } from '../../../../hooks/utils/useABI';
 import { useDebounce } from '../../../../hooks/utils/useDebounce';
 import { analyticsEvents } from '../../../../insights/analyticsEvents';
-import { useStore } from '../../../../providers/App/AppProvider';
+import { useDAOStore } from '../../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../../providers/NetworkConfig/useNetworkConfigStore';
 import { useProposalActionsStore } from '../../../../store/actions/useProposalActionsStore';
 import { CreateProposalActionData, ProposalActionType } from '../../../../types';
@@ -113,7 +113,7 @@ export function SafeProposalDappDetailModal({
   const { daoKey } = useCurrentDAOKey();
   const {
     node: { safe },
-  } = useStore({ daoKey });
+  } = useDAOStore({ daoKey });
   const { dapps } = useSupportedDapps(chain.id);
   const { addAction, resetActions } = useProposalActionsStore();
   const navigate = useNavigate();

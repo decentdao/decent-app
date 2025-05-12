@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as Yup from 'yup';
-import { useStore } from '../../../providers/App/AppProvider';
+import { useDAOStore } from '../../../providers/App/AppProvider';
 import { useCurrentDAOKey } from '../../DAO/useCurrentDAOKey';
 import { useValidationAddress } from '../common/useValidationAddress';
 
@@ -15,7 +15,7 @@ const useCreateProposalSchema = () => {
   const { daoKey } = useCurrentDAOKey();
   const {
     node: { safe },
-  } = useStore({ daoKey });
+  } = useDAOStore({ daoKey });
 
   const labelOrValueValidationTest: Yup.TestFunction<string | undefined, Yup.AnyObject> = (
     _,
@@ -120,10 +120,10 @@ const useCreateProposalSchema = () => {
             title: Yup.string().trim().required().max(50),
             description: Yup.string().trim().notRequired(),
             documentationUrl: Yup.string().trim().notRequired(),
+            nonce: Yup.number()
+              .required()
+              .moreThan((!!safe && safe.nonce - 1) || 0),
           }),
-          nonce: Yup.number()
-            .required()
-            .moreThan((!!safe && safe.nonce - 1) || 0),
         })
         .test('at-least-one-transactions-or-streams', t('atLeastOneRequired'), value => {
           return !!(

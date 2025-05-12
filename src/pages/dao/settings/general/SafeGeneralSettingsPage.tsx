@@ -1,4 +1,4 @@
-import { Button, Flex, Show, Text } from '@chakra-ui/react';
+import { Box, Button, Flex, Show, Text } from '@chakra-ui/react';
 import { abis } from '@fractal-framework/fractal-contracts';
 import { ChangeEventHandler, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -18,7 +18,7 @@ import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
 import { useCanUserCreateProposal } from '../../../../hooks/utils/useCanUserSubmitProposal';
 import { createAccountSubstring } from '../../../../hooks/utils/useGetAccountName';
 import { useInstallVersionedVotingStrategy } from '../../../../hooks/utils/useInstallVersionedVotingStrategy';
-import { useStore } from '../../../../providers/App/AppProvider';
+import { useDAOStore } from '../../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../../providers/NetworkConfig/useNetworkConfigStore';
 import { GovernanceType, ProposalExecuteData } from '../../../../types';
 import {
@@ -29,7 +29,7 @@ import {
 import { validateENSName } from '../../../../utils/url';
 
 export function SafeGeneralSettingsPage() {
-  const { t } = useTranslation(['settings', 'settingsMetadata']);
+  const { t } = useTranslation('settings');
   const [name, setName] = useState('');
   const [snapshotENS, setSnapshotENS] = useState('');
   const [snapshotENSValid, setSnapshotENSValid] = useState<boolean>();
@@ -37,9 +37,9 @@ export function SafeGeneralSettingsPage() {
   const { daoKey } = useCurrentDAOKey();
   const {
     governanceContracts: { strategies },
-    governance: { type: votingStrategyType },
-    node: { subgraphInfo, safe, gaslessVotingEnabled, paymasterAddress },
-  } = useStore({ daoKey });
+    governance: { type: votingStrategyType, gaslessVotingEnabled, paymasterAddress },
+    node: { subgraphInfo, safe },
+  } = useDAOStore({ daoKey });
 
   const [isGaslessVotingEnabledToggled, setIsGaslessVotingEnabledToggled] =
     useState(gaslessVotingEnabled);
@@ -295,88 +295,115 @@ export function SafeGeneralSettingsPage() {
         />
       </Show>
       {!!safe ? (
-        <SettingsContentBox>
+        <SettingsContentBox
+          px={12}
+          py={6}
+        >
           <Flex
             flexDir="column"
-            gap="1rem"
+            justifyContent="space-between"
           >
-            <Text textStyle="heading-small">{t('daoMetadataName')}</Text>
-            <InputComponent
-              isRequired={false}
-              onChange={e => setName(e.target.value)}
-              disabled={!canUserCreateProposal}
-              value={name}
-              placeholder="Amazing DAO"
-              testId="daoSettings.name"
-              gridContainerProps={{
-                display: 'inline-flex',
-                flexWrap: 'wrap',
-                flex: '1',
-                width: '100%',
-              }}
-              inputContainerProps={{
-                width: '100%',
-              }}
-            />
-          </Flex>
-          <Divider
-            my="1rem"
-            w={{ base: 'calc(100% + 1.5rem)', md: 'calc(100% + 3rem)' }}
-            mx={{ base: '-0.75rem', md: '-1.5rem' }}
-          />
-          <Flex
-            flexDir="column"
-            gap="1rem"
-          >
-            <Text textStyle="heading-small">
-              {subgraphInfo?.daoSnapshotENS
-                ? t('daoMetadataSnapshot')
-                : t('daoMetadataConnectSnapshot')}
+            {/* GENERAL */}
+            <Text
+              ml={6}
+              mb={0.5}
+              textStyle="body-large"
+            >
+              {t('daoSettingsGeneral')}
             </Text>
-            <InputComponent
-              isRequired={false}
-              onChange={handleSnapshotENSChange}
-              value={snapshotENS}
-              disabled={!canUserCreateProposal}
-              placeholder="example.eth"
-              testId="daoSettings.snapshotENS"
-              gridContainerProps={{
-                display: 'inline-flex',
-                flexWrap: 'wrap',
-                flex: '1',
-                width: '100%',
-              }}
-              inputContainerProps={{
-                width: '100%',
-              }}
-            />
+            <Flex
+              flexDirection="column"
+              w="100%"
+              border="1px solid"
+              borderColor="neutral-3"
+              borderRadius="0.75rem"
+            >
+              <Flex
+                flexDirection="row"
+                alignItems="center"
+                justifyContent="space-between"
+                px={6}
+                pt={2}
+              >
+                <Text
+                  mb={2}
+                  textStyle="body-small"
+                >
+                  {t('daoMetadataName')}
+                </Text>
+                <InputComponent
+                  isRequired={false}
+                  onChange={e => setName(e.target.value)}
+                  disabled={!canUserCreateProposal}
+                  value={name}
+                  placeholder="Amazing DAO"
+                  testId="daoSettings.name"
+                  inputContainerProps={{
+                    width: { base: '100%', md: '16rem' },
+                  }}
+                />
+              </Flex>
+              <Divider />
+              <Flex
+                flexDirection="row"
+                alignItems="center"
+                justifyContent="space-between"
+                px={6}
+                pt={2}
+              >
+                <Text textStyle="body-small">
+                  {subgraphInfo?.daoSnapshotENS
+                    ? t('daoMetadataSnapshot')
+                    : t('daoMetadataConnectSnapshot')}
+                </Text>
+                <InputComponent
+                  isRequired={false}
+                  onChange={handleSnapshotENSChange}
+                  value={snapshotENS}
+                  disabled={!canUserCreateProposal}
+                  placeholder="example.eth"
+                  testId="daoSettings.snapshotENS"
+                  inputContainerProps={{
+                    width: { base: '100%', md: '16rem' },
+                  }}
+                />
+              </Flex>
+            </Flex>
+
+            <Box h={12} />
+
+            {/* SPONSORED VOTING */}
+            {gaslessVotingSupported && (
+              <>
+                <Text
+                  ml={6}
+                  mb={0.5}
+                  textStyle="body-large"
+                >
+                  {t('gaslessVotingLabelSettings', { ns: 'gaslessVoting' })}
+                </Text>
+                <GaslessVotingToggleDAOSettings
+                  isEnabled={isGaslessVotingEnabledToggled}
+                  onToggle={() => {
+                    setIsGaslessVotingEnabledToggled(!isGaslessVotingEnabledToggled);
+                  }}
+                />
+              </>
+            )}
           </Flex>
 
-          {gaslessVotingSupported && (
-            <GaslessVotingToggleDAOSettings
-              isEnabled={isGaslessVotingEnabledToggled}
-              onToggle={() => {
-                setIsGaslessVotingEnabledToggled(!isGaslessVotingEnabledToggled);
-              }}
-            />
-          )}
+          {/* PROPOSE BUTTON to be removed when batching settings edit actions implemented 
+          (https://linear.app/decent-labs/issue/ENG-806/consolidate-all-settings-edit-actions-into-one-proposal-on-create) */}
           {canUserCreateProposal && (
-            <>
-              <Divider
-                my="1rem"
-                w={{ base: 'calc(100% + 1.5rem)', md: 'calc(100% + 3rem)' }}
-                mx={{ base: '-0.75rem', md: '-1.5rem' }}
-              />
-              <Button
-                variant="secondary"
-                size="sm"
-                marginLeft="auto"
-                isDisabled={!nameChanged && !snapshotChanged && !gaslessVotingChanged}
-                onClick={handleEditGeneralGovernance}
-              >
-                {t('proposeChanges')}
-              </Button>
-            </>
+            <Button
+              variant="secondary"
+              size="sm"
+              marginLeft="auto"
+              isDisabled={!nameChanged && !snapshotChanged && !gaslessVotingChanged}
+              onClick={handleEditGeneralGovernance}
+            >
+              {t('proposeChanges')}
+            </Button>
           )}
         </SettingsContentBox>
       ) : (
