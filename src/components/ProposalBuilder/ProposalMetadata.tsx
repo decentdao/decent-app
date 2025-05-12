@@ -140,9 +140,9 @@ export function MarkdownProposalMetadata({
 }
 
 export default function ProposalMetadata({ values, typeProps }: ProposalMetadataProps) {
-  const markdownEditorFeatureEnabled = useFeatureFlag('flag_markdown_editor');
+  const proposalV1FeatureEnabled = useFeatureFlag('flag_proposal_v1');
 
-  if (markdownEditorFeatureEnabled) {
+  if (proposalV1FeatureEnabled) {
     return (
       <MarkdownProposalMetadata
         values={values}

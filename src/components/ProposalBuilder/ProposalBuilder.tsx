@@ -75,7 +75,7 @@ export function ProposalBuilder({
 }: ProposalBuilderProps) {
   const navigate = useNavigate();
   const { t } = useTranslation(['proposalTemplate', 'proposal']);
-  const markdownEditorFeatureEnabled = useFeatureFlag('flag_markdown_editor');
+  const proposalV1FeatureEnabled = useFeatureFlag('flag_proposal_v1');
   const [currentStep, setCurrentStep] = useState<CreateProposalSteps>(CreateProposalSteps.METADATA);
   const { safeAddress } = useCurrentDAOKey();
 
@@ -197,7 +197,7 @@ export function ProposalBuilder({
                 gap={4}
                 marginTop="3rem"
                 templateColumns={
-                  !markdownEditorFeatureEnabled ? { base: '1fr', lg: '2fr 1fr' } : { base: '1fr' }
+                  !proposalV1FeatureEnabled ? { base: '1fr', lg: '2fr 1fr' } : { base: '1fr' }
                 }
                 templateAreas={{
                   base: '"content" "details"',
@@ -234,7 +234,7 @@ export function ProposalBuilder({
                     />
                   </Flex>
                 </GridItem>
-                {!markdownEditorFeatureEnabled && (
+                {!proposalV1FeatureEnabled && (
                   <GridItem
                     area="details"
                     w="100%"
