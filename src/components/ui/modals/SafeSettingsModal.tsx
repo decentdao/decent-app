@@ -2,10 +2,11 @@ import { Box, Button, Flex } from '@chakra-ui/react';
 import { Formik, Form } from 'formik';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useValidationAddress } from '../../../hooks/schemas/common/useValidationAddress';
 import { useCanUserCreateProposal } from '../../../hooks/utils/useCanUserSubmitProposal';
 import { SafeGeneralSettingsPage } from '../../../pages/dao/settings/general/SafeGeneralSettingsPage';
 import { SettingsNavigation } from '../../SafeSettings/SettingsNavigation';
-import { NewSignerItem } from '../../SafeSettings/Signers/SignersContainer';
+import { NewSignerFormikErrors, NewSignerItem } from '../../SafeSettings/Signers/SignersContainer';
 import Divider from '../utils/Divider';
 
 export type SafeSettingsEdits = {
@@ -27,9 +28,44 @@ export function SafeSettingsModal({ closeModal }: { closeModal: () => void }) {
 
   const { t } = useTranslation(['modals', 'common']);
 
+  const { validateAddress } = useValidationAddress();
+
   return (
     <Formik<SafeSettingsEdits>
       initialValues={{}}
+      validate={async values => {
+        if (values.multisig) {
+          console.log('values.multisig', values.multisig);
+          const errors: NewSignerFormikErrors = {};
+          const { newSigners, signerThreshold } = values.multisig;
+
+          if (!newSigners) {
+            return errors;
+          }
+
+          if (newSigners.length > 0) {
+            const signerErrors = await Promise.all(
+              newSigners.map(async signer => {
+                if (!signer.inputValue) {
+                  return { key: signer.key, error: t('addressRequired', { ns: 'common' }) };
+                }
+
+                const validation = await validateAddress({ address: signer.inputValue });
+                if (!validation.validation.isValidAddress) {
+                  return { key: signer.key, error: t('invalidAddress', { ns: 'common' }) };
+                }
+                return null;
+              }),
+            );
+
+            if (signerErrors.some(error => error !== null)) {
+              errors.newSigners = signerErrors.filter(error => error !== null);
+            }
+          }
+
+          return errors;
+        }
+      }}
       onSubmit={() => {
         // Close all modals, navigate to create proposal page with all prepared actions
       }}

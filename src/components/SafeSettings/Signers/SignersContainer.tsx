@@ -31,27 +31,20 @@ export type NewSignerItem = SignerItem & {
   inputValue: string;
 };
 
-type NewSignerFormikErrors = { newSigners?: { key: string; error: string }[] };
+export type NewSignerFormikErrors = { newSigners?: { key: string; error: string }[] };
 
-function Signer({
-  signer,
-  onRemove,
-  formik,
-}: {
-  signer: SignerItem;
-  onRemove: (() => void) | null;
-  formik: any;
-}) {
+function Signer({ signer, onRemove }: { signer: SignerItem; onRemove: (() => void) | null }) {
   if (!signer.isAdding && !signer.address) {
     throw new Error('Signer does not have an address');
   }
 
   const inputRef = useRef<HTMLInputElement>(null);
+  const { errors, values, setFieldValue } = useFormikContext<SafeSettingsEdits>();
 
   const newSigner = signer.isAdding ? (signer as NewSignerItem) : null;
   const isInvalid =
     !!newSigner?.inputValue &&
-    (formik.errors as NewSignerFormikErrors).newSigners?.some(error => error.key === signer.key);
+    (errors as NewSignerFormikErrors).newSigners?.some(error => error.key === signer.key);
 
   return (
     <Flex
@@ -74,16 +67,17 @@ function Signer({
           isInvalid={isInvalid}
           onChange={e => {
             // Find and overwrite the address input value of this new signer with the input value
-            const newSigners = formik.values.newSigners.map((s: NewSignerItem) =>
-              s.key === signer.key
-                ? {
-                    ...s,
-                    inputValue: e.target.value,
-                  }
-                : s,
-            );
+            const newSigners =
+              values.multisig?.newSigners?.map((s: NewSignerItem) =>
+                s.key === signer.key
+                  ? {
+                      ...s,
+                      inputValue: e.target.value,
+                    }
+                  : s,
+              ) ?? [];
 
-            formik.setFieldValue('newSigners', newSigners);
+            setFieldValue('multisig.newSigners', newSigners);
 
             setTimeout(() => inputRef.current?.focus(), 10);
           }}
@@ -299,7 +293,6 @@ export function SignersContainer() {
             key={signer.key}
             signer={signer}
             onRemove={enableRemove ? () => setRemovingSigner(signer) : null}
-            formik={null}
           />
         ))}
         {values.multisig?.newSigners?.map(signer => (
@@ -312,7 +305,6 @@ export function SignersContainer() {
                 values.multisig?.newSigners?.filter(s => s.key !== signer.key),
               );
             }}
-            formik={formik} // @TODO: remove this
           />
         ))}
 
