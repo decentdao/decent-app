@@ -7,6 +7,7 @@ import { AzoriusProposal, DAOKey, FractalModuleType, FractalProposal } from '../
 import { useGovernanceFetcher } from './fetchers/governance';
 import { useGuardFetcher } from './fetchers/guard';
 import { useNodeFetcher } from './fetchers/node';
+import { useRolesFetcher } from './fetchers/roles';
 import { useTreasuryFetcher } from './fetchers/treasury';
 import { SetAzoriusGovernancePayload } from './slices/governances';
 import { useGlobalStore } from './store';
@@ -37,9 +38,11 @@ export const useDAOStoreFetcher = ({
     setProposalTemplates,
     setTokenClaimContractAddress,
     setProposals,
+    setSnapshotProposals,
     setProposal,
     setLoadingFirstProposal,
     setGuard,
+    setGaslessVotingData,
     setAllProposalsLoaded,
   } = useGlobalStore();
   const { chain, getConfigByChainId } = useNetworkConfigStore();
@@ -47,8 +50,14 @@ export const useDAOStoreFetcher = ({
 
   const { fetchDAONode } = useNodeFetcher();
   const { fetchDAOTreasury } = useTreasuryFetcher();
-  const { fetchDAOGovernance, fetchDAOProposalTemplates } = useGovernanceFetcher();
+  const {
+    fetchDAOGovernance,
+    fetchDAOProposalTemplates,
+    fetchDAOSnapshotProposals,
+    fetchGaslessVotingDAOData,
+  } = useGovernanceFetcher();
   const { fetchDAOGuard } = useGuardFetcher();
+  const { fetchRolesData } = useRolesFetcher();
 
   useEffect(() => {
     async function loadDAOData() {
@@ -110,13 +119,38 @@ export const useDAOStoreFetcher = ({
         onTokenClaimContractAddressLoaded,
       });
 
-      const guardData = await fetchDAOGuard({
+      fetchDAOGuard({
         guardAddress: getAddress(safe.guard),
         _azoriusModule: modules.find(module => module.moduleType === FractalModuleType.AZORIUS),
+      }).then(guardData => {
+        if (guardData) {
+          setGuard(daoKey, guardData);
+        }
       });
 
-      if (guardData) {
-        setGuard(daoKey, guardData);
+      if (daoInfo.daoSnapshotENS) {
+        fetchDAOSnapshotProposals({ daoSnapshotENS: daoInfo.daoSnapshotENS }).then(
+          snapshotProposals => {
+            if (snapshotProposals) {
+              setSnapshotProposals(daoKey, snapshotProposals);
+            }
+          },
+        );
+      }
+
+      const rolesData = await fetchRolesData({
+        safeAddress,
+      });
+
+      if (rolesData) {
+        const gaslessVotingData = await fetchGaslessVotingDAOData({
+          safeAddress,
+          events: rolesData.events,
+        });
+
+        if (gaslessVotingData) {
+          setGaslessVotingData(daoKey, gaslessVotingData);
+        }
       }
     }
 
@@ -144,6 +178,11 @@ export const useDAOStoreFetcher = ({
     setLoadingFirstProposal,
     setGuard,
     setAllProposalsLoaded,
+    fetchDAOSnapshotProposals,
+    setSnapshotProposals,
+    fetchRolesData,
+    setGaslessVotingData,
+    fetchGaslessVotingDAOData,
   ]);
 
   useEffect(() => {

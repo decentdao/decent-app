@@ -8,6 +8,7 @@ import useFeatureFlag from '../../helpers/environmentFeatureFlags';
 import { BASE_URL, INFURA_AUTH } from '../../providers/App/hooks/useIPFSClient';
 import { useProposalActionsStore } from '../../store/actions/useProposalActionsStore';
 import { CreateProposalForm } from '../../types/proposalBuilder';
+import { CustomNonceInput } from '../ui/forms/CustomNonceInput';
 import { InputComponent, TextareaComponent } from '../ui/forms/InputComponent';
 import '@nance/nance-editor/lib/css/editor.css';
 import '@nance/nance-editor/lib/css/dark.css';
@@ -42,11 +43,12 @@ export interface ProposalMetadataProps extends FormikProps<CreateProposalForm> {
 }
 
 export function PlainTextProposalMetadata({
-  values: { proposalMetadata },
+  values,
   typeProps,
 }: Pick<ProposalMetadataProps, 'values' | 'typeProps'>) {
   const { t } = useTranslation(['proposal']);
   const { setProposalMetadata } = useProposalActionsStore();
+  const { proposalMetadata } = values;
 
   return (
     <VStack
@@ -54,6 +56,12 @@ export function PlainTextProposalMetadata({
       spacing={8}
       p="1.5rem"
     >
+      <CustomNonceInput
+        nonce={values.proposalMetadata.nonce}
+        onChange={newNonce => setProposalMetadata('nonce', newNonce)}
+        align="end"
+        renderTrimmed={false}
+      />
       <InputComponent
         label={typeProps.titleLabel}
         helper={typeProps.titleHelper}

@@ -1,3 +1,6 @@
 {
-  "cannotModifyGovernance": "Não tem permissões para modificar a governação deste cofre."
+  "cannotModifyGovernance": "Não tem permissões para modificar a governação deste cofre.",
+  "launchToken": "Token de lançamento",
+  "launchTokenTitle": "TOKENIZE A SUA GOVERNAÇÃO",
+  "launchTokenDescription": "Lançar o seu próprio token de governação e aprovar propostas através de votação por token."
 }

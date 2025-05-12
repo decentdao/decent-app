@@ -14,10 +14,12 @@ export function NumberStepperInput({
   value,
   onChange,
   unitHint,
+  disabled,
 }: {
   value?: string | number;
   onChange: (val: string) => void;
   unitHint?: string;
+  disabled?: boolean;
 }) {
   const stepperButton = (direction: 'inc' | 'dec') => (
     <Button
@@ -36,6 +38,7 @@ export function NumberStepperInput({
       onChange={onChange}
       min={0}
       focusInputOnChange
+      isDisabled={disabled}
     >
       <HStack gap="0.25rem">
         <NumberDecrementStepper>{stepperButton('dec')}</NumberDecrementStepper>

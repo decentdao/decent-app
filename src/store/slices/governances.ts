@@ -17,6 +17,7 @@ import {
   ProposalVotesSummary,
   VotesTokenData,
   VotingStrategy,
+  SnapshotProposal,
 } from '../../types';
 import { GlobalStore, StoreMiddleware, StoreSlice } from '../store';
 
@@ -42,6 +43,7 @@ export type GovernancesSlice = {
   setAzoriusGovernance: (daoKey: DAOKey, payload: SetAzoriusGovernancePayload) => void;
   setTokenClaimContractAddress: (daoKey: DAOKey, tokenClaimContractAddress: Address) => void;
   setProposals: (daoKey: DAOKey, proposals: FractalProposal[]) => void;
+  setSnapshotProposals: (daoKey: DAOKey, snapshotProposals: SnapshotProposal[]) => void;
   setProposal: (daoKey: DAOKey, proposal: AzoriusProposal) => void;
   setProposalVote: (
     daoKey: DAOKey,
@@ -60,6 +62,13 @@ export type GovernancesSlice = {
     daoKey: DAOKey,
     lockReleaseAccountData: { balance: bigint; delegatee: Address },
   ) => void;
+  setGaslessVotingData: (
+    daoKey: DAOKey,
+    gasslesVotingData: {
+      gaslessVotingEnabled: boolean;
+      paymasterAddress: Address | null;
+    },
+  ) => void;
 };
 
 const EMPTY_GOVERNANCE: FractalGovernance & FractalGovernanceContracts = {
@@ -70,6 +79,8 @@ const EMPTY_GOVERNANCE: FractalGovernance & FractalGovernanceContracts = {
   isAzorius: false,
   isLoaded: false,
   strategies: [],
+  gaslessVotingEnabled: false,
+  paymasterAddress: null,
 };
 
 export const createGovernancesSlice: StateCreator<
@@ -147,7 +158,11 @@ export const createGovernancesSlice: StateCreator<
   setProposals: (daoKey, proposals) => {
     set(
       state => {
-        state.governances[daoKey].proposals = proposals;
+        if (!state.governances[daoKey].proposals) {
+          state.governances[daoKey].proposals = proposals;
+        } else {
+          state.governances[daoKey].proposals.push(...proposals);
+        }
       },
       false,
       'setProposals',
@@ -252,6 +267,25 @@ export const createGovernancesSlice: StateCreator<
       false,
       'setAllProposalsLoaded',
     );
+  },
+  setSnapshotProposals: (daoKey, snapshotProposals) => {
+    set(
+      state => {
+        if (!state.governances[daoKey].proposals) {
+          state.governances[daoKey].proposals = snapshotProposals;
+        } else {
+          state.governances[daoKey].proposals.push(...snapshotProposals);
+        }
+      },
+      false,
+      'setSnapshotProposals',
+    );
+  },
+  setGaslessVotingData: (daoKey, gasslesVotingData) => {
+    set(state => {
+      state.governances[daoKey].gaslessVotingEnabled = gasslesVotingData.gaslessVotingEnabled;
+      state.governances[daoKey].paymasterAddress = gasslesVotingData.paymasterAddress;
+    });
   },
   getGovernance: daoKey => {
     const governance = get().governances[daoKey];

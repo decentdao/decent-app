@@ -100,7 +100,8 @@ export default function useCreateRoles() {
       linearVotingErc721WithHatsWhitelistingAddress,
       moduleAzoriusAddress,
     },
-    node: { safe, subgraphInfo, gaslessVotingEnabled, paymasterAddress },
+    node: { safe, subgraphInfo },
+    governance: { gaslessVotingEnabled, paymasterAddress },
   } = useDAOStore({ daoKey });
   const { hatsTree, hatsTreeId, getHat } = useRolesStore();
   const {

@@ -46,7 +46,7 @@
   "wrapTokenButton": "Wickeln",
   "updateSignersTooltip": "Die Anzahl der Unterzeichner, die für die Annahme künftiger Vorschläge erforderlich ist",
   "confirmModifyGovernanceTitle": "Achtung, das ist eine große Sache!",
-  "confirmModifyGovernanceDescription": "Die Änderung der Verwaltung Ihres Tresors wird erhebliche Auswirkungen haben. Bitte vergewissern Sie sich, bevor Sie fortfahren.",
+  "confirmModifyGovernanceDesc": "Die Umstellung auf Token-Governance wird Ihre DAO-Operationen dauerhaft ändern. Diese Aktion kann nicht rückgängig gemacht werden. Sind Sie sicher, dass Sie fortfahren möchten?",
   "stakeTitle": "Pfahl",
   "removeSignerWarning": "Der Unterzeichner wird aus der Organisation ausgeschlossen.",
   "add": "hinzufügen",

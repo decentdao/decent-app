@@ -36,11 +36,11 @@ export function SafeProposalWithActionsCreatePage() {
   const transactions = useMemo(() => getTransactions(), [getTransactions, actions]);
 
   const defaultProposalValues = proposalMetadata
-    ? {
+    ? { ...DEFAULT_PROPOSAL, proposalMetadata: { nonce: safe?.nextNonce, ...proposalMetadata } }
+    : {
         ...DEFAULT_PROPOSAL,
-        proposalMetadata,
-      }
-    : DEFAULT_PROPOSAL;
+        proposalMetadata: { ...DEFAULT_PROPOSAL.proposalMetadata, nonce: safe?.nextNonce },
+      };
 
   const { addressPrefix } = useNetworkConfigStore();
 
@@ -84,7 +84,6 @@ export function SafeProposalWithActionsCreatePage() {
       initialValues={{
         ...defaultProposalValues,
         transactions,
-        nonce: safe.nextNonce,
       }}
       pageHeaderTitle={t('createProposal', { ns: 'proposal' })}
       pageHeaderBreadcrumbs={pageHeaderBreadcrumbs}
