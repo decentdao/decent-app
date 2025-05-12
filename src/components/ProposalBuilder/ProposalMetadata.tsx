@@ -1,4 +1,4 @@
-import { Container, VStack } from '@chakra-ui/react';
+import { Container, Input, VStack } from '@chakra-ui/react';
 import { NanceEditor } from '@nance/nance-editor';
 import { FormikProps } from 'formik';
 import { TFunction } from 'i18next';
@@ -114,17 +114,19 @@ export function MarkdownProposalMetadata({
       spacing={8}
       p="1.5rem"
     >
-      <InputComponent
-        label={typeProps.titleLabel}
-        helper={typeProps.titleHelper}
+      <Input
         placeholder={t('proposalTitlePlaceholder', { ns: 'proposal' })}
         isRequired
         value={proposalMetadata.title}
         onChange={e => setProposalMetadata('title', e.target.value)}
-        testId="metadata.title"
+        data-testid="metadata.title"
         maxLength={50}
       />
-      <Container maxW={{ base: '350px', sm: '600px', md: '700px', lg: '800px' }}>
+      <Container
+        margin={0}
+        padding={0}
+        maxW={{ base: '350px', sm: '600px', md: '700px', lg: '800px' }}
+      >
         <NanceEditor
           initialValue={initialDescription}
           onEditorChange={value => setProposalMetadata('description', value)}
@@ -133,15 +135,6 @@ export function MarkdownProposalMetadata({
           height="400px"
         />
       </Container>
-      <InputComponent
-        label={t('proposalAdditionalResources', { ns: 'proposal' })}
-        placeholder={t('proposalAdditionalResourcesPlaceholder', { ns: 'proposal' })}
-        helper={t('proposalAdditionalResourcesHelper', { ns: 'proposal' })}
-        value={proposalMetadata.documentationUrl || ''}
-        onChange={e => setProposalMetadata('documentationUrl', e.target.value)}
-        testId="metadata.documentationUrl"
-        isRequired={false}
-      />
     </VStack>
   );
 }
