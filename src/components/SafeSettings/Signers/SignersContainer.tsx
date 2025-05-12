@@ -355,6 +355,7 @@ export function SignersContainer() {
                 }
                 setFieldValue('multisig.signerThreshold', updatedValue);
               }}
+              color={values.multisig?.signerThreshold === undefined ? 'neutral-7' : 'white-0'}
               value={values.multisig?.signerThreshold ?? safe?.threshold}
               isInvalid={!!(errors as MultisigEditGovernanceFormikErrors)?.threshold}
             />

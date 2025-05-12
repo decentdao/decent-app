@@ -9,6 +9,7 @@ import {
   NumberInputField,
 } from '@chakra-ui/react';
 import { Plus, Minus } from '@phosphor-icons/react';
+import { SEXY_BOX_SHADOW_T_T } from '../../../constants/common';
 
 export function NumberStepperInput({
   value,
@@ -28,7 +29,8 @@ export function NumberStepperInput({
   const stepperButton = (direction: 'inc' | 'dec') => (
     <Button
       variant="secondary"
-      borderColor="neutral-3"
+      border="none"
+      boxShadow={SEXY_BOX_SHADOW_T_T}
       p="0.5rem"
       size="md"
     >
