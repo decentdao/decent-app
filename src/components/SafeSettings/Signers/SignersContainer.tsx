@@ -1,6 +1,6 @@
 import { Box, Button, Flex, Icon, Input, Show, Text, Image } from '@chakra-ui/react';
 import { MinusCircle, PlusCircle } from '@phosphor-icons/react';
-import { useFormik } from 'formik';
+import { useFormik, useFormikContext } from 'formik';
 import { useEffect, useMemo, useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Address } from 'viem';
@@ -11,6 +11,7 @@ import { useValidationAddress } from '../../../hooks/schemas/common/useValidatio
 import { useStore } from '../../../providers/App/AppProvider';
 import { NumberStepperInput } from '../../ui/forms/NumberStepperInput';
 import { ModalType } from '../../ui/modals/ModalProvider';
+import { SafeSettingsEdits } from '../../ui/modals/SafeSettingsModal';
 import { useDecentModal } from '../../ui/modals/useDecentModal';
 import Divider from '../../ui/utils/Divider';
 
@@ -25,7 +26,7 @@ type ExistingSignerItem = SignerItem & {
   isAdding: false;
 };
 
-type NewSignerItem = SignerItem & {
+export type NewSignerItem = SignerItem & {
   isAdding: true;
   inputValue: string;
 };
@@ -121,17 +122,19 @@ export function SignersContainer() {
   const { t } = useTranslation(['common', 'breadcrumbs', 'daoEdit']);
   const { validateAddress } = useValidationAddress();
 
+  const { setFieldValue, values } = useFormikContext<SafeSettingsEdits>();
+
   const formik = useFormik<{ newSigners: NewSignerItem[]; threshold: number }>({
     initialValues: {
       newSigners: [] as NewSignerItem[],
       threshold: safe?.threshold ?? 1,
     },
-    validate: async values => {
+    validate: async vals => {
       const errors: NewSignerFormikErrors = {};
 
-      if (values.newSigners.length > 0) {
+      if (vals.newSigners.length > 0) {
         const signerErrors = await Promise.all(
-          values.newSigners.map(async signer => {
+          vals.newSigners.map(async signer => {
             if (!signer.inputValue) {
               return { key: signer.key, error: t('addressRequired', { ns: 'common' }) };
             }
@@ -151,9 +154,9 @@ export function SignersContainer() {
 
       return errors;
     },
-    onSubmit: values => {
+    onSubmit: vals => {
       // Handle form submission
-      console.log(values);
+      console.log(vals);
     },
   });
 
@@ -299,17 +302,17 @@ export function SignersContainer() {
             formik={null}
           />
         ))}
-        {formik.values.newSigners.map(signer => (
+        {values.multisig?.newSigners?.map(signer => (
           <Signer
             key={signer.key}
             signer={signer}
             onRemove={() => {
-              formik.setFieldValue(
-                'newSigners',
-                formik.values.newSigners.filter(s => s.key !== signer.key),
+              setFieldValue(
+                'multisig.newSigners',
+                values.multisig?.newSigners?.filter(s => s.key !== signer.key),
               );
             }}
-            formik={formik}
+            formik={formik} // @TODO: remove this
           />
         ))}
 
@@ -326,8 +329,8 @@ export function SignersContainer() {
               onClick={() => {
                 if (isSettingsV1FeatureEnabled) {
                   const key = genSignerItemKey();
-                  formik.setFieldValue('newSigners', [
-                    ...formik.values.newSigners,
+                  setFieldValue('multisig.newSigners', [
+                    ...(values.multisig?.newSigners ?? []),
                     { key, address: '', isAdding: true },
                   ]);
                 } else {
@@ -377,9 +380,8 @@ export function SignersContainer() {
           {/* stepper */}
           <Flex w="200px">
             <NumberStepperInput
-              onChange={value => formik.setFieldValue('threshold', value)}
-              value={formik.values.threshold}
-              disabled // @todo: Disabled until ready to propagate edit actions into a final proposal
+              onChange={value => setFieldValue('multisig.signerThreshold', value)}
+              value={values.multisig?.signerThreshold}
             />
           </Flex>
         </Flex>
