@@ -39,10 +39,12 @@ function Signer({
   signer,
   onRemove,
   markedForRemoval,
+  canRemove,
 }: {
   signer: SignerItem;
   onRemove: (() => void) | null;
   markedForRemoval?: boolean;
+  canRemove: boolean;
 }) {
   if (!signer.isAdding && !signer.address) {
     throw new Error('Signer does not have an address');
@@ -57,6 +59,8 @@ function Signer({
     (errors as MultisigEditGovernanceFormikErrors).newSigners?.some(
       error => error.key === signer.key,
     );
+
+  const showRemoveButton = onRemove && !markedForRemoval && canRemove;
 
   return (
     <Flex
@@ -95,18 +99,19 @@ function Signer({
           }}
         />
 
-        {onRemove && !markedForRemoval && (
+        {!markedForRemoval && (
           <Button
             variant="tertiary"
             aria-label="Remove Signer"
             h="1.5rem"
             p="0"
-            onClick={onRemove}
+            isDisabled={!showRemoveButton}
+            onClick={onRemove ?? (() => {})}
           >
             <Icon
               as={MinusCircle}
               boxSize="1.5rem"
-              color="lilac-0"
+              color={showRemoveButton ? 'lilac-0' : 'neutral-5'}
             />
           </Button>
         )}
@@ -229,6 +234,15 @@ export function SignersContainer() {
 
   const handleModifyGovernance = useDecentModal(ModalType.CONFIRM_MODIFY_GOVERNANCE);
 
+  // Calculate if we can remove more signers
+  const canRemoveMoreSigners = useMemo(() => {
+    const activeSigners = signers.filter(
+      signer => !values.multisig?.removedSigners?.includes(signer.address),
+    ).length;
+    const newSignersCount = values.multisig?.newSigners?.length ?? 0;
+    return activeSigners + newSignersCount > 1;
+  }, [signers, values.multisig?.removedSigners, values.multisig?.newSigners]);
+
   return (
     <Box width="100%">
       {/* LAUNCH TOKEN BANNER */}
@@ -311,6 +325,7 @@ export function SignersContainer() {
                   }
                 : null
             }
+            canRemove={canRemoveMoreSigners}
           />
         ))}
         {values.multisig?.newSigners?.map(signer => (
@@ -323,6 +338,7 @@ export function SignersContainer() {
                 values.multisig?.newSigners?.filter(s => s.key !== signer.key),
               );
             }}
+            canRemove={canRemoveMoreSigners}
           />
         ))}
 
