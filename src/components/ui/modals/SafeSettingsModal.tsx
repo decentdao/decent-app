@@ -2,6 +2,7 @@ import { Box, Button, Flex } from '@chakra-ui/react';
 import { Formik, Form } from 'formik';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { toast } from 'sonner';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import { useValidationAddress } from '../../../hooks/schemas/common/useValidationAddress';
 import { useCanUserCreateProposal } from '../../../hooks/utils/useCanUserSubmitProposal';
@@ -96,6 +97,7 @@ export function SafeSettingsModal({ closeModal }: { closeModal: () => void }) {
       }}
       onSubmit={values => {
         console.log('submit values', values);
+        toast.info(`Submit TBD: ${JSON.stringify(values)}`);
         // Close all modals, navigate to create proposal page with all prepared actions
       }}
     >
