@@ -13,7 +13,10 @@ import { useCurrentDAOKey } from '../../hooks/DAO/useCurrentDAOKey';
 import useCreateProposalSchema from '../../hooks/schemas/proposalBuilder/useCreateProposalSchema';
 import { useUnsavedChangesBlocker } from '../../hooks/useUnsavedChangesBlocker';
 import { useCanUserCreateProposal } from '../../hooks/utils/useCanUserSubmitProposal';
-import { ActionsExperience } from '../../pages/dao/proposals/actions/new/ActionsExperience';
+import {
+  ActionsExperience,
+  ActionsExperienceV1,
+} from '../../pages/dao/proposals/actions/new/ActionsExperience';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
 import { useProposalActionsStore } from '../../store/actions/useProposalActionsStore';
 import { BigIntValuePair, CreateProposalSteps, ProposalExecuteData } from '../../types';
@@ -225,7 +228,13 @@ export function ProposalBuilder({
                         <>{mainContent(formikProps, pendingCreateTx, nonce, currentStep)}</>
                       )}
                     </Box>
-                    {showActionsExperience ? <ActionsExperience /> : null}
+                    {showActionsExperience ? (
+                      proposalV1FeatureEnabled ? (
+                        <ActionsExperienceV1 />
+                      ) : (
+                        <ActionsExperience />
+                      )
+                    ) : null}
                     <StepButtons
                       renderButtons={renderButtons}
                       currentStep={currentStep}
