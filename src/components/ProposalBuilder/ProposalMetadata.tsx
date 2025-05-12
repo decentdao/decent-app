@@ -1,4 +1,4 @@
-import { VStack } from '@chakra-ui/react';
+import { Container, VStack } from '@chakra-ui/react';
 import { NanceEditor } from '@nance/nance-editor';
 import { FormikProps } from 'formik';
 import { TFunction } from 'i18next';
@@ -124,13 +124,15 @@ export function MarkdownProposalMetadata({
         testId="metadata.title"
         maxLength={50}
       />
-      <NanceEditor
-        initialValue={initialDescription}
-        onEditorChange={value => setProposalMetadata('description', value)}
-        fileUploadIPFS={{ gateway: BASE_URL, auth: INFURA_AUTH }}
-        darkMode={true}
-        height="400px"
-      />
+      <Container maxW={{ base: '350px', sm: '600px', md: '700px', lg: '800px' }}>
+        <NanceEditor
+          initialValue={initialDescription}
+          onEditorChange={value => setProposalMetadata('description', value)}
+          fileUploadIPFS={{ gateway: BASE_URL, auth: INFURA_AUTH }}
+          darkMode={true}
+          height="400px"
+        />
+      </Container>
       <InputComponent
         label={t('proposalAdditionalResources', { ns: 'proposal' })}
         placeholder={t('proposalAdditionalResourcesPlaceholder', { ns: 'proposal' })}
