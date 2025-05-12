@@ -87,7 +87,8 @@ export function SafeSettingsModal({ closeModal }: { closeModal: () => void }) {
           return errors;
         }
       }}
-      onSubmit={() => {
+      onSubmit={values => {
+        console.log('submit values', values);
         // Close all modals, navigate to create proposal page with all prepared actions
       }}
     >
@@ -129,9 +130,7 @@ export function SafeSettingsModal({ closeModal }: { closeModal: () => void }) {
               <Button
                 variant="primary"
                 size="sm"
-                onClick={() => {
-                  console.log('go to builder');
-                }}
+                type="submit"
               >
                 {t('createProposal')}
               </Button>
