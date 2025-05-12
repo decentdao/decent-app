@@ -13,15 +13,17 @@ import { Plus, Minus } from '@phosphor-icons/react';
 export function NumberStepperInput({
   value,
   onChange,
-  unitHint,
+  rightElement,
   disabled,
   isInvalid,
+  color,
 }: {
   value?: string | number;
   onChange: (val: string) => void;
-  unitHint?: string;
+  rightElement?: JSX.Element;
   disabled?: boolean;
   isInvalid?: boolean;
+  color?: string;
 }) {
   const stepperButton = (direction: 'inc' | 'dec') => (
     <Button
@@ -46,8 +48,11 @@ export function NumberStepperInput({
       <HStack gap="0.25rem">
         <NumberDecrementStepper>{stepperButton('dec')}</NumberDecrementStepper>
         <InputGroup>
-          <NumberInputField min={0} />
-          <InputRightElement mr="1rem">{unitHint}</InputRightElement>
+          <NumberInputField
+            color={color}
+            min={0}
+          />
+          <InputRightElement mr="1rem">{rightElement}</InputRightElement>
         </InputGroup>
         <NumberIncrementStepper>{stepperButton('inc')}</NumberIncrementStepper>
       </HStack>
