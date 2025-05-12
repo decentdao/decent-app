@@ -7,6 +7,7 @@ import { useValidationAddress } from '../../../hooks/schemas/common/useValidatio
 import { useCanUserCreateProposal } from '../../../hooks/utils/useCanUserSubmitProposal';
 import { SafeGeneralSettingsPage } from '../../../pages/dao/settings/general/SafeGeneralSettingsPage';
 import { useStore } from '../../../providers/App/AppProvider';
+import { BigIntValuePair } from '../../../types';
 import { SettingsNavigation } from '../../SafeSettings/SettingsNavigation';
 import {
   MultisigEditGovernanceFormikErrors,
@@ -19,6 +20,13 @@ export type SafeSettingsEdits = {
     newSigners?: NewSignerItem[];
     removedSigners?: string[];
     signerThreshold?: number;
+  };
+  azorius?: {
+    quorumPercentage?: BigIntValuePair;
+    quorumThreshold?: BigIntValuePair;
+    votingPeriod?: BigIntValuePair;
+    timelockPeriod?: BigIntValuePair;
+    executionPeriod?: BigIntValuePair;
   };
 };
 
