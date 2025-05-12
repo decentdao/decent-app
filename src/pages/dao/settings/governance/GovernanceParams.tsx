@@ -1,4 +1,4 @@
-import { Box, Flex, Input } from '@chakra-ui/react';
+import { Box, Flex, Input, InputGroup, InputRightElement } from '@chakra-ui/react';
 import { useFormikContext } from 'formik';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -73,7 +73,7 @@ export function GovernanceParams() {
 
   return (
     <Box data-testid="dashboard-daoGovernance">
-      {!!existingQuorumPercentage && (
+      {existingQuorumPercentage !== undefined && (
         <>
           <Flex alignItems="center">
             <LabelComponent
@@ -82,26 +82,34 @@ export function GovernanceParams() {
               helper={t('helperQuorumERC20', { ns: 'daoCreate' })}
               gridContainerProps={inputGridContainerProps}
             >
-              <Input
-                value={
-                  values.azorius?.quorumPercentage?.toString() ??
-                  existingQuorumPercentage.toString()
-                }
-                onChange={handleInputChange('azorius.quorumPercentage', existingQuorumPercentage, [
-                  values.azorius?.quorumThreshold,
-                  values.azorius?.votingPeriod,
-                  values.azorius?.timelockPeriod,
-                  values.azorius?.executionPeriod,
-                ])}
-                minWidth="100%"
-              />
+              <InputGroup>
+                <Input
+                  value={
+                    values.azorius?.quorumPercentage?.toString() ??
+                    existingQuorumPercentage.toString()
+                  }
+                  color={values.azorius?.quorumPercentage === undefined ? 'neutral-7' : 'white-0'}
+                  onChange={handleInputChange(
+                    'azorius.quorumPercentage',
+                    existingQuorumPercentage,
+                    [
+                      values.azorius?.quorumThreshold,
+                      values.azorius?.votingPeriod,
+                      values.azorius?.timelockPeriod,
+                      values.azorius?.executionPeriod,
+                    ],
+                  )}
+                  minWidth="100%"
+                />
+                <InputRightElement color="neutral-5">%</InputRightElement>
+              </InputGroup>
             </LabelComponent>
           </Flex>
           <Divider />
         </>
       )}
 
-      {!!existingQuorumThreshold && (
+      {existingQuorumThreshold !== undefined && (
         <>
           <Flex
             alignItems="center"
@@ -120,6 +128,7 @@ export function GovernanceParams() {
                   values.azorius?.quorumThreshold?.toString() ?? existingQuorumThreshold.toString()
                 }
                 minWidth="100%"
+                color={values.azorius?.quorumThreshold === undefined ? 'neutral-7' : 'white-0'}
                 onChange={handleInputChange('azorius.quorumThreshold', existingQuorumThreshold, [
                   values.azorius?.quorumPercentage,
                   values.azorius?.votingPeriod,
@@ -132,7 +141,7 @@ export function GovernanceParams() {
           <Divider />
         </>
       )}
-      {!!existingVotingPeriod && (
+      {existingVotingPeriod !== undefined && (
         <>
           <Flex
             alignItems="center"
@@ -149,6 +158,7 @@ export function GovernanceParams() {
               <Input
                 value={values.azorius?.votingPeriod?.toString() ?? existingVotingPeriod.toString()}
                 minWidth="100%"
+                color={values.azorius?.votingPeriod === undefined ? 'neutral-7' : 'white-0'}
                 onChange={handleInputChange('azorius.votingPeriod', existingVotingPeriod, [
                   values.azorius?.quorumPercentage,
                   values.azorius?.quorumThreshold,
@@ -161,7 +171,7 @@ export function GovernanceParams() {
           <Divider />
         </>
       )}
-      {!!existingTimelockPeriod && (
+      {existingTimelockPeriod !== undefined && (
         <>
           <Flex
             alignItems="center"
@@ -175,24 +185,30 @@ export function GovernanceParams() {
               helper={t('helperTimelockPeriod', { ns: 'daoCreate' })}
               gridContainerProps={inputGridContainerProps}
             >
-              <Input
-                value={
-                  values.azorius?.timelockPeriod?.toString() ?? existingTimelockPeriod.toString()
-                }
-                minWidth="100%"
-                onChange={handleInputChange('azorius.timelockPeriod', existingTimelockPeriod, [
-                  values.azorius?.quorumPercentage,
-                  values.azorius?.quorumThreshold,
-                  values.azorius?.votingPeriod,
-                  values.azorius?.executionPeriod,
-                ])}
-              />
+              <InputGroup>
+                <Input
+                  value={
+                    values.azorius?.timelockPeriod?.toString() ?? existingTimelockPeriod.toString()
+                  }
+                  minWidth="100%"
+                  color={values.azorius?.timelockPeriod === undefined ? 'neutral-7' : 'white-0'}
+                  onChange={handleInputChange('azorius.timelockPeriod', existingTimelockPeriod, [
+                    values.azorius?.quorumPercentage,
+                    values.azorius?.quorumThreshold,
+                    values.azorius?.votingPeriod,
+                    values.azorius?.executionPeriod,
+                  ])}
+                />
+                <InputRightElement color="neutral-5">
+                  {t('minutesShort', { ns: 'common' })}
+                </InputRightElement>
+              </InputGroup>
             </LabelComponent>
           </Flex>
           <Divider />
         </>
       )}
-      {!!existingExecutionPeriod && (
+      {existingExecutionPeriod !== undefined && (
         <>
           <Flex
             alignItems="center"
@@ -211,6 +227,7 @@ export function GovernanceParams() {
                   values.azorius?.executionPeriod?.toString() ?? existingExecutionPeriod.toString()
                 }
                 minWidth="100%"
+                color={values.azorius?.executionPeriod === undefined ? 'neutral-7' : 'white-0'}
                 onChange={handleInputChange('azorius.executionPeriod', existingExecutionPeriod, [
                   values.azorius?.quorumPercentage,
                   values.azorius?.quorumThreshold,

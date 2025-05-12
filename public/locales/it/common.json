@@ -26,6 +26,7 @@
   "move": "Muoversi",
   "hours": "Orario",
   "minutes": "Verbale",
+  "minutesShort": "min",
   "quorum": "Quorum",
   "deploy": "Distribuire",
   "loading": "Caricamento...",

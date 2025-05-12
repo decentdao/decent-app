@@ -26,6 +26,7 @@
   "move": "Verschieben",
   "hours": "Stunden",
   "minutes": "Protokoll",
+  "minutesShort": "min",
   "quorum": "Quorum",
   "deploy": "Bereitstellung von",
   "loading": "Laden...",
