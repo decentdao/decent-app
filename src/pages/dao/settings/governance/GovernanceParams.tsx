@@ -41,9 +41,11 @@ export function GovernanceParams() {
     ) => {
       let newValue: bigint | undefined;
 
-      if (inputVal) {
+      if (inputVal && /^[+-]?\d+$/.test(inputVal)) {
         const inputValue: bigint = BigInt(inputVal);
         newValue = inputValue !== existingValue ? inputValue : undefined;
+      } else if (inputVal) {
+        console.warn(`Invalid input for BigInt conversion: ${inputVal}`);
       }
 
       setFieldValue(field, newValue);
