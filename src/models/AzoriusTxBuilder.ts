@@ -28,7 +28,7 @@ import {
 } from '../types';
 import { NetworkConfig } from '../types/network';
 import { SENTINEL_MODULE } from '../utils/address';
-import { BaseTxBuilder, ContractCallTarget } from './BaseTxBuilder';
+import { call, ContractCallTarget, ensure } from './BaseTxBuilder';
 import { generateContractByteCodeLinear, generateSalt } from './helpers/utils';
 
 export type PredictedAddressAndInitialization = {
@@ -142,7 +142,7 @@ export class AzoriusTxBuilder {
   //     strategyNonce,
   //   );
   //   const predictedAzoriusAddress = this.predictAzoriusAddress(
-  //     this.ensure({ data: predictedStrategyAddress, description: 'Predicted Strategy Address' }),
+  //     ensure({ data: predictedStrategyAddress, description: 'Predicted Strategy Address' }),
   //     azoriusNonce,
   //   );
 
@@ -169,6 +169,72 @@ export class AzoriusTxBuilder {
   // }
 
   public async predict(params: {
+    publicClient: PublicClient;
+    networkConfig: NetworkConfig;
+    safeContractAddress: Address;
+    daoData: AzoriusERC20DAO | AzoriusERC721DAO;
+    nonces: {
+      strategyNonce: bigint;
+      azoriusNonce: bigint;
+      claimNonce: bigint;
+      tokenNonce: bigint;
+    };
+    // nonces: {
+    //   strategyNonce: bigint;
+    //   azoriusNonce: bigint;
+    //   claimNonce: bigint;
+    //   tokenNonce: bigint;
+    // };
+    // tokenData: {
+    //   lockType: TokenLockType;
+    //   name: string;
+    //   symbol: string;
+    //   supply: bigint;
+    //   allocations: { amount: bigint; address: string }[];
+    // };
+    // strategyData: {
+    //   votingStrategyType: VotingStrategyType;
+    //   votingPeriod: number;
+    //   erc20Data?: {
+    //     quorumPercentage?: bigint;
+    //   };
+    //   erc721Data?: {
+    //     nfts: ERC721TokenConfig<bigint>[];
+    //     quorumThreshold: bigint;
+    //   };
+    // };
+    // goveranceData: {
+    //   timelock: number;
+    //   executionPeriod: number;
+    // };
+    // parentAllocation?: {
+    //   tokenAddress: Address;
+    //   amount: bigint;
+    // };
+  }): Promise<{
+    token: PredictedAddressAndInitialization;
+    strategy: PredictedAddressAndInitialization;
+    azorius: PredictedAddressAndInitialization;
+    tokenClaim?: PredictedAddressAndInitialization;
+  }> {
+    const { publicClient, networkConfig, safeContractAddress, daoData } = params;
+    const nonces = {
+      strategyNonce: BigInt(daoData.strategyNonce),
+      azoriusNonce: BigInt(daoData.azoriusNonce),
+      claimNonce: BigInt(daoData.claimNonce),
+      tokenNonce: BigInt(daoData.tokenNonce),
+    };
+
+    return this._predict({
+      publicClient,
+      networkConfig,
+      safeContractAddress,
+
+      ...params,
+    });
+  }
+
+  private async _predict(params: {
     publicClient: PublicClient;
     networkConfig: NetworkConfig;
     safeContractAddress: Address;
@@ -296,7 +362,7 @@ export class AzoriusTxBuilder {
     const { safeContractAddress, multiSendCallOnly, owners } = params;
     const safeContract = this.safeContract(safeContractAddress);
     return owners.map(owner =>
-      this.call({
+      call({
         target: safeContract,
         functionName: 'removeOwner',
         args: [multiSendCallOnly, owner, 1n],
@@ -310,7 +376,7 @@ export class AzoriusTxBuilder {
     votingStrategyType: VotingStrategyType;
   }): SafeTransaction {
     const { networkConfig, predictedAzoriusAddress, votingStrategyType } = params;
-    return this.call({
+    return call({
       target: this._contractSetupTarget(networkConfig, votingStrategyType),
       functionName: 'setAzorius',
       args: [predictedAzoriusAddress],
@@ -344,7 +410,7 @@ export class AzoriusTxBuilder {
   }): SafeTransaction {
     const { safeContractAddress, predictedAzoriusAddress } = params;
     const safeContract = this.safeContract(safeContractAddress);
-    return this.call({
+    return call({
       target: safeContract,
       functionName: 'enableModule',
       args: [predictedAzoriusAddress],
@@ -357,7 +423,7 @@ export class AzoriusTxBuilder {
   }): SafeTransaction {
     const { safeContractAddress, predictedAzoriusAddress } = params;
     const safeContract = this.safeContract(safeContractAddress);
-    return this.call({
+    return call({
       target: safeContract,
       functionName: 'addOwnerWithThreshold',
       args: [predictedAzoriusAddress, 1n],
@@ -371,7 +437,7 @@ export class AzoriusTxBuilder {
   }): SafeTransaction {
     const { safeContractAddress, multiSendCallOnly, predictedAzoriusAddress } = params;
     const safeContract = this.safeContract(safeContractAddress);
-    return this.call({
+    return call({
       target: safeContract,
       functionName: 'removeOwner',
       args: [predictedAzoriusAddress, multiSendCallOnly, 1n],
@@ -385,7 +451,7 @@ export class AzoriusTxBuilder {
     tokenNonce: bigint;
   }): SafeTransaction {
     const { networkConfig, lockType, encodedSetupTokenData, tokenNonce } = params;
-    return this.call({
+    return call({
       target: this.zodiacModuleProxyFactory(networkConfig.contracts.zodiacModuleProxyFactory),
       functionName: 'deployModule',
       args: [this._votesErc20Master(networkConfig, lockType), encodedSetupTokenData, tokenNonce],
@@ -395,7 +461,7 @@ export class AzoriusTxBuilder {
   private _votesErc20Master(networkConfig: NetworkConfig, lockType: TokenLockType): Address {
     switch (lockType) {
       case TokenLockType.LOCKED:
-        return this.ensure({
+        return ensure({
           data: networkConfig.contracts.votesErc20LockableMasterCopy,
           description: 'Locked ERC20 Token Master Contract',
         });
@@ -412,7 +478,7 @@ export class AzoriusTxBuilder {
     strategyNonce: bigint;
   }): SafeTransaction {
     const { networkConfig, encodedStrategySetupData, votingStrategyType, strategyNonce } = params;
-    return this.call({
+    return call({
       target: this.zodiacModuleProxyFactory(networkConfig.contracts.zodiacModuleProxyFactory),
       functionName: 'deployModule',
       args: [
@@ -445,7 +511,7 @@ export class AzoriusTxBuilder {
     azoriusNonce: bigint;
   }): SafeTransaction {
     const { networkConfig, encodedSetupAzoriusData, azoriusNonce } = params;
-    return this.call({
+    return call({
       target: this.zodiacModuleProxyFactory(networkConfig.contracts.zodiacModuleProxyFactory),
       functionName: 'deployModule',
       args: [
@@ -457,15 +523,15 @@ export class AzoriusTxBuilder {
   }
 
   public buildDeployTokenClaim(params: {
-    networConfig: NetworkConfig;
+    networkConfig: NetworkConfig;
     encodedSetupTokenClaimData: `0x${string}`;
     claimNonce: bigint;
   }) {
-    const { networConfig, encodedSetupTokenClaimData, claimNonce } = params;
-    return this.call({
-      target: this.zodiacModuleProxyFactory(networConfig.contracts.zodiacModuleProxyFactory),
+    const { networkConfig, encodedSetupTokenClaimData, claimNonce } = params;
+    return call({
+      target: this.zodiacModuleProxyFactory(networkConfig.contracts.zodiacModuleProxyFactory),
       functionName: 'deployModule',
-      args: [networConfig.contracts.claimErc20MasterCopy, encodedSetupTokenClaimData, claimNonce],
+      args: [networkConfig.contracts.claimErc20MasterCopy, encodedSetupTokenClaimData, claimNonce],
     });
   }
 
@@ -772,7 +838,7 @@ export class AzoriusTxBuilder {
           safeContractAddress,
           predictedTokenAddress,
           votingPeriod: strategyData.votingPeriod,
-          quorumPercentage: this.ensure({
+          quorumPercentage: ensure({
             data: strategyData.erc20Data?.quorumPercentage,
             description: 'Quorum Percentage',
           }),
@@ -785,11 +851,11 @@ export class AzoriusTxBuilder {
           networkConfig,
           safeContractAddress,
           votingPeriod: strategyData.votingPeriod,
-          nfts: this.ensure({
+          nfts: ensure({
             data: strategyData.erc721Data?.nfts,
             description: 'ERC721 NFT Data',
           }),
-          quorumThreshold: this.ensure({
+          quorumThreshold: ensure({
             data: strategyData.erc721Data?.quorumThreshold,
             description: 'Quorum Threshold',
           }),
@@ -844,7 +910,7 @@ export class AzoriusTxBuilder {
 
     return {
       address: getCreate2Address({
-        from: this.ensure({
+        from: ensure({
           data: networkConfig.contracts.zodiacModuleProxyFactory,
           description: 'Zodiac Module Proxy Factory Address',
         }),
