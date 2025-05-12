@@ -46,7 +46,7 @@
   "wrapTokenButton": "Embrulho",
   "updateSignersTooltip": "O número de signatários necessários para aprovar futuras propostas",
   "confirmModifyGovernanceTitle": "Atenção, isto é muito importante!",
-  "confirmModifyGovernanceDescription": "A alteração da governação do seu cofre terá implicações significativas. Por favor, certifique-se antes de prosseguir.",
+  "confirmModifyGovernanceDesc": "A conversão para a governação de tokens irá alterar permanentemente as suas operações DAO. Esta ação não pode ser desfeita. Tem a certeza de que pretende continuar?",
   "stakeTitle": "Estaca",
   "removeSignerWarning": "O signatário será afastado da organização.",
   "add": "Adicionar",

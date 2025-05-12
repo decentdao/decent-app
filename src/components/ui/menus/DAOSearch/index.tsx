@@ -8,7 +8,11 @@ import {
   useDisclosure,
   useOutsideClick,
   Portal,
+  Flex,
+  Text,
+  Icon,
 } from '@chakra-ui/react';
+import { WarningCircle } from '@phosphor-icons/react';
 import debounce from 'lodash.debounce';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -64,8 +68,8 @@ export function DAOSearch() {
   const showResults = useMemo(() => {
     if (typing) return false;
     if (isLoading) return true;
-    return errorMessage === undefined;
-  }, [errorMessage, typing, isLoading]);
+    return true;
+  }, [typing, isLoading]);
 
   useEffect(() => {
     if (localInput) {
@@ -148,11 +152,29 @@ export function DAOSearch() {
             w="full"
             position="absolute"
           >
+            {!!errorMessage && (
+              <Flex
+                alignItems="center"
+                gap="2"
+                p="0.5rem 1rem"
+              >
+                <Icon
+                  as={WarningCircle}
+                  color="red-1"
+                  boxSize="1.5rem"
+                />
+                <Text
+                  textStyle="heading-small"
+                  color="red-1"
+                >
+                  {errorMessage}
+                </Text>
+              </Flex>
+            )}
             {resolvedAddressesWithPrefix.map(resolved => (
               <SearchDisplay
                 key={resolved.address}
                 loading={isLoading}
-                errorMessage={errorMessage}
                 address={resolved.address}
                 chainId={resolved.chainId}
                 onClickView={resetSearch}

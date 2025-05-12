@@ -20,8 +20,6 @@ export const EMPTY_NODE: IDAO = {
   safe: null,
   subgraphInfo: null,
   modules: null,
-  gaslessVotingEnabled: false,
-  paymasterAddress: null,
 };
 
 export const createNodesSlice: StateCreator<GlobalStore, StoreMiddleware, [], NodesSlice> = (
@@ -54,8 +52,6 @@ export const createNodesSlice: StateCreator<GlobalStore, StoreMiddleware, [], No
             safe: mappedSafe,
             subgraphInfo: daoInfo,
             modules,
-            gaslessVotingEnabled: false,
-            paymasterAddress: null,
           };
         } else {
           state.nodes[daoKey].safe = mappedSafe;
@@ -67,7 +63,7 @@ export const createNodesSlice: StateCreator<GlobalStore, StoreMiddleware, [], No
       'setDaoNode',
     );
   },
-  getDaoNode: (daoKey: DAOKey) => {
+  getDaoNode: daoKey => {
     const nodes = get().nodes;
     const node = nodes[daoKey];
     if (!node) {

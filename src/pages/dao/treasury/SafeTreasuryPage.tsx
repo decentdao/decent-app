@@ -18,7 +18,7 @@ import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import useSendAssetsActionModal from '../../../hooks/DAO/useSendAssetsActionModal';
 import { useCanUserCreateProposal } from '../../../hooks/utils/useCanUserSubmitProposal';
 import { analyticsEvents } from '../../../insights/analyticsEvents';
-import { useStore } from '../../../providers/App/AppProvider';
+import { useDAOStore } from '../../../providers/App/AppProvider';
 
 export function SafeTreasuryPage() {
   useEffect(() => {
@@ -28,7 +28,7 @@ export function SafeTreasuryPage() {
   const {
     treasury: { assetsFungible, transfers },
     node: { subgraphInfo, safe },
-  } = useStore({ daoKey });
+  } = useDAOStore({ daoKey });
   const [shownTransactions, setShownTransactions] = useState(20);
   const { t } = useTranslation(['treasury', 'modals']);
   const { canUserCreateProposal } = useCanUserCreateProposal();

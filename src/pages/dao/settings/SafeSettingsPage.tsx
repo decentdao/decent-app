@@ -4,7 +4,7 @@ import { Outlet, useLocation } from 'react-router-dom';
 import { SettingsNavigation } from '../../../components/SafeSettings/SettingsNavigation';
 import PageHeader from '../../../components/ui/page/Header/PageHeader';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
-import { useStore } from '../../../providers/App/AppProvider';
+import { useDAOStore } from '../../../providers/App/AppProvider';
 
 /**  @deprecated */
 export function SafeSettingsPage() {
@@ -12,7 +12,7 @@ export function SafeSettingsPage() {
   const { daoKey } = useCurrentDAOKey();
   const {
     node: { subgraphInfo },
-  } = useStore({ daoKey });
+  } = useDAOStore({ daoKey });
   const location = useLocation();
   const paths = location.pathname.split('/');
   const isMobile = useBreakpointValue({ base: true, md: false });

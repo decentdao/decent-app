@@ -264,7 +264,6 @@ export function ModalProvider({ children }: { children: ReactNode }) {
         break;
       case ModalType.CONFIRM_MODIFY_GOVERNANCE:
         hasWarning = true;
-        modalTitle = t('confirmModifyGovernanceTitle');
         modalContent = <ConfirmModifyGovernanceModal close={closeModal} />;
         break;
       case ModalType.WARN_UNSAVED_CHANGES:
@@ -421,6 +420,7 @@ export function ModalProvider({ children }: { children: ReactNode }) {
       default:
         modalTitle = '';
         modalContent = null;
+        onClose();
     }
 
     return {
@@ -433,7 +433,7 @@ export function ModalProvider({ children }: { children: ReactNode }) {
       closeOnOverlayClick: closeModalOnOverlayClick,
       contentStyle: modalContentStyle,
     };
-  }, [closeModal, current.props, current.type, t]);
+  }, [closeModal, current.props, current.type, onClose, t]);
 
   let display = content ? (
     <ModalBase

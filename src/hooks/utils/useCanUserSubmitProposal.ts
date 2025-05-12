@@ -2,7 +2,7 @@ import { abis } from '@fractal-framework/fractal-contracts';
 import { useCallback, useEffect, useState } from 'react';
 import { Address, getContract } from 'viem';
 import { useAccount } from 'wagmi';
-import { useStore } from '../../providers/App/AppProvider';
+import { useDAOStore } from '../../providers/App/AppProvider';
 import { useSafeAPI } from '../../providers/App/hooks/useSafeAPI';
 import { GovernanceType } from '../../types';
 import { isDemoMode } from '../../utils/demoMode';
@@ -21,7 +21,7 @@ export function useCanUserCreateProposal() {
       linearVotingErc721WithHatsWhitelistingAddress,
     },
     node: { safe },
-  } = useStore({ daoKey });
+  } = useDAOStore({ daoKey });
   const user = useAccount();
   const safeAPI = useSafeAPI();
   const [canUserCreateProposal, setCanUserCreateProposal] = useState<boolean>();

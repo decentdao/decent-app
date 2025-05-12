@@ -17,7 +17,7 @@ import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import { useNetworkWalletClient } from '../../../hooks/useNetworkWalletClient';
 import { useAsyncRequest } from '../../../hooks/utils/useAsyncRequest';
 import { useTransaction } from '../../../hooks/utils/useTransaction';
-import { useStore } from '../../../providers/App/AppProvider';
+import { useDAOStore } from '../../../providers/App/AppProvider';
 import { useSafeAPI } from '../../../providers/App/hooks/useSafeAPI';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
 import { FractalProposalState, MultisigProposal } from '../../../types';
@@ -106,7 +106,7 @@ export function TxActions({ proposal }: { proposal: MultisigProposal }) {
     guardContracts: { freezeGuardContractAddress },
     governance: { proposals },
     node: { safe },
-  } = useStore({ daoKey });
+  } = useDAOStore({ daoKey });
   const userAccount = useAccount();
   const safeAPI = useSafeAPI();
   const { submitRejectionMultisigProposal } = useSubmitProposal();

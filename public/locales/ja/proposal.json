@@ -164,6 +164,7 @@
   "addStream": "ストリームを追加する",
   "removeStream": "ストリームを削除する",
   "streamStartNotice": "ストリームはプロポーザル実行時に開始されます。ストリーム開始の\nストリーム開始の遅延を \"エミュレート \"するために、最初のトランシェの金額を\n0に設定し、希望する「遅延」時間を設定する。",
+  "streamOnSablierNotice": "この提案は、Sablierを使用して支払いストリームを作成する。実行後、受領者はSablierを使用してこれらのストリームを管理する必要がある。",
   "streamedTokenAddress": "ストリーム・トークン・アドレス",
   "streamedTokenAddressHelper": "財務省の残高{{balance}}",
   "recipientAddress": "受取人住所",
@@ -197,5 +198,10 @@
   "by": "による",
   "groupByNonce": "ノンスによるグループ化",
   "snapshot": "スナップショット",
-  "signersThresholdBadgeLabel": "{{current}} out of{{total}}"
+  "signersThresholdBadgeLabel": "{{current}} out of{{total}}",
+  "nonceLabelMultipleTransactions": "複数の取引",
+  "nonceLabelSingleTransaction": "取引番号{{proposalId}}",
+  "nonceLabelRecommended": "{{nonce}}- 新規取引",
+  "nonceLabelRecommendedTitle": "推奨ノンス",
+  "nonceLabelReplaceActiveTitle": "アクティブを置き換える"
 }

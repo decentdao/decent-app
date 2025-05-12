@@ -9,7 +9,7 @@ import Divider from '../../../../components/ui/utils/Divider';
 import { DAO_ROUTES } from '../../../../constants/routes';
 import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
 import { createAccountSubstring } from '../../../../hooks/utils/useGetAccountName';
-import { useStore } from '../../../../providers/App/AppProvider';
+import { useDAOStore } from '../../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../../providers/NetworkConfig/useNetworkConfigStore';
 import { FractalModuleType } from '../../../../types';
 
@@ -20,7 +20,7 @@ export function SafeModulesSettingsPage() {
   const {
     guardContracts: { freezeGuardContractAddress, freezeVotingContractAddress },
     node: { modules, safe },
-  } = useStore({ daoKey });
+  } = useDAOStore({ daoKey });
 
   return (
     <>
