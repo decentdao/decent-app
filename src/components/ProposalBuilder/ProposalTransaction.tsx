@@ -12,10 +12,11 @@ import {
   VStack,
 } from '@chakra-ui/react';
 import { CaretDown, CaretRight, MinusCircle, Plus } from '@phosphor-icons/react';
+import { useFormikContext } from 'formik';
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ABIElement } from '../../hooks/utils/useABI';
-import { CreateProposalTransaction } from '../../types/proposalBuilder';
+import { CreateProposalForm, CreateProposalTransaction } from '../../types/proposalBuilder';
 import { scrollToBottom } from '../../utils/ui';
 import ABISelector from '../ui/forms/ABISelector';
 import ExampleLabel from '../ui/forms/ExampleLabel';
@@ -30,7 +31,6 @@ interface ProposalTransactionProps {
   transactionPending: boolean;
   txAddressError?: string;
   txFunctionError?: string;
-  setFieldValue: (field: string, value: any) => void;
   isProposalMode: boolean;
 }
 
@@ -40,11 +40,11 @@ export default function ProposalTransaction({
   transactionPending,
   txAddressError,
   txFunctionError,
-  setFieldValue,
   isProposalMode,
 }: ProposalTransactionProps) {
   const { t } = useTranslation(['proposal', 'proposalTemplate', 'common']);
   const [expandedIndecies, setExpandedIndecies] = useState<number[]>([0]);
+  const { setFieldValue } = useFormikContext<CreateProposalForm>();
 
   const handleABISelectorChange = useCallback(
     (value: ABIElement) => {

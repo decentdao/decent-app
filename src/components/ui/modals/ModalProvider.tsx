@@ -387,7 +387,6 @@ export function ModalProvider({ children }: { children: ReactNode }) {
             pendingTransaction={false}
             values={[]}
             errors={undefined}
-            setFieldValue={() => {}}
             isProposalMode={true}
             onSubmit={current.props.onSubmit}
             onClose={closeModal}

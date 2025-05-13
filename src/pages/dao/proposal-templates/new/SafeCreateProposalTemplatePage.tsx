@@ -153,13 +153,12 @@ export function SafeCreateProposalTemplatePage() {
       prepareProposalData={prepareProposalTemplateProposal}
       mainContent={(formikProps, pendingCreateTx, _nonce, currentStep) => {
         if (currentStep !== CreateProposalSteps.TRANSACTIONS) return null;
-        const { setFieldValue, errors, values } = formikProps;
+        const { errors, values } = formikProps;
         return (
           <ProposalTransactionsForm
             pendingTransaction={pendingCreateTx}
             isProposalMode={true}
             values={values.transactions}
-            setFieldValue={setFieldValue}
             errors={
               errors?.transactions as FormikErrors<CreateProposalTransaction<BigIntValuePair>>[]
             }

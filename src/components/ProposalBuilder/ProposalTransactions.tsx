@@ -20,7 +20,6 @@ import ProposalTransaction from './ProposalTransaction';
 interface ProposalTransactionsProps {
   values: FormikProps<CreateProposalTransaction[]>['values'];
   errors?: FormikProps<CreateProposalTransaction[]>['errors'];
-  setFieldValue: FormikProps<CreateProposalTransaction[]>['setFieldValue'];
   pendingTransaction: boolean;
   expandedIndecies: number[];
   setExpandedIndecies: Dispatch<SetStateAction<number[]>>;
@@ -31,7 +30,6 @@ interface ProposalTransactionsProps {
 export default function ProposalTransactions({
   values: transactions,
   errors,
-  setFieldValue,
   pendingTransaction,
   expandedIndecies,
   setExpandedIndecies,
@@ -114,7 +112,6 @@ export default function ProposalTransactions({
                     txFunctionError={txFunctionError}
                     txAddressError={txAddressError}
                     transactionIndex={index}
-                    setFieldValue={setFieldValue}
                     transactionPending={pendingTransaction}
                     isProposalMode={isProposalMode}
                   />

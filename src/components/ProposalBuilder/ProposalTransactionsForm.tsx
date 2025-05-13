@@ -1,10 +1,10 @@
 import { Box, Button } from '@chakra-ui/react';
 import { Plus } from '@phosphor-icons/react';
-import { Formik, FormikProps } from 'formik';
+import { Formik, FormikProps, useFormikContext } from 'formik';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import useCreateProposalSchema from '../../hooks/schemas/proposalBuilder/useCreateProposalSchema';
-import { CreateProposalTransaction } from '../../types/proposalBuilder';
+import { CreateProposalForm, CreateProposalTransaction } from '../../types/proposalBuilder';
 import { scrollToBottom } from '../../utils/ui';
 import CeleryButtonWithIcon from '../ui/utils/CeleryButtonWithIcon';
 import Divider from '../ui/utils/Divider';
@@ -14,7 +14,6 @@ import { DEFAULT_PROPOSAL_TRANSACTION } from './constants';
 export interface ProposalTransactionsFormProps {
   pendingTransaction: boolean;
   isProposalMode: boolean;
-  setFieldValue: FormikProps<CreateProposalTransaction[]>['setFieldValue'];
   values: FormikProps<CreateProposalTransaction[]>['values'];
   errors?: FormikProps<CreateProposalTransaction[]>['errors'];
   onSubmit?: (txs: CreateProposalTransaction[]) => void;
@@ -22,7 +21,8 @@ export interface ProposalTransactionsFormProps {
 }
 
 export default function ProposalTransactionsForm(props: ProposalTransactionsFormProps) {
-  const { pendingTransaction, setFieldValue, values } = props;
+  const { pendingTransaction, values } = props;
+  const { setFieldValue } = useFormikContext<CreateProposalForm>();
   const { t } = useTranslation(['proposal']);
   const [expandedIndecies, setExpandedIndecies] = useState<number[]>([0]);
 
@@ -40,9 +40,6 @@ export default function ProposalTransactionsForm(props: ProposalTransactionsForm
         expandedIndecies={expandedIndecies}
         setExpandedIndecies={setExpandedIndecies}
         removeTransaction={removeTransaction}
-        setFieldValue={(field: string, value: unknown) => {
-          setFieldValue(`transactions.${field}`, value);
-        }}
       />
       <Divider my="1.5rem" />
       <CeleryButtonWithIcon
@@ -78,7 +75,7 @@ export function ProposalTransactionsFormModal({
         onClose?.();
       }}
     >
-      {({ values, errors, setFieldValue, setValues, handleSubmit }) => {
+      {({ values, errors, setValues, handleSubmit }) => {
         const removeTransaction = (index: number) => {
           const allTxs = [...values];
           allTxs.splice(index, 1);
@@ -94,7 +91,6 @@ export function ProposalTransactionsFormModal({
                 setExpandedIndecies={setExpandedIndecies}
                 pendingTransaction={pendingTransaction}
                 isProposalMode={isProposalMode}
-                setFieldValue={setFieldValue}
                 values={values}
                 errors={errors}
               />
