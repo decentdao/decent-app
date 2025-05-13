@@ -1,4 +1,4 @@
-import { Box, Button, Flex, Show, Text } from '@chakra-ui/react';
+import { Box, Flex, Show, Text } from '@chakra-ui/react';
 import { abis } from '@fractal-framework/fractal-contracts';
 import { useFormikContext } from 'formik';
 import { useEffect, useState } from 'react';
@@ -46,11 +46,11 @@ export function SafeGeneralSettingsPage() {
     node: { subgraphInfo, safe, gaslessVotingEnabled, paymasterAddress },
   } = useStore({ daoKey });
 
-  const [isGaslessVotingEnabledToggled, setIsGaslessVotingEnabledToggled] =
+  const [existingIsGaslessVotingEnabledToggled, setExistingIsGaslessVotingEnabledToggled] =
     useState(gaslessVotingEnabled);
 
   useEffect(() => {
-    setIsGaslessVotingEnabledToggled(gaslessVotingEnabled);
+    setExistingIsGaslessVotingEnabledToggled(gaslessVotingEnabled);
   }, [gaslessVotingEnabled]);
 
   const navigate = useNavigate();
@@ -110,13 +110,13 @@ export function SafeGeneralSettingsPage() {
 
   const nameChanged = !!existingDaoName && existingDaoName !== subgraphInfo?.daoName;
   const snapshotChanged = snapshotENSValid && existingSnapshotENS !== subgraphInfo?.daoSnapshotENS;
-  const gaslessVotingChanged = isGaslessVotingEnabledToggled !== gaslessVotingEnabled;
+  const gaslessVotingChanged = existingIsGaslessVotingEnabledToggled !== gaslessVotingEnabled;
 
   useEffect(() => {
     if (
       !formValues.general?.name &&
       !formValues.general?.snapshot &&
-      !formValues.general?.sponsoredVoting
+      formValues.general?.sponsoredVoting === undefined
     ) {
       setFieldValue('general', undefined);
     }
@@ -124,6 +124,7 @@ export function SafeGeneralSettingsPage() {
 
   const { buildInstallVersionedVotingStrategies } = useInstallVersionedVotingStrategy();
 
+  // @todo: Move logic to parent formik submit handler
   const handleEditGeneralGovernance = async () => {
     const changeTitles = [];
     const keyArgs = [];
@@ -143,7 +144,7 @@ export function SafeGeneralSettingsPage() {
 
     if (gaslessVotingChanged) {
       keyArgs.push('gaslessVotingEnabled');
-      if (isGaslessVotingEnabledToggled) {
+      if (existingIsGaslessVotingEnabledToggled) {
         changeTitles.push(t('enableGaslessVoting', { ns: 'proposalMetadata' }));
         valueArgs.push('true');
       } else {
@@ -164,7 +165,7 @@ export function SafeGeneralSettingsPage() {
     ];
     const values = [0n];
 
-    if (gaslessVotingChanged && isGaslessVotingEnabledToggled) {
+    if (gaslessVotingChanged && existingIsGaslessVotingEnabledToggled) {
       if (!safeAddress) {
         throw new Error('Safe address is not set');
       }
@@ -360,10 +361,7 @@ export function SafeGeneralSettingsPage() {
                   onChange={e => {
                     const newValue =
                       e.target.value === existingDaoName ? undefined : e.target.value;
-                    setFieldValue('general', {
-                      ...formValues.general,
-                      name: newValue,
-                    });
+                    setFieldValue('general.name', newValue);
                   }}
                   disabled={!canUserCreateProposal}
                   value={formValues.general?.name ?? existingDaoName}
@@ -395,10 +393,7 @@ export function SafeGeneralSettingsPage() {
                     const newValue =
                       lowerCasedValue === existingSnapshotENS ? undefined : lowerCasedValue;
 
-                    setFieldValue('general', {
-                      ...formValues.general,
-                      snapshot: newValue,
-                    });
+                    setFieldValue('general.snapshot', newValue);
                   }}
                   value={formValues.general?.snapshot ?? existingSnapshotENS}
                   disabled={!canUserCreateProposal}
@@ -424,28 +419,33 @@ export function SafeGeneralSettingsPage() {
                   {t('gaslessVotingLabelSettings', { ns: 'gaslessVoting' })}
                 </Text>
                 <GaslessVotingToggleDAOSettings
-                  isEnabled={isGaslessVotingEnabledToggled}
+                  isEnabled={
+                    formValues.general?.sponsoredVoting !== undefined
+                      ? formValues.general?.sponsoredVoting
+                      : existingIsGaslessVotingEnabledToggled
+                  }
                   onToggle={() => {
-                    setIsGaslessVotingEnabledToggled(!isGaslessVotingEnabledToggled);
+                    let newValue;
+
+                    if (formValues.general?.sponsoredVoting === undefined) {
+                      // If no value is set yet, toggle from existing state
+                      newValue = !existingIsGaslessVotingEnabledToggled;
+                    } else if (
+                      formValues.general?.sponsoredVoting === existingIsGaslessVotingEnabledToggled
+                    ) {
+                      // If current form value matches existing state, which means resulting toggle results in a new value that is different from existing state, toggle current value
+                      newValue = !formValues.general?.sponsoredVoting;
+                    } else {
+                      // Resulting value will match existing state. No changes made -- reset to undefined
+                      newValue = undefined;
+                    }
+
+                    setFieldValue('general.sponsoredVoting', newValue);
                   }}
                 />
               </>
             )}
           </Flex>
-
-          {/* PROPOSE BUTTON to be removed when batching settings edit actions implemented 
-          (https://linear.app/decent-labs/issue/ENG-806/consolidate-all-settings-edit-actions-into-one-proposal-on-create) */}
-          {canUserCreateProposal && (
-            <Button
-              variant="secondary"
-              size="sm"
-              marginLeft="auto"
-              isDisabled={!nameChanged && !snapshotChanged && !gaslessVotingChanged}
-              onClick={handleEditGeneralGovernance}
-            >
-              {t('proposeChanges')}
-            </Button>
-          )}
         </SettingsContentBox>
       ) : (
         <Flex
