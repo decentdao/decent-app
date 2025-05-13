@@ -11,7 +11,7 @@ export default defineConfig({
     port: 3000,
   },
   build: {
-    sourcemap: true,
+    sourcemap: false,
   },
   define: {
     'import.meta.env.PACKAGE_VERSION': JSON.stringify(packageJson.version),
