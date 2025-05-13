@@ -4,6 +4,7 @@ import { createContext, ReactNode, useCallback, useEffect, useState } from 'reac
 import { useTranslation } from 'react-i18next';
 import { Address } from 'viem';
 import { NEUTRAL_2_50_TRANSPARENT } from '../../../constants/common';
+import { AddCreateProposalPermissionModal } from '../../../pages/dao/settings/permissions/AddCreateProposalPermissionModal';
 import { CreateProposalTransaction, ProposalTemplate } from '../../../types';
 import { SendAssetsData } from '../../../utils/dao/prepareSendAssetsActionData';
 import { ProposalTransactionsFormModal } from '../../ProposalBuilder/ProposalTransactionsForm';
@@ -41,6 +42,7 @@ export enum ModalType {
   REMOVE_SIGNER,
   ADD_SIGNER,
   ADD_PERMISSION,
+  ADD_CREATE_PROPOSAL_PERMISSION,
   CREATE_PROPOSAL_FROM_TEMPLATE,
   COPY_PROPOSAL_TEMPLATE,
   CONFIRM_MODIFY_GOVERNANCE,
@@ -66,6 +68,7 @@ export type ModalPropsTypes = {
   [ModalType.DELEGATE]: {};
   [ModalType.STAKE]: {};
   [ModalType.ADD_PERMISSION]: {};
+  [ModalType.ADD_CREATE_PROPOSAL_PERMISSION]: {};
   [ModalType.CONFIRM_DELETE_STRATEGY]: {};
   [ModalType.CONFIRM_URL]: { url: string };
   [ModalType.REMOVE_SIGNER]: {
@@ -285,12 +288,11 @@ const getModalData = (args: {
       break;
     }
     case ModalType.ADD_PERMISSION:
-      modalContent = (
-        <AddStrategyPermissionModal
-          closeModal={popModal}
-          closeAllModals={closeAll}
-        />
-      );
+      modalContent = <AddStrategyPermissionModal closeModal={popModal} />;
+      modalSize = 'xl';
+      break;
+    case ModalType.ADD_CREATE_PROPOSAL_PERMISSION:
+      modalContent = <AddCreateProposalPermissionModal closeModal={popModal} />;
       modalSize = 'xl';
       break;
     case ModalType.CONFIRM_DELETE_STRATEGY:
@@ -423,10 +425,12 @@ function ModalDisplay({
   modalData,
   isOpen,
   openModal,
+  index,
 }: {
   modalData: ModalData;
   isOpen: boolean;
   openModal: () => void;
+  index: number;
 }) {
   const {
     content,
@@ -450,6 +454,7 @@ function ModalDisplay({
       isSearchInputModal={isSearchInputModal}
       size={size}
       contentStyle={contentStyle}
+      zIndex={1400 + index}
     >
       {content}
     </ModalBase>
@@ -485,7 +490,7 @@ function ModalDisplay({
             isOpen={isOpen}
             onClose={onSetClosed}
             isSearchInputModal={isSearchInputModal}
-            zIndex={1401} // @dev - Modal zIndex is 1400, but since these modals are might be shown alongside drawer - we need to make it larger
+            zIndex={1401 + index} // @dev - Modal zIndex is 1400, but since these modals are might be shown alongside drawer - we need to make it larger
             size={size}
           >
             {content}
@@ -544,6 +549,7 @@ export function ModalProvider({ children }: { children: ReactNode }) {
         modalData={modalData}
         isOpen={isOpen}
         openModal={onOpen}
+        index={i}
       />
     );
   });
