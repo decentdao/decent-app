@@ -9,10 +9,14 @@ import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import { useStore } from '../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
 import { Card } from '../cards/Card';
-import { ModalType } from './ModalProvider';
-import { useDecentModal } from './useDecentModal';
 
-export function AddStrategyPermissionModal({ closeModal }: { closeModal: () => void }) {
+export function AddStrategyPermissionModal({
+  closeModal,
+  openAddCreateProposalPermissionModal,
+}: {
+  closeModal: () => void;
+  openAddCreateProposalPermissionModal: () => void;
+}) {
   const { t } = useTranslation(['settings', 'common']);
   const navigate = useNavigate();
   const { addressPrefix } = useNetworkConfigStore();
@@ -22,9 +26,6 @@ export function AddStrategyPermissionModal({ closeModal }: { closeModal: () => v
   } = useStore({ daoKey });
 
   const isSettingsV1Enabled = useFeatureFlag('flag_settings_v1');
-  const openAddCreateProposalPermissionModal = useDecentModal(
-    ModalType.ADD_CREATE_PROPOSAL_PERMISSION,
-  );
 
   if (!safe) {
     return null;
@@ -70,6 +71,7 @@ export function AddStrategyPermissionModal({ closeModal }: { closeModal: () => v
                 ),
               );
             } else {
+              closeModal();
               openAddCreateProposalPermissionModal();
             }
           }}

@@ -44,7 +44,7 @@ import {
   ProposalActionType,
 } from '../../../../types';
 
-// @todo Switch this to modal. It uses modalbase, but is currently being navigated to.
+// @todo Remove in favour of AddCreateProposalPermissionModal.
 // ttps://linear.app/decent-labs/issue/ENG-842/fix-permissions-settings-ux-flows
 export function SafePermissionsCreateProposal() {
   const publicClient = useNetworkPublicClient();

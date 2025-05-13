@@ -8,6 +8,7 @@ import { useValidationAddress } from '../../../hooks/schemas/common/useValidatio
 import { useCanUserCreateProposal } from '../../../hooks/utils/useCanUserSubmitProposal';
 import { SafeGeneralSettingsPage } from '../../../pages/dao/settings/general/SafeGeneralSettingsPage';
 import { useStore } from '../../../providers/App/AppProvider';
+import { BigIntValuePair } from '../../../types';
 import { bigintSerializer } from '../../../utils/bigintSerializer';
 import { SettingsNavigation } from '../../SafeSettings/SettingsNavigation';
 import {
@@ -35,8 +36,7 @@ export type SafeSettingsEdits = {
     sponsoredVoting?: boolean;
   };
   permissions?: {
-    guard?: string;
-    modules?: string[];
+    proposerThreshold?: BigIntValuePair;
   };
 };
 

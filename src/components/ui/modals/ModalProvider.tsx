@@ -1,5 +1,5 @@
 import { Portal, Show, useDisclosure } from '@chakra-ui/react';
-import { FormikProps } from 'formik';
+import { FormikProps, FormikContextType } from 'formik';
 import { createContext, ReactNode, useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Address } from 'viem';
@@ -29,7 +29,7 @@ import { PaymentWithdrawModal } from './PaymentWithdrawModal';
 import ProposalTemplateModal from './ProposalTemplateModal';
 import { SafeProposalDappDetailModal } from './SafeDapp/SafeProposalDappDetailModal';
 import { SafeProposalDappsModal } from './SafeDapp/SafeProposalDappsModal';
-import { SafeSettingsModal } from './SafeSettingsModal';
+import { SafeSettingsEdits, SafeSettingsModal } from './SafeSettingsModal';
 import { SendAssetsModal } from './SendAssetsModal';
 import StakeModal from './Stake';
 import { UnsavedChangesWarningContent } from './UnsavedChangesWarningContent';
@@ -67,8 +67,12 @@ export type ModalPropsTypes = {
   [ModalType.NONE]: {};
   [ModalType.DELEGATE]: {};
   [ModalType.STAKE]: {};
-  [ModalType.ADD_PERMISSION]: {};
-  [ModalType.ADD_CREATE_PROPOSAL_PERMISSION]: {};
+  [ModalType.ADD_PERMISSION]: {
+    openAddCreateProposalPermissionModal: () => void;
+  };
+  [ModalType.ADD_CREATE_PROPOSAL_PERMISSION]: {
+    formikContext: FormikContextType<SafeSettingsEdits>;
+  };
   [ModalType.CONFIRM_DELETE_STRATEGY]: {};
   [ModalType.CONFIRM_URL]: { url: string };
   [ModalType.REMOVE_SIGNER]: {
@@ -288,11 +292,21 @@ const getModalData = (args: {
       break;
     }
     case ModalType.ADD_PERMISSION:
-      modalContent = <AddStrategyPermissionModal closeModal={popModal} />;
+      modalContent = (
+        <AddStrategyPermissionModal
+          closeModal={popModal}
+          openAddCreateProposalPermissionModal={current.props.openAddCreateProposalPermissionModal}
+        />
+      );
       modalSize = 'xl';
       break;
     case ModalType.ADD_CREATE_PROPOSAL_PERMISSION:
-      modalContent = <AddCreateProposalPermissionModal closeModal={popModal} />;
+      modalContent = (
+        <AddCreateProposalPermissionModal
+          closeModal={popModal}
+          formikContext={current.props.formikContext}
+        />
+      );
       modalSize = 'xl';
       break;
     case ModalType.CONFIRM_DELETE_STRATEGY:

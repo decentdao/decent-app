@@ -1,6 +1,7 @@
 import { Button, Flex, IconButton, Show, Text } from '@chakra-ui/react';
 import { abis } from '@fractal-framework/fractal-contracts';
 import { ArrowLeft, Trash, X } from '@phosphor-icons/react';
+import { FormikContextType } from 'formik';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useSearchParams } from 'react-router-dom';
@@ -18,6 +19,7 @@ import { SafePermissionsStrategyAction } from '../../../../components/SafeSettin
 import { SettingsPermissionsStrategyForm } from '../../../../components/SafeSettings/SettingsPermissionsStrategyForm';
 import { Card } from '../../../../components/ui/cards/Card';
 import { ModalType } from '../../../../components/ui/modals/ModalProvider';
+import { SafeSettingsEdits } from '../../../../components/ui/modals/SafeSettingsModal';
 import { useDecentModal } from '../../../../components/ui/modals/useDecentModal';
 import NestedPageHeader from '../../../../components/ui/page/Header/NestedPageHeader';
 import Divider from '../../../../components/ui/utils/Divider';
@@ -43,9 +45,15 @@ import {
   ProposalActionType,
 } from '../../../../types';
 
-// @todo Near-duplicate of AddStrategyPermissionModal.tsx. Pending refactor and/or cleanup.
+// @todo Near-duplicate of SafePermissionsCreateProposal.tsx. Pending refactor and/or cleanup.
 // https://linear.app/decent-labs/issue/ENG-842/fix-permissions-settings-ux-flows
-export function AddCreateProposalPermissionModal({ closeModal }: { closeModal: () => void }) {
+export function AddCreateProposalPermissionModal({
+  closeModal,
+  formikContext,
+}: {
+  closeModal: () => void;
+  formikContext: FormikContextType<SafeSettingsEdits>;
+}) {
   const publicClient = useNetworkPublicClient();
   const { t } = useTranslation(['settings', 'common', 'modals']);
   const {
@@ -80,19 +88,23 @@ export function AddCreateProposalPermissionModal({ closeModal }: { closeModal: (
   const openConfirmDeleteStrategyModal = useDecentModal(ModalType.CONFIRM_DELETE_STRATEGY);
   const { addAction, resetActions } = useProposalActionsStore();
 
-  const [proposerThreshold, setProposerThreshold] = useState<BigIntValuePair>({
-    bigintValue: BigInt(azoriusGovernance.votingStrategy?.proposerThreshold?.value ?? 0),
-    value: azoriusGovernance.votingStrategy?.proposerThreshold?.formatted ?? '0',
-  });
+  const { values, setFieldValue } = formikContext;
+  const { permissions: permissionsEdits } = values;
+
+  const proposerThresholdFromGovernanceObject = (governanceObject: AzoriusGovernance) => {
+    return {
+      bigintValue: BigInt(governanceObject.votingStrategy?.proposerThreshold?.value ?? 0),
+      value: governanceObject.votingStrategy?.proposerThreshold?.formatted ?? '0',
+    };
+  };
+
+  const [existingProposerThreshold, setExistingProposerThreshold] = useState<BigIntValuePair>(
+    proposerThresholdFromGovernanceObject(azoriusGovernance),
+  );
 
   useEffect(() => {
-    if (azoriusGovernance.votingStrategy?.proposerThreshold) {
-      setProposerThreshold({
-        bigintValue: BigInt(azoriusGovernance.votingStrategy.proposerThreshold.value),
-        value: azoriusGovernance.votingStrategy.proposerThreshold.formatted ?? '0',
-      });
-    }
-  }, [azoriusGovernance.votingStrategy?.proposerThreshold]);
+    setExistingProposerThreshold(proposerThresholdFromGovernanceObject(azoriusGovernance));
+  }, [azoriusGovernance]);
 
   const gaslessVotingFeatureEnabled = useFeatureFlag('flag_gasless_voting');
 
@@ -104,7 +116,7 @@ export function AddCreateProposalPermissionModal({ closeModal }: { closeModal: (
   );
 
   const handleCreateProposal = async () => {
-    if (proposerThreshold.bigintValue !== undefined && moduleAzoriusAddress) {
+    if (existingProposerThreshold.bigintValue !== undefined && moduleAzoriusAddress) {
       let transactions: CreateProposalTransaction[];
       let actionType: ProposalActionType = ProposalActionType.EDIT;
 
@@ -120,7 +132,7 @@ export function AddCreateProposalPermissionModal({ closeModal }: { closeModal: (
             parameters: [
               {
                 signature: 'uint256',
-                value: proposerThreshold.bigintValue.toString(),
+                value: existingProposerThreshold.bigintValue.toString(),
               },
             ],
           },
@@ -137,7 +149,7 @@ export function AddCreateProposalPermissionModal({ closeModal }: { closeModal: (
             parameters: [
               {
                 signature: 'uint256',
-                value: proposerThreshold.bigintValue.toString(),
+                value: existingProposerThreshold.bigintValue.toString(),
               },
             ],
           },
@@ -253,7 +265,7 @@ export function AddCreateProposalPermissionModal({ closeModal }: { closeModal: (
                   erc721Tokens.map(token => token.votingWeight),
                   moduleAzoriusAddress,
                   Number(votingStrategy.votingPeriod.value),
-                  proposerThreshold.bigintValue,
+                  existingProposerThreshold.bigintValue,
                   500000n,
                   hatsProtocol, // hats protocol
                   [], // whitelisted hat ids
@@ -266,7 +278,7 @@ export function AddCreateProposalPermissionModal({ closeModal }: { closeModal: (
                 erc721Tokens.map(token => token.votingWeight),
                 moduleAzoriusAddress,
                 Number(votingStrategy.votingPeriod.value),
-                proposerThreshold.bigintValue,
+                existingProposerThreshold.bigintValue,
                 500000n,
                 hatsProtocol, // hats protocol
                 [], // whitelisted hat ids
@@ -329,7 +341,7 @@ export function AddCreateProposalPermissionModal({ closeModal }: { closeModal: (
         content: (
           <SafePermissionsStrategyAction
             actionType={actionType}
-            proposerThreshold={proposerThreshold}
+            proposerThreshold={existingProposerThreshold}
           />
         ),
         transactions,
@@ -337,6 +349,51 @@ export function AddCreateProposalPermissionModal({ closeModal }: { closeModal: (
       navigate(DAO_ROUTES.proposalWithActionsNew.relative(addressPrefix, safe.address));
     }
   };
+
+  function FormContent() {
+    console.log(
+      'permissionsEdits, existingProposerThreshold',
+      permissionsEdits,
+      existingProposerThreshold,
+    );
+    return (
+      <SettingsPermissionsStrategyForm
+        proposerThreshold={
+          permissionsEdits?.proposerThreshold !== undefined
+            ? permissionsEdits.proposerThreshold
+            : existingProposerThreshold
+        }
+        setProposerThreshold={val => {
+          let newProposerThresholdValue;
+
+          if (permissionsEdits?.proposerThreshold === undefined) {
+            newProposerThresholdValue = val;
+          } else if (val.bigintValue !== existingProposerThreshold.bigintValue) {
+            newProposerThresholdValue = val;
+          } else {
+            newProposerThresholdValue = undefined;
+          }
+
+          console.log('newProposerThresholdValue', newProposerThresholdValue);
+
+          setFieldValue('permissions.proposerThreshold', newProposerThresholdValue);
+        }}
+      />
+    );
+  }
+
+  function SubmitButton({ fullWidth = false }: { fullWidth?: boolean }) {
+    return (
+      <Button
+        variant="primary"
+        onClick={handleCreateProposal}
+        width={fullWidth ? 'full' : 'auto'}
+        mt={6}
+      >
+        {t('createProposal', { ns: 'modals' })}
+      </Button>
+    );
+  }
 
   return (
     <>
@@ -367,22 +424,16 @@ export function AddCreateProposalPermissionModal({ closeModal }: { closeModal: (
             </Flex>
           )}
         </NestedPageHeader>
+
         <Card>
-          <SettingsPermissionsStrategyForm
-            proposerThreshold={proposerThreshold}
-            setProposerThreshold={setProposerThreshold}
-          />
+          <FormContent />
         </Card>
+
         <Flex justifyContent="flex-end">
-          <Button
-            variant="primary"
-            onClick={handleCreateProposal}
-            mt={6}
-          >
-            {t('createProposal', { ns: 'modals' })}
-          </Button>
+          <SubmitButton />
         </Flex>
       </Show>
+
       <Show above="md">
         <Flex
           height="376px" // @dev - fixed height from design
@@ -422,23 +473,15 @@ export function AddCreateProposalPermissionModal({ closeModal }: { closeModal: (
               />
             )}
           </Flex>
+
           <Divider
             variant="darker"
             mx="-1.5rem"
             width="calc(100% + 3rem)"
           />
-          <SettingsPermissionsStrategyForm
-            proposerThreshold={proposerThreshold}
-            setProposerThreshold={setProposerThreshold}
-          />
-          <Button
-            variant="primary"
-            onClick={handleCreateProposal}
-            width="full"
-            mt={6}
-          >
-            {t('createProposal', { ns: 'modals' })}
-          </Button>
+
+          <FormContent />
+          <SubmitButton fullWidth />
         </Flex>
       </Show>
     </>
