@@ -1,6 +1,7 @@
 import { Box, Button, Flex, Show, Text } from '@chakra-ui/react';
 import { abis } from '@fractal-framework/fractal-contracts';
-import { ChangeEventHandler, useEffect, useState } from 'react';
+import { useFormikContext } from 'formik';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { encodeAbiParameters, encodeFunctionData, parseAbiParameters, zeroAddress } from 'viem';
@@ -9,6 +10,7 @@ import { GaslessVotingToggleDAOSettings } from '../../../../components/GaslessVo
 import { SettingsContentBox } from '../../../../components/SafeSettings/SettingsContentBox';
 import { InputComponent } from '../../../../components/ui/forms/InputComponent';
 import { BarLoader } from '../../../../components/ui/loaders/BarLoader';
+import { SafeSettingsEdits } from '../../../../components/ui/modals/SafeSettingsModal';
 import NestedPageHeader from '../../../../components/ui/page/Header/NestedPageHeader';
 import Divider from '../../../../components/ui/utils/Divider';
 import { DAO_ROUTES } from '../../../../constants/routes';
@@ -30,8 +32,11 @@ import { validateENSName } from '../../../../utils/url';
 
 export function SafeGeneralSettingsPage() {
   const { t } = useTranslation('settings');
-  const [name, setName] = useState('');
-  const [snapshotENS, setSnapshotENS] = useState('');
+  const { setFieldValue, values: formValues } = useFormikContext<SafeSettingsEdits>();
+
+  const [existingDaoName, setExistingDaoName] = useState('');
+  const [existingSnapshotENS, setExistingSnapshotENS] = useState('');
+
   const [snapshotENSValid, setSnapshotENSValid] = useState<boolean>();
 
   const { daoKey } = useCurrentDAOKey();
@@ -73,30 +78,49 @@ export function SafeGeneralSettingsPage() {
       safeAddress &&
       createAccountSubstring(safeAddress) !== subgraphInfo?.daoName
     ) {
-      setName(subgraphInfo.daoName);
+      setExistingDaoName(subgraphInfo.daoName);
     }
 
     if (subgraphInfo?.daoSnapshotENS) {
-      setSnapshotENS(subgraphInfo?.daoSnapshotENS);
+      setExistingSnapshotENS(subgraphInfo?.daoSnapshotENS);
     }
   }, [subgraphInfo?.daoName, subgraphInfo?.daoSnapshotENS, safeAddress]);
 
-  const handleSnapshotENSChange: ChangeEventHandler<HTMLInputElement> = e => {
-    const lowerCasedValue = e.target.value.toLowerCase();
-    setSnapshotENS(lowerCasedValue);
-    if (
-      validateENSName(lowerCasedValue) ||
-      (e.target.value === '' && subgraphInfo?.daoSnapshotENS)
-    ) {
+  // @todo: move validation to parent formik
+  // const handleSnapshotENSChange: ChangeEventHandler<HTMLInputElement> = e => {
+  //   const lowerCasedValue = e.target.value.toLowerCase();
+  //   setSnapshotENS(lowerCasedValue);
+  //   if (
+  //     validateENSName(lowerCasedValue) ||
+  //     (e.target.value === '' && subgraphInfo?.daoSnapshotENS)
+  //   ) {
+  //     setSnapshotENSValid(true);
+  //   } else {
+  //     setSnapshotENSValid(false);
+  //   }
+  // };
+
+  useEffect(() => {
+    if (!!formValues.general?.snapshot && validateENSName(formValues.general?.snapshot)) {
       setSnapshotENSValid(true);
     } else {
       setSnapshotENSValid(false);
     }
-  };
+  }, [formValues.general?.snapshot]);
 
-  const nameChanged = name !== subgraphInfo?.daoName;
-  const snapshotChanged = snapshotENSValid && snapshotENS !== subgraphInfo?.daoSnapshotENS;
+  const nameChanged = !!existingDaoName && existingDaoName !== subgraphInfo?.daoName;
+  const snapshotChanged = snapshotENSValid && existingSnapshotENS !== subgraphInfo?.daoSnapshotENS;
   const gaslessVotingChanged = isGaslessVotingEnabledToggled !== gaslessVotingEnabled;
+
+  useEffect(() => {
+    if (
+      !formValues.general?.name &&
+      !formValues.general?.snapshot &&
+      !formValues.general?.sponsoredVoting
+    ) {
+      setFieldValue('general', undefined);
+    }
+  }, [setFieldValue, formValues.general]);
 
   const { buildInstallVersionedVotingStrategies } = useInstallVersionedVotingStrategy();
 
@@ -108,13 +132,13 @@ export function SafeGeneralSettingsPage() {
     if (nameChanged) {
       changeTitles.push(t('updatesSafeName', { ns: 'proposalMetadata' }));
       keyArgs.push('daoName');
-      valueArgs.push(name);
+      valueArgs.push(existingDaoName);
     }
 
     if (snapshotChanged) {
       changeTitles.push(t('updateSnapshotSpace', { ns: 'proposalMetadata' }));
       keyArgs.push('snapshotENS');
-      valueArgs.push(snapshotENS);
+      valueArgs.push(existingSnapshotENS);
     }
 
     if (gaslessVotingChanged) {
@@ -333,9 +357,16 @@ export function SafeGeneralSettingsPage() {
                 </Text>
                 <InputComponent
                   isRequired={false}
-                  onChange={e => setName(e.target.value)}
+                  onChange={e => {
+                    const newValue =
+                      e.target.value === existingDaoName ? undefined : e.target.value;
+                    setFieldValue('general', {
+                      ...formValues.general,
+                      name: newValue,
+                    });
+                  }}
                   disabled={!canUserCreateProposal}
-                  value={name}
+                  value={formValues.general?.name ?? existingDaoName}
                   placeholder="Amazing DAO"
                   testId="daoSettings.name"
                   inputContainerProps={{
@@ -358,8 +389,18 @@ export function SafeGeneralSettingsPage() {
                 </Text>
                 <InputComponent
                   isRequired={false}
-                  onChange={handleSnapshotENSChange}
-                  value={snapshotENS}
+                  onChange={e => {
+                    const lowerCasedValue = e.target.value.toLowerCase();
+
+                    const newValue =
+                      lowerCasedValue === existingSnapshotENS ? undefined : lowerCasedValue;
+
+                    setFieldValue('general', {
+                      ...formValues.general,
+                      snapshot: newValue,
+                    });
+                  }}
+                  value={formValues.general?.snapshot ?? existingSnapshotENS}
                   disabled={!canUserCreateProposal}
                   placeholder="example.eth"
                   testId="daoSettings.snapshotENS"
