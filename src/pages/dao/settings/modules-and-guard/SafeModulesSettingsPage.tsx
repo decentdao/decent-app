@@ -85,8 +85,6 @@ export function SafeModulesSettingsPage() {
           </Box>
         </Flex>
         <Flex
-          // px={6}
-          // py={2}
           flexDirection="column"
           gap="1rem"
           mt="2rem"
