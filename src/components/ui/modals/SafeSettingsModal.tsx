@@ -29,6 +29,15 @@ export type SafeSettingsEdits = {
     timelockPeriod?: bigint;
     executionPeriod?: bigint;
   };
+  general?: {
+    name?: string;
+    snapshot?: string;
+    sponsoredVoting?: boolean;
+  };
+  permissions?: {
+    guard?: string;
+    modules?: string[];
+  };
 };
 
 export function SafeSettingsModal({ closeModal }: { closeModal: () => void }) {
