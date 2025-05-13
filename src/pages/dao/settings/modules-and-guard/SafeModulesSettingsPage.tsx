@@ -97,7 +97,7 @@ export function SafeModulesSettingsPage() {
             ml={6}
             textStyle="body-large"
           >
-            {t('guardTitle')}
+            {t('guardsTitle')}
           </Text>
 
           <Box
