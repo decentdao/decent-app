@@ -115,6 +115,7 @@ export function AddCreateProposalPermissionModal({
     safe.address,
   );
 
+  // @todo: move logic to parent formik submit
   const handleCreateProposal = async () => {
     if (existingProposerThreshold.bigintValue !== undefined && moduleAzoriusAddress) {
       let transactions: CreateProposalTransaction[];
@@ -351,11 +352,6 @@ export function AddCreateProposalPermissionModal({
   };
 
   function FormContent() {
-    console.log(
-      'permissionsEdits, existingProposerThreshold',
-      permissionsEdits,
-      existingProposerThreshold,
-    );
     return (
       <SettingsPermissionsStrategyForm
         proposerThreshold={
@@ -386,11 +382,11 @@ export function AddCreateProposalPermissionModal({
     return (
       <Button
         variant="primary"
-        onClick={handleCreateProposal}
+        onClick={closeModal}
         width={fullWidth ? 'full' : 'auto'}
         mt={6}
       >
-        {t('createProposal', { ns: 'modals' })}
+        {t('save', { ns: 'common' })}
       </Button>
     );
   }
