@@ -18,6 +18,7 @@ import { useNetworkConfigStore } from '../../../../providers/NetworkConfig/useNe
 import { AzoriusGovernance } from '../../../../types';
 
 // @todo: Near-duplicate of SafePermissionsSettingsPage.tsx. Pending refactor and/or cleanup.
+// https://linear.app/decent-labs/issue/ENG-842/fix-permissions-settings-ux-flows
 export function SafePermissionsSettingsContent() {
   const { t } = useTranslation(['settings', 'common']);
   const navigate = useNavigate();

@@ -10,7 +10,7 @@ import { ProposalTransactionsFormModal } from '../../ProposalBuilder/ProposalTra
 import AddSignerModal from '../../SafeSettings/Signers/modals/AddSignerModal';
 import RemoveSignerModal from '../../SafeSettings/Signers/modals/RemoveSignerModal';
 import DraggableDrawer from '../containers/DraggableDrawer';
-import AddStrategyPermissionModal from './AddStrategyPermissionModal';
+import { AddStrategyPermissionModal } from './AddStrategyPermissionModal';
 import { AirdropData, AirdropModal } from './AirdropModal/AirdropModal';
 import { ConfirmDeleteStrategyModal } from './ConfirmDeleteStrategyModal';
 import { ConfirmModifyGovernanceModal } from './ConfirmModifyGovernanceModal';
@@ -238,7 +238,7 @@ const getModalData = (args: {
       modalContent = (
         <ConfirmModifyGovernanceModal
           onClose={popModal}
-          closeAll={closeAll}
+          closeAllModals={closeAll}
         />
       );
       break;
@@ -285,7 +285,12 @@ const getModalData = (args: {
       break;
     }
     case ModalType.ADD_PERMISSION:
-      modalContent = <AddStrategyPermissionModal closeModal={popModal} />;
+      modalContent = (
+        <AddStrategyPermissionModal
+          closeModal={popModal}
+          closeAllModals={closeAll}
+        />
+      );
       modalSize = 'xl';
       break;
     case ModalType.CONFIRM_DELETE_STRATEGY:

@@ -7,10 +7,10 @@ import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetwo
 
 export function ConfirmModifyGovernanceModal({
   onClose,
-  closeAll,
+  closeAllModals,
 }: {
   onClose: () => void;
-  closeAll: () => void;
+  closeAllModals: () => void;
 }) {
   const { t } = useTranslation('modals');
   const { safeAddress } = useCurrentDAOKey();
@@ -64,7 +64,7 @@ export function ConfirmModifyGovernanceModal({
             px={8}
             py={3}
             width="100%"
-            onClick={closeAll}
+            onClick={closeAllModals}
           >
             {t('modalContinue')}
           </Button>

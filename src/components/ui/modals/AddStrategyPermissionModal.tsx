@@ -4,12 +4,19 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { zeroAddress } from 'viem';
 import { DAO_ROUTES } from '../../../constants/routes';
+import useFeatureFlag from '../../../helpers/environmentFeatureFlags';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import { useStore } from '../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
 import { Card } from '../cards/Card';
 
-export default function AddStrategyPermissionModal({ closeModal }: { closeModal: () => void }) {
+export function AddStrategyPermissionModal({
+  closeModal,
+  closeAllModals,
+}: {
+  closeModal: () => void;
+  closeAllModals: () => void;
+}) {
   const { t } = useTranslation(['settings', 'common']);
   const navigate = useNavigate();
   const { addressPrefix } = useNetworkConfigStore();
@@ -17,6 +24,8 @@ export default function AddStrategyPermissionModal({ closeModal }: { closeModal:
   const {
     node: { safe },
   } = useStore({ daoKey });
+
+  const isSettingsV1Enabled = useFeatureFlag('flag_settings_v1');
 
   if (!safe) {
     return null;
@@ -53,14 +62,19 @@ export default function AddStrategyPermissionModal({ closeModal }: { closeModal:
             backgroundColor: 'white-alpha-04',
           }}
           onClick={() => {
-            navigate(
-              DAO_ROUTES.settingsPermissionsCreateProposal.relative(
-                addressPrefix,
-                safe.address,
-                zeroAddress,
-              ),
-            );
-            closeModal();
+            closeAllModals();
+
+            // @todo: add this as an action instead of a navigation
+            // https://linear.app/decent-labs/issue/ENG-842/fix-permissions-settings-ux-flows
+            if (isSettingsV1Enabled) {
+              navigate(
+                DAO_ROUTES.settingsPermissionsCreateProposal.relative(
+                  addressPrefix,
+                  safe.address,
+                  zeroAddress,
+                ),
+              );
+            }
           }}
         >
           <Box color="lilac-0">
