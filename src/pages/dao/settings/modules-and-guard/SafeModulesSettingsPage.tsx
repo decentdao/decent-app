@@ -34,8 +34,6 @@ export function SafeModulesSettingsPage() {
       </Show>
       <SettingsContentBox>
         <Flex
-          px={6}
-          py={2}
           flexDirection="column"
           gap="1rem"
         >
@@ -87,8 +85,6 @@ export function SafeModulesSettingsPage() {
           </Box>
         </Flex>
         <Flex
-          px={6}
-          py={2}
           flexDirection="column"
           gap="1rem"
           mt="2rem"
@@ -97,7 +93,7 @@ export function SafeModulesSettingsPage() {
             ml={6}
             textStyle="body-large"
           >
-            {t('guardTitle')}
+            {t('guardsTitle')}
           </Text>
 
           <Box
