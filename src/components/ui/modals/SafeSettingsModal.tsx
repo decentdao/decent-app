@@ -3,12 +3,12 @@ import { Formik, Form } from 'formik';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
-import useFeatureFlag from '../../../helpers/environmentFeatureFlags';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import { useValidationAddress } from '../../../hooks/schemas/common/useValidationAddress';
 import { useCanUserCreateProposal } from '../../../hooks/utils/useCanUserSubmitProposal';
 import { SafeGeneralSettingsPage } from '../../../pages/dao/settings/general/SafeGeneralSettingsPage';
 import { useStore } from '../../../providers/App/AppProvider';
+import { bigintSerializer } from '../../../utils/bigintSerializer';
 import { SettingsNavigation } from '../../SafeSettings/SettingsNavigation';
 import {
   MultisigEditGovernanceFormikErrors,
@@ -59,8 +59,6 @@ export function SafeSettingsModal({ closeModal }: { closeModal: () => void }) {
 
   const { validateAddress } = useValidationAddress();
 
-  const settingsV1FeatureEnabled = useFeatureFlag('flag_settings_v1');
-
   return (
     <Formik<SafeSettingsEdits>
       initialValues={{}}
@@ -109,9 +107,7 @@ export function SafeSettingsModal({ closeModal }: { closeModal: () => void }) {
       }}
       onSubmit={values => {
         console.log('submit values', values);
-        if (settingsV1FeatureEnabled) {
-          toast.info(`Submit TBD: ${JSON.stringify(values)}`);
-        }
+        toast.info(`Submit TBD: ${JSON.stringify(values, bigintSerializer)}`);
         // Close all modals, navigate to create proposal page with all prepared actions
       }}
     >
