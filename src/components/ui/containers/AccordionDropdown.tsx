@@ -32,12 +32,12 @@ export function AccordionDropdown({
   content,
   contentCount,
   sectionTitle,
-  defaultExpandedIndecies,
+  defaultExpandedIndices,
 }: {
   content: React.ReactNode;
   contentCount?: number;
   sectionTitle: string;
-  defaultExpandedIndecies?: number[];
+  defaultExpandedIndices?: number[];
 }) {
   return (
     <Box
@@ -51,7 +51,7 @@ export function AccordionDropdown({
       <Accordion
         allowToggle
         gap="1.5rem"
-        defaultIndex={defaultExpandedIndecies}
+        defaultIndex={defaultExpandedIndices}
       >
         <AccordionItem
           borderTop="none"

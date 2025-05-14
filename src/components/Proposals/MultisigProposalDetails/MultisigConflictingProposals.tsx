@@ -102,7 +102,7 @@ export function MultisigConflictingProposals({ proposal }: { proposal: MultisigP
       <AccordionDropdown
         sectionTitle={t('conflictingProposals')}
         // @dev expands if there is a rejection proposal
-        defaultExpandedIndecies={rejectionProposal ? [0] : undefined}
+        defaultExpandedIndices={rejectionProposal ? [0] : undefined}
         contentCount={conflictingProposals.length}
         content={
           <Box mt={4}>
