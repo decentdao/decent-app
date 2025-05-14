@@ -1,8 +1,10 @@
 import { Box, Flex, InputGroup, InputRightElement } from '@chakra-ui/react';
+import { abis } from '@fractal-framework/fractal-contracts';
 import { useFormikContext } from 'formik';
-import { useCallback } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { getContract } from 'viem';
 import { BigIntInput } from '../../../../components/ui/forms/BigIntInput';
 import DurationUnitStepperInput from '../../../../components/ui/forms/DurationUnitStepperInput';
 import { LabelComponent } from '../../../../components/ui/forms/InputComponent';
@@ -10,18 +12,24 @@ import { BarLoader } from '../../../../components/ui/loaders/BarLoader';
 import { SafeSettingsEdits } from '../../../../components/ui/modals/SafeSettingsModal';
 import Divider from '../../../../components/ui/utils/Divider';
 import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
+import useNetworkPublicClient from '../../../../hooks/useNetworkPublicClient';
+import { useTimeHelpers } from '../../../../hooks/utils/useTimeHelpers';
 import { useStore } from '../../../../providers/App/AppProvider';
-import { AzoriusGovernance } from '../../../../types';
+import { AzoriusGovernance, FreezeGuardType } from '../../../../types';
+import { blocksToSeconds } from '../../../../utils/contract';
 
 export function GovernanceParams() {
   const { t } = useTranslation(['dashboard', 'daoCreate', 'common']);
   const { daoKey } = useCurrentDAOKey();
   const {
     governance,
+    guardContracts: { freezeGuardType, freezeGuardContractAddress },
     node: { safe },
   } = useStore({ daoKey });
 
   const { values, setFieldValue } = useFormikContext<SafeSettingsEdits>();
+  const publicClient = useNetworkPublicClient();
+  const { getTimeDuration } = useTimeHelpers();
 
   const votingStrategy = governance.isAzorius
     ? (governance as AzoriusGovernance).votingStrategy
@@ -30,8 +38,48 @@ export function GovernanceParams() {
   const existingQuorumPercentage = votingStrategy?.quorumPercentage?.value;
   const existingQuorumThreshold = votingStrategy?.quorumThreshold?.value;
   const existingVotingPeriod = votingStrategy?.votingPeriod?.value;
-  const existingTimelockPeriod = votingStrategy?.timeLockPeriod?.value;
-  const existingExecutionPeriod = votingStrategy?.executionPeriod?.value;
+
+  const [existingTimelockPeriod, setExistingTimelockPeriod] = useState<bigint | undefined>(
+    votingStrategy?.timeLockPeriod?.value,
+  );
+  const [existingExecutionPeriod, setExistingExecutionPeriod] = useState<bigint | undefined>(
+    votingStrategy?.executionPeriod?.value,
+  );
+
+  useEffect(() => {
+    const setFreezeGuardTimelockAndExecutionInfo = async () => {
+      const formatBlocks = async (blocks: number): Promise<string | undefined> =>
+        getTimeDuration(await blocksToSeconds(blocks, publicClient));
+
+      if (freezeGuardType == FreezeGuardType.MULTISIG) {
+        if (freezeGuardContractAddress && publicClient) {
+          const freezeGuardContract = getContract({
+            abi: abis.MultisigFreezeGuard,
+            address: freezeGuardContractAddress,
+            client: publicClient,
+          });
+          const [contractTimelockPeriod, contractExecutionPeriod] = await Promise.all([
+            freezeGuardContract.read.timelockPeriod(),
+            freezeGuardContract.read.executionPeriod(),
+          ]);
+          const [timelockSeconds, executionPeriodSeconds] = await Promise.all([
+            formatBlocks(contractTimelockPeriod),
+            formatBlocks(contractExecutionPeriod),
+          ]);
+
+          if (timelockSeconds !== undefined) {
+            setExistingTimelockPeriod(BigInt(timelockSeconds));
+          }
+
+          if (executionPeriodSeconds !== undefined) {
+            setExistingExecutionPeriod(BigInt(executionPeriodSeconds));
+          }
+        }
+      }
+    };
+
+    setFreezeGuardTimelockAndExecutionInfo();
+  }, [freezeGuardType, freezeGuardContractAddress, getTimeDuration, publicClient]);
 
   const handleInputChange = useCallback(
     (
