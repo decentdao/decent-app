@@ -26,6 +26,7 @@
   "move": "Déplacer",
   "hours": "Heures",
   "minutes": "Procès-verbal",
+  "minutesShort": "min",
   "quorum": "Quorum",
   "deploy": "Déployer",
   "loading": "Chargement...",

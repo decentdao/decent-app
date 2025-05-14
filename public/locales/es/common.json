@@ -26,6 +26,7 @@
   "move": "Mover",
   "hours": "Horas",
   "minutes": "Actas",
+  "minutesShort": "min",
   "quorum": "Quórum",
   "deploy": "Despliegue",
   "loading": "Cargando...",

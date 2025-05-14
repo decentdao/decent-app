@@ -26,6 +26,7 @@
   "move": "이동",
   "hours": "시간",
   "minutes": "분",
+  "minutesShort": "분",
   "quorum": "쿼럼",
   "deploy": "배포",
   "loading": "로드 중...",

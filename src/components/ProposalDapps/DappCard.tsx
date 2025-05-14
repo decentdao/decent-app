@@ -1,5 +1,6 @@
 import { Avatar, Box, Flex, Icon, Tag, TagLabel, Text } from '@chakra-ui/react';
 import { Dot } from '@phosphor-icons/react';
+import { SEXY_BOX_SHADOW_T_T } from '../../constants/common';
 import { ModalType } from '../ui/modals/ModalProvider';
 import { useDecentModal } from '../ui/modals/useDecentModal';
 import Divider from '../ui/utils/Divider';
@@ -36,7 +37,7 @@ export default function DappCard({
       _hover={{
         bg: 'neutral-3',
       }}
-      boxShadow="0px 0px 0px var(--Spread-1, 1px) var(--black, #151217), 0px 0px 0px var(--Spread-1, 1px) var(--color-whitealpha-04, rgba(255, 255, 255, 0.04)) inset, 0px var(--Depth-1, 1px) 0px 0px var(--color-whitealpha-04, rgba(255, 255, 255, 0.04)) inset"
+      boxShadow={SEXY_BOX_SHADOW_T_T}
       onClick={() => {
         onClose();
         openDappBrowserModal();
