@@ -1,10 +1,11 @@
-import { Box, Flex, Input, InputGroup, InputRightElement, Text } from '@chakra-ui/react';
+import { Box, Flex, InputGroup, InputRightElement } from '@chakra-ui/react';
 import { useFormikContext } from 'formik';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { BigIntInput } from '../../../../components/ui/forms/BigIntInput';
+import DurationUnitStepperInput from '../../../../components/ui/forms/DurationUnitStepperInput';
 import { LabelComponent } from '../../../../components/ui/forms/InputComponent';
-import { NumberStepperInput } from '../../../../components/ui/forms/NumberStepperInput';
 import { BarLoader } from '../../../../components/ui/loaders/BarLoader';
 import { SafeSettingsEdits } from '../../../../components/ui/modals/SafeSettingsModal';
 import Divider from '../../../../components/ui/utils/Divider';
@@ -35,18 +36,11 @@ export function GovernanceParams() {
   const handleInputChange = useCallback(
     (
       field: string,
-      inputVal: string | undefined,
+      inputValue: bigint | undefined,
       existingValue: bigint | undefined,
       otherInputValues: (bigint | undefined)[],
     ) => {
-      let newValue: bigint | undefined;
-
-      if (inputVal && /^[+-]?\d+$/.test(inputVal)) {
-        const inputValue: bigint = BigInt(inputVal);
-        newValue = inputValue !== existingValue ? inputValue : undefined;
-      } else if (inputVal) {
-        console.warn(`Invalid input for BigInt conversion: ${inputVal}`);
-      }
+      const newValue = inputValue !== existingValue ? inputValue : undefined;
 
       setFieldValue(field, newValue);
 
@@ -90,16 +84,14 @@ export function GovernanceParams() {
               gridContainerProps={inputGridContainerProps}
             >
               <InputGroup>
-                <Input
-                  value={
-                    values.azorius?.quorumPercentage?.toString() ??
-                    existingQuorumPercentage.toString()
-                  }
+                <BigIntInput
+                  value={values.azorius?.quorumPercentage ?? existingQuorumPercentage}
                   color={values.azorius?.quorumPercentage === undefined ? 'neutral-7' : 'white-0'}
+                  decimalPlaces={0}
                   onChange={e =>
                     handleInputChange(
                       'azorius.quorumPercentage',
-                      e.target.value,
+                      e.bigintValue,
                       existingQuorumPercentage,
                       [
                         values.azorius?.quorumThreshold,
@@ -133,16 +125,15 @@ export function GovernanceParams() {
               helper={t('helperQuorumERC721', { ns: 'daoCreate' })}
               gridContainerProps={inputGridContainerProps}
             >
-              <Input
-                value={
-                  values.azorius?.quorumThreshold?.toString() ?? existingQuorumThreshold.toString()
-                }
+              <BigIntInput
+                value={values.azorius?.quorumThreshold ?? existingQuorumThreshold}
                 minWidth="100%"
+                decimalPlaces={0}
                 color={values.azorius?.quorumThreshold === undefined ? 'neutral-7' : 'white-0'}
                 onChange={e =>
                   handleInputChange(
                     'azorius.quorumThreshold',
-                    e.target.value,
+                    e.bigintValue,
                     existingQuorumThreshold,
                     [
                       values.azorius?.quorumPercentage,
@@ -172,18 +163,22 @@ export function GovernanceParams() {
               helper={t('helperVotingPeriod', { ns: 'daoCreate' })}
               gridContainerProps={inputGridContainerProps}
             >
-              <NumberStepperInput
-                value={values.azorius?.votingPeriod?.toString() ?? existingVotingPeriod.toString()}
+              <DurationUnitStepperInput
+                secondsValue={Number(values.azorius?.votingPeriod ?? existingVotingPeriod)}
                 color={values.azorius?.votingPeriod === undefined ? 'neutral-7' : 'white-0'}
-                rightElement={<Text color="neutral-5">{t('minutesShort', { ns: 'common' })}</Text>}
-                onChange={e =>
-                  handleInputChange('azorius.votingPeriod', e, existingVotingPeriod, [
-                    values.azorius?.quorumPercentage,
-                    values.azorius?.quorumThreshold,
-                    values.azorius?.timelockPeriod,
-                    values.azorius?.executionPeriod,
-                  ])
-                }
+                onSecondsValueChange={valInSeconds => {
+                  handleInputChange(
+                    'azorius.votingPeriod',
+                    BigInt(valInSeconds),
+                    existingVotingPeriod,
+                    [
+                      values.azorius?.quorumPercentage,
+                      values.azorius?.quorumThreshold,
+                      values.azorius?.timelockPeriod,
+                      values.azorius?.executionPeriod,
+                    ],
+                  );
+                }}
               />
             </LabelComponent>
           </Flex>
@@ -205,16 +200,14 @@ export function GovernanceParams() {
               gridContainerProps={inputGridContainerProps}
             >
               <InputGroup>
-                <Input
-                  value={
-                    values.azorius?.timelockPeriod?.toString() ?? existingTimelockPeriod.toString()
-                  }
+                <BigIntInput
+                  value={values.azorius?.timelockPeriod ?? existingTimelockPeriod}
                   minWidth="100%"
                   color={values.azorius?.timelockPeriod === undefined ? 'neutral-7' : 'white-0'}
                   onChange={e =>
                     handleInputChange(
                       'azorius.timelockPeriod',
-                      e.target.value,
+                      e.bigintValue,
                       existingTimelockPeriod,
                       [
                         values.azorius?.quorumPercentage,
@@ -248,19 +241,21 @@ export function GovernanceParams() {
               helper={t('helperExecutionPeriod', { ns: 'daoCreate' })}
               gridContainerProps={inputGridContainerProps}
             >
-              <NumberStepperInput
-                value={
-                  values.azorius?.executionPeriod?.toString() ?? existingExecutionPeriod.toString()
-                }
+              <DurationUnitStepperInput
+                secondsValue={Number(values.azorius?.executionPeriod ?? existingExecutionPeriod)}
                 color={values.azorius?.executionPeriod === undefined ? 'neutral-7' : 'white-0'}
-                rightElement={<Text color="neutral-5">{t('minutesShort', { ns: 'common' })}</Text>}
-                onChange={e =>
-                  handleInputChange('azorius.executionPeriod', e, existingExecutionPeriod, [
-                    values.azorius?.quorumPercentage,
-                    values.azorius?.quorumThreshold,
-                    values.azorius?.timelockPeriod,
-                    values.azorius?.votingPeriod,
-                  ])
+                onSecondsValueChange={valInSeconds =>
+                  handleInputChange(
+                    'azorius.executionPeriod',
+                    BigInt(valInSeconds),
+                    existingExecutionPeriod,
+                    [
+                      values.azorius?.quorumPercentage,
+                      values.azorius?.quorumThreshold,
+                      values.azorius?.timelockPeriod,
+                      values.azorius?.votingPeriod,
+                    ],
+                  )
                 }
               />
             </LabelComponent>

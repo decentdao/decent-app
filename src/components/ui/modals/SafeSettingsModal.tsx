@@ -66,7 +66,7 @@ export function SafeSettingsModal({ closeModal }: { closeModal: () => void }) {
 
                 const validation = await validateAddress({ address: signer.inputValue });
                 if (!validation.validation.isValidAddress) {
-                  return { key: signer.key, error: t('invalidAddress', { ns: 'common' }) };
+                  return { key: signer.key, error: t('errorInvalidAddress', { ns: 'common' }) };
                 }
                 return null;
               }),
