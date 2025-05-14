@@ -3,6 +3,7 @@ import { Formik, Form } from 'formik';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
+import useFeatureFlag from '../../../helpers/environmentFeatureFlags';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import { useValidationAddress } from '../../../hooks/schemas/common/useValidationAddress';
 import { useCanUserCreateProposal } from '../../../hooks/utils/useCanUserSubmitProposal';
@@ -48,6 +49,8 @@ export function SafeSettingsModal({ closeModal }: { closeModal: () => void }) {
   const { t } = useTranslation(['modals', 'common']);
 
   const { validateAddress } = useValidationAddress();
+
+  const settingsV1FeatureEnabled = useFeatureFlag('flag_settings_v1');
 
   return (
     <Formik<SafeSettingsEdits>
@@ -97,7 +100,9 @@ export function SafeSettingsModal({ closeModal }: { closeModal: () => void }) {
       }}
       onSubmit={values => {
         console.log('submit values', values);
-        toast.info(`Submit TBD: ${JSON.stringify(values)}`);
+        if (settingsV1FeatureEnabled) {
+          toast.info(`Submit TBD: ${JSON.stringify(values)}`);
+        }
         // Close all modals, navigate to create proposal page with all prepared actions
       }}
     >
