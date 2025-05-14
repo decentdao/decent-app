@@ -203,5 +203,13 @@
   "nonceLabelSingleTransaction": "交易 #{{proposalId}}",
   "nonceLabelRecommended": "{{nonce}}- 新交易",
   "nonceLabelRecommendedTitle": "推薦的 nonce",
-  "nonceLabelReplaceActiveTitle": "取代作用中"
+  "nonceLabelReplaceActiveTitle": "取代作用中",
+  "yourSignatureLabel": "Your Signature",
+  "proposalExecutionSectionTitle": "Proposal Execution Status",
+  "notReady": "Not Ready",
+  "executeRejection": "Execute Rejection",
+  "awaitingSigners": "Awaiting Signers",
+  "conflictingProposalNotice": "When two or more proposals share the same Nonce, only one can be executed.",
+  "timelockRejection": "Timelock Rejection",
+  "timelockedTitle": "Timelocked"
 }

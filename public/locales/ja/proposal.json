@@ -203,5 +203,13 @@
   "nonceLabelSingleTransaction": "取引番号{{proposalId}}",
   "nonceLabelRecommended": "{{nonce}}- 新規取引",
   "nonceLabelRecommendedTitle": "推奨ノンス",
-  "nonceLabelReplaceActiveTitle": "アクティブを置き換える"
+  "nonceLabelReplaceActiveTitle": "アクティブを置き換える",
+  "yourSignatureLabel": "あなたの署名",
+  "proposalExecutionSectionTitle": "プロポーザル実施状況",
+  "notReady": "準備不足",
+  "executeRejection": "拒否を実行する",
+  "awaitingSigners": "署名待ち",
+  "conflictingProposalNotice": "2つ以上のプロポーザルが同じNonceを共有する場合、実行できるのは1つだけである。",
+  "timelockRejection": "タイムロックの拒否",
+  "timelockedTitle": "タイムロック"
 }

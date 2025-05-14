@@ -203,5 +203,13 @@
   "nonceLabelSingleTransaction": "트랜잭션 #{{proposalId}}",
   "nonceLabelRecommended": "{{nonce}} - 새 거래",
   "nonceLabelRecommendedTitle": "권장 논스",
-  "nonceLabelReplaceActiveTitle": "활성 바꾸기"
+  "nonceLabelReplaceActiveTitle": "활성 바꾸기",
+  "yourSignatureLabel": "서명",
+  "proposalExecutionSectionTitle": "제안서 실행 상태",
+  "notReady": "준비되지 않음",
+  "executeRejection": "거부 실행",
+  "awaitingSigners": "서명자 대기 중",
+  "conflictingProposalNotice": "두 개 이상의 제안서가 동일한 논스를 공유하는 경우, 하나만 실행할 수 있습니다.",
+  "timelockRejection": "타임락 거부",
+  "timelockedTitle": "시간 고정"
 }

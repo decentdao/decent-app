@@ -203,5 +203,13 @@
   "nonceLabelSingleTransaction": "Транзакція #{{proposalId}}",
   "nonceLabelRecommended": "{{nonce}} - Нова транзакція",
   "nonceLabelRecommendedTitle": "Рекомендований нонсенс",
-  "nonceLabelReplaceActiveTitle": "Замінити активний"
+  "nonceLabelReplaceActiveTitle": "Замінити активний",
+  "yourSignatureLabel": "Your Signature",
+  "proposalExecutionSectionTitle": "Proposal Execution Status",
+  "notReady": "Not Ready",
+  "executeRejection": "Execute Rejection",
+  "awaitingSigners": "Awaiting Signers",
+  "conflictingProposalNotice": "When two or more proposals share the same Nonce, only one can be executed.",
+  "timelockRejection": "Timelock Rejection",
+  "timelockedTitle": "Timelocked"
 }

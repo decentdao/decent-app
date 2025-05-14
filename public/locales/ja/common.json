@@ -128,5 +128,6 @@
   "unsavedChanges": "未保存の変更",
   "unsavedChangesDescription": "保存していない変更があり、このまま続けると失われます。変更を破棄しますか？",
   "discardChanges": "廃棄",
-  "keepEditing": "編集を続ける"
+  "keepEditing": "編集を続ける",
+  "selectStatusLabel": "ステータス選択"
 }
