@@ -4,7 +4,6 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import PencilWithLineIcon from '../../../../assets/theme/custom/icons/PencilWithLineIcon';
 import { SettingsContentBox } from '../../../../components/SafeSettings/SettingsContentBox';
-import { Card } from '../../../../components/ui/cards/Card';
 import NoDataCard from '../../../../components/ui/containers/NoDataCard';
 import { BarLoader } from '../../../../components/ui/loaders/BarLoader';
 import { ModalType } from '../../../../components/ui/modals/ModalProvider';
@@ -46,110 +45,127 @@ export function SafePermissionsSettingsContent() {
     <>
       <SettingsContentBox
         flexDirection="column"
-        gap={{ base: 4, md: 6 }}
         display="flex"
         bg={{ base: 'transparent', md: NEUTRAL_2_82_TRANSPARENT }}
       >
-        {!isLoaded ? (
-          <Card
-            my="0.5rem"
-            justifyContent="center"
-            display="flex"
-          >
-            <BarLoader />
-          </Card>
-        ) : (!votesToken || !linearVotingErc20Address) &&
-          (!erc721Tokens || !linearVotingErc721Address) ? (
-          <NoDataCard
-            emptyText="emptyPermissions"
-            emptyTextNotProposer="emptyPermissionsNotProposer"
-            translationNameSpace="settings"
-          />
-        ) : (
-          <Card
-            onClick={
-              canUserCreateProposal && (linearVotingErc20Address || linearVotingErc721Address)
-                ? () =>
-                    navigate(
-                      DAO_ROUTES.settingsPermissionsCreateProposal.relative(
-                        addressPrefix,
-                        safe.address,
-                        linearVotingErc20Address || linearVotingErc721Address,
-                      ),
-                    )
-                : undefined
-            }
-            sx={{
-              _hover: {
-                backgroundColor: 'neutral-3',
-                button: {
-                  opacity: 1,
-                },
-              },
-            }}
-          >
-            <Flex justifyContent="space-between">
-              <Flex
-                gap={4}
-                alignItems="flex-start"
-              >
-                <Box
-                  borderRadius="50%"
-                  bg="neutral-3"
-                  color="lilac-0"
-                  padding={1}
-                >
-                  <Coins fontSize="1.5rem" />
-                </Box>
-                <Box>
-                  <Text>{t('permissionCreateProposalsTitle')}</Text>
-                  <Text
-                    textStyle="labels-large"
-                    color="neutral-7"
-                  >
-                    {votesToken
-                      ? t('permissionsErc20CreateProposalsDescription', {
-                          symbol: votesToken.symbol,
-                          proposerThreshold,
-                        })
-                      : t('permissionsErc721CreateProposalsDescription', {
-                          proposerThreshold,
-                          symbol: erc721Tokens?.[0]?.symbol,
-                          count: erc721Tokens?.length,
-                        })}
-                  </Text>
-                </Box>
-              </Flex>
-              {canUserCreateProposal && (
-                <IconButton
-                  variant="secondary"
-                  size="icon-md"
-                  icon={<PencilWithLineIcon />}
-                  aria-label={t('edit')}
-                  opacity={0}
-                  color="neutral-6"
-                  border="none"
-                />
-              )}
-            </Flex>
-          </Card>
-        )}
+        <Text
+          ml={6}
+          mb={0.5}
+          textStyle="body-large"
+        >
+          {t('permissionsTitle')}
+        </Text>
 
-        {canUserCreateProposal && (
-          <Flex flexDir="column">
-            <Divider mb={4} />
-            <Button
-              variant="secondary"
-              size="sm"
-              leftIcon={<Plus />}
-              width="max-content"
-              onClick={openAddPermissionModal}
-              alignSelf="flex-end"
+        <Flex
+          flexDirection="column"
+          border="1px solid"
+          borderColor="neutral-3"
+          borderRadius="0.75rem"
+        >
+          {!isLoaded ? (
+            <Box
+              my="0.5rem"
+              justifyContent="center"
+              display="flex"
             >
-              {t('addPermission')}
-            </Button>
-          </Flex>
-        )}
+              <BarLoader />
+            </Box>
+          ) : (!votesToken || !linearVotingErc20Address) &&
+            (!erc721Tokens || !linearVotingErc721Address) ? (
+            <NoDataCard
+              emptyText="emptyPermissions"
+              emptyTextNotProposer="emptyPermissionsNotProposer"
+              translationNameSpace="settings"
+              flatten
+            />
+          ) : (
+            <Box
+              p={4}
+              borderRadius="0.75rem"
+              onClick={
+                canUserCreateProposal && (linearVotingErc20Address || linearVotingErc721Address)
+                  ? () =>
+                      navigate(
+                        DAO_ROUTES.settingsPermissionsCreateProposal.relative(
+                          addressPrefix,
+                          safe.address,
+                          linearVotingErc20Address || linearVotingErc721Address,
+                        ),
+                      )
+                  : undefined
+              }
+              sx={{
+                _hover: {
+                  backgroundColor: 'neutral-3',
+                  button: {
+                    opacity: 1,
+                  },
+                },
+              }}
+            >
+              <Flex justifyContent="space-between">
+                <Flex
+                  gap={4}
+                  alignItems="flex-start"
+                >
+                  <Box
+                    borderRadius="50%"
+                    bg="neutral-3"
+                    color="lilac-0"
+                    padding={1}
+                  >
+                    <Coins fontSize="1.5rem" />
+                  </Box>
+                  <Box>
+                    <Text>{t('permissionCreateProposalsTitle')}</Text>
+                    <Text
+                      textStyle="labels-large"
+                      color="neutral-7"
+                    >
+                      {votesToken
+                        ? t('permissionsErc20CreateProposalsDescription', {
+                            symbol: votesToken.symbol,
+                            proposerThreshold,
+                          })
+                        : t('permissionsErc721CreateProposalsDescription', {
+                            proposerThreshold,
+                            symbol: erc721Tokens?.[0]?.symbol,
+                            count: erc721Tokens?.length,
+                          })}
+                    </Text>
+                  </Box>
+                </Flex>
+                {canUserCreateProposal && (
+                  <IconButton
+                    variant="secondary"
+                    size="icon-md"
+                    icon={<PencilWithLineIcon />}
+                    aria-label={t('edit')}
+                    opacity={0}
+                    color="neutral-6"
+                    border="none"
+                  />
+                )}
+              </Flex>
+            </Box>
+          )}
+          {canUserCreateProposal && (
+            <Flex flexDir="column">
+              <Divider />
+              <Button
+                m={4}
+                variant="secondary"
+                size="sm"
+                leftIcon={<Plus />}
+                width="max-content"
+                onClick={openAddPermissionModal}
+                alignSelf="flex-end"
+              >
+                {t('addPermission')}
+              </Button>
+            </Flex>
+          )}
+        </Flex>
       </SettingsContentBox>
     </>
   );

@@ -183,7 +183,7 @@ export function SettingsNavigation({
 
   return (
     <Flex
-      backgroundColor={isSettingsV1Enabled ? 'transparent' : 'neutral-1'}
+      backgroundColor={isSettingsV1Enabled ? 'transparent' : 'neutral-2'}
       p={{ base: '1rem', md: '0.25rem' }}
       gap="0.25rem"
       flexDirection="column"
@@ -235,7 +235,7 @@ export function SettingsNavigation({
             </Text>
           </SettingsNavigationItem>
           <SettingsNavigationItem
-            title={t('daoModulesAndGuard')}
+            title={t('modulesAndGuardsTitle')}
             leftIcon={<Stack fontSize="1.5rem" />}
             item="modulesAndGuard"
             currentItem={currentItem}
@@ -282,7 +282,7 @@ export function SettingsNavigation({
           <SettingsLink
             path={DAO_ROUTES.settingsModulesAndGuard.relative(addressPrefix, safe.address)}
             leftIcon={<Stack fontSize="1.5rem" />}
-            title={t('daoModulesAndGuard')}
+            title={t('modulesAndGuardsTitle')}
           >
             <Text color="neutral-7">{(modules ?? []).length + (safe?.guard ? 1 : 0)}</Text>
           </SettingsLink>
