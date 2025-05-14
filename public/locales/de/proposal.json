@@ -207,5 +207,9 @@
   "nonceLabelSingleTransaction": "Transaktion #{{proposalId}}",
   "nonceLabelRecommended": "{{nonce}} - Neue Transaktion",
   "nonceLabelRecommendedTitle": "Empfohlene nonce",
-  "nonceLabelReplaceActiveTitle": "Ersetzen aktiv"
+  "nonceLabelReplaceActiveTitle": "Ersetzen aktiv",
+  "nonceLabelBannerActive": "{{confirmations}} von {{signersThreshold}} Unterzeichner wollen Nonce {{nonce}} ablehnen.",
+  "nonceLabelBannerRejected": "Nonce {{nonce}} wurde abgelehnt.",
+  "conflictingProposals": "Widersprüchliche Vorschläge",
+  "executableCode": "Ausführbarer Code"
 }

@@ -207,5 +207,9 @@
   "nonceLabelSingleTransaction": "事务 #{{proposalId}}",
   "nonceLabelRecommended": "{{nonce}}- 新事务",
   "nonceLabelRecommendedTitle": "建议使用的 nonce",
-  "nonceLabelReplaceActiveTitle": "更换活动"
+  "nonceLabelReplaceActiveTitle": "更换活动",
+  "nonceLabelBannerActive": "{{confirmations} {{signersThreshold}} 的签名者希望拒绝接受 Nonce }。{{nonce}",
+  "nonceLabelBannerRejected": "Nonce{{nonce}} 已被拒绝。",
+  "conflictingProposals": "相互矛盾的建议",
+  "executableCode": "可执行代码"
 }

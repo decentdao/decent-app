@@ -207,5 +207,9 @@
   "nonceLabelSingleTransaction": "Транзакция #{{proposalId}}",
   "nonceLabelRecommended": "{{nonce}} - Новая транзакция",
   "nonceLabelRecommendedTitle": "Рекомендуемый нонс",
-  "nonceLabelReplaceActiveTitle": "Заменить активный"
+  "nonceLabelReplaceActiveTitle": "Заменить активный",
+  "nonceLabelBannerActive": "{{confirmations}Подписчики {{signersThreshold}} хотят отклонить Nonce {{nonce}}.",
+  "nonceLabelBannerRejected": "Nonce {{nonce}} был отклонен.",
+  "conflictingProposals": "Противоречивые предложения",
+  "executableCode": "Исполняемый код"
 }

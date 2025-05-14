@@ -1,20 +1,10 @@
-import {
-  Accordion,
-  AccordionButton,
-  AccordionIcon,
-  AccordionItem,
-  AccordionPanel,
-  Alert,
-  AlertTitle,
-  Box,
-  Flex,
-  Text,
-} from '@chakra-ui/react';
+import { Alert, AlertTitle, Box, Flex, Text } from '@chakra-ui/react';
 import { useTranslation } from 'react-i18next';
 import { isAddress } from 'viem';
 import { Info } from '../../../assets/theme/custom/icons/Info';
 import { ADDRESS_MULTISIG_METADATA } from '../../../constants/common';
 import { DecodedTransaction, FractalProposal } from '../../../types';
+import { AccordionDropdown } from '../containers/AccordionDropdown';
 import EtherscanLink from '../links/EtherscanLink';
 
 function TransactionRow({ paramKey, value }: { paramKey: string; value: string }) {
@@ -148,52 +138,22 @@ export default function ProposalExecutableCode({ proposal }: { proposal: Fractal
     return null;
   }
   return (
-    <Box
-      marginTop={4}
-      padding="1.5rem"
-      borderRadius="0.75rem"
-      bg="neutral-2"
-      border="1px solid"
-      borderColor="neutral-3"
-    >
-      <Accordion
-        allowToggle
-        gap="1.5rem"
-      >
-        <AccordionItem
-          borderTop="none"
-          borderBottom="none"
+    <AccordionDropdown
+      sectionTitle={t('executableCode')}
+      content={
+        <Flex
+          mt={2}
+          gap={2}
+          flexDirection="column"
         >
-          {({ isExpanded }) => (
-            <>
-              <AccordionButton
-                p={0}
-                textStyle="heading-small"
-                color="lilac-0"
-              >
-                <AccordionIcon
-                  marginRight={3}
-                  transform={`rotate(-${isExpanded ? '0' : '90'}deg)`}
-                />
-                {t(isExpanded ? 'hideExecutableCode' : 'showExecutableCode')}
-              </AccordionButton>
-              <AccordionPanel paddingBottom={4}>
-                <Flex
-                  gap={2}
-                  flexDirection="column"
-                >
-                  {proposal.data?.decodedTransactions.map((tx, i) => (
-                    <TransactionBlock
-                      transaction={tx}
-                      key={i}
-                    />
-                  ))}
-                </Flex>
-              </AccordionPanel>
-            </>
-          )}
-        </AccordionItem>
-      </Accordion>
-    </Box>
+          {proposal.data?.decodedTransactions.map((tx, i) => (
+            <TransactionBlock
+              transaction={tx}
+              key={i}
+            />
+          ))}
+        </Flex>
+      }
+    />
   );
 }

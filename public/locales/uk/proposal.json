@@ -207,5 +207,9 @@
   "nonceLabelSingleTransaction": "Транзакція #{{proposalId}}",
   "nonceLabelRecommended": "{{nonce}} - Нова транзакція",
   "nonceLabelRecommendedTitle": "Рекомендований нонсенс",
-  "nonceLabelReplaceActiveTitle": "Замінити активний"
+  "nonceLabelReplaceActiveTitle": "Замінити активний",
+  "nonceLabelBannerActive": "{{confirmations}} підписантів {{signersThreshold}} хочуть відмовитися від Nonce {{nonce}}.",
+  "nonceLabelBannerRejected": "Nonce {{nonce}} було відхилено.",
+  "conflictingProposals": "Суперечливі пропозиції",
+  "executableCode": "Виконавчий код"
 }
