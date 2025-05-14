@@ -19,7 +19,7 @@ import Divider from '../utils/Divider';
 export type SafeSettingsEdits = {
   multisig?: {
     newSigners?: NewSignerItem[];
-    removedSigners?: string[];
+    signersToRemove?: string[];
     signerThreshold?: number;
   };
   azorius?: {
@@ -58,7 +58,7 @@ export function SafeSettingsModal({ closeModal }: { closeModal: () => void }) {
       validate={async values => {
         if (values.multisig) {
           const errors: MultisigEditGovernanceFormikErrors = {};
-          const { newSigners, signerThreshold, removedSigners } = values.multisig;
+          const { newSigners, signerThreshold, signersToRemove } = values.multisig;
 
           if (newSigners && newSigners.length > 0) {
             const signerErrors = await Promise.all(
@@ -87,7 +87,7 @@ export function SafeSettingsModal({ closeModal }: { closeModal: () => void }) {
           if (signerThreshold) {
             const totalResultingSigners =
               (safe?.owners?.length ?? 0) -
-              (removedSigners?.length ?? 0) +
+              (signersToRemove?.length ?? 0) +
               (newSigners?.length ?? 0);
 
             if (signerThreshold > totalResultingSigners) {

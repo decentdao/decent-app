@@ -123,8 +123,8 @@ function Signer({
             h="1.5rem"
             p="0"
             onClick={() => {
-              setFieldValue('multisig.removedSigners', [
-                ...(values.multisig?.removedSigners ?? []).filter(
+              setFieldValue('multisig.signersToRemove', [
+                ...(values.multisig?.signersToRemove ?? []).filter(
                   (s: string) => s !== signer.address,
                 ),
               ]);
@@ -160,7 +160,7 @@ export function SignersContainer() {
     if (
       values.multisig &&
       !values.multisig.newSigners?.length &&
-      !values.multisig.removedSigners?.length &&
+      !values.multisig.signersToRemove?.length &&
       !values.multisig.signerThreshold
     ) {
       setFieldValue('multisig', undefined);
@@ -237,11 +237,11 @@ export function SignersContainer() {
   // Calculate if we can remove more signers
   const canRemoveMoreSigners = useMemo(() => {
     const activeSigners = signers.filter(
-      signer => !values.multisig?.removedSigners?.includes(signer.address),
+      signer => !values.multisig?.signersToRemove?.includes(signer.address),
     ).length;
     const newSignersCount = values.multisig?.newSigners?.length ?? 0;
     return activeSigners + newSignersCount > 1;
-  }, [signers, values.multisig?.removedSigners, values.multisig?.newSigners]);
+  }, [signers, values.multisig?.signersToRemove, values.multisig?.newSigners]);
 
   return (
     <Box width="100%">
@@ -314,12 +314,12 @@ export function SignersContainer() {
           <Signer
             key={signer.key}
             signer={signer}
-            markedForRemoval={values.multisig?.removedSigners?.includes(signer.address) ?? false}
+            markedForRemoval={values.multisig?.signersToRemove?.includes(signer.address) ?? false}
             onRemove={
               enableRemove
                 ? () => {
-                    setFieldValue('multisig.removedSigners', [
-                      ...(values.multisig?.removedSigners ?? []),
+                    setFieldValue('multisig.signersToRemove', [
+                      ...(values.multisig?.signersToRemove ?? []),
                       signer.address,
                     ]);
                   }
