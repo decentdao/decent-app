@@ -38,7 +38,7 @@ export default function QuorumBadge({ proposal }: { proposal: AzoriusProposal })
   const quorumDisplay = useMemo(() => {
     if (!votingStrategy) return null;
     return !!votingStrategy.quorumPercentage
-      ? votingStrategy.quorumPercentage.formatted
+      ? `${votingStrategy.quorumPercentage.formatted}%`
       : !!votingStrategy.quorumThreshold
         ? votingStrategy.quorumThreshold.formatted
         : null;

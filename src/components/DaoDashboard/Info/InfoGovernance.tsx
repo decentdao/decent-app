@@ -13,7 +13,7 @@ import { AzoriusGovernance, FreezeGuardType } from '../../../types';
 import { blocksToSeconds } from '../../../utils/contract';
 import { BarLoader } from '../../ui/loaders/BarLoader';
 
-export function InfoGovernance({ showTitle = true }: { showTitle?: boolean }) {
+export function InfoGovernance() {
   const { t } = useTranslation(['dashboard', 'daoCreate', 'common']);
   const { daoKey } = useCurrentDAOKey();
   const {
@@ -94,16 +94,14 @@ export function InfoGovernance({ showTitle = true }: { showTitle?: boolean }) {
 
   return (
     <Box data-testid="dashboard-daoGovernance">
-      {showTitle && (
-        <Flex
-          alignItems="center"
-          gap="0.4rem"
-          mb="0.5rem"
-        >
-          <Bank size="1.5rem" />
-          <Text textStyle="heading-small">{t('titleGovernance')}</Text>
-        </Flex>
-      )}
+      <Flex
+        alignItems="center"
+        gap="0.4rem"
+        mb="0.5rem"
+      >
+        <Bank size="1.5rem" />
+        <Text textStyle="heading-small">{t('titleGovernance')}</Text>
+      </Flex>
 
       <Flex
         alignItems="center"
@@ -143,7 +141,7 @@ export function InfoGovernance({ showTitle = true }: { showTitle?: boolean }) {
         >
           <Text color="neutral-7">{t('titleQuorum')}</Text>
           <Text textAlign="right">
-            {governanceAzorius.votingStrategy.quorumPercentage.formatted}
+            {`${governanceAzorius.votingStrategy.quorumPercentage.formatted}%`}
           </Text>
         </Flex>
       )}
