@@ -3,13 +3,14 @@ import { ArrowUpRight } from '@phosphor-icons/react';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Shield } from '../../assets/theme/custom/icons/Shield';
+import { findMostConfirmedMultisigRejectionProposal } from '../../helpers/multisigProposal';
 import useSnapshotProposal from '../../hooks/DAO/loaders/snapshot/useSnapshotProposal';
 import { useGetMetadata } from '../../hooks/DAO/proposal/useGetMetadata';
 import { useCurrentDAOKey } from '../../hooks/DAO/useCurrentDAOKey';
 import { useDAOStore } from '../../providers/App/AppProvider';
 import { ExtendedSnapshotProposal, FractalProposal, MultisigProposal } from '../../types';
 import { ActivityDescription } from '../Activity/ActivityDescription';
-import { Badge } from '../ui/badges/Badge';
+import { ProposalStateBadge } from '../ui/badges/Badge';
 import { SignerThresholdBadge } from '../ui/badges/SignerThresholdBadge';
 import { SnapshotButton } from '../ui/badges/Snapshot';
 import { ModalType } from '../ui/modals/ModalProvider';
@@ -27,7 +28,8 @@ export function ProposalInfo({
   const { t } = useTranslation('proposal');
   const { daoKey } = useCurrentDAOKey();
   const {
-    node: { subgraphInfo },
+    node: { subgraphInfo, safe },
+    governance: { proposals },
   } = useDAOStore({ daoKey });
   const { snapshotProposal } = useSnapshotProposal(proposal);
 
@@ -44,6 +46,12 @@ export function ProposalInfo({
   }, [metaData.documentationUrl]);
 
   const confirmUrl = useDecentModal(modalType, props);
+
+  const rejectionProposal = findMostConfirmedMultisigRejectionProposal(
+    safe?.address,
+    (proposal as MultisigProposal).nonce,
+    proposals,
+  );
 
   return (
     <Box
@@ -62,13 +70,15 @@ export function ProposalInfo({
           alignItems="center"
         >
           {proposal.state && (
-            <Badge
+            <ProposalStateBadge
               size="base"
               labelKey={proposal.state}
+              rejectionProposalState={rejectionProposal?.state}
             />
           )}
           <ProposalCountdown
             proposal={proposal}
+            rejectionProposal={rejectionProposal}
             showIcon={false}
             textColor="neutral-7"
           />
