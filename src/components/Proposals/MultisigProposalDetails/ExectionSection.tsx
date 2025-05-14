@@ -21,6 +21,7 @@ import { SectionBottomContentBox } from '../../ui/containers/ContentBox';
 function useProposalExecutionButtonAction(
   state: FractalProposalState | null | undefined,
   proposalTransaction: SafeMultisigTransactionResponse | undefined,
+  requireDataHex: boolean,
 ) {
   const { daoKey } = useCurrentDAOKey();
   const {
@@ -37,16 +38,17 @@ function useProposalExecutionButtonAction(
 
   const timelockTransaction = async () => {
     try {
-      setIsSubmitDisabled(true);
       if (
         !proposalTransaction ||
         !proposalTransaction.confirmations ||
         !walletClient ||
         !freezeGuardContractAddress ||
-        !isHex(proposalTransaction.data)
+        (requireDataHex && !isHex(proposalTransaction.data))
       ) {
+        console.log(walletClient);
         return;
       }
+      setIsSubmitDisabled(true);
       const safeTx = buildSafeTransaction({
         ...proposalTransaction,
         gasToken: getAddress(proposalTransaction.gasToken),
@@ -55,7 +57,7 @@ function useProposalExecutionButtonAction(
           : undefined,
         to: getAddress(proposalTransaction.to),
         value: BigInt(proposalTransaction.value),
-        data: proposalTransaction.data,
+        data: (proposalTransaction.data ?? undefined) as Hex | undefined,
         operation: proposalTransaction.operation as 0 | 1,
       });
       const signatures = buildSignatureBytes(
@@ -104,7 +106,6 @@ function useProposalExecutionButtonAction(
   };
 
   const executeMultisigProposal = async (options: {
-    requireDataHex: boolean;
     messages: {
       failed: string;
       pending: string;
@@ -112,16 +113,16 @@ function useProposalExecutionButtonAction(
     };
   }) => {
     try {
-      setIsSubmitDisabled(true);
       if (
         !walletClient ||
         !safe?.address ||
         !proposalTransaction ||
         !proposalTransaction.confirmations ||
-        (options.requireDataHex && !isHex(proposalTransaction.data))
+        (requireDataHex && !isHex(proposalTransaction.data))
       ) {
         return;
       }
+      setIsSubmitDisabled(true);
       const safeContract = getContract({
         abi: GnosisSafeL2Abi,
         address: safe.address,
@@ -189,7 +190,6 @@ function useProposalExecutionButtonAction(
       return {
         action: () =>
           executeMultisigProposal({
-            requireDataHex: true,
             messages: {
               failed: t('failedExecute', { ns: 'transaction' }),
               pending: t('pendingExecute', { ns: 'transaction' }),
@@ -206,9 +206,13 @@ function useProposalExecutionButtonAction(
     case FractalProposalState.TIMELOCKED:
       return {
         action: undefined,
+        actionPending: true,
+      };
+    case FractalProposalState.EXPIRED:
+      return {
+        action: undefined,
         actionPending: false,
       };
-
     default:
       return {
         action: undefined,
@@ -224,11 +228,11 @@ function getProposalExecutionButtonLabel(state: FractalProposalState | null) {
     case FractalProposalState.ACTIVE:
       return 'awaitingSigners';
     case FractalProposalState.EXECUTABLE:
-      return 'execute';
+      return 'executeTitle';
     case FractalProposalState.TIMELOCKABLE:
-      return 'timelock';
+      return 'timelockTitle';
     case FractalProposalState.TIMELOCKED:
-      return 'execute';
+      return 'executeTitle';
     default:
       return null;
   }
@@ -244,7 +248,7 @@ function getRejectionProposalExecutionButtonLabel(state: FractalProposalState | 
     case FractalProposalState.TIMELOCKABLE:
       return 'timelockRejection';
     case FractalProposalState.TIMELOCKED:
-      return 'executeRejection';
+      return 'timelockedTitle';
     default:
       return null;
   }
@@ -267,6 +271,7 @@ export function ExectionSection({ proposal }: { proposal: MultisigProposal }) {
     proposal.transaction
       ? { ...proposal.transaction, data: proposal.transaction.data ?? '0x' }
       : undefined,
+    true,
   );
 
   const rejectionProposal = findMostConfirmedMultisigRejectionProposal(
@@ -281,6 +286,7 @@ export function ExectionSection({ proposal }: { proposal: MultisigProposal }) {
   const rejectionProposalAction = useProposalExecutionButtonAction(
     rejectionProposal?.state,
     rejectionProposal?.transaction,
+    false,
   );
 
   const isRejectedProposalPassThreshold =
@@ -293,16 +299,20 @@ export function ExectionSection({ proposal }: { proposal: MultisigProposal }) {
     proposal.state === FractalProposalState.CLOSED ||
     proposal.state === FractalProposalState.EXECUTED;
 
-  if (!proposalExecutionButtonLabel || isDoNotShowStates || !canUserCreateProposal) return null;
+  if (
+    !proposalExecutionButtonLabel ||
+    isDoNotShowStates ||
+    !canUserCreateProposal ||
+    proposal.state === FractalProposalState.EXPIRED ||
+    rejectionProposal?.state === FractalProposalState.EXPIRED
+  ) {
+    return null;
+  }
   const isActiveNonce =
     safe?.nonce === proposal.nonce || proposal.state === FractalProposalState.EXECUTABLE;
 
   const isButtonDisabled =
-    actionPending ||
-    !action ||
-    !isActiveNonce ||
-    proposal.state === FractalProposalState.EXPIRED ||
-    rejectionProposalAction.actionPending;
+    actionPending || !action || !isActiveNonce || rejectionProposalAction.actionPending;
 
   return (
     <SectionBottomContentBox>
