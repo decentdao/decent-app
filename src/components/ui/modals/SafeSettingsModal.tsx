@@ -1,5 +1,5 @@
 import { Box, Button, Flex } from '@chakra-ui/react';
-import { Formik, Form } from 'formik';
+import { Formik, Form, useFormikContext } from 'formik';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
@@ -40,7 +40,13 @@ export type SafeSettingsEdits = {
   };
 };
 
-export function SafeSettingsModal({ closeModal }: { closeModal: () => void }) {
+export function SafeSettingsModal({
+  closeModal,
+  closeAllModals,
+}: {
+  closeModal: () => void;
+  closeAllModals: () => void;
+}) {
   const { daoKey } = useCurrentDAOKey();
 
   const {
@@ -58,6 +64,42 @@ export function SafeSettingsModal({ closeModal }: { closeModal: () => void }) {
   const { t } = useTranslation(['modals', 'common']);
 
   const { validateAddress } = useValidationAddress();
+
+  function ActionButtons() {
+    const { values } = useFormikContext<SafeSettingsEdits>();
+    const hasEdits = Object.keys(values).some(key => values[key as keyof SafeSettingsEdits]);
+    return (
+      <Flex
+        flexDirection="row"
+        justifyContent="flex-end"
+        mt="1rem"
+        mr={4}
+        alignItems="center"
+        alignSelf="center"
+        alignContent="center"
+        gap="0.5rem"
+      >
+        <Button
+          variant="tertiary"
+          size="sm"
+          px="2rem"
+          onClick={closeModal}
+        >
+          {t('discardChanges', { ns: 'common' })}
+        </Button>
+        {canUserCreateProposal && (
+          <Button
+            variant="primary"
+            size="sm"
+            type="submit"
+            isDisabled={!hasEdits}
+          >
+            {t('createProposal')}
+          </Button>
+        )}
+      </Flex>
+    );
+  }
 
   return (
     <Formik<SafeSettingsEdits>
@@ -106,9 +148,8 @@ export function SafeSettingsModal({ closeModal }: { closeModal: () => void }) {
         }
       }}
       onSubmit={values => {
-        console.log('submit values', values);
         toast.info(`Submit TBD: ${JSON.stringify(values, bigintSerializer)}`);
-        // Close all modals, navigate to create proposal page with all prepared actions
+        closeAllModals();
       }}
     >
       <Form>
@@ -125,36 +166,9 @@ export function SafeSettingsModal({ closeModal }: { closeModal: () => void }) {
             <Divider vertical />
             {settingsContent}
           </Flex>
+
           <Divider />
-          {/* Action Buttons */}
-          <Flex
-            flexDirection="row"
-            justifyContent="flex-end"
-            mt="1rem"
-            mr={4}
-            alignItems="center"
-            alignSelf="center"
-            alignContent="center"
-            gap="0.5rem"
-          >
-            <Button
-              variant="tertiary"
-              size="sm"
-              px="2rem"
-              onClick={closeModal}
-            >
-              {t('discardChanges', { ns: 'common' })}
-            </Button>
-            {canUserCreateProposal && (
-              <Button
-                variant="primary"
-                size="sm"
-                type="submit"
-              >
-                {t('createProposal')}
-              </Button>
-            )}
-          </Flex>
+          <ActionButtons />
         </Box>
       </Form>
     </Formik>

@@ -406,7 +406,12 @@ const getModalData = (args: {
       modalSize = 'max';
       break;
     case ModalType.SAFE_SETTINGS:
-      modalContent = <SafeSettingsModal closeModal={popModal} />;
+      modalContent = (
+        <SafeSettingsModal
+          closeModal={popModal}
+          closeAllModals={closeAll}
+        />
+      );
       modalSize = 'max';
       modalContentStyle = {
         backgroundColor: NEUTRAL_2_50_TRANSPARENT,
