@@ -78,8 +78,8 @@
   "nftVotes_one": "{{count}} vote",
   "nftVotes_other": "{{count}} votes",
   "signTitle": "Sign Transaction",
-  "timelockTitle": "Timelock Transaction",
-  "executeTitle": "Execute Transaction",
+  "timelockTitle": "Timelock Proposal",
+  "executeTitle": "Execute Proposal",
   "filterProposalsAllSelected": "All Proposals",
   "filterProposalsNoneSelected": "No Proposals",
   "filterProposalsNSelected": "Filter {{count}}",
@@ -210,5 +210,6 @@
   "executeRejection": "Execute Rejection",
   "awaitingSigners": "Awaiting Signers",
   "conflictingProposalNotice": "When two or more proposals share the same Nonce, only one can be executed.",
-  "timelockRejection": "Timelock Rejection"
+  "timelockRejection": "Timelock Rejection",
+  "timelockedTitle": "Timelocked"
 }
