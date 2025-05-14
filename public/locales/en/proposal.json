@@ -203,5 +203,12 @@
   "nonceLabelSingleTransaction": "Transaction #{{proposalId}}",
   "nonceLabelRecommended": "{{nonce}} - New Transaction",
   "nonceLabelRecommendedTitle": "Recommended nonce",
-  "nonceLabelReplaceActiveTitle": "Replace active"
+  "nonceLabelReplaceActiveTitle": "Replace active",
+  "yourSignatureLabel": "Your Signature",
+  "proposalExecutionSectionTitle": "Proposal Execution Status",
+  "notReady": "Not Ready",
+  "executeRejection": "Execute Rejection",
+  "awaitingSigners": "Awaiting Signers",
+  "conflictingProposalNotice": "When two or more proposals share the same Nonce, only one can be executed.",
+  "timelockRejection": "Timelock Rejection"
 }
