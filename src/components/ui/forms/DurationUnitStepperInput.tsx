@@ -70,7 +70,7 @@ export default function DurationUnitStepperInput({
       min={minSeconds / selectedUnit.unit}
       focusInputOnChange
     >
-      <HStack>
+      <HStack gap="0.25rem">
         <NumberDecrementStepper>{stepperButton('dec')}</NumberDecrementStepper>
         <InputGroup>
           <NumberInputField
