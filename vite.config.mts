@@ -1,8 +1,8 @@
+import { sentryVitePlugin } from '@sentry/vite-plugin';
 import { viteWranglerSpa } from '@torchauth/vite-plugin-wrangler-spa';
 import react from '@vitejs/plugin-react-swc';
 import { defineConfig } from 'vite';
 import { checker } from 'vite-plugin-checker';
-import { sentryVitePlugin } from '@sentry/vite-plugin';
 import packageJson from './package.json';
 
 // https://vitejs.dev/config/
