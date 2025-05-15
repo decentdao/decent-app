@@ -114,37 +114,6 @@ export function MarkdownProposalMetadata({
       spacing={8}
       p="1.5rem"
     >
-      <Flex
-        justify="space-between"
-        align="center"
-      >
-        <Text color="neutral-6">{t('newProposal', { ns: 'proposal' })}</Text>
-        <Flex gap="1rem">
-          <Button
-            color="red-1"
-            variant="ghost"
-            p="0.5rem"
-            size="xs"
-          >
-            {t('delete')}
-          </Button>
-          <Button
-            p="0.5rem"
-            size="xs"
-            variant="outline"
-            borderWidth="1px"
-            borderColor="white-0"
-          >
-            {t('saveAndClose')}
-          </Button>
-          <Button
-            p="0.5rem"
-            size="xs"
-          >
-            {t('preview')}
-          </Button>
-        </Flex>
-      </Flex>
       <Input
         placeholder={t('proposalTitlePlaceholder', { ns: 'proposal' })}
         isRequired
