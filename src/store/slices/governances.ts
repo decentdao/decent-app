@@ -267,7 +267,12 @@ export const createGovernancesSlice: StateCreator<
   setSnapshotProposals: (daoKey, snapshotProposals) => {
     set(
       state => {
-        if (!state.governances[daoKey].proposals) {
+        if (!state.governances[daoKey]) {
+          state.governances[daoKey] = {
+            ...EMPTY_GOVERNANCE,
+            proposals: snapshotProposals,
+          };
+        } else if (!state.governances[daoKey].proposals) {
           state.governances[daoKey].proposals = snapshotProposals;
         } else {
           state.governances[daoKey].proposals.push(...snapshotProposals);
