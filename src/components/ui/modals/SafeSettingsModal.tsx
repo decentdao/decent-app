@@ -80,7 +80,13 @@ export function SafeSettingsModal({
 
   function ActionButtons() {
     const { values } = useFormikContext<SafeSettingsEdits>();
-    const hasEdits = Object.keys(values).some(key => values[key as keyof SafeSettingsEdits]);
+    const { errors } = useFormikContext<SafeSettingsFormikErrors>();
+
+    const hasEdits = Object.values(values).some(Boolean);
+    const hasErrors =
+      (errors.general && Object.values(errors.general).some(Boolean)) ||
+      (errors.multisig && Object.values(errors.multisig).some(Boolean));
+
     return (
       <Flex
         flexDirection="row"
@@ -105,7 +111,7 @@ export function SafeSettingsModal({
             variant="primary"
             size="sm"
             type="submit"
-            isDisabled={!hasEdits}
+            isDisabled={!hasEdits || hasErrors}
           >
             {t('createProposal')}
           </Button>
