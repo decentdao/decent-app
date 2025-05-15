@@ -10,11 +10,9 @@ import { SafeGeneralSettingsPage } from '../../../pages/dao/settings/general/Saf
 import { useStore } from '../../../providers/App/AppProvider';
 import { BigIntValuePair } from '../../../types';
 import { bigintSerializer } from '../../../utils/bigintSerializer';
+import { validateENSName } from '../../../utils/url';
 import { SettingsNavigation } from '../../SafeSettings/SettingsNavigation';
-import {
-  MultisigEditGovernanceFormikErrors,
-  NewSignerItem,
-} from '../../SafeSettings/Signers/SignersContainer';
+import { NewSignerItem } from '../../SafeSettings/Signers/SignersContainer';
 import Divider from '../utils/Divider';
 
 export type SafeSettingsEdits = {
@@ -38,6 +36,21 @@ export type SafeSettingsEdits = {
   permissions?: {
     proposerThreshold?: BigIntValuePair;
   };
+};
+
+type MultisigEditGovernanceFormikErrors = {
+  newSigners: { key: string; error: string }[];
+  threshold: string;
+};
+
+type GeneralEditFormikErrors = {
+  name: string;
+  snapshot: string;
+};
+
+export type SafeSettingsFormikErrors = {
+  multisig: MultisigEditGovernanceFormikErrors;
+  general: GeneralEditFormikErrors;
 };
 
 export function SafeSettingsModal({
@@ -105,8 +118,18 @@ export function SafeSettingsModal({
     <Formik<SafeSettingsEdits>
       initialValues={{}}
       validate={async values => {
+        const errors: SafeSettingsFormikErrors = {
+          multisig: {
+            newSigners: [],
+            threshold: '',
+          },
+          general: {
+            name: '',
+            snapshot: '',
+          },
+        };
+
         if (values.multisig) {
-          const errors: MultisigEditGovernanceFormikErrors = {};
           const { newSigners, signerThreshold, signersToRemove } = values.multisig;
 
           if (newSigners && newSigners.length > 0) {
@@ -125,12 +148,12 @@ export function SafeSettingsModal({
             );
 
             if (signerErrors.some(error => error !== null)) {
-              errors.newSigners = signerErrors.filter(error => error !== null);
+              errors.multisig.newSigners = signerErrors.filter(error => error !== null);
             }
           }
 
           if (signerThreshold && signerThreshold < 1) {
-            errors.threshold = t('errorLowSignerThreshold', { ns: 'daoCreate' });
+            errors.multisig.threshold = t('errorLowSignerThreshold', { ns: 'daoCreate' });
           }
 
           if (signerThreshold) {
@@ -140,12 +163,19 @@ export function SafeSettingsModal({
               (newSigners?.length ?? 0);
 
             if (signerThreshold > totalResultingSigners) {
-              errors.threshold = t('errorHighSignerThreshold', { ns: 'daoCreate' });
+              errors.multisig.threshold = t('errorHighSignerThreshold', { ns: 'daoCreate' });
             }
           }
-
-          return errors;
         }
+
+        if (values.general) {
+          const { snapshot } = values.general;
+          if (snapshot && !validateENSName(snapshot)) {
+            errors.general.snapshot = t('errorInvalidENSName', { ns: 'common' });
+          }
+        }
+
+        return errors;
       }}
       onSubmit={values => {
         toast.info(`Submit TBD: ${JSON.stringify(values, bigintSerializer)}`);

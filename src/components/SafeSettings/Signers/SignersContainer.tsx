@@ -10,7 +10,7 @@ import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import { useStore } from '../../../providers/App/AppProvider';
 import { NumberStepperInput } from '../../ui/forms/NumberStepperInput';
 import { ModalType } from '../../ui/modals/ModalProvider';
-import { SafeSettingsEdits } from '../../ui/modals/SafeSettingsModal';
+import { SafeSettingsEdits, SafeSettingsFormikErrors } from '../../ui/modals/SafeSettingsModal';
 import { useDecentModal } from '../../ui/modals/useDecentModal';
 import Divider from '../../ui/utils/Divider';
 
@@ -30,11 +30,6 @@ export type NewSignerItem = SignerItem & {
   inputValue: string;
 };
 
-export type MultisigEditGovernanceFormikErrors = {
-  newSigners?: { key: string; error: string }[];
-  threshold?: string;
-};
-
 function Signer({
   signer,
   onRemove,
@@ -51,14 +46,15 @@ function Signer({
   }
 
   const inputRef = useRef<HTMLInputElement>(null);
-  const { errors, values, setFieldValue } = useFormikContext<SafeSettingsEdits>();
+  const { values, setFieldValue } = useFormikContext<SafeSettingsEdits>();
+  const { errors } = useFormikContext<SafeSettingsFormikErrors>();
+
+  const multisigEditFormikErrors = (errors as SafeSettingsFormikErrors).multisig;
 
   const newSigner = signer.isAdding ? (signer as NewSignerItem) : null;
   const isInvalid =
     !!newSigner?.inputValue &&
-    (errors as MultisigEditGovernanceFormikErrors).newSigners?.some(
-      error => error.key === signer.key,
-    );
+    multisigEditFormikErrors.newSigners.some(error => error.key === signer.key);
 
   const showRemoveButton = onRemove && !markedForRemoval && canRemove;
 
@@ -154,7 +150,10 @@ export function SignersContainer() {
 
   const { t } = useTranslation(['common', 'breadcrumbs', 'daoEdit']);
 
-  const { setFieldValue, values, errors } = useFormikContext<SafeSettingsEdits>();
+  const { setFieldValue, values } = useFormikContext<SafeSettingsEdits>();
+  const { errors } = useFormikContext<SafeSettingsFormikErrors>();
+
+  const multisigEditFormikErrors = (errors as SafeSettingsFormikErrors).multisig;
 
   useEffect(() => {
     if (
@@ -415,7 +414,7 @@ export function SignersContainer() {
               }}
               color={values.multisig?.signerThreshold === undefined ? 'neutral-7' : 'white-0'}
               value={values.multisig?.signerThreshold ?? safe?.threshold}
-              isInvalid={!!(errors as MultisigEditGovernanceFormikErrors)?.threshold}
+              isInvalid={!!multisigEditFormikErrors?.threshold}
             />
           </Flex>
         </Flex>

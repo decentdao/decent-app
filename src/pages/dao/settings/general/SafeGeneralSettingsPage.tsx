@@ -10,7 +10,10 @@ import { GaslessVotingToggleDAOSettings } from '../../../../components/GaslessVo
 import { SettingsContentBox } from '../../../../components/SafeSettings/SettingsContentBox';
 import { InputComponent } from '../../../../components/ui/forms/InputComponent';
 import { BarLoader } from '../../../../components/ui/loaders/BarLoader';
-import { SafeSettingsEdits } from '../../../../components/ui/modals/SafeSettingsModal';
+import {
+  SafeSettingsEdits,
+  SafeSettingsFormikErrors,
+} from '../../../../components/ui/modals/SafeSettingsModal';
 import NestedPageHeader from '../../../../components/ui/page/Header/NestedPageHeader';
 import Divider from '../../../../components/ui/utils/Divider';
 import { DAO_ROUTES } from '../../../../constants/routes';
@@ -28,16 +31,16 @@ import {
   getPaymasterSaltNonce,
   getVoteSelectorAndValidator,
 } from '../../../../utils/gaslessVoting';
-import { validateENSName } from '../../../../utils/url';
 
 export function SafeGeneralSettingsPage() {
   const { t } = useTranslation('settings');
   const { setFieldValue, values: formValues } = useFormikContext<SafeSettingsEdits>();
+  const {
+    errors: { general: generalEditFormikErrors },
+  } = useFormikContext<SafeSettingsFormikErrors>();
 
   const [existingDaoName, setExistingDaoName] = useState('');
   const [existingSnapshotENS, setExistingSnapshotENS] = useState('');
-
-  const [snapshotENSValid, setSnapshotENSValid] = useState<boolean>();
 
   const { daoKey } = useCurrentDAOKey();
   const {
@@ -86,30 +89,8 @@ export function SafeGeneralSettingsPage() {
     }
   }, [subgraphInfo?.daoName, subgraphInfo?.daoSnapshotENS, safeAddress]);
 
-  // @todo: move validation to parent formik
-  // const handleSnapshotENSChange: ChangeEventHandler<HTMLInputElement> = e => {
-  //   const lowerCasedValue = e.target.value.toLowerCase();
-  //   setSnapshotENS(lowerCasedValue);
-  //   if (
-  //     validateENSName(lowerCasedValue) ||
-  //     (e.target.value === '' && subgraphInfo?.daoSnapshotENS)
-  //   ) {
-  //     setSnapshotENSValid(true);
-  //   } else {
-  //     setSnapshotENSValid(false);
-  //   }
-  // };
-
-  useEffect(() => {
-    if (!!formValues.general?.snapshot && validateENSName(formValues.general?.snapshot)) {
-      setSnapshotENSValid(true);
-    } else {
-      setSnapshotENSValid(false);
-    }
-  }, [formValues.general?.snapshot]);
-
   const nameChanged = !!existingDaoName && existingDaoName !== subgraphInfo?.daoName;
-  const snapshotChanged = snapshotENSValid && existingSnapshotENS !== subgraphInfo?.daoSnapshotENS;
+  const snapshotChanged = existingSnapshotENS !== subgraphInfo?.daoSnapshotENS;
   const gaslessVotingChanged = existingIsGaslessVotingEnabledToggled !== gaslessVotingEnabled;
 
   useEffect(() => {
@@ -395,6 +376,7 @@ export function SafeGeneralSettingsPage() {
 
                     setFieldValue('general.snapshot', newValue);
                   }}
+                  isInvalid={!!generalEditFormikErrors?.snapshot}
                   value={formValues.general?.snapshot ?? existingSnapshotENS}
                   disabled={!canUserCreateProposal}
                   placeholder="example.eth"
