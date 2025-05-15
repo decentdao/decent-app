@@ -39,18 +39,18 @@ export type SafeSettingsEdits = {
 };
 
 type MultisigEditGovernanceFormikErrors = {
-  newSigners: { key: string; error: string }[];
-  threshold: string;
+  newSigners?: { key: string; error: string }[];
+  threshold?: string;
 };
 
 type GeneralEditFormikErrors = {
-  name: string;
-  snapshot: string;
+  name?: string;
+  snapshot?: string;
 };
 
 export type SafeSettingsFormikErrors = {
-  multisig: MultisigEditGovernanceFormikErrors;
-  general: GeneralEditFormikErrors;
+  multisig?: MultisigEditGovernanceFormikErrors;
+  general?: GeneralEditFormikErrors;
 };
 
 export function SafeSettingsModal({
@@ -82,10 +82,17 @@ export function SafeSettingsModal({
     const { values } = useFormikContext<SafeSettingsEdits>();
     const { errors } = useFormikContext<SafeSettingsFormikErrors>();
 
-    const hasEdits = Object.values(values).some(Boolean);
+    const hasEdits = Object.keys(values).some(key => values[key as keyof SafeSettingsEdits]);
     const hasErrors =
-      (errors.general && Object.values(errors.general).some(Boolean)) ||
-      (errors.multisig && Object.values(errors.multisig).some(Boolean));
+      Object.keys(errors.general ?? {}).some(
+        key => (errors.general as GeneralEditFormikErrors)[key as keyof GeneralEditFormikErrors],
+      ) ||
+      Object.keys(errors.multisig ?? {}).some(
+        key =>
+          (errors.multisig as MultisigEditGovernanceFormikErrors)[
+            key as keyof MultisigEditGovernanceFormikErrors
+          ],
+      );
 
     return (
       <Flex
@@ -124,19 +131,11 @@ export function SafeSettingsModal({
     <Formik<SafeSettingsEdits>
       initialValues={{}}
       validate={async values => {
-        const errors: SafeSettingsFormikErrors = {
-          multisig: {
-            newSigners: [],
-            threshold: '',
-          },
-          general: {
-            name: '',
-            snapshot: '',
-          },
-        };
+        const errors: SafeSettingsFormikErrors = {};
 
         if (values.multisig) {
           const { newSigners, signerThreshold, signersToRemove } = values.multisig;
+          const errorsMultisig = errors.multisig ?? {};
 
           if (newSigners && newSigners.length > 0) {
             const signerErrors = await Promise.all(
@@ -154,12 +153,14 @@ export function SafeSettingsModal({
             );
 
             if (signerErrors.some(error => error !== null)) {
-              errors.multisig.newSigners = signerErrors.filter(error => error !== null);
+              errorsMultisig.newSigners = signerErrors.filter(error => error !== null);
+              errors.multisig = errorsMultisig;
             }
           }
 
           if (signerThreshold && signerThreshold < 1) {
-            errors.multisig.threshold = t('errorLowSignerThreshold', { ns: 'daoCreate' });
+            errorsMultisig.threshold = t('errorLowSignerThreshold', { ns: 'daoCreate' });
+            errors.multisig = errorsMultisig;
           }
 
           if (signerThreshold) {
@@ -169,16 +170,24 @@ export function SafeSettingsModal({
               (newSigners?.length ?? 0);
 
             if (signerThreshold > totalResultingSigners) {
-              errors.multisig.threshold = t('errorHighSignerThreshold', { ns: 'daoCreate' });
+              errorsMultisig.threshold = t('errorHighSignerThreshold', { ns: 'daoCreate' });
+              errors.multisig = errorsMultisig;
             }
           }
+        } else {
+          errors.multisig = undefined;
         }
 
         if (values.general) {
           const { snapshot } = values.general;
+          const errorsGeneral = errors.general ?? {};
+
           if (snapshot && !validateENSName(snapshot)) {
-            errors.general.snapshot = t('errorInvalidENSName', { ns: 'common' });
+            errorsGeneral.snapshot = t('errorInvalidENSName', { ns: 'common' });
+            errors.general = errorsGeneral;
           }
+        } else {
+          errors.general = undefined;
         }
 
         return errors;

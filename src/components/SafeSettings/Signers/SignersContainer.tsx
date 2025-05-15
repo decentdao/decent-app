@@ -54,7 +54,7 @@ function Signer({
   const newSigner = signer.isAdding ? (signer as NewSignerItem) : null;
   const isInvalid =
     !!newSigner?.inputValue &&
-    multisigEditFormikErrors.newSigners.some(error => error.key === signer.key);
+    multisigEditFormikErrors?.newSigners?.some(error => error.key === signer.key);
 
   const showRemoveButton = onRemove && !markedForRemoval && canRemove;
 

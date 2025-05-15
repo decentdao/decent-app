@@ -35,9 +35,8 @@ import {
 export function SafeGeneralSettingsPage() {
   const { t } = useTranslation('settings');
   const { setFieldValue, values: formValues } = useFormikContext<SafeSettingsEdits>();
-  const {
-    errors: { general: generalEditFormikErrors },
-  } = useFormikContext<SafeSettingsFormikErrors>();
+  const { errors } = useFormikContext<SafeSettingsFormikErrors>();
+  const generalEditFormikErrors = (errors as SafeSettingsFormikErrors).general;
 
   const [existingDaoName, setExistingDaoName] = useState('');
   const [existingSnapshotENS, setExistingSnapshotENS] = useState('');
