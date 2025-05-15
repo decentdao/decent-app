@@ -199,9 +199,7 @@ export function ProposalBuilder({
               <Grid
                 gap={4}
                 marginTop="3rem"
-                templateColumns={
-                  !proposalV1FeatureEnabled ? { base: '1fr', lg: '2fr 1fr' } : { base: '1fr' }
-                }
+                templateColumns={{ base: '1fr', lg: '2fr 1fr' }}
                 templateAreas={{
                   base: '"content" "details"',
                   lg: '"content details"',
@@ -243,28 +241,24 @@ export function ProposalBuilder({
                     />
                   </Flex>
                 </GridItem>
-                {!proposalV1FeatureEnabled && (
-                  <GridItem
-                    area="details"
-                    w="100%"
-                  >
-                    <ProposalDetails
-                      title={trimmedTitle}
-                      description={description}
-                      transactionsDetails={
-                        transactionsDetails ? transactionsDetails(transactions) : null
-                      }
-                      templateDetails={templateDetails ? templateDetails(trimmedTitle) : null}
-                      streamsDetails={
-                        streamsDetails
-                          ? streamsDetails(
-                              (formikProps.values as CreateSablierProposalForm).streams,
-                            )
-                          : null
-                      }
-                    />
-                  </GridItem>
-                )}
+                <GridItem
+                  area="details"
+                  w="100%"
+                >
+                  <ProposalDetails
+                    title={trimmedTitle}
+                    description={description}
+                    transactionsDetails={
+                      transactionsDetails ? transactionsDetails(transactions) : null
+                    }
+                    templateDetails={templateDetails ? templateDetails(trimmedTitle) : null}
+                    streamsDetails={
+                      streamsDetails
+                        ? streamsDetails((formikProps.values as CreateSablierProposalForm).streams)
+                        : null
+                    }
+                  />
+                </GridItem>
               </Grid>
             </Box>
           </form>
