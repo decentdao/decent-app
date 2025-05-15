@@ -15,9 +15,9 @@ import {
   ProposalTemplate,
   ProposalVote,
   ProposalVotesSummary,
+  SnapshotProposal,
   VotesTokenData,
   VotingStrategy,
-  SnapshotProposal,
 } from '../../types';
 import { GlobalStore, StoreMiddleware, StoreSlice } from '../store';
 
@@ -158,11 +158,7 @@ export const createGovernancesSlice: StateCreator<
   setProposals: (daoKey, proposals) => {
     set(
       state => {
-        if (!state.governances[daoKey].proposals) {
-          state.governances[daoKey].proposals = proposals;
-        } else {
-          state.governances[daoKey].proposals.push(...proposals);
-        }
+        state.governances[daoKey].proposals = proposals;
       },
       false,
       'setProposals',
