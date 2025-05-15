@@ -207,5 +207,6 @@
   "nonceLabelBannerActive": "{{confirmations}的{{signersThreshold}} 簽署人想要拒絕 Nonce{{nonce}}。",
   "nonceLabelBannerRejected": "Nonce{{nonce}} 已被拒絕。",
   "conflictingProposals": "相互矛盾的提案",
-  "executableCode": "可執行程式碼"
+  "executableCode": "可執行程式碼",
+  "nonceLabelBannerPassedThreshold": "這次 nonce 收到的拒絕簽名足以拒絕所有相關提案。"
 }

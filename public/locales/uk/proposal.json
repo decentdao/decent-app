@@ -207,5 +207,6 @@
   "nonceLabelBannerActive": "{{confirmations}} підписантів {{signersThreshold}} хочуть відмовитися від Nonce {{nonce}}.",
   "nonceLabelBannerRejected": "Nonce {{nonce}} було відхилено.",
   "conflictingProposals": "Суперечливі пропозиції",
-  "executableCode": "Виконавчий код"
+  "executableCode": "Виконавчий код",
+  "nonceLabelBannerPassedThreshold": "Для цього нонче було отримано достатньо підписів проти, щоб відхилити всі пов'язані з ним пропозиції."
 }

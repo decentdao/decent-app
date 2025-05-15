@@ -207,5 +207,6 @@
   "nonceLabelBannerActive": "{{confirmations}Подписчики {{signersThreshold}} хотят отклонить Nonce {{nonce}}.",
   "nonceLabelBannerRejected": "Nonce {{nonce}} был отклонен.",
   "conflictingProposals": "Противоречивые предложения",
-  "executableCode": "Исполняемый код"
+  "executableCode": "Исполняемый код",
+  "nonceLabelBannerPassedThreshold": "Для этого нонса было получено достаточно подписей отказа, чтобы отклонить все связанные с ним предложения."
 }

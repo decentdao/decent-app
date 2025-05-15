@@ -207,5 +207,6 @@
   "nonceLabelBannerActive": "{{confirmations}} von {{signersThreshold}} Unterzeichner wollen Nonce {{nonce}} ablehnen.",
   "nonceLabelBannerRejected": "Nonce {{nonce}} wurde abgelehnt.",
   "conflictingProposals": "Widersprüchliche Vorschläge",
-  "executableCode": "Ausführbarer Code"
+  "executableCode": "Ausführbarer Code",
+  "nonceLabelBannerPassedThreshold": "Für diese Nonce sind genügend Ablehnungsunterschriften eingegangen, um alle entsprechenden Vorschläge abzulehnen."
 }

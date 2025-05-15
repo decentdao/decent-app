@@ -207,5 +207,6 @@
   "nonceLabelBannerActive": "{{confirmations}} de {{signersThreshold}} firmantes quieren rechazar Nonce {{nonce}}.",
   "nonceLabelBannerRejected": "Nonce {{nonce}} ha sido rechazado.",
   "conflictingProposals": "Propuestas contradictorias",
-  "executableCode": "Código ejecutable"
+  "executableCode": "Código ejecutable",
+  "nonceLabelBannerPassedThreshold": "Se recibieron suficientes firmas de rechazo para este nonce como para rechazar todas las propuestas relacionadas."
 }
