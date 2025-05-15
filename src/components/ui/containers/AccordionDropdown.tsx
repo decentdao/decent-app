@@ -9,7 +9,7 @@ import {
 } from '@chakra-ui/react';
 
 function ContentCountBadge({ count }: { count: number | undefined }) {
-  if (!count) {
+  if (!count || count === 0) {
     return null;
   }
   return (
