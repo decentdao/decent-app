@@ -1,35 +1,66 @@
-import colorTokens from './color.styles.tokens.json';
-
-interface ColorValue {
-  $value?: string;
-}
-
-interface ColorToken {
-  [key: string]: ColorValue | ColorToken;
-}
-
-const extractColorsFromJson = (tokens: ColorToken, prefix = ''): Record<string, string> => {
-  const colors: Record<string, string> = {};
-  Object.entries(tokens).forEach(([key, value]) => {
-    // Replace spaces with dashes in the key
-    const formattedKey = key.replace(/\s+/g, '-').toLowerCase();
-    if (typeof value === 'object' && value !== null) {
-      if ('$value' in value && typeof value.$value === 'string') {
-        colors[`${prefix}${formattedKey}`] = value.$value;
-      } else {
-        const nestedColors = extractColorsFromJson(
-          value as ColorToken,
-          `${prefix}${formattedKey}-`,
-        );
-        Object.assign(colors, nestedColors);
-      }
-    }
-  });
-
-  return colors;
+export default {
+  'black-0': '#100414',
+  'black-alpha-16': '#00000029',
+  'black-alpha-04': '#0000000a',
+  'black-alpha-08': '#00000014',
+  'blue-0': '#3f5c97',
+  'blue-1': '#afc2e9',
+  'blue-2': '#dce6f9',
+  'blue--1': '#1c4087',
+  'celery-0': '#caff8a',
+  'celery-1': '#dcffb8',
+  'celery-2': '#e4ffc8',
+  'celery-3': '#edffdc',
+  'celery-4': '#f6ffee',
+  'celery-5': '#fafff6',
+  'celery--1': '#c1f384',
+  'celery--2': '#acda76',
+  'celery--3': '#95bc66',
+  'celery--4': '#7a9a53',
+  'celery--5': '#495d32',
+  'celery--6': '#2c381e',
+  'cosmic-nebula-0': '#501464',
+  'cosmic-nebula-1': '#711c8d',
+  'cosmic-nebula-2': '#9426ba',
+  'cosmic-nebula-3': '#b341d9',
+  'cosmic-nebula-4': '#c46de1',
+  'cosmic-nebula-5': '#d493e9',
+  'cosmic-nebula-6': '#e2b7f1',
+  'cosmic-nebula-7': '#f1dcf8',
+  'cosmic-nebula-8': '#f8edfb',
+  'cosmic-nebula--1': '#2e0b39',
+  'lilac-0': '#dcc8f0',
+  'lilac-1': '#e5d9f2',
+  'lilac-2': '#ebe2f3',
+  'lilac--1': '#cbb1e6',
+  'lilac--2': '#9974be',
+  'lilac--3': '#805ca3',
+  'lilac--4': '#5f376c',
+  'lilac--5': '#332b3b',
+  'lilac--6': '#200828',
+  'neutral-1': '#161219',
+  'neutral-2': '#221d25',
+  'neutral-3': '#2e2833',
+  'neutral-4': '#3e3743',
+  'neutral-5': '#57515c',
+  'neutral-6': '#8f8796',
+  'neutral-7': '#b8afc0',
+  'neutral-8': '#d1cad8',
+  'neutral-9': '#e0dae7',
+  'neutral-10': '#ebe5f0',
+  'neutral-11': '#f0eaf6',
+  'red-0': '#af3a48',
+  'red-1': '#fa5367',
+  'red-4': '#efd8da',
+  'red--1': '#69232b',
+  'red--2': '#351116',
+  'red--3': '#1f0a0d',
+  'white-0': '#f8f4fc',
+  'white-1': '#D9D9D9',
+  'white-alpha-16': '#f8f4fc29',
+  'white-alpha-04': '#ffffff0a',
+  'white-alpha-08': '#ffffff14',
+  'yellow-0': '#ffe66d',
+  'yellow--1': '#695c16',
+  'yellow--2': '#443900',
 };
-
-const colors = extractColorsFromJson(colorTokens as unknown as ColorToken);
-
-export type Colors = typeof colors;
-export default colors;
