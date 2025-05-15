@@ -22,11 +22,26 @@ export async function decodeTransactionsWithABI(
 
   for (const transaction of transactions) {
     const functionSelector = transaction.data.slice(0, 10);
-    const abi = await loadABI(transaction.to);
-    const abiFunction = getAbiItem({
+    let abi = await loadABI(transaction.to);
+
+    let abiFunction = getAbiItem({
       abi: abi,
       name: functionSelector,
     }) as AbiFunction;
+
+    if (!abiFunction && decodedTransactions.length > 0) {
+      // it could match with function in new fallback handler set in previous transactions
+      const newFallbackHandlerAddress = decodedTransactions.findLast(
+        t => t.functionName === 'setFallbackHandler',
+      )?.parameters?.[0]?.value;
+      if (newFallbackHandlerAddress) {
+        abi = await loadABI(newFallbackHandlerAddress);
+        abiFunction = getAbiItem({
+          abi: abi,
+          name: functionSelector,
+        }) as AbiFunction;
+      }
+    }
 
     // is there ABI for this transaction?
     if (abiFunction) {

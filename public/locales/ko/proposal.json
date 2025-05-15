@@ -203,5 +203,9 @@
   "nonceLabelSingleTransaction": "트랜잭션 #{{proposalId}}",
   "nonceLabelRecommended": "{{nonce}} - 새 거래",
   "nonceLabelRecommendedTitle": "권장 논스",
-  "nonceLabelReplaceActiveTitle": "활성 바꾸기"
+  "nonceLabelReplaceActiveTitle": "활성 바꾸기",
+  "nonceLabelBannerActive": "{{confirmations}의 서명자 중 {{signersThreshold}} 서명자가 Nonce {{nonce}}를 거부하려고 합니다.}",
+  "nonceLabelBannerRejected": "논스 {{nonce}}가 거부되었습니다.",
+  "conflictingProposals": "상충되는 제안",
+  "executableCode": "실행 코드"
 }

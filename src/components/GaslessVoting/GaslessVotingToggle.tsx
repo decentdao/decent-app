@@ -53,6 +53,8 @@ function GaslessVotingToggleContent({
       flexDirection="column"
       gap="1.5rem"
       w="100%"
+      px={6}
+      py={2}
     >
       <HStack
         justify="space-between"
@@ -63,18 +65,18 @@ function GaslessVotingToggleContent({
           flexDirection="column"
           gap="0.25rem"
         >
-          <Text textStyle={isSettings ? 'body-small' : 'helper-text'}>
+          <Text
+            color="neutral-7"
+            textStyle={isSettings ? 'labels-large' : 'helper-text'}
+          >
             {isSettings ? t('gaslessVotingLabelSettings') : t('gaslessVotingLabel')}
           </Text>
-          <Text
-            textStyle={isSettings ? 'labels-large' : 'helper-text'}
-            color="neutral-7"
-          >
+          <Text textStyle={isSettings ? 'labels-large' : 'helper-text'}>
             {isSettings ? t('gaslessVotingDescriptionSettings') : t('gaslessVotingDescription')}
           </Text>
           {displayNeedStakingLabel && (
             <Text
-              textStyle={isSettings ? 'labels-large' : 'helper-text'}
+              textStyle={isSettings ? 'labels-small' : 'helper-text'}
               color="neutral-7"
             >
               {t('gaslessStakingRequirement', {
@@ -234,17 +236,14 @@ export function GaslessVotingToggleDAOSettings(props: GaslessVotingToggleProps) 
   );
 
   return (
-    <Box
-      gap="1.5rem"
+    <Flex
       display="flex"
       flexDirection="column"
+      border="1px solid"
+      borderColor="neutral-3"
+      borderRadius="0.75rem"
+      mb={2}
     >
-      <Divider
-        mt="1rem"
-        w={{ base: 'calc(100% + 1.5rem)', md: 'calc(100% + 3rem)' }}
-        mx={{ base: '-0.75rem', md: '-1.5rem' }}
-      />
-
       <GaslessVotingToggleContent
         {...props}
         isSettings
@@ -252,89 +251,103 @@ export function GaslessVotingToggleDAOSettings(props: GaslessVotingToggleProps) 
       />
 
       {gaslessVotingEnabled && (
-        <Flex justifyContent="space-between">
+        <>
+          <Divider />
           <Flex
-            direction="column"
+            px={6}
+            py={2}
             justifyContent="space-between"
           >
-            <Text
-              textStyle="labels-small"
-              color="neutral-7"
-              mb="0.25rem"
+            <Flex
+              direction="column"
+              justifyContent="space-between"
             >
-              {t('paymasterBalance')}
-            </Text>
-            <Text
-              textStyle="labels-large"
-              display="flex"
-              alignItems="center"
-            >
-              {formattedPaymasterBalance}
-              <Image
-                src={nativeTokenIcon}
-                fallbackSrc={'/images/coin-icon-default.svg'}
-                alt={nativeCurrency.symbol}
-                w="1.25rem"
-                h="1.25rem"
-                ml="0.5rem"
-                mr="0.25rem"
-              />
-              {nativeCurrency.symbol}
-            </Text>
-          </Flex>
+              <Text
+                textStyle="labels-small"
+                color="neutral-7"
+                mb="0.25rem"
+              >
+                {t('paymasterBalance')}
+              </Text>
+              <Text
+                textStyle="labels-large"
+                display="flex"
+                alignItems="center"
+              >
+                {formattedPaymasterBalance}
+                <Image
+                  src={nativeTokenIcon}
+                  fallbackSrc={'/images/coin-icon-default.svg'}
+                  alt={nativeCurrency.symbol}
+                  w="1.25rem"
+                  h="1.25rem"
+                  ml="0.5rem"
+                  mr="0.25rem"
+                />
+                {nativeCurrency.symbol}
+              </Text>
+            </Flex>
 
-          <Flex gap="0.5rem">
-            <Button
-              variant="secondary"
-              size="sm"
-              onClick={withdrawGas}
-            >
-              {t('withdrawGas')}
-            </Button>
-            <Button
-              variant="secondary"
-              size="sm"
-              onClick={refillGas}
-            >
-              {t('addGas')}
-            </Button>
+            <Flex gap="0.5rem">
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={withdrawGas}
+              >
+                {t('withdrawGas')}
+              </Button>
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={refillGas}
+              >
+                {t('addGas')}
+              </Button>
+            </Flex>
           </Flex>
-        </Flex>
+        </>
       )}
 
       {gaslessStakingEnabled && (
-        <Flex justifyContent="space-between">
+        <>
+          <Divider />
           <Flex
-            direction="column"
+            px={6}
+            py={2}
             justifyContent="space-between"
           >
-            <Text
-              textStyle="labels-small"
-              color="neutral-7"
-              mb="0.25rem"
+            <Flex
+              direction="column"
+              justifyContent="space-between"
             >
-              {t('paymasterStakedAmount')}
-            </Text>
-            <Text
-              textStyle="labels-large"
-              display="flex"
-              alignItems="center"
-            >
-              {formattedPaymasterStakedAmount}
-              <Image
-                src={nativeTokenIcon}
-                fallbackSrc={'/images/coin-icon-default.svg'}
-                alt={nativeCurrency.symbol}
-                w="1.25rem"
-                h="1.25rem"
-                ml="0.5rem"
-                mr="0.25rem"
-              />
-              {nativeCurrency.symbol}
-            </Text>
+              <Text
+                textStyle="labels-small"
+                color="neutral-7"
+                mb="0.25rem"
+              >
+                {t('paymasterStakedAmount')}
+              </Text>
+              <Text
+                textStyle="labels-large"
+                display="flex"
+                alignItems="center"
+              >
+                {formattedPaymasterStakedAmount}
+                <Image
+                  src={nativeTokenIcon}
+                  fallbackSrc={'/images/coin-icon-default.svg'}
+                  alt={nativeCurrency.symbol}
+                  w="1.25rem"
+                  h="1.25rem"
+                  ml="0.5rem"
+                  mr="0.25rem"
+                />
+                {nativeCurrency.symbol}
+              </Text>
+            </Flex>
           </Flex>
-        </Flex>
+        </>
       )}
-    </Box>
+    </Flex>
   );
 }

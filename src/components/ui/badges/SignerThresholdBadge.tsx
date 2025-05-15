@@ -56,9 +56,11 @@ export function CountProgressBadge(props: { total: number; current: number }) {
 export function SignerThresholdBadge({
   numberOfConfirmedSigners,
   proposalThreshold,
+  isRejected,
 }: {
   numberOfConfirmedSigners?: number;
   proposalThreshold?: number;
+  isRejected?: boolean;
 }) {
   const { daoKey } = useCurrentDAOKey();
   const {
@@ -71,7 +73,8 @@ export function SignerThresholdBadge({
     !safe ||
     type !== GovernanceType.MULTISIG ||
     numberOfConfirmedSigners === undefined ||
-    proposalThreshold === undefined
+    proposalThreshold === undefined ||
+    isRejected
   ) {
     return null;
   }

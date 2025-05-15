@@ -46,7 +46,7 @@
   "wrapTokenButton": "랩",
   "updateSignersTooltip": "향후 제안을 통과시키는 데 필요한 서명자 수",
   "confirmModifyGovernanceTitle": "주의하세요, 이것은 큰 문제입니다!",
-  "confirmModifyGovernanceDescription": "금고의 거버넌스를 수정하는 것은 중요한 영향을 미칩니다. 진행하기 전에 반드시 확인하시기 바랍니다.",
+  "confirmModifyGovernanceDesc": "토큰 거버넌스로 전환하면 DAO 운영이 영구적으로 변경됩니다. 이 작업은 되돌릴 수 없습니다. 계속 진행하시겠습니까?",
   "stakeTitle": "스테이크",
   "removeSignerWarning": "서명자는 조직에서 제거됩니다.",
   "add": "추가",
