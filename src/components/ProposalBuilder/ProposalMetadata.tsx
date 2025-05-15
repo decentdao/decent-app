@@ -1,4 +1,4 @@
-import { Container, Input, VStack, Text, Flex, Button } from '@chakra-ui/react';
+import { Container, Input, VStack } from '@chakra-ui/react';
 import { NanceEditor } from '@nance/nance-editor';
 import { FormikProps } from 'formik';
 import { TFunction } from 'i18next';
