@@ -207,5 +207,6 @@
   "nonceLabelBannerActive": "{{confirmations}의 서명자 중 {{signersThreshold}} 서명자가 Nonce {{nonce}}를 거부하려고 합니다.}",
   "nonceLabelBannerRejected": "논스 {{nonce}}가 거부되었습니다.",
   "conflictingProposals": "상충되는 제안",
-  "executableCode": "실행 코드"
+  "executableCode": "실행 코드",
+  "nonceLabelBannerPassedThreshold": "모든 관련 제안을 거부할 수 있을 만큼 충분한 거부 서명을 받았습니다."
 }
