@@ -5,7 +5,7 @@ import { TFunction } from 'i18next';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import useFeatureFlag from '../../helpers/environmentFeatureFlags';
-import { BASE_URL, INFURA_AUTH } from '../../providers/App/hooks/useIPFSClient';
+import { GATEWAY_URL, INFURA_AUTH } from '../../providers/App/hooks/useIPFSClient';
 import { useProposalActionsStore } from '../../store/actions/useProposalActionsStore';
 import { CreateProposalForm } from '../../types/proposalBuilder';
 import { CustomNonceInput } from '../ui/forms/CustomNonceInput';
@@ -161,7 +161,7 @@ export function MarkdownProposalMetadata({
         <NanceEditor
           initialValue={initialDescription}
           onEditorChange={value => setProposalMetadata('description', value)}
-          fileUploadIPFS={{ gateway: BASE_URL, auth: INFURA_AUTH }}
+          fileUploadIPFS={{ gateway: GATEWAY_URL, auth: INFURA_AUTH }}
           darkMode={true}
           height="400px"
         />
