@@ -211,5 +211,9 @@
   "awaitingSigners": "署名待ち",
   "conflictingProposalNotice": "2つ以上のプロポーザルが同じNonceを共有する場合、実行できるのは1つだけである。",
   "timelockRejection": "タイムロックの拒否",
-  "timelockedTitle": "タイムロック"
+  "timelockedTitle": "タイムロック",
+  "nonceLabelBannerActive": "{{confirmations} {{signersThreshold}}の署名者は、Nonce }を拒否したい。｝{{nonce}",
+  "nonceLabelBannerRejected": "Nonce{{nonce}} は拒否された。",
+  "conflictingProposals": "相反する提案",
+  "executableCode": "実行可能コード"
 }

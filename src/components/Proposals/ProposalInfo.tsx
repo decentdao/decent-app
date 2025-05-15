@@ -8,7 +8,12 @@ import useSnapshotProposal from '../../hooks/DAO/loaders/snapshot/useSnapshotPro
 import { useGetMetadata } from '../../hooks/DAO/proposal/useGetMetadata';
 import { useCurrentDAOKey } from '../../hooks/DAO/useCurrentDAOKey';
 import { useDAOStore } from '../../providers/App/AppProvider';
-import { ExtendedSnapshotProposal, FractalProposal, MultisigProposal } from '../../types';
+import {
+  ExtendedSnapshotProposal,
+  FractalProposal,
+  FractalProposalState,
+  MultisigProposal,
+} from '../../types';
 import { ActivityDescription } from '../Activity/ActivityDescription';
 import { ProposalStateBadge } from '../ui/badges/Badge';
 import { SignerThresholdBadge } from '../ui/badges/SignerThresholdBadge';
@@ -18,6 +23,7 @@ import { useDecentModal } from '../ui/modals/useDecentModal';
 import { ProposalCountdown } from '../ui/proposal/ProposalCountdown';
 import ProposalExecutableCode from '../ui/proposal/ProposalExecutableCode';
 import CeleryButtonWithIcon from '../ui/utils/CeleryButtonWithIcon';
+import { MultisigConflictingProposals } from './MultisigProposalDetails/MultisigConflictingProposals';
 
 export function ProposalInfo({
   proposal,
@@ -122,6 +128,7 @@ export function ProposalInfo({
           <SignerThresholdBadge
             numberOfConfirmedSigners={(proposal as MultisigProposal).confirmations?.length}
             proposalThreshold={(proposal as MultisigProposal).signersThreshold}
+            isRejected={proposal.state === FractalProposalState.REJECTED}
           />
         </Flex>
       </Flex>
@@ -140,6 +147,7 @@ export function ProposalInfo({
           />
         )}
         <ProposalExecutableCode proposal={proposal} />
+        <MultisigConflictingProposals proposal={proposal} />
       </Box>
     </Box>
   );

@@ -211,5 +211,9 @@
   "awaitingSigners": "Awaiting Signers",
   "conflictingProposalNotice": "When two or more proposals share the same Nonce, only one can be executed.",
   "timelockRejection": "Timelock Rejection",
-  "timelockedTitle": "Timelocked"
+  "timelockedTitle": "Timelocked",
+  "nonceLabelBannerActive": "{{confirmations}} of {{signersThreshold}} signers want to reject Nonce {{nonce}}.",
+  "nonceLabelBannerRejected": "Nonce {{nonce}} has been rejected.",
+  "conflictingProposals": "Conflicting Proposals",
+  "executableCode": "Executable Code"
 }

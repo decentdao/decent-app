@@ -211,5 +211,9 @@
   "awaitingSigners": "En attente de signataires",
   "conflictingProposalNotice": "Lorsque deux propositions ou plus partagent le même Nonce, une seule peut être exécutée.",
   "timelockRejection": "Rejet de la minuterie",
-  "timelockedTitle": "Bloqué dans le temps"
+  "timelockedTitle": "Bloqué dans le temps",
+  "nonceLabelBannerActive": "{{confirmations}} des signataires {{signersThreshold}} veulent rejeter Nonce {{nonce}}.",
+  "nonceLabelBannerRejected": "Nonce {{nonce}} a été rejeté.",
+  "conflictingProposals": "Propositions contradictoires",
+  "executableCode": "Code exécutable"
 }

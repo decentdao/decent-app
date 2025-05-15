@@ -211,5 +211,9 @@
   "awaitingSigners": "Wartende Unterzeichner",
   "conflictingProposalNotice": "Wenn zwei oder mehr Vorschläge dieselbe Nonce haben, kann nur einer davon ausgeführt werden.",
   "timelockRejection": "Timelock Ablehnung",
-  "timelockedTitle": "Zeitgesperrt"
+  "timelockedTitle": "Zeitgesperrt",
+  "nonceLabelBannerActive": "{{confirmations}} von {{signersThreshold}} Unterzeichner wollen Nonce {{nonce}} ablehnen.",
+  "nonceLabelBannerRejected": "Nonce {{nonce}} wurde abgelehnt.",
+  "conflictingProposals": "Widersprüchliche Vorschläge",
+  "executableCode": "Ausführbarer Code"
 }

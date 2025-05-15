@@ -211,5 +211,9 @@
   "awaitingSigners": "서명자 대기 중",
   "conflictingProposalNotice": "두 개 이상의 제안서가 동일한 논스를 공유하는 경우, 하나만 실행할 수 있습니다.",
   "timelockRejection": "타임락 거부",
-  "timelockedTitle": "시간 고정"
+  "timelockedTitle": "시간 고정",
+  "nonceLabelBannerActive": "{{confirmations}의 서명자 중 {{signersThreshold}} 서명자가 Nonce {{nonce}}를 거부하려고 합니다.}",
+  "nonceLabelBannerRejected": "논스 {{nonce}}가 거부되었습니다.",
+  "conflictingProposals": "상충되는 제안",
+  "executableCode": "실행 코드"
 }
