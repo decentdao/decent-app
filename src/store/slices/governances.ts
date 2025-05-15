@@ -279,8 +279,16 @@ export const createGovernancesSlice: StateCreator<
   },
   setGaslessVotingData: (daoKey, gasslesVotingData) => {
     set(state => {
-      state.governances[daoKey].gaslessVotingEnabled = gasslesVotingData.gaslessVotingEnabled;
-      state.governances[daoKey].paymasterAddress = gasslesVotingData.paymasterAddress;
+      if (!state.governances[daoKey]) {
+        state.governances[daoKey] = {
+          ...EMPTY_GOVERNANCE,
+          gaslessVotingEnabled: gasslesVotingData.gaslessVotingEnabled,
+          paymasterAddress: gasslesVotingData.paymasterAddress,
+        };
+      } else {
+        state.governances[daoKey].gaslessVotingEnabled = gasslesVotingData.gaslessVotingEnabled;
+        state.governances[daoKey].paymasterAddress = gasslesVotingData.paymasterAddress;
+      }
     });
   },
   getGovernance: daoKey => {
