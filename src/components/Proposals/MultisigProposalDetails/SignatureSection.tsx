@@ -210,7 +210,13 @@ export function SignatureSection({ proposal }: { proposal: MultisigProposal }) {
     proposal.state === FractalProposalState.REJECTED ||
     proposal.state === FractalProposalState.EXECUTED;
 
-  if (!canUserCreateProposal || !transaction || isDoNotShowStates || !safe?.address) {
+  if (
+    !canUserCreateProposal ||
+    !transaction ||
+    isDoNotShowStates ||
+    !safe?.address ||
+    !user.address
+  ) {
     return null;
   }
 
@@ -224,14 +230,15 @@ export function SignatureSection({ proposal }: { proposal: MultisigProposal }) {
   let isSignatureSectionDisabled =
     asyncRequestPending || proposal.state !== FractalProposalState.ACTIVE || pendingCreateTx;
   // Allow proposer to sign reject proposal, since proposer automatically approves
-  if (userProposalConfirmation || userRejectionProposalConfirmation) {
-    isSignatureSectionDisabled = true;
-  }
-  if (proposal.proposer === user.address) {
+  if (proposal.proposer === getAddress(user.address)) {
     if (!userRejectionProposalConfirmation && !isSignatureSectionDisabled) {
       isSignatureSectionDisabled = false;
+    } else if (userRejectionProposalConfirmation) {
+      isSignatureSectionDisabled = true;
     }
     // If user has already approved or rejected, disable signature section
+  } else if (userProposalConfirmation || userRejectionProposalConfirmation) {
+    isSignatureSectionDisabled = true;
   }
 
   return (
