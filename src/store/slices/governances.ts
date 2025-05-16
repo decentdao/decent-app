@@ -164,6 +164,8 @@ export const createGovernancesSlice: StateCreator<
             proposals,
           };
         } else {
+          // TODO: Sometimes snapshot proposals might be loaded before proposals, then snapshot proposals are lost
+          // Need to tackle this in scope of ENG-813
           state.governances[daoKey].proposals = proposals;
         }
       },
