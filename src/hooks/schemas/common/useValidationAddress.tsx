@@ -3,8 +3,8 @@ import { useTranslation } from 'react-i18next';
 import { Address, getAddress, isAddress } from 'viem';
 import { normalize } from 'viem/ens';
 import { AnyObject } from 'yup';
-import { useDAOStore } from '../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
+import { useGlobalStore } from '../../../store/store';
 import { AddressValidationMap, ERC721TokenConfig } from '../../../types';
 import { validateENSName } from '../../../utils/url';
 import { useCurrentDAOKey } from '../../DAO/useCurrentDAOKey';
@@ -22,9 +22,7 @@ export const useValidationAddress = () => {
 
   const { t } = useTranslation(['daoCreate', 'common', 'modals']);
   const { daoKey } = useCurrentDAOKey();
-  const {
-    node: { safe },
-  } = useDAOStore({ daoKey });
+  const { getDaoNode } = useGlobalStore();
   const { chain } = useNetworkConfigStore();
 
   const { getEnsAddress } = useNetworkEnsAddressAsync();
@@ -143,8 +141,9 @@ export const useValidationAddress = () => {
       name: 'New Signer Validation',
       message: t('alreadySigner', { ns: 'modals' }),
       test: async function (addressOrENS: string | undefined) {
-        if (!addressOrENS || !safe) return false;
-
+        if (!addressOrENS || !daoKey) return false;
+        const safe = getDaoNode(daoKey).safe;
+        if (!safe) return false;
         let resolvedAddress: Address | null;
 
         if (validateENSName(addressOrENS)) {
@@ -160,7 +159,7 @@ export const useValidationAddress = () => {
         return !safe.owners.includes(resolvedAddress);
       },
     };
-  }, [safe, getEnsAddress, t]);
+  }, [daoKey, getDaoNode, getEnsAddress, t]);
 
   const testUniqueAddressArray = useCallback(
     async (value: string, addressArray: string[]) => {
