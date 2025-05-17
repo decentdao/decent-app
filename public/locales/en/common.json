@@ -128,5 +128,6 @@
   "unsavedChanges": "Unsaved Changes",
   "unsavedChangesDescription": "You have unsaved changes that will be lost if you continue. Do you want to discard your changes?",
   "discardChanges": "Discard",
-  "keepEditing": "Keep Editing"
+  "keepEditing": "Keep Editing",
+  "selectStatusLabel": "Select Status"
 }

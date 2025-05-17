@@ -1,10 +1,11 @@
 import { SafeMultisigTransactionResponse } from '@safe-global/safe-core-sdk-types';
-import { FractalProposal, MultisigProposal } from '../types';
+import { FractalProposal, FractalProposalState, MultisigProposal } from '../types';
 
 export function isMultisigRejectionProposal(
   safeAddress: string | undefined,
   nonce: number | undefined,
   tx: SafeMultisigTransactionResponse | undefined,
+  isExpired?: boolean,
 ) {
   if (!safeAddress || !nonce) return false;
 
@@ -12,7 +13,7 @@ export function isMultisigRejectionProposal(
   const emptyTransactionToSafe =
     !tx?.data && tx?.to === safeAddress && BigInt(tx?.value || 0) === 0n;
 
-  return sameNonce && emptyTransactionToSafe;
+  return sameNonce && emptyTransactionToSafe && !isExpired;
 }
 
 export function findMostConfirmedMultisigRejectionProposal(
@@ -21,7 +22,12 @@ export function findMostConfirmedMultisigRejectionProposal(
   proposals: FractalProposal[] | null,
 ): MultisigProposal | undefined {
   const multisigRejectionProposals = proposals?.filter(p =>
-    isMultisigRejectionProposal(safeAddress, nonce, p.transaction),
+    isMultisigRejectionProposal(
+      safeAddress,
+      nonce,
+      p.transaction,
+      p.state === FractalProposalState.EXPIRED,
+    ),
   );
 
   if (!multisigRejectionProposals?.length) return undefined;

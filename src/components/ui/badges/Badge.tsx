@@ -158,3 +158,27 @@ export function Badge({ labelKey, children, size }: IBadge) {
     </DecentTooltip>
   );
 }
+
+export function ProposalStateBadge({
+  labelKey,
+  size,
+  rejectionProposalState,
+}: IBadge & { rejectionProposalState?: FractalProposalState | null }) {
+  if (
+    rejectionProposalState === FractalProposalState.TIMELOCKABLE ||
+    rejectionProposalState === FractalProposalState.TIMELOCKED
+  ) {
+    return (
+      <Badge
+        labelKey={rejectionProposalState}
+        size={size}
+      />
+    );
+  }
+  return (
+    <Badge
+      labelKey={labelKey}
+      size={size}
+    />
+  );
+}
