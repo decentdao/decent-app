@@ -215,5 +215,13 @@
   "nonceLabelBannerActive": "{{confirmations} {{signersThreshold}}の署名者は、Nonce }を拒否したい。｝{{nonce}",
   "nonceLabelBannerRejected": "Nonce{{nonce}} は拒否された。",
   "conflictingProposals": "相反する提案",
-  "executableCode": "実行可能コード"
+  "executableCode": "実行可能コード",
+  "confirmRejectProposal": "プロポーズを断る？",
+  "rejectProposalYesRejectIt": "はい、拒否します",
+  "rejectProposalDescription": "十分な数の署名者がこの提案、あるいは同じNonceを持つ提案を拒否した場合、関連するすべての提案を拒否するオプションも利用可能になります。",
+  "rejectProposalNevermind": "ネバーマインド",
+  "rejectProposalAreYouSure": "本当にこの提案を拒否したいのか？",
+  "rejectProposalAreYouSureDescription": "注意：この処置は不可逆的です。",
+  "confirmExecution": "実行の確認",
+  "executionDescription": "このプロポーザルのみを実行します。<color>Nonce{{nonce}</color>}を含む他の提案はすべて自動的に却下されます。"
 }

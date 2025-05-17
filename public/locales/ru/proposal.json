@@ -215,5 +215,13 @@
   "nonceLabelBannerActive": "{{confirmations}Подписчики {{signersThreshold}} хотят отклонить Nonce {{nonce}}.",
   "nonceLabelBannerRejected": "Nonce {{nonce}} был отклонен.",
   "conflictingProposals": "Противоречивые предложения",
-  "executableCode": "Исполняемый код"
+  "executableCode": "Исполняемый код",
+  "confirmRejectProposal": "Отклонить предложение?",
+  "rejectProposalYesRejectIt": "Да, отклонить",
+  "rejectProposalDescription": "Если достаточное количество подписантов отклонит это или любое другое предложение с тем же Nonce, станет доступна опция отклонить все связанные предложения.",
+  "rejectProposalNevermind": "Неважно",
+  "rejectProposalAreYouSure": "Вы уверены, что хотите отклонить это предложение?",
+  "rejectProposalAreYouSureDescription": "Обратите внимание: это действие необратимо.",
+  "confirmExecution": "Подтвердить выполнение",
+  "executionDescription": "You are executing this proposal only. All other proposals with <color>Nonce {{nonce}}</color> will automatically be rejected."
 }

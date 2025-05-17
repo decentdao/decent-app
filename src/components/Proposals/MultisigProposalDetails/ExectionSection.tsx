@@ -17,15 +17,20 @@ import { useDAOStore } from '../../../providers/App/AppProvider';
 import { FractalProposalState, MultisigProposal } from '../../../types';
 import { DecentTooltip } from '../../ui/DecentTooltip';
 import { SectionBottomContentBox } from '../../ui/containers/ContentBox';
+import { ModalType } from '../../ui/modals/ModalProvider';
+import { useDecentModal } from '../../ui/modals/useDecentModal';
 
 function useProposalExecutionButtonAction(
   state: FractalProposalState | null | undefined,
   proposalTransaction: SafeMultisigTransactionResponse | undefined,
+  proposalId: string | undefined,
+  proposalNonce: number | undefined,
   requireDataHex: boolean,
 ) {
   const { daoKey } = useCurrentDAOKey();
   const {
     guardContracts: { freezeGuardContractAddress },
+    governance: { proposals },
     node: { safe },
   } = useDAOStore({ daoKey });
   const [isSubmitDisabled, setIsSubmitDisabled] = useState(false);
@@ -34,7 +39,11 @@ function useProposalExecutionButtonAction(
   const { loadSafeMultisigProposals } = useSafeMultisigProposals();
   const { t } = useTranslation(['transaction']);
 
-  if (!state || !walletClient) return { action: undefined, actionPending: false };
+  const conflictingProposals =
+    proposals?.filter(
+      (p: MultisigProposal) =>
+        p.nonce === proposalNonce && p.proposalId !== proposalId && !p.isMultisigRejectionTx,
+    ) ?? [];
 
   const timelockTransaction = async () => {
     try {
@@ -179,6 +188,18 @@ function useProposalExecutionButtonAction(
     }
   };
 
+  const openExecutionConfirmModal = useDecentModal(ModalType.CONFIRM_EXECUTION, {
+    nonce: proposalNonce,
+    submitExecution: () =>
+      executeMultisigProposal({
+        messages: {
+          failed: t('failedExecute', { ns: 'transaction' }),
+          pending: t('pendingExecute', { ns: 'transaction' }),
+          success: t('successExecute', { ns: 'transaction' }),
+        },
+      }),
+  });
+
   switch (state) {
     case FractalProposalState.ACTIVE:
       return {
@@ -187,14 +208,17 @@ function useProposalExecutionButtonAction(
       };
     case FractalProposalState.EXECUTABLE:
       return {
-        action: () =>
-          executeMultisigProposal({
-            messages: {
-              failed: t('failedExecute', { ns: 'transaction' }),
-              pending: t('pendingExecute', { ns: 'transaction' }),
-              success: t('successExecute', { ns: 'transaction' }),
-            },
-          }),
+        action:
+          conflictingProposals.length > 0
+            ? openExecutionConfirmModal
+            : () =>
+                executeMultisigProposal({
+                  messages: {
+                    failed: t('failedExecute', { ns: 'transaction' }),
+                    pending: t('pendingExecute', { ns: 'transaction' }),
+                    success: t('successExecute', { ns: 'transaction' }),
+                  },
+                }),
         actionPending: contractCallPending || isSubmitDisabled,
       };
     case FractalProposalState.TIMELOCKABLE:
@@ -270,6 +294,8 @@ export function ExectionSection({ proposal }: { proposal: MultisigProposal }) {
     proposal.transaction
       ? { ...proposal.transaction, data: proposal.transaction.data ?? '0x' }
       : undefined,
+    proposal.proposalId,
+    proposal.nonce,
     true,
   );
 
@@ -285,6 +311,8 @@ export function ExectionSection({ proposal }: { proposal: MultisigProposal }) {
   const rejectionProposalAction = useProposalExecutionButtonAction(
     rejectionProposal?.state,
     rejectionProposal?.transaction,
+    rejectionProposal?.proposalId,
+    rejectionProposal?.nonce,
     false,
   );
 

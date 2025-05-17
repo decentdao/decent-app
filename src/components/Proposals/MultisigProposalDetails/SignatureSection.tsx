@@ -20,6 +20,8 @@ import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetwo
 import { FractalProposalState, MultisigProposal } from '../../../types';
 import { SectionTopContentBox } from '../../ui/containers/ContentBox';
 import { OptionMenu } from '../../ui/menus/OptionMenu';
+import { ModalType } from '../../ui/modals/ModalProvider';
+import { useDecentModal } from '../../ui/modals/useDecentModal';
 
 const useSignTransaction = () => {
   const { daoKey } = useCurrentDAOKey();
@@ -189,8 +191,11 @@ export function SignatureSection({ proposal }: { proposal: MultisigProposal }) {
 
   const conflictingProposals =
     proposals?.filter(
-      (p: MultisigProposal) => p?.nonce === proposal?.nonce && p?.proposalId !== proposalId,
-    ) || [];
+      (p: MultisigProposal) =>
+        p.nonce === proposal.nonce &&
+        p.proposalId !== proposal.proposalId &&
+        !p.isMultisigRejectionTx,
+    ) ?? [];
 
   const rejectionProposal = findMostConfirmedMultisigRejectionProposal(
     safe?.address,
@@ -204,6 +209,27 @@ export function SignatureSection({ proposal }: { proposal: MultisigProposal }) {
   const userRejectionProposalConfirmation = rejectionProposal?.confirmations?.find(
     confirmation => confirmation.owner === user.address,
   );
+
+  const handleConfirmSubmitRejectionProposal = () => {
+    submitRejectionMultisigProposal({
+      safeAddress: safe?.address,
+      nonce: proposal.nonce,
+      pendingToastMessage: t('proposalRejectionCreatePendingToastMessage', {
+        ns: 'proposal',
+      }),
+      successToastMessage: t('proposalRejectionCreateSuccessToastMessage', {
+        ns: 'proposal',
+      }),
+      failedToastMessage: t('proposalRejectionCreateFailureToastMessage', {
+        ns: 'proposal',
+      }),
+    });
+  };
+
+  const openConfirmRejectProposalModal = useDecentModal(ModalType.CONFIRM_REJECT_PROPOSAL, {
+    submitRejection: handleConfirmSubmitRejectionProposal,
+  });
+  const showConfirmRejectProposalModal = !rejectionProposal && conflictingProposals?.length;
 
   const isDoNotShowStates =
     proposal.state === FractalProposalState.CLOSED ||
@@ -317,21 +343,11 @@ export function SignatureSection({ proposal }: { proposal: MultisigProposal }) {
                 color="red-1"
                 isDisabled={!!userRejectionProposalConfirmation}
                 menuItemOnClick={() =>
-                  rejectionProposal?.transaction
-                    ? signTransaction(rejectionProposal.transaction, rejectionProposal.proposalId)
-                    : submitRejectionMultisigProposal({
-                        safeAddress: safe.address,
-                        nonce: proposal.nonce,
-                        pendingToastMessage: t('proposalRejectionCreatePendingToastMessage', {
-                          ns: 'proposal',
-                        }),
-                        successToastMessage: t('proposalRejectionCreateSuccessToastMessage', {
-                          ns: 'proposal',
-                        }),
-                        failedToastMessage: t('proposalRejectionCreateFailureToastMessage', {
-                          ns: 'proposal',
-                        }),
-                      })
+                  showConfirmRejectProposalModal
+                    ? openConfirmRejectProposalModal()
+                    : rejectionProposal?.transaction
+                      ? signTransaction(rejectionProposal.transaction, rejectionProposal.proposalId)
+                      : handleConfirmSubmitRejectionProposal()
                 }
               />
             ),

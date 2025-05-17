@@ -215,5 +215,13 @@
   "nonceLabelBannerActive": "{{confirmations}} di {{signersThreshold}} firmatari vogliono rifiutare Nonce {{nonce}}.",
   "nonceLabelBannerRejected": "Nonce {{nonce}} è stato rifiutato.",
   "conflictingProposals": "Proposte contrastanti",
-  "executableCode": "Codice eseguibile"
+  "executableCode": "Codice eseguibile",
+  "confirmRejectProposal": "Rifiutare la proposta?",
+  "rejectProposalYesRejectIt": "Sì, rifiutare",
+  "rejectProposalDescription": "Se un numero sufficiente di firmatari rifiuta questa o qualsiasi proposta con lo stesso Nonce, diventa disponibile anche l'opzione di rifiutare tutte le proposte correlate.",
+  "rejectProposalNevermind": "Non importa",
+  "rejectProposalAreYouSure": "Siete sicuri di voler rifiutare questa proposta?",
+  "rejectProposalAreYouSureDescription": "Nota bene: questa azione è irreversibile.",
+  "confirmExecution": "Confermare l'esecuzione",
+  "executionDescription": "Si sta eseguendo solo questa proposta. Tutte le altre proposte con <color>Nonce {{nonce}</color> } saranno automaticamente rifiutate."
 }
