@@ -15,6 +15,7 @@ import { AirdropData, AirdropModal } from './AirdropModal/AirdropModal';
 import { ConfirmDeleteStrategyModal } from './ConfirmDeleteStrategyModal';
 import { ConfirmModifyGovernanceModal } from './ConfirmModifyGovernanceModal';
 import { ConfirmUrlModal } from './ConfirmUrlModal';
+import { ConfirmExecutionModal, ConfirmRejectProposalModal } from './ConfirmationModal';
 import { DelegateModal } from './DelegateModal';
 import ForkProposalTemplateModal from './ForkProposalTemplateModal';
 import { GaslessVoteFailedModal } from './GaslessVoting/GaslessVoteFailedModal';
@@ -59,6 +60,9 @@ export enum ModalType {
   DAPPS_BROWSER,
   DAPP_BROWSER,
   SAFE_SETTINGS,
+  CONFIRM_NONCE_EXECUTION,
+  CONFIRM_REJECT_PROPOSAL,
+  CONFIRM_EXECUTION,
 }
 
 export type CurrentModal = {
@@ -132,6 +136,18 @@ export type ModalPropsTypes = {
     appUrl: string;
   };
   [ModalType.SAFE_SETTINGS]: {};
+  [ModalType.CONFIRM_NONCE_EXECUTION]: {
+    nonce: number | undefined;
+    continue: () => void;
+    cancel: () => void;
+  };
+  [ModalType.CONFIRM_REJECT_PROPOSAL]: {
+    submitRejection: () => void;
+  };
+  [ModalType.CONFIRM_EXECUTION]: {
+    nonce: number | undefined;
+    submitExecution: () => void;
+  };
 };
 
 export interface IModalContext {
@@ -415,6 +431,31 @@ export function ModalProvider({ children }: { children: ReactNode }) {
           backgroundColor: NEUTRAL_2_50_TRANSPARENT,
           padding: '0',
         };
+        break;
+      case ModalType.CONFIRM_REJECT_PROPOSAL:
+        modalContent = (
+          <ConfirmRejectProposalModal
+            submitRejection={() => {
+              current.props.submitRejection();
+              closeModal();
+            }}
+            cancel={closeModal}
+          />
+        );
+        modalSize = 'md';
+        break;
+      case ModalType.CONFIRM_EXECUTION:
+        modalContent = (
+          <ConfirmExecutionModal
+            nonce={current.props.nonce}
+            submitExecution={() => {
+              current.props.submitExecution();
+              closeModal();
+            }}
+            cancel={closeModal}
+          />
+        );
+        modalSize = 'md';
         break;
       case ModalType.NONE:
       default:
