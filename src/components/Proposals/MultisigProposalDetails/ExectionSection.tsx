@@ -45,7 +45,6 @@ function useProposalExecutionButtonAction(
         !freezeGuardContractAddress ||
         (requireDataHex && !isHex(proposalTransaction.data))
       ) {
-        console.log(walletClient);
         return;
       }
       setIsSubmitDisabled(true);
