@@ -1,6 +1,6 @@
 import * as amplitude from '@amplitude/analytics-browser';
 import { Center } from '@chakra-ui/react';
-import { useEffect, useMemo } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { ProposalBuilder } from '../../../../../components/ProposalBuilder/ProposalBuilder';
@@ -17,7 +17,7 @@ import { analyticsEvents } from '../../../../../insights/analyticsEvents';
 import { useStore } from '../../../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../../../providers/NetworkConfig/useNetworkConfigStore';
 import { useProposalActionsStore } from '../../../../../store/actions/useProposalActionsStore';
-import { CreateProposalSteps } from '../../../../../types';
+import { CreateProposalSteps, CreateProposalTransaction } from '../../../../../types';
 
 export function SafeProposalWithActionsCreatePage() {
   useEffect(() => {
@@ -31,9 +31,9 @@ export function SafeProposalWithActionsCreatePage() {
 
   const { prepareProposal } = usePrepareProposal();
   const { getTransactions, actions, proposalMetadata } = useProposalActionsStore();
-  // getTransactions function depends on actions internally
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const transactions = useMemo(() => getTransactions(), [getTransactions, actions]);
+
+  const [transactions, setTransactions] = useState<CreateProposalTransaction[]>([]);
+  useEffect(() => setTransactions(getTransactions()), [getTransactions, actions]);
 
   const defaultProposalValues = proposalMetadata
     ? {

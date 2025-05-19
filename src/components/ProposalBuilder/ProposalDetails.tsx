@@ -53,9 +53,9 @@ export function TransactionsDetails({
                   <TransactionValueContainer>{parameter.signature}</TransactionValueContainer>
                 )}
                 <Text color="neutral-7">{!!parameter.label ? parameter.label : t('value')}</Text>
-                {(parameter.label || parameter.value) && (
+                {(parameter.label || parameter.value || parameter.valueArray) && (
                   <TransactionValueContainer>
-                    {parameter.value || t('userInput')}
+                    {parameter.value || `[${parameter.valueArray?.join(', ')}]` || t('userInput')}
                   </TransactionValueContainer>
                 )}
               </Fragment>

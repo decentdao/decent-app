@@ -18,11 +18,17 @@ export function usePrepareProposal() {
           };
         } else {
           const signature = tx.parameters.map(parameter => parameter.signature.trim()).join(', ');
+
+          const processValue = (value: string) =>
+            isValidUrl(value.trim())
+              ? encodeURIComponent(value.trim()) // If parameter.value is valid URL with special symbols like ":" or "?" - decoding might fail, thus we need to encode URL
+              : value.trim();
+
           const parameters = tx.parameters
             .map(parameter =>
-              isValidUrl(parameter.value!.trim())
-                ? encodeURIComponent(parameter.value!.trim()) // If parameter.value is valid URL with special symbols like ":" or "?" - decoding might fail, thus we need to encode URL
-                : parameter.value!.trim(),
+              parameter.valueArray
+                ? `[${parameter.valueArray.map(processValue)}]`
+                : processValue(parameter.value!),
             )
             .join(', ');
 

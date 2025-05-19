@@ -208,7 +208,7 @@ export function SafeSettingsModal({
       functionName: 'updateValues',
       parameters: [
         {
-          signature: 'bytes32[]',
+          signature: 'string[]',
           valueArray: keyArgs,
         },
         {
