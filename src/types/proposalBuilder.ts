@@ -5,16 +5,18 @@ export enum CreateProposalSteps {
   METADATA = 'metadata',
   TRANSACTIONS = 'transactions',
 }
+export interface CreateProposalParameter {
+  signature: string;
+  label?: string;
+  value?: string;
+  valueArray?: string[];
+}
 
 export interface CreateProposalTransaction<T = BigIntValuePair> {
   targetAddress: string;
   ethValue: T;
   functionName: string;
-  parameters: {
-    signature: string;
-    label?: string;
-    value?: string;
-  }[];
+  parameters: CreateProposalParameter[];
 }
 
 export type CreateProposalMetadata = {

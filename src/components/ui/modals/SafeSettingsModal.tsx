@@ -1,10 +1,11 @@
-import { Box, Button, Flex } from '@chakra-ui/react';
+import { Box, Button, Flex, Text } from '@chakra-ui/react';
 import { abis } from '@fractal-framework/fractal-contracts';
 import { Formik, Form, useFormikContext } from 'formik';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import { encodeAbiParameters, encodeFunctionData, parseAbiParameters } from 'viem';
-import { ZodiacModuleProxyFactoryAbi } from '../../../assets/abi/ZodiacModuleProxyFactoryAbi';
+import { DAO_ROUTES } from '../../../constants/routes';
 import { usePaymasterDepositInfo } from '../../../hooks/DAO/accountAbstraction/usePaymasterDepositInfo';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import { useValidationAddress } from '../../../hooks/schemas/common/useValidationAddress';
@@ -13,7 +14,13 @@ import { useInstallVersionedVotingStrategy } from '../../../hooks/utils/useInsta
 import { SafeGeneralSettingsPage } from '../../../pages/dao/settings/general/SafeGeneralSettingsPage';
 import { useStore } from '../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
-import { BigIntValuePair } from '../../../types';
+import { useProposalActionsStore } from '../../../store/actions/useProposalActionsStore';
+import {
+  BigIntValuePair,
+  CreateProposalActionData,
+  CreateProposalTransaction,
+  ProposalActionType,
+} from '../../../types';
 import {
   getPaymasterSaltNonce,
   getPaymasterAddress,
@@ -143,15 +150,23 @@ export function SafeSettingsModal({
     );
   }
 
+  const { addAction, resetActions } = useProposalActionsStore();
+
+  const { addressPrefix } = useNetworkConfigStore();
+
   const { buildInstallVersionedVotingStrategies } = useInstallVersionedVotingStrategy();
   const { depositInfo } = usePaymasterDepositInfo();
+  const navigate = useNavigate();
 
   const handleEditGeneralGovernance = async (updatedValues: SafeSettingsEdits) => {
     const changeTitles = [];
-    const keyArgs = [];
-    const valueArgs = [];
+    const keyArgs: string[] = [];
+    const valueArgs: string[] = [];
+
     const accountAbstractionSupported = bundlerMinimumStake !== undefined;
     const stakingRequired = accountAbstractionSupported && bundlerMinimumStake > 0n;
+
+    const transactions: CreateProposalTransaction[] = [];
 
     if (updatedValues.general?.name) {
       changeTitles.push(t('updatesSafeName', { ns: 'proposalMetadata' }));
@@ -176,17 +191,27 @@ export function SafeSettingsModal({
       }
     }
 
-    // const title = changeTitles.join(`; `);
+    const title = changeTitles.join(`; `);
+    const ethValue = {
+      bigintValue: 0n,
+      value: '0',
+    };
 
-    const targets = [keyValuePairs];
-    const calldatas = [
-      encodeFunctionData({
-        abi: abis.KeyValuePairs,
-        functionName: 'updateValues',
-        args: [keyArgs, valueArgs],
-      }),
-    ];
-    const values = [0n];
+    transactions.push({
+      targetAddress: keyValuePairs,
+      ethValue,
+      functionName: 'updateValues',
+      parameters: [
+        {
+          signature: 'bytes32[]',
+          valueArray: keyArgs,
+        },
+        {
+          signature: 'string[]',
+          valueArray: valueArgs,
+        },
+      ],
+    });
 
     if (updatedValues.general?.sponsoredVoting) {
       if (!safe?.address) {
@@ -211,28 +236,32 @@ export function SafeSettingsModal({
           ],
         });
 
-        targets.push(zodiacModuleProxyFactory);
-        calldatas.push(
-          encodeFunctionData({
-            abi: ZodiacModuleProxyFactoryAbi,
-            functionName: 'deployModule',
-            args: [
-              paymaster.decentPaymasterV1MasterCopy,
-              paymasterInitData,
-              getPaymasterSaltNonce(safe.address, chainId),
-            ],
-          }),
-        );
-        values.push(0n);
+        transactions.push({
+          targetAddress: zodiacModuleProxyFactory,
+          ethValue,
+          functionName: 'deployModule',
+          parameters: [
+            {
+              signature: 'address',
+              value: paymaster.decentPaymasterV1MasterCopy,
+            },
+            {
+              signature: 'bytes',
+              value: paymasterInitData,
+            },
+            {
+              signature: 'uint256',
+              value: getPaymasterSaltNonce(safe.address, chainId).toString(),
+            },
+          ],
+        });
       }
 
       // Include txs to disable any old voting strategies and enable the new ones.
-      const { installVersionedStrategyTxDatas, newStrategies } =
+      const { installVersionedStrategyCreateProposalTxs, newStrategies } =
         await buildInstallVersionedVotingStrategies();
 
-      targets.push(...installVersionedStrategyTxDatas.map(tx => tx.targetAddress));
-      calldatas.push(...installVersionedStrategyTxDatas.map(tx => tx.calldata));
-      values.push(...installVersionedStrategyTxDatas.map(() => 0n));
+      transactions.push(...installVersionedStrategyCreateProposalTxs);
 
       const predictedPaymasterAddress = getPaymasterAddress({
         safeAddress: safe.address,
@@ -250,16 +279,21 @@ export function SafeSettingsModal({
         if (paymasterAddress === null || stakedAmount < bundlerMinimumStake) {
           const delta = bundlerMinimumStake - stakedAmount;
 
-          targets.push(predictedPaymasterAddress);
-          calldatas.push(
-            encodeFunctionData({
-              abi: abis.DecentPaymasterV1,
-              functionName: 'addStake',
-              // one day in seconds, defined on https://github.com/alchemyplatform/rundler/blob/c17fd3dbc24d2af93fd68310031d445d5440794f/crates/sim/src/simulation/mod.rs#L170
-              args: [86400],
-            }),
-          );
-          values.push(delta);
+          transactions.push({
+            targetAddress: predictedPaymasterAddress,
+            ethValue: {
+              bigintValue: delta,
+              value: delta.toString(),
+            },
+            functionName: 'addStake',
+            parameters: [
+              {
+                signature: 'uint256',
+                // one day in seconds, defined on https://github.com/alchemyplatform/rundler/blob/c17fd3dbc24d2af93fd68310031d445d5440794f/crates/sim/src/simulation/mod.rs#L170
+                value: '86400', // @todo: might fail. is bigint, here string
+              },
+            ],
+          });
         }
       }
 
@@ -271,15 +305,25 @@ export function SafeSettingsModal({
           paymaster,
         );
 
-        targets.push(predictedPaymasterAddress);
-        calldatas.push(
-          encodeFunctionData({
-            abi: abis.DecentPaymasterV1,
-            functionName: 'setFunctionValidator',
-            args: [strategy.address, voteSelector, voteValidator],
-          }),
-        );
-        values.push(0n);
+        transactions.push({
+          targetAddress: predictedPaymasterAddress,
+          ethValue,
+          functionName: 'setFunctionValidator',
+          parameters: [
+            {
+              signature: 'address',
+              value: strategy.address,
+            },
+            {
+              signature: 'bytes4',
+              value: voteSelector,
+            },
+            {
+              signature: 'address',
+              value: voteValidator,
+            },
+          ],
+        });
       });
 
       // Also whitelist existing versioned strategies that have not already been whitelisted.
@@ -293,54 +337,62 @@ export function SafeSettingsModal({
               paymaster,
             );
 
-            targets.push(predictedPaymasterAddress);
-            calldatas.push(
-              encodeFunctionData({
-                abi: abis.DecentPaymasterV1,
-                functionName: 'setFunctionValidator',
-                args: [strategy.address, voteSelector, voteValidator],
-              }),
-            );
-            values.push(0n);
+            transactions.push({
+              targetAddress: predictedPaymasterAddress,
+              ethValue,
+              functionName: 'setFunctionValidator',
+              parameters: [
+                {
+                  signature: 'address',
+                  value: strategy.address,
+                },
+                {
+                  signature: 'bytes4',
+                  value: voteSelector,
+                },
+                {
+                  signature: 'address',
+                  value: voteValidator,
+                },
+              ],
+            });
           });
       }
     }
 
-    // const proposalData: ProposalExecuteData = {
-    //   metaData: {
-    //     title,
-    //     description: '',
-    //     documentationUrl: '',
-    //   },
-    //   targets,
-    //   values: values,
-    //   calldatas,
-    // };
+    const action: CreateProposalActionData = {
+      actionType: ProposalActionType.EDIT,
+      transactions,
+    };
+
+    return { action, title };
   };
 
-  // const { submitProposal } = useSubmitProposal();
-
   const submitAllSettingsEditsProposal = async (values: SafeSettingsEdits) => {
-    const { general } = values;
-    if (general) {
-      await handleEditGeneralGovernance(values);
+    if (!safe?.address) {
+      throw new Error('Safe address is not set');
     }
 
-    // submitProposal({
-    //   safeAddress: safe?.address,
-    //   proposalData,
-    //   nonce: safe?.nextNonce,
-    //   pendingToastMessage: t('proposalCreatePendingToastMessage', { ns: 'proposal' }),
-    //   successToastMessage: t('proposalCreateSuccessToastMessage', { ns: 'proposal' }),
-    //   failedToastMessage: t('proposalCreateFailureToastMessage', { ns: 'proposal' }),
-    // });
+    resetActions();
+    const { general } = values;
+    if (general) {
+      const { action, title } = await handleEditGeneralGovernance(values);
+
+      addAction({
+        actionType: action.actionType,
+        transactions: action.transactions,
+        content: <Text>{title}</Text>,
+      });
+
+      navigate(DAO_ROUTES.proposalWithActionsNew.relative(addressPrefix, safe.address));
+    }
   };
 
   return (
     <Formik<SafeSettingsEdits>
       initialValues={{}}
       validate={async values => {
-        const errors: SafeSettingsFormikErrors = {};
+        let errors: SafeSettingsFormikErrors = {};
 
         if (values.multisig) {
           const { newSigners, signerThreshold, signersToRemove } = values.multisig;
@@ -397,6 +449,10 @@ export function SafeSettingsModal({
           }
         } else {
           errors.general = undefined;
+        }
+
+        if (Object.values(errors).every(e => e === undefined)) {
+          errors = {};
         }
 
         return errors;
