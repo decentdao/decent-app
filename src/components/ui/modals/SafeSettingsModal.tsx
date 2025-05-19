@@ -4,11 +4,12 @@ import { Formik, Form, useFormikContext } from 'formik';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { encodeAbiParameters, encodeFunctionData, parseAbiParameters } from 'viem';
+import { Address, encodeAbiParameters, encodeFunctionData, parseAbiParameters } from 'viem';
 import { DAO_ROUTES } from '../../../constants/routes';
 import { usePaymasterDepositInfo } from '../../../hooks/DAO/accountAbstraction/usePaymasterDepositInfo';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import { useValidationAddress } from '../../../hooks/schemas/common/useValidationAddress';
+import { useNetworkEnsAddressAsync } from '../../../hooks/useNetworkEnsAddress';
 import { useCanUserCreateProposal } from '../../../hooks/utils/useCanUserSubmitProposal';
 import { useInstallVersionedVotingStrategy } from '../../../hooks/utils/useInstallVersionedVotingStrategy';
 import { SafeGeneralSettingsPage } from '../../../pages/dao/settings/general/SafeGeneralSettingsPage';
@@ -21,6 +22,7 @@ import {
   CreateProposalTransaction,
   ProposalActionType,
 } from '../../../types';
+import { SENTINEL_MODULE } from '../../../utils/address';
 import {
   getPaymasterSaltNonce,
   getPaymasterAddress,
@@ -91,7 +93,7 @@ export function SafeSettingsModal({
 
   const { canUserCreateProposal } = useCanUserCreateProposal();
 
-  const { t } = useTranslation(['modals', 'common']);
+  const { t } = useTranslation(['modals', 'common', 'proposalMetadata']);
 
   const { validateAddress } = useValidationAddress();
 
@@ -158,6 +160,13 @@ export function SafeSettingsModal({
   const { depositInfo } = usePaymasterDepositInfo();
   const navigate = useNavigate();
 
+  const { getEnsAddress } = useNetworkEnsAddressAsync();
+
+  const ethValue = {
+    bigintValue: 0n,
+    value: '0',
+  };
+
   const handleEditGeneralGovernance = async (updatedValues: SafeSettingsEdits) => {
     const changeTitles = [];
     const keyArgs: string[] = [];
@@ -192,10 +201,6 @@ export function SafeSettingsModal({
     }
 
     const title = changeTitles.join(`; `);
-    const ethValue = {
-      bigintValue: 0n,
-      value: '0',
-    };
 
     transactions.push({
       targetAddress: keyValuePairs,
@@ -368,13 +373,124 @@ export function SafeSettingsModal({
     return { action, title };
   };
 
+  const handleEditMultisigGovernance = async (updatedValues: SafeSettingsEdits) => {
+    if (!updatedValues.multisig) {
+      throw new Error('Multisig settings are not set');
+    }
+
+    if (!safe?.address) {
+      throw new Error('Safe address is not set');
+    }
+    const changeTitles: string[] = [];
+
+    const { newSigners, signersToRemove, signerThreshold } = updatedValues.multisig;
+
+    const threshold = signerThreshold ?? safe.threshold;
+
+    const transactions: CreateProposalTransaction[] = [];
+
+    if ((newSigners?.length ?? 0) > 0) {
+      newSigners?.forEach(async s => {
+        const maybeEnsAddress = await getEnsAddress({ name: s.inputValue });
+        const signerAddress: Address | undefined = maybeEnsAddress ?? s.address;
+
+        if (!signerAddress) {
+          throw new Error('Invalid ENS name or address');
+        }
+
+        transactions.push({
+          targetAddress: safe.address,
+          ethValue,
+          functionName: 'addOwnerWithThreshold',
+          parameters: [
+            {
+              signature: 'address',
+              value: signerAddress,
+            },
+            {
+              signature: 'uint256',
+              value: threshold.toString(),
+            },
+          ],
+        });
+      });
+
+      changeTitles.push(t('addSigners', { ns: 'proposalMetadata' }));
+    }
+
+    if ((signersToRemove?.length ?? 0) > 0) {
+      const signerIndicesThatWillBeRemoved = new Set<number>();
+
+      signersToRemove?.forEach(s => {
+        const signerToRemoveIndex = safe.owners.findIndex(a => a === s);
+        let previousIndex = signerToRemoveIndex - 1;
+        while (signerIndicesThatWillBeRemoved.has(previousIndex)) {
+          previousIndex--;
+        }
+
+        const prevSigner = previousIndex < 0 ? SENTINEL_MODULE : safe.owners[previousIndex];
+
+        transactions.push({
+          targetAddress: safe.address,
+          ethValue,
+          functionName: 'removeOwner',
+          parameters: [
+            {
+              signature: 'address',
+              value: prevSigner,
+            },
+            {
+              signature: 'address',
+              value: s,
+            },
+            {
+              signature: 'uint256',
+              value: threshold.toString(),
+            },
+          ],
+        });
+
+        signerIndicesThatWillBeRemoved.add(signerToRemoveIndex);
+      });
+
+      changeTitles.push(t('removeSigners', { ns: 'proposalMetadata' }));
+    }
+
+    if (
+      newSigners === undefined &&
+      signersToRemove === undefined &&
+      signerThreshold !== undefined
+    ) {
+      transactions.push({
+        targetAddress: safe.address,
+        ethValue,
+        functionName: 'changeThreshold',
+        parameters: [
+          {
+            signature: 'uint256',
+            value: signerThreshold.toString(),
+          },
+        ],
+      });
+
+      changeTitles.push(t('changeThreshold', { ns: 'proposalMetadata' }));
+    }
+
+    const action: CreateProposalActionData = {
+      actionType: ProposalActionType.EDIT,
+      transactions,
+    };
+
+    return { action, title: changeTitles.join(`; `) };
+  };
+
   const submitAllSettingsEditsProposal = async (values: SafeSettingsEdits) => {
     if (!safe?.address) {
       throw new Error('Safe address is not set');
     }
 
     resetActions();
-    const { general } = values;
+    const { general, multisig } = values;
     if (general) {
       const { action, title } = await handleEditGeneralGovernance(values);
 
@@ -383,9 +499,19 @@ export function SafeSettingsModal({
         transactions: action.transactions,
         content: <Text>{title}</Text>,
       });
-
-      navigate(DAO_ROUTES.proposalWithActionsNew.relative(addressPrefix, safe.address));
     }
+
+    if (multisig) {
+      const { action, title } = await handleEditMultisigGovernance(values);
+
+      addAction({
+        actionType: action.actionType,
+        transactions: action.transactions,
+        content: <Text>{title}</Text>,
+      });
+    }
+
+    navigate(DAO_ROUTES.proposalWithActionsNew.relative(addressPrefix, safe.address));
   };
 
   return (
