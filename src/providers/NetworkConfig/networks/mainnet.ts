@@ -22,7 +22,7 @@ export const mainnetConfig: NetworkConfig = {
   rpcEndpoint: `https://eth-mainnet.g.alchemy.com/v2/${import.meta.env?.VITE_APP_ALCHEMY_API_KEY}`,
   safeBaseURL: 'https://safe-transaction-mainnet.safe.global',
   etherscanBaseURL: 'https://etherscan.io',
-  etherscanAPIUrl: `https://api.etherscan.io/api?apikey=${import.meta.env?.VITE_APP_ETHERSCAN_MAINNET_API_KEY}`,
+  etherscanAPIUrl: `https://api.etherscan.io/v2/api?chainid=1&apikey=${import.meta.env?.VITE_APP_ETHERSCAN_MAINNET_API_KEY}`,
   addressPrefix: 'eth',
   nativeTokenIcon: '/images/coin-icon-eth.svg',
   isENSSupported: true,
