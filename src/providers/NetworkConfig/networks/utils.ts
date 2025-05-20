@@ -14,3 +14,7 @@ export const getSafeContractDeploymentAddress = (
   const contractAddress = getAddress(contract);
   return contractAddress;
 };
+
+export const getEtherscanAPIUrl = (chainId: number, apiKey: string) => {
+  return `https://api.etherscan.io/v2/api?chainid=${chainId}&apikey=${apiKey}`;
+};
