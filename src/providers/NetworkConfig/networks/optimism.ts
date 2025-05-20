@@ -22,10 +22,7 @@ export const optimismConfig: NetworkConfig = {
   rpcEndpoint: `https://opt-mainnet.g.alchemy.com/v2/${import.meta.env?.VITE_APP_ALCHEMY_API_KEY}`,
   safeBaseURL: 'https://safe-transaction-optimism.safe.global',
   etherscanBaseURL: 'https://optimistic.etherscan.io/',
-  etherscanAPIUrl: getEtherscanAPIUrl(
-    chain.id,
-    import.meta.env?.VITE_APP_ETHERSCAN_MAINNET_API_KEY,
-  ),
+  etherscanAPIUrl: getEtherscanAPIUrl(chain.id),
   addressPrefix: 'oeth',
   nativeTokenIcon: '/images/coin-icon-op.svg',
   isENSSupported: false,

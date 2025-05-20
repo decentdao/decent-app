@@ -22,10 +22,7 @@ export const baseConfig: NetworkConfig = {
   rpcEndpoint: `https://base-mainnet.g.alchemy.com/v2/${import.meta.env?.VITE_APP_ALCHEMY_API_KEY}`,
   safeBaseURL: 'https://safe-transaction-base.safe.global',
   etherscanBaseURL: 'https://basescan.org/',
-  etherscanAPIUrl: getEtherscanAPIUrl(
-    chain.id,
-    import.meta.env?.VITE_APP_ETHERSCAN_MAINNET_API_KEY,
-  ),
+  etherscanAPIUrl: getEtherscanAPIUrl(chain.id),
   addressPrefix: 'base',
   nativeTokenIcon: '/images/coin-icon-base.svg',
   isENSSupported: false,

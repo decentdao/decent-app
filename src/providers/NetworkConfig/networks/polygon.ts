@@ -22,10 +22,7 @@ export const polygonConfig: NetworkConfig = {
   rpcEndpoint: `https://polygon-mainnet.g.alchemy.com/v2/${import.meta.env?.VITE_APP_ALCHEMY_API_KEY}`,
   safeBaseURL: 'https://safe-transaction-polygon.safe.global',
   etherscanBaseURL: 'https://polygonscan.com',
-  etherscanAPIUrl: getEtherscanAPIUrl(
-    chain.id,
-    import.meta.env?.VITE_APP_ETHERSCAN_MAINNET_API_KEY,
-  ),
+  etherscanAPIUrl: getEtherscanAPIUrl(chain.id),
   addressPrefix: 'matic',
   nativeTokenIcon: '/images/coin-icon-pol.svg',
   isENSSupported: false,

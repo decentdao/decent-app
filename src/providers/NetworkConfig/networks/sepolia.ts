@@ -22,10 +22,7 @@ export const sepoliaConfig: NetworkConfig = {
   rpcEndpoint: `https://eth-sepolia.g.alchemy.com/v2/${import.meta.env?.VITE_APP_ALCHEMY_API_KEY}`,
   safeBaseURL: 'https://safe-transaction-sepolia.safe.global',
   etherscanBaseURL: 'https://sepolia.etherscan.io',
-  etherscanAPIUrl: getEtherscanAPIUrl(
-    chain.id,
-    import.meta.env?.VITE_APP_ETHERSCAN_MAINNET_API_KEY,
-  ),
+  etherscanAPIUrl: getEtherscanAPIUrl(chain.id),
   addressPrefix: 'sep',
   nativeTokenIcon: '/images/coin-icon-sep.svg',
   isENSSupported: true,
