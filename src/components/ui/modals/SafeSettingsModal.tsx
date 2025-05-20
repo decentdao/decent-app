@@ -194,13 +194,13 @@ export function SafeSettingsModal({
       valueArgs.push(updatedValues.general.name);
     }
 
-    if (updatedValues.general?.snapshot) {
+    if (updatedValues.general?.snapshot !== undefined) {
       changeTitles.push(t('updateSnapshotSpace', { ns: 'proposalMetadata' }));
       keyArgs.push('snapshotENS');
       valueArgs.push(updatedValues.general.snapshot);
     }
 
-    if (updatedValues.general?.sponsoredVoting) {
+    if (updatedValues.general?.sponsoredVoting !== undefined) {
       keyArgs.push('gaslessVotingEnabled');
       if (updatedValues.general.sponsoredVoting) {
         changeTitles.push(t('enableGaslessVoting', { ns: 'proposalMetadata' }));
@@ -229,7 +229,7 @@ export function SafeSettingsModal({
       ],
     });
 
-    if (updatedValues.general?.sponsoredVoting) {
+    if (updatedValues.general?.sponsoredVoting !== undefined) {
       if (!safe?.address) {
         throw new Error('Safe address is not set');
       }
@@ -729,11 +729,16 @@ export function SafeSettingsModal({
         }
 
         if (values.general) {
-          const { snapshot } = values.general;
+          const { name, snapshot } = values.general;
           const errorsGeneral = errors.general ?? {};
 
           if (snapshot && !validateENSName(snapshot)) {
             errorsGeneral.snapshot = t('errorInvalidENSName', { ns: 'common' });
+            errors.general = errorsGeneral;
+          }
+
+          if (name !== undefined && name === '') {
+            errorsGeneral.name = t('daoNameRequired', { ns: 'common' });
             errors.general = errorsGeneral;
           }
         } else {

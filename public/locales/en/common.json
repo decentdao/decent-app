@@ -131,5 +131,6 @@
   "discardChanges": "Discard",
   "keepEditing": "Keep Editing",
   "addressRequired": "Address is required",
-  "save": "Save"
+  "save": "Save",
+  "daoNameRequired": "DAO name is required"
 }

@@ -77,7 +77,6 @@ export function GovernanceParams() {
       }
 
       const executionPeriodSeconds = votingStrategy?.executionPeriod?.value;
-      console.log({ executionPeriodSeconds, ex: (executionPeriodSeconds ?? 1n) / 60n });
       if (executionPeriodSeconds) {
         setExistingExecutionPeriod(executionPeriodSeconds);
       }

@@ -68,8 +68,8 @@ export function SafeGeneralSettingsPage() {
 
   useEffect(() => {
     if (
-      !formValues.general?.name &&
-      !formValues.general?.snapshot &&
+      formValues.general?.name === undefined &&
+      formValues.general?.snapshot === undefined &&
       formValues.general?.sponsoredVoting === undefined
     ) {
       setFieldValue('general', undefined);
@@ -128,13 +128,14 @@ export function SafeGeneralSettingsPage() {
                   isRequired={false}
                   onChange={e => {
                     const newValue =
-                      e.target.value === existingDaoName ? undefined : e.target.value;
+                      e.target.value === existingDaoName ? undefined : e.target.value.trim();
                     setFieldValue('general.name', newValue);
                   }}
                   disabled={!canUserCreateProposal}
                   value={formValues.general?.name ?? existingDaoName}
-                  placeholder="Amazing DAO"
+                  placeholder={formValues.general?.name === undefined ? 'Amazing DAO' : ''}
                   testId="daoSettings.name"
+                  isInvalid={!!generalEditFormikErrors?.name}
                   inputContainerProps={{
                     width: { base: '100%', md: '16rem' },
                   }}
@@ -156,15 +157,18 @@ export function SafeGeneralSettingsPage() {
                 <InputComponent
                   isRequired={false}
                   onChange={e => {
-                    const lowerCasedValue = e.target.value.toLowerCase();
-
+                    const lowerCasedValue = e.target.value.toLowerCase().trim();
                     const newValue =
                       lowerCasedValue === existingSnapshotENS ? undefined : lowerCasedValue;
 
                     setFieldValue('general.snapshot', newValue);
                   }}
                   isInvalid={!!generalEditFormikErrors?.snapshot}
-                  value={formValues.general?.snapshot ?? existingSnapshotENS}
+                  value={
+                    formValues.general?.snapshot === undefined
+                      ? existingSnapshotENS
+                      : formValues.general?.snapshot
+                  }
                   disabled={!canUserCreateProposal}
                   placeholder="example.eth"
                   testId="daoSettings.snapshotENS"
