@@ -33,7 +33,10 @@ export function SafeProposalWithActionsCreatePage() {
   const { getTransactions, actions, proposalMetadata } = useProposalActionsStore();
 
   const [transactions, setTransactions] = useState<CreateProposalTransaction[]>([]);
-  useEffect(() => setTransactions(getTransactions()), [getTransactions, actions]);
+  useEffect(() => {
+    const txs = getTransactions();
+    setTransactions(txs);
+  }, [getTransactions, actions, safe]);
 
   const defaultProposalValues = proposalMetadata
     ? {
