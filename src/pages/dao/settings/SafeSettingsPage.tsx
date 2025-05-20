@@ -1,7 +1,9 @@
 import { Flex, useBreakpointValue } from '@chakra-ui/react';
+import { Formik } from 'formik';
 import { useTranslation } from 'react-i18next';
 import { Outlet, useLocation } from 'react-router-dom';
 import { SettingsNavigation } from '../../../components/SafeSettings/SettingsNavigation';
+import { SafeSettingsEdits } from '../../../components/ui/modals/SafeSettingsModal';
 import PageHeader from '../../../components/ui/page/Header/PageHeader';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import { useStore } from '../../../providers/App/AppProvider';
@@ -31,12 +33,17 @@ export function SafeSettingsPage() {
           title={t('settingsPageTitle', { daoName: subgraphInfo?.daoName })}
         />
       )}
-      <Flex flexDirection={{ base: 'column', md: 'row' }}>
-        {(!isMobile || isIndexSettingsPage) && (
-          <SettingsNavigation onSettingsNavigationClick={() => {}} />
-        )}
-        {(!isMobile || (isMobile && !isIndexSettingsPage)) && <Outlet />}
-      </Flex>
+      <Formik<SafeSettingsEdits>
+        initialValues={{}}
+        onSubmit={() => {}}
+      >
+        <Flex flexDirection={{ base: 'column', md: 'row' }}>
+          {(!isMobile || isIndexSettingsPage) && (
+            <SettingsNavigation onSettingsNavigationClick={() => {}} />
+          )}
+          {(!isMobile || (isMobile && !isIndexSettingsPage)) && <Outlet />}
+        </Flex>
+      </Formik>
     </>
   );
 }

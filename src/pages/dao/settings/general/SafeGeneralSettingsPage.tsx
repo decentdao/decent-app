@@ -1,8 +1,11 @@
-import { Box, Flex, Show, Text } from '@chakra-ui/react';
+import { Box, Button, Flex, Show, Text } from '@chakra-ui/react';
+import { abis } from '@fractal-framework/fractal-contracts';
 import { useFormikContext } from 'formik';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { zeroAddress } from 'viem';
+import { useNavigate } from 'react-router-dom';
+import { encodeAbiParameters, encodeFunctionData, parseAbiParameters, zeroAddress } from 'viem';
+import { ZodiacModuleProxyFactoryAbi } from '../../../../assets/abi/ZodiacModuleProxyFactoryAbi';
 import { GaslessVotingToggleDAOSettings } from '../../../../components/GaslessVoting/GaslessVotingToggle';
 import { SettingsContentBox } from '../../../../components/SafeSettings/SettingsContentBox';
 import { InputComponent } from '../../../../components/ui/forms/InputComponent';
@@ -14,13 +17,22 @@ import {
 import NestedPageHeader from '../../../../components/ui/page/Header/NestedPageHeader';
 import Divider from '../../../../components/ui/utils/Divider';
 import { DAO_ROUTES } from '../../../../constants/routes';
+import { usePaymasterDepositInfo } from '../../../../hooks/DAO/accountAbstraction/usePaymasterDepositInfo';
+import useSubmitProposal from '../../../../hooks/DAO/proposal/useSubmitProposal';
 import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
 import { useCanUserCreateProposal } from '../../../../hooks/utils/useCanUserSubmitProposal';
 import { createAccountSubstring } from '../../../../hooks/utils/useGetAccountName';
+import { useInstallVersionedVotingStrategy } from '../../../../hooks/utils/useInstallVersionedVotingStrategy';
 import { useStore } from '../../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../../providers/NetworkConfig/useNetworkConfigStore';
-import { GovernanceType } from '../../../../types';
+import { GovernanceType, ProposalExecuteData } from '../../../../types';
+import {
+  getPaymasterSaltNonce,
+  getPaymasterAddress,
+  getVoteSelectorAndValidator,
+} from '../../../../utils/gaslessVoting';
 
+// @deprecated
 export function SafeGeneralSettingsPage() {
   const { t } = useTranslation('settings');
   const { setFieldValue, values: formValues } = useFormikContext<SafeSettingsEdits>();
@@ -32,8 +44,9 @@ export function SafeGeneralSettingsPage() {
 
   const { daoKey } = useCurrentDAOKey();
   const {
+    governanceContracts: { strategies },
     governance: { type: votingStrategyType },
-    node: { subgraphInfo, safe, gaslessVotingEnabled },
+    node: { subgraphInfo, safe, gaslessVotingEnabled, paymasterAddress },
   } = useStore({ daoKey });
 
   const [existingIsGaslessVotingEnabledToggled, setExistingIsGaslessVotingEnabledToggled] =
@@ -75,6 +88,198 @@ export function SafeGeneralSettingsPage() {
       setFieldValue('general', undefined);
     }
   }, [setFieldValue, formValues.general]);
+
+  const {
+    chain: { id: chainId },
+    contracts: { keyValuePairs, accountAbstraction, paymaster, zodiacModuleProxyFactory },
+  } = useNetworkConfigStore();
+  const { submitProposal } = useSubmitProposal();
+  const { buildInstallVersionedVotingStrategies } = useInstallVersionedVotingStrategy();
+  const stakingRequired = accountAbstractionSupported && bundlerMinimumStake > 0n;
+  const { depositInfo } = usePaymasterDepositInfo();
+  const navigate = useNavigate();
+  const handleEditGeneralGovernance = async () => {
+    const changeTitles = [];
+    const keyArgs = [];
+    const valueArgs = [];
+
+    if (formValues.general?.name) {
+      changeTitles.push(t('updatesSafeName', { ns: 'proposalMetadata' }));
+      keyArgs.push('daoName');
+      valueArgs.push(formValues.general?.name);
+    }
+
+    if (formValues.general?.snapshot) {
+      changeTitles.push(t('updateSnapshotSpace', { ns: 'proposalMetadata' }));
+      keyArgs.push('snapshotENS');
+      valueArgs.push(formValues.general?.snapshot);
+    }
+
+    if (formValues.general?.sponsoredVoting) {
+      keyArgs.push('gaslessVotingEnabled');
+      if (formValues.general?.sponsoredVoting) {
+        changeTitles.push(t('enableGaslessVoting', { ns: 'proposalMetadata' }));
+        valueArgs.push('true');
+      } else {
+        changeTitles.push(t('disableGaslessVoting', { ns: 'proposalMetadata' }));
+        valueArgs.push('false');
+      }
+    }
+
+    const title = changeTitles.join(`; `);
+
+    const targets = [keyValuePairs];
+    const calldatas = [
+      encodeFunctionData({
+        abi: abis.KeyValuePairs,
+        functionName: 'updateValues',
+        args: [keyArgs, valueArgs],
+      }),
+    ];
+    const values = [0n];
+
+    if (formValues.general?.sponsoredVoting && existingIsGaslessVotingEnabledToggled) {
+      if (!safeAddress) {
+        throw new Error('Safe address is not set');
+      }
+
+      if (!accountAbstraction) {
+        throw new Error('Account Abstraction addresses are not set');
+      }
+
+      if (paymasterAddress === null) {
+        // Paymaster does not exist, deploy a new one
+        const paymasterInitData = encodeFunctionData({
+          abi: abis.DecentPaymasterV1,
+          functionName: 'initialize',
+          args: [
+            encodeAbiParameters(parseAbiParameters(['address', 'address', 'address']), [
+              safeAddress,
+              accountAbstraction.entryPointv07,
+              accountAbstraction.lightAccountFactory,
+            ]),
+          ],
+        });
+
+        targets.push(zodiacModuleProxyFactory);
+        calldatas.push(
+          encodeFunctionData({
+            abi: ZodiacModuleProxyFactoryAbi,
+            functionName: 'deployModule',
+            args: [
+              paymaster.decentPaymasterV1MasterCopy,
+              paymasterInitData,
+              getPaymasterSaltNonce(safeAddress, chainId),
+            ],
+          }),
+        );
+        values.push(0n);
+      }
+
+      // Include txs to disable any old voting strategies and enable the new ones.
+      const { installVersionedStrategyTxDatas, newStrategies } =
+        await buildInstallVersionedVotingStrategies();
+
+      targets.push(...installVersionedStrategyTxDatas.map(tx => tx.targetAddress));
+      calldatas.push(...installVersionedStrategyTxDatas.map(tx => tx.calldata));
+      values.push(...installVersionedStrategyTxDatas.map(() => 0n));
+
+      const predictedPaymasterAddress = getPaymasterAddress({
+        safeAddress,
+        zodiacModuleProxyFactory,
+        paymasterMastercopy: paymaster.decentPaymasterV1MasterCopy,
+        entryPoint: accountAbstraction.entryPointv07,
+        lightAccountFactory: accountAbstraction.lightAccountFactory,
+        chainId,
+      });
+
+      // Add stake for Paymaster if not enough
+      if (stakingRequired) {
+        const stakedAmount = depositInfo?.stake || 0n;
+
+        if (paymasterAddress === null || stakedAmount < bundlerMinimumStake) {
+          const delta = bundlerMinimumStake - stakedAmount;
+
+          targets.push(predictedPaymasterAddress);
+          calldatas.push(
+            encodeFunctionData({
+              abi: abis.DecentPaymasterV1,
+              functionName: 'addStake',
+              // one day in seconds, defined on https://github.com/alchemyplatform/rundler/blob/c17fd3dbc24d2af93fd68310031d445d5440794f/crates/sim/src/simulation/mod.rs#L170
+              args: [86400],
+            }),
+          );
+          values.push(delta);
+        }
+      }
+
+      newStrategies.forEach(strategy => {
+        // Whitelist the new strategy's `vote` function call on the Paymaster
+        // // // // // // // // // // // // // // // // // // // // // // //
+        const { voteSelector, voteValidator } = getVoteSelectorAndValidator(
+          strategy.type,
+          paymaster,
+        );
+
+        targets.push(predictedPaymasterAddress);
+        calldatas.push(
+          encodeFunctionData({
+            abi: abis.DecentPaymasterV1,
+            functionName: 'setFunctionValidator',
+            args: [strategy.address, voteSelector, voteValidator],
+          }),
+        );
+        values.push(0n);
+      });
+
+      // Also whitelist existing versioned strategies that have not already been whitelisted.
+      // This will be the case for DAOs deployed after this feature, but did not enable gasless voting on creation.
+      if (paymasterAddress === null) {
+        strategies
+          .filter(strategy => strategy.version !== undefined)
+          .forEach(strategy => {
+            const { voteSelector, voteValidator } = getVoteSelectorAndValidator(
+              strategy.type,
+              paymaster,
+            );
+
+            targets.push(predictedPaymasterAddress);
+            calldatas.push(
+              encodeFunctionData({
+                abi: abis.DecentPaymasterV1,
+                functionName: 'setFunctionValidator',
+                args: [strategy.address, voteSelector, voteValidator],
+              }),
+            );
+            values.push(0n);
+          });
+      }
+    }
+
+    const proposalData: ProposalExecuteData = {
+      metaData: {
+        title,
+        description: '',
+        documentationUrl: '',
+      },
+      targets,
+      values,
+      calldatas,
+    };
+    submitProposal({
+      safeAddress: safe?.address,
+      proposalData,
+      nonce: safe?.nextNonce,
+      pendingToastMessage: t('proposalCreatePendingToastMessage', { ns: 'proposal' }),
+      successToastMessage: t('proposalCreateSuccessToastMessage', { ns: 'proposal' }),
+      failedToastMessage: t('proposalCreateFailureToastMessage', { ns: 'proposal' }),
+      successCallback: () => {
+        if (safeAddress) {
+          navigate(DAO_ROUTES.dao.relative(addressPrefix, safeAddress));
+        }
+      },
+    });
+  };
 
   return (
     <>
@@ -219,6 +424,23 @@ export function SafeGeneralSettingsPage() {
               </>
             )}
           </Flex>
+          {/* Remove PROPOSE BUTTON when feature flag is removed
+          (https://linear.app/decent-labs/issue/ENG-894/remove-inner-propose-button-when-feature-flag-removed) */}
+          {canUserCreateProposal && (
+            <Button
+              variant="secondary"
+              size="sm"
+              marginLeft="auto"
+              isDisabled={
+                formValues.general?.name === undefined &&
+                formValues.general?.snapshot === undefined &&
+                formValues.general?.sponsoredVoting === undefined
+              }
+              onClick={() => handleEditGeneralGovernance()}
+            >
+              {t('proposeChanges')}
+            </Button>
+          )}
         </SettingsContentBox>
       ) : (
         <Flex
