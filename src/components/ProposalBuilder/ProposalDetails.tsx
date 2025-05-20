@@ -58,8 +58,8 @@ export function TransactionsDetails({
                     {parameter.value
                       ? parameter.value
                       : parameter.valueArray
-                      ? `[${parameter.valueArray.join(', ')}]`
-                      : t('userInput')}
+                        ? `[${parameter.valueArray.join(', ')}]`
+                        : t('userInput')}
                   </TransactionValueContainer>
                 )}
               </Fragment>
