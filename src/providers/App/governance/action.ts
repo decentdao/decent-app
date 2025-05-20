@@ -8,6 +8,7 @@ import {
   VotingStrategy,
   GovernanceType,
   ERC721TokenData,
+  GaslessVotingDaoData,
 } from '../../../types';
 import { ProposalTemplate } from '../../../types/proposalBuilder';
 
@@ -30,6 +31,7 @@ export enum FractalGovernanceAction {
   SET_CLAIMING_CONTRACT = 'SET_CLAIMING_CONTRACT',
   RESET_TOKEN_ACCOUNT_DATA = 'RESET_TOKEN_ACCOUNT_DATA',
   PENDING_PROPOSAL_ADD = 'PENDING_PROPOSAL_ADD',
+  SET_GASLESS_VOTING_DATA = 'SET_GASLESS_VOTING_DATA',
 }
 
 export enum DecentGovernanceAction {
@@ -100,6 +102,10 @@ export type FractalGovernanceActions =
   | {
       type: FractalGovernanceAction.PENDING_PROPOSAL_ADD;
       payload: string;
+    }
+  | {
+      type: FractalGovernanceAction.SET_GASLESS_VOTING_DATA;
+      payload: GaslessVotingDaoData;
     }
   | DecentGovernanceActions;
 
