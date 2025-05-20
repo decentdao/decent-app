@@ -17,6 +17,7 @@ import {
 import NestedPageHeader from '../../../../components/ui/page/Header/NestedPageHeader';
 import Divider from '../../../../components/ui/utils/Divider';
 import { DAO_ROUTES } from '../../../../constants/routes';
+import useFeatureFlag from '../../../../helpers/environmentFeatureFlags';
 import { usePaymasterDepositInfo } from '../../../../hooks/DAO/accountAbstraction/usePaymasterDepositInfo';
 import useSubmitProposal from '../../../../hooks/DAO/proposal/useSubmitProposal';
 import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
@@ -32,7 +33,6 @@ import {
   getVoteSelectorAndValidator,
 } from '../../../../utils/gaslessVoting';
 
-// @deprecated
 export function SafeGeneralSettingsPage() {
   const { t } = useTranslation('settings');
   const { setFieldValue, values: formValues } = useFormikContext<SafeSettingsEdits>();
@@ -98,24 +98,25 @@ export function SafeGeneralSettingsPage() {
   const stakingRequired = accountAbstractionSupported && bundlerMinimumStake > 0n;
   const { depositInfo } = usePaymasterDepositInfo();
   const navigate = useNavigate();
+  const isSettingsV1FeatureEnabled = useFeatureFlag('flag_settings_v1');
   const handleEditGeneralGovernance = async () => {
     const changeTitles = [];
     const keyArgs = [];
     const valueArgs = [];
 
-    if (formValues.general?.name) {
+    if (formValues.general?.name !== undefined) {
       changeTitles.push(t('updatesSafeName', { ns: 'proposalMetadata' }));
       keyArgs.push('daoName');
       valueArgs.push(formValues.general?.name);
     }
 
-    if (formValues.general?.snapshot) {
+    if (formValues.general?.snapshot !== undefined) {
       changeTitles.push(t('updateSnapshotSpace', { ns: 'proposalMetadata' }));
       keyArgs.push('snapshotENS');
       valueArgs.push(formValues.general?.snapshot);
     }
 
-    if (formValues.general?.sponsoredVoting) {
+    if (formValues.general?.sponsoredVoting !== undefined) {
       keyArgs.push('gaslessVotingEnabled');
       if (formValues.general?.sponsoredVoting) {
         changeTitles.push(t('enableGaslessVoting', { ns: 'proposalMetadata' }));
@@ -138,7 +139,7 @@ export function SafeGeneralSettingsPage() {
     ];
     const values = [0n];
 
-    if (formValues.general?.sponsoredVoting && existingIsGaslessVotingEnabledToggled) {
+    if (formValues.general?.sponsoredVoting !== undefined) {
       if (!safeAddress) {
         throw new Error('Safe address is not set');
       }
@@ -426,7 +427,7 @@ export function SafeGeneralSettingsPage() {
           </Flex>
           {/* Remove PROPOSE BUTTON when feature flag is removed
           (https://linear.app/decent-labs/issue/ENG-894/remove-inner-propose-button-when-feature-flag-removed) */}
-          {canUserCreateProposal && (
+          {!isSettingsV1FeatureEnabled && canUserCreateProposal && (
             <Button
               variant="secondary"
               size="sm"

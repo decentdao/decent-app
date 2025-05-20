@@ -452,7 +452,7 @@ export const useInstallVersionedVotingStrategy = () => {
               value: encodedStrategySetupData,
             },
             {
-              signature: 'bytes32',
+              signature: 'uint256',
               value: strategyNonce.toString(),
             },
           ],
