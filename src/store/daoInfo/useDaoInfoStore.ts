@@ -3,7 +3,6 @@ import { create } from 'zustand';
 import {
   DAOSubgraph,
   DecentModule,
-  GaslessVotingDaoData,
   IDAO,
   SafeWithNextNonce,
 } from '../../types';
@@ -24,7 +23,6 @@ export interface DaoInfoStore extends IDAO {
   setDaoInfo: (daoInfo: DAOSubgraph) => void;
   setDecentModules: (modules: DecentModule[]) => void;
   resetDaoInfoStore: () => void;
-  setGaslessVotingDaoData: (gaslessVotingDaoData: GaslessVotingDaoData) => void;
 }
 
 export const useDaoInfoStore = create<DaoInfoStore>()(set => ({
@@ -53,11 +51,5 @@ export const useDaoInfoStore = create<DaoInfoStore>()(set => ({
     set({ modules });
   },
 
-  resetDaoInfoStore: () => set(initialDaoInfoStore),
-  setGaslessVotingDaoData: (gaslessVotingDaoData: GaslessVotingDaoData) => {
-    set(state => ({
-      ...state,
-      ...gaslessVotingDaoData,
-    }));
-  },
+  resetDaoInfoStore: () => set(initialDaoInfoStore)
 }));
