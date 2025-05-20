@@ -616,7 +616,7 @@ export function SafeSettingsModal({
     }
 
     if (executionPeriod) {
-      const numberOfBlocks = await getEstimatedNumberOfBlocks(executionPeriod, publicClient);
+      const numberOfBlocks = await getEstimatedNumberOfBlocks(executionPeriod / 60n, publicClient);
       transactions.push({
         targetAddress: moduleAzoriusAddress,
         ethValue,

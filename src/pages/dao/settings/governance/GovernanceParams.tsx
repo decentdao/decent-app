@@ -39,19 +39,11 @@ export function GovernanceParams() {
   const existingQuorumThreshold = votingStrategy?.quorumThreshold?.value;
   const existingVotingPeriod = votingStrategy?.votingPeriod?.value;
 
-  const [existingTimelockPeriod, setExistingTimelockPeriod] = useState<bigint | undefined>(
-    votingStrategy?.timeLockPeriod?.value,
-  );
-
-  const [existingExecutionPeriod, setExistingExecutionPeriod] = useState<bigint | undefined>(
-    votingStrategy?.executionPeriod?.value,
-  );
+  const [existingTimelockPeriod, setExistingTimelockPeriod] = useState<bigint>();
+  const [existingExecutionPeriod, setExistingExecutionPeriod] = useState<bigint>();
 
   useEffect(() => {
-    const setFreezeGuardTimelockAndExecutionInfo = async () => {
-      const formatBlocks = async (blocks: number): Promise<string | undefined> =>
-        getTimeDuration(await blocksToSeconds(blocks, publicClient));
-
+    const setTimelockAndExecutionInfo = async () => {
       if (freezeGuardType == FreezeGuardType.MULTISIG) {
         if (freezeGuardContractAddress && publicClient) {
           const freezeGuardContract = getContract({
@@ -64,12 +56,12 @@ export function GovernanceParams() {
             freezeGuardContract.read.executionPeriod(),
           ]);
           const [timelockSeconds, executionPeriodSeconds] = await Promise.all([
-            formatBlocks(contractTimelockPeriod),
-            formatBlocks(contractExecutionPeriod),
+            blocksToSeconds(contractTimelockPeriod, publicClient),
+            blocksToSeconds(contractExecutionPeriod, publicClient),
           ]);
 
           if (timelockSeconds !== undefined) {
-            setExistingTimelockPeriod(BigInt(timelockSeconds));
+            setExistingTimelockPeriod(BigInt(timelockSeconds / 60));
           }
 
           if (executionPeriodSeconds !== undefined) {
@@ -77,10 +69,29 @@ export function GovernanceParams() {
           }
         }
       }
+
+      const timelockPeriodSeconds = votingStrategy?.timeLockPeriod?.value;
+
+      if (timelockPeriodSeconds) {
+        setExistingTimelockPeriod(timelockPeriodSeconds / 60n);
+      }
+
+      const executionPeriodSeconds = votingStrategy?.executionPeriod?.value;
+      console.log({ executionPeriodSeconds, ex: (executionPeriodSeconds ?? 1n) / 60n });
+      if (executionPeriodSeconds) {
+        setExistingExecutionPeriod(executionPeriodSeconds);
+      }
     };
 
-    setFreezeGuardTimelockAndExecutionInfo();
-  }, [freezeGuardType, freezeGuardContractAddress, getTimeDuration, publicClient]);
+    setTimelockAndExecutionInfo();
+  }, [
+    freezeGuardType,
+    freezeGuardContractAddress,
+    getTimeDuration,
+    publicClient,
+    votingStrategy?.timeLockPeriod?.value,
+    votingStrategy?.executionPeriod?.value,
+  ]);
 
   const handleInputChange = useCallback(
     (
