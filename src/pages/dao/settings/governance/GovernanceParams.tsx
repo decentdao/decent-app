@@ -42,6 +42,7 @@ export function GovernanceParams() {
   const [existingTimelockPeriod, setExistingTimelockPeriod] = useState<bigint | undefined>(
     votingStrategy?.timeLockPeriod?.value,
   );
+
   const [existingExecutionPeriod, setExistingExecutionPeriod] = useState<bigint | undefined>(
     votingStrategy?.executionPeriod?.value,
   );
@@ -252,6 +253,7 @@ export function GovernanceParams() {
                   value={values.azorius?.timelockPeriod ?? existingTimelockPeriod}
                   minWidth="100%"
                   color={values.azorius?.timelockPeriod === undefined ? 'neutral-7' : 'white-0'}
+                  decimalPlaces={0}
                   onChange={e =>
                     handleInputChange(
                       'azorius.timelockPeriod',

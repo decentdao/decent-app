@@ -19,5 +19,10 @@
   "stakeWithLidoDescription": "This proposal will stake ETH in Lido, returning stETH to your treasury.",
   "addSigners": "Add signers",
   "removeSigners": "Remove signers",
-  "changeThreshold": "Update signer threshold"
+  "changeThreshold": "Update signer threshold",
+  "changeVotingPeriod": "Update voting period",
+  "changeTimelockPeriod": "Update timelock period",
+  "changeExecutionPeriod": "Update execution period",
+  "changeQuorumNumerator": "Update quorum percentage",
+  "changeQuorumThreshold": "Update quorum threshold"
 }
