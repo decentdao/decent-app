@@ -580,7 +580,7 @@ export function SafeSettingsModal({
 
       await Promise.all(
         eligibleStrategies.map(async strategy => {
-          const numberOfBlocks = await getEstimatedNumberOfBlocks(votingPeriod, publicClient);
+          const numberOfBlocks = await getEstimatedNumberOfBlocks(votingPeriod / 60n, publicClient);
           transactions.push({
             targetAddress: strategy.address,
             ethValue,
