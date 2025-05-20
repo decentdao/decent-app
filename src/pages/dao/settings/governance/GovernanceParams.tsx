@@ -72,12 +72,12 @@ export function GovernanceParams() {
 
       const timelockPeriodSeconds = votingStrategy?.timeLockPeriod?.value;
 
-      if (timelockPeriodSeconds) {
+      if (timelockPeriodSeconds !== undefined) {
         setExistingTimelockPeriod(timelockPeriodSeconds / 60n);
       }
 
       const executionPeriodSeconds = votingStrategy?.executionPeriod?.value;
-      if (executionPeriodSeconds) {
+      if (executionPeriodSeconds !== undefined) {
         setExistingExecutionPeriod(executionPeriodSeconds);
       }
     };
