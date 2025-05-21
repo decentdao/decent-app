@@ -215,5 +215,13 @@
   "nonceLabelBannerActive": "{{confirmations} {{signersThreshold}} 的签名者希望拒绝接受 Nonce }。{{nonce}",
   "nonceLabelBannerRejected": "Nonce{{nonce}} 已被拒绝。",
   "conflictingProposals": "相互矛盾的建议",
-  "executableCode": "可执行代码"
+  "executableCode": "可执行代码",
+  "confirmRejectProposal": "Reject Proposal?",
+  "rejectProposalYesRejectIt": "Yes, Reject it",
+  "rejectProposalDescription": "If enough signers Reject this or any proposal with the same Nonce, the option to Reject all related proposal will also become available.",
+  "rejectProposalNevermind": "Nevermind",
+  "rejectProposalAreYouSure": "Are you sure you want to reject this proposal?",
+  "rejectProposalAreYouSureDescription": "Please note: This action is irreversible.",
+  "confirmExecution": "Confirm Execution",
+  "executionDescription": "You are executing this proposal only. All other proposals with <color>Nonce {{nonce}}</color> will automatically be rejected."
 }

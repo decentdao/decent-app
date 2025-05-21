@@ -215,5 +215,13 @@
   "nonceLabelBannerActive": "{{confirmations}} von {{signersThreshold}} Unterzeichner wollen Nonce {{nonce}} ablehnen.",
   "nonceLabelBannerRejected": "Nonce {{nonce}} wurde abgelehnt.",
   "conflictingProposals": "Widersprüchliche Vorschläge",
-  "executableCode": "Ausführbarer Code"
+  "executableCode": "Ausführbarer Code",
+  "confirmRejectProposal": "Vorschlag ablehnen?",
+  "rejectProposalYesRejectIt": "Ja, lehnen Sie es ab",
+  "rejectProposalDescription": "Wenn genügend Unterzeichner diesen oder einen anderen Vorschlag mit der gleichen Nonce ablehnen, wird auch die Option zur Ablehnung aller zugehörigen Vorschläge verfügbar.",
+  "rejectProposalNevermind": "Vergessen Sie",
+  "rejectProposalAreYouSure": "Sind Sie sicher, dass Sie diesen Vorschlag ablehnen wollen?",
+  "rejectProposalAreYouSureDescription": "Bitte beachten Sie: Diese Aktion ist unumkehrbar.",
+  "confirmExecution": "Bestätigen Sie die Ausführung",
+  "executionDescription": "Sie führen nur diesen Vorschlag aus. Alle anderen Vorschläge mit <color>Nonce {{nonce}</color> } werden automatisch abgelehnt."
 }

@@ -215,5 +215,13 @@
   "nonceLabelBannerActive": "{{confirmations}} of {{signersThreshold}} signers want to reject Nonce {{nonce}}.",
   "nonceLabelBannerRejected": "Nonce {{nonce}} has been rejected.",
   "conflictingProposals": "Conflicting Proposals",
-  "executableCode": "Executable Code"
+  "executableCode": "Executable Code",
+  "confirmRejectProposal": "Reject Proposal?",
+  "rejectProposalYesRejectIt": "Yes, Reject it",
+  "rejectProposalDescription": "If enough signers Reject this or any proposal with the same Nonce, the option to Reject all related proposal will also become available.",
+  "rejectProposalNevermind": "Nevermind",
+  "rejectProposalAreYouSure": "Are you sure you want to reject this proposal?",
+  "rejectProposalAreYouSureDescription": "Please note: This action is irreversible.",
+  "confirmExecution": "Confirm Execution",
+  "executionDescription": "You are executing this proposal only. All other proposals with <color>Nonce {{nonce}}</color> will automatically be rejected."
 }
