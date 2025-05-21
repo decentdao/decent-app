@@ -1,5 +1,5 @@
-import axios, { AxiosResponse } from "axios";
-import { Address } from "viem";
+import axios, { AxiosResponse } from 'axios';
+import { Address } from 'viem';
 
 const DECENT_API_BASE_URL = 'https://api.decent.build';
 
@@ -18,6 +18,8 @@ interface DAOQueryResponse {
 
 // this file should be replaced with decent-sdk package once it's ready
 export async function queryDaosByName(name: string) {
-  const response: AxiosResponse<DAOQueryResponse> = await axiosClient.get('/d', {params: {name}});
+  const response: AxiosResponse<DAOQueryResponse> = await axiosClient.get('/d', {
+    params: { name },
+  });
   return response.data.data;
 }

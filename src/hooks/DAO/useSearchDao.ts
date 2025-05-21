@@ -64,7 +64,7 @@ export const useSearchDao = () => {
     async (input: string) => {
       setIsSafeLookupLoading(true);
       try {
-        const isAddressOrEns = isAddress(input) || input.endsWith(".eth");
+        const isAddressOrEns = isAddress(input) || input.endsWith('.eth');
 
         if (!isAddressOrEns) {
           // Search DAOs with name through our API
