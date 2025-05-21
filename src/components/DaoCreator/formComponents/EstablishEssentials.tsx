@@ -40,7 +40,6 @@ export function EstablishEssentials(props: ICreationStepProps) {
   useEffect(() => {
     if (isEdit && subgraphInfo && safeAddress) {
       setFieldValue('essentials.daoName', subgraphInfo.daoName, false);
-      setFieldValue('essentials.daoName', subgraphInfo.daoName, false);
       if (safeAddress && createAccountSubstring(safeAddress) !== subgraphInfo.daoName) {
         // Pre-fill the snapshot URL form field when editing
         setFieldValue('essentials.snapshotENS', subgraphInfo.daoSnapshotENS || '', false);
