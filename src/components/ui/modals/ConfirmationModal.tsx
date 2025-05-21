@@ -13,7 +13,7 @@ export function ConfirmationModal({
   icon,
 }: {
   title: string;
-  description: string | JSX.Element;
+  description: ReactNode;
   primaryButtonProps: {
     onClick: () => void;
     label: string;
