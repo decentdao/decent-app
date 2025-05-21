@@ -21,6 +21,10 @@ export function MarkdownEditor({
   const { add } = useIPFSClient();
 
   const editor = editorRef.current?.getInstance();
+  // it can't be a empty string which cause a weird bug that value becomes something else.
+  //   Workaround: set it to a string with a space.
+  // check https://github.com/nhn/tui.editor/issues/3206
+  const editorInitialValue = initialValue || ' ';
 
   return (
     <Box
@@ -54,7 +58,7 @@ export function MarkdownEditor({
         ref={editorRef}
         usageStatistics={false}
         placeholder={placeholder}
-        initialValue={initialValue}
+        initialValue={editorInitialValue}
         previewStyle="tab"
         height={height}
         initialEditType="wysiwyg"
