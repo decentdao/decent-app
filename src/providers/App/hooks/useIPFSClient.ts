@@ -3,6 +3,12 @@ import { useMemo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 
+interface IPFSAddResponse {
+  Hash: string;
+  Name: string;
+  Size: string;
+}
+
 export const INFURA_AUTH =
   'Basic ' +
   Buffer.from(
@@ -29,18 +35,35 @@ export default function useIPFSClient() {
     [t],
   );
 
-  const add = useCallback(async (data: string) => {
-    const formData = new FormData();
-    formData.append('file', data);
+  const add = useCallback(
+    async (data: string | Blob, onProgress?: (percent: number) => void) => {
+      const formData = new FormData();
+      formData.append('file', data);
 
-    return axiosClient
-      .post(`${BASE_URL}/add`, formData)
-      .then(response => response.data)
-      .catch(error => {
-        console.error(error);
-        toast.error('ipfsSavingErrorMessage');
-      });
-  }, []);
+      return axiosClient
+        .post<IPFSAddResponse>(`${BASE_URL}/add`, formData, {
+          onUploadProgress: (event: ProgressEvent) => {
+            if (event.lengthComputable) {
+              const percent = Math.round((event.loaded / event.total) * 100);
+              onProgress?.(Math.min(percent, 80));
+            } else {
+              onProgress?.(50);
+            }
+          },
+        })
+        .then(response => {
+          onProgress?.(0);
+          return response.data;
+        })
+        .catch(error => {
+          onProgress?.(0);
+          console.error(error);
+          toast.error(t('ipfsSavingErrorMessage'));
+          throw error;
+        });
+    },
+    [t],
+  );
 
   const client = useMemo(
     () => ({
