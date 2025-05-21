@@ -18,10 +18,6 @@ interface ImportMetaEnv {
   readonly VITE_APP_HOTJAR_VERSION: string;
   readonly VITE_APP_SENTRY_DSN_URL: string;
   readonly VITE_APP_ETHERSCAN_MAINNET_API_KEY: string;
-  readonly VITE_APP_ETHERSCAN_POLYGON_API_KEY: string;
-  readonly VITE_APP_ETHERSCAN_SEPOLIA_API_KEY: string;
-  readonly VITE_APP_ETHERSCAN_BASE_API_KEY: string;
-  readonly VITE_APP_ETHERSCAN_OPTIMISM_API_KEY: string;
 
   readonly VITE_APP_FIREBASE_CONFIG: string;
   readonly VITE_APP_FIREBASE_TIME_INTERVALS: number;

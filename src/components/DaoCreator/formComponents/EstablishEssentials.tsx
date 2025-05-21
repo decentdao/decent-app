@@ -5,11 +5,11 @@ import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import { createAccountSubstring } from '../../../hooks/utils/useGetAccountName';
-import { useDAOStore } from '../../../providers/App/AppProvider';
 import {
   supportedNetworks,
   useNetworkConfigStore,
 } from '../../../providers/NetworkConfig/useNetworkConfigStore';
+import { useGlobalStore } from '../../../store/store';
 import { GovernanceType, ICreationStepProps, VotingStrategyType } from '../../../types';
 import { getNetworkIcon } from '../../../utils/url';
 import { InputComponent, LabelComponent } from '../../ui/forms/InputComponent';
@@ -30,31 +30,22 @@ export function EstablishEssentials(props: ICreationStepProps) {
   const { values, setFieldValue, isSubmitting, transactionPending, isSubDAO, errors, mode } = props;
 
   const { daoKey } = useCurrentDAOKey();
-  const {
-    node: { subgraphInfo, safe },
-  } = useDAOStore({ daoKey });
+  const { getDaoNode } = useGlobalStore();
 
   const isEdit = mode === DAOCreateMode.EDIT;
-
-  const safeAddress = safe?.address;
+  const node = daoKey ? getDaoNode(daoKey) : null;
+  const subgraphInfo = node?.subgraphInfo;
+  const safeAddress = node?.safe?.address;
 
   useEffect(() => {
-    if (isEdit && subgraphInfo) {
+    if (isEdit && subgraphInfo && safeAddress) {
       setFieldValue('essentials.daoName', subgraphInfo.daoName, false);
       if (safeAddress && createAccountSubstring(safeAddress) !== subgraphInfo.daoName) {
         // Pre-fill the snapshot URL form field when editing
         setFieldValue('essentials.snapshotENS', subgraphInfo.daoSnapshotENS || '', false);
       }
     }
-  }, [
-    setFieldValue,
-    mode,
-    subgraphInfo?.daoName,
-    subgraphInfo?.daoSnapshotENS,
-    isEdit,
-    safeAddress,
-    subgraphInfo,
-  ]);
+  }, [setFieldValue, mode, subgraphInfo, safeAddress, isEdit]);
 
   const daoNameDisabled =
     isEdit &&
