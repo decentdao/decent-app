@@ -1,0 +1,75 @@
+import { Editor } from '@toast-ui/react-editor';
+import { useRef, useState } from 'react';
+import useIPFSClient, { GATEWAY_URL } from '../../providers/App/hooks/useIPFSClient';
+
+interface MarkdownEditorProps {
+  height: string;
+  onChange?: (markdown: string) => void;
+  placeholder?: string;
+  initialValue?: string;
+}
+
+export function MarkdownEditor({
+  height,
+  onChange,
+  placeholder = '',
+  initialValue = '',
+}: MarkdownEditorProps) {
+  const editorRef = useRef<Editor>(null);
+  const [uploadedPercent, setUploadedPercent] = useState(0);
+  const { add } = useIPFSClient();
+
+  const editor = editorRef.current?.getInstance();
+
+  return (
+    <div
+      onDrop={async e => {
+        e.preventDefault();
+
+        // if md, set markdown
+        const file = e.dataTransfer?.files[0];
+        if (file && file.name.toLowerCase().endsWith('.md')) {
+          const md = await file.text();
+          editor?.setMarkdown(md);
+        }
+
+        // if pdf, upload to ipfs and insert link
+        if (file && file.name.toLowerCase().endsWith('.pdf')) {
+          add(file, setUploadedPercent).then(response =>
+            editor?.exec('addLink', {
+              linkText: file.name,
+              linkUrl: `${GATEWAY_URL}/ipfs/${response.Hash}`,
+            }),
+          );
+        }
+      }}
+    >
+      <div style={{ height: '2px', backgroundColor: '#4f46e5', width: `${uploadedPercent}%` }} />
+      <Editor
+        ref={editorRef}
+        usageStatistics={false}
+        placeholder={placeholder}
+        initialValue={initialValue}
+        previewStyle="tab"
+        height={height}
+        initialEditType="wysiwyg"
+        useCommandShortcut={true}
+        referenceDefinition={true}
+        onBeforeConvertWysiwygToMarkdown={(md: string) => {
+          return md.replace(/\\(_)/g, '$1'); // Remove escaped underscores
+        }}
+        onChange={() => {
+          if (onChange) onChange(editor?.getMarkdown() || '');
+        }}
+        hooks={{
+          addImageBlobHook(blob, cb) {
+            add(blob, setUploadedPercent).then(response =>
+              cb(`${GATEWAY_URL}/ipfs/${response.Hash}`),
+            );
+          },
+        }}
+        theme="dark"
+      />
+    </div>
+  );
+}
