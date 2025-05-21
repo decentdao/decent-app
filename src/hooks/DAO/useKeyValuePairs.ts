@@ -199,7 +199,6 @@ const useKeyValuePairs = () => {
           accountAbstraction,
         ).then(gaslessVotingDaoData => {
           if (gaslessVotingDaoData) {
-            // @TODO swap out for setter in `useGlobalStore` when ready: https://linear.app/decent-labs/issue/ENG-898/update-gaslessvoting-setter-to-function-setter
             action.dispatch({
               type: FractalGovernanceAction.SET_GASLESS_VOTING_DATA,
               payload: gaslessVotingDaoData,
@@ -246,7 +245,6 @@ const useKeyValuePairs = () => {
             accountAbstraction,
           ).then(gaslessVotingDaoData => {
             if (gaslessVotingDaoData) {
-              // @TODO swap out for setter in `useGlobalStore` when ready: https://linear.app/decent-labs/issue/ENG-898/update-gaslessvoting-setter-to-function-setter
               action.dispatch({
                 type: FractalGovernanceAction.SET_GASLESS_VOTING_DATA,
                 payload: gaslessVotingDaoData,
@@ -259,7 +257,6 @@ const useKeyValuePairs = () => {
     return () => {
       unwatch();
     };
-    // @TODO remove `useGlobalStore` when ready: https://linear.app/decent-labs/issue/ENG-898/update-gaslessvoting-setter-to-function-setter
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     keyValuePairs,
