@@ -158,7 +158,16 @@ export const createGovernancesSlice: StateCreator<
   setProposals: (daoKey, proposals) => {
     set(
       state => {
-        state.governances[daoKey].proposals = proposals;
+        if (!state.governances[daoKey]) {
+          state.governances[daoKey] = {
+            ...EMPTY_GOVERNANCE,
+            proposals,
+          };
+        } else {
+          // TODO: Sometimes snapshot proposals might be loaded before proposals, then snapshot proposals are lost
+          // Need to tackle this in scope of ENG-813
+          state.governances[daoKey].proposals = proposals;
+        }
       },
       false,
       'setProposals',
@@ -267,7 +276,12 @@ export const createGovernancesSlice: StateCreator<
   setSnapshotProposals: (daoKey, snapshotProposals) => {
     set(
       state => {
-        if (!state.governances[daoKey].proposals) {
+        if (!state.governances[daoKey]) {
+          state.governances[daoKey] = {
+            ...EMPTY_GOVERNANCE,
+            proposals: snapshotProposals,
+          };
+        } else if (!state.governances[daoKey].proposals) {
           state.governances[daoKey].proposals = snapshotProposals;
         } else {
           state.governances[daoKey].proposals.push(...snapshotProposals);
@@ -278,10 +292,22 @@ export const createGovernancesSlice: StateCreator<
     );
   },
   setGaslessVotingData: (daoKey, gasslesVotingData) => {
-    set(state => {
-      state.governances[daoKey].gaslessVotingEnabled = gasslesVotingData.gaslessVotingEnabled;
-      state.governances[daoKey].paymasterAddress = gasslesVotingData.paymasterAddress;
-    });
+    set(
+      state => {
+        if (!state.governances[daoKey]) {
+          state.governances[daoKey] = {
+            ...EMPTY_GOVERNANCE,
+            gaslessVotingEnabled: gasslesVotingData.gaslessVotingEnabled,
+            paymasterAddress: gasslesVotingData.paymasterAddress,
+          };
+        } else {
+          state.governances[daoKey].gaslessVotingEnabled = gasslesVotingData.gaslessVotingEnabled;
+          state.governances[daoKey].paymasterAddress = gasslesVotingData.paymasterAddress;
+        }
+      },
+      false,
+      'setGaslessVotingData',
+    );
   },
   getGovernance: daoKey => {
     const governance = get().governances[daoKey];
