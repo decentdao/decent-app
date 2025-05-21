@@ -1,3 +1,4 @@
+import { Box } from '@chakra-ui/react';
 import { Editor } from '@toast-ui/react-editor';
 import { useRef, useState } from 'react';
 import useIPFSClient, { GATEWAY_URL } from '../../providers/App/hooks/useIPFSClient';
@@ -22,7 +23,7 @@ export function MarkdownEditor({
   const editor = editorRef.current?.getInstance();
 
   return (
-    <div
+    <Box
       onDrop={async e => {
         e.preventDefault();
 
@@ -44,7 +45,11 @@ export function MarkdownEditor({
         }
       }}
     >
-      <div style={{ height: '2px', backgroundColor: '#4f46e5', width: `${uploadedPercent}%` }} />
+      <Box
+        height="0.25rem"
+        bgColor="blue-0"
+        width={`${uploadedPercent}%`}
+      />
       <Editor
         ref={editorRef}
         usageStatistics={false}
@@ -70,6 +75,6 @@ export function MarkdownEditor({
         }}
         theme="dark"
       />
-    </div>
+    </Box>
   );
 }
