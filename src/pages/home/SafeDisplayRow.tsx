@@ -48,7 +48,7 @@ export function SafeDisplayRow({
 
     navigate(DAO_ROUTES.dao.relative(network, address));
 
-    // @TODO swap out for setter in `useGlobalStore` when ready: https://linear.app/decent-labs/issue/ENG-898/update-gaslessvoting-setter-to-function-setter
+    // TODO: remove this after releasing complete release of useGlobalStore
     action.resetSafeState();
   };
 
