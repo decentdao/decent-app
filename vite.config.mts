@@ -8,12 +8,11 @@ import packageJson from './package.json';
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
-  console.log(env.SENTRY_ORG);
-  return {
-    plugins: [
-      react(),
-      checker({ typescript: true }),
-      viteWranglerSpa(),
+  const plugins = [react(), checker({ typescript: true }), viteWranglerSpa()];
+  if (env.SENTRY_ORG && env.SENTRY_PROJECT && env.SENTRY_AUTH_TOKEN) {
+    console.log('Got Sentry credentials');
+    console.log(`Will upload sourcemaps for ${env.SENTRY_ORG}/${env.SENTRY_PROJECT}\n`);
+    plugins.push(
       sentryVitePlugin({
         org: env.SENTRY_ORG,
         project: env.SENTRY_PROJECT,
@@ -23,7 +22,10 @@ export default defineConfig(({ mode }) => {
         },
         telemetry: false,
       }),
-    ],
+    );
+  }
+  return {
+    plugins,
     server: {
       port: 3000,
     },
