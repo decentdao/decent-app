@@ -207,5 +207,6 @@
   "nonceLabelBannerActive": "{{confirmations} {{signersThreshold}}の署名者は、Nonce }を拒否したい。｝{{nonce}",
   "nonceLabelBannerRejected": "Nonce{{nonce}} は拒否された。",
   "conflictingProposals": "相反する提案",
-  "executableCode": "実行可能コード"
+  "executableCode": "実行可能コード",
+  "nonceLabelBannerPassedThreshold": "関連するすべてのプロポーザルを拒否するのに十分な拒否署名が、このノンスに寄せられた。"
 }
