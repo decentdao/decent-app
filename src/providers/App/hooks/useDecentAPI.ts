@@ -16,7 +16,7 @@ interface DAOQueryResponse {
   data: DAO[];
 }
 
-// this file should be replaced with decent-sdk package once it's ready
+// @todo this file should be replaced with decent-sdk package once it's ready
 export async function queryDaosByName(name: string) {
   const response: AxiosResponse<DAOQueryResponse> = await axiosClient.get('/d', {
     params: { name },
