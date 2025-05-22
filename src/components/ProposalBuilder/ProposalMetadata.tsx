@@ -1,7 +1,6 @@
 import { Container, Input, VStack } from '@chakra-ui/react';
 import { FormikProps } from 'formik';
 import { TFunction } from 'i18next';
-import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import useFeatureFlag from '../../helpers/environmentFeatureFlags';
 import { useProposalActionsStore } from '../../store/actions/useProposalActionsStore';
@@ -103,12 +102,6 @@ export function MarkdownProposalMetadata({
   const { t } = useTranslation(['proposal']);
   const { setProposalMetadata } = useProposalActionsStore();
 
-  const initialDescription = proposalMetadata.description || typeProps.descriptionHelper;
-
-  useEffect(() => {
-    setProposalMetadata('description', initialDescription);
-  }, [initialDescription, setProposalMetadata]);
-
   return (
     <VStack
       align="left"
@@ -129,7 +122,8 @@ export function MarkdownProposalMetadata({
         maxW={{ base: '350px', sm: '440px', md: '768px', lg: '1100px', xl: '1200px' }}
       >
         <MarkdownEditor
-          initialValue={initialDescription}
+          initialValue={proposalMetadata.description}
+          placeholder={typeProps.descriptionHelper}
           onChange={value => setProposalMetadata('description', value)}
           height="400px"
         />
