@@ -2,7 +2,7 @@ import { GridItem } from '@chakra-ui/react';
 import { MultisigProposal } from '../../../types';
 import { ProposalDetailsGrid } from '../../ui/containers/ProposalDetailsGrid';
 import { ProposalInfo } from '../ProposalInfo';
-import { ExectionSection } from './ExectionSection';
+import { ExecutionSection } from './ExecutionSection';
 import { SignatureSection } from './SignatureSection';
 import { SignerDetails } from './SignerDetails';
 import { TxDetails } from './TxDetails';
@@ -17,7 +17,7 @@ export function MultisigProposalDetails({ proposal }: { proposal: MultisigPropos
       <GridItem colSpan={1}>
         <TxDetails proposal={proposal} />
         <SignatureSection proposal={proposal} />
-        <ExectionSection proposal={proposal} />
+        <ExecutionSection proposal={proposal} />
       </GridItem>
     </ProposalDetailsGrid>
   );

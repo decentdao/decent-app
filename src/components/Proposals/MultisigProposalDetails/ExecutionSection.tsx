@@ -277,7 +277,7 @@ function getRejectionProposalExecutionButtonLabel(state: FractalProposalState | 
   }
 }
 
-export function ExectionSection({ proposal }: { proposal: MultisigProposal }) {
+export function ExecutionSection({ proposal }: { proposal: MultisigProposal }) {
   const { t } = useTranslation(['proposal']);
   const { daoKey } = useCurrentDAOKey();
   const {
