@@ -1,27 +1,25 @@
 import { Box, Button, Flex, IconButton, Text } from '@chakra-ui/react';
 import { Coins, Plus } from '@phosphor-icons/react';
+import { useFormikContext } from 'formik';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
 import PencilWithLineIcon from '../../../../assets/theme/custom/icons/PencilWithLineIcon';
 import { SettingsContentBox } from '../../../../components/SafeSettings/SettingsContentBox';
 import NoDataCard from '../../../../components/ui/containers/NoDataCard';
 import { BarLoader } from '../../../../components/ui/loaders/BarLoader';
 import { ModalType } from '../../../../components/ui/modals/ModalProvider';
+import { SafeSettingsEdits } from '../../../../components/ui/modals/SafeSettingsModal';
 import { useDecentModal } from '../../../../components/ui/modals/useDecentModal';
 import Divider from '../../../../components/ui/utils/Divider';
 import { NEUTRAL_2_82_TRANSPARENT } from '../../../../constants/common';
-import { DAO_ROUTES } from '../../../../constants/routes';
 import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
 import { useCanUserCreateProposal } from '../../../../hooks/utils/useCanUserSubmitProposal';
 import { useDAOStore } from '../../../../providers/App/AppProvider';
-import { useNetworkConfigStore } from '../../../../providers/NetworkConfig/useNetworkConfigStore';
 import { AzoriusGovernance } from '../../../../types';
 
 // @todo: Near-duplicate of SafePermissionsSettingsPage.tsx. Pending refactor and/or cleanup.
+// https://linear.app/decent-labs/issue/ENG-842/fix-permissions-settings-ux-flows
 export function SafePermissionsSettingsContent() {
   const { t } = useTranslation(['settings', 'common']);
-  const navigate = useNavigate();
-  const { addressPrefix } = useNetworkConfigStore();
   const { daoKey } = useCurrentDAOKey();
   const {
     governance,
@@ -33,7 +31,18 @@ export function SafePermissionsSettingsContent() {
   const azoriusGovernance = governance as AzoriusGovernance;
   const { votesToken, erc721Tokens } = azoriusGovernance;
 
-  const openAddPermissionModal = useDecentModal(ModalType.ADD_PERMISSION);
+  const formikContext = useFormikContext<SafeSettingsEdits>();
+
+  const openAddCreateProposalPermissionModal = useDecentModal(
+    ModalType.ADD_CREATE_PROPOSAL_PERMISSION,
+    {
+      formikContext,
+    },
+  );
+
+  const openAddPermissionModal = useDecentModal(ModalType.ADD_PERMISSION, {
+    openAddCreateProposalPermissionModal,
+  });
 
   if (!safe) {
     return null;
@@ -82,18 +91,7 @@ export function SafePermissionsSettingsContent() {
             <Box
               p={4}
               borderRadius="0.75rem"
-              onClick={
-                canUserCreateProposal && (linearVotingErc20Address || linearVotingErc721Address)
-                  ? () =>
-                      navigate(
-                        DAO_ROUTES.settingsPermissionsCreateProposal.relative(
-                          addressPrefix,
-                          safe.address,
-                          linearVotingErc20Address || linearVotingErc721Address,
-                        ),
-                      )
-                  : undefined
-              }
+              onClick={openAddPermissionModal}
               sx={{
                 _hover: {
                   backgroundColor: 'neutral-3',

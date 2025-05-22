@@ -1,6 +1,7 @@
 import { Button, Flex, IconButton, Show, Text } from '@chakra-ui/react';
 import { abis } from '@fractal-framework/fractal-contracts';
 import { ArrowLeft, Trash, X } from '@phosphor-icons/react';
+import { FormikContextType } from 'formik';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useSearchParams } from 'react-router-dom';
@@ -17,8 +18,8 @@ import {
 import { SafePermissionsStrategyAction } from '../../../../components/SafeSettings/SafePermissionsStrategyAction';
 import { SettingsPermissionsStrategyForm } from '../../../../components/SafeSettings/SettingsPermissionsStrategyForm';
 import { Card } from '../../../../components/ui/cards/Card';
-import { ModalBase } from '../../../../components/ui/modals/ModalBase';
 import { ModalType } from '../../../../components/ui/modals/ModalProvider';
+import { SafeSettingsEdits } from '../../../../components/ui/modals/SafeSettingsModal';
 import { useDecentModal } from '../../../../components/ui/modals/useDecentModal';
 import NestedPageHeader from '../../../../components/ui/page/Header/NestedPageHeader';
 import Divider from '../../../../components/ui/utils/Divider';
@@ -44,9 +45,15 @@ import {
   ProposalActionType,
 } from '../../../../types';
 
-// @todo Remove in favour of AddCreateProposalPermissionModal.
-// ttps://linear.app/decent-labs/issue/ENG-842/fix-permissions-settings-ux-flows
-export function SafePermissionsCreateProposal() {
+// @todo Near-duplicate of SafePermissionsCreateProposal.tsx. Pending refactor and/or cleanup.
+// https://linear.app/decent-labs/issue/ENG-842/fix-permissions-settings-ux-flows
+export function AddCreateProposalPermissionModal({
+  closeModal,
+  formikContext,
+}: {
+  closeModal: () => void;
+  formikContext: FormikContextType<SafeSettingsEdits>;
+}) {
   const publicClient = useNetworkPublicClient();
   const { t } = useTranslation(['settings', 'common', 'modals']);
   const {
@@ -77,23 +84,27 @@ export function SafePermissionsCreateProposal() {
     node: { safe },
   } = useDAOStore({ daoKey });
   const azoriusGovernance = governance as AzoriusGovernance;
-  const openSelectAddPermissionModal = useDecentModal(ModalType.ADD_PERMISSION);
+
   const openConfirmDeleteStrategyModal = useDecentModal(ModalType.CONFIRM_DELETE_STRATEGY);
   const { addAction, resetActions } = useProposalActionsStore();
 
-  const [proposerThreshold, setProposerThreshold] = useState<BigIntValuePair>({
-    bigintValue: BigInt(azoriusGovernance.votingStrategy?.proposerThreshold?.value ?? 0),
-    value: azoriusGovernance.votingStrategy?.proposerThreshold?.formatted ?? '0',
-  });
+  const { values, setFieldValue } = formikContext;
+  const { permissions: permissionsEdits } = values;
+
+  const proposerThresholdFromGovernanceObject = (governanceObject: AzoriusGovernance) => {
+    return {
+      bigintValue: BigInt(governanceObject.votingStrategy?.proposerThreshold?.value ?? 0),
+      value: governanceObject.votingStrategy?.proposerThreshold?.formatted ?? '0',
+    };
+  };
+
+  const [existingProposerThreshold, setExistingProposerThreshold] = useState<BigIntValuePair>(
+    proposerThresholdFromGovernanceObject(azoriusGovernance),
+  );
 
   useEffect(() => {
-    if (azoriusGovernance.votingStrategy?.proposerThreshold) {
-      setProposerThreshold({
-        bigintValue: BigInt(azoriusGovernance.votingStrategy.proposerThreshold.value),
-        value: azoriusGovernance.votingStrategy.proposerThreshold.formatted ?? '0',
-      });
-    }
-  }, [azoriusGovernance.votingStrategy?.proposerThreshold]);
+    setExistingProposerThreshold(proposerThresholdFromGovernanceObject(azoriusGovernance));
+  }, [azoriusGovernance]);
 
   const gaslessVotingFeatureEnabled = useFeatureFlag('flag_gasless_voting');
 
@@ -104,17 +115,9 @@ export function SafePermissionsCreateProposal() {
     safe.address,
   );
 
-  const handleClose = () => {
-    navigate(settingsPermissionsPath);
-  };
-
-  const handleGoBack = () => {
-    openSelectAddPermissionModal();
-    handleClose();
-  };
-
+  // @todo: move logic to parent formik submit
   const handleCreateProposal = async () => {
-    if (proposerThreshold.bigintValue !== undefined && moduleAzoriusAddress) {
+    if (existingProposerThreshold.bigintValue !== undefined && moduleAzoriusAddress) {
       let transactions: CreateProposalTransaction[];
       let actionType: ProposalActionType = ProposalActionType.EDIT;
 
@@ -130,7 +133,7 @@ export function SafePermissionsCreateProposal() {
             parameters: [
               {
                 signature: 'uint256',
-                value: proposerThreshold.bigintValue.toString(),
+                value: existingProposerThreshold.bigintValue.toString(),
               },
             ],
           },
@@ -147,7 +150,7 @@ export function SafePermissionsCreateProposal() {
             parameters: [
               {
                 signature: 'uint256',
-                value: proposerThreshold.bigintValue.toString(),
+                value: existingProposerThreshold.bigintValue.toString(),
               },
             ],
           },
@@ -263,7 +266,7 @@ export function SafePermissionsCreateProposal() {
                   erc721Tokens.map(token => token.votingWeight),
                   moduleAzoriusAddress,
                   Number(votingStrategy.votingPeriod.value),
-                  proposerThreshold.bigintValue,
+                  existingProposerThreshold.bigintValue,
                   500000n,
                   hatsProtocol, // hats protocol
                   [], // whitelisted hat ids
@@ -276,7 +279,7 @@ export function SafePermissionsCreateProposal() {
                 erc721Tokens.map(token => token.votingWeight),
                 moduleAzoriusAddress,
                 Number(votingStrategy.votingPeriod.value),
-                proposerThreshold.bigintValue,
+                existingProposerThreshold.bigintValue,
                 500000n,
                 hatsProtocol, // hats protocol
                 [], // whitelisted hat ids
@@ -339,7 +342,7 @@ export function SafePermissionsCreateProposal() {
         content: (
           <SafePermissionsStrategyAction
             actionType={actionType}
-            proposerThreshold={proposerThreshold}
+            proposerThreshold={existingProposerThreshold}
           />
         ),
         transactions,
@@ -347,6 +350,46 @@ export function SafePermissionsCreateProposal() {
       navigate(DAO_ROUTES.proposalWithActionsNew.relative(addressPrefix, safe.address));
     }
   };
+
+  function FormContent() {
+    return (
+      <SettingsPermissionsStrategyForm
+        proposerThreshold={
+          permissionsEdits?.proposerThreshold !== undefined
+            ? permissionsEdits.proposerThreshold
+            : existingProposerThreshold
+        }
+        setProposerThreshold={val => {
+          let newProposerThresholdValue;
+
+          if (permissionsEdits?.proposerThreshold === undefined) {
+            newProposerThresholdValue = val;
+          } else if (val.bigintValue !== existingProposerThreshold.bigintValue) {
+            newProposerThresholdValue = val;
+          } else {
+            newProposerThresholdValue = undefined;
+          }
+
+          console.log('newProposerThresholdValue', newProposerThresholdValue);
+
+          setFieldValue('permissions.proposerThreshold', newProposerThresholdValue);
+        }}
+      />
+    );
+  }
+
+  function SubmitButton({ fullWidth = false }: { fullWidth?: boolean }) {
+    return (
+      <Button
+        variant="primary"
+        onClick={closeModal}
+        width={fullWidth ? 'full' : 'auto'}
+        mt={6}
+      >
+        {t('save', { ns: 'common' })}
+      </Button>
+    );
+  }
 
   return (
     <>
@@ -357,7 +400,7 @@ export function SafePermissionsCreateProposal() {
             text: t('back', { ns: 'common' }),
             ...(votingStrategyAddress
               ? { href: settingsPermissionsPath }
-              : { onClick: handleGoBack }),
+              : { onClick: closeModal }),
           }}
         >
           {votingStrategyAddress && votingStrategyAddress !== zeroAddress && (
@@ -377,85 +420,65 @@ export function SafePermissionsCreateProposal() {
             </Flex>
           )}
         </NestedPageHeader>
+
         <Card>
-          <SettingsPermissionsStrategyForm
-            proposerThreshold={proposerThreshold}
-            setProposerThreshold={setProposerThreshold}
-          />
+          <FormContent />
         </Card>
+
         <Flex justifyContent="flex-end">
-          <Button
-            variant="primary"
-            onClick={handleCreateProposal}
-            mt={6}
-          >
-            {t('createProposal', { ns: 'modals' })}
-          </Button>
+          <SubmitButton />
         </Flex>
       </Show>
+
       <Show above="md">
-        <ModalBase
-          isOpen
-          onClose={handleClose}
-          closeOnOverlayClick
+        <Flex
+          height="376px" // @dev - fixed height from design
+          flexDirection="column"
+          justifyContent="space-between"
         >
-          <Flex
-            height="376px" // @dev - fixed height from design
-            flexDirection="column"
-            justifyContent="space-between"
-          >
-            <Flex justifyContent="space-between">
-              {!votingStrategyAddress ||
-                (votingStrategyAddress === zeroAddress && (
-                  <IconButton
-                    size="button-md"
-                    variant="ghost"
-                    color="lilac-0"
-                    aria-label={t('back', { ns: 'common' })}
-                    onClick={handleGoBack}
-                    icon={<ArrowLeft size={24} />}
-                  />
-                ))}
-              <Text>{t('permissionCreateProposalsTitle')}</Text>
-              {votingStrategyAddress && votingStrategyAddress !== zeroAddress ? (
-                <IconButton
-                  size="button-md"
-                  variant="ghost"
-                  color="red-1"
-                  icon={<Trash size={24} />}
-                  aria-label={t('delete', { ns: 'common' })}
-                  onClick={openConfirmDeleteStrategyModal}
-                />
-              ) : (
+          <Flex justifyContent="space-between">
+            {!votingStrategyAddress ||
+              (votingStrategyAddress === zeroAddress && (
                 <IconButton
                   size="button-md"
                   variant="ghost"
                   color="lilac-0"
-                  aria-label={t('close', { ns: 'common' })}
-                  onClick={handleClose}
-                  icon={<X size={24} />}
+                  aria-label={t('back', { ns: 'common' })}
+                  onClick={closeModal}
+                  icon={<ArrowLeft size={24} />}
                 />
-              )}
-            </Flex>
-            <Divider
-              variant="darker"
-              mx="-1.5rem"
-              width="calc(100% + 3rem)"
-            />
-            <SettingsPermissionsStrategyForm
-              proposerThreshold={proposerThreshold}
-              setProposerThreshold={setProposerThreshold}
-            />
-            <Button
-              variant="primary"
-              onClick={handleCreateProposal}
-              width="full"
-              mt={6}
-            >
-              {t('createProposal', { ns: 'modals' })}
-            </Button>
+              ))}
+            <Text>{t('permissionCreateProposalsTitle')}</Text>
+            {votingStrategyAddress && votingStrategyAddress !== zeroAddress ? (
+              <IconButton
+                size="button-md"
+                variant="ghost"
+                color="red-1"
+                icon={<Trash size={24} />}
+                aria-label={t('delete', { ns: 'common' })}
+                onClick={openConfirmDeleteStrategyModal}
+              />
+            ) : (
+              <IconButton
+                size="button-md"
+                variant="ghost"
+                color="lilac-0"
+                aria-label={t('close', { ns: 'common' })}
+                onClick={closeModal}
+                icon={<X size={24} />}
+              />
+            )}
           </Flex>
-        </ModalBase>
+
+          <Divider
+            variant="darker"
+            mx="-1.5rem"
+            width="calc(100% + 3rem)"
+          />
+
+          <FormContent />
+          <SubmitButton fullWidth />
+        </Flex>
       </Show>
     </>
   );

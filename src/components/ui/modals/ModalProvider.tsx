@@ -1,16 +1,17 @@
 import { Portal, Show, useDisclosure } from '@chakra-ui/react';
-import { FormikProps } from 'formik';
+import { FormikProps, FormikContextType } from 'formik';
 import { createContext, ReactNode, useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Address } from 'viem';
 import { NEUTRAL_2_50_TRANSPARENT } from '../../../constants/common';
+import { AddCreateProposalPermissionModal } from '../../../pages/dao/settings/permissions/AddCreateProposalPermissionModal';
 import { CreateProposalTransaction, ProposalTemplate } from '../../../types';
 import { SendAssetsData } from '../../../utils/dao/prepareSendAssetsActionData';
 import { ProposalTransactionsFormModal } from '../../ProposalBuilder/ProposalTransactionsForm';
 import AddSignerModal from '../../SafeSettings/Signers/modals/AddSignerModal';
 import RemoveSignerModal from '../../SafeSettings/Signers/modals/RemoveSignerModal';
 import DraggableDrawer from '../containers/DraggableDrawer';
-import AddStrategyPermissionModal from './AddStrategyPermissionModal';
+import { AddStrategyPermissionModal } from './AddStrategyPermissionModal';
 import { AirdropData, AirdropModal } from './AirdropModal/AirdropModal';
 import { ConfirmDeleteStrategyModal } from './ConfirmDeleteStrategyModal';
 import { ConfirmModifyGovernanceModal } from './ConfirmModifyGovernanceModal';
@@ -28,7 +29,7 @@ import { PaymentWithdrawModal } from './PaymentWithdrawModal';
 import ProposalTemplateModal from './ProposalTemplateModal';
 import { SafeProposalDappDetailModal } from './SafeDapp/SafeProposalDappDetailModal';
 import { SafeProposalDappsModal } from './SafeDapp/SafeProposalDappsModal';
-import { SafeSettingsModal } from './SafeSettingsModal';
+import { SafeSettingsEdits, SafeSettingsModal } from './SafeSettingsModal';
 import { SendAssetsModal } from './SendAssetsModal';
 import StakeModal from './Stake';
 import { UnsavedChangesWarningContent } from './UnsavedChangesWarningContent';
@@ -41,6 +42,7 @@ export enum ModalType {
   REMOVE_SIGNER,
   ADD_SIGNER,
   ADD_PERMISSION,
+  ADD_CREATE_PROPOSAL_PERMISSION,
   CREATE_PROPOSAL_FROM_TEMPLATE,
   COPY_PROPOSAL_TEMPLATE,
   CONFIRM_MODIFY_GOVERNANCE,
@@ -65,7 +67,12 @@ export type ModalPropsTypes = {
   [ModalType.NONE]: {};
   [ModalType.DELEGATE]: {};
   [ModalType.STAKE]: {};
-  [ModalType.ADD_PERMISSION]: {};
+  [ModalType.ADD_PERMISSION]: {
+    openAddCreateProposalPermissionModal: () => void;
+  };
+  [ModalType.ADD_CREATE_PROPOSAL_PERMISSION]: {
+    formikContext: FormikContextType<SafeSettingsEdits>;
+  };
   [ModalType.CONFIRM_DELETE_STRATEGY]: {};
   [ModalType.CONFIRM_URL]: { url: string };
   [ModalType.REMOVE_SIGNER]: {
@@ -238,7 +245,7 @@ const getModalData = (args: {
       modalContent = (
         <ConfirmModifyGovernanceModal
           onClose={popModal}
-          closeAll={closeAll}
+          closeAllModals={closeAll}
         />
       );
       break;
@@ -285,7 +292,21 @@ const getModalData = (args: {
       break;
     }
     case ModalType.ADD_PERMISSION:
-      modalContent = <AddStrategyPermissionModal closeModal={popModal} />;
+      modalContent = (
+        <AddStrategyPermissionModal
+          closeModal={popModal}
+          openAddCreateProposalPermissionModal={current.props.openAddCreateProposalPermissionModal}
+        />
+      );
+      modalSize = 'xl';
+      break;
+    case ModalType.ADD_CREATE_PROPOSAL_PERMISSION:
+      modalContent = (
+        <AddCreateProposalPermissionModal
+          closeModal={popModal}
+          formikContext={current.props.formikContext}
+        />
+      );
       modalSize = 'xl';
       break;
     case ModalType.CONFIRM_DELETE_STRATEGY:
@@ -385,7 +406,12 @@ const getModalData = (args: {
       modalSize = 'max';
       break;
     case ModalType.SAFE_SETTINGS:
-      modalContent = <SafeSettingsModal closeModal={popModal} />;
+      modalContent = (
+        <SafeSettingsModal
+          closeModal={popModal}
+          closeAllModals={closeAll}
+        />
+      );
       modalSize = 'max';
       modalContentStyle = {
         backgroundColor: NEUTRAL_2_50_TRANSPARENT,
@@ -418,10 +444,12 @@ function ModalDisplay({
   modalData,
   isOpen,
   openModal,
+  index,
 }: {
   modalData: ModalData;
   isOpen: boolean;
   openModal: () => void;
+  index: number;
 }) {
   const {
     content,
@@ -445,6 +473,7 @@ function ModalDisplay({
       isSearchInputModal={isSearchInputModal}
       size={size}
       contentStyle={contentStyle}
+      zIndex={1400 + index}
     >
       {content}
     </ModalBase>
@@ -480,7 +509,7 @@ function ModalDisplay({
             isOpen={isOpen}
             onClose={onSetClosed}
             isSearchInputModal={isSearchInputModal}
-            zIndex={1401} // @dev - Modal zIndex is 1400, but since these modals are might be shown alongside drawer - we need to make it larger
+            zIndex={1401 + index} // @dev - Modal zIndex is 1400, but since these modals are might be shown alongside drawer - we need to make it larger
             size={size}
           >
             {content}
@@ -539,6 +568,7 @@ export function ModalProvider({ children }: { children: ReactNode }) {
         modalData={modalData}
         isOpen={isOpen}
         openModal={onOpen}
+        index={i}
       />
     );
   });

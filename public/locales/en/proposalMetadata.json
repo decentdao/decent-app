@@ -16,5 +16,13 @@
   "unstakeStEthTitle": "Unstake stETH",
   "unstakeStEthDescription": "This proposal will unstake stETH from Lido and mint a Lido Withdrawal NFT which can be used to claim your ETH.",
   "stakeWithLidoTitle": "Stake ETH with Lido",
-  "stakeWithLidoDescription": "This proposal will stake ETH in Lido, returning stETH to your treasury."
+  "stakeWithLidoDescription": "This proposal will stake ETH in Lido, returning stETH to your treasury.",
+  "addSigners": "Add signers",
+  "removeSigners": "Remove signers",
+  "changeThreshold": "Update signer threshold",
+  "changeVotingPeriod": "Update voting period",
+  "changeTimelockPeriod": "Update timelock period",
+  "changeExecutionPeriod": "Update execution period",
+  "changeQuorumNumerator": "Update quorum percentage",
+  "changeQuorumThreshold": "Update quorum threshold"
 }

@@ -129,5 +129,7 @@
   "unsavedChangesDescription": "You have unsaved changes that will be lost if you continue. Do you want to discard your changes?",
   "discardChanges": "Discard",
   "keepEditing": "Keep Editing",
-  "addressRequired": "Address is required"
+  "addressRequired": "Address is required",
+  "save": "Save",
+  "daoNameRequired": "DAO name is required"
 }

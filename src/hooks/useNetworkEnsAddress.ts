@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import { createPublicClient, http } from 'viem';
+import { createPublicClient, http, isAddress } from 'viem';
 import { mainnet } from 'viem/chains';
 import { useEnsAddress } from 'wagmi';
 import {
@@ -27,6 +27,10 @@ export function useNetworkEnsAddressAsync() {
 
   const getEnsAddress = useCallback(
     (args: { name: string; chainId?: number }) => {
+      if (isAddress(args.name)) {
+        return Promise.resolve(args.name);
+      }
+
       let effectiveChainId: number;
       if (args.chainId !== undefined) {
         if (!supportedEnsNetworks.includes(args.chainId)) {

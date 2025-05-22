@@ -415,7 +415,7 @@ export default function RoleFormPaymentStreamTermed({ paymentIndex }: { paymentI
               setFieldValue('roleEditing.roleEditingPaymentIndex', undefined);
             }}
           >
-            {t('save')}
+            {t('save', { ns: 'common' })}
           </Button>
         )}
       </Flex>

@@ -25,7 +25,7 @@ const useCreateProposalSchema = () => {
       return true;
     }
 
-    if (!!context.parent.label || !!context.parent.value) {
+    if (!!context.parent.label || !!context.parent.value || !!context.parent.valueArray) {
       return true;
     }
 
@@ -64,6 +64,12 @@ const useCreateProposalSchema = () => {
                 message: t('labelOrValueRequired'),
                 test: labelOrValueValidationTest,
               }),
+              valueArray: Yup.array().of(
+                Yup.string().test({
+                  message: t('labelOrValueRequired'),
+                  test: labelOrValueValidationTest,
+                }),
+              ),
             }),
           ),
         }),
