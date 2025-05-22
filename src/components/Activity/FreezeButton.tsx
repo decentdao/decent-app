@@ -2,14 +2,14 @@ import { Button } from '@chakra-ui/react';
 import { useTranslation } from 'react-i18next';
 import { useCastFreezeVote } from '../../hooks/DAO/useCastFreezeVote';
 import { useCurrentDAOKey } from '../../hooks/DAO/useCurrentDAOKey';
-import { useStore } from '../../providers/App/AppProvider';
+import { useDAOStore } from '../../providers/App/AppProvider';
 
 export function FreezeButton() {
   const { t } = useTranslation(['dashboard']);
   const { daoKey } = useCurrentDAOKey();
   const {
     guard: { isFrozen, userHasFreezeVoted, userHasVotes },
-  } = useStore({ daoKey });
+  } = useDAOStore({ daoKey });
 
   const { castFreezeVote, pending } = useCastFreezeVote();
 

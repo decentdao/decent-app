@@ -7,7 +7,7 @@ import { Address } from 'viem';
 import { useAccount } from 'wagmi';
 import useFeatureFlag from '../../../helpers/environmentFeatureFlags';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
-import { useStore } from '../../../providers/App/AppProvider';
+import { useDAOStore } from '../../../providers/App/AppProvider';
 import { NumberStepperInput } from '../../ui/forms/NumberStepperInput';
 import { ModalType } from '../../ui/modals/ModalProvider';
 import { SafeSettingsEdits, SafeSettingsFormikErrors } from '../../ui/modals/SafeSettingsModal';
@@ -143,7 +143,7 @@ export function SignersContainer() {
   const { daoKey } = useCurrentDAOKey();
   const {
     node: { safe },
-  } = useStore({ daoKey });
+  } = useDAOStore({ daoKey });
   const [userIsSigner, setUserIsSigner] = useState(false);
 
   const [signers, setSigners] = useState<ExistingSignerItem[]>([]);
@@ -373,52 +373,54 @@ export function SignersContainer() {
         )}
       </Box>
 
-      <Box
-        border="1px solid"
-        borderColor="neutral-3"
-        borderRadius="0.75rem"
-        mt={3}
-        px={6}
-        py={3}
-      >
-        <Flex
-          flexDirection="row"
-          gap={3}
-          justifyContent="space-between"
-          alignItems="center"
+      {isSettingsV1FeatureEnabled && (
+        <Box
+          border="1px solid"
+          borderColor="neutral-3"
+          borderRadius="0.75rem"
+          mt={3}
+          px={6}
+          py={3}
         >
-          <Flex flexDirection="column">
-            <Text
-              textStyle="body-large"
-              mb={0.5}
-            >
-              {t('threshold', { ns: 'common' })}
-            </Text>
-            <Text
-              textStyle="body-small"
-              color="neutral-7"
-            >
-              {t('thresholdDescription', { ns: 'common' })}
-            </Text>
-          </Flex>
+          <Flex
+            flexDirection="row"
+            gap={3}
+            justifyContent="space-between"
+            alignItems="center"
+          >
+            <Flex flexDirection="column">
+              <Text
+                textStyle="body-large"
+                mb={0.5}
+              >
+                {t('threshold', { ns: 'common' })}
+              </Text>
+              <Text
+                textStyle="body-small"
+                color="neutral-7"
+              >
+                {t('thresholdDescription', { ns: 'common' })}
+              </Text>
+            </Flex>
 
-          {/* stepper */}
-          <Flex w="200px">
-            <NumberStepperInput
-              onChange={value => {
-                let updatedValue;
-                if (value !== `${safe?.threshold}`) {
-                  updatedValue = value;
-                }
-                setFieldValue('multisig.signerThreshold', updatedValue);
-              }}
-              color={values.multisig?.signerThreshold === undefined ? 'neutral-7' : 'white-0'}
-              value={values.multisig?.signerThreshold ?? safe?.threshold}
-              isInvalid={!!multisigEditFormikErrors?.threshold}
-            />
+            {/* stepper */}
+            <Flex w="200px">
+              <NumberStepperInput
+                onChange={value => {
+                  let updatedValue;
+                  if (value !== `${safe?.threshold}`) {
+                    updatedValue = value;
+                  }
+                  setFieldValue('multisig.signerThreshold', updatedValue);
+                }}
+                color={values.multisig?.signerThreshold === undefined ? 'neutral-7' : 'white-0'}
+                value={values.multisig?.signerThreshold ?? safe?.threshold}
+                isInvalid={!!multisigEditFormikErrors?.threshold}
+              />
+            </Flex>
           </Flex>
-        </Flex>
-      </Box>
+        </Box>
+      )}
     </Box>
   );
 }

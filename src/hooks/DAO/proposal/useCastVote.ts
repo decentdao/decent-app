@@ -9,7 +9,7 @@ import { EntryPoint07Abi } from '../../../assets/abi/EntryPoint07Abi';
 import { ModalType } from '../../../components/ui/modals/ModalProvider';
 import { useDecentModal } from '../../../components/ui/modals/useDecentModal';
 import useFeatureFlag from '../../../helpers/environmentFeatureFlags';
-import { useStore } from '../../../providers/App/AppProvider';
+import { useDAOStore } from '../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
 import { fetchMaxPriorityFeePerGas } from '../../../utils/gaslessVoting';
 import useNetworkPublicClient from '../../useNetworkPublicClient';
@@ -27,8 +27,8 @@ const useCastVote = (proposalId: string, strategy: Address) => {
       linearVotingErc721Address,
       linearVotingErc721WithHatsWhitelistingAddress,
     },
-    node: { paymasterAddress },
-  } = useStore({ daoKey });
+    governance: { paymasterAddress },
+  } = useDAOStore({ daoKey });
   const {
     contracts: { accountAbstraction },
     rpcEndpoint,

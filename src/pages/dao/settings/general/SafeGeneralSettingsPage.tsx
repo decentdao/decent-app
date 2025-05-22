@@ -24,7 +24,7 @@ import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
 import { useCanUserCreateProposal } from '../../../../hooks/utils/useCanUserSubmitProposal';
 import { createAccountSubstring } from '../../../../hooks/utils/useGetAccountName';
 import { useInstallVersionedVotingStrategy } from '../../../../hooks/utils/useInstallVersionedVotingStrategy';
-import { useStore } from '../../../../providers/App/AppProvider';
+import { useDAOStore } from '../../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../../providers/NetworkConfig/useNetworkConfigStore';
 import { GovernanceType, ProposalExecuteData } from '../../../../types';
 import {
@@ -45,9 +45,9 @@ export function SafeGeneralSettingsPage() {
   const { daoKey } = useCurrentDAOKey();
   const {
     governanceContracts: { strategies },
-    governance: { type: votingStrategyType },
-    node: { subgraphInfo, safe, gaslessVotingEnabled, paymasterAddress },
-  } = useStore({ daoKey });
+    governance: { type: votingStrategyType, gaslessVotingEnabled, paymasterAddress },
+    node: { subgraphInfo, safe },
+  } = useDAOStore({ daoKey });
 
   const [existingIsGaslessVotingEnabledToggled, setExistingIsGaslessVotingEnabledToggled] =
     useState(gaslessVotingEnabled);

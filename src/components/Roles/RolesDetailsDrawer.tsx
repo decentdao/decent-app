@@ -22,7 +22,7 @@ import useAddress from '../../hooks/utils/useAddress';
 import { useCanUserCreateProposal } from '../../hooks/utils/useCanUserSubmitProposal';
 import { useCopyText } from '../../hooks/utils/useCopyText';
 import { useGetAccountName } from '../../hooks/utils/useGetAccountName';
-import { useStore } from '../../providers/App/AppProvider';
+import { useDAOStore } from '../../providers/App/AppProvider';
 import {
   paymentSorterByActiveStatus,
   paymentSorterByStartDate,
@@ -88,7 +88,7 @@ export default function RolesDetailsDrawer({
   const { daoKey } = useCurrentDAOKey();
   const {
     node: { safe },
-  } = useStore({ daoKey });
+  } = useDAOStore({ daoKey });
   const permissionsContainerRef = useRef<HTMLDivElement>(null);
 
   const roleHatWearer = 'wearer' in roleHat ? roleHat.wearer : roleHat.wearerAddress;

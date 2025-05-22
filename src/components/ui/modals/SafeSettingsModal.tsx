@@ -20,7 +20,7 @@ import useNetworkPublicClient from '../../../hooks/useNetworkPublicClient';
 import { useCanUserCreateProposal } from '../../../hooks/utils/useCanUserSubmitProposal';
 import { useInstallVersionedVotingStrategy } from '../../../hooks/utils/useInstallVersionedVotingStrategy';
 import { SafeGeneralSettingsPage } from '../../../pages/dao/settings/general/SafeGeneralSettingsPage';
-import { useStore } from '../../../providers/App/AppProvider';
+import { useDAOStore } from '../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
 import { useProposalActionsStore } from '../../../store/actions/useProposalActionsStore';
 import {
@@ -90,9 +90,10 @@ export function SafeSettingsModal({
   const { daoKey } = useCurrentDAOKey();
 
   const {
-    node: { safe, paymasterAddress },
+    node: { safe },
+    governance: { paymasterAddress },
     governanceContracts: { strategies, moduleAzoriusAddress },
-  } = useStore({ daoKey });
+  } = useDAOStore({ daoKey });
 
   const [settingsContent, setSettingsContent] = useState(<SafeGeneralSettingsPage />);
 

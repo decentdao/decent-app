@@ -10,7 +10,7 @@ import PageHeader from '../../../../../components/ui/page/Header/PageHeader';
 import { DAO_ROUTES } from '../../../../../constants/routes';
 import { useCurrentDAOKey } from '../../../../../hooks/DAO/useCurrentDAOKey';
 import { useNavigationBlocker } from '../../../../../hooks/utils/useNavigationBlocker';
-import { useStore } from '../../../../../providers/App/AppProvider';
+import { useDAOStore } from '../../../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../../../providers/NetworkConfig/useNetworkConfigStore';
 import {
   EditBadgeStatus,
@@ -24,7 +24,7 @@ export function SafeRoleEditDetailsPage() {
   const { daoKey } = useCurrentDAOKey();
   const {
     node: { safe },
-  } = useStore({ daoKey });
+  } = useDAOStore({ daoKey });
   const { addressPrefix } = useNetworkConfigStore();
   const navigate = useNavigate();
 

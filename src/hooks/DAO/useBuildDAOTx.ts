@@ -2,8 +2,8 @@ import { useCallback } from 'react';
 import { Address } from 'viem';
 import { useAccount } from 'wagmi';
 import { TxBuilderFactory } from '../../models/TxBuilderFactory';
-import { useStore } from '../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
+import { useGlobalStore } from '../../store/store';
 import {
   AzoriusERC20DAO,
   AzoriusERC721DAO,
@@ -40,10 +40,7 @@ const useBuildDAOTx = () => {
     },
   } = useNetworkConfigStore();
   const { daoKey } = useCurrentDAOKey();
-  const {
-    governance,
-    governanceContracts: { linearVotingErc721Address },
-  } = useStore({ daoKey });
+  const { getGovernance } = useGlobalStore();
   const user = useAccount();
 
   const publicClient = useNetworkPublicClient();
@@ -97,11 +94,17 @@ const useBuildDAOTx = () => {
       let parentStrategyType: VotingStrategyType | undefined;
       let parentStrategyAddress: Address | undefined;
 
-      const azoriusGovernance = governance as AzoriusGovernance;
-      if (governance.isAzorius && azoriusGovernance.votingStrategy) {
-        parentStrategyType = azoriusGovernance.votingStrategy.strategyType;
-        if (parentStrategyType === VotingStrategyType.LINEAR_ERC721 && linearVotingErc721Address) {
-          parentStrategyAddress = linearVotingErc721Address;
+      if (daoKey) {
+        const governance = getGovernance(daoKey);
+        const azoriusGovernance = governance as AzoriusGovernance;
+        if (governance.isAzorius && azoriusGovernance.votingStrategy) {
+          parentStrategyType = azoriusGovernance.votingStrategy.strategyType;
+          if (
+            parentStrategyType === VotingStrategyType.LINEAR_ERC721 &&
+            governance.linearVotingErc721Address
+          ) {
+            parentStrategyAddress = governance.linearVotingErc721Address;
+          }
         }
       }
 
@@ -148,8 +151,8 @@ const useBuildDAOTx = () => {
       linearVotingErc20MasterCopy,
       linearVotingErc721MasterCopy,
       moduleAzoriusMasterCopy,
-      governance,
-      linearVotingErc721Address,
+      getGovernance,
+      daoKey,
     ],
   );
 

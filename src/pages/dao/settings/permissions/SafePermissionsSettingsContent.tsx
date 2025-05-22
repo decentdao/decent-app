@@ -13,7 +13,7 @@ import Divider from '../../../../components/ui/utils/Divider';
 import { NEUTRAL_2_82_TRANSPARENT } from '../../../../constants/common';
 import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
 import { useCanUserCreateProposal } from '../../../../hooks/utils/useCanUserSubmitProposal';
-import { useStore } from '../../../../providers/App/AppProvider';
+import { useDAOStore } from '../../../../providers/App/AppProvider';
 import { AzoriusGovernance } from '../../../../types';
 
 // @todo: Near-duplicate of SafePermissionsSettingsPage.tsx. Pending refactor and/or cleanup.
@@ -25,7 +25,7 @@ export function SafePermissionsSettingsContent() {
     governance,
     governanceContracts: { isLoaded, linearVotingErc20Address, linearVotingErc721Address },
     node: { safe },
-  } = useStore({ daoKey });
+  } = useDAOStore({ daoKey });
 
   const { canUserCreateProposal } = useCanUserCreateProposal();
   const azoriusGovernance = governance as AzoriusGovernance;

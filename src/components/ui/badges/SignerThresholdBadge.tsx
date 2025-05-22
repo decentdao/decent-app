@@ -3,7 +3,7 @@ import { User } from '@phosphor-icons/react';
 import { useTranslation } from 'react-i18next';
 import { COLOR_TEXT_SUCCESS } from '../../../constants/common';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
-import { useStore } from '../../../providers/App/AppProvider';
+import { useDAOStore } from '../../../providers/App/AppProvider';
 import { GovernanceType } from '../../../types';
 
 export function CountProgressBadge(props: { total: number; current: number }) {
@@ -56,22 +56,25 @@ export function CountProgressBadge(props: { total: number; current: number }) {
 export function SignerThresholdBadge({
   numberOfConfirmedSigners,
   proposalThreshold,
+  isRejected,
 }: {
   numberOfConfirmedSigners?: number;
   proposalThreshold?: number;
+  isRejected?: boolean;
 }) {
   const { daoKey } = useCurrentDAOKey();
   const {
     governance,
     node: { safe },
-  } = useStore({ daoKey });
+  } = useDAOStore({ daoKey });
   const { type } = governance;
 
   if (
     !safe ||
     type !== GovernanceType.MULTISIG ||
     numberOfConfirmedSigners === undefined ||
-    proposalThreshold === undefined
+    proposalThreshold === undefined ||
+    isRejected
   ) {
     return null;
   }

@@ -12,7 +12,7 @@ import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
 import { useABI } from '../../../../hooks/utils/useABI';
 import { useDebounce } from '../../../../hooks/utils/useDebounce';
 import { analyticsEvents } from '../../../../insights/analyticsEvents';
-import { useStore } from '../../../../providers/App/AppProvider';
+import { useDAOStore } from '../../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../../providers/NetworkConfig/useNetworkConfigStore';
 import { useProposalActionsStore } from '../../../../store/actions/useProposalActionsStore';
 import { CreateProposalActionData, ProposalActionType } from '../../../../types';
@@ -113,14 +113,17 @@ export function SafeProposalDappDetailModal({
   const { daoKey } = useCurrentDAOKey();
   const {
     node: { safe },
-  } = useStore({ daoKey });
+  } = useDAOStore({ daoKey });
   const { dapps } = useSupportedDapps(chain.id);
   const { addAction, resetActions } = useProposalActionsStore();
   const navigate = useNavigate();
 
+  const [customAppUrl, setCustomAppUrl] = useState('https://app.decentdao.org');
+  const finalAppUrl = appUrl || customAppUrl;
+
   const safeAddress = safe?.address;
-  const dapp = dapps.find(d => d.url === appUrl);
-  const appName = dapp?.name || appUrl;
+  const dapp = dapps.find(d => d.url === finalAppUrl);
+  const appName = dapp?.name || finalAppUrl;
   const dappLabel = t('dappIntegrationActionLabel', { appName });
 
   return (
@@ -140,9 +143,22 @@ export function SafeProposalDappDetailModal({
         <CloseButton onClick={onClose} />
       </Flex>
 
+      {!appUrl && (
+        <Box mt="2rem">
+          <InputComponent
+            label="Custom dApp Url"
+            helper="Enter url of any dApp you want to load, then click Custom dApp card to open the modal."
+            value={customAppUrl}
+            onChange={e => setCustomAppUrl(e.target.value)}
+            isRequired={false}
+            testId={'customDappUrlInput'}
+          />
+        </Box>
+      )}
+
       <SafeInjectProvider
         defaultAddress={safeAddress}
-        defaultAppUrl={appUrl}
+        defaultAppUrl={finalAppUrl}
         chainId={chain.id}
         onTransactionsReceived={async transactions => {
           const id = toast.promise(
@@ -187,7 +203,7 @@ export function SafeProposalDappDetailModal({
         }}
       >
         <Iframe
-          appUrl={appUrl || ''}
+          appUrl={finalAppUrl || ''}
           enableWalletConnect={!!dapp?.enableWalletConnect}
         />
       </SafeInjectProvider>

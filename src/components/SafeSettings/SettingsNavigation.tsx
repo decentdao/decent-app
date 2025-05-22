@@ -11,7 +11,7 @@ import { SafeGeneralSettingsPage } from '../../pages/dao/settings/general/SafeGe
 import { SafeGovernanceSettingsPage } from '../../pages/dao/settings/governance/SafeGovernanceSettingsPage';
 import { SafeModulesSettingsPage } from '../../pages/dao/settings/modules-and-guard/SafeModulesSettingsPage';
 import { SafePermissionsSettingsContent } from '../../pages/dao/settings/permissions/SafePermissionsSettingsContent';
-import { useStore } from '../../providers/App/AppProvider';
+import { useDAOStore } from '../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
 import { AzoriusGovernance } from '../../types';
 import { BarLoader } from '../ui/loaders/BarLoader';
@@ -183,7 +183,7 @@ export function SettingsNavigation({
   const {
     governance,
     node: { safe, modules },
-  } = useStore({ daoKey });
+  } = useDAOStore({ daoKey });
   const azoriusGovernance = governance as AzoriusGovernance;
 
   const isSettingsV1Enabled = useFeatureFlag('flag_settings_v1');
@@ -196,7 +196,7 @@ export function SettingsNavigation({
 
   return (
     <Flex
-      backgroundColor={isSettingsV1Enabled ? 'transparent' : 'neutral-1'}
+      backgroundColor={isSettingsV1Enabled ? 'transparent' : 'neutral-2'}
       p={{ base: '1rem', md: '0.25rem' }}
       gap="0.25rem"
       flexDirection="column"

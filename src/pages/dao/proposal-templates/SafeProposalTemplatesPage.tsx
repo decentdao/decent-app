@@ -20,7 +20,7 @@ import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import useSendAssetsActionModal from '../../../hooks/DAO/useSendAssetsActionModal';
 import { useCanUserCreateProposal } from '../../../hooks/utils/useCanUserSubmitProposal';
 import { analyticsEvents } from '../../../insights/analyticsEvents';
-import { useStore } from '../../../providers/App/AppProvider';
+import { useDAOStore } from '../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
 import { useProposalActionsStore } from '../../../store/actions/useProposalActionsStore';
 import { ProposalActionType } from '../../../types/proposalBuilder';
@@ -40,7 +40,7 @@ export function SafeProposalTemplatesPage() {
     governance: { proposalTemplates },
     treasury: { assetsFungible },
     node: { safe },
-  } = useStore({ daoKey });
+  } = useDAOStore({ daoKey });
   const { canUserCreateProposal } = useCanUserCreateProposal();
   const {
     addressPrefix,

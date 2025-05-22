@@ -19,7 +19,7 @@ import {
 } from '../../constants/params';
 import { getRandomBytes } from '../../helpers';
 import { generateContractByteCodeLinear, generateSalt } from '../../models/helpers/utils';
-import { useStore } from '../../providers/App/AppProvider';
+import { useDAOStore } from '../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
 import {
   AzoriusGovernance,
@@ -39,7 +39,7 @@ export const useInstallVersionedVotingStrategy = () => {
     governance,
     governanceContracts,
     node: { safe },
-  } = useStore({ daoKey });
+  } = useDAOStore({ daoKey });
 
   const safeAddress = safe?.address;
 

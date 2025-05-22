@@ -8,7 +8,7 @@ import { SignersContainer } from '../../../../components/SafeSettings/Signers/Si
 import NestedPageHeader from '../../../../components/ui/page/Header/NestedPageHeader';
 import { DAO_ROUTES } from '../../../../constants/routes';
 import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
-import { useStore } from '../../../../providers/App/AppProvider';
+import { useDAOStore } from '../../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../../providers/NetworkConfig/useNetworkConfigStore';
 import { GovernanceType } from '../../../../types';
 import { GovernanceParams } from './GovernanceParams';
@@ -20,7 +20,7 @@ export function SafeGovernanceSettingsPage() {
   const {
     governance: { type },
     node: { safe },
-  } = useStore({ daoKey });
+  } = useDAOStore({ daoKey });
 
   const isERC20Governance = type === GovernanceType.AZORIUS_ERC20;
   const isERC721Governance = type === GovernanceType.AZORIUS_ERC721;

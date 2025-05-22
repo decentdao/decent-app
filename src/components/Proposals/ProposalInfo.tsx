@@ -1,4 +1,4 @@
-import { Box, Button, Flex, Link } from '@chakra-ui/react';
+import { Box, Button, Flex, Link, Text } from '@chakra-ui/react';
 import { ArrowUpRight } from '@phosphor-icons/react';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -6,16 +6,23 @@ import { Shield } from '../../assets/theme/custom/icons/Shield';
 import useSnapshotProposal from '../../hooks/DAO/loaders/snapshot/useSnapshotProposal';
 import { useGetMetadata } from '../../hooks/DAO/proposal/useGetMetadata';
 import { useCurrentDAOKey } from '../../hooks/DAO/useCurrentDAOKey';
-import { useStore } from '../../providers/App/AppProvider';
-import { ExtendedSnapshotProposal, FractalProposal } from '../../types';
+import { useDAOStore } from '../../providers/App/AppProvider';
+import {
+  ExtendedSnapshotProposal,
+  FractalProposal,
+  FractalProposalState,
+  MultisigProposal,
+} from '../../types';
 import { ActivityDescription } from '../Activity/ActivityDescription';
 import { Badge } from '../ui/badges/Badge';
+import { SignerThresholdBadge } from '../ui/badges/SignerThresholdBadge';
 import { SnapshotButton } from '../ui/badges/Snapshot';
 import { ModalType } from '../ui/modals/ModalProvider';
 import { useDecentModal } from '../ui/modals/useDecentModal';
 import { ProposalCountdown } from '../ui/proposal/ProposalCountdown';
 import ProposalExecutableCode from '../ui/proposal/ProposalExecutableCode';
 import CeleryButtonWithIcon from '../ui/utils/CeleryButtonWithIcon';
+import { MultisigConflictingProposals } from './MultisigProposalDetails/MultisigConflictingProposals';
 
 export function ProposalInfo({
   proposal,
@@ -27,7 +34,7 @@ export function ProposalInfo({
   const { daoKey } = useCurrentDAOKey();
   const {
     node: { subgraphInfo },
-  } = useStore({ daoKey });
+  } = useDAOStore({ daoKey });
   const { snapshotProposal } = useSnapshotProposal(proposal);
 
   const [modalType, props] = useMemo(() => {
@@ -54,42 +61,66 @@ export function ProposalInfo({
       <Flex
         gap={2}
         alignItems="center"
+        justifyContent="space-between"
       >
-        {proposal.state && (
-          <Badge
-            size="base"
-            labelKey={proposal.state}
-          />
-        )}
-        <ProposalCountdown
-          proposal={proposal}
-          showIcon={false}
-          textColor="neutral-7"
-        />
-        {snapshotProposal && subgraphInfo && (
-          <>
-            <SnapshotButton
-              snapshotENS={`${subgraphInfo.daoSnapshotENS}/proposal/${snapshotProposal.proposalId}`}
+        <Flex
+          gap={2}
+          alignItems="center"
+        >
+          {proposal.state && (
+            <Badge
+              size="base"
+              labelKey={proposal.state}
             />
-            {(proposal as ExtendedSnapshotProposal).privacy === 'shutter' && (
-              <Button
-                as={Link}
-                target="_blank"
-                href="https://blog.shutter.network/announcing-shutter-governance-shielded-voting-for-daos/"
-                variant="secondary"
-                h={6}
-                w={32}
-              >
-                <Shield
-                  width="16px"
-                  height="16px"
-                  mr={1}
-                />
-                {t('shutterPrivacy')}
-              </Button>
-            )}
-          </>
-        )}
+          )}
+          <ProposalCountdown
+            proposal={proposal}
+            showIcon={false}
+            textColor="neutral-7"
+          />
+          {snapshotProposal && subgraphInfo && (
+            <>
+              <SnapshotButton
+                snapshotENS={`${subgraphInfo.daoSnapshotENS}/proposal/${snapshotProposal.proposalId}`}
+              />
+              {(proposal as ExtendedSnapshotProposal).privacy === 'shutter' && (
+                <Button
+                  as={Link}
+                  target="_blank"
+                  href="https://blog.shutter.network/announcing-shutter-governance-shielded-voting-for-daos/"
+                  variant="secondary"
+                  h={6}
+                  w={32}
+                >
+                  <Shield
+                    width="16px"
+                    height="16px"
+                    mr={1}
+                  />
+                  {t('shutterPrivacy')}
+                </Button>
+              )}
+            </>
+          )}
+        </Flex>
+        <Flex
+          gap={4}
+          alignItems="center"
+        >
+          <Text
+            textStyle="labels-large"
+            color="neutral-7"
+          >
+            {t('nonceLabel', {
+              number: (proposal as MultisigProposal).nonce,
+            })}
+          </Text>
+          <SignerThresholdBadge
+            numberOfConfirmedSigners={(proposal as MultisigProposal).confirmations?.length}
+            proposalThreshold={(proposal as MultisigProposal).signersThreshold}
+            isRejected={proposal.state === FractalProposalState.REJECTED}
+          />
+        </Flex>
       </Flex>
       <Box mt={4}>
         <ActivityDescription
@@ -106,6 +137,7 @@ export function ProposalInfo({
           />
         )}
         <ProposalExecutableCode proposal={proposal} />
+        <MultisigConflictingProposals proposal={proposal} />
       </Box>
     </Box>
   );

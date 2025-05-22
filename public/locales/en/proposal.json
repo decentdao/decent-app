@@ -164,6 +164,7 @@
   "addStream": "Add stream",
   "removeStream": "Remove stream",
   "streamStartNotice": "Stream will be started in the moment of proposal execution. In order to\n\"emulate\" delay of stream start - first tranche should have amount set to\n0 with desired \"delay\" duration.",
+  "streamOnSablierNotice": "This proposal will create payment streams using Sablier. After it is executed, recipients will need to use Sablier to manage those streams.",
   "streamedTokenAddress": "Streamed Token Address",
   "streamedTokenAddressHelper": "Treasury balance: {{balance}}",
   "recipientAddress": "Recipient Address",
@@ -197,5 +198,14 @@
   "by": "By",
   "groupByNonce": "Group by Nonce",
   "snapshot": "Snapshot",
-  "signersThresholdBadgeLabel": "{{current}} out of {{total}}"
+  "signersThresholdBadgeLabel": "{{current}} out of {{total}}",
+  "nonceLabelMultipleTransactions": "Multiple transactions",
+  "nonceLabelSingleTransaction": "Transaction #{{proposalId}}",
+  "nonceLabelRecommended": "{{nonce}} - New Transaction",
+  "nonceLabelRecommendedTitle": "Recommended nonce",
+  "nonceLabelReplaceActiveTitle": "Replace active",
+  "nonceLabelBannerActive": "{{confirmations}} of {{signersThreshold}} signers want to reject Nonce {{nonce}}.",
+  "nonceLabelBannerRejected": "Nonce {{nonce}} has been rejected.",
+  "conflictingProposals": "Conflicting Proposals",
+  "executableCode": "Executable Code"
 }

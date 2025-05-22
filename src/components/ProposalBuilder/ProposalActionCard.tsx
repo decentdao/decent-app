@@ -5,7 +5,7 @@ import { formatUnits, getAddress, isAddress } from 'viem';
 import PencilWithLineIcon from '../../assets/theme/custom/icons/PencilWithLineIcon';
 import { useCurrentDAOKey } from '../../hooks/DAO/useCurrentDAOKey';
 import { createAccountSubstring } from '../../hooks/utils/useGetAccountName';
-import { useStore } from '../../providers/App/AppProvider';
+import { useDAOStore } from '../../providers/App/AppProvider';
 import { CreateProposalAction, ProposalActionType } from '../../types/proposalBuilder';
 import { Card } from '../ui/cards/Card';
 import { DappInteractionActionCard } from '../ui/cards/DappInteractionActionCard';
@@ -21,7 +21,7 @@ function SendAssetsAction({
   const { daoKey } = useCurrentDAOKey();
   const {
     treasury: { assetsFungible },
-  } = useStore({ daoKey });
+  } = useDAOStore({ daoKey });
 
   const isNativeAssetTransfer = action.actionType === ProposalActionType.NATIVE_TRANSFER;
 
@@ -82,7 +82,7 @@ export function AirdropAction({
   const { daoKey } = useCurrentDAOKey();
   const {
     treasury: { assetsFungible },
-  } = useStore({ daoKey });
+  } = useDAOStore({ daoKey });
   const totalAmountString = action.transactions[1].parameters[2].value?.slice(1, -1);
   const totalAmount = BigInt(
     totalAmountString?.split(',').reduce((acc, curr) => acc + BigInt(curr), 0n) || '0',

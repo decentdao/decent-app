@@ -6,7 +6,7 @@ import { zeroAddress } from 'viem';
 import { DAO_ROUTES } from '../../../constants/routes';
 import useFeatureFlag from '../../../helpers/environmentFeatureFlags';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
-import { useStore } from '../../../providers/App/AppProvider';
+import { useDAOStore } from '../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
 import { Card } from '../cards/Card';
 
@@ -23,7 +23,7 @@ export function AddStrategyPermissionModal({
   const { daoKey } = useCurrentDAOKey();
   const {
     node: { safe },
-  } = useStore({ daoKey });
+  } = useDAOStore({ daoKey });
 
   const isSettingsV1Enabled = useFeatureFlag('flag_settings_v1');
 

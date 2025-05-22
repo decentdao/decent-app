@@ -164,6 +164,7 @@
   "addStream": "新增串流",
   "removeStream": "移除串流",
   "streamStartNotice": "串流會在提案執行時啟動。為了\n為了「模擬 」串流開始的延遲-第一筆付款的金額應設定為\n0和所需的「延遲 」時間。",
+  "streamOnSablierNotice": "本提案將使用 Sablier 建立付款流。執行後，收款人將需要使用 Sablier 來管理這些付款流。",
   "streamedTokenAddress": "串流代幣位址",
   "streamedTokenAddressHelper": "庫房結餘：{{balance}}",
   "recipientAddress": "收件人地址",
@@ -197,5 +198,14 @@
   "by": "按",
   "groupByNonce": "依 Nonce 分組",
   "snapshot": "快照",
-  "signersThresholdBadgeLabel": "{{current}} out of{{total}}"
+  "signersThresholdBadgeLabel": "{{current}} out of{{total}}",
+  "nonceLabelMultipleTransactions": "多重交易",
+  "nonceLabelSingleTransaction": "交易 #{{proposalId}}",
+  "nonceLabelRecommended": "{{nonce}}- 新交易",
+  "nonceLabelRecommendedTitle": "推薦的 nonce",
+  "nonceLabelReplaceActiveTitle": "取代作用中",
+  "nonceLabelBannerActive": "{{confirmations}的{{signersThreshold}} 簽署人想要拒絕 Nonce{{nonce}}。",
+  "nonceLabelBannerRejected": "Nonce{{nonce}} 已被拒絕。",
+  "conflictingProposals": "相互矛盾的提案",
+  "executableCode": "可執行程式碼"
 }

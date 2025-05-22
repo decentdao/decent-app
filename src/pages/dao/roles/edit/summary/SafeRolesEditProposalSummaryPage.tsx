@@ -8,7 +8,7 @@ import PageHeader from '../../../../../components/ui/page/Header/PageHeader';
 import { CONTENT_MAXW } from '../../../../../constants/common';
 import { DAO_ROUTES } from '../../../../../constants/routes';
 import { useCurrentDAOKey } from '../../../../../hooks/DAO/useCurrentDAOKey';
-import { useStore } from '../../../../../providers/App/AppProvider';
+import { useDAOStore } from '../../../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../../../providers/NetworkConfig/useNetworkConfigStore';
 import { RoleFormValues } from '../../../../../types/roles';
 
@@ -17,7 +17,7 @@ export function SafeRolesEditProposalSummaryPage() {
   const { daoKey } = useCurrentDAOKey();
   const {
     node: { safe },
-  } = useStore({ daoKey });
+  } = useDAOStore({ daoKey });
   const { t } = useTranslation(['roles', 'breadcrumbs']);
   const { addressPrefix } = useNetworkConfigStore();
   const { values } = useFormikContext<RoleFormValues>();
