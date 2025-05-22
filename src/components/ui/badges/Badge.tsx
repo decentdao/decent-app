@@ -164,20 +164,16 @@ export function ProposalStateBadge({
   size,
   rejectionProposalState,
 }: IBadge & { rejectionProposalState?: FractalProposalState | null }) {
+  let badgeLabelKey = labelKey;
   if (
     rejectionProposalState === FractalProposalState.TIMELOCKABLE ||
     rejectionProposalState === FractalProposalState.TIMELOCKED
   ) {
-    return (
-      <Badge
-        labelKey={rejectionProposalState}
-        size={size}
-      />
-    );
+    badgeLabelKey = rejectionProposalState;
   }
   return (
     <Badge
-      labelKey={labelKey}
+      labelKey={badgeLabelKey}
       size={size}
     />
   );
