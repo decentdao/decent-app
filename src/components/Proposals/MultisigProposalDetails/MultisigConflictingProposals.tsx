@@ -103,7 +103,7 @@ export function MultisigConflictingProposals({ proposal }: { proposal: MultisigP
         sectionTitle={t('conflictingProposals')}
         // @dev expands if there is a rejection proposal
         defaultExpandedIndices={rejectionProposal ? [0] : undefined}
-        contentCount={conflictingProposals.length}
+        contentCount={conflictingProposalsOnlyNonRejections.length}
         content={
           <Box mt={4}>
             <NonceLabel nonce={proposalNonce} />
