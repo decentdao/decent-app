@@ -117,7 +117,7 @@ function getTriggerButtonLabel(
   rejectionTimestamp: Date | undefined,
 ) {
   if (!!approvalTimestamp && !!rejectionTimestamp) {
-    return approvalTimestamp > rejectionTimestamp ? 'Approve' : 'Reject';
+    return approvalTimestamp > rejectionTimestamp ? 'approve' : 'reject';
   }
   if (approvalTimestamp) {
     return 'approve';
