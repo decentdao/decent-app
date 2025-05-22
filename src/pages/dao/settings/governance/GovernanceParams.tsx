@@ -14,7 +14,7 @@ import Divider from '../../../../components/ui/utils/Divider';
 import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
 import useNetworkPublicClient from '../../../../hooks/useNetworkPublicClient';
 import { useTimeHelpers } from '../../../../hooks/utils/useTimeHelpers';
-import { useStore } from '../../../../providers/App/AppProvider';
+import { useDAOStore } from '../../../../providers/App/AppProvider';
 import { AzoriusGovernance, FreezeGuardType } from '../../../../types';
 import { blocksToSeconds } from '../../../../utils/contract';
 
@@ -25,7 +25,7 @@ export function GovernanceParams() {
     governance,
     guardContracts: { freezeGuardType, freezeGuardContractAddress },
     node: { safe },
-  } = useStore({ daoKey });
+  } = useDAOStore({ daoKey });
 
   const { values, setFieldValue } = useFormikContext<SafeSettingsEdits>();
   const publicClient = useNetworkPublicClient();

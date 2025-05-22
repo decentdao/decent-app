@@ -8,7 +8,7 @@ import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import { useValidationAddress } from '../../../hooks/schemas/common/useValidationAddress';
 import { useCanUserCreateProposal } from '../../../hooks/utils/useCanUserSubmitProposal';
 import { SafeGeneralSettingsPage } from '../../../pages/dao/settings/general/SafeGeneralSettingsPage';
-import { useStore } from '../../../providers/App/AppProvider';
+import { useDAOStore } from '../../../providers/App/AppProvider';
 import { SettingsNavigation } from '../../SafeSettings/SettingsNavigation';
 import {
   MultisigEditGovernanceFormikErrors,
@@ -36,7 +36,7 @@ export function SafeSettingsModal({ closeModal }: { closeModal: () => void }) {
 
   const {
     node: { safe },
-  } = useStore({ daoKey });
+  } = useDAOStore({ daoKey });
 
   const [settingsContent, setSettingsContent] = useState(<SafeGeneralSettingsPage />);
 
