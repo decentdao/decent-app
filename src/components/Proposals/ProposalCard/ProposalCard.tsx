@@ -8,7 +8,7 @@ import { useDateTimeDisplay } from '../../../helpers/dateTime';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import { useNetworkEnsAvatar } from '../../../hooks/useNetworkEnsAvatar';
 import { useGetAccountName } from '../../../hooks/utils/useGetAccountName';
-import { useStore } from '../../../providers/App/AppProvider';
+import { useDAOStore } from '../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
 import {
   AzoriusProposal,
@@ -16,6 +16,7 @@ import {
   SnapshotProposal,
   GovernanceType,
   MultisigProposal,
+  FractalProposalState,
 } from '../../../types';
 import { ActivityDescription } from '../../Activity/ActivityDescription';
 import { Badge } from '../../ui/badges/Badge';
@@ -73,7 +74,7 @@ function ProposalCreatedBy({ createdBy }: { createdBy: Address }) {
 
 function NonceLabel({ nonce }: { nonce: number | undefined }) {
   const { daoKey } = useCurrentDAOKey();
-  const { governance } = useStore({ daoKey });
+  const { governance } = useDAOStore({ daoKey });
   const { t } = useTranslation('proposal');
   const isMultisig = governance.type === GovernanceType.MULTISIG;
 
@@ -143,6 +144,7 @@ function ProposalCard({ proposal }: { proposal: FractalProposal }) {
           <SignerThresholdBadge
             numberOfConfirmedSigners={(proposal as MultisigProposal).confirmations?.length}
             proposalThreshold={(proposal as MultisigProposal).signersThreshold}
+            isRejected={proposal.state === FractalProposalState.REJECTED}
           />
         </Flex>
         <ActivityDescription activity={proposal} />

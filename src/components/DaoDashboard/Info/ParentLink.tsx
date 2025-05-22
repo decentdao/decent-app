@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Link as RouterLink } from 'react-router-dom';
 import { DAO_ROUTES } from '../../../constants/routes';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
-import { useStore } from '../../../providers/App/AppProvider';
+import { useDAOStore } from '../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
 /**
  * Displays a link to the current DAO's parent, if it has one.
@@ -13,7 +13,7 @@ export function ParentLink() {
   const { daoKey } = useCurrentDAOKey();
   const {
     node: { subgraphInfo },
-  } = useStore({ daoKey });
+  } = useDAOStore({ daoKey });
   const { addressPrefix } = useNetworkConfigStore();
   const { t } = useTranslation('breadcrumbs');
 

@@ -8,7 +8,7 @@ import { getContract } from 'viem';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import useNetworkPublicClient from '../../../hooks/useNetworkPublicClient';
 import { useTimeHelpers } from '../../../hooks/utils/useTimeHelpers';
-import { useStore } from '../../../providers/App/AppProvider';
+import { useDAOStore } from '../../../providers/App/AppProvider';
 import { AzoriusGovernance, FreezeGuardType } from '../../../types';
 import { blocksToSeconds } from '../../../utils/contract';
 import { BarLoader } from '../../ui/loaders/BarLoader';
@@ -20,7 +20,7 @@ export function InfoGovernance() {
     governance,
     guardContracts: { freezeGuardType, freezeGuardContractAddress },
     node: { safe },
-  } = useStore({ daoKey });
+  } = useDAOStore({ daoKey });
   const publicClient = useNetworkPublicClient();
   const { getTimeDuration } = useTimeHelpers();
   const [timelockPeriod, setTimelockPeriod] = useState<string>();

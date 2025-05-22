@@ -164,6 +164,7 @@
   "addStream": "Добавить поток",
   "removeStream": "Удалить поток",
   "streamStartNotice": "Поток будет запущен в момент выполнения предложения. Для того чтобы\n\"эмулировать\" задержку запуска потока - первый транш должен иметь сумму, установленную на\n0 с желаемой продолжительностью \"задержки\".",
+  "streamOnSablierNotice": "Это предложение позволит создать потоки платежей с помощью Sablier. После его выполнения получатели должны будут использовать Sablier для управления этими потоками.",
   "streamedTokenAddress": "Адрес потокового токена",
   "streamedTokenAddressHelper": "Казначейский баланс: {{balance}}",
   "recipientAddress": "Адрес получателя",
@@ -197,5 +198,14 @@
   "by": "По ссылке",
   "groupByNonce": "Группировка по нонсенсу",
   "snapshot": "Снимок",
-  "signersThresholdBadgeLabel": "{{current}} из {{total}}"
+  "signersThresholdBadgeLabel": "{{current}} из {{total}}",
+  "nonceLabelMultipleTransactions": "Многократные транзакции",
+  "nonceLabelSingleTransaction": "Транзакция #{{proposalId}}",
+  "nonceLabelRecommended": "{{nonce}} - Новая транзакция",
+  "nonceLabelRecommendedTitle": "Рекомендуемый нонс",
+  "nonceLabelReplaceActiveTitle": "Заменить активный",
+  "nonceLabelBannerActive": "{{confirmations}Подписчики {{signersThreshold}} хотят отклонить Nonce {{nonce}}.",
+  "nonceLabelBannerRejected": "Nonce {{nonce}} был отклонен.",
+  "conflictingProposals": "Противоречивые предложения",
+  "executableCode": "Исполняемый код"
 }

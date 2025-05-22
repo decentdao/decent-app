@@ -1,20 +1,21 @@
 import { useEffect, useState } from 'react';
 import { formatUnits } from 'viem';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
-import { useStore } from '../../../providers/App/AppProvider';
+import { useGlobalStore } from '../../../store/store';
 import { AzoriusGovernance, GovernanceType } from '../../../types/fractal';
 
 export const useParentSafeVotingWeight = () => {
   const { daoKey } = useCurrentDAOKey();
-  const {
-    governance,
-    node: { safe },
-  } = useStore({ daoKey });
-
+  const { getGovernance, getDaoNode } = useGlobalStore();
   const [parentVotingQuorum, setParentVotingQuorum] = useState<bigint>();
   const [totalParentVotingWeight, setTotalParentVotingWeight] = useState<bigint>();
 
   useEffect(() => {
+    if (!daoKey) {
+      return;
+    }
+    const governance = getGovernance(daoKey);
+    const safe = getDaoNode(daoKey).safe;
     if (!safe) {
       return;
     }
@@ -68,7 +69,7 @@ export const useParentSafeVotingWeight = () => {
         setTotalParentVotingWeight(BigInt(safe.owners.length));
         setParentVotingQuorum(BigInt(safe.threshold));
     }
-  }, [safe, governance]);
+  }, [daoKey, getGovernance, getDaoNode]);
 
   return {
     totalParentVotingWeight,

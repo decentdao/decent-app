@@ -5,6 +5,7 @@ import {
   AzoriusProposal,
   DAOKey,
   DecentGovernance,
+  ERC721ProposalVote,
   ERC721TokenData,
   FractalGovernance,
   FractalGovernanceContracts,
@@ -12,6 +13,9 @@ import {
   FractalVotingStrategy,
   GovernanceType,
   ProposalTemplate,
+  ProposalVote,
+  ProposalVotesSummary,
+  SnapshotProposal,
   VotesTokenData,
   VotingStrategy,
 } from '../../types';
@@ -39,7 +43,14 @@ export type GovernancesSlice = {
   setAzoriusGovernance: (daoKey: DAOKey, payload: SetAzoriusGovernancePayload) => void;
   setTokenClaimContractAddress: (daoKey: DAOKey, tokenClaimContractAddress: Address) => void;
   setProposals: (daoKey: DAOKey, proposals: FractalProposal[]) => void;
+  setSnapshotProposals: (daoKey: DAOKey, snapshotProposals: SnapshotProposal[]) => void;
   setProposal: (daoKey: DAOKey, proposal: AzoriusProposal) => void;
+  setProposalVote: (
+    daoKey: DAOKey,
+    proposalId: string,
+    votesSummary: ProposalVotesSummary,
+    proposalVote: ProposalVote | ERC721ProposalVote,
+  ) => void;
   setLoadingFirstProposal: (daoKey: DAOKey, loading: boolean) => void;
   setAllProposalsLoaded: (daoKey: DAOKey, loaded: boolean) => void;
   getGovernance: (daoKey: DAOKey) => FractalGovernance & FractalGovernanceContracts;
@@ -51,6 +62,13 @@ export type GovernancesSlice = {
     daoKey: DAOKey,
     lockReleaseAccountData: { balance: bigint; delegatee: Address },
   ) => void;
+  setGaslessVotingData: (
+    daoKey: DAOKey,
+    gasslesVotingData: {
+      gaslessVotingEnabled: boolean;
+      paymasterAddress: Address | null;
+    },
+  ) => void;
 };
 
 const EMPTY_GOVERNANCE: FractalGovernance & FractalGovernanceContracts = {
@@ -61,6 +79,8 @@ const EMPTY_GOVERNANCE: FractalGovernance & FractalGovernanceContracts = {
   isAzorius: false,
   isLoaded: false,
   strategies: [],
+  gaslessVotingEnabled: false,
+  paymasterAddress: null,
 };
 
 export const createGovernancesSlice: StateCreator<
@@ -138,7 +158,16 @@ export const createGovernancesSlice: StateCreator<
   setProposals: (daoKey, proposals) => {
     set(
       state => {
-        state.governances[daoKey].proposals = proposals;
+        if (!state.governances[daoKey]) {
+          state.governances[daoKey] = {
+            ...EMPTY_GOVERNANCE,
+            proposals,
+          };
+        } else {
+          // TODO: Sometimes snapshot proposals might be loaded before proposals, then snapshot proposals are lost
+          // Need to tackle this in scope of ENG-813
+          state.governances[daoKey].proposals = proposals;
+        }
       },
       false,
       'setProposals',
@@ -163,6 +192,30 @@ export const createGovernancesSlice: StateCreator<
       'setProposal',
     );
   },
+  setProposalVote: (daoKey, proposalId, votesSummary, proposalVote) => {
+    set(
+      state => {
+        const azoriusProposal = state.governances[daoKey].proposals?.find(
+          p => p.proposalId === proposalId,
+        ) as AzoriusProposal;
+        if (!azoriusProposal) {
+          return;
+        }
+
+        const existingVoteIndex = azoriusProposal.votes.findIndex(
+          v => v.voter === proposalVote.voter,
+        );
+        if (existingVoteIndex !== -1) {
+          azoriusProposal.votes[existingVoteIndex] = proposalVote;
+        } else {
+          (azoriusProposal.votes as (ProposalVote | ERC721ProposalVote)[]).push(proposalVote);
+        }
+        azoriusProposal.votesSummary = votesSummary;
+      },
+      false,
+      'setProposalVote',
+    );
+  },
   setLoadingFirstProposal: (daoKey, loading) => {
     set(
       state => {
@@ -174,39 +227,41 @@ export const createGovernancesSlice: StateCreator<
       'setLoadingFirstProposal',
     );
   },
-  setGovernanceAccountData: (
-    daoKey: DAOKey,
-    governanceAccountData: { balance: bigint; delegatee: Address },
-  ) => {
-    set(state => {
-      const azoirusGovernance = state.governances[daoKey] as AzoriusGovernance;
-      if (
-        !state.governances[daoKey] ||
-        !state.governances[daoKey].isAzorius ||
-        !azoirusGovernance.votesToken
-      ) {
-        return;
-      }
-      azoirusGovernance.votesToken.balance = governanceAccountData.balance;
-      azoirusGovernance.votesToken.delegatee = governanceAccountData.delegatee;
-    });
+  setGovernanceAccountData: (daoKey, governanceAccountData) => {
+    set(
+      state => {
+        const azoirusGovernance = state.governances[daoKey] as AzoriusGovernance;
+        if (
+          !state.governances[daoKey] ||
+          !state.governances[daoKey].isAzorius ||
+          !azoirusGovernance.votesToken
+        ) {
+          return;
+        }
+        azoirusGovernance.votesToken.balance = governanceAccountData.balance;
+        azoirusGovernance.votesToken.delegatee = governanceAccountData.delegatee;
+      },
+      false,
+      'setGovernanceAccountData',
+    );
   },
-  setGovernanceLockReleaseAccountData: (
-    daoKey: DAOKey,
-    lockReleaseAccountData: { balance: bigint; delegatee: Address },
-  ) => {
-    set(state => {
-      const decentGovernance = state.governances[daoKey] as DecentGovernance;
-      if (
-        !state.governances[daoKey] ||
-        !state.governances[daoKey].isAzorius ||
-        !decentGovernance.lockedVotesToken
-      ) {
-        return;
-      }
-      decentGovernance.lockedVotesToken.balance = lockReleaseAccountData.balance;
-      decentGovernance.lockedVotesToken.delegatee = lockReleaseAccountData.delegatee;
-    });
+  setGovernanceLockReleaseAccountData: (daoKey, lockReleaseAccountData) => {
+    set(
+      state => {
+        const decentGovernance = state.governances[daoKey] as DecentGovernance;
+        if (
+          !state.governances[daoKey] ||
+          !state.governances[daoKey].isAzorius ||
+          !decentGovernance.lockedVotesToken
+        ) {
+          return;
+        }
+        decentGovernance.lockedVotesToken.balance = lockReleaseAccountData.balance;
+        decentGovernance.lockedVotesToken.delegatee = lockReleaseAccountData.delegatee;
+      },
+      false,
+      'setGovernanceLockReleaseAccountData',
+    );
   },
   setAllProposalsLoaded: (daoKey, loaded) => {
     set(
@@ -216,6 +271,42 @@ export const createGovernancesSlice: StateCreator<
       },
       false,
       'setAllProposalsLoaded',
+    );
+  },
+  setSnapshotProposals: (daoKey, snapshotProposals) => {
+    set(
+      state => {
+        if (!state.governances[daoKey]) {
+          state.governances[daoKey] = {
+            ...EMPTY_GOVERNANCE,
+            proposals: snapshotProposals,
+          };
+        } else if (!state.governances[daoKey].proposals) {
+          state.governances[daoKey].proposals = snapshotProposals;
+        } else {
+          state.governances[daoKey].proposals.push(...snapshotProposals);
+        }
+      },
+      false,
+      'setSnapshotProposals',
+    );
+  },
+  setGaslessVotingData: (daoKey, gasslesVotingData) => {
+    set(
+      state => {
+        if (!state.governances[daoKey]) {
+          state.governances[daoKey] = {
+            ...EMPTY_GOVERNANCE,
+            gaslessVotingEnabled: gasslesVotingData.gaslessVotingEnabled,
+            paymasterAddress: gasslesVotingData.paymasterAddress,
+          };
+        } else {
+          state.governances[daoKey].gaslessVotingEnabled = gasslesVotingData.gaslessVotingEnabled;
+          state.governances[daoKey].paymasterAddress = gasslesVotingData.paymasterAddress;
+        }
+      },
+      false,
+      'setGaslessVotingData',
     );
   },
   getGovernance: daoKey => {

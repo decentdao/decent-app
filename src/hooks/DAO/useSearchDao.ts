@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Address } from 'viem';
+import { Address, isAddress } from 'viem';
+import { queryDaosByName } from '../../providers/App/hooks/useDecentAPI';
 import {
   supportedEnsNetworks,
   supportedNetworks,
@@ -29,7 +30,7 @@ export const useSearchDao = () => {
   const findSafes = useCallback(
     async (resolvedAddressesWithChainId: { address: Address; chainId: number }[]) => {
       /*
-      This function only checks if the address is a Safe on any of the EVM networks. 
+      This function only checks if the address is a Safe on any of the EVM networks.
       The same Safe could of on multiple networks
       */
 
@@ -49,15 +50,31 @@ export const useSearchDao = () => {
 
       // We're left with a list of chains and addresses
       // (all the same address) that have a Safe at that address.
+      if (realSafes.length === 0) {
+        setErrorMessage(t('errorFailedSearch'));
+        setIsSafeLookupLoading(false);
+        return;
+      }
       setSafeResolvedAddressesWithPrefix(realSafes);
     },
-    [getConfigByChainId],
+    [getConfigByChainId, t],
   );
 
   const resolveInput = useCallback(
     async (input: string) => {
       setIsSafeLookupLoading(true);
       try {
+        const isAddressOrEns = isAddress(input) || input.endsWith('.eth');
+
+        if (!isAddressOrEns) {
+          // Search DAOs with name through our API
+          const daos = await queryDaosByName(input);
+          if (daos.length > 0) {
+            setSafeResolvedAddressesWithPrefix(daos);
+            return;
+          }
+        }
+
         const resolvedAddressPromises = supportedEnsNetworks.map(async chainId => {
           const { resolvedAddress, isValid } = await resolveENSName(input, chainId);
           return isValid ? resolvedAddress : null;

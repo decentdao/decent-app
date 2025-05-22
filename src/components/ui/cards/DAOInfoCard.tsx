@@ -4,7 +4,7 @@ import { DAO_ROUTES } from '../../../constants/routes';
 import { useAccountFavorites } from '../../../hooks/DAO/loaders/useFavorites';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import { useGetAccountName } from '../../../hooks/utils/useGetAccountName';
-import { useStore } from '../../../providers/App/AppProvider';
+import { useDAOStore } from '../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
 import { getNetworkIcon } from '../../../utils/url';
 import { SnapshotButton } from '../badges/Snapshot';
@@ -19,7 +19,7 @@ export function DAOInfoCard() {
   const { daoKey } = useCurrentDAOKey();
   const {
     node: { safe, subgraphInfo },
-  } = useStore({ daoKey });
+  } = useDAOStore({ daoKey });
   const { addressPrefix } = useNetworkConfigStore();
   // for non Fractal Safes
   const displayedAddress = safe?.address;

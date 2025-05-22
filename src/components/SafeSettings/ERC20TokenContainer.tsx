@@ -1,7 +1,7 @@
 import { Box, Flex, Text } from '@chakra-ui/react';
 import { useTranslation } from 'react-i18next';
 import { useCurrentDAOKey } from '../../hooks/DAO/useCurrentDAOKey';
-import { useStore } from '../../providers/App/AppProvider';
+import { useDAOStore } from '../../providers/App/AppProvider';
 import { AzoriusGovernance } from '../../types';
 import { formatCoin } from '../../utils';
 import { DisplayAddress } from '../ui/links/DisplayAddress';
@@ -11,7 +11,7 @@ import Divider from '../ui/utils/Divider';
 export function ERC20TokenContainer() {
   const { t } = useTranslation(['settings']);
   const { daoKey } = useCurrentDAOKey();
-  const { governance } = useStore({ daoKey });
+  const { governance } = useDAOStore({ daoKey });
 
   const azoriusGovernance = governance as AzoriusGovernance;
   const { votesToken } = azoriusGovernance;

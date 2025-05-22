@@ -5,8 +5,8 @@ import { CONTENT_MAXW } from '../../../../constants/common';
 import { DAO_ROUTES } from '../../../../constants/routes';
 import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
 import { createAccountSubstring } from '../../../../hooks/utils/useGetAccountName';
-import { useStore } from '../../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../../providers/NetworkConfig/useNetworkConfigStore';
+import { useGlobalStore } from '../../../../store/store';
 import AddressCopier from '../../links/AddressCopier';
 import Divider from '../../utils/Divider';
 import Breadcrumbs, { Crumb } from './Breadcrumbs';
@@ -34,14 +34,14 @@ function PageHeader({
   showSafeAddress,
 }: PageHeaderProps) {
   const { daoKey } = useCurrentDAOKey();
-  const {
-    node: { safe, subgraphInfo },
-  } = useStore({ daoKey });
+  const { getDaoNode } = useGlobalStore();
 
   const { addressPrefix } = useNetworkConfigStore();
-  const safeAddress = safe?.address;
 
   const [links, setLinks] = useState([...breadcrumbs]);
+  const node = daoKey ? getDaoNode(daoKey) : null;
+  const safeAddress = node?.safe?.address;
+  const subgraphInfo = node?.subgraphInfo;
 
   useEffect(() => {
     if (hasDAOLink && safeAddress) {
@@ -110,10 +110,10 @@ function PageHeader({
           {title}
         </Text>
       )}
-      {safe?.address && showSafeAddress && (
+      {safeAddress && showSafeAddress && (
         <AddressCopier
           marginTop="0.5rem"
-          address={safe?.address}
+          address={safeAddress}
           display="inline-flex"
         />
       )}

@@ -14,3 +14,7 @@ export const getSafeContractDeploymentAddress = (
   const contractAddress = getAddress(contract);
   return contractAddress;
 };
+
+export const getEtherscanAPIUrl = (chainId: number) => {
+  return `https://api.etherscan.io/v2/api?chainid=${chainId}&apikey=${import.meta.env?.VITE_APP_ETHERSCAN_MAINNET_API_KEY}`;
+};

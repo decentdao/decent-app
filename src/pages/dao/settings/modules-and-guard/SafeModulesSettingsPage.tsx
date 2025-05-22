@@ -8,7 +8,7 @@ import NestedPageHeader from '../../../../components/ui/page/Header/NestedPageHe
 import { DAO_ROUTES } from '../../../../constants/routes';
 import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
 import { createAccountSubstring } from '../../../../hooks/utils/useGetAccountName';
-import { useStore } from '../../../../providers/App/AppProvider';
+import { useDAOStore } from '../../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../../providers/NetworkConfig/useNetworkConfigStore';
 import { FractalModuleType } from '../../../../types';
 
@@ -19,7 +19,7 @@ export function SafeModulesSettingsPage() {
   const {
     guardContracts: { freezeGuardContractAddress, freezeVotingContractAddress },
     node: { modules, safe },
-  } = useStore({ daoKey });
+  } = useDAOStore({ daoKey });
 
   return (
     <>
@@ -34,8 +34,6 @@ export function SafeModulesSettingsPage() {
       </Show>
       <SettingsContentBox>
         <Flex
-          px={6}
-          py={2}
           flexDirection="column"
           gap="1rem"
         >
@@ -87,8 +85,6 @@ export function SafeModulesSettingsPage() {
           </Box>
         </Flex>
         <Flex
-          px={6}
-          py={2}
           flexDirection="column"
           gap="1rem"
           mt="2rem"
@@ -97,7 +93,7 @@ export function SafeModulesSettingsPage() {
             ml={6}
             textStyle="body-large"
           >
-            {t('guardTitle')}
+            {t('guardsTitle')}
           </Text>
 
           <Box
