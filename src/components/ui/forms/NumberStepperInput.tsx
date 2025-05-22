@@ -9,6 +9,7 @@ import {
   NumberInputField,
 } from '@chakra-ui/react';
 import { Plus, Minus } from '@phosphor-icons/react';
+import { ReactNode } from 'react';
 import { SEXY_BOX_SHADOW_T_T } from '../../../constants/common';
 
 export function NumberStepperInput({
@@ -21,7 +22,7 @@ export function NumberStepperInput({
 }: {
   value?: string | number;
   onChange: (val: string) => void;
-  rightElement?: JSX.Element;
+  rightElement?: ReactNode;
   disabled?: boolean;
   isInvalid?: boolean;
   color?: string;
