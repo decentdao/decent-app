@@ -16,7 +16,7 @@ import { useTransaction } from '../../../hooks/utils/useTransaction';
 import { useDAOStore } from '../../../providers/App/AppProvider';
 import { FractalProposalState, MultisigProposal } from '../../../types';
 import { DecentTooltip } from '../../ui/DecentTooltip';
-import { SectionBottomContentBox } from '../../ui/containers/ContentBox';
+import { SectionContentBox } from '../../ui/containers/ContentBox';
 import { ModalType } from '../../ui/modals/ModalProvider';
 import { useDecentModal } from '../../ui/modals/useDecentModal';
 
@@ -342,7 +342,13 @@ export function ExecutionSection({ proposal }: { proposal: MultisigProposal }) {
     actionPending || !action || !isActiveNonce || rejectionProposalAction.actionPending;
 
   return (
-    <SectionBottomContentBox>
+    <SectionContentBox
+      containerBoxProps={{
+        borderBottomLeftRadius: '0.5rem',
+        borderBottomRightRadius: '0.5rem',
+        my: 0,
+      }}
+    >
       <Text
         textStyle="labels-large"
         color="neutral-7"
@@ -381,6 +387,6 @@ export function ExecutionSection({ proposal }: { proposal: MultisigProposal }) {
           )}
         </>
       </DecentTooltip>
-    </SectionBottomContentBox>
+    </SectionContentBox>
   );
 }

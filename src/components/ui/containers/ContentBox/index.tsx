@@ -31,38 +31,23 @@ function ContentBox({ title, children, containerBoxProps, onClick }: ContentBoxP
   );
 }
 
-export function SectionTopContentBox({ children }: { children: ReactNode }) {
+export function SectionContentBox({
+  children,
+  containerBoxProps,
+}: {
+  children: ReactNode;
+  containerBoxProps?: BoxProps;
+}) {
   return (
     <ContentBox
       containerBoxProps={{
-        bg: 'neutral-2',
-        border: '1px solid',
-        borderColor: 'neutral-3',
-        rounded: 'unset',
-        borderTopLeftRadius: '0.5rem',
-        borderTopRightRadius: '0.5rem',
-        py: 2,
-        px: 4,
-        my: 0,
-        mt: 4,
-      }}
-    >
-      {children}
-    </ContentBox>
-  );
-}
-export function SectionBottomContentBox({ children }: { children: ReactNode }) {
-  return (
-    <ContentBox
-      containerBoxProps={{
+        ...containerBoxProps,
         bg: 'neutral-2',
         border: '1px solid',
         borderColor: 'neutral-3',
         rounded: 'unset',
         py: 2,
         px: 4,
-        borderBottomLeftRadius: '0.5rem',
-        borderBottomRightRadius: '0.5rem',
         my: 0,
       }}
     >

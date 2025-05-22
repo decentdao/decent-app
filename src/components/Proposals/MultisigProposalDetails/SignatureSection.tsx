@@ -18,7 +18,7 @@ import { useDAOStore } from '../../../providers/App/AppProvider';
 import { useSafeAPI } from '../../../providers/App/hooks/useSafeAPI';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
 import { FractalProposalState, MultisigProposal } from '../../../types';
-import { SectionTopContentBox } from '../../ui/containers/ContentBox';
+import { SectionContentBox } from '../../ui/containers/ContentBox';
 import { OptionMenu } from '../../ui/menus/OptionMenu';
 import { ModalType } from '../../ui/modals/ModalProvider';
 import { useDecentModal } from '../../ui/modals/useDecentModal';
@@ -268,7 +268,13 @@ export function SignatureSection({ proposal }: { proposal: MultisigProposal }) {
   }
 
   return (
-    <SectionTopContentBox>
+    <SectionContentBox
+      containerBoxProps={{
+        borderTopLeftRadius: '0.5rem',
+        borderTopRightRadius: '0.5rem',
+        mt: 4,
+      }}
+    >
       <Text
         textStyle="labels-large"
         color="neutral-7"
@@ -367,6 +373,6 @@ export function SignatureSection({ proposal }: { proposal: MultisigProposal }) {
           </Text>
         )}
       </Box>
-    </SectionTopContentBox>
+    </SectionContentBox>
   );
 }
