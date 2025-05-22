@@ -10,13 +10,14 @@ import { DAO_ROUTES } from '../../constants/routes';
 import { createDecentSubgraphClient } from '../../graphql';
 import { DAOQuery, DAOQueryResponse } from '../../graphql/DAOQueries';
 import { useDecentModules } from '../../hooks/DAO/loaders/useDecentModules';
+import { useCurrentDAOKey } from '../../hooks/DAO/useCurrentDAOKey';
 import useNetworkPublicClient from '../../hooks/useNetworkPublicClient';
 import { CacheKeys } from '../../hooks/utils/cache/cacheDefaults';
 import { getValue, setValue } from '../../hooks/utils/cache/useLocalStorage';
 import { useAddressContractType } from '../../hooks/utils/useAddressContractType';
+import { useDAOStore } from '../../providers/App/AppProvider';
 import { useSafeAPI } from '../../providers/App/hooks/useSafeAPI';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
-import { useDaoInfoStore } from '../../store/daoInfo/useDaoInfoStore';
 import { DaoHierarchyInfo, DaoHierarchyStrategyType, DecentModule } from '../../types';
 import { getAzoriusModuleFromModules } from '../../utils';
 import { DAONodeInfoCard, NODE_HEIGHT_REM } from '../ui/cards/DAONodeInfoCard';
@@ -39,7 +40,10 @@ export function DaoHierarchyNode({
   safeAddress: Address | null;
   depth: number;
 }) {
-  const { safe: currentSafe } = useDaoInfoStore();
+  const { daoKey } = useCurrentDAOKey();
+  const {
+    node: { safe: currentSafe },
+  } = useDAOStore({ daoKey });
   const { t } = useTranslation('common');
   const safeApi = useSafeAPI();
   const [hierarchyNode, setHierarchyNode] = useState<DaoHierarchyInfo>();

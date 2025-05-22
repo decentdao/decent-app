@@ -8,11 +8,12 @@ import { Address, getAddress, Hex } from 'viem';
 import { useAccount } from 'wagmi';
 import { DETAILS_BOX_SHADOW } from '../../constants/common';
 import { DAO_ROUTES } from '../../constants/routes';
+import { useCurrentDAOKey } from '../../hooks/DAO/useCurrentDAOKey';
 import useNetworkPublicClient from '../../hooks/useNetworkPublicClient';
 import { useCanUserCreateProposal } from '../../hooks/utils/useCanUserSubmitProposal';
+import { useDAOStore } from '../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
 import { useProposalActionsStore } from '../../store/actions/useProposalActionsStore';
-import { useDaoInfoStore } from '../../store/daoInfo/useDaoInfoStore';
 import { useRolesStore } from '../../store/roles/useRolesStore';
 import { BigIntValuePair, ProposalActionType } from '../../types';
 import { DEFAULT_DATE_FORMAT, formatCoin } from '../../utils';
@@ -349,7 +350,10 @@ export function RolePaymentDetails({
   roleHatId,
   roleTerms,
 }: RolePaymentDetailsProps) {
-  const { safe } = useDaoInfoStore();
+  const { daoKey } = useCurrentDAOKey();
+  const {
+    node: { safe },
+  } = useDAOStore({ daoKey });
   const { address: connectedAccount } = useAccount();
   const { addressPrefix } = useNetworkConfigStore();
   const { refreshWithdrawableAmount } = useRolesStore();

@@ -14,10 +14,10 @@ export const DEFAULT_PROPOSAL_TRANSACTION: CreateProposalTransaction = {
 };
 
 export const DEFAULT_PROPOSAL = {
-  nonce: undefined,
   proposalMetadata: {
     title: '',
     description: '',
+    nonce: undefined as number | undefined,
   },
   transactions: [DEFAULT_PROPOSAL_TRANSACTION],
 };
@@ -52,10 +52,10 @@ export const DEFAULT_STREAM: Stream = {
 };
 
 export const DEFAULT_SABLIER_PROPOSAL = {
-  nonce: undefined,
   proposalMetadata: {
     title: '',
     description: '',
+    nonce: undefined as number | undefined,
   },
   streams: [DEFAULT_STREAM],
   transactions: [],

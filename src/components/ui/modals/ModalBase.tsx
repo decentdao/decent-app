@@ -9,7 +9,14 @@ import {
 import Divider from '../utils/Divider';
 
 export type ModalBaseSize = 'sm' | 'md' | 'lg' | 'xl' | '2xl' | 'max';
+
+export type ModalContentStyle = {
+  backgroundColor?: string;
+  padding?: string;
+};
+
 interface ModuleBaseProps {
+  // @todo: remove (https://linear.app/decent-labs/issue/ENG-793/remove-issearchinputmodal)
   isSearchInputModal?: boolean;
   title?: string;
   warn?: boolean;
@@ -19,6 +26,7 @@ interface ModuleBaseProps {
   children: ReactNode;
   zIndex?: number;
   closeOnOverlayClick?: boolean;
+  contentStyle?: ModalContentStyle;
 }
 /**
  * The base wrapper component for a modal.  This displays the Chakra components necessary to open a modal,
@@ -34,6 +42,7 @@ export function ModalBase({
   warn,
   size = 'lg',
   closeOnOverlayClick = true,
+  contentStyle,
 }: ModuleBaseProps) {
   return (
     <Modal
@@ -61,10 +70,11 @@ export function ModalBase({
         </ModalContent>
       ) : (
         <ModalContent
-          bg="neutral-2"
-          borderRadius="0.5rem"
+          bg={contentStyle?.backgroundColor ?? 'neutral-2'}
+          borderRadius="0.75rem"
           boxShadow="0px 0px 0px 1px #100414, 0px 0px 0px 1px rgba(248, 244, 252, 0.04) inset, 0px 1px 0px 0px rgba(248, 244, 252, 0.04) inset"
-          padding="1.5rem"
+          padding={contentStyle?.padding ?? '1.5rem'}
+          backdropFilter="blur(25px)"
           containerProps={
             zIndex
               ? {

@@ -3,6 +3,7 @@ import { FormikProps } from 'formik';
 import { createContext, ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Address } from 'viem';
+import { NEUTRAL_2_50_TRANSPARENT } from '../../../constants/common';
 import { CreateProposalTransaction, ProposalTemplate } from '../../../types';
 import { SendAssetsData } from '../../../utils/dao/prepareSendAssetsActionData';
 import { ProposalTransactionsFormModal } from '../../ProposalBuilder/ProposalTransactionsForm';
@@ -21,12 +22,13 @@ import { GaslessVoteLoadingModal } from './GaslessVoting/GaslessVoteLoadingModal
 import { GaslessVoteSuccessModal } from './GaslessVoting/GaslessVoteSuccessModal';
 import { RefillGasData, RefillGasTankModal } from './GaslessVoting/RefillGasTankModal';
 import { WithdrawGasData, WithdrawGasTankModal } from './GaslessVoting/WithdrawGasTankModal';
-import { ModalBase, ModalBaseSize } from './ModalBase';
+import { ModalBase, ModalBaseSize, ModalContentStyle } from './ModalBase';
 import PaymentCancelConfirmModal from './PaymentCancelConfirmModal';
 import { PaymentWithdrawModal } from './PaymentWithdrawModal';
 import ProposalTemplateModal from './ProposalTemplateModal';
 import { SafeProposalDappDetailModal } from './SafeDapp/SafeProposalDappDetailModal';
 import { SafeProposalDappsModal } from './SafeDapp/SafeProposalDappsModal';
+import { SafeSettingsModal } from './SafeSettingsModal';
 import { SendAssetsModal } from './SendAssetsModal';
 import StakeModal from './Stake';
 import { UnsavedChangesWarningContent } from './UnsavedChangesWarningContent';
@@ -56,6 +58,7 @@ export enum ModalType {
   WITHDRAW_GAS,
   DAPPS_BROWSER,
   DAPP_BROWSER,
+  SAFE_SETTINGS,
 }
 
 export type CurrentModal = {
@@ -128,6 +131,7 @@ export type ModalPropsTypes = {
   [ModalType.DAPP_BROWSER]: {
     appUrl: string;
   };
+  [ModalType.SAFE_SETTINGS]: {};
 };
 
 export interface IModalContext {
@@ -148,6 +152,7 @@ interface ModalUI {
   onSetClosed: () => void;
   size: ModalBaseSize;
   closeOnOverlayClick: boolean;
+  contentStyle?: ModalContentStyle;
 }
 
 /**
@@ -180,237 +185,255 @@ export function ModalProvider({ children }: { children: ReactNode }) {
     }
   }, [current.type, onOpen, onClose, closeModal]);
 
-  const { title, warn, content, onSetClosed, isSearchInputModal, size, closeOnOverlayClick } =
-    useMemo<ModalUI>(() => {
-      let modalSize: ModalBaseSize = 'lg';
-      let modalTitle: string | undefined;
-      let hasWarning = false;
-      let isSearchInput = false;
-      let modalContent: ReactNode | null = null;
-      let closeModalOnOverlayClick = true;
+  const {
+    title,
+    warn,
+    content,
+    onSetClosed,
+    isSearchInputModal,
+    size,
+    closeOnOverlayClick,
+    contentStyle,
+  } = useMemo<ModalUI>(() => {
+    let modalSize: ModalBaseSize = 'lg';
+    let modalTitle: string | undefined;
+    let hasWarning = false;
+    let isSearchInput = false;
+    let modalContent: ReactNode | null = null;
+    let closeModalOnOverlayClick = true;
+    let modalContentStyle: ModalContentStyle | undefined;
 
-      switch (current.type) {
-        case ModalType.DELEGATE:
-          modalTitle = t('delegateTitle');
-          modalContent = <DelegateModal close={closeModal} />;
-          break;
-        case ModalType.STAKE:
-          modalTitle = t('stakeTitle');
-          modalContent = <StakeModal close={closeModal} />;
-          break;
-        case ModalType.CONFIRM_URL:
-          modalTitle = t('confirmUrlTitle');
-          hasWarning = true;
-          modalContent = (
-            <ConfirmUrlModal
-              url={current.props.url}
-              close={closeModal}
-            />
-          );
-          break;
-        case ModalType.REMOVE_SIGNER:
-          modalTitle = t('removeSignerTitle');
-          modalContent = (
-            <RemoveSignerModal
-              selectedSigner={current.props.selectedSigner}
-              signers={current.props.signers}
-              currentThreshold={current.props.currentThreshold}
-              close={closeModal}
-            />
-          );
-          break;
-        case ModalType.ADD_SIGNER:
-          modalTitle = t('addSignerTitle');
-          modalContent = (
-            <AddSignerModal
-              signers={current.props.signers}
-              currentThreshold={current.props.currentThreshold}
-              close={closeModal}
-            />
-          );
-          break;
-        case ModalType.CREATE_PROPOSAL_FROM_TEMPLATE:
-          modalTitle = current.props.proposalTemplate.title;
-          modalContent = (
-            <ProposalTemplateModal
-              proposalTemplate={current.props.proposalTemplate}
-              onClose={closeModal}
-            />
-          );
-          break;
-        case ModalType.COPY_PROPOSAL_TEMPLATE:
-          modalTitle = t('forkProposalTemplate');
-          modalContent = (
-            <ForkProposalTemplateModal
-              proposalTemplate={current.props.proposalTemplate}
-              templateIndex={current.props.templateIndex}
-              onClose={closeModal}
-            />
-          );
-          break;
-        case ModalType.CONFIRM_MODIFY_GOVERNANCE:
-          hasWarning = true;
-          modalTitle = t('confirmModifyGovernanceTitle');
-          modalContent = <ConfirmModifyGovernanceModal close={closeModal} />;
-          break;
-        case ModalType.WARN_UNSAVED_CHANGES:
-          closeModalOnOverlayClick = false;
-          modalContent = (
-            <UnsavedChangesWarningContent
-              onDiscard={() => {
-                current.props.discardChanges();
+    switch (current.type) {
+      case ModalType.DELEGATE:
+        modalTitle = t('delegateTitle');
+        modalContent = <DelegateModal close={closeModal} />;
+        break;
+      case ModalType.STAKE:
+        modalTitle = t('stakeTitle');
+        modalContent = <StakeModal close={closeModal} />;
+        break;
+      case ModalType.CONFIRM_URL:
+        modalTitle = t('confirmUrlTitle');
+        hasWarning = true;
+        modalContent = (
+          <ConfirmUrlModal
+            url={current.props.url}
+            close={closeModal}
+          />
+        );
+        break;
+      case ModalType.REMOVE_SIGNER:
+        modalTitle = t('removeSignerTitle');
+        modalContent = (
+          <RemoveSignerModal
+            selectedSigner={current.props.selectedSigner}
+            signers={current.props.signers}
+            currentThreshold={current.props.currentThreshold}
+            close={closeModal}
+          />
+        );
+        break;
+      case ModalType.ADD_SIGNER:
+        modalTitle = t('addSignerTitle');
+        modalContent = (
+          <AddSignerModal
+            signers={current.props.signers}
+            currentThreshold={current.props.currentThreshold}
+            close={closeModal}
+          />
+        );
+        break;
+      case ModalType.CREATE_PROPOSAL_FROM_TEMPLATE:
+        modalTitle = current.props.proposalTemplate.title;
+        modalContent = (
+          <ProposalTemplateModal
+            proposalTemplate={current.props.proposalTemplate}
+            onClose={closeModal}
+          />
+        );
+        break;
+      case ModalType.COPY_PROPOSAL_TEMPLATE:
+        modalTitle = t('forkProposalTemplate');
+        modalContent = (
+          <ForkProposalTemplateModal
+            proposalTemplate={current.props.proposalTemplate}
+            templateIndex={current.props.templateIndex}
+            onClose={closeModal}
+          />
+        );
+        break;
+      case ModalType.CONFIRM_MODIFY_GOVERNANCE:
+        hasWarning = true;
+        modalContent = <ConfirmModifyGovernanceModal close={closeModal} />;
+        break;
+      case ModalType.WARN_UNSAVED_CHANGES:
+        closeModalOnOverlayClick = false;
+        modalContent = (
+          <UnsavedChangesWarningContent
+            onDiscard={() => {
+              current.props.discardChanges();
+              closeModal();
+            }}
+            onKeepEditing={() => {
+              current.props.keepEditing();
+              setTimeout(() => {
                 closeModal();
-              }}
-              onKeepEditing={() => {
-                current.props.keepEditing();
-                setTimeout(() => {
-                  closeModal();
-                }, 0); // This is a workaround to avoid the modal being closed immediately
-              }}
-            />
-          );
-          break;
-        case ModalType.WITHDRAW_PAYMENT: {
-          modalContent = (
-            <PaymentWithdrawModal
-              paymentAssetLogo={current.props.paymentAssetLogo}
-              paymentAssetSymbol={current.props.paymentAssetSymbol}
-              paymentAssetDecimals={current.props.paymentAssetDecimals}
-              paymentStreamId={current.props.paymentStreamId}
-              paymentContractAddress={current.props.paymentContractAddress}
-              withdrawInformation={current.props.withdrawInformation}
-              onSuccess={current.props.onSuccess}
-              onClose={closeModal}
-            />
-          );
-          break;
-        }
-        case ModalType.CONFIRM_CANCEL_PAYMENT: {
-          modalContent = (
-            <PaymentCancelConfirmModal
-              onClose={closeModal}
-              onSubmit={current.props.onSubmit}
-            />
-          );
-          modalSize = 'sm';
-          break;
-        }
-        case ModalType.ADD_PERMISSION:
-          modalContent = <AddStrategyPermissionModal closeModal={closeModal} />;
-          modalSize = 'xl';
-          break;
-        case ModalType.CONFIRM_DELETE_STRATEGY:
-          modalContent = <ConfirmDeleteStrategyModal onClose={closeModal} />;
-          break;
-        case ModalType.SEND_ASSETS:
-          modalContent = (
-            <SendAssetsModal
-              submitButtonText={current.props.submitButtonText}
-              close={closeModal}
-              sendAssetsData={(data: SendAssetsData) => {
-                current.props.onSubmit(data);
-                closeModal();
-              }}
-            />
-          );
-          break;
-        case ModalType.REFILL_GAS:
-          modalContent = (
-            <RefillGasTankModal
-              close={closeModal}
-              refillGasData={(data: RefillGasData) => {
-                current.props.onSubmit(data);
-                closeModal();
-              }}
-            />
-          );
-          break;
-        case ModalType.WITHDRAW_GAS:
-          modalContent = (
-            <WithdrawGasTankModal
-              close={closeModal}
-              withdrawGasData={(data: WithdrawGasData) => {
-                current.props.onWithdraw(data);
-                closeModal();
-              }}
-            />
-          );
-          break;
-        case ModalType.GASLESS_VOTE_SUCCESS:
-          modalContent = <GaslessVoteSuccessModal close={closeModal} />;
-          modalSize = 'md';
-          break;
-        case ModalType.GASLESS_VOTE_FAILED:
-          modalContent = (
-            <GaslessVoteFailedModal
-              close={closeModal}
-              onRetry={current.props.onRetry}
-              onFallback={current.props.onFallback}
-            />
-          );
-          modalSize = 'md';
-          break;
-        case ModalType.GASLESS_VOTE_LOADING:
-          modalContent = <GaslessVoteLoadingModal />;
-          modalSize = 'md';
-          closeModalOnOverlayClick = false;
-          break;
-        case ModalType.AIRDROP:
-          modalContent = (
-            <AirdropModal
-              submitButtonText={current.props.submitButtonText}
-              close={closeModal}
-              airdropData={(data: AirdropData) => {
-                current.props.onSubmit(data);
-                closeModal();
-              }}
-            />
-          );
-          break;
-        case ModalType.TRANSACTION_BUILDER:
-          modalTitle = t('transactionBuilderTitle');
-          modalContent = (
-            <ProposalTransactionsFormModal
-              pendingTransaction={false}
-              values={[]}
-              errors={undefined}
-              setFieldValue={() => {}}
-              isProposalMode={true}
-              onSubmit={current.props.onSubmit}
-              onClose={closeModal}
-            />
-          );
-          modalSize = '2xl';
-          break;
-        case ModalType.DAPPS_BROWSER:
-          modalContent = <SafeProposalDappsModal onClose={closeModal} />;
-          modalSize = 'max';
-          break;
-        case ModalType.DAPP_BROWSER:
-          modalContent = (
-            <SafeProposalDappDetailModal
-              appUrl={current.props.appUrl}
-              onClose={closeModal}
-            />
-          );
-          modalSize = 'max';
-          break;
-        case ModalType.NONE:
-        default:
-          modalTitle = '';
-          modalContent = null;
+              }, 0); // This is a workaround to avoid the modal being closed immediately
+            }}
+          />
+        );
+        break;
+      case ModalType.WITHDRAW_PAYMENT: {
+        modalContent = (
+          <PaymentWithdrawModal
+            paymentAssetLogo={current.props.paymentAssetLogo}
+            paymentAssetSymbol={current.props.paymentAssetSymbol}
+            paymentAssetDecimals={current.props.paymentAssetDecimals}
+            paymentStreamId={current.props.paymentStreamId}
+            paymentContractAddress={current.props.paymentContractAddress}
+            withdrawInformation={current.props.withdrawInformation}
+            onSuccess={current.props.onSuccess}
+            onClose={closeModal}
+          />
+        );
+        break;
       }
+      case ModalType.CONFIRM_CANCEL_PAYMENT: {
+        modalContent = (
+          <PaymentCancelConfirmModal
+            onClose={closeModal}
+            onSubmit={current.props.onSubmit}
+          />
+        );
+        modalSize = 'sm';
+        break;
+      }
+      case ModalType.ADD_PERMISSION:
+        modalContent = <AddStrategyPermissionModal closeModal={closeModal} />;
+        modalSize = 'xl';
+        break;
+      case ModalType.CONFIRM_DELETE_STRATEGY:
+        modalContent = <ConfirmDeleteStrategyModal onClose={closeModal} />;
+        break;
+      case ModalType.SEND_ASSETS:
+        modalContent = (
+          <SendAssetsModal
+            submitButtonText={current.props.submitButtonText}
+            close={closeModal}
+            sendAssetsData={(data: SendAssetsData) => {
+              current.props.onSubmit(data);
+              closeModal();
+            }}
+          />
+        );
+        break;
+      case ModalType.REFILL_GAS:
+        modalContent = (
+          <RefillGasTankModal
+            close={closeModal}
+            refillGasData={(data: RefillGasData) => {
+              current.props.onSubmit(data);
+              closeModal();
+            }}
+          />
+        );
+        break;
+      case ModalType.WITHDRAW_GAS:
+        modalContent = (
+          <WithdrawGasTankModal
+            close={closeModal}
+            withdrawGasData={(data: WithdrawGasData) => {
+              current.props.onWithdraw(data);
+              closeModal();
+            }}
+          />
+        );
+        break;
+      case ModalType.GASLESS_VOTE_SUCCESS:
+        modalContent = <GaslessVoteSuccessModal close={closeModal} />;
+        modalSize = 'md';
+        break;
+      case ModalType.GASLESS_VOTE_FAILED:
+        modalContent = (
+          <GaslessVoteFailedModal
+            close={closeModal}
+            onRetry={current.props.onRetry}
+            onFallback={current.props.onFallback}
+          />
+        );
+        modalSize = 'md';
+        break;
+      case ModalType.GASLESS_VOTE_LOADING:
+        modalContent = <GaslessVoteLoadingModal />;
+        modalSize = 'md';
+        closeModalOnOverlayClick = false;
+        break;
+      case ModalType.AIRDROP:
+        modalContent = (
+          <AirdropModal
+            submitButtonText={current.props.submitButtonText}
+            close={closeModal}
+            airdropData={(data: AirdropData) => {
+              current.props.onSubmit(data);
+              closeModal();
+            }}
+          />
+        );
+        break;
+      case ModalType.TRANSACTION_BUILDER:
+        modalTitle = t('transactionBuilderTitle');
+        modalContent = (
+          <ProposalTransactionsFormModal
+            pendingTransaction={false}
+            values={[]}
+            errors={undefined}
+            setFieldValue={() => {}}
+            isProposalMode={true}
+            onSubmit={current.props.onSubmit}
+            onClose={closeModal}
+          />
+        );
+        modalSize = '2xl';
+        break;
+      case ModalType.DAPPS_BROWSER:
+        modalContent = <SafeProposalDappsModal onClose={closeModal} />;
+        modalSize = 'max';
+        break;
+      case ModalType.DAPP_BROWSER:
+        modalContent = (
+          <SafeProposalDappDetailModal
+            appUrl={current.props.appUrl}
+            onClose={closeModal}
+          />
+        );
+        modalSize = 'max';
+        break;
+      case ModalType.SAFE_SETTINGS:
+        modalContent = <SafeSettingsModal closeModal={closeModal} />;
+        modalSize = 'max';
+        modalContentStyle = {
+          backgroundColor: NEUTRAL_2_50_TRANSPARENT,
+          padding: '0',
+        };
+        break;
+      case ModalType.NONE:
+      default:
+        modalTitle = '';
+        modalContent = null;
+        onClose();
+    }
 
-      return {
-        isSearchInputModal: isSearchInput,
-        title: modalTitle,
-        warn: hasWarning,
-        content: modalContent,
-        onSetClosed: closeModal,
-        size: modalSize,
-        closeOnOverlayClick: closeModalOnOverlayClick,
-      };
-    }, [closeModal, current.props, current.type, t]);
+    return {
+      isSearchInputModal: isSearchInput,
+      title: modalTitle,
+      warn: hasWarning,
+      content: modalContent,
+      onSetClosed: closeModal,
+      size: modalSize,
+      closeOnOverlayClick: closeModalOnOverlayClick,
+      contentStyle: modalContentStyle,
+    };
+  }, [closeModal, current.props, current.type, onClose, t]);
 
   let display = content ? (
     <ModalBase
@@ -421,6 +444,7 @@ export function ModalProvider({ children }: { children: ReactNode }) {
       onClose={onSetClosed}
       isSearchInputModal={isSearchInputModal}
       size={size}
+      contentStyle={contentStyle}
     >
       {content}
     </ModalBase>
@@ -432,6 +456,7 @@ export function ModalProvider({ children }: { children: ReactNode }) {
     current.type === ModalType.ADD_PERMISSION ||
     current.type === ModalType.CONFIRM_DELETE_STRATEGY ||
     current.type === ModalType.GASLESS_VOTE_LOADING ||
+    current.type === ModalType.GASLESS_VOTE_FAILED ||
     current.type === ModalType.GASLESS_VOTE_SUCCESS
   ) {
     display = (

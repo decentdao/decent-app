@@ -35,19 +35,9 @@ export function useCurrentDAOKey() {
     };
   }
 
-  if (queryAddressPrefix !== addressPrefix) {
-    return {
-      invalidQuery: false,
-      wrongNetwork: true,
-      addressPrefix: queryAddressPrefix,
-      safeAddress: undefined,
-      daoKey: undefined,
-    };
-  }
-
   return {
     invalidQuery: false,
-    wrongNetwork: false,
+    wrongNetwork: normalizedQueryAddressPrefix !== addressPrefix,
     addressPrefix: normalizedQueryAddressPrefix,
     safeAddress: normalizedDAOAddress,
     daoKey: daoKey,

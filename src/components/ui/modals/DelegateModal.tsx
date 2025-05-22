@@ -13,7 +13,7 @@ import { useNetworkWalletClient } from '../../../hooks/useNetworkWalletClient';
 
 import { useGetAccountName } from '../../../hooks/utils/useGetAccountName';
 import { useTransaction } from '../../../hooks/utils/useTransaction';
-import { useStore } from '../../../providers/App/AppProvider';
+import { useDAOStore } from '../../../providers/App/AppProvider';
 import { AzoriusGovernance, DecentGovernance } from '../../../types';
 import { formatCoin } from '../../../utils/numberFormats';
 import { validateENSName } from '../../../utils/url';
@@ -28,7 +28,7 @@ export function DelegateModal({ close }: { close: Function }) {
   const {
     governance,
     governanceContracts: { votesTokenAddress, lockReleaseAddress },
-  } = useStore({ daoKey });
+  } = useDAOStore({ daoKey });
   const user = useAccount();
 
   const azoriusGovernance = governance as AzoriusGovernance;

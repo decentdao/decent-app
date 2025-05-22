@@ -46,7 +46,7 @@
   "wrapTokenButton": "Enveloppe",
   "updateSignersTooltip": "Le nombre de signataires requis pour l'adoption des propositions futures",
   "confirmModifyGovernanceTitle": "Attention, il s'agit d'une affaire importante !",
-  "confirmModifyGovernanceDescription": "La modification de la gouvernance de votre coffre-fort aura des conséquences importantes. Veuillez vous en assurer avant de procéder.",
+  "confirmModifyGovernanceDesc": "La conversion de la gouvernance en jetons modifiera de façon permanente les opérations de votre DAO. Cette action ne peut pas être annulée. Etes-vous sûr de vouloir continuer ?",
   "stakeTitle": "Enjeu",
   "removeSignerWarning": "Le signataire sera retiré de l'organisation.",
   "add": "Ajouter",

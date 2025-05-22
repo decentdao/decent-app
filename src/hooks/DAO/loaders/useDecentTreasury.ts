@@ -2,12 +2,12 @@ import { TokenInfoResponse } from '@safe-global/api-kit';
 import { useCallback, useEffect, useRef } from 'react';
 import { toast } from 'sonner';
 import { Address, getAddress, zeroAddress } from 'viem';
-import { useStore } from '../../../providers/App/AppProvider';
+import useFeatureFlag from '../../../helpers/environmentFeatureFlags';
+import { useDAOStore } from '../../../providers/App/AppProvider';
 import useBalancesAPI from '../../../providers/App/hooks/useBalancesAPI';
 import { useSafeAPI } from '../../../providers/App/hooks/useSafeAPI';
 import { TreasuryAction } from '../../../providers/App/treasury/action';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
-import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
 import {
   TokenEventType,
   TransferDisplayData,
@@ -17,6 +17,7 @@ import {
 import { formatCoin } from '../../../utils';
 import { CacheExpiry, CacheKeys } from '../../utils/cache/cacheDefaults';
 import { setValue } from '../../utils/cache/useLocalStorage';
+import { useFilterSpamTokens } from '../../utils/useFilterSpamTokens';
 import { useCurrentDAOKey } from '../useCurrentDAOKey';
 
 function getTransferEventType(transferFrom: string, safeAddress: Address | undefined) {
@@ -33,12 +34,19 @@ export const useDecentTreasury = () => {
   // tracks the current valid DAO address / chain; helps prevent unnecessary calls
   const loadKey = useRef<string | null>();
   const { daoKey } = useCurrentDAOKey();
-  const { action } = useStore({ daoKey });
-  const { safe } = useDaoInfoStore();
+  const {
+    action,
+    node: { safe },
+  } = useDAOStore({ daoKey });
+  const filterSpamTokens = useFilterSpamTokens({
+    includeNativeToken: true,
+    includeZeroBalanceToken: true,
+  });
   const safeAPI = useSafeAPI();
   const { getTokenBalances, getNFTBalances, getDeFiBalances } = useBalancesAPI();
 
   const { chain, nativeTokenIcon } = useNetworkConfigStore();
+  const storeFeatureEnabled = useFeatureFlag('flag_store_v2');
   const safeAddress = safe?.address;
 
   const formatTransfer = useCallback(
@@ -71,7 +79,7 @@ export const useDecentTreasury = () => {
   );
 
   const loadTreasury = useCallback(async () => {
-    if (!safeAddress || !safeAPI) {
+    if (!safeAddress || !safeAPI || storeFeatureEnabled) {
       return;
     }
 
@@ -98,7 +106,7 @@ export const useDecentTreasury = () => {
     if (defiBalancesError) {
       toast.warning(defiBalancesError, { duration: 2000 });
     }
-    const assetsFungible = tokenBalances || [];
+    const assetsFungible = filterSpamTokens(tokenBalances || []);
     const assetsNonFungible = nftBalances || [];
     const assetsDeFi = defiBalances || [];
 
@@ -207,15 +215,21 @@ export const useDecentTreasury = () => {
     getTokenBalances,
     getNFTBalances,
     getDeFiBalances,
+    filterSpamTokens,
     action,
     chain.nativeCurrency.name,
     chain.nativeCurrency.symbol,
     chain.nativeCurrency.decimals,
     nativeTokenIcon,
     formatTransfer,
+    storeFeatureEnabled,
   ]);
 
   useEffect(() => {
+    if (storeFeatureEnabled) {
+      return;
+    }
+
     if (!safeAddress) {
       loadKey.current = null;
       return;
@@ -226,7 +240,7 @@ export const useDecentTreasury = () => {
       loadKey.current = newLoadKey;
       loadTreasury();
     }
-  }, [action, chain.id, safeAddress, loadTreasury]);
+  }, [action, chain.id, safeAddress, loadTreasury, storeFeatureEnabled]);
 
   return;
 };

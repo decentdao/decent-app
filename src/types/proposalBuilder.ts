@@ -21,12 +21,12 @@ export type CreateProposalMetadata = {
   title: string;
   description: string;
   documentationUrl?: string;
+  nonce?: number;
 };
 
 export type CreateProposalForm = {
   transactions: CreateProposalTransaction[];
   proposalMetadata: CreateProposalMetadata;
-  nonce?: number;
 };
 
 export type Tranche = {

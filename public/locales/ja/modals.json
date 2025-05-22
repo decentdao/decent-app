@@ -46,7 +46,7 @@
   "wrapTokenButton": "ラップ",
   "updateSignersTooltip": "今後の提案の可決に必要な署名者数",
   "confirmModifyGovernanceTitle": "注意してほしい！",
-  "confirmModifyGovernanceDescription": "セーフのガバナンスを変更することは、重要な意味を持ちます。事前にご確認ください。",
+  "confirmModifyGovernanceDesc": "トークン統治に変換すると、DAOの運用が恒久的に変更されます。この操作は元に戻せません。本当に続けますか？",
   "stakeTitle": "杭",
   "removeSignerWarning": "署名者は組織から排除される。",
   "add": "追加",

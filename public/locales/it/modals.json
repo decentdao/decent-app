@@ -46,7 +46,7 @@
   "wrapTokenButton": "Avvolgimento",
   "updateSignersTooltip": "Il numero di firmatari necessario per approvare le proposte future",
   "confirmModifyGovernanceTitle": "Attenzione, questo è un grosso problema!",
-  "confirmModifyGovernanceDescription": "La modifica della governance del vostro Safe avrà implicazioni significative. Prima di procedere, accertarsene.",
+  "confirmModifyGovernanceDesc": "La conversione alla governance dei token modificherà in modo permanente le operazioni del DAO. Questa azione non può essere annullata. Siete sicuri di voler continuare?",
   "stakeTitle": "Palo",
   "removeSignerWarning": "Il firmatario sarà allontanato dall'organizzazione.",
   "add": "Aggiungi",

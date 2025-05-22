@@ -2,9 +2,10 @@ import { Box, Flex, Icon, IconButton, Text } from '@chakra-ui/react';
 import { useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import PencilWithLineIcon from '../../assets/theme/custom/icons/PencilWithLineIcon';
+import { useCurrentDAOKey } from '../../hooks/DAO/useCurrentDAOKey';
 import useAddress from '../../hooks/utils/useAddress';
 import { useCanUserCreateProposal } from '../../hooks/utils/useCanUserSubmitProposal';
-import { useDaoInfoStore } from '../../store/daoInfo/useDaoInfoStore';
+import { useDAOStore } from '../../providers/App/AppProvider';
 import {
   paymentSorterByActiveStatus,
   paymentSorterByStartDate,
@@ -25,7 +26,10 @@ export default function RolesDetailsDrawerMobile({
   isOpen = true,
   onEdit,
 }: RoleDetailsDrawerProps) {
-  const { safe } = useDaoInfoStore();
+  const { daoKey } = useCurrentDAOKey();
+  const {
+    node: { safe },
+  } = useDAOStore({ daoKey });
   const { t } = useTranslation('roles');
   const { hatsTree } = useRolesStore();
   const permissionsContainerRef = useRef<HTMLDivElement>(null);

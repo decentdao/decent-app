@@ -40,14 +40,6 @@ export function TxDetails({ proposal }: { proposal: MultisigProposal }) {
           value={createAccountSubstring(proposal.proposalId)}
         />
         <InfoRow
-          property={t('txDetailsSignersCurrent')}
-          value={proposal.confirmations?.length.toString() || '0'}
-        />
-        <InfoRow
-          property={t('txDetailsSignersRequired')}
-          value={proposal.signersThreshold?.toString()}
-        />
-        <InfoRow
           property={t('created')}
           value={format(proposal.eventDate, DEFAULT_DATE_TIME_FORMAT)}
           tooltip={formatInTimeZone(proposal.eventDate, 'GMT', DEFAULT_DATE_TIME_FORMAT)}
@@ -61,10 +53,6 @@ export function TxDetails({ proposal }: { proposal: MultisigProposal }) {
           property={t('transactionHash')}
           value={proposal.transactionHash ? undefined : '-'}
           txHash={proposal.transactionHash}
-        />
-        <InfoRow
-          property={t('nonce')}
-          value={proposal.nonce?.toString()}
         />
       </Box>
     </ContentBox>

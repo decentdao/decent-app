@@ -11,7 +11,7 @@ import {
   UserVotingWeightResponse,
 } from '../../../../graphql/SnapshotQueries';
 import { logError } from '../../../../helpers/errorLogging';
-import { useDaoInfoStore } from '../../../../store/daoInfo/useDaoInfoStore';
+import { useDAOStore } from '../../../../providers/App/AppProvider';
 import {
   DecentSnapshotVote,
   ExtendedSnapshotProposal,
@@ -20,13 +20,16 @@ import {
   SnapshotProposal,
   SnapshotWeightedVotingChoice,
 } from '../../../../types';
+import { useCurrentDAOKey } from '../../useCurrentDAOKey';
 
 export default function useSnapshotProposal(proposal: FractalProposal | null | undefined) {
   const [extendedSnapshotProposal, setExtendedSnapshotProposal] =
     useState<ExtendedSnapshotProposal | null>(null);
   const { address } = useAccount();
-
-  const { subgraphInfo } = useDaoInfoStore();
+  const { daoKey } = useCurrentDAOKey();
+  const {
+    node: { subgraphInfo },
+  } = useDAOStore({ daoKey });
   const snaphshotGraphQlClient = useMemo(() => createSnapshotSubgraphClient(), []);
 
   const snapshotProposal = useMemo(() => {

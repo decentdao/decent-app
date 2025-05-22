@@ -6,9 +6,10 @@ import { DAO_ROUTES } from '../../../constants/routes';
 import { logError } from '../../../helpers/errorLogging';
 import { usePrepareProposal } from '../../../hooks/DAO/proposal/usePrepareProposal';
 import useSubmitProposal from '../../../hooks/DAO/proposal/useSubmitProposal';
+import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import { useCanUserCreateProposal } from '../../../hooks/utils/useCanUserSubmitProposal';
+import { useDAOStore } from '../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
-import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
 import { BigIntValuePair } from '../../../types';
 import { ProposalTemplate } from '../../../types/proposalBuilder';
 import { CustomNonceInput } from '../forms/CustomNonceInput';
@@ -25,7 +26,10 @@ export default function ProposalTemplateModal({
   proposalTemplate: { title, description, transactions },
   onClose,
 }: IProposalTemplateModalProps) {
-  const { safe } = useDaoInfoStore();
+  const { daoKey } = useCurrentDAOKey();
+  const {
+    node: { safe },
+  } = useDAOStore({ daoKey });
   const { addressPrefix } = useNetworkConfigStore();
 
   const [filledProposalTransactions, setFilledProposalTransactions] = useState(transactions);

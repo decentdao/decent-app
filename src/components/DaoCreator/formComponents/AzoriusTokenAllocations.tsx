@@ -11,7 +11,7 @@ import { CaretDown, CaretRight, Plus } from '@phosphor-icons/react';
 import { FieldArray, FormikErrors } from 'formik';
 import { useTranslation } from 'react-i18next';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
-import { useStore } from '../../../providers/App/AppProvider';
+import { useDAOStore } from '../../../providers/App/AppProvider';
 import {
   AzoriusGovernance,
   BigIntValuePair,
@@ -29,7 +29,7 @@ export function AzoriusTokenAllocations(props: ICreationStepProps) {
   const { values, errors, setFieldValue, isSubDAO } = props;
   const { t } = useTranslation('daoCreate');
   const { daoKey } = useCurrentDAOKey();
-  const { governance } = useStore({ daoKey });
+  const { governance } = useDAOStore({ daoKey });
   const azoriusGovernance = governance as AzoriusGovernance;
   const canReceiveParentAllocations = isSubDAO && azoriusGovernance.votesToken?.address;
 

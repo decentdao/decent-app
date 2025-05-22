@@ -44,8 +44,10 @@ export function OptionsList({
               <MenuItem
                 as={showOptionSelected ? Box : Text}
                 onClick={clickListener}
+                isDisabled={option.isDisabled}
                 cursor="pointer"
                 _hover={{ bg: 'neutral-3', textDecoration: 'none' }}
+                _disabled={{ cursor: 'not-allowed', opacity: 0.5 }}
                 p="0.5rem"
                 borderRadius="0.5rem"
                 gap={2}

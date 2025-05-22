@@ -1,7 +1,7 @@
 import { abis } from '@fractal-framework/fractal-contracts';
 import { useCallback } from 'react';
 import { erc721Abi, getContract, zeroAddress } from 'viem';
-import { useStore } from '../../../../providers/App/AppProvider';
+import { useDAOStore } from '../../../../providers/App/AppProvider';
 import { FractalGovernanceAction } from '../../../../providers/App/governance/action';
 import { ERC721TokenData } from '../../../../types';
 import useNetworkPublicClient from '../../../useNetworkPublicClient';
@@ -15,7 +15,7 @@ export default function useERC721Tokens() {
       linearVotingErc721WithHatsWhitelistingAddress,
     },
     action,
-  } = useStore({ daoKey });
+  } = useDAOStore({ daoKey });
   const publicClient = useNetworkPublicClient();
   const loadERC721Tokens = useCallback(async () => {
     const linear721VotingAddress =

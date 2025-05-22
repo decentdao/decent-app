@@ -1,7 +1,7 @@
 import { abis } from '@fractal-framework/fractal-contracts';
 import { useCallback, useMemo } from 'react';
 import { getContract } from 'viem';
-import { useStore } from '../../../../providers/App/AppProvider';
+import { useDAOStore } from '../../../../providers/App/AppProvider';
 import { FractalGovernanceAction } from '../../../../providers/App/governance/action';
 import { VotingStrategyType } from '../../../../types';
 import { blocksToSeconds } from '../../../../utils/contract';
@@ -18,7 +18,7 @@ export const useERC721LinearStrategy = () => {
       moduleAzoriusAddress,
     },
     action,
-  } = useStore({ daoKey });
+  } = useDAOStore({ daoKey });
   const { getTimeDuration } = useTimeHelpers();
   const publicClient = useNetworkPublicClient();
 

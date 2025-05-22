@@ -46,7 +46,7 @@
   "wrapTokenButton": "包裝",
   "updateSignersTooltip": "未來提案通過所需的簽署人數",
   "confirmModifyGovernanceTitle": "注意，這可是件大事！",
-  "confirmModifyGovernanceDescription": "修改Safe的管理將會有重大影響。請在進行之前確認。",
+  "confirmModifyGovernanceDesc": "轉換為代幣治理將永久改變您的 DAO 作業。此操作無法撤銷。您確定要繼續嗎？",
   "stakeTitle": "利害關係人",
   "removeSignerWarning": "簽署人將從組織中除名。",
   "add": "新增",

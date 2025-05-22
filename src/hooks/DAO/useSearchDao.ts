@@ -49,9 +49,14 @@ export const useSearchDao = () => {
 
       // We're left with a list of chains and addresses
       // (all the same address) that have a Safe at that address.
+      if (realSafes.length === 0) {
+        setErrorMessage(t('errorFailedSearch'));
+        setIsSafeLookupLoading(false);
+        return;
+      }
       setSafeResolvedAddressesWithPrefix(realSafes);
     },
-    [getConfigByChainId],
+    [getConfigByChainId, t],
   );
 
   const resolveInput = useCallback(

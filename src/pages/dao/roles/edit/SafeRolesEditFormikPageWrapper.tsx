@@ -2,10 +2,11 @@ import * as amplitude from '@amplitude/analytics-browser';
 import { Formik } from 'formik';
 import { useEffect, useMemo } from 'react';
 import { Outlet } from 'react-router-dom';
+import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
 import { useRolesSchema } from '../../../../hooks/schemas/roles/useRolesSchema';
 import useCreateRoles from '../../../../hooks/utils/useCreateRoles';
 import { analyticsEvents } from '../../../../insights/analyticsEvents';
-import { useDaoInfoStore } from '../../../../store/daoInfo/useDaoInfoStore';
+import { useDAOStore } from '../../../../providers/App/AppProvider';
 import { useRolesStore } from '../../../../store/roles/useRolesStore';
 import { RoleFormValues } from '../../../../types/roles';
 
@@ -14,7 +15,10 @@ export default function SafeRolesEditFormikPageWrapper() {
     amplitude.track(analyticsEvents.RolesEditPageOpened);
   }, []);
 
-  const { safe } = useDaoInfoStore();
+  const { daoKey } = useCurrentDAOKey();
+  const {
+    node: { safe },
+  } = useDAOStore({ daoKey });
 
   const { rolesSchema } = useRolesSchema();
   const { hatsTree } = useRolesStore();

@@ -2,12 +2,15 @@ import { abis } from '@fractal-framework/fractal-contracts';
 import { hatIdToTreeId } from '@hatsprotocol/sdk-v1-core';
 import { useEffect } from 'react';
 import { Address, GetContractEventsReturnType, PublicClient, getContract } from 'viem';
+import useFeatureFlag from '../../helpers/environmentFeatureFlags';
 import { logError } from '../../helpers/errorLogging';
+import { useDAOStore } from '../../providers/App/AppProvider';
+import { FractalGovernanceAction } from '../../providers/App/governance/action';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
-import { useDaoInfoStore } from '../../store/daoInfo/useDaoInfoStore';
 import { useRolesStore } from '../../store/roles/useRolesStore';
 import { getPaymasterAddress } from '../../utils/gaslessVoting';
 import useNetworkPublicClient from '../useNetworkPublicClient';
+import { useCurrentDAOKey } from './useCurrentDAOKey';
 
 const getGaslessVotingDaoData = async (
   events: GetContractEventsReturnType<typeof abis.KeyValuePairs>,
@@ -145,7 +148,6 @@ const getHatIdsToStreamIds = (
 
 const useKeyValuePairs = () => {
   const publicClient = useNetworkPublicClient();
-  const node = useDaoInfoStore();
   const {
     contracts: {
       keyValuePairs,
@@ -155,12 +157,18 @@ const useKeyValuePairs = () => {
       accountAbstraction,
     },
   } = useNetworkConfigStore();
+  const { daoKey } = useCurrentDAOKey();
+  const {
+    node: { safe },
+    action,
+  } = useDAOStore({ daoKey });
   const { setHatKeyValuePairData, resetHatsStore } = useRolesStore();
-  const { setGaslessVotingDaoData } = useDaoInfoStore();
-  const safeAddress = node.safe?.address;
+  const safeAddress = safe?.address;
+
+  const storeFeatureEnabled = useFeatureFlag('flag_store_v2');
 
   useEffect(() => {
-    if (!safeAddress || !publicClient.chain) {
+    if (!safeAddress || !publicClient.chain || storeFeatureEnabled) {
       return;
     }
 
@@ -191,7 +199,10 @@ const useKeyValuePairs = () => {
           accountAbstraction,
         ).then(gaslessVotingDaoData => {
           if (gaslessVotingDaoData) {
-            setGaslessVotingDaoData(gaslessVotingDaoData);
+            action.dispatch({
+              type: FractalGovernanceAction.SET_GASLESS_VOTING_DATA,
+              payload: gaslessVotingDaoData,
+            });
           }
         });
       })
@@ -234,7 +245,10 @@ const useKeyValuePairs = () => {
             accountAbstraction,
           ).then(gaslessVotingDaoData => {
             if (gaslessVotingDaoData) {
-              setGaslessVotingDaoData(gaslessVotingDaoData);
+              action.dispatch({
+                type: FractalGovernanceAction.SET_GASLESS_VOTING_DATA,
+                payload: gaslessVotingDaoData,
+              });
             }
           });
         },
@@ -243,23 +257,24 @@ const useKeyValuePairs = () => {
     return () => {
       unwatch();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     keyValuePairs,
     safeAddress,
     publicClient,
     setHatKeyValuePairData,
     sablierV2LockupLinear,
-    setGaslessVotingDaoData,
     accountAbstraction,
     paymaster,
     zodiacModuleProxyFactory,
+    storeFeatureEnabled,
   ]);
 
   useEffect(() => {
-    if (safeAddress === undefined) {
+    if (safeAddress === undefined && !storeFeatureEnabled) {
       resetHatsStore();
     }
-  }, [resetHatsStore, safeAddress]);
+  }, [resetHatsStore, safeAddress, storeFeatureEnabled]);
 };
 
 export { useKeyValuePairs };

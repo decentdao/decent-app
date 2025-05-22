@@ -1,9 +1,8 @@
 import { abis } from '@fractal-framework/fractal-contracts';
 import { useCallback, useEffect, useRef } from 'react';
 import { getContract } from 'viem';
-import { useStore } from '../../../../providers/App/AppProvider';
+import { useDAOStore } from '../../../../providers/App/AppProvider';
 import { FractalGovernanceAction } from '../../../../providers/App/governance/action';
-import { useDaoInfoStore } from '../../../../store/daoInfo/useDaoInfoStore';
 import useNetworkPublicClient from '../../../useNetworkPublicClient';
 import { useAddressContractType } from '../../../utils/useAddressContractType';
 import { useCurrentDAOKey } from '../../useCurrentDAOKey';
@@ -12,9 +11,9 @@ export function useERC20Claim() {
   const { daoKey } = useCurrentDAOKey();
   const {
     governanceContracts: { votesTokenAddress },
+    node: { safe },
     action,
-  } = useStore({ daoKey });
-  const { safe } = useDaoInfoStore();
+  } = useDAOStore({ daoKey });
   const publicClient = useNetworkPublicClient();
   const safeAddress = safe?.address;
   const { getAddressContractType } = useAddressContractType();

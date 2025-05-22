@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { getContract } from 'viem';
 import { useAccount } from 'wagmi';
 import LockReleaseAbi from '../../../../assets/abi/LockRelease';
-import { useStore } from '../../../../providers/App/AppProvider';
+import { useDAOStore } from '../../../../providers/App/AppProvider';
 import { DecentGovernanceAction } from '../../../../providers/App/governance/action';
 import useNetworkPublicClient from '../../../useNetworkPublicClient';
 import { useCurrentDAOKey } from '../../useCurrentDAOKey';
@@ -18,7 +18,7 @@ export const useLockRelease = ({ onMount = true }: { onMount?: boolean }) => {
   const {
     governanceContracts: { lockReleaseAddress },
     action,
-  } = useStore({ daoKey });
+  } = useDAOStore({ daoKey });
   const user = useAccount();
   const publicClient = useNetworkPublicClient();
 

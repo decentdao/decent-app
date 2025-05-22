@@ -1,3 +1,6 @@
 {
-  "cannotModifyGovernance": "Non si dispone dei permessi per modificare la governance di questa cassaforte."
+  "cannotModifyGovernance": "Non si dispone dei permessi per modificare la governance di questa cassaforte.",
+  "launchToken": "Gettone di lancio",
+  "launchTokenTitle": "TOKENIZZARE LA VOSTRA GOVERNANCE",
+  "launchTokenDescription": "Lanciate il vostro token di governance e fate passare le proposte attraverso il voto del token."
 }

@@ -46,7 +46,7 @@
   "wrapTokenButton": "Envolver",
   "updateSignersTooltip": "El número de firmantes necesario para aprobar futuras propuestas",
   "confirmModifyGovernanceTitle": "Atención, ¡esto es importante!",
-  "confirmModifyGovernanceDescription": "Modificar el gobierno de su Caja Fuerte tendrá implicaciones significativas. Por favor, asegúrese antes de proceder.",
+  "confirmModifyGovernanceDesc": "La conversión al gobierno de tokens cambiará permanentemente sus operaciones DAO. Esta acción no se puede deshacer. Estás seguro de que quieres continuar?",
   "stakeTitle": "Estaca",
   "removeSignerWarning": "El firmante será dado de baja de la organización.",
   "add": "Añadir",

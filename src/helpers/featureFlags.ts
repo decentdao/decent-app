@@ -4,6 +4,8 @@ export const FEATURE_FLAGS = [
   'flag_iframe_template',
   'flag_store_v2',
   'flag_locked_token',
+  'flag_proposal_v1',
+  'flag_settings_v1',
 ] as const;
 
 export type FeatureFlagKeys = typeof FEATURE_FLAGS;

@@ -1,3 +1,6 @@
 {
-  "cannotModifyGovernance": "您无权修改Safe的管理。"
+  "cannotModifyGovernance": "您无权修改Safe的管理。",
+  "launchToken": "启动令牌",
+  "launchTokenTitle": "代币化治理",
+  "launchTokenDescription": "推出自己的治理代币，并通过代币投票通过提案。"
 }

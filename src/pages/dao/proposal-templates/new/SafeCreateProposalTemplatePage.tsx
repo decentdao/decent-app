@@ -18,11 +18,12 @@ import { useHeaderHeight } from '../../../../constants/common';
 import { DAO_ROUTES } from '../../../../constants/routes';
 import { logError } from '../../../../helpers/errorLogging';
 import useCreateProposalTemplate from '../../../../hooks/DAO/proposal/useCreateProposalTemplate';
+import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
 import { analyticsEvents } from '../../../../insights/analyticsEvents';
+import { useDAOStore } from '../../../../providers/App/AppProvider';
 import useIPFSClient from '../../../../providers/App/hooks/useIPFSClient';
 import { useNetworkConfigStore } from '../../../../providers/NetworkConfig/useNetworkConfigStore';
 import { useProposalActionsStore } from '../../../../store/actions/useProposalActionsStore';
-import { useDaoInfoStore } from '../../../../store/daoInfo/useDaoInfoStore';
 import { BigIntValuePair } from '../../../../types';
 import {
   CreateProposalSteps,
@@ -48,7 +49,10 @@ export function SafeCreateProposalTemplatePage() {
     () => searchParams?.get('templateIndex'),
     [searchParams],
   );
-  const { safe } = useDaoInfoStore();
+  const { daoKey } = useCurrentDAOKey();
+  const {
+    node: { safe },
+  } = useDAOStore({ daoKey });
   const { addressPrefix } = useNetworkConfigStore();
 
   useEffect(() => {
@@ -59,8 +63,9 @@ export function SafeCreateProposalTemplatePage() {
           const initialTemplate: ProposalTemplate = proposalTemplates[defaultProposalTemplateIndex];
           if (initialTemplate) {
             const newInitialValue = {
-              nonce: undefined,
+              ...DEFAULT_PROPOSAL,
               proposalMetadata: {
+                ...DEFAULT_PROPOSAL.proposalMetadata,
                 title: initialTemplate.title,
                 description: initialTemplate.description || '',
               },
@@ -138,16 +143,15 @@ export function SafeCreateProposalTemplatePage() {
       streamsDetails={null}
       key={initialProposalTemplate.proposalMetadata.title}
       initialValues={{
-        ...(proposalMetadata
-          ? {
-              ...initialProposalTemplate,
-              proposalMetadata,
-            }
-          : initialProposalTemplate),
-        nonce: safe.nextNonce,
+        ...initialProposalTemplate,
+        proposalMetadata: {
+          ...initialProposalTemplate.proposalMetadata,
+          ...(proposalMetadata && { ...proposalMetadata }),
+          nonce: safe.nextNonce,
+        },
       }}
       prepareProposalData={prepareProposalTemplateProposal}
-      mainContent={(formikProps, pendingCreateTx, nonce, currentStep) => {
+      mainContent={(formikProps, pendingCreateTx, _nonce, currentStep) => {
         if (currentStep !== CreateProposalSteps.TRANSACTIONS) return null;
         const { setFieldValue, errors, values } = formikProps;
         return (

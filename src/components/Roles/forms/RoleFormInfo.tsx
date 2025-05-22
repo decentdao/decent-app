@@ -3,7 +3,7 @@ import { Field, FieldInputProps, FieldMetaProps, FormikProps, useFormikContext }
 import { useTranslation } from 'react-i18next';
 import { DETAILS_BOX_SHADOW } from '../../../constants/common';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
-import { useStore } from '../../../providers/App/AppProvider';
+import { useDAOStore } from '../../../providers/App/AppProvider';
 import { useRolesStore } from '../../../store/roles/useRolesStore';
 import { GovernanceType } from '../../../types';
 import { RoleFormValues } from '../../../types/roles';
@@ -14,7 +14,7 @@ export default function RoleFormInfo() {
   const { daoKey } = useCurrentDAOKey();
   const {
     governance: { type },
-  } = useStore({ daoKey });
+  } = useDAOStore({ daoKey });
   const { hatsTree, hatsTreeId } = useRolesStore();
 
   const { setFieldValue, values } = useFormikContext<RoleFormValues>();

@@ -3,12 +3,13 @@ import { CheckCircle } from '@phosphor-icons/react';
 import debounce from 'lodash.debounce';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import { createAccountSubstring } from '../../../hooks/utils/useGetAccountName';
+import { useDAOStore } from '../../../providers/App/AppProvider';
 import {
   supportedNetworks,
   useNetworkConfigStore,
 } from '../../../providers/NetworkConfig/useNetworkConfigStore';
-import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
 import { GovernanceType, ICreationStepProps, VotingStrategyType } from '../../../types';
 import { getNetworkIcon } from '../../../utils/url';
 import { InputComponent, LabelComponent } from '../../ui/forms/InputComponent';
@@ -28,7 +29,10 @@ export function EstablishEssentials(props: ICreationStepProps) {
   const { t } = useTranslation(['daoCreate', 'common']);
   const { values, setFieldValue, isSubmitting, transactionPending, isSubDAO, errors, mode } = props;
 
-  const { subgraphInfo, safe } = useDaoInfoStore();
+  const { daoKey } = useCurrentDAOKey();
+  const {
+    node: { subgraphInfo, safe },
+  } = useDAOStore({ daoKey });
 
   const isEdit = mode === DAOCreateMode.EDIT;
 

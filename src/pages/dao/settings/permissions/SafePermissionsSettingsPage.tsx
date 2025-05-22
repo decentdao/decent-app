@@ -12,13 +12,12 @@ import { ModalType } from '../../../../components/ui/modals/ModalProvider';
 import { useDecentModal } from '../../../../components/ui/modals/useDecentModal';
 import NestedPageHeader from '../../../../components/ui/page/Header/NestedPageHeader';
 import Divider from '../../../../components/ui/utils/Divider';
-import { NEUTRAL_2_84 } from '../../../../constants/common';
+import { NEUTRAL_2_82_TRANSPARENT } from '../../../../constants/common';
 import { DAO_ROUTES } from '../../../../constants/routes';
 import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
 import { useCanUserCreateProposal } from '../../../../hooks/utils/useCanUserSubmitProposal';
-import { useStore } from '../../../../providers/App/AppProvider';
+import { useDAOStore } from '../../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../../providers/NetworkConfig/useNetworkConfigStore';
-import { useDaoInfoStore } from '../../../../store/daoInfo/useDaoInfoStore';
 import { AzoriusGovernance } from '../../../../types';
 
 export function SafePermissionsSettingsPage() {
@@ -29,8 +28,8 @@ export function SafePermissionsSettingsPage() {
   const {
     governance,
     governanceContracts: { isLoaded, linearVotingErc20Address, linearVotingErc721Address },
-  } = useStore({ daoKey });
-  const { safe } = useDaoInfoStore();
+    node: { safe },
+  } = useDAOStore({ daoKey });
 
   const { canUserCreateProposal } = useCanUserCreateProposal();
   const azoriusGovernance = governance as AzoriusGovernance;
@@ -68,7 +67,7 @@ export function SafePermissionsSettingsPage() {
               justifyContent="flex-end"
             >
               <IconButton
-                aria-label={t('add', { ns: 'common' })}
+                aria-label={t('addOwner', { ns: 'common' })}
                 size="icon-md"
                 variant="ghost"
                 color="neutral-6"
@@ -91,7 +90,7 @@ export function SafePermissionsSettingsPage() {
         flexDirection="column"
         gap={{ base: 4, md: 6 }}
         display="flex"
-        bg={{ base: 'transparent', md: NEUTRAL_2_84 }}
+        bg={{ base: 'transparent', md: NEUTRAL_2_82_TRANSPARENT }}
       >
         {!isLoaded ? (
           <Card

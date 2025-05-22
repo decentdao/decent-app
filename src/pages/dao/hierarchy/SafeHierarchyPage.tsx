@@ -8,17 +8,21 @@ import { BarLoader } from '../../../components/ui/loaders/BarLoader';
 import PageHeader from '../../../components/ui/page/Header/PageHeader';
 import { useHeaderHeight } from '../../../constants/common';
 import { DAO_ROUTES } from '../../../constants/routes';
+import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import { useCanUserCreateProposal } from '../../../hooks/utils/useCanUserSubmitProposal';
 import { analyticsEvents } from '../../../insights/analyticsEvents';
+import { useDAOStore } from '../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
-import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
 
 export function SafeHierarchyPage() {
   useEffect(() => {
     amplitude.track(analyticsEvents.HierarchyPageOpened);
   }, []);
 
-  const { safe, subgraphInfo } = useDaoInfoStore();
+  const { daoKey } = useCurrentDAOKey();
+  const {
+    node: { safe, subgraphInfo },
+  } = useDAOStore({ daoKey });
 
   const { t } = useTranslation('breadcrumbs');
 

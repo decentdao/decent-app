@@ -1,27 +1,18 @@
 import { Box, Flex, Hide, Show, Text } from '@chakra-ui/react';
-import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DAOSearch } from '../../components/ui/menus/DAOSearch';
+import useFeatureFlag from '../../helpers/environmentFeatureFlags';
 import { useCurrentDAOKey } from '../../hooks/DAO/useCurrentDAOKey';
-import { useStore } from '../../providers/App/AppProvider';
-import { useDaoInfoStore } from '../../store/daoInfo/useDaoInfoStore';
 import { GettingStarted } from './GettingStarted';
 import { MySafes } from './MySafes';
+import SafeStateResetWrapper from './SafeStateResetWrapper';
 
 export default function HomePage() {
-  const { safe } = useDaoInfoStore();
   const { daoKey } = useCurrentDAOKey();
-  const { action } = useStore({ daoKey });
   const { t } = useTranslation('home');
+  const storeFeatureEnabled = useFeatureFlag('flag_store_v2');
 
-  useEffect(() => {
-    // @todo @dev Let's revisit this logic in future when state has been updated
-    if (safe?.address) {
-      action.resetSafeState();
-    }
-  }, [safe?.address, action]);
-
-  return (
+  const content = (
     <Flex
       direction="column"
       mt="2.5rem"
@@ -68,4 +59,10 @@ export default function HomePage() {
       </Flex>
     </Flex>
   );
+
+  if (!storeFeatureEnabled && daoKey) {
+    return <SafeStateResetWrapper>{content}</SafeStateResetWrapper>;
+  }
+
+  return content;
 }

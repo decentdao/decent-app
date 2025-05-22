@@ -6,13 +6,36 @@ export default function NoDataCard({
   translationNameSpace,
   emptyText,
   emptyTextNotProposer,
+  flatten = false,
 }: {
   translationNameSpace: string;
   emptyText: string;
   emptyTextNotProposer?: string;
+  flatten?: boolean;
 }) {
   const { t } = useTranslation(translationNameSpace);
   const { canUserCreateProposal } = useCanUserCreateProposal();
+
+  const content = (
+    <Text
+      textAlign="center"
+      color="neutral-6"
+      p="1rem"
+    >
+      {t(
+        emptyTextNotProposer
+          ? canUserCreateProposal
+            ? emptyText
+            : emptyTextNotProposer
+          : emptyText,
+      )}
+    </Text>
+  );
+
+  if (flatten) {
+    return content;
+  }
+
   return (
     <Box
       bg="neutral-2"
@@ -20,18 +43,7 @@ export default function NoDataCard({
       borderRadius="0.75rem"
       p="1rem"
     >
-      <Text
-        textAlign="center"
-        color="neutral-6"
-      >
-        {t(
-          emptyTextNotProposer
-            ? canUserCreateProposal
-              ? emptyText
-              : emptyTextNotProposer
-            : emptyText,
-        )}
-      </Text>
+      {content}
     </Box>
   );
 }

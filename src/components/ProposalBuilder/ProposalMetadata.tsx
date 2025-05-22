@@ -1,10 +1,17 @@
-import { VStack } from '@chakra-ui/react';
+import { Container, Input, VStack } from '@chakra-ui/react';
+import { NanceEditor } from '@nance/nance-editor';
 import { FormikProps } from 'formik';
 import { TFunction } from 'i18next';
+import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import useFeatureFlag from '../../helpers/environmentFeatureFlags';
+import { GATEWAY_URL, INFURA_AUTH } from '../../providers/App/hooks/useIPFSClient';
 import { useProposalActionsStore } from '../../store/actions/useProposalActionsStore';
 import { CreateProposalForm } from '../../types/proposalBuilder';
+import { CustomNonceInput } from '../ui/forms/CustomNonceInput';
 import { InputComponent, TextareaComponent } from '../ui/forms/InputComponent';
+import '@nance/nance-editor/lib/css/editor.css';
+import '@nance/nance-editor/lib/css/dark.css';
 
 export interface ProposalMetadataTypeProps {
   titleLabel: string;
@@ -35,18 +42,26 @@ export interface ProposalMetadataProps extends FormikProps<CreateProposalForm> {
   typeProps: ProposalMetadataTypeProps;
 }
 
-export default function ProposalMetadata({
-  values: { proposalMetadata },
+export function PlainTextProposalMetadata({
+  values,
   typeProps,
-}: ProposalMetadataProps) {
+}: Pick<ProposalMetadataProps, 'values' | 'typeProps'>) {
   const { t } = useTranslation(['proposal']);
   const { setProposalMetadata } = useProposalActionsStore();
+  const { proposalMetadata } = values;
+
   return (
     <VStack
       align="left"
       spacing={8}
       p="1.5rem"
     >
+      <CustomNonceInput
+        nonce={values.proposalMetadata.nonce}
+        onChange={newNonce => setProposalMetadata('nonce', newNonce)}
+        align="end"
+        renderTrimmed={false}
+      />
       <InputComponent
         label={typeProps.titleLabel}
         helper={typeProps.titleHelper}
@@ -78,4 +93,68 @@ export default function ProposalMetadata({
       />
     </VStack>
   );
+}
+
+export function MarkdownProposalMetadata({
+  values: { proposalMetadata },
+  typeProps,
+}: Pick<ProposalMetadataProps, 'values' | 'typeProps'>) {
+  const { t } = useTranslation(['proposal']);
+  const { setProposalMetadata } = useProposalActionsStore();
+
+  const initialDescription = proposalMetadata.description || typeProps.descriptionHelper;
+
+  useEffect(() => {
+    setProposalMetadata('description', initialDescription);
+  }, [initialDescription, setProposalMetadata]);
+
+  return (
+    <VStack
+      align="left"
+      spacing={8}
+      p="1.5rem"
+    >
+      <Input
+        placeholder={t('proposalTitlePlaceholder', { ns: 'proposal' })}
+        isRequired
+        value={proposalMetadata.title}
+        onChange={e => setProposalMetadata('title', e.target.value)}
+        data-testid="metadata.title"
+        maxLength={50}
+      />
+      <Container
+        margin={0}
+        padding={0}
+        maxW={{ base: '350px', sm: '440px', md: '768px', lg: '1100px', xl: '1200px' }}
+      >
+        <NanceEditor
+          initialValue={initialDescription}
+          onEditorChange={value => setProposalMetadata('description', value)}
+          fileUploadIPFS={{ gateway: GATEWAY_URL, auth: INFURA_AUTH }}
+          darkMode={true}
+          height="400px"
+        />
+      </Container>
+    </VStack>
+  );
+}
+
+export default function ProposalMetadata({ values, typeProps }: ProposalMetadataProps) {
+  const proposalV1FeatureEnabled = useFeatureFlag('flag_proposal_v1');
+
+  if (proposalV1FeatureEnabled) {
+    return (
+      <MarkdownProposalMetadata
+        values={values}
+        typeProps={typeProps}
+      />
+    );
+  } else {
+    return (
+      <PlainTextProposalMetadata
+        values={values}
+        typeProps={typeProps}
+      />
+    );
+  }
 }

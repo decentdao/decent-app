@@ -1,23 +1,26 @@
 import { useCallback } from 'react';
+import useFeatureFlag from '../../../../helpers/environmentFeatureFlags';
 import { logError } from '../../../../helpers/errorLogging';
-import { useStore } from '../../../../providers/App/AppProvider';
+import { useDAOStore } from '../../../../providers/App/AppProvider';
 import { FractalGovernanceAction } from '../../../../providers/App/governance/action';
 import { useSafeAPI } from '../../../../providers/App/hooks/useSafeAPI';
-import { useDaoInfoStore } from '../../../../store/daoInfo/useDaoInfoStore';
 import { useSafeTransactions } from '../../../utils/useSafeTransactions';
 import { useCurrentDAOKey } from '../../useCurrentDAOKey';
 
 export const useSafeMultisigProposals = () => {
   const { daoKey } = useCurrentDAOKey();
-  const { action } = useStore({ daoKey });
-  const { safe } = useDaoInfoStore();
+  const {
+    action,
+    node: { safe },
+  } = useDAOStore({ daoKey });
   const safeAPI = useSafeAPI();
   const safeAddress = safe?.address;
+  const storeFeatureEnabled = useFeatureFlag('flag_store_v2');
 
   const { parseTransactions } = useSafeTransactions();
 
   const loadSafeMultisigProposals = useCallback(async () => {
-    if (!safeAddress || !safeAPI) {
+    if (!safeAddress || !safeAPI || storeFeatureEnabled) {
       return;
     }
     try {
@@ -40,7 +43,7 @@ export const useSafeMultisigProposals = () => {
     } catch (e) {
       logError(e);
     }
-  }, [safeAddress, safeAPI, parseTransactions, action]);
+  }, [safeAddress, safeAPI, parseTransactions, action, storeFeatureEnabled]);
 
   return { loadSafeMultisigProposals };
 };

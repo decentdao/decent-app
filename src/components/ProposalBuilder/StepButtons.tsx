@@ -1,7 +1,8 @@
 import { Button, Flex, Icon } from '@chakra-ui/react';
 import { CaretLeft } from '@phosphor-icons/react';
 import { useTranslation } from 'react-i18next';
-import { useDaoInfoStore } from '../../store/daoInfo/useDaoInfoStore';
+import { useCurrentDAOKey } from '../../hooks/DAO/useCurrentDAOKey';
+import { useDAOStore } from '../../providers/App/AppProvider';
 import { CreateProposalSteps } from '../../types';
 
 interface StepButtonsProps {
@@ -71,7 +72,10 @@ export default function StepButtons({
   onStepChange,
   createProposalBlocked,
 }: StepButtonsProps) {
-  const { safe } = useDaoInfoStore();
+  const { daoKey } = useCurrentDAOKey();
+  const {
+    node: { safe },
+  } = useDAOStore({ daoKey });
 
   if (!safe?.address) {
     return null;

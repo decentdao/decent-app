@@ -15,19 +15,22 @@ import { useAutomaticSwitchChain } from '../../hooks/utils/useAutomaticSwitchCha
 import { usePageTitle } from '../../hooks/utils/usePageTitle';
 import { useTemporaryProposals } from '../../hooks/utils/useTemporaryProposals';
 import { useUpdateSafeData } from '../../hooks/utils/useUpdateSafeData';
-import { useDaoInfoStore } from '../../store/daoInfo/useDaoInfoStore';
-import { useGlobalStoreFetcher } from '../../store/fetcher';
+import { useDAOStore } from '../../providers/App/AppProvider';
+import { useDAOStoreFetcher } from '../../store/fetcher';
+import { useDAOStoreListener } from '../../store/listener';
 import LoadingProblem from '../LoadingProblem';
 
 export function SafeController() {
-  const { invalidQuery, wrongNetwork, addressPrefix, safeAddress } = useCurrentDAOKey();
+  const { invalidQuery, wrongNetwork, addressPrefix, safeAddress, daoKey } = useCurrentDAOKey();
   useAutomaticSwitchChain({ urlAddressPrefix: addressPrefix });
 
   useUpdateSafeData(safeAddress);
   usePageTitle();
   useTemporaryProposals();
 
-  const { subgraphInfo } = useDaoInfoStore();
+  const {
+    node: { subgraphInfo },
+  } = useDAOStore({ daoKey });
 
   const { errorLoading } = useFractalNode({
     addressPrefix,
@@ -48,7 +51,8 @@ export function SafeController() {
   useKeyValuePairs();
   useHatsTree();
 
-  useGlobalStoreFetcher();
+  useDAOStoreFetcher({ daoKey, safeAddress, invalidQuery, wrongNetwork });
+  useDAOStoreListener({ daoKey });
 
   // the order of the if blocks of these next three error states matters
   if (invalidQuery) {

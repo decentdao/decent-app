@@ -1,3 +1,6 @@
 {
-  "cannotModifyGovernance": "Sie haben keine Berechtigung, die Verwaltung dieses Safes zu ändern."
+  "cannotModifyGovernance": "Sie haben keine Berechtigung, die Verwaltung dieses Safes zu ändern.",
+  "launchToken": "Start-Token",
+  "launchTokenTitle": "IHRE VERWALTUNG MIT TOKEN VERSEHEN",
+  "launchTokenDescription": "Lancieren Sie Ihren eigenen Governance-Token und verabschieden Sie Vorschläge durch Token-Abstimmung."
 }

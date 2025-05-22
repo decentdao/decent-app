@@ -1,12 +1,13 @@
-import { Box, Button, CloseButton, Flex, Text, Checkbox } from '@chakra-ui/react';
+import { Box, Button, Checkbox, CloseButton, Flex, Text } from '@chakra-ui/react';
 import { Field, FieldAttributes, FieldProps, Form, Formik } from 'formik';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAccount, useBalance } from 'wagmi';
 import * as Yup from 'yup';
+import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
 import { useCanUserCreateProposal } from '../../../../hooks/utils/useCanUserSubmitProposal';
+import { useDAOStore } from '../../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../../providers/NetworkConfig/useNetworkConfigStore';
-import { useDaoInfoStore } from '../../../../store/daoInfo/useDaoInfoStore';
 import { BigIntValuePair } from '../../../../types';
 import { formatCoinUnits } from '../../../../utils/numberFormats';
 import { BigIntInput } from '../../forms/BigIntInput';
@@ -34,7 +35,10 @@ interface RefillFormProps {
 function RefillForm({ onSubmit, onClose, isDirectDeposit, showNonceInput }: RefillFormProps) {
   const { t } = useTranslation('gaslessVoting');
   const { address } = useAccount();
-  const { safe } = useDaoInfoStore();
+  const { daoKey } = useCurrentDAOKey();
+  const {
+    node: { safe },
+  } = useDAOStore({ daoKey });
   const [nonceInput, setNonceInput] = useState<number | undefined>(safe?.nextNonce);
   const { chain } = useNetworkConfigStore();
 
