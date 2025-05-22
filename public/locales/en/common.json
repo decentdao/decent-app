@@ -34,7 +34,6 @@
   "learnMore": "Learn More",
   "home": "Home",
   "labelViewDAO": "View Safe",
-  "labelDAOFound": "Safe Found",
   "labelCurrentDAO": "You are currently viewing this Safe.",
   "labelEtherscan": "View on Etherscan",
   "errorInvalidENSAddress": "Invalid ENS name or address on {{chain}}",

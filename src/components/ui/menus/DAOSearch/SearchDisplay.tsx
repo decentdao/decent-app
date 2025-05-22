@@ -1,5 +1,4 @@
-import { Flex, Spinner, Text } from '@chakra-ui/react';
-import { useTranslation } from 'react-i18next';
+import { Flex, Spinner } from '@chakra-ui/react';
 import { Address } from 'viem';
 import { SafeDisplayRow } from '../../../../pages/home/SafeDisplayRow';
 import { getNetworkConfig } from '../../../../providers/NetworkConfig/useNetworkConfigStore';
@@ -14,8 +13,6 @@ interface ISearchDisplay {
 }
 
 export function SearchDisplay({ loading, address, onClickView, chainId }: ISearchDisplay) {
-  const { t } = useTranslation(['common', 'dashboard']);
-
   if (loading) {
     return (
       <Flex
@@ -41,14 +38,6 @@ export function SearchDisplay({ loading, address, onClickView, chainId }: ISearc
         px="0.5rem"
       >
         <ErrorBoundary fallback={MySafesErrorFallback}>
-          <Text
-            textStyle="labels-large"
-            color="neutral-7"
-            py="1rem"
-            px="0.5rem"
-          >
-            {t('labelDAOFound')}
-          </Text>
           <SafeDisplayRow
             name={undefined}
             address={address}

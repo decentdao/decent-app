@@ -151,6 +151,8 @@ export function DAOSearch() {
             hidden={!showResults}
             w="full"
             position="absolute"
+            maxHeight="70vh"
+            overflowY="auto"
           >
             {!!errorMessage && (
               <Flex
