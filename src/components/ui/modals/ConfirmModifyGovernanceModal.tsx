@@ -5,7 +5,13 @@ import { DAO_ROUTES } from '../../../constants/routes';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
 
-export function ConfirmModifyGovernanceModal({ close }: { close: () => void }) {
+export function ConfirmModifyGovernanceModal({
+  onClose,
+  closeAll,
+}: {
+  onClose: () => void;
+  closeAll: () => void;
+}) {
   const { t } = useTranslation('modals');
   const { safeAddress } = useCurrentDAOKey();
   const { addressPrefix } = useNetworkConfigStore();
@@ -43,7 +49,7 @@ export function ConfirmModifyGovernanceModal({ close }: { close: () => void }) {
           py={3}
           width="100%"
           variant="secondary"
-          onClick={close}
+          onClick={onClose}
         >
           {t('modalCancel')}
         </Button>
@@ -53,7 +59,7 @@ export function ConfirmModifyGovernanceModal({ close }: { close: () => void }) {
             px={8}
             py={3}
             width="100%"
-            onClick={close}
+            onClick={closeAll}
           >
             {t('modalContinue')}
           </Button>
