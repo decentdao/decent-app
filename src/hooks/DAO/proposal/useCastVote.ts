@@ -268,7 +268,13 @@ const useCastVote = (proposalId: string, strategy: Address) => {
     estimateGaslessVoteGas().catch(() => {
       setCanCastGaslessVote(false);
     });
-  }, [accountAbstraction, canCastGaslessVote, paymasterAddress, prepareGaslessVoteOperation, publicClient]);
+  }, [
+    accountAbstraction,
+    canCastGaslessVote,
+    paymasterAddress,
+    prepareGaslessVoteOperation,
+    publicClient,
+  ]);
 
   const gaslessVoteLoadingModal = useDecentModal(ModalType.GASLESS_VOTE_LOADING);
   const closeModal = useDecentModal(ModalType.NONE);
