@@ -29,10 +29,9 @@ export function ERC721TokensContainer() {
           flexDirection="column"
         >
           {erc721Tokens.map((token, index) => (
-            <>
+            <Box key={token.address}>
               {/* TOKEN NAME */}
               <Flex
-                key={token.address}
                 alignItems="center"
                 justifyContent="space-between"
                 px={6}
@@ -102,7 +101,7 @@ export function ERC721TokensContainer() {
                 </Text>
               </Flex>
               {index < erc721Tokens.length - 1 && <Divider />}
-            </>
+            </Box>
           ))}
         </Flex>
       ) : (

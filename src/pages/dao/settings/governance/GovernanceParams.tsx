@@ -1,16 +1,20 @@
-import { Box, Flex, Input } from '@chakra-ui/react';
+import { Box, Flex, InputGroup, InputRightElement } from '@chakra-ui/react';
 import { abis } from '@fractal-framework/fractal-contracts';
-import { useEffect, useState } from 'react';
+import { useFormikContext } from 'formik';
+import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { getContract } from 'viem';
 
+import { getContract } from 'viem';
+import { BigIntInput } from '../../../../components/ui/forms/BigIntInput';
+import DurationUnitStepperInput from '../../../../components/ui/forms/DurationUnitStepperInput';
 import { LabelComponent } from '../../../../components/ui/forms/InputComponent';
 import { BarLoader } from '../../../../components/ui/loaders/BarLoader';
+import { SafeSettingsEdits } from '../../../../components/ui/modals/SafeSettingsModal';
 import Divider from '../../../../components/ui/utils/Divider';
 import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
 import useNetworkPublicClient from '../../../../hooks/useNetworkPublicClient';
 import { useTimeHelpers } from '../../../../hooks/utils/useTimeHelpers';
-import { useStore } from '../../../../providers/App/AppProvider';
+import { useDAOStore } from '../../../../providers/App/AppProvider';
 import { AzoriusGovernance, FreezeGuardType } from '../../../../types';
 import { blocksToSeconds } from '../../../../utils/contract';
 
@@ -21,16 +25,29 @@ export function GovernanceParams() {
     governance,
     guardContracts: { freezeGuardType, freezeGuardContractAddress },
     node: { safe },
-  } = useStore({ daoKey });
+  } = useDAOStore({ daoKey });
+
+  const { values, setFieldValue } = useFormikContext<SafeSettingsEdits>();
   const publicClient = useNetworkPublicClient();
   const { getTimeDuration } = useTimeHelpers();
-  const [timelockPeriod, setTimelockPeriod] = useState<string>();
-  const [executionPeriod, setExecutionPeriod] = useState<string>();
 
-  const governanceAzorius = governance.isAzorius ? (governance as AzoriusGovernance) : null;
+  const votingStrategy = governance.isAzorius
+    ? (governance as AzoriusGovernance).votingStrategy
+    : null;
+
+  const existingQuorumPercentage = votingStrategy?.quorumPercentage?.value;
+  const existingQuorumThreshold = votingStrategy?.quorumThreshold?.value;
+  const existingVotingPeriod = votingStrategy?.votingPeriod?.value;
+
+  const [existingTimelockPeriod, setExistingTimelockPeriod] = useState<bigint | undefined>(
+    votingStrategy?.timeLockPeriod?.value,
+  );
+  const [existingExecutionPeriod, setExistingExecutionPeriod] = useState<bigint | undefined>(
+    votingStrategy?.executionPeriod?.value,
+  );
 
   useEffect(() => {
-    const setTimelockInfo = async () => {
+    const setFreezeGuardTimelockAndExecutionInfo = async () => {
       const formatBlocks = async (blocks: number): Promise<string | undefined> =>
         getTimeDuration(await blocksToSeconds(blocks, publicClient));
 
@@ -49,36 +66,39 @@ export function GovernanceParams() {
             formatBlocks(contractTimelockPeriod),
             formatBlocks(contractExecutionPeriod),
           ]);
-          setTimelockPeriod(timelockSeconds);
-          setExecutionPeriod(executionPeriodSeconds);
-        }
-      } else if (governanceAzorius !== null) {
-        const timelock = governanceAzorius.votingStrategy?.timeLockPeriod;
-        const execution = governanceAzorius.votingStrategy?.executionPeriod;
-        if (timelock?.formatted) {
-          setTimelockPeriod(timelock.formatted);
-        }
-        if (execution?.formatted) {
-          setExecutionPeriod(execution.formatted);
+
+          if (timelockSeconds !== undefined) {
+            setExistingTimelockPeriod(BigInt(timelockSeconds));
+          }
+
+          if (executionPeriodSeconds !== undefined) {
+            setExistingExecutionPeriod(BigInt(executionPeriodSeconds));
+          }
         }
       }
-      return () => {
-        setTimelockPeriod(undefined);
-        setExecutionPeriod(undefined);
-      };
     };
 
-    setTimelockInfo();
-  }, [
-    executionPeriod,
-    getTimeDuration,
-    governance,
-    freezeGuardContractAddress,
-    freezeGuardType,
-    timelockPeriod,
-    publicClient,
-    governanceAzorius,
-  ]);
+    setFreezeGuardTimelockAndExecutionInfo();
+  }, [freezeGuardType, freezeGuardContractAddress, getTimeDuration, publicClient]);
+
+  const handleInputChange = useCallback(
+    (
+      field: string,
+      inputValue: bigint | undefined,
+      existingValue: bigint | undefined,
+      otherInputValues: (bigint | undefined)[],
+    ) => {
+      const newValue = inputValue !== existingValue ? inputValue : undefined;
+
+      setFieldValue(field, newValue);
+
+      // if this chnage results in NONE of the existing values being changed, clear `azorius` field
+      if (newValue === undefined && otherInputValues.every(value => value === undefined)) {
+        setFieldValue('azorius', undefined);
+      }
+    },
+    [setFieldValue],
+  );
 
   if (!safe?.address || !governance.type) {
     return (
@@ -102,7 +122,7 @@ export function GovernanceParams() {
 
   return (
     <Box data-testid="dashboard-daoGovernance">
-      {governanceAzorius?.votingStrategy?.quorumPercentage && (
+      {existingQuorumPercentage !== undefined && (
         <>
           <Flex alignItems="center">
             <LabelComponent
@@ -111,17 +131,35 @@ export function GovernanceParams() {
               helper={t('helperQuorumERC20', { ns: 'daoCreate' })}
               gridContainerProps={inputGridContainerProps}
             >
-              <Input
-                value={governanceAzorius.votingStrategy.quorumPercentage.formatted}
-                minWidth="100%"
-              />
+              <InputGroup>
+                <BigIntInput
+                  value={values.azorius?.quorumPercentage ?? existingQuorumPercentage}
+                  color={values.azorius?.quorumPercentage === undefined ? 'neutral-7' : 'white-0'}
+                  decimalPlaces={0}
+                  onChange={e =>
+                    handleInputChange(
+                      'azorius.quorumPercentage',
+                      e.bigintValue,
+                      existingQuorumPercentage,
+                      [
+                        values.azorius?.quorumThreshold,
+                        values.azorius?.votingPeriod,
+                        values.azorius?.timelockPeriod,
+                        values.azorius?.executionPeriod,
+                      ],
+                    )
+                  }
+                  minWidth="100%"
+                />
+                <InputRightElement color="neutral-5">%</InputRightElement>
+              </InputGroup>
             </LabelComponent>
           </Flex>
           <Divider />
         </>
       )}
 
-      {governanceAzorius?.votingStrategy?.quorumThreshold && (
+      {existingQuorumThreshold !== undefined && (
         <>
           <Flex
             alignItems="center"
@@ -135,16 +173,31 @@ export function GovernanceParams() {
               helper={t('helperQuorumERC721', { ns: 'daoCreate' })}
               gridContainerProps={inputGridContainerProps}
             >
-              <Input
-                value={governanceAzorius.votingStrategy.quorumThreshold.formatted}
+              <BigIntInput
+                value={values.azorius?.quorumThreshold ?? existingQuorumThreshold}
                 minWidth="100%"
+                decimalPlaces={0}
+                color={values.azorius?.quorumThreshold === undefined ? 'neutral-7' : 'white-0'}
+                onChange={e =>
+                  handleInputChange(
+                    'azorius.quorumThreshold',
+                    e.bigintValue,
+                    existingQuorumThreshold,
+                    [
+                      values.azorius?.quorumPercentage,
+                      values.azorius?.votingPeriod,
+                      values.azorius?.timelockPeriod,
+                      values.azorius?.executionPeriod,
+                    ],
+                  )
+                }
               />
             </LabelComponent>
           </Flex>
           <Divider />
         </>
       )}
-      {governanceAzorius?.votingStrategy?.votingPeriod && (
+      {existingVotingPeriod !== undefined && (
         <>
           <Flex
             alignItems="center"
@@ -158,16 +211,29 @@ export function GovernanceParams() {
               helper={t('helperVotingPeriod', { ns: 'daoCreate' })}
               gridContainerProps={inputGridContainerProps}
             >
-              <Input
-                value={governanceAzorius.votingStrategy.votingPeriod.formatted}
-                minWidth="100%"
+              <DurationUnitStepperInput
+                secondsValue={Number(values.azorius?.votingPeriod ?? existingVotingPeriod)}
+                color={values.azorius?.votingPeriod === undefined ? 'neutral-7' : 'white-0'}
+                onSecondsValueChange={valInSeconds => {
+                  handleInputChange(
+                    'azorius.votingPeriod',
+                    BigInt(valInSeconds),
+                    existingVotingPeriod,
+                    [
+                      values.azorius?.quorumPercentage,
+                      values.azorius?.quorumThreshold,
+                      values.azorius?.timelockPeriod,
+                      values.azorius?.executionPeriod,
+                    ],
+                  );
+                }}
               />
             </LabelComponent>
           </Flex>
           <Divider />
         </>
       )}
-      {timelockPeriod && (
+      {existingTimelockPeriod !== undefined && (
         <>
           <Flex
             alignItems="center"
@@ -181,16 +247,35 @@ export function GovernanceParams() {
               helper={t('helperTimelockPeriod', { ns: 'daoCreate' })}
               gridContainerProps={inputGridContainerProps}
             >
-              <Input
-                value={timelockPeriod}
-                minWidth="100%"
-              />
+              <InputGroup>
+                <BigIntInput
+                  value={values.azorius?.timelockPeriod ?? existingTimelockPeriod}
+                  minWidth="100%"
+                  color={values.azorius?.timelockPeriod === undefined ? 'neutral-7' : 'white-0'}
+                  onChange={e =>
+                    handleInputChange(
+                      'azorius.timelockPeriod',
+                      e.bigintValue,
+                      existingTimelockPeriod,
+                      [
+                        values.azorius?.quorumPercentage,
+                        values.azorius?.quorumThreshold,
+                        values.azorius?.votingPeriod,
+                        values.azorius?.executionPeriod,
+                      ],
+                    )
+                  }
+                />
+                <InputRightElement color="neutral-5">
+                  {t('minutesShort', { ns: 'common' })}
+                </InputRightElement>
+              </InputGroup>
             </LabelComponent>
           </Flex>
           <Divider />
         </>
       )}
-      {executionPeriod && (
+      {existingExecutionPeriod !== undefined && (
         <>
           <Flex
             alignItems="center"
@@ -204,9 +289,22 @@ export function GovernanceParams() {
               helper={t('helperExecutionPeriod', { ns: 'daoCreate' })}
               gridContainerProps={inputGridContainerProps}
             >
-              <Input
-                value={executionPeriod}
-                minWidth="100%"
+              <DurationUnitStepperInput
+                secondsValue={Number(values.azorius?.executionPeriod ?? existingExecutionPeriod)}
+                color={values.azorius?.executionPeriod === undefined ? 'neutral-7' : 'white-0'}
+                onSecondsValueChange={valInSeconds =>
+                  handleInputChange(
+                    'azorius.executionPeriod',
+                    BigInt(valInSeconds),
+                    existingExecutionPeriod,
+                    [
+                      values.azorius?.quorumPercentage,
+                      values.azorius?.quorumThreshold,
+                      values.azorius?.timelockPeriod,
+                      values.azorius?.votingPeriod,
+                    ],
+                  )
+                }
               />
             </LabelComponent>
           </Flex>

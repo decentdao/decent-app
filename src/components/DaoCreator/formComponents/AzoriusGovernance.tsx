@@ -42,7 +42,7 @@ function DayStepperInput({
         w="250px"
       >
         <NumberStepperInput
-          unitHint={t('days', { ns: 'common' })}
+          rightElement={<Text color="neutral-5">{t('days', { ns: 'common' })}</Text>}
           value={inputValue}
           onChange={val => onInputChange(Number(val))}
         />

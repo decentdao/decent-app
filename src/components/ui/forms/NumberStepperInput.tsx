@@ -9,22 +9,29 @@ import {
   NumberInputField,
 } from '@chakra-ui/react';
 import { Plus, Minus } from '@phosphor-icons/react';
+import { ReactNode } from 'react';
+import { SEXY_BOX_SHADOW_T_T } from '../../../constants/common';
 
 export function NumberStepperInput({
   value,
   onChange,
-  unitHint,
+  rightElement,
   disabled,
+  isInvalid,
+  color,
 }: {
   value?: string | number;
   onChange: (val: string) => void;
-  unitHint?: string;
+  rightElement?: ReactNode;
   disabled?: boolean;
+  isInvalid?: boolean;
+  color?: string;
 }) {
   const stepperButton = (direction: 'inc' | 'dec') => (
     <Button
       variant="secondary"
-      borderColor="neutral-3"
+      border="none"
+      boxShadow={SEXY_BOX_SHADOW_T_T}
       p="0.5rem"
       size="md"
     >
@@ -39,12 +46,16 @@ export function NumberStepperInput({
       min={0}
       focusInputOnChange
       isDisabled={disabled}
+      isInvalid={isInvalid}
     >
       <HStack gap="0.25rem">
         <NumberDecrementStepper>{stepperButton('dec')}</NumberDecrementStepper>
         <InputGroup>
-          <NumberInputField min={0} />
-          <InputRightElement mr="1rem">{unitHint}</InputRightElement>
+          <NumberInputField
+            color={color}
+            min={0}
+          />
+          <InputRightElement mr="1rem">{rightElement}</InputRightElement>
         </InputGroup>
         <NumberIncrementStepper>{stepperButton('inc')}</NumberIncrementStepper>
       </HStack>
