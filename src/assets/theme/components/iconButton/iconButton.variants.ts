@@ -17,7 +17,7 @@ const primary = defineStyle({
     ...primaryDisabled,
   },
   _active: {
-    bg: 'lilac--2',
+    bg: 'color-lilac-300',
   },
 });
 
@@ -40,8 +40,8 @@ const secondary = defineStyle({
     ...secondaryDisabled,
   },
   _active: {
-    borderColor: 'lilac--2',
-    color: 'lilac--2',
+    borderColor: 'color-lilac-300',
+    color: 'color-lilac-300',
   },
 });
 
@@ -69,7 +69,7 @@ const tertiary = defineStyle({
   },
   _active: {
     bg: 'white-alpha-08',
-    color: 'lilac--2',
+    color: 'color-lilac-300',
   },
   _focus: {},
 });

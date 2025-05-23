@@ -24,7 +24,7 @@ const primary = defineStyle({
     _disabled: primaryDisabled.track,
   },
   thumb: {
-    backgroundColor: 'lilac--2',
+    backgroundColor: 'color-lilac-300',
     _disabled: primaryDisabled.thumb,
   },
 });
