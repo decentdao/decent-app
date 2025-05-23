@@ -140,7 +140,7 @@ export function SafePermissionsSettingsContent() {
                     icon={<PencilWithLineIcon />}
                     aria-label={t('edit')}
                     opacity={0}
-                    color="neutral-6"
+                    color="color-neutral-400"
                     border="none"
                   />
                 )}

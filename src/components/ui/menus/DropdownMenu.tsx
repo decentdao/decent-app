@@ -64,7 +64,7 @@ export function DropdownMenu<T>({
             sx={{
               '&:disabled': {
                 '.payment-menu-asset *': {
-                  color: 'neutral-6',
+                  color: 'color-neutral-400',
                   bg: 'transparent',
                 },
               },
@@ -98,7 +98,7 @@ export function DropdownMenu<T>({
                   {selectedItem?.label ?? selectPlaceholder}
                 </Text>
                 <Icon
-                  color="neutral-6"
+                  color="color-neutral-400"
                   as={CaretDown}
                   boxSize="1.5rem"
                 />

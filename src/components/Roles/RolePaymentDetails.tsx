@@ -39,7 +39,7 @@ function getPaymentContainerProps(section: 'top' | 'bottom', isActiveStream: boo
     : {
         sx: {
           p: {
-            color: 'neutral-6',
+            color: 'color-neutral-400',
           },
         },
         bg: 'none',
@@ -73,11 +73,11 @@ function PaymentDate({ label, date }: { label: string; date?: Date }) {
         <Icon
           boxSize="1rem"
           as={CalendarBlank}
-          color={date ? 'color-lilac-100' : 'neutral-6'}
+          color={date ? 'color-lilac-100' : 'color-neutral-400'}
         />
         <Text
           textStyle="labels-small"
-          color={date ? 'white-0' : 'neutral-6'}
+          color={date ? 'white-0' : 'color-neutral-400'}
         >
           {date ? format(date, DEFAULT_DATE_FORMAT) : '---'}
         </Text>

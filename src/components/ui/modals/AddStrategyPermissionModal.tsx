@@ -95,13 +95,13 @@ export function AddStrategyPermissionModal({
           _hover={{}}
           cursor="not-allowed"
         >
-          <Box color="neutral-6">
+          <Box color="color-neutral-400">
             <CheckSquare size={24} />
           </Box>
           <Flex
             flexDirection="column"
             gap={1}
-            color="neutral-6"
+            color="color-neutral-400"
           >
             <Text textStyle="heading-small">{t('permissionComingSoonTitle')}</Text>
             <Text>{t('permissionComingSoonDescription')}</Text>

@@ -150,7 +150,7 @@ export function DelegateModal({ close }: { close: Function }) {
         decentGovernance.lockedVotesToken?.balance !== undefined && (
           <SimpleGrid
             columns={2}
-            color="neutral-6"
+            color="color-neutral-400"
           >
             <Text
               align="start"

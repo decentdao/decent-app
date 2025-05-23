@@ -33,7 +33,7 @@ export default function Breadcrumbs({
             whiteSpace="nowrap"
             textOverflow="ellipsis"
             textStyle="labels-large"
-            color={isCurrentPage ? 'neutral-7' : 'neutral-6'}
+            color={isCurrentPage ? 'neutral-7' : 'color-neutral-400'}
           >
             {title}
           </Text>

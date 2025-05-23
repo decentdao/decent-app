@@ -9,7 +9,7 @@ const disabled = {
   bg: DISABLED_INPUT,
   border: '1px solid',
   borderColor: 'white-alpha-16',
-  color: 'neutral-6',
+  color: 'color-neutral-400',
   _placeholder: {
     color: 'color-neutral-700',
   },

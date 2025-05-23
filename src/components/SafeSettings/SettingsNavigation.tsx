@@ -72,7 +72,7 @@ function SettingsLink({
         <Show below="md">
           <Flex
             alignItems="center"
-            color="neutral-6"
+            color="color-neutral-400"
             gap={2}
           >
             {children}
@@ -150,7 +150,7 @@ function SettingsNavigationItem({
         <Show below="md">
           <Flex
             alignItems="center"
-            color="neutral-6"
+            color="color-neutral-400"
             gap={2}
           >
             {children}

@@ -8,16 +8,16 @@ const primaryDisabled = {
     },
   },
   thumb: {
-    backgroundColor: 'neutral-6',
+    backgroundColor: 'color-neutral-400',
     _checked: {
-      backgroundColor: 'neutral-6',
+      backgroundColor: 'color-neutral-400',
     },
   },
 };
 
 const primary = defineStyle({
   track: {
-    backgroundColor: 'neutral-6',
+    backgroundColor: 'color-neutral-400',
     _checked: {
       backgroundColor: 'color-lilac-600',
     },

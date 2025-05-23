@@ -29,7 +29,7 @@ export default function ExternalLink({
         textDecoration: 'underline',
       },
       active: {
-        color: 'neutral-6',
+        color: 'color-neutral-400',
       },
     },
     black: {
@@ -98,7 +98,7 @@ export default function ExternalLink({
 
   const linkColor = {
     green: 'color-green-400',
-    grey: 'neutral-6',
+    grey: 'color-neutral-400',
     black: 'black',
     lilac: 'color-lilac-600',
   };

@@ -84,8 +84,8 @@ function RoleTermHeaderStatus({
     const statusTextData = {
       ended: {
         text: t('ended'),
-        textColor: 'neutral-6',
-        iconColor: 'neutral-6',
+        textColor: 'color-neutral-400',
+        iconColor: 'color-neutral-400',
       },
       inQueue: {
         text: t('inQueue'),

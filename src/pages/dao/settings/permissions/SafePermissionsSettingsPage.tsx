@@ -70,7 +70,7 @@ export function SafePermissionsSettingsPage() {
                 aria-label={t('addOwner', { ns: 'common' })}
                 size="icon-md"
                 variant="ghost"
-                color="neutral-6"
+                color="color-neutral-400"
                 icon={<Plus size={24} />}
                 onClick={() =>
                   navigate(
@@ -169,7 +169,7 @@ export function SafePermissionsSettingsPage() {
                   icon={<PencilWithLineIcon />}
                   aria-label={t('edit')}
                   opacity={0}
-                  color="neutral-6"
+                  color="color-neutral-400"
                   border="none"
                 />
               )}

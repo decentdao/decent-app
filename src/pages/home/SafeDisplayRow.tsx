@@ -75,7 +75,7 @@ export function SafeDisplayRow({
       />
       <Flex flexDir="column">
         <Text
-          color={safeName ? nameColor : 'neutral-6'}
+          color={safeName ? nameColor : 'color-neutral-400'}
           textStyle={showAddress ? 'labels-large' : 'body-large'}
         >
           {safeName || t('loadingFavorite')}

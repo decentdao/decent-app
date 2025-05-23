@@ -19,7 +19,7 @@ export default function NoDataCard({
   const content = (
     <Text
       textAlign="center"
-      color="neutral-6"
+      color="color-neutral-400"
       p="1rem"
     >
       {t(

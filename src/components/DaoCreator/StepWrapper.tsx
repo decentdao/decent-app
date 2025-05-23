@@ -25,14 +25,14 @@ function Step({ index, stepNumber, label }: { index: number; stepNumber: number;
     <Box width="100%">
       <Box
         height="4px"
-        bg={stepNumber >= index ? 'color-lilac-100' : 'neutral-6'}
+        bg={stepNumber >= index ? 'color-lilac-100' : 'color-neutral-400'}
         borderRadius="full"
       />
       <Text
         mx="0.25rem"
         mt="0.5rem"
         textStyle="labels-large"
-        color={stepNumber === index ? 'white-0' : 'neutral-6'}
+        color={stepNumber === index ? 'white-0' : 'color-neutral-400'}
       >
         {index}. {label}
       </Text>

@@ -123,7 +123,7 @@ export function DAOSearch() {
               <InputLeftElement ml="0.5rem">
                 <Search
                   boxSize="1.75rem"
-                  color="neutral-6"
+                  color="color-neutral-400"
                 />
               </InputLeftElement>
               <Input

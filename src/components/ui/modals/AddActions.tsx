@@ -49,19 +49,19 @@ function ActionCard({
           w="2rem"
           h="2rem"
           mb="1rem"
-          color={isDisabled ? 'neutral-6' : 'color-lilac-100'}
+          color={isDisabled ? 'color-neutral-400' : 'color-lilac-100'}
         />
         <Text
           textStyle="heading-small"
           mb="0.25rem"
-          color={isDisabled ? 'neutral-6' : 'neutral-0'}
+          color={isDisabled ? 'color-neutral-400' : 'neutral-0'}
         >
           {title}
         </Text>
         <Text
           whiteSpace="pre-wrap"
           textAlign="left"
-          color={isDisabled ? 'neutral-6' : 'neutral-7'}
+          color={isDisabled ? 'color-neutral-400' : 'neutral-7'}
         >
           {subtitle}
         </Text>
