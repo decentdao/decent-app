@@ -136,7 +136,7 @@ function RemoveSignerModal({
         mt={6}
         p="1rem"
         border="1px"
-        borderColor="yellow--1"
+        borderColor="color-yellow-800"
         bg="yellow--2"
         borderRadius="0.25rem"
         alignItems="center"

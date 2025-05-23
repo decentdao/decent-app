@@ -79,7 +79,7 @@
 
 .sonner-toast[data-rich-colors='true'][data-sonner-toast][data-type='warning'] {
   background-color: var(--colors-yellow--2);
-  border: 1px solid var(--colors-yellow--1);
+  border: 1px solid var(--colors-color-yellow-800);
   color: var(--colors-color-yellow-200);
 }
 
