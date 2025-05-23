@@ -171,7 +171,7 @@ function TermSelection({
       >
         <Icon as={Calendar} />
         <Text
-          textStyle="labels-small"
+          textStyle="text-xs-medium"
           color={defaultDateColor}
         >
           {format(selectedTermEndDate, DEFAULT_DATE_TIME_FORMAT_NO_TZ)}

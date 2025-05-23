@@ -1,19 +1,4 @@
 export const textStyles = {
-  'labels-small': {
-    fontSize: '12px',
-    textDecoration: 'none',
-    fontFamily: 'DM Sans',
-    fontWeight: 500,
-    fontStyle: 'normal',
-    fontStretch: 'normal',
-    letterSpacing: 0,
-    lineHeight: '16px',
-    paragraphIndent: 0,
-    paragraphSpacing: 0,
-    textCase: 'none',
-  },
-
-  // New Text Styles
   'text-xs-regular': {
     fontSize: '12px',
     textDecoration: 'none',

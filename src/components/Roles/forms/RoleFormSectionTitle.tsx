@@ -58,7 +58,7 @@ export function SectionTitle({
               alignItems="center"
               gap="0.25rem"
             >
-              <Text textStyle="labels-small">{t('learnMore')}</Text>
+              <Text textStyle="text-xs-medium">{t('learnMore')}</Text>
               <Icon
                 as={ArrowUpRight}
                 boxSize="1rem"

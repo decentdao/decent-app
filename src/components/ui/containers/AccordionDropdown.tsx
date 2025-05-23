@@ -14,7 +14,7 @@ function ContentCountBadge({ count }: { count: number | undefined }) {
   }
   return (
     <Box
-      textStyle="labels-small"
+      textStyle="text-xs-medium"
       rounded="9999px"
       bg="celery--2"
       border="1px solid"

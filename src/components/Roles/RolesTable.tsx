@@ -154,7 +154,7 @@ function PaymentsColumn({ paymentsCount }: { paymentsCount?: number }) {
         <Box
           as="span"
           display="inline-block"
-          textStyle="labels-small"
+          textStyle="text-xs-medium"
           lineHeight="1rem"
           textAlign="center"
           bg="celery--2"

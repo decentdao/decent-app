@@ -132,7 +132,7 @@ function RefillForm({ onSubmit, onClose, isDirectDeposit, showNonceInput }: Refi
                   disabled
                 />
                 <Text
-                  textStyle="labels-small"
+                  textStyle="text-xs-medium"
                   color="neutral-7"
                 >
                   {t('balance', {

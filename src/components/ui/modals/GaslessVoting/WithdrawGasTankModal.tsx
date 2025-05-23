@@ -159,7 +159,7 @@ export function WithdrawGasTankModal({
                     />
                     <Text
                       color={overDraft ? 'red-0' : 'neutral-7'}
-                      textStyle="labels-small"
+                      textStyle="text-xs-medium"
                       px="0.25rem"
                     >
                       {`${t('availableBalance', {

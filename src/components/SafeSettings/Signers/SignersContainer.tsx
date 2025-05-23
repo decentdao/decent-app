@@ -270,7 +270,7 @@ export function SignersContainer() {
               flexDirection="column"
             >
               <Text
-                textStyle="labels-small"
+                textStyle="text-xs-medium"
                 color="cosmic-nebula-0"
                 fontWeight="bold"
               >

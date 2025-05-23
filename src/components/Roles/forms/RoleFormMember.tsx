@@ -263,7 +263,7 @@ function RoleFormMemberTermToggle() {
                   />
                 </Flex>
                 <Text
-                  textStyle="labels-small"
+                  textStyle="text-xs-medium"
                   color="neutral-7"
                 >
                   {t('addTermLengthSubTitle')}

@@ -74,7 +74,7 @@ export function Sort({ sortBy, setSortBy, buttonProps }: ISort) {
           <Text
             px="0.5rem"
             my="0.25rem"
-            textStyle="labels-small"
+            textStyle="text-xs-medium"
             color="neutral-7"
           >
             {t('sortTitle')}

@@ -220,7 +220,7 @@ export function DropdownMenu<T>({
                   <>
                     <Text
                       px="1rem"
-                      textStyle="labels-small"
+                      textStyle="text-xs-medium"
                       color="neutral-7"
                     >
                       {title}

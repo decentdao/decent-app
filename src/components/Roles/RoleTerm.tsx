@@ -61,7 +61,7 @@ function RoleTermHeaderTitle({
     >
       <Text textStyle="text-xl-regular">{t('termNumber', { number: termNumber })}</Text>
       <Text
-        textStyle="labels-small"
+        textStyle="text-xs-medium"
         color="neutral-5"
       >
         {!!termPosition && t(termPosition)}
@@ -145,7 +145,7 @@ function RoleTermHeaderStatus({
         color={statusText.iconColor}
       />
       <Text
-        textStyle="labels-small"
+        textStyle="text-xs-medium"
         color={statusText.textColor}
       >
         {statusText.text}
@@ -194,7 +194,7 @@ function RoleTermMemberAddress({ memberAddress }: { memberAddress: Address }) {
   return (
     <Flex flexDir="column">
       <Text
-        textStyle="labels-small"
+        textStyle="text-xs-medium"
         color="neutral-7"
       >
         {t('member')}
@@ -239,7 +239,7 @@ function RoleTermEndDate({ termEndDate }: { termEndDate: Date }) {
   return (
     <Flex flexDir="column">
       <Text
-        textStyle="labels-small"
+        textStyle="text-xs-medium"
         color="neutral-7"
       >
         {t('ending')}

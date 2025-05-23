@@ -76,7 +76,7 @@ function GaslessVotingToggleContent({
           </Text>
           {displayNeedStakingLabel && (
             <Text
-              textStyle={isSettings ? 'labels-small' : 'helper-text'}
+              textStyle={isSettings ? 'text-xs-medium' : 'helper-text'}
               color="neutral-7"
             >
               {t('gaslessStakingRequirement', {
@@ -263,7 +263,7 @@ export function GaslessVotingToggleDAOSettings(props: GaslessVotingToggleProps) 
               justifyContent="space-between"
             >
               <Text
-                textStyle="labels-small"
+                textStyle="text-xs-medium"
                 color="neutral-7"
                 mb="0.25rem"
               >
@@ -321,7 +321,7 @@ export function GaslessVotingToggleDAOSettings(props: GaslessVotingToggleProps) 
               justifyContent="space-between"
             >
               <Text
-                textStyle="labels-small"
+                textStyle="text-xs-medium"
                 color="neutral-7"
                 mb="0.25rem"
               >
