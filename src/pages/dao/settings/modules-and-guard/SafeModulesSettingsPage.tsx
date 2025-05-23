@@ -39,7 +39,7 @@ export function SafeModulesSettingsPage() {
         >
           <Text
             ml={6}
-            textStyle="body-large"
+            textStyle="text-lg-regular"
           >
             {t('modulesTitle')}
           </Text>
@@ -91,7 +91,7 @@ export function SafeModulesSettingsPage() {
         >
           <Text
             ml={6}
-            textStyle="body-large"
+            textStyle="text-lg-regular"
           >
             {t('guardsTitle')}
           </Text>

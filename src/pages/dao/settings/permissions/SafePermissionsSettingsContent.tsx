@@ -60,7 +60,7 @@ export function SafePermissionsSettingsContent() {
         <Text
           ml={6}
           mb={0.5}
-          textStyle="body-large"
+          textStyle="text-lg-regular"
         >
           {t('permissionsTitle')}
         </Text>

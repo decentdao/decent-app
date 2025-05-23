@@ -298,7 +298,7 @@ export function SignersContainer() {
 
       <Text
         ml={6}
-        textStyle="body-large"
+        textStyle="text-lg-regular"
         mb={0.5}
       >
         {t('owners', { ns: 'common' })}
@@ -390,7 +390,7 @@ export function SignersContainer() {
           >
             <Flex flexDirection="column">
               <Text
-                textStyle="body-large"
+                textStyle="text-lg-regular"
                 mb={0.5}
               >
                 {t('threshold', { ns: 'common' })}

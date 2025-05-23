@@ -17,7 +17,7 @@ export function ERC721TokensContainer() {
 
   return (
     <Box width="100%">
-      <Text textStyle="body-large">{t('governanceTokenInfoTitle')}</Text>
+      <Text textStyle="text-lg-regular">{t('governanceTokenInfoTitle')}</Text>
       {erc721Tokens ? (
         <Flex
           justifyContent="space-between"

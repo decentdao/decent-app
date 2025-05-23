@@ -306,7 +306,7 @@ export function SafeGeneralSettingsPage() {
             <Text
               ml={6}
               mb={0.5}
-              textStyle="body-large"
+              textStyle="text-lg-regular"
             >
               {t('daoSettingsGeneral')}
             </Text>
@@ -393,7 +393,7 @@ export function SafeGeneralSettingsPage() {
                 <Text
                   ml={6}
                   mb={0.5}
-                  textStyle="body-large"
+                  textStyle="text-lg-regular"
                 >
                   {t('gaslessVotingLabelSettings', { ns: 'gaslessVoting' })}
                 </Text>
