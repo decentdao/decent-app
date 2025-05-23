@@ -129,7 +129,7 @@ export function AssetSelector({
               <Flex flexDir="column">
                 <Text
                   textStyle="labels-large"
-                  color="white-0"
+                  color="color-white"
                 >
                   {item.label}
                 </Text>

@@ -39,7 +39,7 @@ export function SectionTitle({
             >
               <Text
                 textStyle="heading-small"
-                color="white-0"
+                color="color-white"
               >
                 {title}
               </Text>

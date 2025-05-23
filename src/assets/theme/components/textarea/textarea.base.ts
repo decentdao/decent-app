@@ -13,7 +13,7 @@ const loading = {};
 
 const baseStyle = defineStyle({
   borderRadius: '4px',
-  color: 'white-0',
+  color: 'color-white',
   bg: 'color-black',
   border: '1px solid',
   borderColor: 'color-neutral-900',

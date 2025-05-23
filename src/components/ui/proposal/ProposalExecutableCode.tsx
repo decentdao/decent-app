@@ -13,7 +13,7 @@ function TransactionRow({ paramKey, value }: { paramKey: string; value: string }
     <Flex
       width="full"
       textStyle="snippets-large"
-      color="white-0"
+      color="color-white"
       alignItems="center"
       justifyContent="space-between"
       maxH={{ base: '12.5rem', md: 'initial' }}

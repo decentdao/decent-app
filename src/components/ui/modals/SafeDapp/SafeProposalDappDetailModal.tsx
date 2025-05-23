@@ -135,7 +135,7 @@ export function SafeProposalDappDetailModal({
       >
         <Text
           textStyle="heading-medium"
-          color="white-0"
+          color="color-white"
         >
           {appName}
         </Text>

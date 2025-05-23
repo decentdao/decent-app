@@ -8,7 +8,7 @@ export default {
       backgroundRepeat: 'no-repeat',
       fontFamily: 'DM Sans',
       textStyle: 'body-small',
-      color: 'white-0',
+      color: 'color-white',
       height: '100%',
     },
     html: {

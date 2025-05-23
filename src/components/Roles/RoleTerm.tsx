@@ -218,13 +218,13 @@ function RoleTermMemberAddress({ memberAddress }: { memberAddress: Address }) {
             <Icon
               as={Copy}
               boxSize="1rem"
-              color="white-0"
+              color="color-white"
             />
           }
         >
           <Text
             textStyle="labels-large"
-            color="white-0"
+            color="color-white"
           >
             {accountDisplayName}
           </Text>

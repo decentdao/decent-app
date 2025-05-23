@@ -34,7 +34,7 @@ const baseStyle = definePartsStyle({
   stepper: {},
   field: {
     borderRadius: '0.5rem',
-    color: 'white-0',
+    color: 'color-white',
     bg: 'color-black',
     boxShadow: '0px 1px 0px 0px rgba(255, 255, 255, 0.16), 0px 0px 0px 1px rgba(0, 0, 0, 0.68)',
     borderColor: 'color-neutral-900',

@@ -77,7 +77,7 @@ function PaymentDate({ label, date }: { label: string; date?: Date }) {
         />
         <Text
           textStyle="labels-small"
-          color={date ? 'white-0' : 'color-neutral-400'}
+          color={date ? 'color-white' : 'color-neutral-400'}
         >
           {date ? format(date, DEFAULT_DATE_FORMAT) : '---'}
         </Text>
@@ -110,7 +110,7 @@ function TermedAssigned({ termNumber }: { termNumber: number }) {
         />
         <Text
           textStyle="labels-small"
-          color="white-0"
+          color="color-white"
         >
           {t('termNumber', { number: termNumber })}
         </Text>
@@ -166,7 +166,7 @@ function PaymentDetailsTop({ payment, onClick, isActiveStream }: PaymentDetailsT
             />
             <Text
               textStyle="heading-small"
-              color="white-0"
+              color="color-white"
             >
               {payment.amount?.bigintValue
                 ? formatCoin(

@@ -192,7 +192,7 @@ export function SendAssetsModal({
               <HStack
                 justify="space-between"
                 textStyle="color-neutral-300"
-                color="white-0"
+                color="color-white"
                 marginTop="0.75rem"
               >
                 <Text

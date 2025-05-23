@@ -1,6 +1,4 @@
 export default {
-  'white-0': '#f8f4fc',
-  'white-1': '#D9D9D9',
   'white-alpha-16': '#f8f4fc29',
   'white-alpha-04': '#ffffff0a',
   'white-alpha-08': '#ffffff14',

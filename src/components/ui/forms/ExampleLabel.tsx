@@ -8,7 +8,7 @@ export default function ExampleLabel({ children, ...rest }: PropsWithChildren<Te
       borderRadius="2px"
       px="6px"
       py="2px"
-      color="white-0"
+      color="color-white"
       textStyle="snippets-small"
       as="span"
       {...rest}

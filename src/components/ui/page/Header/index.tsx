@@ -52,7 +52,7 @@ function HeaderLogo() {
               <Icon
                 boxSize="1.5rem"
                 as={List}
-                color="white-0"
+                color="color-white"
                 aria-hidden
               />
             }

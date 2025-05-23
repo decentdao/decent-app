@@ -152,7 +152,7 @@ export default function RolesDetails({
       <Flex justifyContent="space-between">
         <Text
           textStyle="heading-large"
-          color="white-0"
+          color="color-white"
           my="1rem"
         >
           {roleHat.name}
@@ -206,7 +206,7 @@ export default function RolesDetails({
             bg="color-neutral-900"
             color="color-lilac-100"
             _hover={{
-              color: 'white-0',
+              color: 'color-white',
               bg: 'color-neutral-800',
             }}
             cursor="pointer"

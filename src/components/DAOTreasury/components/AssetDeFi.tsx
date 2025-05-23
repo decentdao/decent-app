@@ -90,7 +90,7 @@ export function DeFiRow({ asset }: { asset: DefiBalance }) {
           />
         </DecentTooltip>
         <EtherscanLink
-          color="white-0"
+          color="color-white"
           _hover={{ bg: 'transparent' }}
           padding={0}
           borderWidth={0}

@@ -92,7 +92,7 @@ export function ModalBase({
                 <HStack>
                   {warn && <Warning size="20" />}
                   <Text
-                    color="white-0"
+                    color="color-white"
                     textStyle="heading-small"
                   >
                     {title}

@@ -76,7 +76,7 @@ function Signer({
           value={!!newSigner ? newSigner.inputValue : signer.address}
           isDisabled={!newSigner}
           textDecoration={markedForRemoval ? 'line-through' : 'none'}
-          color={!!newSigner ? 'white-0' : 'color-neutral-900'}
+          color={!!newSigner ? 'color-white' : 'color-neutral-900'}
           isInvalid={isInvalid}
           onChange={e => {
             // Find and overwrite the address input value of this new signer with the input value
@@ -286,8 +286,8 @@ export function SignersContainer() {
             </Flex>
           </Flex>
           <Button
-            bg="white-0"
-            _hover={{ bg: 'white-0' }}
+            bg="color-white"
+            _hover={{ bg: 'color-white' }}
             size="sm"
             onClick={handleModifyGovernance}
           >
@@ -414,7 +414,9 @@ export function SignersContainer() {
                   setFieldValue('multisig.signerThreshold', updatedValue);
                 }}
                 color={
-                  values.multisig?.signerThreshold === undefined ? 'color-neutral-300' : 'white-0'
+                  values.multisig?.signerThreshold === undefined
+                    ? 'color-neutral-300'
+                    : 'color-white'
                 }
                 value={values.multisig?.signerThreshold ?? safe?.threshold}
                 isInvalid={!!multisigEditFormikErrors?.threshold}

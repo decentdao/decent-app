@@ -44,7 +44,7 @@ export function RadioWithText({
           ml="0.25rem"
         >
           <HStack>
-            <Text color={disabled ? 'color-neutral-700' : 'white-0'}>{label}</Text>
+            <Text color={disabled ? 'color-neutral-700' : 'color-white'}>{label}</Text>
             {tooltip && (
               <SupportTooltip
                 label={tooltip}

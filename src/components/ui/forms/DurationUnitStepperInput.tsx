@@ -27,7 +27,7 @@ export default function DurationUnitStepperInput({
   secondsValue,
   onSecondsValueChange,
   minSeconds = 0,
-  color = 'white-0',
+  color = 'color-white',
 }: {
   secondsValue: number;
   onSecondsValueChange: (val: number) => void;

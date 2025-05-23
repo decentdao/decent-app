@@ -93,7 +93,7 @@ export function DropdownMenu<T>({
               >
                 <Text
                   textStyle="body-large"
-                  color="white-0"
+                  color="color-white"
                 >
                   {selectedItem?.label ?? selectPlaceholder}
                 </Text>
@@ -182,7 +182,7 @@ export function DropdownMenu<T>({
                             )}
                             <Text
                               textStyle="labels-large"
-                              color="white-0"
+                              color="color-white"
                             >
                               {item.label}
                             </Text>
@@ -280,7 +280,7 @@ export function DropdownMenu<T>({
                             )}
                             <Text
                               textStyle="labels-large"
-                              color="white-0"
+                              color="color-white"
                             >
                               {item.label}
                             </Text>
