@@ -180,7 +180,7 @@ function ProposalVotingSection({
         </Flex>
 
         <Text
-          color="celery-0"
+          color="color-green-400"
           mt={1}
         >
           {proposalVotingWeight}

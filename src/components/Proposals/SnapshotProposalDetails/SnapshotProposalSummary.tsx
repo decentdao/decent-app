@@ -57,7 +57,7 @@ export default function SnapshotProposalSummary({ proposal }: ISnapshotProposalS
       justifyContent="flex-end"
       alignItems="flex-start"
       variant="text"
-      color="celery-0"
+      color="color-green-400"
       onClick={toggleShowVotingPower}
     >
       {showVotingPower ? votingWeight : t('show')}

@@ -307,7 +307,7 @@ export function DaoHierarchyNode({
               my={`${NODE_HEIGHT_REM / 2.5}rem`}
               ml="0.5rem"
               boxSize="32px"
-              color={currentSafe?.address === childAddress ? 'celery-0' : 'neutral-6'}
+              color={currentSafe?.address === childAddress ? 'color-green-400' : 'neutral-6'}
             />
 
             <DaoHierarchyNode

@@ -21,7 +21,7 @@ export default function ExternalLink({
         textDecoration: 'underline',
       },
       active: {
-        color: 'celery--2',
+        color: 'color-green-500',
       },
     },
     grey: {
@@ -53,12 +53,12 @@ export default function ExternalLink({
   const pillLinkStyles = {
     green: {
       hover: {
-        bg: 'celery--6',
-        borderColor: 'celery--6',
+        bg: 'color-green-950',
+        borderColor: 'color-green-950',
       },
       active: {
-        bg: 'celery--5',
-        borderColor: 'celery--5',
+        bg: 'color-green-800',
+        borderColor: 'color-green-800',
         borderWidth: '1px',
       },
     },
@@ -97,7 +97,7 @@ export default function ExternalLink({
   };
 
   const linkColor = {
-    green: 'celery-0',
+    green: 'color-green-400',
     grey: 'neutral-6',
     black: 'black',
     lilac: 'lilac--3',

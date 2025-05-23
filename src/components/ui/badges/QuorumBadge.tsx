@@ -64,7 +64,7 @@ export default function QuorumBadge({ proposal }: { proposal: AzoriusProposal })
       reachedQuorum
     : reachedQuorum >= totalQuorum;
 
-  const displayColor = totalVotesCasted !== 0n && meetsQuorum ? 'celery--3' : 'neutral-7';
+  const displayColor = totalVotesCasted !== 0n && meetsQuorum ? 'color-green-600' : 'neutral-7';
   return (
     <Box
       rounded="md"

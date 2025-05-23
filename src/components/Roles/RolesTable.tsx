@@ -157,7 +157,7 @@ function PaymentsColumn({ paymentsCount }: { paymentsCount?: number }) {
           textStyle="labels-small"
           lineHeight="1rem"
           textAlign="center"
-          bg="celery--2"
+          bg="color-green-500"
           color="neutral-3"
           borderColor="neutral-3"
           borderWidth="2px"
