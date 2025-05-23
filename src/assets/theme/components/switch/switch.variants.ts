@@ -56,7 +56,7 @@ const secondary = defineStyle({
     _disabled: secondaryDisabled.track,
   },
   thumb: {
-    backgroundColor: 'neutral-10',
+    backgroundColor: 'color-neutral-50',
     borderColor: 'white-0',
     _hover: {
       _disabled: secondaryDisabled.thumb,
