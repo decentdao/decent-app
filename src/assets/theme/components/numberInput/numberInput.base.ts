@@ -19,7 +19,7 @@ const disabled = {
 const loading = {};
 
 const invalid = {
-  bg: 'red--3',
+  bg: 'color-error-950',
   color: 'color-error-400',
   _placeholder: {
     color: 'color-error-500',

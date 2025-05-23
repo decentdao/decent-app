@@ -22,7 +22,7 @@ const baseStyle = defineStyle({
   width: '100%',
   _invalid: {
     borderColor: 'color-error-500',
-    bg: 'red--3',
+    bg: 'color-error-950',
     color: 'color-error-400',
     _placeholder: {
       color: 'color-error-500',
@@ -56,7 +56,7 @@ const baseStyle = defineStyle({
     boxShadow: '0px 0px 0px 3px #534D58',
     _invalid: {
       borderColor: 'color-error-500',
-      bg: 'red--3',
+      bg: 'color-error-950',
       color: 'color-error-400',
       _placeholder: {
         color: 'color-error-500',

@@ -1,5 +1,4 @@
 export default {
-  'red--3': '#1f0a0d',
   'white-0': '#f8f4fc',
   'white-1': '#D9D9D9',
   'white-alpha-16': '#f8f4fc29',
