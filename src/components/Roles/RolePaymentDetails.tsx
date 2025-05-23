@@ -73,7 +73,7 @@ function PaymentDate({ label, date }: { label: string; date?: Date }) {
         <Icon
           boxSize="1rem"
           as={CalendarBlank}
-          color={date ? 'lilac-0' : 'neutral-6'}
+          color={date ? 'color-lilac-100' : 'neutral-6'}
         />
         <Text
           textStyle="labels-small"

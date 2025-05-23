@@ -5,10 +5,10 @@ const primaryDisabled = {
 };
 
 const primary = defineStyle({
-  bg: 'lilac-0',
-  color: 'cosmic-nebula-0',
+  bg: 'color-lilac-100',
+  color: 'color-lilac-700',
   _hover: {
-    bg: 'lilac--1',
+    bg: 'color-lilac-200',
     _disabled: {
       ...primaryDisabled,
     },
@@ -17,7 +17,7 @@ const primary = defineStyle({
     ...primaryDisabled,
   },
   _active: {
-    bg: 'lilac--2',
+    bg: 'color-lilac-300',
   },
 });
 
@@ -27,11 +27,11 @@ const secondaryDisabled = {
 };
 const secondary = defineStyle({
   border: '1px solid',
-  borderColor: 'lilac-0',
-  color: 'lilac-0',
+  borderColor: 'color-lilac-100',
+  color: 'color-lilac-100',
   _hover: {
-    borderColor: 'lilac--1',
-    color: 'lilac--1',
+    borderColor: 'color-lilac-200',
+    color: 'color-lilac-200',
     _disabled: {
       ...secondaryDisabled,
     },
@@ -40,8 +40,8 @@ const secondary = defineStyle({
     ...secondaryDisabled,
   },
   _active: {
-    borderColor: 'lilac--2',
-    color: 'lilac--2',
+    borderColor: 'color-lilac-300',
+    color: 'color-lilac-300',
   },
 });
 
@@ -54,10 +54,10 @@ const tertiaryLoading = {
 };
 const tertiary = defineStyle({
   bg: 'transparent',
-  color: 'lilac-0',
+  color: 'color-lilac-100',
   _hover: {
     bg: 'white-alpha-08',
-    color: 'lilac--1',
+    color: 'color-lilac-200',
     _disabled: {
       ...tertiaryDisabled,
       _loading: tertiaryLoading,
@@ -69,7 +69,7 @@ const tertiary = defineStyle({
   },
   _active: {
     bg: 'white-alpha-08',
-    color: 'lilac--2',
+    color: 'color-lilac-300',
   },
   _focus: {},
 });

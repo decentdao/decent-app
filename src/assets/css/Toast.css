@@ -56,14 +56,14 @@
 .sonner-toast[data-rich-colors='true'][data-sonner-toast][data-type='loading'] {
   background-color: var(--colors-neutral-3);
   border: 1px solid var(--colors-neutral-4);
-  color: var(--colors-lilac-0);
+  color: var(--colors-color-lilac-100);
 }
 
 .sonner-toast[data-rich-colors='true'][data-sonner-toast][data-type='info']
   button[data-close-button],
 .sonner-toast[data-rich-colors='true'][data-sonner-toast][data-type='loading']
   button[data-close-button] {
-  color: var(--colors-lilac-0);
+  color: var(--colors-color-lilac-100);
 }
 
 .sonner-toast[data-rich-colors='true'][data-sonner-toast][data-type='error'] {

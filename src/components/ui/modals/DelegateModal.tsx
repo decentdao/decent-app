@@ -208,7 +208,7 @@ export function DelegateModal({ close }: { close: Function }) {
               <Button
                 pr={0}
                 variant="text"
-                color="lilac--3"
+                color="color-lilac-600"
                 onClick={() => (user.address ? setFieldValue('address', user.address) : null)}
               >
                 {t('linkSelfDelegate')}

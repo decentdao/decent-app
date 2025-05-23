@@ -28,12 +28,12 @@ export function RadioWithText({
         type="radio"
         isDisabled={disabled}
         bg="color-black"
-        color="lilac--3"
+        color="color-lilac-600"
         _disabled={{ bg: 'neutral-6', color: 'neutral-5' }}
-        _hover={{ bg: 'color-black', color: 'lilac--4' }}
+        _hover={{ bg: 'color-black', color: 'color-lilac-800' }}
         _checked={{
           bg: 'color-black',
-          color: 'lilac--3',
+          color: 'color-lilac-600',
           borderWidth: '6px',
         }}
         size="lg"
@@ -50,7 +50,7 @@ export function RadioWithText({
                 label={tooltip}
                 closeDelay={1000}
                 pointerEvents="all"
-                color="lilac-0"
+                color="color-lilac-100"
               />
             )}
           </HStack>

@@ -45,7 +45,7 @@ export function AddStrategyPermissionModal({
         <Show above="md">
           <IconButton
             variant="ghost"
-            color="lilac-0"
+            color="color-lilac-100"
             aria-label={t('close', { ns: 'common' })}
             onClick={closeModal}
             icon={<X size={24} />}
@@ -76,7 +76,7 @@ export function AddStrategyPermissionModal({
             }
           }}
         >
-          <Box color="lilac-0">
+          <Box color="color-lilac-100">
             <Scroll size={24} />
           </Box>
           <Flex

@@ -208,7 +208,7 @@ export default function RolesDetailsDrawer({
                 ml="-0.75rem"
                 rounded="1rem"
                 bg="neutral-3"
-                color="lilac-0"
+                color="color-lilac-100"
                 _hover={{
                   color: 'white-0',
                   bg: 'neutral-4',

@@ -18,9 +18,9 @@ const BADGE_MAPPING: Record<
 > = {
   [FractalProposalState.ACTIVE]: {
     tooltipKey: 'stateActiveTip',
-    bg: 'lilac-0',
-    textColor: 'cosmic-nebula-0',
-    _hover: { bg: 'lilac--1', textColor: 'cosmic-nebula-0' },
+    bg: 'color-lilac-100',
+    textColor: 'color-lilac-700',
+    _hover: { bg: 'color-lilac-200', textColor: 'color-lilac-700' },
   },
   [FractalProposalState.TIMELOCKED]: {
     tooltipKey: 'stateTimelockedTip',
@@ -48,15 +48,15 @@ const BADGE_MAPPING: Record<
   },
   [FractalProposalState.TIMELOCKABLE]: {
     tooltipKey: 'stateTimelockableTip',
-    bg: 'lilac-0',
-    textColor: 'cosmic-nebula-0',
-    _hover: { bg: 'lilac--1', textColor: 'cosmic-nebula-0' },
+    bg: 'color-lilac-100',
+    textColor: 'color-lilac-700',
+    _hover: { bg: 'color-lilac-200', textColor: 'color-lilac-700' },
   },
   [FractalProposalState.MODULE]: {
     tooltipKey: 'stateModuleTip',
-    bg: 'lilac-0',
-    textColor: 'cosmic-nebula-0',
-    _hover: { bg: 'lilac--1', textColor: 'cosmic-nebula-0' },
+    bg: 'color-lilac-100',
+    textColor: 'color-lilac-700',
+    _hover: { bg: 'color-lilac-200', textColor: 'color-lilac-700' },
   },
   [FractalProposalState.EXPIRED]: {
     tooltipKey: 'stateExpiredTip',

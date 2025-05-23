@@ -110,7 +110,7 @@ function AddSignerModal({
                 <Flex ref={tooltipContainer}>
                   <SupportTooltip
                     containerRef={tooltipContainer}
-                    color="lilac-0"
+                    color="color-lilac-100"
                     label={t('updateSignersTooltip')}
                     mx="2"
                     mt="1"

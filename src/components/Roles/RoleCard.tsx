@@ -51,7 +51,7 @@ export function AvatarAndRoleName({
         </Text>
         <Text
           textStyle="labels-large"
-          color="lilac-0"
+          color="color-lilac-100"
           _hover={{
             color: 'white-0',
             bg: 'neutral-4',
@@ -177,7 +177,7 @@ export function RoleCardShort({
       <Flex justifyContent="space-between">
         <Text
           textStyle="heading-small"
-          color="lilac-0"
+          color="color-lilac-100"
         >
           {name}
         </Text>
@@ -188,7 +188,7 @@ export function RoleCardShort({
           <EditBadge editStatus={editStatus} />
           <Icon
             as={CaretCircleRight}
-            color="lilac-0"
+            color="color-lilac-100"
             boxSize="1.5rem"
           />
         </Flex>

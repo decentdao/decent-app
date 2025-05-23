@@ -41,12 +41,12 @@ export function SettingsPermissionsStrategyForm({
           ref={tooltipContainerRef}
         >
           <Text textStyle="heading-small">{t('asset')}</Text>
-          <Text color="lilac-0">*</Text>
+          <Text color="color-lilac-100">*</Text>
           <ModalTooltip
             containerRef={tooltipContainerRef}
             label={t('assetTooltip')}
           >
-            <Box color="lilac-0">
+            <Box color="color-lilac-100">
               <Info />
             </Box>
           </ModalTooltip>

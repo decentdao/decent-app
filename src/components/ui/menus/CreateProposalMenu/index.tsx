@@ -73,7 +73,7 @@ export function CreateProposalMenu({ safeAddress }: { safeAddress: Address }) {
         paddingY: '0.25rem',
         _hover: { bg: 'neutral-2' },
         _active: {
-          color: 'lilac-0',
+          color: 'color-lilac-100',
           bg: 'neutral-2',
         },
       }}

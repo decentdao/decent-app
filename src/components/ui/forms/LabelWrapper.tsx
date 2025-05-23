@@ -35,7 +35,7 @@ function LabelWrapper({
           textStyle="labels-large"
         >
           <Text>{label}</Text>
-          {isRequired && <Text color="lilac-0">*</Text>}
+          {isRequired && <Text color="color-lilac-100">*</Text>}
           {!!tooltipContent && (
             <DecentTooltip
               hasArrow

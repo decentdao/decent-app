@@ -79,7 +79,7 @@ export default function ProposalTransactions({
                     }}
                     p="0.25rem"
                     textStyle="heading-small"
-                    color="lilac-0"
+                    color="color-lilac-100"
                   >
                     <Text textStyle="heading-small">
                       <Flex
@@ -98,7 +98,7 @@ export default function ProposalTransactions({
                       variant="unstyled"
                       onClick={() => removeTransaction(index)}
                       minWidth="auto"
-                      color="lilac-0"
+                      color="color-lilac-100"
                       _disabled={{ opacity: 0.4, cursor: 'default' }}
                       sx={{ '&:disabled:hover': { color: 'inherit', opacity: 0.4 } }}
                       isDisabled={pendingTransaction}

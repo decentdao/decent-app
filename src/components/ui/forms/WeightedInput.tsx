@@ -12,7 +12,7 @@ interface IWeightedInput {
 export default function WeightedInput({ label, value, totalValue, onChange }: IWeightedInput) {
   return (
     <Flex
-      color="lilac-0"
+      color="color-lilac-100"
       bg="neutral-3"
       borderRadius="0.5rem"
       mt={4}
@@ -52,7 +52,7 @@ export default function WeightedInput({ label, value, totalValue, onChange }: IW
           bg="transparent"
           padding={0}
           textAlign="center"
-          color="lilac-0"
+          color="color-lilac-100"
           width="48px"
         />
         <IconButton

@@ -80,7 +80,7 @@ export default function RolesDetailsDrawerMobile({
                 icon={
                   <Icon
                     as={PencilWithLineIcon}
-                    color="lilac-0"
+                    color="color-lilac-100"
                     aria-hidden
                   />
                 }

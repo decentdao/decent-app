@@ -53,7 +53,7 @@ export default function DappCard({
             height={10}
             src={iconUrl}
             name={title}
-            color="lilac-0"
+            color="color-lilac-100"
           />
         </Flex>
         <Text textStyle="body-large">{title}</Text>

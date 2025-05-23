@@ -46,7 +46,7 @@ export function SectionTitle({
               {tooltipContent && (
                 <Icon
                   as={Info}
-                  color="lilac-0"
+                  color="color-lilac-100"
                 />
               )}
             </Flex>

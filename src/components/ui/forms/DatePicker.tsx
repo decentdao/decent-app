@@ -167,7 +167,7 @@ function TodayBox({ isTodaySelected }: { isTodaySelected: () => boolean }) {
   return (
     <Box
       ml={todayDotLeftMargin}
-      bg={isTodaySelected() ? 'cosmic-nebula-0' : 'white-1'}
+      bg={isTodaySelected() ? 'color-lilac-700' : 'white-1'}
       borderRadius="50%"
       w="4px"
       h="4px"

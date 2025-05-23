@@ -167,7 +167,7 @@ export function PaginationButton({ onClick }: { onClick: () => void }) {
         px="0.75rem"
         borderRadius="full"
         bg="neutral-3"
-        color="lilac-0"
+        color="color-lilac-100"
         onClick={onClick}
       >
         {t('textMoreTransactions')}

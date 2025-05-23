@@ -65,7 +65,7 @@ function FixedDate({ formIndex, disabled }: { formIndex: number; disabled: boole
           <Icon
             as={ArrowRight}
             boxSize="1.5rem"
-            color="lilac-0"
+            color="color-lilac-100"
           />
           <Field name={`roleEditing.payments.[${formIndex}].endDate`}>
             {({ field }: FieldProps<Date, RoleFormValues>) => (

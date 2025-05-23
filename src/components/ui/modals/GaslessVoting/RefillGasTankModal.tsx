@@ -203,8 +203,8 @@ export function RefillGasTankModal({
         <Checkbox
           isChecked={isDirectDeposit}
           onChange={e => setIsDirectDeposit(e.target.checked)}
-          borderColor="lilac-0"
-          iconColor="lilac-0"
+          borderColor="color-lilac-100"
+          iconColor="color-lilac-100"
           sx={{
             '& .chakra-checkbox__control': {
               borderRadius: '0.25rem',

@@ -9,11 +9,11 @@ const info = definePartsStyle({
     bg: 'neutral-3',
     border: '1px solid',
     borderColor: 'neutral-4',
-    color: 'lilac-0',
+    color: 'color-lilac-100',
   },
   description: {},
   icon: {
-    color: 'lilac-0',
+    color: 'color-lilac-100',
   },
   spinner: {},
 });

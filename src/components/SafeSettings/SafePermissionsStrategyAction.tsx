@@ -31,7 +31,7 @@ export function SafePermissionsStrategyAction({
     >
       <Text as="span">{title}</Text>
       <Text
-        color="lilac-0"
+        color="color-lilac-100"
         as="span"
       >
         {` ${t('createProposals')} `}
@@ -39,11 +39,11 @@ export function SafePermissionsStrategyAction({
       <Text as="span">{` ${t('editPermissionActionDescription')} `}</Text>
       <Icon
         as={Coins}
-        color="lilac-0"
+        color="color-lilac-100"
       />
       <Text
         as="span"
-        color="lilac-0"
+        color="color-lilac-100"
       >
         {` ${proposerThreshold.value} ${azoriusGovernance.votesToken?.symbol || t('votingWeightThreshold')} `}
       </Text>

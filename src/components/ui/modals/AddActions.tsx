@@ -49,7 +49,7 @@ function ActionCard({
           w="2rem"
           h="2rem"
           mb="1rem"
-          color={isDisabled ? 'neutral-6' : 'lilac-0'}
+          color={isDisabled ? 'neutral-6' : 'color-lilac-100'}
         />
         <Text
           textStyle="heading-small"

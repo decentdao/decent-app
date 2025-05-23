@@ -20,7 +20,7 @@ export function DappInteractionActionCard({
             as={ArrowsDownUp}
             w="1.5rem"
             h="1.5rem"
-            color="lilac-0"
+            color="color-lilac-100"
           />
           {action.content}
         </Flex>

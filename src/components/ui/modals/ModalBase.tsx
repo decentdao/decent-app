@@ -86,7 +86,7 @@ export function ModalBase({
           {title && (
             <>
               <Flex
-                color="lilac-0"
+                color="color-lilac-100"
                 marginBottom="1rem"
               >
                 <HStack>

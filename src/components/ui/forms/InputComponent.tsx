@@ -85,7 +85,7 @@ export function LabelComponent(props: Omit<BaseProps, 'value'>) {
             spacing={0}
           >
             <Text>{label}</Text>
-            {isRequired && <Text color="lilac-0">*</Text>}
+            {isRequired && <Text color="color-lilac-100">*</Text>}
           </HStack>
         ) : (
           label

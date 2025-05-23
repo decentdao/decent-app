@@ -25,7 +25,7 @@ export default function ExampleTemplateCard({
         <Icon
           w="50px"
           h="50px"
-          color="lilac-0"
+          color="color-lilac-100"
           borderRadius={0}
           textStyle="heading-large"
           as={icon}

@@ -64,7 +64,7 @@ function SettingsLink({
         <Flex
           gap={4}
           alignItems="center"
-          color="lilac-0"
+          color="color-lilac-100"
         >
           {leftIcon}
           <Text color="white-0">{title}</Text>
@@ -135,7 +135,7 @@ function SettingsNavigationItem({
         <Flex
           gap={4}
           alignItems="center"
-          color="lilac-0"
+          color="color-lilac-100"
           justifyContent="space-between"
         >
           {leftIcon}

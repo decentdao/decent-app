@@ -442,7 +442,7 @@ export function AddCreateProposalPermissionModal({
                 <IconButton
                   size="button-md"
                   variant="ghost"
-                  color="lilac-0"
+                  color="color-lilac-100"
                   aria-label={t('back', { ns: 'common' })}
                   onClick={closeModal}
                   icon={<ArrowLeft size={24} />}
@@ -462,7 +462,7 @@ export function AddCreateProposalPermissionModal({
               <IconButton
                 size="button-md"
                 variant="ghost"
-                color="lilac-0"
+                color="color-lilac-100"
                 aria-label={t('close', { ns: 'common' })}
                 onClick={closeModal}
                 icon={<X size={24} />}

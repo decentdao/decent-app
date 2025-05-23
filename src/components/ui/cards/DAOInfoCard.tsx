@@ -67,7 +67,7 @@ export function DAOInfoCard() {
                 _hover={{ textDecoration: 'none', bg: 'neutral-4' }}
                 _active={{ bg: 'neutral-3', borderColor: 'neutral-4' }}
                 bg="neutral-3"
-                color="lilac-0"
+                color="color-lilac-100"
                 borderRadius="625rem"
                 p="0.25rem 0.75rem"
                 textStyle="body-large"

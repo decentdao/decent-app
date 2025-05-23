@@ -57,7 +57,7 @@ export function StepButtons({
           variant="text"
           isDisabled={transactionPending || isSubmitting}
           onClick={() => navigate(prevStepUrl)}
-          color="lilac-0"
+          color="color-lilac-100"
           px="2rem"
         >
           <Icon as={CaretLeft} />
