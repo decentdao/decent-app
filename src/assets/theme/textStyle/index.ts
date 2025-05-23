@@ -1,17 +1,4 @@
 export const textStyles = {
-  'heading-x-large': {
-    fontSize: '40px',
-    textDecoration: 'none',
-    fontFamily: 'DM Sans',
-    fontWeight: 400,
-    fontStyle: 'normal',
-    fontStretch: 'normal',
-    letterSpacing: 0,
-    lineHeight: '48px',
-    paragraphIndent: 0,
-    paragraphSpacing: 0,
-    textCase: 'none',
-  },
   'heading-large': {
     fontSize: '32px',
     textDecoration: 'none',
