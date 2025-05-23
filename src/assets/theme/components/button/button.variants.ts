@@ -75,7 +75,7 @@ const tertiary = defineStyle({
 });
 
 const dangerDisabled = {
-  borderColor: 'red--2',
+  borderColor: 'color-error-900',
   color: 'color-error-800',
 };
 
