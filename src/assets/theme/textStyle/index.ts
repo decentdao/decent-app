@@ -25,32 +25,6 @@ export const textStyles = {
     paragraphSpacing: 0,
     textCase: 'none',
   },
-  'snippets-large': {
-    fontSize: '14px',
-    textDecoration: 'none',
-    fontFamily: 'DM Mono',
-    fontWeight: 400,
-    fontStyle: 'normal',
-    fontStretch: 'normal',
-    letterSpacing: 0,
-    lineHeight: '20px',
-    paragraphIndent: 0,
-    paragraphSpacing: 0,
-    textCase: 'none',
-  },
-  'snippets-small': {
-    fontSize: '12px',
-    textDecoration: 'none',
-    fontFamily: 'DM Mono',
-    fontWeight: 400,
-    fontStyle: 'normal',
-    fontStretch: 'normal',
-    letterSpacing: 0,
-    lineHeight: '16px',
-    paragraphIndent: 0,
-    paragraphSpacing: 0,
-    textCase: 'none',
-  },
 
   // New Text Styles
   'text-xs-regular': {
