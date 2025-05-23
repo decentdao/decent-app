@@ -59,7 +59,7 @@ export function MarkdownViewer({ content }: { content: string }) {
           return { type: 'closeTag', tagName: 'a' };
         },
         image(node, context) {
-          const { destination } = node as any;
+          const { title, destination } = node as any;
           const { getChildrenText, skipChildren } = context;
 
           skipChildren();
@@ -71,7 +71,7 @@ export function MarkdownViewer({ content }: { content: string }) {
             attributes: {
               src: transformURI(escapeXml(destination)),
               alt: getChildrenText(node),
-              onerror: "this.style.display='none';",
+              ...(title && { title: escapeXml(title) }),
             },
           };
         },
