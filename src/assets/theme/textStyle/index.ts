@@ -1,17 +1,4 @@
 export const textStyles = {
-  'heading-medium': {
-    fontSize: '24px',
-    textDecoration: 'none',
-    fontFamily: 'DM Sans',
-    fontWeight: 400,
-    fontStyle: 'normal',
-    fontStretch: 'normal',
-    letterSpacing: 0,
-    lineHeight: '32px',
-    paragraphIndent: 0,
-    paragraphSpacing: 0,
-    textCase: 'none',
-  },
   'heading-small': {
     fontSize: '20px',
     textDecoration: 'none',

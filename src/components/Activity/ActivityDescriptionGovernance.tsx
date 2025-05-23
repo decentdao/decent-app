@@ -38,7 +38,7 @@ export function ProposalTitle({ activity }: { activity: FractalProposal }) {
       >
         <Text
           as="span"
-          textStyle="heading-medium"
+          textStyle="text-2xl-regular"
           maxW="100%"
         >
           {titleText}
