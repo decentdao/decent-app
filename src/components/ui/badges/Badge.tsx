@@ -20,7 +20,7 @@ const BADGE_MAPPING: Record<
     tooltipKey: 'stateActiveTip',
     bg: 'color-lilac-100',
     textColor: 'cosmic-nebula-0',
-    _hover: { bg: 'lilac--1', textColor: 'cosmic-nebula-0' },
+    _hover: { bg: 'color-lilac-200', textColor: 'cosmic-nebula-0' },
   },
   [FractalProposalState.TIMELOCKED]: {
     tooltipKey: 'stateTimelockedTip',
@@ -50,13 +50,13 @@ const BADGE_MAPPING: Record<
     tooltipKey: 'stateTimelockableTip',
     bg: 'color-lilac-100',
     textColor: 'cosmic-nebula-0',
-    _hover: { bg: 'lilac--1', textColor: 'cosmic-nebula-0' },
+    _hover: { bg: 'color-lilac-200', textColor: 'cosmic-nebula-0' },
   },
   [FractalProposalState.MODULE]: {
     tooltipKey: 'stateModuleTip',
     bg: 'color-lilac-100',
     textColor: 'cosmic-nebula-0',
-    _hover: { bg: 'lilac--1', textColor: 'cosmic-nebula-0' },
+    _hover: { bg: 'color-lilac-200', textColor: 'cosmic-nebula-0' },
   },
   [FractalProposalState.EXPIRED]: {
     tooltipKey: 'stateExpiredTip',

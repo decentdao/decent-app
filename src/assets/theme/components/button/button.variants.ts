@@ -8,7 +8,7 @@ const primary = defineStyle({
   bg: 'color-lilac-100',
   color: 'cosmic-nebula-0',
   _hover: {
-    bg: 'lilac--1',
+    bg: 'color-lilac-200',
     _disabled: {
       ...primaryDisabled,
     },
@@ -30,8 +30,8 @@ const secondary = defineStyle({
   borderColor: 'color-lilac-100',
   color: 'color-lilac-100',
   _hover: {
-    borderColor: 'lilac--1',
-    color: 'lilac--1',
+    borderColor: 'color-lilac-200',
+    color: 'color-lilac-200',
     _disabled: {
       ...secondaryDisabled,
     },
@@ -57,7 +57,7 @@ const tertiary = defineStyle({
   color: 'color-lilac-100',
   _hover: {
     bg: 'white-alpha-04',
-    color: 'lilac--1',
+    color: 'color-lilac-200',
     _disabled: {
       ...tertiaryDisabled,
       _loading: tertiaryLoading,
