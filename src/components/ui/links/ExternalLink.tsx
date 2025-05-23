@@ -67,8 +67,8 @@ export default function ExternalLink({
         bg: 'color-neutral-950',
       },
       active: {
-        bg: 'neutral-5',
-        borderColor: 'neutral-5',
+        bg: 'color-neutral-700',
+        borderColor: 'color-neutral-700',
         borderWidth: '1px',
       },
     },

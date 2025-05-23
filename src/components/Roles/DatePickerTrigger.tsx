@@ -28,9 +28,9 @@ export function DatePickerTrigger({ selectedDate, disabled }: DatePickerTriggerP
       <Icon
         as={CalendarBlank}
         boxSize="24px"
-        color="neutral-5"
+        color="color-neutral-700"
       />
-      <Text color={disabled ? 'neutral-7' : selectedDateStr ? 'white-0' : 'neutral-5'}>
+      <Text color={disabled ? 'neutral-7' : selectedDateStr ? 'white-0' : 'color-neutral-700'}>
         {selectedDateStr ?? t('select')}
       </Text>
     </Flex>

@@ -41,7 +41,7 @@ function DateDisplayBox({ date }: { date: Date | undefined }) {
       <Icon
         as={CalendarBlank}
         boxSize="24px"
-        color="neutral-5"
+        color="color-neutral-700"
       />
       <Box color="neutral-7">{(date && format(date, DEFAULT_DATE_FORMAT)) ?? t('select')}</Box>
     </Flex>

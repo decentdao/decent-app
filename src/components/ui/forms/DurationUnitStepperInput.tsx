@@ -78,7 +78,7 @@ export default function DurationUnitStepperInput({
             color={color}
           />
           <InputRightElement
-            color="neutral-5"
+            color="color-neutral-700"
             minWidth="fit-content"
           >
             <Select

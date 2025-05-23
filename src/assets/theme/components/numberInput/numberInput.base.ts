@@ -11,7 +11,7 @@ const disabled = {
   borderColor: 'white-alpha-16',
   color: 'neutral-6',
   _placeholder: {
-    color: 'neutral-5',
+    color: 'color-neutral-700',
   },
   boxShadow: 'unset',
 };
@@ -43,7 +43,7 @@ const baseStyle = definePartsStyle({
     width: '100%',
     _invalid: invalid,
     _placeholder: {
-      color: 'neutral-5',
+      color: 'color-neutral-700',
     },
     _active: {
       boxShadow:

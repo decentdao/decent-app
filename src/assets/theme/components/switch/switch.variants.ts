@@ -2,9 +2,9 @@ import { defineStyle } from '@chakra-ui/react';
 
 const primaryDisabled = {
   track: {
-    backgroundColor: 'neutral-5',
+    backgroundColor: 'color-neutral-700',
     _checked: {
-      backgroundColor: 'neutral-5',
+      backgroundColor: 'color-neutral-700',
     },
   },
   thumb: {

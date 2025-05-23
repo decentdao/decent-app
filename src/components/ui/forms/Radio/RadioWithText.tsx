@@ -29,7 +29,7 @@ export function RadioWithText({
         isDisabled={disabled}
         bg="color-black"
         color="color-lilac-600"
-        _disabled={{ bg: 'neutral-6', color: 'neutral-5' }}
+        _disabled={{ bg: 'neutral-6', color: 'color-neutral-700' }}
         _hover={{ bg: 'color-black', color: 'color-lilac-800' }}
         _checked={{
           bg: 'color-black',
@@ -44,7 +44,7 @@ export function RadioWithText({
           ml="0.25rem"
         >
           <HStack>
-            <Text color={disabled ? 'neutral-5' : 'white-0'}>{label}</Text>
+            <Text color={disabled ? 'color-neutral-700' : 'white-0'}>{label}</Text>
             {tooltip && (
               <SupportTooltip
                 label={tooltip}
@@ -54,7 +54,7 @@ export function RadioWithText({
               />
             )}
           </HStack>
-          <Text color={disabled ? 'neutral-5' : 'neutral-7'}>{description}</Text>
+          <Text color={disabled ? 'color-neutral-700' : 'neutral-7'}>{description}</Text>
         </Box>
       </Radio>
     </Box>

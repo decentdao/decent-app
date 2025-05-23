@@ -62,7 +62,7 @@ function RoleTermHeaderTitle({
       <Text textStyle="heading-small">{t('termNumber', { number: termNumber })}</Text>
       <Text
         textStyle="labels-small"
-        color="neutral-5"
+        color="color-neutral-700"
       >
         {!!termPosition && t(termPosition)}
       </Text>

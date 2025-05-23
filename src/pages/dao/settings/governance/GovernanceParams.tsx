@@ -162,7 +162,7 @@ export function GovernanceParams() {
                   }
                   minWidth="100%"
                 />
-                <InputRightElement color="neutral-5">%</InputRightElement>
+                <InputRightElement color="color-neutral-700">%</InputRightElement>
               </InputGroup>
             </LabelComponent>
           </Flex>
@@ -278,7 +278,7 @@ export function GovernanceParams() {
                     )
                   }
                 />
-                <InputRightElement color="neutral-5">
+                <InputRightElement color="color-neutral-700">
                   {t('minutesShort', { ns: 'common' })}
                 </InputRightElement>
               </InputGroup>

@@ -5,7 +5,7 @@ const disabled = {
   border: 'white-alpha-08',
   color: 'color-black',
   _placeholder: {
-    color: 'neutral-5',
+    color: 'color-neutral-700',
   },
 };
 
@@ -29,7 +29,7 @@ const baseStyle = defineStyle({
     },
   },
   _placeholder: {
-    color: 'neutral-5',
+    color: 'color-neutral-700',
   },
   _active: {
     borderColor: 'color-neutral-800',

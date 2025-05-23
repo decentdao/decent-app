@@ -258,7 +258,7 @@ export function CastVote({ proposal }: { proposal: FractalProposal }) {
             bg="color-black"
             color="color-lilac-600"
             size="md"
-            _disabled={{ bg: 'neutral-6', color: 'neutral-5' }}
+            _disabled={{ bg: 'neutral-6', color: 'color-neutral-700' }}
             _hover={{ bg: 'color-black', color: 'color-lilac-800' }}
             _checked={{
               bg: 'color-black',

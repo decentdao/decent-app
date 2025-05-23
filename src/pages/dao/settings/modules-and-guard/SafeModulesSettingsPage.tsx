@@ -77,7 +77,7 @@ export function SafeModulesSettingsPage() {
                   );
                 })
               ) : (
-                <Text color="neutral-5">{t('noModulesAttached')}</Text>
+                <Text color="color-neutral-700">{t('noModulesAttached')}</Text>
               )
             ) : (
               <BarLoader />
@@ -118,7 +118,7 @@ export function SafeModulesSettingsPage() {
                 </DisplayAddress>
               </Flex>
             ) : (
-              <Text color="neutral-5">{t('noGuardAttached')}</Text>
+              <Text color="color-neutral-700">{t('noGuardAttached')}</Text>
             )}
           </Box>
         </Flex>

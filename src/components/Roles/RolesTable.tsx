@@ -148,7 +148,7 @@ function PaymentsColumn({ paymentsCount }: { paymentsCount?: number }) {
       width="15%"
       minWidth="140px"
       textAlign="center"
-      color="neutral-5"
+      color="color-neutral-700"
     >
       {paymentsCount !== undefined ? (
         <Box
