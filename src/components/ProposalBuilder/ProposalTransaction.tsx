@@ -253,7 +253,7 @@ export default function ProposalTransaction({
                                       color="color-lilac-600"
                                       size="md"
                                       _disabled={{ bg: 'neutral-6', color: 'neutral-5' }}
-                                      _hover={{ bg: 'color-black', color: 'lilac--4' }}
+                                      _hover={{ bg: 'color-black', color: 'color-lilac-800' }}
                                       _checked={{
                                         bg: 'color-black',
                                         color: 'color-lilac-600',
@@ -311,7 +311,7 @@ export default function ProposalTransaction({
                                     color="color-lilac-600"
                                     size="md"
                                     _disabled={{ bg: 'neutral-6', color: 'neutral-5' }}
-                                    _hover={{ bg: 'color-black', color: 'lilac--4' }}
+                                    _hover={{ bg: 'color-black', color: 'color-lilac-800' }}
                                     _checked={{
                                       bg: 'color-black',
                                       color: 'color-lilac-600',
