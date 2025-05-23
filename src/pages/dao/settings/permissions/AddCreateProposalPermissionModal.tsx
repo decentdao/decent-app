@@ -350,7 +350,7 @@ export function AddCreateProposalPermissionModal({
       navigate(DAO_ROUTES.proposalWithActionsNew.relative(addressPrefix, safe.address));
     }
   };
-
+  console.log(handleCreateProposal);
   function FormContent() {
     return (
       <SettingsPermissionsStrategyForm
