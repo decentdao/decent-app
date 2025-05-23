@@ -32,7 +32,7 @@ export default function Breadcrumbs({
             overflow="hidden"
             whiteSpace="nowrap"
             textOverflow="ellipsis"
-            textStyle="labels-large"
+            textStyle="text-sm-medium"
             color={isCurrentPage ? 'neutral-7' : 'neutral-6'}
           >
             {title}
@@ -44,7 +44,7 @@ export default function Breadcrumbs({
             key={path + title}
             isCurrentPage={isCurrentPage}
             color="neutral-7"
-            textStyle="labels-large"
+            textStyle="text-sm-medium"
           >
             {isCurrentPage ? (
               crumbText

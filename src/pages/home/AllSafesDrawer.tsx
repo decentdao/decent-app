@@ -17,7 +17,7 @@ export function AllSafesDrawer({ isOpen, onClose, onOpen }: DrawerControllingPro
       headerContent={
         <Text
           color="neutral-7"
-          textStyle="labels-large"
+          textStyle="text-sm-medium"
         >
           {t('mySafes')}
         </Text>

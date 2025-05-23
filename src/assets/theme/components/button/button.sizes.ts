@@ -10,7 +10,7 @@ export default {
     padding: '0.75rem 1rem',
   },
   sm: {
-    apply: 'textStyles.labels-large',
+    apply: 'textStyles.text-sm-medium',
     height: '1.875rem',
     padding: '0.25rem .5rem',
   },
@@ -27,7 +27,7 @@ export default {
     borderRadius: '0.25rem',
   },
   'icon-sm': {
-    apply: 'textStyles.labels-large',
+    apply: 'textStyles.text-sm-medium',
     height: '1.5rem',
     width: '1.5rem',
     borderRadius: '0.25rem',

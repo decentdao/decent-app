@@ -68,7 +68,7 @@ export default function QuorumBadge({ proposal }: { proposal: AzoriusProposal })
   return (
     <Box
       rounded="md"
-      textStyle="labels-large"
+      textStyle="text-sm-medium"
       borderColor={displayColor}
       textColor={displayColor}
       border="1px solid"

@@ -108,7 +108,7 @@ export function ProposalInfo({
           alignItems="center"
         >
           <Text
-            textStyle="labels-large"
+            textStyle="text-sm-medium"
             color="neutral-7"
           >
             {t('nonceLabel', {

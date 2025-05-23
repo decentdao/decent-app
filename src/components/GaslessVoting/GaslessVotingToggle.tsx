@@ -67,16 +67,16 @@ function GaslessVotingToggleContent({
         >
           <Text
             color="neutral-7"
-            textStyle={isSettings ? 'labels-large' : 'helper-text'}
+            textStyle={isSettings ? 'text-sm-medium' : 'helper-text'}
           >
             {isSettings ? t('gaslessVotingLabelSettings') : t('gaslessVotingLabel')}
           </Text>
-          <Text textStyle={isSettings ? 'labels-large' : 'helper-text'}>
+          <Text textStyle={isSettings ? 'text-sm-medium' : 'helper-text'}>
             {isSettings ? t('gaslessVotingDescriptionSettings') : t('gaslessVotingDescription')}
           </Text>
           {displayNeedStakingLabel && (
             <Text
-              textStyle={isSettings ? 'labels-small' : 'helper-text'}
+              textStyle={isSettings ? 'text-xs-medium' : 'helper-text'}
               color="neutral-7"
             >
               {t('gaslessStakingRequirement', {
@@ -263,14 +263,14 @@ export function GaslessVotingToggleDAOSettings(props: GaslessVotingToggleProps) 
               justifyContent="space-between"
             >
               <Text
-                textStyle="labels-small"
+                textStyle="text-xs-medium"
                 color="neutral-7"
                 mb="0.25rem"
               >
                 {t('paymasterBalance')}
               </Text>
               <Text
-                textStyle="labels-large"
+                textStyle="text-sm-medium"
                 display="flex"
                 alignItems="center"
               >
@@ -321,14 +321,14 @@ export function GaslessVotingToggleDAOSettings(props: GaslessVotingToggleProps) 
               justifyContent="space-between"
             >
               <Text
-                textStyle="labels-small"
+                textStyle="text-xs-medium"
                 color="neutral-7"
                 mb="0.25rem"
               >
                 {t('paymasterStakedAmount')}
               </Text>
               <Text
-                textStyle="labels-large"
+                textStyle="text-sm-medium"
                 display="flex"
                 alignItems="center"
               >

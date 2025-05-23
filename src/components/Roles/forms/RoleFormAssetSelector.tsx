@@ -101,7 +101,7 @@ export function AssetSelector({ formIndex, disabled }: { formIndex: number; disa
                       />
                       <Flex flexDir="column">
                         <Text
-                          textStyle="labels-large"
+                          textStyle="text-sm-medium"
                           color="white-0"
                         >
                           {item.label}

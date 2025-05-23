@@ -85,7 +85,7 @@ export function AzoriusTokenAllocations(props: ICreationStepProps) {
 
             <Text
               color="neutral-7"
-              textStyle="labels-large"
+              textStyle="text-sm-medium"
             >
               {t('helperAllocations')}
             </Text>
