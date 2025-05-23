@@ -55,7 +55,7 @@ function RejectionBanner({ rejectionProposal }: { rejectionProposal: MultisigPro
         as={WarningCircle}
         boxSize="1.5rem"
       />
-      <Text textStyle="labels-large">
+      <Text textStyle="text-sm-medium">
         {hasRejectionExecuted
           ? rejectedProposalLabel
           : hasPassedThreshold
@@ -73,7 +73,7 @@ function NonceLabel({ nonce }: { nonce: number | undefined }) {
   return (
     <Text
       mb={2}
-      textStyle="labels-large"
+      textStyle="text-sm-medium"
       color="neutral-7"
     >
       {t('nonceLabel', {

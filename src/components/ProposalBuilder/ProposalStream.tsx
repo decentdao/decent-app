@@ -167,7 +167,7 @@ export function ProposalStream({
           isRequired
           disabled={pendingTransaction}
           subLabel={
-            <HStack textStyle="labels-large">
+            <HStack textStyle="text-sm-medium">
               <Text>{t('example', { ns: 'common' })}:</Text>
               <ExampleLabel>0x4168592...</ExampleLabel>
             </HStack>

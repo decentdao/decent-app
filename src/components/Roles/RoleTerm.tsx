@@ -223,7 +223,7 @@ function RoleTermMemberAddress({ memberAddress }: { memberAddress: Address }) {
           }
         >
           <Text
-            textStyle="labels-large"
+            textStyle="text-sm-medium"
             color="white-0"
           >
             {accountDisplayName}
@@ -253,7 +253,7 @@ function RoleTermEndDate({ termEndDate }: { termEndDate: Date }) {
           boxSize="1.5rem"
         />
         <Text
-          textStyle="labels-large"
+          textStyle="text-sm-medium"
           color="white"
         >
           {format(termEndDate, DEFAULT_DATE_TIME_FORMAT_NO_TZ)}

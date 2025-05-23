@@ -81,7 +81,7 @@ function NonceLabel({ nonce }: { nonce: number | undefined }) {
   if (!isMultisig || nonce === undefined) return null;
   return (
     <Text
-      textStyle="labels-large"
+      textStyle="text-sm-medium"
       color="neutral-7"
     >
       {t('nonceLabel', {

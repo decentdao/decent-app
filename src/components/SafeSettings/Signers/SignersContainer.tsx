@@ -277,7 +277,7 @@ export function SignersContainer() {
                 {t('launchTokenTitle', { ns: 'daoEdit' })}
               </Text>
               <Text
-                textStyle="labels-large"
+                textStyle="text-sm-medium"
                 color="cosmic-nebula-0"
                 mb="1rem"
               >

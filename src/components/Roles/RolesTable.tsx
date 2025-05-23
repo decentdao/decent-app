@@ -32,7 +32,7 @@ function RolesHeader() {
       bg="white-alpha-04"
     >
       <Tr
-        textStyle="labels-large"
+        textStyle="text-sm-medium"
         color="neutral-7"
       >
         <Th

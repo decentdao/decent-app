@@ -58,7 +58,7 @@ export default function DappCard({
         </Flex>
         <Text textStyle="text-lg-regular">{title}</Text>
         <Text
-          textStyle="labels-large"
+          textStyle="text-sm-medium"
           color="neutral-7"
           noOfLines={2}
         >

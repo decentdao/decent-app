@@ -117,7 +117,7 @@ export function SafePermissionsSettingsContent() {
                   <Box>
                     <Text>{t('permissionCreateProposalsTitle')}</Text>
                     <Text
-                      textStyle="labels-large"
+                      textStyle="text-sm-medium"
                       color="neutral-7"
                     >
                       {votesToken

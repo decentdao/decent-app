@@ -192,7 +192,7 @@ export function PaginationCount({ shownTransactions }: { shownTransactions: numb
     <Flex gap="0.25rem">
       <Text
         color="neutral-7"
-        textStyle="labels-large"
+        textStyle="text-sm-medium"
       >
         {t('transactionsShownCount', {
           count: totalTransfers > shownTransactions ? shownTransactions : totalTransfers,
@@ -203,7 +203,7 @@ export function PaginationCount({ shownTransactions }: { shownTransactions: numb
         value={safe.address}
         p={0}
         isTextLink
-        textStyle="labels-large"
+        textStyle="text-sm-medium"
         borderWidth={0}
       >
         {t('transactionsTotalCount', { count: totalTransfers })}

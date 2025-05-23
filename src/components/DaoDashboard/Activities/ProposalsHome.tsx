@@ -397,7 +397,7 @@ export function ProposalsHome() {
               >
                 <Text
                   mb={2}
-                  textStyle="labels-large"
+                  textStyle="text-sm-medium"
                 >
                   {key === 'snapshot' ? t('snapshot') : `${t('nonce')}: ${key}`}
                 </Text>

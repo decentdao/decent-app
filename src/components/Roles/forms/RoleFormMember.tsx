@@ -156,7 +156,7 @@ function RoleMemberConfirmationScreen({
             as={Warning}
             weight="fill"
           />
-          <Text textStyle="labels-large">{t('termedRoleConfirmation-warning')}</Text>
+          <Text textStyle="text-sm-medium">{t('termedRoleConfirmation-warning')}</Text>
         </Flex>
         <Flex
           gap={4}

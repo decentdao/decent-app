@@ -119,7 +119,7 @@ export function WithdrawGasTankModal({
                 gap={2}
               >
                 <Text
-                  textStyle="labels-large"
+                  textStyle="text-sm-medium"
                   color="neutral-7"
                 >
                   {t('withdrawAmount')}
@@ -171,7 +171,7 @@ export function WithdrawGasTankModal({
                 </Flex>
 
                 <Text
-                  textStyle="labels-large"
+                  textStyle="text-sm-medium"
                   color="neutral-7"
                 >
                   {t('withdrawAmount')}

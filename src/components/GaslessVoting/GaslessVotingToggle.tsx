@@ -67,11 +67,11 @@ function GaslessVotingToggleContent({
         >
           <Text
             color="neutral-7"
-            textStyle={isSettings ? 'labels-large' : 'helper-text'}
+            textStyle={isSettings ? 'text-sm-medium' : 'helper-text'}
           >
             {isSettings ? t('gaslessVotingLabelSettings') : t('gaslessVotingLabel')}
           </Text>
-          <Text textStyle={isSettings ? 'labels-large' : 'helper-text'}>
+          <Text textStyle={isSettings ? 'text-sm-medium' : 'helper-text'}>
             {isSettings ? t('gaslessVotingDescriptionSettings') : t('gaslessVotingDescription')}
           </Text>
           {displayNeedStakingLabel && (
@@ -270,7 +270,7 @@ export function GaslessVotingToggleDAOSettings(props: GaslessVotingToggleProps) 
                 {t('paymasterBalance')}
               </Text>
               <Text
-                textStyle="labels-large"
+                textStyle="text-sm-medium"
                 display="flex"
                 alignItems="center"
               >
@@ -328,7 +328,7 @@ export function GaslessVotingToggleDAOSettings(props: GaslessVotingToggleProps) 
                 {t('paymasterStakedAmount')}
               </Text>
               <Text
-                textStyle="labels-large"
+                textStyle="text-sm-medium"
                 display="flex"
                 alignItems="center"
               >

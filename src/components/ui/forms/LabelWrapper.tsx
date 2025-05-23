@@ -32,7 +32,7 @@ function LabelWrapper({
           h="fit-content"
           color={labelColor}
           mb="2"
-          textStyle="labels-large"
+          textStyle="text-sm-medium"
         >
           <Text>{label}</Text>
           {isRequired && <Text color="lilac-0">*</Text>}
@@ -48,7 +48,7 @@ function LabelWrapper({
         </Flex>
         {children}
         <Box
-          textStyle="labels-large"
+          textStyle="text-sm-medium"
           color="neutral-7"
           mt="2"
           h="0.5rem"
