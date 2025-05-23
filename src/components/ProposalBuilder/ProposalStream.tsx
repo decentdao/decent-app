@@ -252,10 +252,10 @@ export function ProposalStream({
                             });
                           }}
                           p={0}
-                          textStyle="heading-small"
+                          textStyle="text-xl-regular"
                           color="lilac-0"
                         >
-                          <Text textStyle="heading-small">
+                          <Text textStyle="text-xl-regular">
                             <Flex
                               alignItems="center"
                               gap={2}

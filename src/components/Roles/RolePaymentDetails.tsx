@@ -165,7 +165,7 @@ function PaymentDetailsTop({ payment, onClick, isActiveStream }: PaymentDetailsT
               fallbackSrc="/images/coin-icon-default.svg"
             />
             <Text
-              textStyle="heading-small"
+              textStyle="text-xl-regular"
               color="white-0"
             >
               {payment.amount?.bigintValue

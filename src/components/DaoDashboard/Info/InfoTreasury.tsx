@@ -36,7 +36,7 @@ export function InfoTreasury() {
         mb="0.5rem"
       >
         <Coins size="1.5rem" />
-        <Text textStyle="heading-small">{t('titleTreasury')}</Text>
+        <Text textStyle="text-xl-regular">{t('titleTreasury')}</Text>
       </Flex>
 
       <Text>{formatUSD(totalUsdValue)}</Text>

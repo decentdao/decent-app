@@ -88,7 +88,7 @@ export function GettingStarted() {
       direction="column"
       gap="1.5rem"
     >
-      <Text textStyle="heading-small">{t('gettingStarted')}</Text>
+      <Text textStyle="text-xl-regular">{t('gettingStarted')}</Text>
 
       <Grid
         templateColumns={['1fr', '1fr', 'repeat(2, 1fr)']}

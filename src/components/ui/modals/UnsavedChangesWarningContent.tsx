@@ -23,7 +23,7 @@ export function UnsavedChangesWarningContent({
         <WarningCircle size="2.5rem" />
         <Text
           mt="1rem"
-          textStyle="heading-medium"
+          textStyle="text-2xl-regular"
         >
           {t('unsavedChanges')}
         </Text>

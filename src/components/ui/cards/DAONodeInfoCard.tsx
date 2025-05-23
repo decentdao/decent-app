@@ -62,7 +62,7 @@ export function DAONodeInfoCard(props: {
             >
               {/* DAO NAME */}
 
-              <Text textStyle="heading-medium">{daoName}</Text>
+              <Text textStyle="text-2xl-regular">{daoName}</Text>
 
               {/* FAVORITE ICON */}
               <FavoriteIcon
