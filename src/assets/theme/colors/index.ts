@@ -4,7 +4,6 @@ export default {
   'white-alpha-16': '#f8f4fc29',
   'white-alpha-04': '#ffffff0a',
   'white-alpha-08': '#ffffff14',
-  'yellow--2': '#443900',
 
   // Solid colors
   'color-white': '#f8f4fc',

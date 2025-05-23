@@ -11,7 +11,7 @@ interface AlertBannerProps {
 export function AlertBanner({ message, variant, layout, messageSecondary }: AlertBannerProps) {
   const variantProps = {
     warning: {
-      bg: 'yellow--2',
+      bg: 'color-yellow-950',
       color: 'color-yellow-200',
     },
     error: {

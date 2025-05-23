@@ -137,7 +137,7 @@ function RemoveSignerModal({
         p="1rem"
         border="1px"
         borderColor="color-yellow-800"
-        bg="yellow--2"
+        bg="color-yellow-950"
         borderRadius="0.25rem"
         alignItems="center"
         gap="1rem"

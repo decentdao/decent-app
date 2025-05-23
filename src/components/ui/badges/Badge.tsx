@@ -74,7 +74,7 @@ const BADGE_MAPPING: Record<
     tooltipKey: 'statePendingTip',
     bg: 'color-yellow-200',
     textColor: 'color-black',
-    _hover: { bg: 'color-yellow-200', textColor: 'yellow--2' },
+    _hover: { bg: 'color-yellow-200', textColor: 'color-yellow-950' },
   },
   [FractalProposalState.CLOSED]: {
     tooltipKey: 'stateClosedTip',
