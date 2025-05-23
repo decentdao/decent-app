@@ -57,9 +57,6 @@ export const useDAOStore = ({ daoKey }: { daoKey: DAOKey | undefined }): Fractal
         resetDaoInfoStore: () => {
           // Do nothing - global store currently not supposed to reset anything
         },
-        setGaslessVotingDaoData: () => {
-          // Do nothing - this is handled in governance slice
-        },
       },
       treasury,
       governance,

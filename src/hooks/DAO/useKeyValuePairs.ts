@@ -5,6 +5,7 @@ import { Address, GetContractEventsReturnType, PublicClient, getContract } from 
 import useFeatureFlag from '../../helpers/environmentFeatureFlags';
 import { logError } from '../../helpers/errorLogging';
 import { useDAOStore } from '../../providers/App/AppProvider';
+import { FractalGovernanceAction } from '../../providers/App/governance/action';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
 import { useRolesStore } from '../../store/roles/useRolesStore';
 import { getPaymasterAddress } from '../../utils/gaslessVoting';
@@ -158,7 +159,8 @@ const useKeyValuePairs = () => {
   } = useNetworkConfigStore();
   const { daoKey } = useCurrentDAOKey();
   const {
-    node: { safe, setGaslessVotingDaoData },
+    node: { safe },
+    action,
   } = useDAOStore({ daoKey });
   const { setHatKeyValuePairData, resetHatsStore } = useRolesStore();
   const safeAddress = safe?.address;
@@ -197,7 +199,10 @@ const useKeyValuePairs = () => {
           accountAbstraction,
         ).then(gaslessVotingDaoData => {
           if (gaslessVotingDaoData) {
-            setGaslessVotingDaoData(gaslessVotingDaoData);
+            action.dispatch({
+              type: FractalGovernanceAction.SET_GASLESS_VOTING_DATA,
+              payload: gaslessVotingDaoData,
+            });
           }
         });
       })
@@ -240,7 +245,10 @@ const useKeyValuePairs = () => {
             accountAbstraction,
           ).then(gaslessVotingDaoData => {
             if (gaslessVotingDaoData) {
-              setGaslessVotingDaoData(gaslessVotingDaoData);
+              action.dispatch({
+                type: FractalGovernanceAction.SET_GASLESS_VOTING_DATA,
+                payload: gaslessVotingDaoData,
+              });
             }
           });
         },
@@ -249,13 +257,13 @@ const useKeyValuePairs = () => {
     return () => {
       unwatch();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     keyValuePairs,
     safeAddress,
     publicClient,
     setHatKeyValuePairData,
     sablierV2LockupLinear,
-    setGaslessVotingDaoData,
     accountAbstraction,
     paymaster,
     zodiacModuleProxyFactory,

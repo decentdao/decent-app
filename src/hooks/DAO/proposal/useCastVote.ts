@@ -37,7 +37,7 @@ const useCastVote = (proposalId: string, strategy: Address) => {
 
   const [contractCall, castVotePending] = useTransaction();
   const [castGaslessVotePending, setCastGaslessVotePending] = useState(false);
-  const [canCastGaslessVote, setCanCastGaslessVote] = useState(false);
+  const [canCastGaslessVote, setCanCastGaslessVote] = useState<boolean | undefined>();
 
   const { remainingTokenIds, remainingTokenAddresses } = useUserERC721VotingTokens(
     null,
@@ -245,6 +245,10 @@ const useCastVote = (proposalId: string, strategy: Address) => {
         return;
       }
 
+      if (typeof canCastGaslessVote === 'boolean') {
+        return;
+      }
+
       const entryPoint = getContract({
         address: accountAbstraction.entryPointv07,
         abi: EntryPoint07Abi,
@@ -264,7 +268,13 @@ const useCastVote = (proposalId: string, strategy: Address) => {
     estimateGaslessVoteGas().catch(() => {
       setCanCastGaslessVote(false);
     });
-  }, [accountAbstraction, paymasterAddress, prepareGaslessVoteOperation, publicClient]);
+  }, [
+    accountAbstraction,
+    canCastGaslessVote,
+    paymasterAddress,
+    prepareGaslessVoteOperation,
+    publicClient,
+  ]);
 
   const gaslessVoteLoadingModal = useDecentModal(ModalType.GASLESS_VOTE_LOADING);
   const closeModal = useDecentModal(ModalType.NONE);

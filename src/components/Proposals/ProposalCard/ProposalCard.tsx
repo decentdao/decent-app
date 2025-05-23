@@ -139,13 +139,18 @@ function ProposalCard({ proposal }: { proposal: FractalProposal }) {
               </Box>
             )}
           </Flex>
-          {isAzoriusProposal && <QuorumBadge proposal={proposal as AzoriusProposal} />}
-          <NonceLabel nonce={(proposal as MultisigProposal).nonce} />
-          <SignerThresholdBadge
-            numberOfConfirmedSigners={(proposal as MultisigProposal).confirmations?.length}
-            proposalThreshold={(proposal as MultisigProposal).signersThreshold}
-            isRejected={proposal.state === FractalProposalState.REJECTED}
-          />
+          <Flex
+            gap={4}
+            alignItems="center"
+          >
+            <NonceLabel nonce={(proposal as MultisigProposal).nonce} />
+            {isAzoriusProposal && <QuorumBadge proposal={proposal as AzoriusProposal} />}
+            <SignerThresholdBadge
+              numberOfConfirmedSigners={(proposal as MultisigProposal).confirmations?.length}
+              proposalThreshold={(proposal as MultisigProposal).signersThreshold}
+              isRejected={proposal.state === FractalProposalState.REJECTED}
+            />
+          </Flex>
         </Flex>
         <ActivityDescription activity={proposal} />
         <Flex
