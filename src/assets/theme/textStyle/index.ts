@@ -1,49 +1,135 @@
-import textStylesTokens from './text.styles.tokens.json';
+export const textStyles = {
+  'heading-x-large': {
+    fontSize: '40px',
+    textDecoration: 'none',
+    fontFamily: 'DM Sans',
+    fontWeight: 400,
+    fontStyle: 'normal',
+    fontStretch: 'normal',
+    letterSpacing: 0,
+    lineHeight: '48px',
+    paragraphIndent: 0,
+    paragraphSpacing: 0,
+    textCase: 'none',
+  },
+  'heading-large': {
+    fontSize: '32px',
+    textDecoration: 'none',
+    fontFamily: 'DM Sans',
+    fontWeight: 400,
+    fontStyle: 'normal',
+    fontStretch: 'normal',
+    letterSpacing: 0,
+    lineHeight: '40px',
+    paragraphIndent: 0,
+    paragraphSpacing: 0,
+    textCase: 'none',
+  },
+  'heading-medium': {
+    fontSize: '24px',
+    textDecoration: 'none',
+    fontFamily: 'DM Sans',
+    fontWeight: 400,
+    fontStyle: 'normal',
+    fontStretch: 'normal',
+    letterSpacing: 0,
+    lineHeight: '32px',
+    paragraphIndent: 0,
+    paragraphSpacing: 0,
+    textCase: 'none',
+  },
+  'heading-small': {
+    fontSize: '20px',
+    textDecoration: 'none',
+    fontFamily: 'DM Sans',
+    fontWeight: 400,
+    fontStyle: 'normal',
+    fontStretch: 'normal',
+    letterSpacing: 0,
+    lineHeight: '20px',
+    paragraphIndent: 0,
+    paragraphSpacing: 0,
+    textCase: 'none',
+  },
+  'body-large': {
+    fontSize: '18px',
+    textDecoration: 'none',
+    fontFamily: 'DM Sans',
+    fontWeight: 400,
+    fontStyle: 'normal',
+    fontStretch: 'normal',
+    letterSpacing: 0,
+    lineHeight: '28px',
+    paragraphIndent: 0,
+    paragraphSpacing: 0,
+    textCase: 'none',
+  },
+  'body-small': {
+    fontSize: '16px',
+    textDecoration: 'none',
+    fontFamily: 'DM Sans',
+    fontWeight: 400,
+    fontStyle: 'normal',
+    fontStretch: 'normal',
+    letterSpacing: 0,
+    lineHeight: '24px',
+    paragraphIndent: 0,
+    paragraphSpacing: 0,
+    textCase: 'none',
+  },
+  'labels-large': {
+    fontSize: '14px',
+    textDecoration: 'none',
+    fontFamily: 'DM Sans',
+    fontWeight: 500,
+    fontStyle: 'normal',
+    fontStretch: 'normal',
+    letterSpacing: 0,
+    lineHeight: '20px',
+    paragraphIndent: 0,
+    paragraphSpacing: 0,
+    textCase: 'none',
+  },
+  'labels-small': {
+    fontSize: '12px',
+    textDecoration: 'none',
+    fontFamily: 'DM Sans',
+    fontWeight: 500,
+    fontStyle: 'normal',
+    fontStretch: 'normal',
+    letterSpacing: 0,
+    lineHeight: '16px',
+    paragraphIndent: 0,
+    paragraphSpacing: 0,
+    textCase: 'none',
+  },
+  'snippets-large': {
+    fontSize: '14px',
+    textDecoration: 'none',
+    fontFamily: 'DM Mono',
+    fontWeight: 400,
+    fontStyle: 'normal',
+    fontStretch: 'normal',
+    letterSpacing: 0,
+    lineHeight: '20px',
+    paragraphIndent: 0,
+    paragraphSpacing: 0,
+    textCase: 'none',
+  },
+  'snippets-small': {
+    fontSize: '12px',
+    textDecoration: 'none',
+    fontFamily: 'DM Mono',
+    fontWeight: 400,
+    fontStyle: 'normal',
+    fontStretch: 'normal',
+    letterSpacing: 0,
+    lineHeight: '16px',
+    paragraphIndent: 0,
+    paragraphSpacing: 0,
+    textCase: 'none',
+  },
+} as const;
 
-export interface TypographyValue {
-  fontFamily: string;
-  fontSize: string;
-  fontWeight: number | string;
-  letterSpacing: string;
-  lineHeight: string;
-  textTransform: string;
-  textDecoration: string;
-}
-
-interface TypographyToken {
-  $type: string;
-  value: TypographyValue;
-}
-
-interface TypographyTokenGroup {
-  [key: string]: TypographyToken;
-}
-
-interface TypographyScheme {
-  [groupName: string]: TypographyTokenGroup;
-}
-
-const extractTypographyFromJson = (tokens: TypographyScheme) => {
-  const typography: Record<string, TypographyValue> = {};
-
-  Object.entries(tokens).forEach(([groupKey, groupValue]) => {
-    Object.entries(groupValue).forEach(([styleKey, styleValue]) => {
-      const formattedKey = `${groupKey}-${styleKey}`.replace(/\s+/g, '-').toLowerCase();
-      if (styleValue && typeof styleValue.value === 'object' && styleValue.value) {
-        typography[formattedKey] = {
-          ...styleValue.value,
-          fontSize: `${styleValue.value.fontSize}px`,
-          letterSpacing: `${styleValue.value.letterSpacing}px`,
-          lineHeight: `${styleValue.value.lineHeight}px`,
-        };
-      }
-    });
-  });
-
-  return typography;
-};
-
-const typography = extractTypographyFromJson(textStylesTokens as unknown as TypographyScheme);
-
-export type Typography = typeof typography;
-export default typography;
+export type TextStyles = typeof textStyles;
+export type TextStyleName = keyof TextStyles;
