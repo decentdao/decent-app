@@ -116,7 +116,7 @@ export default function ProposalTemplateCard({
           trigger={
             <Icon
               as={GearFine}
-              color="lilac-0"
+              color="color-lilac-100"
               width="1.25rem"
               height="1.25rem"
             />

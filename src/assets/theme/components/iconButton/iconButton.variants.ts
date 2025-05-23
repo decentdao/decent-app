@@ -5,7 +5,7 @@ const primaryDisabled = {
 };
 
 const primary = defineStyle({
-  bg: 'lilac-0',
+  bg: 'color-lilac-100',
   color: 'cosmic-nebula-0',
   _hover: {
     bg: 'lilac--1',
@@ -27,8 +27,8 @@ const secondaryDisabled = {
 };
 const secondary = defineStyle({
   border: '1px solid',
-  borderColor: 'lilac-0',
-  color: 'lilac-0',
+  borderColor: 'color-lilac-100',
+  color: 'color-lilac-100',
   _hover: {
     borderColor: 'lilac--1',
     color: 'lilac--1',
@@ -54,7 +54,7 @@ const tertiaryLoading = {
 };
 const tertiary = defineStyle({
   bg: 'transparent',
-  color: 'lilac-0',
+  color: 'color-lilac-100',
   _hover: {
     bg: 'white-alpha-08',
     color: 'lilac--1',

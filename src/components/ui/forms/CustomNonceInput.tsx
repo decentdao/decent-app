@@ -102,7 +102,7 @@ export function CustomNonceInput({
                 <Text>{t('customNonceTrimmed', { ns: 'proposal' })}</Text>
                 <SupportTooltip
                   containerRef={tooltipContainer}
-                  color="lilac-0"
+                  color="color-lilac-100"
                   label={t('customNonceTooltip', { ns: 'proposal' })}
                   mx="2"
                   mt="1"

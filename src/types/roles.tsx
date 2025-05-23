@@ -126,7 +126,7 @@ export const BadgeStatus: Record<EditBadgeStatus, string> = {
   [EditBadgeStatus.Inactive]: 'Inactive',
 };
 export const BadgeStatusColor: Record<EditBadgeStatus, string> = {
-  [EditBadgeStatus.Updated]: 'lilac-0',
+  [EditBadgeStatus.Updated]: 'color-lilac-100',
   [EditBadgeStatus.New]: 'color-green-500',
   [EditBadgeStatus.Removed]: 'red-1',
   [EditBadgeStatus.NewTermedRole]: 'color-green-500',

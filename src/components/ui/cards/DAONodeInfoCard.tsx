@@ -91,7 +91,7 @@ export function DAONodeInfoCard(props: {
             >
               <Text
                 textStyle="label-large"
-                color="lilac-0"
+                color="color-lilac-100"
                 whiteSpace="nowrap"
               >
                 {/* Convert multisig badge casing here since it's already been cached to avoid another migration */}

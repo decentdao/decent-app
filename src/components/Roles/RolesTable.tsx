@@ -76,7 +76,7 @@ function RoleNameEditColumn({
           justifyContent="space-between"
           w="full"
         >
-          <Text color="lilac-0">{roleName}</Text>
+          <Text color="color-lilac-100">{roleName}</Text>
           <EditBadge editStatus={editStatus} />
         </Flex>
         <Icon
@@ -196,7 +196,7 @@ export function RolesRow({
       onClick={handleRoleClick}
     >
       <Td
-        color="lilac-0"
+        color="color-lilac-100"
         width="25%"
         minW="230px"
       >

@@ -3,7 +3,6 @@ export default {
   'cosmic-nebula-4': '#c46de1',
   'cosmic-nebula-5': '#d493e9',
   'cosmic-nebula--1': '#2e0b39',
-  'lilac-0': '#dcc8f0',
   'lilac--1': '#cbb1e6',
   'lilac--2': '#9974be',
   'lilac--3': '#805ca3',

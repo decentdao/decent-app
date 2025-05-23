@@ -90,22 +90,22 @@ function RoleTermHeaderStatus({
       inQueue: {
         text: t('inQueue'),
         textColor: 'neutral-7',
-        iconColor: 'lilac-0',
+        iconColor: 'color-lilac-100',
       },
       pending: {
         text: t('pending'),
         textColor: 'neutral-7',
-        iconColor: 'lilac-0',
+        iconColor: 'color-lilac-100',
       },
       readyToStart: {
         text: t('readyToStart'),
         textColor: 'neutral-7',
-        iconColor: 'lilac-0',
+        iconColor: 'color-lilac-100',
       },
       active: {
         text: dateDisplay,
         textColor: 'neutral-7',
-        iconColor: 'lilac-0',
+        iconColor: 'color-lilac-100',
       },
       revoked: {
         text: t('revoked'),

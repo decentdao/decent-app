@@ -107,7 +107,7 @@ function Signer({
             <Icon
               as={MinusCircle}
               boxSize="1.5rem"
-              color={showRemoveButton ? 'lilac-0' : 'neutral-5'}
+              color={showRemoveButton ? 'color-lilac-100' : 'neutral-5'}
             />
           </Button>
         )}
@@ -129,7 +129,7 @@ function Signer({
             <Icon
               as={PlusCircle}
               boxSize="1.5rem"
-              color="lilac-0"
+              color="color-lilac-100"
             />
           </Button>
         )}

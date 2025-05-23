@@ -121,7 +121,7 @@ export function PaginationControls({
         <Text
           fontSize="sm"
           px={2}
-          color="lilac-0"
+          color="color-lilac-100"
         >
           {t('pageXofY', { current: currentPage, total: totalPages })}
         </Text>

@@ -110,7 +110,7 @@ function RoleMemberConfirmationScreen({
         >
           <Flex gap={4}>
             <Icon
-              color="lilac-0"
+              color="color-lilac-100"
               boxSize="1.5rem"
               as={ClockCountdown}
               weight="fill"
@@ -119,7 +119,7 @@ function RoleMemberConfirmationScreen({
           </Flex>
           <Flex gap={4}>
             <Icon
-              color="lilac-0"
+              color="color-lilac-100"
               boxSize="1.5rem"
               as={ListPlus}
               weight="fill"
@@ -129,7 +129,7 @@ function RoleMemberConfirmationScreen({
           </Flex>
           <Flex gap={4}>
             <Icon
-              color="lilac-0"
+              color="color-lilac-100"
               boxSize="1.5rem"
               as={ReceiptX}
               weight="fill"
@@ -138,7 +138,7 @@ function RoleMemberConfirmationScreen({
           </Flex>
           <Flex gap={4}>
             <Icon
-              color="lilac-0"
+              color="color-lilac-100"
               boxSize="1.5rem"
               as={HandCoins}
               weight="fill"

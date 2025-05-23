@@ -25,7 +25,7 @@ function Step({ index, stepNumber, label }: { index: number; stepNumber: number;
     <Box width="100%">
       <Box
         height="4px"
-        bg={stepNumber >= index ? 'lilac-0' : 'neutral-6'}
+        bg={stepNumber >= index ? 'color-lilac-100' : 'neutral-6'}
         borderRadius="full"
       />
       <Text

@@ -191,7 +191,7 @@ export function DropdownMenu<T>({
                             <Icon
                               as={CheckCircle}
                               boxSize="1.5rem"
-                              color="lilac-0"
+                              color="color-lilac-100"
                             />
                           )}
                         </>
@@ -289,7 +289,7 @@ export function DropdownMenu<T>({
                             <Icon
                               as={CheckCircle}
                               boxSize="1.5rem"
-                              color="lilac-0"
+                              color="color-lilac-100"
                             />
                           )}
                         </>

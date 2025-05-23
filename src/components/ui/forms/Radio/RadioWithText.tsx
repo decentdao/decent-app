@@ -50,7 +50,7 @@ export function RadioWithText({
                 label={tooltip}
                 closeDelay={1000}
                 pointerEvents="all"
-                color="lilac-0"
+                color="color-lilac-100"
               />
             )}
           </HStack>
