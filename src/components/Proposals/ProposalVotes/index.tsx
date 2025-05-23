@@ -163,7 +163,7 @@ function ProposalVotes({ proposal }: { proposal: AzoriusProposal }) {
       mt="1.5rem"
     >
       <ContentBox containerBoxProps={{ bg: 'transparent', width: '100%', my: 0 }}>
-        <Text textStyle="heading-small">{t('breakdownTitle', { ns: 'proposal' })}</Text>
+        <Text textStyle="text-xl-regular">{t('breakdownTitle', { ns: 'proposal' })}</Text>
         <VotesPercentage
           label={t('yes')}
           percentage={yesVotesPercentage}
@@ -185,7 +185,7 @@ function ProposalVotes({ proposal }: { proposal: AzoriusProposal }) {
       </ContentBox>
       {votes.length !== 0 && (
         <ContentBox containerBoxProps={{ bg: 'transparent', width: '100%', my: 0, paddingTop: 0 }}>
-          <Text textStyle="heading-small">{t('votesTitle', { ns: 'proposal' })}</Text>
+          <Text textStyle="text-xl-regular">{t('votesTitle', { ns: 'proposal' })}</Text>
           <Divider
             my={4}
             variant="darker"

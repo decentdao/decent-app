@@ -41,7 +41,7 @@ export function AddStrategyPermissionModal({
         justifyContent="space-between"
         alignItems="center"
       >
-        <Text textStyle="heading-small">{t('addPermissionTitle')}</Text>
+        <Text textStyle="text-xl-regular">{t('addPermissionTitle')}</Text>
         <Show above="md">
           <IconButton
             variant="ghost"
@@ -83,7 +83,7 @@ export function AddStrategyPermissionModal({
             flexDirection="column"
             gap={1}
           >
-            <Text textStyle="heading-small">{t('permissionCreateProposalsTitle')}</Text>
+            <Text textStyle="text-xl-regular">{t('permissionCreateProposalsTitle')}</Text>
             <Text color="neutral-7">{t('permissionCreateProposalsDescription')}</Text>
           </Flex>
         </Card>
@@ -103,7 +103,7 @@ export function AddStrategyPermissionModal({
             gap={1}
             color="neutral-6"
           >
-            <Text textStyle="heading-small">{t('permissionComingSoonTitle')}</Text>
+            <Text textStyle="text-xl-regular">{t('permissionComingSoonTitle')}</Text>
             <Text>{t('permissionComingSoonDescription')}</Text>
           </Flex>
         </Card>

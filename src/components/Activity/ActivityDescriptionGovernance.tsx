@@ -27,7 +27,7 @@ export function ProposalTitle({ activity }: { activity: FractalProposal }) {
   const titleText = proposalIdText + ' ' + proposaltitleText;
   return (
     <Box
-      textStyle="heading-small"
+      textStyle="text-xl-regular"
       color="white-0"
       pr="1.5rem"
     >

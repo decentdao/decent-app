@@ -65,7 +65,7 @@ export function AccordionDropdown({
               >
                 <AccordionButton
                   p={0}
-                  textStyle="heading-small"
+                  textStyle="text-xl-regular"
                   color="lilac-0"
                 >
                   <Flex

@@ -24,7 +24,7 @@ export function TxDetails({ proposal }: { proposal: MultisigProposal }) {
       }}
     >
       <Text
-        textStyle="heading-small"
+        textStyle="text-xl-regular"
         variant="darker"
       >
         {t('proposalSummaryTitle')}

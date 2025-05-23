@@ -93,7 +93,7 @@ export function ModalBase({
                   {warn && <Warning size="20" />}
                   <Text
                     color="white-0"
-                    textStyle="heading-small"
+                    textStyle="text-xl-regular"
                   >
                     {title}
                   </Text>

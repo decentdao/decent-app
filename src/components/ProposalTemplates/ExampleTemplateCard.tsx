@@ -32,7 +32,7 @@ export default function ExampleTemplateCard({
         />
       </Flex>
       <Text
-        textStyle="heading-small"
+        textStyle="text-xl-regular"
         color="white-0"
         my="0.5rem"
       >

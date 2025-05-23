@@ -95,7 +95,7 @@ export function SignerDetails({ proposal }: { proposal: MultisigProposal }) {
         borderRadius: '0.5rem',
       }}
     >
-      <Text textStyle="heading-small">{t('signers')}</Text>
+      <Text textStyle="text-xl-regular">{t('signers')}</Text>
       <Box marginTop={4}>
         <Divider
           width="calc(100% + 4rem)"
