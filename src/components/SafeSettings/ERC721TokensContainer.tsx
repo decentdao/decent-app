@@ -37,7 +37,7 @@ export function ERC721TokensContainer() {
                 px={6}
                 py={2}
               >
-                <Text textStyle="body-small">{t('governanceTokenNameTitle')}</Text>
+                <Text textStyle="text-base-regular">{t('governanceTokenNameTitle')}</Text>
                 <DisplayAddress
                   mb={-2}
                   mr={-4}
@@ -56,10 +56,10 @@ export function ERC721TokensContainer() {
                 px={6}
                 py={2}
               >
-                <Text textStyle="body-small">{t('governanceTokenSymbolLabel')}</Text>
+                <Text textStyle="text-base-regular">{t('governanceTokenSymbolLabel')}</Text>
                 <Text
                   color="neutral-7"
-                  textStyle="body-small"
+                  textStyle="text-base-regular"
                 >
                   ${token.symbol}
                 </Text>
@@ -74,10 +74,10 @@ export function ERC721TokensContainer() {
                 px={6}
                 py={2}
               >
-                <Text textStyle="body-small">{t('governanceTokenWeightLabel')}</Text>
+                <Text textStyle="text-base-regular">{t('governanceTokenWeightLabel')}</Text>
                 <Text
                   color="neutral-7"
-                  textStyle="body-small"
+                  textStyle="text-base-regular"
                 >
                   {token.votingWeight.toString()}
                 </Text>
@@ -92,10 +92,10 @@ export function ERC721TokensContainer() {
                 px={6}
                 py={2}
               >
-                <Text textStyle="body-small">{t('governanceTokenTotalWeightLabel')}</Text>
+                <Text textStyle="text-base-regular">{t('governanceTokenTotalWeightLabel')}</Text>
                 <Text
                   color="neutral-7"
-                  textStyle="body-small"
+                  textStyle="text-base-regular"
                 >
                   {token.totalSupply ? (token.totalSupply * token.votingWeight).toString() : 'n/a'}
                 </Text>

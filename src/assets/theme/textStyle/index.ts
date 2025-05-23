@@ -1,17 +1,4 @@
 export const textStyles = {
-  'body-small': {
-    fontSize: '16px',
-    textDecoration: 'none',
-    fontFamily: 'DM Sans',
-    fontWeight: 400,
-    fontStyle: 'normal',
-    fontStretch: 'normal',
-    letterSpacing: 0,
-    lineHeight: '24px',
-    paragraphIndent: 0,
-    paragraphSpacing: 0,
-    textCase: 'none',
-  },
   'labels-large': {
     fontSize: '14px',
     textDecoration: 'none',

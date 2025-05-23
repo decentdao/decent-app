@@ -326,7 +326,7 @@ export function SafeGeneralSettingsPage() {
               >
                 <Text
                   mb={2}
-                  textStyle="body-small"
+                  textStyle="text-base-regular"
                 >
                   {t('daoMetadataName')}
                 </Text>
@@ -355,7 +355,7 @@ export function SafeGeneralSettingsPage() {
                 px={6}
                 pt={2}
               >
-                <Text textStyle="body-small">
+                <Text textStyle="text-base-regular">
                   {subgraphInfo?.daoSnapshotENS
                     ? t('daoMetadataSnapshot')
                     : t('daoMetadataConnectSnapshot')}

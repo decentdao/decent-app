@@ -396,7 +396,7 @@ export function SignersContainer() {
                 {t('threshold', { ns: 'common' })}
               </Text>
               <Text
-                textStyle="body-small"
+                textStyle="text-base-regular"
                 color="neutral-7"
               >
                 {t('thresholdDescription', { ns: 'common' })}

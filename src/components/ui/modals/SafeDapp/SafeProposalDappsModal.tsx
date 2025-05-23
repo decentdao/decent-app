@@ -39,7 +39,7 @@ export function SafeProposalDappsModal({ onClose }: { onClose: () => void }) {
           </Text>
           <Text
             color="neutral-7"
-            textStyle="body-small"
+            textStyle="text-base-regular"
           >
             {t('dappsDescription')}
           </Text>

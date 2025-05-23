@@ -255,7 +255,7 @@ function RoleFormMemberTermToggle() {
                   alignItems="center"
                   gap={2}
                 >
-                  <Text textStyle="body-small">{t('addTermLengths')}</Text>
+                  <Text textStyle="text-base-regular">{t('addTermLengths')}</Text>
                   <Icon
                     size="1rem"
                     as={WarningDiamond}
