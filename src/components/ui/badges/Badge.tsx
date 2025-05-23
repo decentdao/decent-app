@@ -24,7 +24,7 @@ const BADGE_MAPPING: Record<
   },
   [FractalProposalState.TIMELOCKED]: {
     tooltipKey: 'stateTimelockedTip',
-    bg: 'neutral-8',
+    bg: 'color-neutral-100',
     textColor: 'color-neutral-800',
     _hover: { bg: 'color-neutral-300', textColor: 'color-neutral-800' },
   },
@@ -78,7 +78,7 @@ const BADGE_MAPPING: Record<
   },
   [FractalProposalState.CLOSED]: {
     tooltipKey: 'stateClosedTip',
-    bg: 'neutral-8',
+    bg: 'color-neutral-100',
     textColor: 'color-neutral-800',
     _hover: { bg: 'color-neutral-300', textColor: 'color-neutral-800' },
   },
