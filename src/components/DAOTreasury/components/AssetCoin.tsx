@@ -75,7 +75,7 @@ export function CoinRow({ asset }: { asset: TokenBalance }) {
           h="1rem"
         />
         <EtherscanLink
-          color="white-0"
+          color="color-white"
           _hover={{ bg: 'transparent' }}
           padding={0}
           borderWidth={0}

@@ -49,7 +49,7 @@ export default function ABISelector({ target, onChange }: IABISelector) {
         borderColor="color-neutral-900"
         borderWidth="1px"
         borderRadius="4px"
-        color="white-0"
+        color="color-white"
         onChange={e => {
           const selectedFunction = abiFunctions.find(
             (abiFunction: ABIElement) => abiFunction.name === e.target.value,

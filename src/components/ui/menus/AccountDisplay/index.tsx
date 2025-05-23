@@ -21,11 +21,11 @@ export function AccountDisplay({ containerRef }: AccountDisplayProps) {
         paddingY="0.25rem"
         paddingX="1rem"
         paddingInline="0.75rem"
-        color="white-0"
+        color="color-white"
         borderRadius="0.5rem"
-        _hover={{ color: 'white-0', bg: 'color-neutral-900' }}
+        _hover={{ color: 'color-white', bg: 'color-neutral-900' }}
         _active={{
-          color: 'white-0',
+          color: 'color-white',
           bg: 'color-neutral-900',
         }}
       >

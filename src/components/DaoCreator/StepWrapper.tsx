@@ -32,7 +32,7 @@ function Step({ index, stepNumber, label }: { index: number; stepNumber: number;
         mx="0.25rem"
         mt="0.5rem"
         textStyle="labels-large"
-        color={stepNumber === index ? 'white-0' : 'color-neutral-400'}
+        color={stepNumber === index ? 'color-white' : 'color-neutral-400'}
       >
         {index}. {label}
       </Text>
@@ -81,7 +81,7 @@ export function StepWrapper({
           >
             <Text
               textStyle="heading-large"
-              color="white-0"
+              color="color-white"
             >
               {title}
             </Text>

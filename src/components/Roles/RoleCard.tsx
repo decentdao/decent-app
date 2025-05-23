@@ -45,7 +45,7 @@ export function AvatarAndRoleName({
       >
         <Text
           textStyle="heading-small"
-          color="white-0"
+          color="color-white"
         >
           {name}
         </Text>
@@ -53,7 +53,7 @@ export function AvatarAndRoleName({
           textStyle="labels-large"
           color="color-lilac-100"
           _hover={{
-            color: 'white-0',
+            color: 'color-white',
             bg: 'color-neutral-800',
           }}
           maxW="fit-content"
@@ -150,7 +150,7 @@ export function RoleCardEdit({
           <EditBadge editStatus={editStatus} />
           <Icon
             as={CaretRight}
-            color="white-0"
+            color="color-white"
           />
         </Flex>
       </Flex>

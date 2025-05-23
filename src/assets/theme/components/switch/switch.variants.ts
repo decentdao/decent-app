@@ -57,7 +57,7 @@ const secondary = defineStyle({
   },
   thumb: {
     backgroundColor: 'color-neutral-50',
-    borderColor: 'white-0',
+    borderColor: 'color-white',
     _hover: {
       _disabled: secondaryDisabled.thumb,
     },

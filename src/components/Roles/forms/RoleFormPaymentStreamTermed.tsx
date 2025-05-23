@@ -145,7 +145,7 @@ function CliffDatePicker({ paymentIndex, disabled }: { paymentIndex: number; dis
 function TermSelection({
   selectedTermNumber,
   selectedTermEndDate,
-  defaultDateColor = 'white-0',
+  defaultDateColor = 'color-white',
 }: {
   selectedTermNumber: number;
   selectedTermEndDate: Date;
@@ -161,7 +161,7 @@ function TermSelection({
     >
       <Text
         textStyle="body-small"
-        color="white-0"
+        color="color-white"
       >
         {t('termNumber', { number: selectedTermNumber })}
       </Text>
@@ -261,7 +261,7 @@ function TermSelectorMenu({ paymentIndex }: { paymentIndex: number }) {
                   <Icon
                     as={CaretDown}
                     boxSize="1.5rem"
-                    color="white-0"
+                    color="color-white"
                   />
                 </Flex>
               )}
@@ -289,7 +289,7 @@ function TermSelectorMenu({ paymentIndex }: { paymentIndex: number }) {
                         mb="1.5rem"
                         px={8}
                         textStyle="heading-small"
-                        color="white-0"
+                        color="color-white"
                       >
                         {t('selectTerm')}
                       </Text>
