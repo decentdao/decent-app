@@ -27,12 +27,12 @@ export function RadioWithText({
         data-testid={testId}
         type="radio"
         isDisabled={disabled}
-        bg="black-0"
+        bg="color-black"
         color="lilac--3"
         _disabled={{ bg: 'neutral-6', color: 'neutral-5' }}
-        _hover={{ bg: 'black-0', color: 'lilac--4' }}
+        _hover={{ bg: 'color-black', color: 'lilac--4' }}
         _checked={{
-          bg: 'black-0',
+          bg: 'color-black',
           color: 'lilac--3',
           borderWidth: '6px',
         }}

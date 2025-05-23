@@ -1,5 +1,4 @@
 export default {
-  'black-0': '#100414',
   'black-alpha-16': '#00000029',
   'black-alpha-04': '#0000000a',
   'black-alpha-08': '#00000014',

@@ -37,8 +37,8 @@ const BADGE_MAPPING: Record<
   [FractalProposalState.EXECUTABLE]: {
     tooltipKey: 'stateExecutableTip',
     bg: 'celery--2',
-    textColor: 'black-0',
-    _hover: { bg: 'celery--3', textColor: 'black-0' },
+    textColor: 'color-black',
+    _hover: { bg: 'celery--3', textColor: 'color-black' },
   },
   [FractalProposalState.FAILED]: {
     tooltipKey: 'stateFailedTip',
@@ -73,7 +73,7 @@ const BADGE_MAPPING: Record<
   [FractalProposalState.PENDING]: {
     tooltipKey: 'statePendingTip',
     bg: 'yellow-0',
-    textColor: 'black-0',
+    textColor: 'color-black',
     _hover: { bg: 'yellow-0', textColor: 'yellow--2' },
   },
   [FractalProposalState.CLOSED]: {

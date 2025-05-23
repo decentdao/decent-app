@@ -46,7 +46,7 @@ const secondaryDisabled = {
 
 const secondary = defineStyle({
   track: {
-    backgroundColor: 'black-0',
+    backgroundColor: 'color-black',
     _checked: {
       backgroundColor: 'celery--3',
     },
