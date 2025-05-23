@@ -39,7 +39,7 @@ export function DAONodeInfoCard(props: {
           ? {
               bg: 'color-neutral-900',
               border: '1px solid',
-              borderColor: 'neutral-4',
+              borderColor: 'color-neutral-800',
             }
           : {}
       }
@@ -47,7 +47,7 @@ export function DAONodeInfoCard(props: {
       width="100%"
       borderRadius="0.75rem"
       border={isCurrentViewingDAO ? '4px solid' : '1px'}
-      borderColor={isCurrentViewingDAO ? 'neutral-4' : 'transparent'}
+      borderColor={isCurrentViewingDAO ? 'color-neutral-800' : 'transparent'}
     >
       <Flex justifyItems="space-between">
         <Flex w="full">

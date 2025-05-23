@@ -207,7 +207,7 @@ export default function RolesDetails({
             color="color-lilac-100"
             _hover={{
               color: 'white-0',
-              bg: 'neutral-4',
+              bg: 'color-neutral-800',
             }}
             cursor="pointer"
             maxW="fit-content"

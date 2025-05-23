@@ -64,8 +64,8 @@ export function DAOInfoCard() {
               <Link
                 to={DAO_ROUTES.hierarchy.relative(addressPrefix, displayedAddress)}
                 as={RouterLink}
-                _hover={{ textDecoration: 'none', bg: 'neutral-4' }}
-                _active={{ bg: 'color-neutral-900', borderColor: 'neutral-4' }}
+                _hover={{ textDecoration: 'none', bg: 'color-neutral-800' }}
+                _active={{ bg: 'color-neutral-900', borderColor: 'color-neutral-800' }}
                 bg="color-neutral-900"
                 color="color-lilac-100"
                 borderRadius="625rem"

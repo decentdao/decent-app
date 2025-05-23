@@ -32,7 +32,7 @@ const baseStyle = defineStyle({
     color: 'neutral-5',
   },
   _active: {
-    borderColor: 'neutral-4',
+    borderColor: 'color-neutral-800',
     boxShadow: '0px 0px 0px 3px #534D58',
     _disabled: {
       ...disabled,
@@ -40,7 +40,7 @@ const baseStyle = defineStyle({
     },
   },
   _hover: {
-    borderColor: 'neutral-4',
+    borderColor: 'color-neutral-800',
     _disabled: {
       ...disabled,
       _loading: loading,
@@ -52,7 +52,7 @@ const baseStyle = defineStyle({
   },
   _focus: {
     outline: 'none',
-    borderColor: 'neutral-4',
+    borderColor: 'color-neutral-800',
     boxShadow: '0px 0px 0px 3px #534D58',
     _invalid: {
       borderColor: 'red-0',

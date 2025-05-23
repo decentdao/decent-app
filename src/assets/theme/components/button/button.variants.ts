@@ -102,15 +102,15 @@ const stepper = defineStyle({
   bg: 'color-black',
   color: 'color-lilac-100',
   _active: {
-    borderColor: 'neutral-4',
+    borderColor: 'color-neutral-800',
     boxShadow: '0px 0px 0px 3px #534D58',
   },
   _hover: {
-    borderColor: 'neutral-4',
+    borderColor: 'color-neutral-800',
   },
   _focus: {
     outline: 'none',
-    borderColor: 'neutral-4',
+    borderColor: 'color-neutral-800',
     boxShadow: '0px 0px 0px 3px #534D58',
   },
 });

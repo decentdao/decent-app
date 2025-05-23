@@ -80,7 +80,7 @@ export default function DappCard({
                 rounded="full"
                 key={category}
                 variant="subtle"
-                bg="neutral-4"
+                bg="color-neutral-800"
               >
                 <Icon
                   color="neutral-7"

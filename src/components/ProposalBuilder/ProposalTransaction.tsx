@@ -226,9 +226,9 @@ export default function ProposalTransaction({
                               <HStack>
                                 <Text>
                                   {t('example', { ns: 'common' })}:{' '}
-                                  <ExampleLabel bg="neutral-4">address to</ExampleLabel>{' '}
+                                  <ExampleLabel bg="color-neutral-800">address to</ExampleLabel>{' '}
                                   {t('or', { ns: 'common' })}{' '}
-                                  <ExampleLabel bg="neutral-4">uint amount</ExampleLabel>
+                                  <ExampleLabel bg="color-neutral-800">uint amount</ExampleLabel>
                                 </Text>
                               </HStack>
                             }
@@ -352,7 +352,7 @@ export default function ProposalTransaction({
                                 <HStack wordBreak="break-all">
                                   <Text>
                                     {t('example', { ns: 'common' })}:{' '}
-                                    <ExampleLabel bg="neutral-4">1.2</ExampleLabel>
+                                    <ExampleLabel bg="color-neutral-800">1.2</ExampleLabel>
                                   </Text>
                                 </HStack>
                               }

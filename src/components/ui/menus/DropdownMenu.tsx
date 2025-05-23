@@ -74,7 +74,7 @@ export function DropdownMenu<T>({
               gap={2}
               alignItems="center"
               border="1px solid"
-              borderColor="neutral-4"
+              borderColor="color-neutral-800"
               borderRadius="9999px"
               w="fit-content"
               className="payment-menu-asset"

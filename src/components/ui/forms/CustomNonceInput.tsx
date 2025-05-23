@@ -118,7 +118,8 @@ export function CustomNonceInput({
           subLabel={
             renderTrimmed ? null : (
               <Text>
-                {t('example', { ns: 'common' })}: <ExampleLabel bg="neutral-4">14</ExampleLabel>{' '}
+                {t('example', { ns: 'common' })}:{' '}
+                <ExampleLabel bg="color-neutral-800">14</ExampleLabel>{' '}
               </Text>
             )
           }

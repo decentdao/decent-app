@@ -49,7 +49,7 @@ function getPaymentContainerProps(section: 'top' | 'bottom', isActiveStream: boo
         borderTopRadius,
         borderBottomRadius,
         py: '1rem',
-        borderColor: 'neutral-4',
+        borderColor: 'color-neutral-800',
       };
 }
 

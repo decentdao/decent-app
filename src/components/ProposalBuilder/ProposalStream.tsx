@@ -306,7 +306,7 @@ export function ProposalStream({
                                   <HStack wordBreak="break-all">
                                     <Text>
                                       {t('example', { ns: 'common' })}:{' '}
-                                      <ExampleLabel bg="neutral-4">1000</ExampleLabel>
+                                      <ExampleLabel bg="color-neutral-800">1000</ExampleLabel>
                                     </Text>
                                   </HStack>
                                 }
@@ -349,7 +349,7 @@ export function ProposalStream({
                                     </Text>
                                     <Text>
                                       {t('example', { ns: 'common' })}:{' '}
-                                      <ExampleLabel bg="neutral-4">
+                                      <ExampleLabel bg="color-neutral-800">
                                         {SECONDS_IN_DAY * 30} (1 month)
                                       </ExampleLabel>
                                     </Text>

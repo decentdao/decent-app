@@ -35,8 +35,8 @@ export function SnapshotButton({ snapshotENS }: Props) {
       color={'color-lilac-100'}
       borderWidth="1px"
       borderColor="transparent"
-      _hover={{ textDecoration: 'none', bg: 'neutral-4' }}
-      _active={{ bg: 'color-neutral-900', borderColor: 'neutral-4' }}
+      _hover={{ textDecoration: 'none', bg: 'color-neutral-800' }}
+      _active={{ bg: 'color-neutral-900', borderColor: 'color-neutral-800' }}
       size={'sm'}
       p={'0.25rem 0.75rem'}
       width={'fit-content'}

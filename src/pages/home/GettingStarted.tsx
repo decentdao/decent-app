@@ -23,7 +23,7 @@ function CardContent({ icon, title, subtitle }: CardContentProps) {
       _hover={{
         backgroundColor: 'color-neutral-900',
         border: '1px solid',
-        borderColor: 'neutral-4',
+        borderColor: 'color-neutral-800',
       }}
       transition="all 300ms ease-in-out"
     >

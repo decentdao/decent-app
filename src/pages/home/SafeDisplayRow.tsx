@@ -60,13 +60,13 @@ export function SafeDisplayRow({
       _hover={{
         backgroundColor: 'color-neutral-900',
         border: '1px solid',
-        borderColor: 'neutral-4',
+        borderColor: 'color-neutral-800',
       }}
       transition="all ease-out 300ms"
       borderRadius="0.5rem"
       border="1px solid"
       borderColor="transparent"
-      _active={{ borderColor: 'neutral-4' }}
+      _active={{ borderColor: 'color-neutral-800' }}
     >
       <Avatar
         size="lg"

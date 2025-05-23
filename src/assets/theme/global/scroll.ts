@@ -7,7 +7,7 @@ export default {
   '.scroll-dark::-webkit-scrollbar-thumb': {
     border: 'none',
     boxShadow: 'none',
-    background: 'neutral-4',
+    background: 'color-neutral-800',
     borderRadius: '0.5rem',
     minHeight: '2.5rem',
   },

@@ -3,7 +3,7 @@
   --font-family: 'DM Sans';
   --background: var(--colors-color-neutral-950);
   --actor-hover-background: var(--colors-color-neutral-900);
-  --actor-border: '1px solid var(--colors-neutral-4)';
+  --actor-border: '1px solid var(--colors-color-neutral-800)';
   --actor-border-radius: 0.75rem;
   --foreground: var(--colors-white-0);
   --font-size: 16px;

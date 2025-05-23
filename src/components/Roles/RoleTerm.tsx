@@ -38,7 +38,7 @@ function Container({
       flexDirection="column"
       gap="1rem"
       border={displayLightContainer ? '1px solid' : undefined}
-      borderColor={displayLightContainer ? 'neutral-4' : undefined}
+      borderColor={displayLightContainer ? 'color-neutral-800' : undefined}
     >
       {children}
     </Box>

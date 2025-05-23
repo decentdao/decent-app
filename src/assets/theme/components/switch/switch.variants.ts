@@ -37,9 +37,9 @@ const secondaryDisabled = {
     },
   },
   thumb: {
-    backgroundColor: 'neutral-4',
+    backgroundColor: 'color-neutral-800',
     _checked: {
-      backgroundColor: 'neutral-4',
+      backgroundColor: 'color-neutral-800',
     },
   },
 };

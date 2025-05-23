@@ -8,7 +8,7 @@ const info = definePartsStyle({
   container: {
     bg: 'color-neutral-900',
     border: '1px solid',
-    borderColor: 'neutral-4',
+    borderColor: 'color-neutral-800',
     color: 'color-lilac-100',
   },
   description: {},

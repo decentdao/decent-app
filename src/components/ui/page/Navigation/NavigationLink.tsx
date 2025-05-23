@@ -26,7 +26,7 @@ function LinkContent({
         borderRadius={{ md: 4 }}
         transition="all ease-out 300ms"
         _hover={{ bgColor: 'color-neutral-900' }}
-        border={shouldApplyBorder ? `1px solid var(--colors-neutral-4)` : 'transparent'}
+        border={shouldApplyBorder ? `1px solid var(--colors-color-neutral-800)` : 'transparent'}
         bgColor={shouldApplyBorder ? 'color-neutral-900' : 'transparent'}
       >
         <Box w={6}>

@@ -73,8 +73,8 @@ export function SimpleProposalCard({ proposal }: { proposal: FractalProposal }) 
       <Box
         minHeight="6.25rem"
         bg="color-neutral-900"
-        _hover={{ bg: 'neutral-4' }}
-        _active={{ bg: 'neutral-4', border: '1px solid', borderColor: 'neutral-4' }}
+        _hover={{ bg: 'color-neutral-800' }}
+        _active={{ bg: 'color-neutral-800', border: '1px solid', borderColor: 'color-neutral-800' }}
         transition="all ease-out 300ms"
         p="1.5rem"
         borderRadius="0.75rem"

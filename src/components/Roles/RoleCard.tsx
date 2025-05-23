@@ -54,7 +54,7 @@ export function AvatarAndRoleName({
           color="color-lilac-100"
           _hover={{
             color: 'white-0',
-            bg: 'neutral-4',
+            bg: 'color-neutral-800',
           }}
           maxW="fit-content"
         >
