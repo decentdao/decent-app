@@ -48,7 +48,7 @@ export function RoleProposalPermissionBadge({
       label={t('permissionsProposalsTooltip')}
     >
       <Badge
-        color="celery-0"
+        color="color-green-400"
         bgColor="celery--6"
         textTransform="unset"
         fontSize="1rem"

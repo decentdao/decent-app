@@ -17,7 +17,7 @@ export default function CeleryButtonWithIcon({
   return (
     <Button
       variant="text"
-      color="celery-0"
+      color="color-green-400"
       maxWidth="100%"
       padding="0.25rem 0.75rem"
       gap="0.25rem"

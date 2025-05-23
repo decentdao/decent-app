@@ -1,5 +1,4 @@
 export default {
-  'celery-0': '#caff8a',
   'celery--2': '#acda76',
   'celery--3': '#95bc66',
   'celery--5': '#495d32',

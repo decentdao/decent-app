@@ -97,7 +97,7 @@ export default function ExternalLink({
   };
 
   const linkColor = {
-    green: 'celery-0',
+    green: 'color-green-400',
     grey: 'neutral-6',
     black: 'black',
     lilac: 'lilac--3',

@@ -91,10 +91,10 @@
 .sonner-toast[data-rich-colors='true'][data-sonner-toast][data-type='success'] {
   background-color: var(--colors-celery--6);
   border: 1px solid var(--colors-celery--5);
-  color: var(--colors-celery-0);
+  color: var(--colors-color-green-400);
 }
 
 .sonner-toast[data-rich-colors='true'][data-sonner-toast][data-type='success']
   button[data-close-button] {
-  color: var(--colors-celery-0);
+  color: var(--colors-color-green-400);
 }

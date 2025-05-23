@@ -23,7 +23,7 @@ export function ParentLink() {
 
   return (
     <Link
-      color="celery-0"
+      color="color-green-400"
       _hover={{ textDecoration: 'none', color: 'celery--6' }}
       to={DAO_ROUTES.dao.relative(addressPrefix, subgraphInfo.parentAddress)}
       marginBottom="1rem"
