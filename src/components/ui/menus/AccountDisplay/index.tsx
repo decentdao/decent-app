@@ -23,10 +23,10 @@ export function AccountDisplay({ containerRef }: AccountDisplayProps) {
         paddingInline="0.75rem"
         color="white-0"
         borderRadius="0.5rem"
-        _hover={{ color: 'white-0', bg: 'neutral-3' }}
+        _hover={{ color: 'white-0', bg: 'color-neutral-900' }}
         _active={{
           color: 'white-0',
-          bg: 'neutral-3',
+          bg: 'color-neutral-900',
         }}
       >
         <AccountMenuButton />

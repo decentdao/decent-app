@@ -174,7 +174,7 @@ export function RoleFormPaymentStream({ formIndex }: { formIndex: number }) {
       <Box
         p="1.5rem"
         mt={4}
-        bg="neutral-2"
+        bg="color-neutral-950"
         boxShadow={{
           base: DETAILS_BOX_SHADOW,
           md: 'unset',

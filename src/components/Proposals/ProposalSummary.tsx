@@ -41,7 +41,7 @@ function ProposalDetailsSection({
     <ContentBox
       containerBoxProps={{
         border: '1px solid',
-        borderColor: 'neutral-3',
+        borderColor: 'color-neutral-900',
         borderRadius: '0.75rem',
         my: 0,
       }}
@@ -74,7 +74,7 @@ function ProposalDetailsSection({
           alignItems="center"
         >
           <Text
-            color="neutral-7"
+            color="color-neutral-300"
             w="full"
           >
             {t('snapshotTaken')}
@@ -101,7 +101,7 @@ function ProposalDetailsSection({
             flexWrap="wrap"
           >
             <Text
-              color="neutral-7"
+              color="color-neutral-300"
               w="full"
             >
               {t('transactionHash')}
@@ -145,7 +145,7 @@ function ProposalVotingSection({
     <ContentBox
       containerBoxProps={{
         border: '1px solid',
-        borderColor: 'neutral-3',
+        borderColor: 'color-neutral-900',
         borderRadius: '0.75rem',
         py: 4,
       }}
@@ -162,7 +162,7 @@ function ProposalVotingSection({
           gap={1}
         >
           <Text
-            color="neutral-7"
+            color="color-neutral-300"
             w="full"
           >
             {t('votingPower')}
@@ -174,7 +174,7 @@ function ProposalVotingSection({
           >
             <Icon
               as={Question}
-              color="neutral-7"
+              color="color-neutral-300"
             />
           </DecentTooltip>
         </Flex>

@@ -14,7 +14,7 @@ function ProposalCreatedBy({ proposer }: { proposer: Address | null }) {
       mt={4}
     >
       <Text
-        color="neutral-7"
+        color="color-neutral-300"
         w="full"
       >
         {t('proposedBy')}

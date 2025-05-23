@@ -46,7 +46,7 @@ export function SafeModulesSettingsPage() {
 
           <Box
             border="1px solid"
-            borderColor="neutral-3"
+            borderColor="color-neutral-900"
             borderRadius="0.75rem"
             p={4}
           >
@@ -77,7 +77,7 @@ export function SafeModulesSettingsPage() {
                   );
                 })
               ) : (
-                <Text color="neutral-5">{t('noModulesAttached')}</Text>
+                <Text color="color-neutral-700">{t('noModulesAttached')}</Text>
               )
             ) : (
               <BarLoader />
@@ -98,7 +98,7 @@ export function SafeModulesSettingsPage() {
 
           <Box
             border="1px solid"
-            borderColor="neutral-3"
+            borderColor="color-neutral-900"
             borderRadius="0.75rem"
             p={4}
           >
@@ -118,7 +118,7 @@ export function SafeModulesSettingsPage() {
                 </DisplayAddress>
               </Flex>
             ) : (
-              <Text color="neutral-5">{t('noGuardAttached')}</Text>
+              <Text color="color-neutral-700">{t('noGuardAttached')}</Text>
             )}
           </Box>
         </Flex>

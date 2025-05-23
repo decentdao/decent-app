@@ -22,21 +22,21 @@ export function CoinHeader() {
         <Text
           w="40%"
           textStyle="labels-small"
-          color="neutral-7"
+          color="color-neutral-300"
         >
           {t('columnCoins')}
         </Text>
         <Text
           w="35%"
           textStyle="labels-small"
-          color="neutral-7"
+          color="color-neutral-300"
         >
           {t('columnValue')}
         </Text>
         <Text
           w="25%"
           textStyle="labels-small"
-          color="neutral-7"
+          color="color-neutral-300"
         >
           {t('columnAllocation')}
         </Text>
@@ -106,7 +106,7 @@ export function CoinRow({ asset }: { asset: TokenBalance }) {
         {asset.usdPrice && asset.usdValue && (
           <Text
             textStyle="labels-small"
-            color="neutral-7"
+            color="color-neutral-300"
             width="100%"
           >
             <DecentTooltip

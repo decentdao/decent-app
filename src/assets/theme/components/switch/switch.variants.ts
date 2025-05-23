@@ -2,22 +2,22 @@ import { defineStyle } from '@chakra-ui/react';
 
 const primaryDisabled = {
   track: {
-    backgroundColor: 'neutral-5',
+    backgroundColor: 'color-neutral-700',
     _checked: {
-      backgroundColor: 'neutral-5',
+      backgroundColor: 'color-neutral-700',
     },
   },
   thumb: {
-    backgroundColor: 'neutral-6',
+    backgroundColor: 'color-neutral-400',
     _checked: {
-      backgroundColor: 'neutral-6',
+      backgroundColor: 'color-neutral-400',
     },
   },
 };
 
 const primary = defineStyle({
   track: {
-    backgroundColor: 'neutral-6',
+    backgroundColor: 'color-neutral-400',
     _checked: {
       backgroundColor: 'color-lilac-600',
     },
@@ -31,15 +31,15 @@ const primary = defineStyle({
 
 const secondaryDisabled = {
   track: {
-    backgroundColor: 'neutral-3',
+    backgroundColor: 'color-neutral-900',
     _checked: {
-      backgroundColor: 'neutral-3',
+      backgroundColor: 'color-neutral-900',
     },
   },
   thumb: {
-    backgroundColor: 'neutral-4',
+    backgroundColor: 'color-neutral-800',
     _checked: {
-      backgroundColor: 'neutral-4',
+      backgroundColor: 'color-neutral-800',
     },
   },
 };
@@ -56,7 +56,7 @@ const secondary = defineStyle({
     _disabled: secondaryDisabled.track,
   },
   thumb: {
-    backgroundColor: 'neutral-10',
+    backgroundColor: 'color-neutral-50',
     borderColor: 'white-0',
     _hover: {
       _disabled: secondaryDisabled.thumb,

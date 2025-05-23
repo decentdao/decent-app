@@ -33,13 +33,13 @@ export function DAONodeInfoCard(props: {
   return (
     <Box
       minH={`${NODE_HEIGHT_REM}rem`}
-      bg="neutral-2"
+      bg="color-neutral-950"
       _hover={
         !isCurrentViewingDAO
           ? {
-              bg: 'neutral-3',
+              bg: 'color-neutral-900',
               border: '1px solid',
-              borderColor: 'neutral-4',
+              borderColor: 'color-neutral-800',
             }
           : {}
       }
@@ -47,7 +47,7 @@ export function DAONodeInfoCard(props: {
       width="100%"
       borderRadius="0.75rem"
       border={isCurrentViewingDAO ? '4px solid' : '1px'}
-      borderColor={isCurrentViewingDAO ? 'neutral-4' : 'transparent'}
+      borderColor={isCurrentViewingDAO ? 'color-neutral-800' : 'transparent'}
     >
       <Flex justifyItems="space-between">
         <Flex w="full">
@@ -84,7 +84,7 @@ export function DAONodeInfoCard(props: {
             <Box
               key={index}
               borderRadius="9999px"
-              bg="neutral-3"
+              bg="color-neutral-900"
               px="0.75rem"
               py="0.25rem"
               h="fit-content"

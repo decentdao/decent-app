@@ -100,9 +100,9 @@ export function DnDFileInput() {
         {...getRootProps()}
         p="1rem"
         border="1px dashed"
-        borderColor={isDragActive ? 'color-lilac-100' : 'neutral-3'}
+        borderColor={isDragActive ? 'color-lilac-100' : 'color-neutral-900'}
         borderRadius="sm"
-        bg="neutral-1"
+        bg="color-black"
         cursor="pointer"
         textAlign="center"
         transition="border-color 0.2s ease-in-out"
@@ -112,7 +112,7 @@ export function DnDFileInput() {
         <Text>{isDragActive ? t('dropCSVHere') : t('dragDropCSV')}</Text>
         <Text
           fontSize="sm"
-          color="neutral-7"
+          color="color-neutral-300"
           mt="0.5rem"
         >
           {t('csvFormat')}

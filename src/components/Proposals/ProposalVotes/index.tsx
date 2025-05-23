@@ -157,7 +157,7 @@ function ProposalVotes({ proposal }: { proposal: AzoriusProposal }) {
   return (
     <Flex
       border="1px solid"
-      borderColor="neutral-3"
+      borderColor="color-neutral-900"
       borderRadius="0.5rem"
       flexWrap="wrap"
       mt="1.5rem"

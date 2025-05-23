@@ -12,7 +12,7 @@ const twoToneVariant = definePartsStyle({
     padding: '0.25rem',
     borderRadius: '0.5rem',
     gap: '0.25rem',
-    bg: 'neutral-1',
+    bg: 'color-black',
     width: 'fit-content',
   },
   tab: {
@@ -20,9 +20,9 @@ const twoToneVariant = definePartsStyle({
     width: { base: 'full', md: 'fit-content' },
     borderRadius: '0.25rem',
     whiteSpace: 'nowrap',
-    color: 'neutral-6',
+    color: 'color-neutral-400',
     _selected: {
-      background: 'neutral-2',
+      background: 'color-neutral-950',
       color: 'color-lilac-100',
       boxShadow: CARD_SHADOW,
     },

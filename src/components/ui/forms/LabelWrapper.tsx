@@ -49,7 +49,7 @@ function LabelWrapper({
         {children}
         <Box
           textStyle="labels-large"
-          color="neutral-7"
+          color="color-neutral-300"
           mt="2"
           h="0.5rem"
         >

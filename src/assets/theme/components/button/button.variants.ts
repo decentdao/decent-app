@@ -1,7 +1,7 @@
 import { defineStyle } from '@chakra-ui/react';
 const primaryDisabled = {
-  bg: 'neutral-5',
-  color: 'neutral-7',
+  bg: 'color-neutral-700',
+  color: 'color-neutral-300',
 };
 
 const primary = defineStyle({
@@ -22,8 +22,8 @@ const primary = defineStyle({
 });
 
 const secondaryDisabled = {
-  borderColor: 'neutral-5',
-  color: 'neutral-5',
+  borderColor: 'color-neutral-700',
+  color: 'color-neutral-700',
 };
 const secondary = defineStyle({
   border: '1px solid',
@@ -46,7 +46,7 @@ const secondary = defineStyle({
 });
 
 const tertiaryDisabled = {
-  color: 'neutral-5',
+  color: 'color-neutral-700',
 };
 
 const tertiaryLoading = {
@@ -98,19 +98,19 @@ const danger = defineStyle({
 
 const stepper = defineStyle({
   border: '1px solid',
-  borderColor: 'neutral-3',
-  bg: 'neutral-1',
+  borderColor: 'color-neutral-900',
+  bg: 'color-black',
   color: 'color-lilac-100',
   _active: {
-    borderColor: 'neutral-4',
+    borderColor: 'color-neutral-800',
     boxShadow: '0px 0px 0px 3px #534D58',
   },
   _hover: {
-    borderColor: 'neutral-4',
+    borderColor: 'color-neutral-800',
   },
   _focus: {
     outline: 'none',
-    borderColor: 'neutral-4',
+    borderColor: 'color-neutral-800',
     boxShadow: '0px 0px 0px 3px #534D58',
   },
 });

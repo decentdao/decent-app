@@ -68,7 +68,7 @@ export function SafePermissionsSettingsContent() {
         <Flex
           flexDirection="column"
           border="1px solid"
-          borderColor="neutral-3"
+          borderColor="color-neutral-900"
           borderRadius="0.75rem"
         >
           {!isLoaded ? (
@@ -94,7 +94,7 @@ export function SafePermissionsSettingsContent() {
               onClick={openAddPermissionModal}
               sx={{
                 _hover: {
-                  backgroundColor: 'neutral-3',
+                  backgroundColor: 'color-neutral-900',
                   button: {
                     opacity: 1,
                   },
@@ -108,7 +108,7 @@ export function SafePermissionsSettingsContent() {
                 >
                   <Box
                     borderRadius="50%"
-                    bg="neutral-3"
+                    bg="color-neutral-900"
                     color="color-lilac-100"
                     padding={1}
                   >
@@ -118,7 +118,7 @@ export function SafePermissionsSettingsContent() {
                     <Text>{t('permissionCreateProposalsTitle')}</Text>
                     <Text
                       textStyle="labels-large"
-                      color="neutral-7"
+                      color="color-neutral-300"
                     >
                       {votesToken
                         ? t('permissionsErc20CreateProposalsDescription', {
@@ -140,7 +140,7 @@ export function SafePermissionsSettingsContent() {
                     icon={<PencilWithLineIcon />}
                     aria-label={t('edit')}
                     opacity={0}
-                    color="neutral-6"
+                    color="color-neutral-400"
                     border="none"
                   />
                 )}

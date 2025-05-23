@@ -176,7 +176,7 @@ export function AzoriusTokenDetails(props: ICreationStepProps) {
       <Box
         mt="1.5rem"
         padding="1.5rem"
-        bg="neutral-2"
+        bg="color-neutral-950"
         borderRadius="0.25rem"
       >
         <TokenConfigDisplay {...props} />
@@ -185,7 +185,7 @@ export function AzoriusTokenDetails(props: ICreationStepProps) {
         <Box
           mt="1.5rem"
           padding="1.5rem"
-          bg="neutral-2"
+          bg="color-neutral-950"
           borderRadius="0.25rem"
         >
           <AzoriusTokenAllocations {...props} />

@@ -64,7 +64,7 @@ export function DropdownMenu<T>({
             sx={{
               '&:disabled': {
                 '.payment-menu-asset *': {
-                  color: 'neutral-6',
+                  color: 'color-neutral-400',
                   bg: 'transparent',
                 },
               },
@@ -74,7 +74,7 @@ export function DropdownMenu<T>({
               gap={2}
               alignItems="center"
               border="1px solid"
-              borderColor="neutral-4"
+              borderColor="color-neutral-800"
               borderRadius="9999px"
               w="fit-content"
               className="payment-menu-asset"
@@ -98,7 +98,7 @@ export function DropdownMenu<T>({
                   {selectedItem?.label ?? selectPlaceholder}
                 </Text>
                 <Icon
-                  color="neutral-6"
+                  color="color-neutral-400"
                   as={CaretDown}
                   boxSize="1.5rem"
                 />
@@ -141,7 +141,7 @@ export function DropdownMenu<T>({
                   >
                     <Text
                       textStyle="heading-small"
-                      color="neutral-7"
+                      color="color-neutral-300"
                     >
                       {emptyMessage}
                     </Text>
@@ -221,7 +221,7 @@ export function DropdownMenu<T>({
                     <Text
                       px="1rem"
                       textStyle="labels-small"
-                      color="neutral-7"
+                      color="color-neutral-300"
                     >
                       {title}
                     </Text>
@@ -242,7 +242,7 @@ export function DropdownMenu<T>({
                   >
                     <Text
                       textStyle="heading-small"
-                      color="neutral-7"
+                      color="color-neutral-300"
                     >
                       {emptyMessage}
                     </Text>

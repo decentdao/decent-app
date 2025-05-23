@@ -44,9 +44,9 @@ export function AccordionDropdown({
       marginTop={4}
       padding="1rem"
       borderRadius="0.75rem"
-      bg="neutral-2"
+      bg="color-neutral-950"
       border="1px solid"
-      borderColor="neutral-3"
+      borderColor="color-neutral-900"
     >
       <Accordion
         allowToggle

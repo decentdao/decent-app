@@ -45,8 +45,8 @@ export default function ABISelector({ target, onChange }: IABISelector) {
       <Select
         placeholder={t('select')}
         variant="outline"
-        bg="neutral-1"
-        borderColor="neutral-3"
+        bg="color-black"
+        borderColor="color-neutral-900"
         borderWidth="1px"
         borderRadius="4px"
         color="white-0"
@@ -57,14 +57,14 @@ export default function ABISelector({ target, onChange }: IABISelector) {
           if (!selectedFunction) throw new Error('Issue finding selected function');
           onChange(selectedFunction);
         }}
-        sx={{ '> option, > optgroup': { bg: 'neutral-1' } }}
+        sx={{ '> option, > optgroup': { bg: 'color-black' } }}
       >
         {abiFunctions.map((abiFunction: ABIElement) => (
           <option key={abiFunction.name}>{abiFunction.name}</option>
         ))}
       </Select>
       <Text
-        color="neutral-7"
+        color="color-neutral-300"
         mt="0.5rem"
       >
         {t('abiSelectorDescription')}

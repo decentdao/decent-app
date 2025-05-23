@@ -33,7 +33,7 @@ export function ActivityCard({
       >
         <Flex flexDirection="column">
           <Flex
-            color="neutral-7"
+            color="color-neutral-300"
             alignItems="center"
             gap="1rem"
             mb="1rem"
@@ -54,7 +54,7 @@ export function ActivityCard({
               alignItems="center"
               gap="0.5rem"
             >
-              <Text color="neutral-7">
+              <Text color="color-neutral-300">
                 {eventDateLabel} {eventDate}
               </Text>
             </Flex>

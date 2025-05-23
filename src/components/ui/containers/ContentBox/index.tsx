@@ -15,7 +15,7 @@ function ContentBox({ title, children, containerBoxProps, onClick }: ContentBoxP
       rounded="lg"
       p="1.5rem"
       my="1.25rem"
-      bg="neutral-2"
+      bg="color-neutral-950"
       {...containerBoxProps}
       cursor={!!onClick ? 'pointer' : 'default'}
       onClick={onClick}

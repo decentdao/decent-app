@@ -25,9 +25,9 @@ function LinkContent({
         px="6px"
         borderRadius={{ md: 4 }}
         transition="all ease-out 300ms"
-        _hover={{ bgColor: 'neutral-3' }}
-        border={shouldApplyBorder ? `1px solid var(--colors-neutral-4)` : 'transparent'}
-        bgColor={shouldApplyBorder ? 'neutral-3' : 'transparent'}
+        _hover={{ bgColor: 'color-neutral-900' }}
+        border={shouldApplyBorder ? `1px solid var(--colors-color-neutral-800)` : 'transparent'}
+        bgColor={shouldApplyBorder ? 'color-neutral-900' : 'transparent'}
       >
         <Box w={6}>
           <NavigationIcon

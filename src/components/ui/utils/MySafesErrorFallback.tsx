@@ -6,7 +6,7 @@ export function MySafesErrorFallback() {
     <Box
       p="1rem"
       maxW="100%"
-      bg="neutral-2"
+      bg="color-neutral-950"
       borderRadius="0.5rem"
     >
       <Text

@@ -80,10 +80,10 @@ export function SafesMenu() {
           buttonProps={{
             variant: 'tertiary',
             color: 'white-0',
-            _hover: { color: 'white-0', bg: 'neutral-3' },
+            _hover: { color: 'white-0', bg: 'color-neutral-900' },
             _active: {
               color: 'white-0',
-              bg: 'neutral-3',
+              bg: 'color-neutral-900',
             },
             paddingX: '0.75rem',
             paddingY: '0.25rem',

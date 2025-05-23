@@ -70,7 +70,7 @@ export function ModalBase({
         </ModalContent>
       ) : (
         <ModalContent
-          bg={contentStyle?.backgroundColor ?? 'neutral-2'}
+          bg={contentStyle?.backgroundColor ?? 'color-neutral-950'}
           borderRadius="0.75rem"
           boxShadow="0px 0px 0px 1px #100414, 0px 0px 0px 1px rgba(248, 244, 252, 0.04) inset, 0px 1px 0px 0px rgba(248, 244, 252, 0.04) inset"
           padding={contentStyle?.padding ?? '1.5rem'}

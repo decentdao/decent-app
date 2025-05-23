@@ -89,7 +89,7 @@ function TransactionBlock({ transaction }: { transaction: DecodedTransaction }) 
     <Flex
       width="full"
       borderRadius="4px"
-      bg="neutral-3"
+      bg="color-neutral-900"
       flexWrap="wrap"
       padding="1rem"
       rowGap="0.5rem"

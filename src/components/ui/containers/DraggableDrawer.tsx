@@ -111,7 +111,7 @@ export default function DraggableDrawer({
       <DrawerContent
         ref={drawerContentRef}
         id="drawer-content"
-        bg="neutral-2"
+        bg="color-neutral-950"
         borderTopRadius="0.5rem"
         height={drawerHeight}
         transitionDuration="300ms"

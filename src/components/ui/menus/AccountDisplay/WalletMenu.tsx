@@ -22,7 +22,7 @@ export function WalletMenu() {
       backdropFilter="auto"
       backdropBlur="10px"
       border="1px solid"
-      borderColor="neutral-3"
+      borderColor="color-neutral-900"
       zIndex="popover"
       py="0.25rem"
     >

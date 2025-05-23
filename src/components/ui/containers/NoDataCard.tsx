@@ -19,7 +19,7 @@ export default function NoDataCard({
   const content = (
     <Text
       textAlign="center"
-      color="neutral-6"
+      color="color-neutral-400"
       p="1rem"
     >
       {t(
@@ -38,7 +38,7 @@ export default function NoDataCard({
 
   return (
     <Box
-      bg="neutral-2"
+      bg="color-neutral-950"
       boxShadow="layeredShadowBorder"
       borderRadius="0.75rem"
       p="1rem"

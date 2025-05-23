@@ -71,16 +71,16 @@ export default function AzoriusNFTDetail({
       position="relative"
     >
       <Flex justifyContent="space-between">
-        <Text color="neutral-7">{t('nftDetailsToken')}</Text>
+        <Text color="color-neutral-300">{t('nftDetailsToken')}</Text>
         <Box textAlign="right">
           {showData ? (
             <>
               <Text>{tokenDetails.symbol}</Text>
               <Text>{tokenDetails.name}</Text>
-              <Text color="neutral-7">{displayName}</Text>
+              <Text color="color-neutral-300">{displayName}</Text>
             </>
           ) : (
-            <Text color="neutral-7">{t('n/a')}</Text>
+            <Text color="color-neutral-300">{t('n/a')}</Text>
           )}
         </Box>
       </Flex>
@@ -88,8 +88,8 @@ export default function AzoriusNFTDetail({
         mt={4}
         justifyContent="space-between"
       >
-        <Text color="neutral-7">{t('nftDetailsWeight')}</Text>
-        <Text color={showData && nft.tokenWeight.value ? undefined : 'neutral-7'}>
+        <Text color="color-neutral-300">{t('nftDetailsWeight')}</Text>
+        <Text color={showData && nft.tokenWeight.value ? undefined : 'color-neutral-300'}>
           {showData && nft.tokenWeight.value ? nft.tokenWeight.value : t('n/a')}
         </Text>
       </Flex>

@@ -22,21 +22,21 @@ export function DeFiHeader() {
         <Text
           w="40%"
           textStyle="labels-small"
-          color="neutral-7"
+          color="color-neutral-300"
         >
           {t('columnProtocols')}
         </Text>
         <Text
           w="35%"
           textStyle="labels-small"
-          color="neutral-7"
+          color="color-neutral-300"
         >
           {t('columnValue')}
         </Text>
         <Text
           w="25%"
           textStyle="labels-small"
-          color="neutral-7"
+          color="color-neutral-300"
         >
           {t('columnAllocation')}
         </Text>

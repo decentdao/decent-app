@@ -76,7 +76,7 @@ function Signer({
           value={!!newSigner ? newSigner.inputValue : signer.address}
           isDisabled={!newSigner}
           textDecoration={markedForRemoval ? 'line-through' : 'none'}
-          color={!!newSigner ? 'white-0' : 'neutral-3'}
+          color={!!newSigner ? 'white-0' : 'color-neutral-900'}
           isInvalid={isInvalid}
           onChange={e => {
             // Find and overwrite the address input value of this new signer with the input value
@@ -107,7 +107,7 @@ function Signer({
             <Icon
               as={MinusCircle}
               boxSize="1.5rem"
-              color={showRemoveButton ? 'color-lilac-100' : 'neutral-5'}
+              color={showRemoveButton ? 'color-lilac-100' : 'color-neutral-700'}
             />
           </Button>
         )}
@@ -306,7 +306,7 @@ export function SignersContainer() {
 
       <Box
         border="1px solid"
-        borderColor="neutral-3"
+        borderColor="color-neutral-900"
         borderRadius="0.75rem"
       >
         {signers.map(signer => (
@@ -376,7 +376,7 @@ export function SignersContainer() {
       {isSettingsV1FeatureEnabled && (
         <Box
           border="1px solid"
-          borderColor="neutral-3"
+          borderColor="color-neutral-900"
           borderRadius="0.75rem"
           mt={3}
           px={6}
@@ -397,7 +397,7 @@ export function SignersContainer() {
               </Text>
               <Text
                 textStyle="body-small"
-                color="neutral-7"
+                color="color-neutral-300"
               >
                 {t('thresholdDescription', { ns: 'common' })}
               </Text>
@@ -413,7 +413,9 @@ export function SignersContainer() {
                   }
                   setFieldValue('multisig.signerThreshold', updatedValue);
                 }}
-                color={values.multisig?.signerThreshold === undefined ? 'neutral-7' : 'white-0'}
+                color={
+                  values.multisig?.signerThreshold === undefined ? 'color-neutral-300' : 'white-0'
+                }
                 value={values.multisig?.signerThreshold ?? safe?.threshold}
                 isInvalid={!!multisigEditFormikErrors?.threshold}
               />

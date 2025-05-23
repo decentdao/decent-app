@@ -45,7 +45,7 @@ export function Layout() {
         ref={headerContainerRef}
       >
         <Box
-          bg="neutral-2"
+          bg="color-neutral-950"
           boxShadow="0px 1px 0px 0px #161219"
           position="fixed"
           w="full"

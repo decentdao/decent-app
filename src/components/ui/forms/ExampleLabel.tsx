@@ -4,7 +4,7 @@ import { PropsWithChildren } from 'react';
 export default function ExampleLabel({ children, ...rest }: PropsWithChildren<TextProps>) {
   return (
     <Text
-      bg="neutral-3"
+      bg="color-neutral-900"
       borderRadius="2px"
       px="6px"
       py="2px"

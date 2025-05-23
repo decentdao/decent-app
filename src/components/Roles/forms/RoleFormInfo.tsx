@@ -23,7 +23,7 @@ export default function RoleFormInfo() {
     <>
       <Box
         p="1.5rem"
-        bg="neutral-2"
+        bg="color-neutral-950"
         boxShadow={{
           base: DETAILS_BOX_SHADOW,
           md: 'unset',
@@ -115,8 +115,8 @@ export default function RoleFormInfo() {
                 padding={4}
                 borderRadius={8}
                 border="1px solid"
-                borderColor="neutral-3"
-                bg="neutral-2"
+                borderColor="color-neutral-900"
+                bg="color-neutral-950"
                 boxShadow={{
                   base: DETAILS_BOX_SHADOW,
                   md: 'unset',

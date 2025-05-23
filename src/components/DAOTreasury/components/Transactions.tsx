@@ -45,12 +45,12 @@ function TransferRow({ displayData }: { displayData: TransferDisplayData }) {
             as={displayData.eventType === TokenEventType.WITHDRAW ? ArrowUp : ArrowDown}
             w="1.25rem"
             h="1.25rem"
-            color="neutral-7"
+            color="color-neutral-300"
           />
           <Box>
             <Text
               textStyle="labels-small"
-              color="neutral-7"
+              color="color-neutral-300"
             >
               {t(getTransferEventLabel(displayData.eventType))}
             </Text>
@@ -113,7 +113,7 @@ function EmptyTransactions() {
   const { t } = useTranslation('treasury');
   return (
     <Text
-      color="neutral-6"
+      color="color-neutral-400"
       data-testid="text-empty-transactions"
       align="center"
       px={{ base: '1rem', lg: '1.5rem' }}
@@ -166,7 +166,7 @@ export function PaginationButton({ onClick }: { onClick: () => void }) {
         py="0.25rem"
         px="0.75rem"
         borderRadius="full"
-        bg="neutral-3"
+        bg="color-neutral-900"
         color="color-lilac-100"
         onClick={onClick}
       >
@@ -191,7 +191,7 @@ export function PaginationCount({ shownTransactions }: { shownTransactions: numb
   return (
     <Flex gap="0.25rem">
       <Text
-        color="neutral-7"
+        color="color-neutral-300"
         textStyle="labels-large"
       >
         {t('transactionsShownCount', {

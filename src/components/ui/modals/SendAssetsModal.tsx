@@ -134,8 +134,8 @@ export function SendAssetsModal({
                       <LabelWrapper label={t('selectLabel')}>
                         <Select
                           {...field}
-                          bgColor="neutral-1"
-                          borderColor="neutral-3"
+                          bgColor="color-black"
+                          borderColor="color-neutral-900"
                           rounded="sm"
                           cursor="pointer"
                           iconSize="1.5rem"
@@ -191,12 +191,12 @@ export function SendAssetsModal({
               {/* AVAILABLE BALANCE HINT */}
               <HStack
                 justify="space-between"
-                textStyle="neutral-7"
+                textStyle="color-neutral-300"
                 color="white-0"
                 marginTop="0.75rem"
               >
                 <Text
-                  color={overDraft ? 'red-0' : 'neutral-7'}
+                  color={overDraft ? 'red-0' : 'color-neutral-300'}
                   textStyle="labels-large"
                   as="span"
                 >

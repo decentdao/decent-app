@@ -29,7 +29,7 @@ export default function ExternalLink({
         textDecoration: 'underline',
       },
       active: {
-        color: 'neutral-6',
+        color: 'color-neutral-400',
       },
     },
     black: {
@@ -64,11 +64,11 @@ export default function ExternalLink({
     },
     grey: {
       hover: {
-        bg: 'neutral-2',
+        bg: 'color-neutral-950',
       },
       active: {
-        bg: 'neutral-5',
-        borderColor: 'neutral-5',
+        bg: 'color-neutral-700',
+        borderColor: 'color-neutral-700',
         borderWidth: '1px',
       },
     },
@@ -98,7 +98,7 @@ export default function ExternalLink({
 
   const linkColor = {
     green: 'color-green-400',
-    grey: 'neutral-6',
+    grey: 'color-neutral-400',
     black: 'black',
     lilac: 'color-lilac-600',
   };

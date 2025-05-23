@@ -22,7 +22,7 @@ function SortMenuItem({
       borderRadius="0.75rem"
       p="0.5rem 0.5rem"
       sx={{
-        '&:hover': { bg: 'neutral-3' },
+        '&:hover': { bg: 'color-neutral-900' },
       }}
       data-testid={testId}
       onClick={onClick}
@@ -61,7 +61,7 @@ export function Sort({ sortBy, setSortBy, buttonProps }: ISort) {
       </MenuButton>
       <MenuList
         borderWidth="1px"
-        borderColor="neutral-3"
+        borderColor="color-neutral-900"
         borderRadius="0.75rem"
         bg={NEUTRAL_2_82_TRANSPARENT}
         backdropFilter="auto"
@@ -75,7 +75,7 @@ export function Sort({ sortBy, setSortBy, buttonProps }: ISort) {
             px="0.5rem"
             my="0.25rem"
             textStyle="labels-small"
-            color="neutral-7"
+            color="color-neutral-300"
           >
             {t('sortTitle')}
           </Text>

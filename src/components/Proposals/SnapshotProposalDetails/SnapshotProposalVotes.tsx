@@ -24,7 +24,7 @@ export default function SnapshotProposalVotes({ proposal }: ISnapshotProposalVot
         containerBoxProps={{
           bg: 'transparent',
           border: '1px solid',
-          borderColor: 'neutral-3',
+          borderColor: 'color-neutral-900',
           borderRadius: '0.5rem',
         }}
       >
@@ -95,7 +95,7 @@ export default function SnapshotProposalVotes({ proposal }: ISnapshotProposalVot
                 justifyContent="center"
                 width="100%"
               >
-                <Text color="neutral-7">{t('shutterVotesHidden')} |</Text>
+                <Text color="color-neutral-300">{t('shutterVotesHidden')} |</Text>
                 <ProposalCountdown
                   proposal={proposal}
                   showIcon={false}
