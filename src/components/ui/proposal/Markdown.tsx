@@ -1,38 +1,10 @@
-import { Button, Image, Box } from '@chakra-ui/react';
+import { Button, Box } from '@chakra-ui/react';
 import React, { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import ReactMarkdown, { Components } from 'react-markdown';
-import remarkGfm from 'remark-gfm';
 import '../../../assets/css/Markdown.css';
 import { getRandomBytes } from '../../../helpers';
 import useSkipTab from '../../../hooks/utils/useSkipTab';
-
-function CustomMarkdownImage({ src, alt }: { src?: string; alt?: string }) {
-  const [error, setError] = useState(false);
-
-  if (!src || error) {
-    return null;
-  }
-
-  return (
-    <Image
-      src={src}
-      alt={alt || ''}
-      onError={() => setError(true)}
-    />
-  );
-}
-
-const MarkdownComponents: Components = {
-  img: image => {
-    return (
-      <CustomMarkdownImage
-        src={image.src}
-        alt={image.alt || ''}
-      />
-    );
-  },
-};
+import { MarkdownViewer } from '../../Markdown/MarkdownViewer';
 
 interface IMarkdown {
   truncate?: boolean;
@@ -129,26 +101,7 @@ export default function Markdown({
     setCollapsed(prevState => !prevState);
   };
 
-  const handleTransformURI = (uri: string) => {
-    if (uri.startsWith('ipfs://')) {
-      const hash = uri.split('://')[1];
-      const SNAPSHOT_IPFS_BASE_URL = 'https://snapshot.4everland.link/ipfs';
-      return `${SNAPSHOT_IPFS_BASE_URL}/${hash}`;
-    }
-
-    return uri;
-  };
-
-  const innerContent = (!hideCollapsed || !collapsed) && (
-    <ReactMarkdown
-      remarkPlugins={truncate ? [] : [remarkGfm]}
-      urlTransform={handleTransformURI}
-      components={MarkdownComponents}
-      className="markdown-body"
-    >
-      {content}
-    </ReactMarkdown>
-  );
+  const innerContent = (!hideCollapsed || !collapsed) && <MarkdownViewer content={content} />;
 
   return (
     <>
