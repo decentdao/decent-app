@@ -57,8 +57,8 @@ export default function ExternalLink({
         borderColor: 'celery--6',
       },
       active: {
-        bg: 'celery--5',
-        borderColor: 'celery--5',
+        bg: 'color-green-800',
+        borderColor: 'color-green-800',
         borderWidth: '1px',
       },
     },

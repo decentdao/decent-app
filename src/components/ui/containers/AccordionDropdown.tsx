@@ -18,7 +18,7 @@ function ContentCountBadge({ count }: { count: number | undefined }) {
       rounded="9999px"
       bg="color-green-500"
       border="1px solid"
-      borderColor="celery--5"
+      borderColor="color-green-800"
       color="celery--6"
       boxSize="1.25rem"
       textAlign="center"

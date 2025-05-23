@@ -129,7 +129,7 @@ function GreenStreamingDot({ isStreaming }: { isStreaming: boolean }) {
       borderRadius="100%"
       bg="color-green-500"
       border="1px solid"
-      borderColor="celery--5"
+      borderColor="color-green-800"
     />
   );
 }

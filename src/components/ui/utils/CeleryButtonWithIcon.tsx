@@ -25,7 +25,7 @@ export default function CeleryButtonWithIcon({
       borderColor="transparent"
       borderWidth="1px"
       _hover={{ bg: 'celery--6', borderColor: 'celery--6' }}
-      _active={{ bg: 'celery--6', borderWidth: '1px', borderColor: 'celery--5' }}
+      _active={{ bg: 'celery--6', borderWidth: '1px', borderColor: 'color-green-800' }}
       onClick={onClick}
       {...rest}
     >
