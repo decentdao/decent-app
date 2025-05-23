@@ -53,8 +53,8 @@ export default function ExternalLink({
   const pillLinkStyles = {
     green: {
       hover: {
-        bg: 'celery--6',
-        borderColor: 'celery--6',
+        bg: 'color-green-950',
+        borderColor: 'color-green-950',
       },
       active: {
         bg: 'color-green-800',

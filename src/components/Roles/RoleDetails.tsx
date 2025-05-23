@@ -43,7 +43,7 @@ export function RoleProposalPermissionBadge({
     >
       <Badge
         color="color-green-400"
-        bgColor="celery--6"
+        bgColor="color-green-950"
         textTransform="unset"
         fontSize="1rem"
         lineHeight="1.5rem"
