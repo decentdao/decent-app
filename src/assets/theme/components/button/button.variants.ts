@@ -81,8 +81,8 @@ const dangerDisabled = {
 
 const danger = defineStyle({
   border: '1px solid',
-  borderColor: 'red-1',
-  color: 'red-1',
+  borderColor: 'color-error-400',
+  color: 'color-error-400',
   _disabled: {
     ...dangerDisabled,
   },

@@ -38,7 +38,7 @@ function RejectionBanner({ rejectionProposal }: { rejectionProposal: MultisigPro
       }
     : {
         bg: 'red--2',
-        color: 'red-1',
+        color: 'color-error-400',
         borderColor: 'red--1',
       };
   return (

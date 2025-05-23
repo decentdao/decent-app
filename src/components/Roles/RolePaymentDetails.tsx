@@ -182,7 +182,7 @@ function PaymentDetailsTop({ payment, onClick, isActiveStream }: PaymentDetailsT
             {(payment.isCancelled || payment.isCancelling) && (
               <Tag
                 variant="outlined"
-                color="red-1"
+                color="color-error-400"
                 outline="unset"
                 border="1px solid"
                 py={0}

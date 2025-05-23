@@ -23,7 +23,7 @@ const baseStyle = defineStyle({
   _invalid: {
     borderColor: 'color-error-500',
     bg: 'red--3',
-    color: 'red-1',
+    color: 'color-error-400',
     _placeholder: {
       color: 'color-error-500',
     },
@@ -57,7 +57,7 @@ const baseStyle = defineStyle({
     _invalid: {
       borderColor: 'color-error-500',
       bg: 'red--3',
-      color: 'red-1',
+      color: 'color-error-400',
       _placeholder: {
         color: 'color-error-500',
       },

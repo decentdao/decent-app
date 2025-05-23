@@ -69,12 +69,12 @@
 .sonner-toast[data-rich-colors='true'][data-sonner-toast][data-type='error'] {
   background-color: var(--colors-red--2);
   border: 1px solid var(--colors-red--1);
-  color: var(--colors-red-1);
+  color: var(--colors-color-error-400);
 }
 
 .sonner-toast[data-rich-colors='true'][data-sonner-toast][data-type='error']
   button[data-close-button] {
-  color: var(--colors-red-1);
+  color: var(--colors-color-error-400);
 }
 
 .sonner-toast[data-rich-colors='true'][data-sonner-toast][data-type='warning'] {

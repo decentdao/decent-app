@@ -18,7 +18,7 @@ const disabled = {
 
 const invalid = {
   bg: 'red--3',
-  color: 'red-1',
+  color: 'color-error-400',
   _placeholder: {
     color: 'color-error-500',
   },
@@ -57,7 +57,7 @@ const baseStyle = definePartsStyle({
       },
       _invalid: {
         ...invalid,
-        borderColor: 'red-1',
+        borderColor: 'color-error-400',
       },
     },
     _disabled: {

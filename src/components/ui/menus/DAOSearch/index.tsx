@@ -162,12 +162,12 @@ export function DAOSearch() {
               >
                 <Icon
                   as={WarningCircle}
-                  color="red-1"
+                  color="color-error-400"
                   boxSize="1.5rem"
                 />
                 <Text
                   textStyle="heading-small"
-                  color="red-1"
+                  color="color-error-400"
                 >
                   {errorMessage}
                 </Text>

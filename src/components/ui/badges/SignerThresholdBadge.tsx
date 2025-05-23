@@ -16,8 +16,8 @@ export function CountProgressBadge(props: { total: number; current: number }) {
       borderColor: COLOR_TEXT_SUCCESS,
     },
     red: {
-      color: 'red-1',
-      borderColor: 'red-1',
+      color: 'color-error-400',
+      borderColor: 'color-error-400',
     },
   };
   const currentTheme = colorScheme[themeKey];

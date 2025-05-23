@@ -245,7 +245,7 @@ export function ProposalActionCard({
         >
           <Icon
             as={isAddAction ? CheckSquare : isEditAction ? PencilWithLineIcon : Trash}
-            color={isEditAction || isAddAction ? 'color-neutral-300' : 'red-1'}
+            color={isEditAction || isAddAction ? 'color-neutral-300' : 'color-error-400'}
           />
           {action.content}
         </Flex>
@@ -255,7 +255,7 @@ export function ProposalActionCard({
         icon={<Trash />}
         variant="ghost"
         size="icon-sm"
-        color="red-1"
+        color="color-error-400"
         onClick={() => removeAction(index)}
       />
     </Flex>
