@@ -42,7 +42,7 @@ const BADGE_MAPPING: Record<
   },
   [FractalProposalState.FAILED]: {
     tooltipKey: 'stateFailedTip',
-    bg: 'red-0',
+    bg: 'color-error-500',
     textColor: 'red-4',
     _hover: { bg: 'red--1', textColor: 'red-4' },
   },
@@ -66,7 +66,7 @@ const BADGE_MAPPING: Record<
   },
   [FractalProposalState.REJECTED]: {
     tooltipKey: 'stateRejectedTip',
-    bg: 'red-0',
+    bg: 'color-error-500',
     textColor: 'red-4',
     _hover: { bg: 'red--1', textColor: 'red-4' },
   },
@@ -100,7 +100,7 @@ const BADGE_MAPPING: Record<
     _hover: { bg: 'color-neutral-950', textColor: 'color-neutral-300' },
   },
   ownerRejected: {
-    bg: 'red-0',
+    bg: 'color-error-500',
     textColor: 'red-4',
     _hover: { bg: 'red--1', textColor: 'red-4' },
   },

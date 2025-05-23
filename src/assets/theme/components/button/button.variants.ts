@@ -87,12 +87,12 @@ const danger = defineStyle({
     ...dangerDisabled,
   },
   _hover: {
-    borderColor: 'red-0',
-    color: 'red-0',
+    borderColor: 'color-error-500',
+    color: 'color-error-500',
   },
   _active: {
-    borderColor: 'red-0',
-    color: 'red-0',
+    borderColor: 'color-error-500',
+    color: 'color-error-500',
   },
 });
 

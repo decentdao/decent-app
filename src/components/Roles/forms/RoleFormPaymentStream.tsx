@@ -260,7 +260,7 @@ export function RoleFormPaymentStream({ formIndex }: { formIndex: number }) {
               <Button
                 color="red-1"
                 borderColor="red-1"
-                _hover={{ color: 'red-0', borderColor: 'red-0' }}
+                _hover={{ color: 'color-error-500', borderColor: 'color-error-500' }}
                 variant="secondary"
                 leftIcon={<Trash />}
                 onClick={confirmCancelPayment}
@@ -278,7 +278,7 @@ export function RoleFormPaymentStream({ formIndex }: { formIndex: number }) {
           <Button
             color="red-1"
             borderColor="red-1"
-            _hover={{ color: 'red-0', borderColor: 'red-0' }}
+            _hover={{ color: 'color-error-500', borderColor: 'color-error-500' }}
             variant="secondary"
             leftIcon={<Trash />}
             onClick={confirmCancelPayment}

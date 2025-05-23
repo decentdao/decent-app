@@ -141,7 +141,7 @@ export function WithdrawGasTankModal({
                           parentFormikValue={values.inputAmount}
                           placeholder="0"
                           isInvalid={overDraft}
-                          errorBorderColor="red-0"
+                          errorBorderColor="color-error-500"
                         />
                       </LabelWrapper>
                     )}
@@ -158,7 +158,7 @@ export function WithdrawGasTankModal({
                       disabled
                     />
                     <Text
-                      color={overDraft ? 'red-0' : 'color-neutral-300'}
+                      color={overDraft ? 'color-error-500' : 'color-neutral-300'}
                       textStyle="labels-small"
                       px="0.25rem"
                     >

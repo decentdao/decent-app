@@ -160,7 +160,7 @@ export function ConfirmDeleteStrategyModal({ onClose }: { onClose: () => void })
           variant="secondary"
           color="red-1"
           borderColor="red-1"
-          _hover={{ color: 'red-0', borderColor: 'red-0' }}
+          _hover={{ color: 'color-error-500', borderColor: 'color-error-500' }}
           onClick={handleDeleteStrategy}
         >
           {t('deletePermission')}

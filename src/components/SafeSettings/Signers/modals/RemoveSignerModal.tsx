@@ -75,11 +75,11 @@ function RemoveSignerModal({
         <Icon
           weight="fill"
           as={WarningDiamond}
-          color="red-0"
+          color="color-error-500"
         />
         <Text
           textStyle="labels-large"
-          color="red-0"
+          color="color-error-500"
         >
           {t('removeSignerWarning', { ns: 'modals' })}
         </Text>

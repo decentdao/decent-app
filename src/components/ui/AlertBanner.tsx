@@ -16,7 +16,7 @@ export function AlertBanner({ message, variant, layout, messageSecondary }: Aler
     },
     error: {
       bg: 'red--2',
-      color: 'red-0',
+      color: 'color-error-500',
     },
     info: {
       bg: 'color-neutral-900',

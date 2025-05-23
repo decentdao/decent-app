@@ -122,7 +122,7 @@ export function AirdropAction({
           </Text>
         </Flex>
         <Button
-          color="red-0"
+          color="color-error-500"
           variant="tertiary"
           size="sm"
           onClick={onRemove}
@@ -167,7 +167,7 @@ export function TransactionBuilderAction({
           </Text>
         </Flex>
         <Button
-          color="red-0"
+          color="color-error-500"
           variant="tertiary"
           size="sm"
           onClick={onRemove}
