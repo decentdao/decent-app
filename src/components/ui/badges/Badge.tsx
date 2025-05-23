@@ -38,7 +38,7 @@ const BADGE_MAPPING: Record<
     tooltipKey: 'stateExecutableTip',
     bg: 'color-green-500',
     textColor: 'color-black',
-    _hover: { bg: 'celery--3', textColor: 'color-black' },
+    _hover: { bg: 'color-green-600', textColor: 'color-black' },
   },
   [FractalProposalState.FAILED]: {
     tooltipKey: 'stateFailedTip',

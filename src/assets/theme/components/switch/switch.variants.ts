@@ -48,7 +48,7 @@ const secondary = defineStyle({
   track: {
     backgroundColor: 'color-black',
     _checked: {
-      backgroundColor: 'celery--3',
+      backgroundColor: 'color-green-600',
     },
     _hover: {
       _disabled: secondaryDisabled.track,
