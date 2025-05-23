@@ -248,7 +248,7 @@ export function SignersContainer() {
       {isSettingsV1FeatureEnabled && (
         <Flex
           flexDirection="row"
-          bg="cosmic-nebula-5"
+          bg="color-lilac-200"
           p={4}
           borderRadius="0.75rem"
           mb={12}
