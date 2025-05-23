@@ -36,7 +36,7 @@ const BADGE_MAPPING: Record<
   },
   [FractalProposalState.EXECUTABLE]: {
     tooltipKey: 'stateExecutableTip',
-    bg: 'celery--2',
+    bg: 'color-green-500',
     textColor: 'color-black',
     _hover: { bg: 'celery--3', textColor: 'color-black' },
   },

@@ -21,7 +21,7 @@ export default function ExternalLink({
         textDecoration: 'underline',
       },
       active: {
-        color: 'celery--2',
+        color: 'color-green-500',
       },
     },
     grey: {

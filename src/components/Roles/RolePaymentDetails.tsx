@@ -127,7 +127,7 @@ function GreenStreamingDot({ isStreaming }: { isStreaming: boolean }) {
     <Box
       boxSize="0.75rem"
       borderRadius="100%"
-      bg="celery--2"
+      bg="color-green-500"
       border="1px solid"
       borderColor="celery--5"
     />
