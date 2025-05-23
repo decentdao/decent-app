@@ -271,14 +271,14 @@ export function SignersContainer() {
             >
               <Text
                 textStyle="labels-small"
-                color="cosmic-nebula-0"
+                color="color-lilac-700"
                 fontWeight="bold"
               >
                 {t('launchTokenTitle', { ns: 'daoEdit' })}
               </Text>
               <Text
                 textStyle="labels-large"
-                color="cosmic-nebula-0"
+                color="color-lilac-700"
                 mb="1rem"
               >
                 {t('launchTokenDescription', { ns: 'daoEdit' })}

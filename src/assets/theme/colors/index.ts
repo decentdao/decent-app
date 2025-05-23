@@ -1,5 +1,4 @@
 export default {
-  'cosmic-nebula-0': '#501464',
   'cosmic-nebula-4': '#c46de1',
   'cosmic-nebula-5': '#d493e9',
   'cosmic-nebula--1': '#2e0b39',

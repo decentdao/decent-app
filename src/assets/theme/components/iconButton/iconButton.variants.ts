@@ -6,7 +6,7 @@ const primaryDisabled = {
 
 const primary = defineStyle({
   bg: 'color-lilac-100',
-  color: 'cosmic-nebula-0',
+  color: 'color-lilac-700',
   _hover: {
     bg: 'color-lilac-200',
     _disabled: {
