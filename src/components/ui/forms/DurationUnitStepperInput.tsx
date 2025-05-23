@@ -82,7 +82,7 @@ export default function DurationUnitStepperInput({
             minWidth="fit-content"
           >
             <Select
-              bgColor="neutral-1"
+              bgColor="color-black"
               borderColor="neutral-3"
               rounded="lg"
               cursor="pointer"

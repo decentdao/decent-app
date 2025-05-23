@@ -134,7 +134,7 @@ export function SendAssetsModal({
                       <LabelWrapper label={t('selectLabel')}>
                         <Select
                           {...field}
-                          bgColor="neutral-1"
+                          bgColor="color-black"
                           borderColor="neutral-3"
                           rounded="sm"
                           cursor="pointer"

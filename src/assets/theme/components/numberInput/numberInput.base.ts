@@ -35,7 +35,7 @@ const baseStyle = definePartsStyle({
   field: {
     borderRadius: '0.5rem',
     color: 'white-0',
-    bg: 'neutral-1',
+    bg: 'color-black',
     boxShadow: '0px 1px 0px 0px rgba(255, 255, 255, 0.16), 0px 0px 0px 1px rgba(0, 0, 0, 0.68)',
     borderColor: 'neutral-3',
     transitionDuration: 'normal',

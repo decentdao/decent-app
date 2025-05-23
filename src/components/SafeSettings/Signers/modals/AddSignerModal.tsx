@@ -122,7 +122,7 @@ function AddSignerModal({
                   onChange={e => setFieldValue('threshold', Number(e.target.value))}
                   mt={4}
                   width="8rem"
-                  bgColor="neutral-1"
+                  bgColor="color-black"
                   borderColor="neutral-3"
                   rounded="sm"
                   cursor="pointer"

@@ -12,7 +12,7 @@ const twoToneVariant = definePartsStyle({
     padding: '0.25rem',
     borderRadius: '0.5rem',
     gap: '0.25rem',
-    bg: 'neutral-1',
+    bg: 'color-black',
     width: 'fit-content',
   },
   tab: {

@@ -33,7 +33,7 @@ function DateDisplayBox({ date }: { date: Date | undefined }) {
       gap="0.5rem"
       p="0.5rem 1rem"
       width={{ base: '100%', md: '11.125rem' }}
-      bg="neutral-1"
+      bg="color-black"
       borderWidth="1px"
       borderRadius="0.25rem"
       borderColor="neutral-3"

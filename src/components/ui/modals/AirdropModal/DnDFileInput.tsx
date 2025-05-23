@@ -102,7 +102,7 @@ export function DnDFileInput() {
         border="1px dashed"
         borderColor={isDragActive ? 'color-lilac-100' : 'neutral-3'}
         borderRadius="sm"
-        bg="neutral-1"
+        bg="color-black"
         cursor="pointer"
         textAlign="center"
         transition="border-color 0.2s ease-in-out"

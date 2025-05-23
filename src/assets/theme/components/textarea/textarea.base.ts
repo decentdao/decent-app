@@ -3,7 +3,7 @@ import { defineStyle } from '@chakra-ui/react';
 const disabled = {
   cursor: 'default',
   border: 'white-alpha-08',
-  color: 'neutral-1',
+  color: 'color-black',
   _placeholder: {
     color: 'neutral-5',
   },
@@ -14,7 +14,7 @@ const loading = {};
 const baseStyle = defineStyle({
   borderRadius: '4px',
   color: 'white-0',
-  bg: 'neutral-1',
+  bg: 'color-black',
   border: '1px solid',
   borderColor: 'neutral-3',
   transitionDuration: 'normal',
