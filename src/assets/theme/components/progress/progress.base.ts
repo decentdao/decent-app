@@ -9,7 +9,7 @@ const baseStyles = definePartsStyle({
     borderRadius: '4px',
   },
   filledTrack: {
-    bg: 'lilac--3',
+    bg: 'color-lilac-600',
     borderRadius: '4px',
   },
   label: {},

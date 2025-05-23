@@ -28,12 +28,12 @@ export function RadioWithText({
         type="radio"
         isDisabled={disabled}
         bg="color-black"
-        color="lilac--3"
+        color="color-lilac-600"
         _disabled={{ bg: 'neutral-6', color: 'neutral-5' }}
         _hover={{ bg: 'color-black', color: 'lilac--4' }}
         _checked={{
           bg: 'color-black',
-          color: 'lilac--3',
+          color: 'color-lilac-600',
           borderWidth: '6px',
         }}
         size="lg"

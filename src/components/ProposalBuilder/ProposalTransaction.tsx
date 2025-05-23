@@ -250,13 +250,13 @@ export default function ProposalTransaction({
                                       isChecked={!!parameter.label}
                                       isDisabled={!parameter.signature || !!parameter.value}
                                       bg="color-black"
-                                      color="lilac--3"
+                                      color="color-lilac-600"
                                       size="md"
                                       _disabled={{ bg: 'neutral-6', color: 'neutral-5' }}
                                       _hover={{ bg: 'color-black', color: 'lilac--4' }}
                                       _checked={{
                                         bg: 'color-black',
-                                        color: 'lilac--3',
+                                        color: 'color-lilac-600',
                                         borderWidth: '6px',
                                       }}
                                     >
@@ -308,13 +308,13 @@ export default function ProposalTransaction({
                                     isChecked={!!parameter.value}
                                     isDisabled={!parameter.signature || !!parameter.label}
                                     bg="color-black"
-                                    color="lilac--3"
+                                    color="color-lilac-600"
                                     size="md"
                                     _disabled={{ bg: 'neutral-6', color: 'neutral-5' }}
                                     _hover={{ bg: 'color-black', color: 'lilac--4' }}
                                     _checked={{
                                       bg: 'color-black',
-                                      color: 'lilac--3',
+                                      color: 'color-lilac-600',
                                       borderWidth: '6px',
                                     }}
                                   >

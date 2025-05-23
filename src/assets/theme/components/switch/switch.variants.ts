@@ -19,7 +19,7 @@ const primary = defineStyle({
   track: {
     backgroundColor: 'neutral-6',
     _checked: {
-      backgroundColor: 'lilac--3',
+      backgroundColor: 'color-lilac-600',
     },
     _disabled: primaryDisabled.track,
   },
