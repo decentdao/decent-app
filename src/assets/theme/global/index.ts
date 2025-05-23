@@ -7,7 +7,7 @@ export default {
       background: 'neutral-1',
       backgroundRepeat: 'no-repeat',
       fontFamily: 'DM Sans',
-      textStyle: 'body-small',
+      textStyle: 'text-base-regular',
       color: 'white-0',
       height: '100%',
     },

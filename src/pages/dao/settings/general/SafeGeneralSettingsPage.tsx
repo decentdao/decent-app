@@ -306,7 +306,7 @@ export function SafeGeneralSettingsPage() {
             <Text
               ml={6}
               mb={0.5}
-              textStyle="body-large"
+              textStyle="text-lg-regular"
             >
               {t('daoSettingsGeneral')}
             </Text>
@@ -326,7 +326,7 @@ export function SafeGeneralSettingsPage() {
               >
                 <Text
                   mb={2}
-                  textStyle="body-small"
+                  textStyle="text-base-regular"
                 >
                   {t('daoMetadataName')}
                 </Text>
@@ -355,7 +355,7 @@ export function SafeGeneralSettingsPage() {
                 px={6}
                 pt={2}
               >
-                <Text textStyle="body-small">
+                <Text textStyle="text-base-regular">
                   {subgraphInfo?.daoSnapshotENS
                     ? t('daoMetadataSnapshot')
                     : t('daoMetadataConnectSnapshot')}
@@ -393,7 +393,7 @@ export function SafeGeneralSettingsPage() {
                 <Text
                   ml={6}
                   mb={0.5}
-                  textStyle="body-large"
+                  textStyle="text-lg-regular"
                 >
                   {t('gaslessVotingLabelSettings', { ns: 'gaslessVoting' })}
                 </Text>
