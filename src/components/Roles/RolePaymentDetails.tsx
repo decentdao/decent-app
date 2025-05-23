@@ -196,7 +196,7 @@ function PaymentDetailsTop({ payment, onClick, isActiveStream }: PaymentDetailsT
             {!payment.isCancelableStream && (
               <Tag
                 variant="outlined"
-                color="yellow-0"
+                color="color-yellow-200"
                 outline="unset"
                 border="1px solid"
                 py={0}

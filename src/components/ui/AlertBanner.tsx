@@ -12,7 +12,7 @@ export function AlertBanner({ message, variant, layout, messageSecondary }: Aler
   const variantProps = {
     warning: {
       bg: 'yellow--2',
-      color: 'yellow-0',
+      color: 'color-yellow-200',
     },
     error: {
       bg: 'color-error-900',

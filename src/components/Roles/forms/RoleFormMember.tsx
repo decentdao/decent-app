@@ -149,7 +149,7 @@ function RoleMemberConfirmationScreen({
         <Flex
           gap={4}
           mt={8}
-          color="yellow-0"
+          color="color-yellow-200"
         >
           <Icon
             boxSize="1.5rem"
