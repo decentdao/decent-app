@@ -37,9 +37,9 @@ function RejectionBanner({ rejectionProposal }: { rejectionProposal: MultisigPro
         borderColor: COLOR_YELLOW_1,
       }
     : {
-        bg: 'red--2',
-        color: 'red-1',
-        borderColor: 'red--1',
+        bg: 'color-error-900',
+        color: 'color-error-400',
+        borderColor: 'color-error-800',
       };
   return (
     <Flex

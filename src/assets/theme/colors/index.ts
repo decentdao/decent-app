@@ -1,18 +1,9 @@
 export default {
-  'red-0': '#af3a48',
-  'red-1': '#fa5367',
-  'red-4': '#efd8da',
-  'red--1': '#69232b',
-  'red--2': '#351116',
-  'red--3': '#1f0a0d',
   'white-0': '#f8f4fc',
   'white-1': '#D9D9D9',
   'white-alpha-16': '#f8f4fc29',
   'white-alpha-04': '#ffffff0a',
   'white-alpha-08': '#ffffff14',
-  'yellow-0': '#ffe66d',
-  'yellow--1': '#695c16',
-  'yellow--2': '#443900',
 
   // Solid colors
   'color-white': '#f8f4fc',

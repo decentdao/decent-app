@@ -21,11 +21,11 @@ const baseStyle = defineStyle({
   transitionProperty: 'common',
   width: '100%',
   _invalid: {
-    borderColor: 'red-0',
-    bg: 'red--3',
-    color: 'red-1',
+    borderColor: 'color-error-500',
+    bg: 'color-error-950',
+    color: 'color-error-400',
     _placeholder: {
-      color: 'red-0',
+      color: 'color-error-500',
     },
   },
   _placeholder: {
@@ -55,11 +55,11 @@ const baseStyle = defineStyle({
     borderColor: 'color-neutral-800',
     boxShadow: '0px 0px 0px 3px #534D58',
     _invalid: {
-      borderColor: 'red-0',
-      bg: 'red--3',
-      color: 'red-1',
+      borderColor: 'color-error-500',
+      bg: 'color-error-950',
+      color: 'color-error-400',
       _placeholder: {
-        color: 'red-0',
+        color: 'color-error-500',
       },
     },
     _disabled: {

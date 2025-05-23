@@ -114,7 +114,7 @@ function RefillForm({ onSubmit, onClose, isDirectDeposit, showNonceInput }: Refi
                       placeholder="0"
                       maxValue={!isDirectDeposit ? balance?.value || 0n : undefined}
                       isInvalid={overDraft}
-                      errorBorderColor="red-0"
+                      errorBorderColor="color-error-500"
                       autoFocus
                     />
                   </LabelWrapper>

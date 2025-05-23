@@ -17,10 +17,10 @@ const disabled = {
 };
 
 const invalid = {
-  bg: 'red--3',
-  color: 'red-1',
+  bg: 'color-error-950',
+  color: 'color-error-400',
   _placeholder: {
-    color: 'red-0',
+    color: 'color-error-500',
   },
   boxShadow:
     '0px 0px 0px 2px #AF3A48, 0px 1px 0px 0px rgba(242, 161, 171, 0.30), 0px 0px 0px 1px rgba(0, 0, 0, 0.80)',
@@ -57,7 +57,7 @@ const baseStyle = definePartsStyle({
       },
       _invalid: {
         ...invalid,
-        borderColor: 'red-1',
+        borderColor: 'color-error-400',
       },
     },
     _disabled: {

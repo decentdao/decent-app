@@ -144,7 +144,7 @@ export function CustomNonceInput({
             width="full"
           />
         </LabelComponent>
-        {errorMessage && <Text color="red-0">{errorMessage}</Text>}
+        {errorMessage && <Text color="color-error-500">{errorMessage}</Text>}
       </Flex>
       <MenuList
         borderWidth="1px"

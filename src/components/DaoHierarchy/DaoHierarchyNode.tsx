@@ -243,7 +243,7 @@ export function DaoHierarchyNode({
         <Center w="100%">
           <Text
             textStyle="label-base"
-            color="red-0"
+            color="color-error-500"
           >
             {t('errorMySafesNotLoaded')}
           </Text>

@@ -25,7 +25,7 @@ export function DappInteractionActionCard({
           {action.content}
         </Flex>
         <Button
-          color="red-0"
+          color="color-error-500"
           variant="tertiary"
           size="sm"
           onClick={onRemove}

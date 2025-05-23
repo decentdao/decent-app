@@ -75,24 +75,24 @@ const tertiary = defineStyle({
 });
 
 const dangerDisabled = {
-  borderColor: 'red--2',
-  color: 'red--1',
+  borderColor: 'color-error-900',
+  color: 'color-error-800',
 };
 
 const danger = defineStyle({
   border: '1px solid',
-  borderColor: 'red-1',
-  color: 'red-1',
+  borderColor: 'color-error-400',
+  color: 'color-error-400',
   _disabled: {
     ...dangerDisabled,
   },
   _hover: {
-    borderColor: 'red-0',
-    color: 'red-0',
+    borderColor: 'color-error-500',
+    color: 'color-error-500',
   },
   _active: {
-    borderColor: 'red-0',
-    color: 'red-0',
+    borderColor: 'color-error-500',
+    color: 'color-error-500',
   },
 });
 
