@@ -88,7 +88,7 @@ function StartDatePicker({ paymentIndex, disabled }: { paymentIndex: number; dis
         {({ field, form: { setFieldValue } }: FieldProps<Date, RoleFormValues>) => (
           <LabelWrapper
             label={t('date')}
-            labelColor="neutral-7"
+            labelColor="color-neutral-300"
           >
             <DatePicker
               onChange={(date: Date) => setFieldValue(field.name, date)}
@@ -126,7 +126,7 @@ function CliffDatePicker({ paymentIndex, disabled }: { paymentIndex: number; dis
         {({ field, form: { setFieldValue } }: FieldProps<Date, RoleFormValues>) => (
           <LabelWrapper
             label={t('date')}
-            labelColor="neutral-7"
+            labelColor="color-neutral-300"
           >
             <DatePicker
               onChange={(date: Date) => setFieldValue(field.name, date)}
@@ -311,7 +311,7 @@ function TermSelectorMenu({ paymentIndex }: { paymentIndex: number }) {
                         <TermSelection
                           selectedTermNumber={term.termNumber}
                           selectedTermEndDate={term.termEndDate}
-                          defaultDateColor="neutral-7"
+                          defaultDateColor="color-neutral-300"
                         />
                         <Icon
                           as={CheckCircle}
@@ -346,7 +346,7 @@ function TermSelectorMenu({ paymentIndex }: { paymentIndex: number }) {
                     <TermSelection
                       selectedTermNumber={term.termNumber}
                       selectedTermEndDate={term.termEndDate}
-                      defaultDateColor="neutral-7"
+                      defaultDateColor="color-neutral-300"
                     />
                   </MenuItem>
                 ))}

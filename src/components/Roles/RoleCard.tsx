@@ -67,7 +67,7 @@ export function AvatarAndRoleName({
           >
             <Text
               textStyle="labels-large"
-              color="neutral-7"
+              color="color-neutral-300"
               alignSelf="center"
             >
               {t('activePayments')}

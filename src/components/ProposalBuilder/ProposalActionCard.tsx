@@ -245,7 +245,7 @@ export function ProposalActionCard({
         >
           <Icon
             as={isAddAction ? CheckSquare : isEditAction ? PencilWithLineIcon : Trash}
-            color={isEditAction || isAddAction ? 'neutral-7' : 'red-1'}
+            color={isEditAction || isAddAction ? 'color-neutral-300' : 'red-1'}
           />
           {action.content}
         </Flex>

@@ -36,7 +36,7 @@ function RoleTermEndDateInput({ previousTermEndDate }: { previousTermEndDate: Da
             label={t('termEndDate')}
             errorMessage={meta.touched && meta.error ? meta.error : undefined}
             isRequired
-            labelColor="neutral-7"
+            labelColor="color-neutral-300"
           >
             <DatePicker
               onChange={(date: Date) => setFieldValue(field.name, date)}
@@ -66,7 +66,7 @@ function RoleTermMemberInput() {
             label={t('member')}
             errorMessage={meta.touched && meta.error ? meta.error : undefined}
             isRequired
-            labelColor="neutral-7"
+            labelColor="color-neutral-300"
           >
             <AddressInput
               value={field.value}

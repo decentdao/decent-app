@@ -397,7 +397,7 @@ export function SignersContainer() {
               </Text>
               <Text
                 textStyle="body-small"
-                color="neutral-7"
+                color="color-neutral-300"
               >
                 {t('thresholdDescription', { ns: 'common' })}
               </Text>
@@ -413,7 +413,9 @@ export function SignersContainer() {
                   }
                   setFieldValue('multisig.signerThreshold', updatedValue);
                 }}
-                color={values.multisig?.signerThreshold === undefined ? 'neutral-7' : 'white-0'}
+                color={
+                  values.multisig?.signerThreshold === undefined ? 'color-neutral-300' : 'white-0'
+                }
                 value={values.multisig?.signerThreshold ?? safe?.threshold}
                 isInvalid={!!multisigEditFormikErrors?.threshold}
               />

@@ -48,7 +48,7 @@ function CardContent({ icon, title, subtitle }: CardContentProps) {
         </Flex>
         <Box textStyle="labels-large">
           <Text>{title}</Text>
-          <Text color="neutral-7">{subtitle}</Text>
+          <Text color="color-neutral-300">{subtitle}</Text>
         </Box>
       </Flex>
     </GridItem>

@@ -110,7 +110,7 @@ export function RoleFormPaymentStreams() {
                 <Text textStyle="label-large">{t('noPaymentsTitle')}</Text>
                 <Text
                   textStyle="label-small"
-                  color="neutral-7"
+                  color="color-neutral-300"
                 >
                   {t('noPaymentsSubTitle')}
                 </Text>

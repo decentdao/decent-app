@@ -112,7 +112,7 @@ export function AssetSelector({ formIndex, disabled }: { formIndex: number; disa
                         >
                           <Text
                             textStyle="body-large"
-                            color="neutral-7"
+                            color="color-neutral-300"
                           >
                             {balanceText}
                           </Text>
@@ -120,13 +120,13 @@ export function AssetSelector({ formIndex, disabled }: { formIndex: number; disa
                             <>
                               <Text
                                 textStyle="body-large"
-                                color="neutral-7"
+                                color="color-neutral-300"
                               >
                                 {'•'}
                               </Text>
                               <Text
                                 textStyle="body-large"
-                                color="neutral-7"
+                                color="color-neutral-300"
                               >
                                 {formatUSD(usdValue)}
                               </Text>
@@ -170,7 +170,7 @@ export function AssetSelector({ formIndex, disabled }: { formIndex: number; disa
             return (
               <LabelWrapper
                 label={t('totalAmount')}
-                labelColor="neutral-7"
+                labelColor="color-neutral-300"
                 errorMessage={
                   paymentAmountBigIntTouched && paymentAmountBigIntError?.bigintValue
                     ? paymentAmountBigIntError.bigintValue

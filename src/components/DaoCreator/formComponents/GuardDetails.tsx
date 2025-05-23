@@ -175,7 +175,7 @@ function GuardDetails(props: ICreationStepProps) {
             </InputGroup>
             <Text
               textStyle="labels-large"
-              color="neutral-7"
+              color="color-neutral-300"
               mt="0.5rem"
             >
               {t('exampleFreezeProposalPeriod')}
@@ -199,7 +199,7 @@ function GuardDetails(props: ICreationStepProps) {
             </InputGroup>
             <Text
               textStyle="labels-large"
-              color="neutral-7"
+              color="color-neutral-300"
               mt="0.5rem"
             >
               {t('exampleFreezePeriod')}
@@ -243,7 +243,7 @@ function GuardDetails(props: ICreationStepProps) {
           />
         </FormControl>
         <Text
-          color="neutral-7"
+          color="color-neutral-300"
           width="50%"
         >
           {t('attachFractalModuleDescription')}

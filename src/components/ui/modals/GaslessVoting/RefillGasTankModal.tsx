@@ -101,7 +101,7 @@ function RefillForm({ onSubmit, onClose, isDirectDeposit, showNonceInput }: Refi
                 {({ field }: FieldAttributes<FieldProps<BigIntValuePair | undefined>>) => (
                   <LabelWrapper
                     label={t(isDirectDeposit ? 'sendingHintDirectDeposit' : 'sendingHint')}
-                    labelColor="neutral-7"
+                    labelColor="color-neutral-300"
                   >
                     <BigIntInput
                       {...field}
@@ -133,7 +133,7 @@ function RefillForm({ onSubmit, onClose, isDirectDeposit, showNonceInput }: Refi
                 />
                 <Text
                   textStyle="labels-small"
-                  color="neutral-7"
+                  color="color-neutral-300"
                 >
                   {t('balance', {
                     balance: formatCoinUnits(balance?.value || 0n).toFixed(2),

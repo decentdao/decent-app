@@ -54,7 +54,7 @@ export function RadioWithText({
               />
             )}
           </HStack>
-          <Text color={disabled ? 'color-neutral-700' : 'neutral-7'}>{description}</Text>
+          <Text color={disabled ? 'color-neutral-700' : 'color-neutral-300'}>{description}</Text>
         </Box>
       </Radio>
     </Box>

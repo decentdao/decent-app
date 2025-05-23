@@ -82,7 +82,7 @@ export function SettingsPermissionsStrategyForm({
       </Flex>
       <LabelWrapper
         label={t('permissionAmountLabel')}
-        labelColor="neutral-7"
+        labelColor="color-neutral-300"
       >
         <BigIntInput
           onChange={setProposerThreshold}

@@ -245,7 +245,7 @@ export function SettingsNavigation({
             }}
             hasEdits={values.azorius !== undefined || values.multisig !== undefined}
           >
-            <Text color="neutral-7">
+            <Text color="color-neutral-300">
               {t(azoriusGovernance.votingStrategy?.strategyType ?? 'labelMultisig')}
             </Text>
           </SettingsNavigationItem>
@@ -259,7 +259,7 @@ export function SettingsNavigation({
               setCurrentItem('modulesAndGuard');
             }}
           >
-            <Text color="neutral-7">{(modules ?? []).length + (safe?.guard ? 1 : 0)}</Text>
+            <Text color="color-neutral-300">{(modules ?? []).length + (safe?.guard ? 1 : 0)}</Text>
           </SettingsNavigationItem>
           {governance.isAzorius && (
             <SettingsNavigationItem
@@ -274,7 +274,7 @@ export function SettingsNavigation({
               }}
               hasEdits={values.permissions !== undefined}
             >
-              <Text color="neutral-7">{azoriusGovernance.votingStrategy ? 1 : 0}</Text>
+              <Text color="color-neutral-300">{azoriusGovernance.votingStrategy ? 1 : 0}</Text>
             </SettingsNavigationItem>
           )}
         </>
@@ -291,7 +291,7 @@ export function SettingsNavigation({
             leftIcon={<Bank fontSize="1.5rem" />}
             title={t('daoSettingsGovernance')}
           >
-            <Text color="neutral-7">
+            <Text color="color-neutral-300">
               {t(azoriusGovernance.votingStrategy?.strategyType ?? 'labelMultisig')}
             </Text>
           </SettingsLink>
@@ -300,7 +300,7 @@ export function SettingsNavigation({
             leftIcon={<Stack fontSize="1.5rem" />}
             title={t('modulesAndGuardsTitle')}
           >
-            <Text color="neutral-7">{(modules ?? []).length + (safe?.guard ? 1 : 0)}</Text>
+            <Text color="color-neutral-300">{(modules ?? []).length + (safe?.guard ? 1 : 0)}</Text>
           </SettingsLink>
           {governance.isAzorius && (
             <SettingsLink
@@ -309,7 +309,7 @@ export function SettingsNavigation({
               title={t('permissionsTitle')}
               showDivider={false}
             >
-              <Text color="neutral-7">{azoriusGovernance.votingStrategy ? 1 : 0}</Text>
+              <Text color="color-neutral-300">{azoriusGovernance.votingStrategy ? 1 : 0}</Text>
             </SettingsLink>
           )}
         </>

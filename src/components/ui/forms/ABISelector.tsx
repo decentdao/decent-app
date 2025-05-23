@@ -64,7 +64,7 @@ export default function ABISelector({ target, onChange }: IABISelector) {
         ))}
       </Select>
       <Text
-        color="neutral-7"
+        color="color-neutral-300"
         mt="0.5rem"
       >
         {t('abiSelectorDescription')}

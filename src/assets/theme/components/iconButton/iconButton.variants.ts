@@ -1,7 +1,7 @@
 import { defineStyle } from '@chakra-ui/react';
 const primaryDisabled = {
   bg: 'color-neutral-700',
-  color: 'neutral-7',
+  color: 'color-neutral-300',
 };
 
 const primary = defineStyle({

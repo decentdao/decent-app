@@ -194,7 +194,7 @@ export function ProposalStream({
             />
             <Text>{t('cancelable')}</Text>
           </Flex>
-          <Text color="neutral-7">{t('streamCancelableHelper')}</Text>
+          <Text color="color-neutral-300">{t('streamCancelableHelper')}</Text>
         </Box>
         <Box>
           <Flex gap="0.5rem">
@@ -209,7 +209,7 @@ export function ProposalStream({
             />
             <Text>{t('transferable')}</Text>
           </Flex>
-          <Text color="neutral-7">{t('streamTransferableHelper')}</Text>
+          <Text color="color-neutral-300">{t('streamTransferableHelper')}</Text>
         </Box>
         <Divider
           variant="light"

@@ -20,7 +20,7 @@ export default function Breadcrumbs({
     <Breadcrumb
       display="flex"
       alignItems="center"
-      color="neutral-7"
+      color="color-neutral-300"
       w={w}
       listProps={{ flexWrap: 'wrap' }}
     >
@@ -33,7 +33,7 @@ export default function Breadcrumbs({
             whiteSpace="nowrap"
             textOverflow="ellipsis"
             textStyle="labels-large"
-            color={isCurrentPage ? 'neutral-7' : 'color-neutral-400'}
+            color={isCurrentPage ? 'color-neutral-300' : 'color-neutral-400'}
           >
             {title}
           </Text>
@@ -43,7 +43,7 @@ export default function Breadcrumbs({
           <BreadcrumbItem
             key={path + title}
             isCurrentPage={isCurrentPage}
-            color="neutral-7"
+            color="color-neutral-300"
             textStyle="labels-large"
           >
             {isCurrentPage ? (
@@ -54,7 +54,7 @@ export default function Breadcrumbs({
                 to={path}
                 display="flex"
                 alignItems="center"
-                _hover={{ textDecoration: 'none', color: 'neutral-7' }} // Guessed. Probaby incorrect, couldn't find on figma
+                _hover={{ textDecoration: 'none', color: 'color-neutral-300' }} // Guessed. Probaby incorrect, couldn't find on figma
               >
                 {crumbText}
               </BreadcrumbLink>

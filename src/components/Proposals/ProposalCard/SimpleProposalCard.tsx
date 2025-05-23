@@ -24,7 +24,7 @@ function ProposalCreatedDate({ date }: { date: Date }) {
     >
       <Text
         textStyle="labels-small"
-        color="neutral-7"
+        color="color-neutral-300"
       >
         {createdDateLabel}
       </Text>
@@ -44,7 +44,7 @@ function ProposalCreatedBy({ createdBy }: { createdBy: Address }) {
     >
       <Text
         textStyle="labels-small"
-        color="neutral-7"
+        color="color-neutral-300"
       >
         <Flex gap="1">
           {t('by')}

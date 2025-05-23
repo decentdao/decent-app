@@ -37,22 +37,24 @@ export function TransactionsDetails({
           : false;
         return (
           <Fragment key={i}>
-            <Text color="neutral-7">{t('labelTargetAddress', { ns: 'proposal' })}</Text>
+            <Text color="color-neutral-300">{t('labelTargetAddress', { ns: 'proposal' })}</Text>
             {transaction.targetAddress && (
               <TransactionValueContainer>{transaction.targetAddress}</TransactionValueContainer>
             )}
             <Divider />
-            <Text color="neutral-7">{t('labelFunctionName', { ns: 'proposal' })}</Text>
+            <Text color="color-neutral-300">{t('labelFunctionName', { ns: 'proposal' })}</Text>
             {transaction.functionName && (
               <TransactionValueContainer>{transaction.functionName}</TransactionValueContainer>
             )}
             {transaction.parameters.map((parameter, parameterIndex) => (
               <Fragment key={parameterIndex}>
-                <Text color="neutral-7">{t('parameter')}</Text>
+                <Text color="color-neutral-300">{t('parameter')}</Text>
                 {parameter.signature && (
                   <TransactionValueContainer>{parameter.signature}</TransactionValueContainer>
                 )}
-                <Text color="neutral-7">{!!parameter.label ? parameter.label : t('value')}</Text>
+                <Text color="color-neutral-300">
+                  {!!parameter.label ? parameter.label : t('value')}
+                </Text>
                 {(parameter.label || parameter.value || parameter.valueArray) && (
                   <TransactionValueContainer>
                     {parameter.value
@@ -66,10 +68,10 @@ export function TransactionsDetails({
             ))}
             <Divider />
             <HStack justifyContent="space-between">
-              <Text color="neutral-7">{chain.nativeCurrency.symbol}</Text>
+              <Text color="color-neutral-300">{chain.nativeCurrency.symbol}</Text>
               <Text
                 textAlign="right"
-                color={valueBiggerThanZero ? 'white-0' : 'neutral-7'}
+                color={valueBiggerThanZero ? 'white-0' : 'color-neutral-300'}
                 wordBreak="break-all"
               >
                 {valueBiggerThanZero ? transaction.ethValue.value : 'n/a'}
@@ -89,22 +91,22 @@ export function StreamsDetails({ streams }: { streams: Stream[] }) {
     <>
       {streams.map((stream, idx) => (
         <Fragment key={idx}>
-          <Text color="neutral-7">{t('labelRecipientAddress', { ns: 'proposal' })}</Text>
+          <Text color="color-neutral-300">{t('labelRecipientAddress', { ns: 'proposal' })}</Text>
           {stream.recipientAddress && (
             <TransactionValueContainer>{stream.recipientAddress}</TransactionValueContainer>
           )}
           <Divider />
-          <Text color="neutral-7">{t('labelTotalAmount', { ns: 'proposal' })}</Text>
+          <Text color="color-neutral-300">{t('labelTotalAmount', { ns: 'proposal' })}</Text>
           {stream.totalAmount && (
             <TransactionValueContainer>{stream.totalAmount.value}</TransactionValueContainer>
           )}
           <Divider />
-          <Text color="neutral-7">{t('labelTranches', { ns: 'proposal' })}</Text>
+          <Text color="color-neutral-300">{t('labelTranches', { ns: 'proposal' })}</Text>
           {stream.tranches.map((tranche, trancheIdx) => (
             <Fragment key={trancheIdx}>
-              <Text color="neutral-7">{t('labelTrancheAmount', { ns: 'proposal' })}</Text>
+              <Text color="color-neutral-300">{t('labelTrancheAmount', { ns: 'proposal' })}</Text>
               <TransactionValueContainer>{tranche.amount.value}</TransactionValueContainer>
-              <Text color="neutral-7">{t('labelTrancheDuration', { ns: 'proposal' })}</Text>
+              <Text color="color-neutral-300">{t('labelTrancheDuration', { ns: 'proposal' })}</Text>
               <TransactionValueContainer>{tranche.duration.value}</TransactionValueContainer>
             </Fragment>
           ))}
@@ -119,7 +121,7 @@ export function TemplateDetails({ title }: { title: string }) {
 
   return (
     <HStack justifyContent="space-between">
-      <Text color="neutral-7">{t('previewThumnbail')}</Text>
+      <Text color="color-neutral-300">{t('previewThumnbail')}</Text>
       <Avatar
         size="sm"
         w="28px"
@@ -163,7 +165,7 @@ export default function ProposalDetails({
         <Text textStyle="heading-small">{t('preview')}</Text>
         <Divider />
         <HStack justifyContent="space-between">
-          <Text color="neutral-7">{t('previewTitle')}</Text>
+          <Text color="color-neutral-300">{t('previewTitle')}</Text>
           <Text
             textAlign="right"
             width="66%"
@@ -173,7 +175,7 @@ export default function ProposalDetails({
         </HStack>
         {templateDetails}
         <HStack justifyContent="space-between">
-          <Text color="neutral-7">{t('proposalTemplateDescription')}</Text>
+          <Text color="color-neutral-300">{t('proposalTemplateDescription')}</Text>
           <CeleryButtonWithIcon
             onClick={() => setDescriptionCollapsed(prevState => !prevState)}
             text={t(descriptionCollapsed ? 'show' : 'hide', { ns: 'common' })}

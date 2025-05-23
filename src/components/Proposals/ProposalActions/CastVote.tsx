@@ -198,7 +198,7 @@ export function CastVote({ proposal }: { proposal: FractalProposal }) {
         )}
         <Box
           mt={4}
-          color="neutral-7"
+          color="color-neutral-300"
         >
           <Text>{t('poweredBy')}</Text>
           <Flex>

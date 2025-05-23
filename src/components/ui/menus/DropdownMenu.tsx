@@ -141,7 +141,7 @@ export function DropdownMenu<T>({
                   >
                     <Text
                       textStyle="heading-small"
-                      color="neutral-7"
+                      color="color-neutral-300"
                     >
                       {emptyMessage}
                     </Text>
@@ -221,7 +221,7 @@ export function DropdownMenu<T>({
                     <Text
                       px="1rem"
                       textStyle="labels-small"
-                      color="neutral-7"
+                      color="color-neutral-300"
                     >
                       {title}
                     </Text>
@@ -242,7 +242,7 @@ export function DropdownMenu<T>({
                   >
                     <Text
                       textStyle="heading-small"
-                      color="neutral-7"
+                      color="color-neutral-300"
                     >
                       {emptyMessage}
                     </Text>

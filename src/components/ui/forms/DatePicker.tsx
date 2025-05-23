@@ -43,7 +43,9 @@ function DateDisplayBox({ date }: { date: Date | undefined }) {
         boxSize="24px"
         color="color-neutral-700"
       />
-      <Box color="neutral-7">{(date && format(date, DEFAULT_DATE_FORMAT)) ?? t('select')}</Box>
+      <Box color="color-neutral-300">
+        {(date && format(date, DEFAULT_DATE_FORMAT)) ?? t('select')}
+      </Box>
     </Flex>
   );
 }

@@ -57,7 +57,7 @@ export function ERC20TokenContainer() {
           >
             <Text textStyle="body-small">{t('governanceTokenSymbolLabel')}</Text>
             <Text
-              color="neutral-7"
+              color="color-neutral-300"
               textStyle="body-small"
             >
               ${votesToken.symbol}
@@ -75,7 +75,7 @@ export function ERC20TokenContainer() {
           >
             <Text textStyle="body-small">{t('governanceTokenSupplyLabel')}</Text>
             <Text
-              color="neutral-7"
+              color="color-neutral-300"
               textStyle="body-small"
             >
               {formatCoin(

@@ -61,7 +61,7 @@ function ActionCard({
         <Text
           whiteSpace="pre-wrap"
           textAlign="left"
-          color={isDisabled ? 'color-neutral-400' : 'neutral-7'}
+          color={isDisabled ? 'color-neutral-400' : 'color-neutral-300'}
         >
           {subtitle}
         </Text>

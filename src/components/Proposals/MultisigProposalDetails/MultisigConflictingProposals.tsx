@@ -74,7 +74,7 @@ function NonceLabel({ nonce }: { nonce: number | undefined }) {
     <Text
       mb={2}
       textStyle="labels-large"
-      color="neutral-7"
+      color="color-neutral-300"
     >
       {t('nonceLabel', {
         number: nonce,

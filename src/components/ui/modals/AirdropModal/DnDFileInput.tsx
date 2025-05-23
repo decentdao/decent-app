@@ -112,7 +112,7 @@ export function DnDFileInput() {
         <Text>{isDragActive ? t('dropCSVHere') : t('dragDropCSV')}</Text>
         <Text
           fontSize="sm"
-          color="neutral-7"
+          color="color-neutral-300"
           mt="0.5rem"
         >
           {t('csvFormat')}

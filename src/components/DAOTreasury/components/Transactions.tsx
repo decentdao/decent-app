@@ -45,12 +45,12 @@ function TransferRow({ displayData }: { displayData: TransferDisplayData }) {
             as={displayData.eventType === TokenEventType.WITHDRAW ? ArrowUp : ArrowDown}
             w="1.25rem"
             h="1.25rem"
-            color="neutral-7"
+            color="color-neutral-300"
           />
           <Box>
             <Text
               textStyle="labels-small"
-              color="neutral-7"
+              color="color-neutral-300"
             >
               {t(getTransferEventLabel(displayData.eventType))}
             </Text>
@@ -191,7 +191,7 @@ export function PaginationCount({ shownTransactions }: { shownTransactions: numb
   return (
     <Flex gap="0.25rem">
       <Text
-        color="neutral-7"
+        color="color-neutral-300"
         textStyle="labels-large"
       >
         {t('transactionsShownCount', {

@@ -76,7 +76,7 @@ export function ProposalInfo({
           <ProposalCountdown
             proposal={proposal}
             showIcon={false}
-            textColor="neutral-7"
+            textColor="color-neutral-300"
           />
           {snapshotProposal && subgraphInfo && (
             <>
@@ -109,7 +109,7 @@ export function ProposalInfo({
         >
           <Text
             textStyle="labels-large"
-            color="neutral-7"
+            color="color-neutral-300"
           >
             {t('nonceLabel', {
               number: (proposal as MultisigProposal).nonce,

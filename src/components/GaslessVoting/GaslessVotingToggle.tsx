@@ -66,7 +66,7 @@ function GaslessVotingToggleContent({
           gap="0.25rem"
         >
           <Text
-            color="neutral-7"
+            color="color-neutral-300"
             textStyle={isSettings ? 'labels-large' : 'helper-text'}
           >
             {isSettings ? t('gaslessVotingLabelSettings') : t('gaslessVotingLabel')}
@@ -77,7 +77,7 @@ function GaslessVotingToggleContent({
           {displayNeedStakingLabel && (
             <Text
               textStyle={isSettings ? 'labels-small' : 'helper-text'}
-              color="neutral-7"
+              color="color-neutral-300"
             >
               {t('gaslessStakingRequirement', {
                 amount: formattedMinStakeAmount,
@@ -264,7 +264,7 @@ export function GaslessVotingToggleDAOSettings(props: GaslessVotingToggleProps) 
             >
               <Text
                 textStyle="labels-small"
-                color="neutral-7"
+                color="color-neutral-300"
                 mb="0.25rem"
               >
                 {t('paymasterBalance')}
@@ -322,7 +322,7 @@ export function GaslessVotingToggleDAOSettings(props: GaslessVotingToggleProps) 
             >
               <Text
                 textStyle="labels-small"
-                color="neutral-7"
+                color="color-neutral-300"
                 mb="0.25rem"
               >
                 {t('paymasterStakedAmount')}

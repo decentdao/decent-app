@@ -84,7 +84,7 @@ export function AddStrategyPermissionModal({
             gap={1}
           >
             <Text textStyle="heading-small">{t('permissionCreateProposalsTitle')}</Text>
-            <Text color="neutral-7">{t('permissionCreateProposalsDescription')}</Text>
+            <Text color="color-neutral-300">{t('permissionCreateProposalsDescription')}</Text>
           </Flex>
         </Card>
 

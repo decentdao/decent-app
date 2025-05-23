@@ -120,7 +120,7 @@ export function WithdrawGasTankModal({
               >
                 <Text
                   textStyle="labels-large"
-                  color="neutral-7"
+                  color="color-neutral-300"
                 >
                   {t('withdrawAmount')}
                 </Text>
@@ -158,7 +158,7 @@ export function WithdrawGasTankModal({
                       disabled
                     />
                     <Text
-                      color={overDraft ? 'red-0' : 'neutral-7'}
+                      color={overDraft ? 'red-0' : 'color-neutral-300'}
                       textStyle="labels-small"
                       px="0.25rem"
                     >
@@ -172,7 +172,7 @@ export function WithdrawGasTankModal({
 
                 <Text
                   textStyle="labels-large"
-                  color="neutral-7"
+                  color="color-neutral-300"
                 >
                   {t('withdrawAmount')}
                 </Text>

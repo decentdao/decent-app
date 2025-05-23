@@ -145,7 +145,9 @@ export function GovernanceParams() {
               <InputGroup>
                 <BigIntInput
                   value={values.azorius?.quorumPercentage ?? existingQuorumPercentage}
-                  color={values.azorius?.quorumPercentage === undefined ? 'neutral-7' : 'white-0'}
+                  color={
+                    values.azorius?.quorumPercentage === undefined ? 'color-neutral-300' : 'white-0'
+                  }
                   decimalPlaces={0}
                   onChange={e =>
                     handleInputChange(
@@ -188,7 +190,9 @@ export function GovernanceParams() {
                 value={values.azorius?.quorumThreshold ?? existingQuorumThreshold}
                 minWidth="100%"
                 decimalPlaces={0}
-                color={values.azorius?.quorumThreshold === undefined ? 'neutral-7' : 'white-0'}
+                color={
+                  values.azorius?.quorumThreshold === undefined ? 'color-neutral-300' : 'white-0'
+                }
                 onChange={e =>
                   handleInputChange(
                     'azorius.quorumThreshold',
@@ -224,7 +228,7 @@ export function GovernanceParams() {
             >
               <DurationUnitStepperInput
                 secondsValue={Number(values.azorius?.votingPeriod ?? existingVotingPeriod)}
-                color={values.azorius?.votingPeriod === undefined ? 'neutral-7' : 'white-0'}
+                color={values.azorius?.votingPeriod === undefined ? 'color-neutral-300' : 'white-0'}
                 onSecondsValueChange={valInSeconds => {
                   handleInputChange(
                     'azorius.votingPeriod',
@@ -262,7 +266,9 @@ export function GovernanceParams() {
                 <BigIntInput
                   value={values.azorius?.timelockPeriod ?? existingTimelockPeriod}
                   minWidth="100%"
-                  color={values.azorius?.timelockPeriod === undefined ? 'neutral-7' : 'white-0'}
+                  color={
+                    values.azorius?.timelockPeriod === undefined ? 'color-neutral-300' : 'white-0'
+                  }
                   decimalPlaces={0}
                   onChange={e =>
                     handleInputChange(
@@ -303,7 +309,9 @@ export function GovernanceParams() {
             >
               <DurationUnitStepperInput
                 secondsValue={Number(values.azorius?.executionPeriod ?? existingExecutionPeriod)}
-                color={values.azorius?.executionPeriod === undefined ? 'neutral-7' : 'white-0'}
+                color={
+                  values.azorius?.executionPeriod === undefined ? 'color-neutral-300' : 'white-0'
+                }
                 onSecondsValueChange={valInSeconds =>
                   handleInputChange(
                     'azorius.executionPeriod',

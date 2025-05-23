@@ -147,7 +147,7 @@ export function SafePermissionsSettingsPage() {
                   <Text>{t('permissionCreateProposalsTitle')}</Text>
                   <Text
                     textStyle="labels-large"
-                    color="neutral-7"
+                    color="color-neutral-300"
                   >
                     {votesToken
                       ? t('permissionsErc20CreateProposalsDescription', {

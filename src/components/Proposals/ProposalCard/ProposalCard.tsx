@@ -36,7 +36,7 @@ function ProposalCreatedDate({ date }: { date: Date }) {
     >
       <Text
         textStyle="labels-small"
-        color="neutral-7"
+        color="color-neutral-300"
       >
         {createdDateLabel}
       </Text>
@@ -56,7 +56,7 @@ function ProposalCreatedBy({ createdBy }: { createdBy: Address }) {
     >
       <Text
         textStyle="labels-small"
-        color="neutral-7"
+        color="color-neutral-300"
       >
         <Flex gap="1">
           {t('by')}
@@ -82,7 +82,7 @@ function NonceLabel({ nonce }: { nonce: number | undefined }) {
   return (
     <Text
       textStyle="labels-large"
-      color="neutral-7"
+      color="color-neutral-300"
     >
       {t('nonceLabel', {
         number: nonce,
@@ -131,7 +131,7 @@ function ProposalCard({ proposal }: { proposal: FractalProposal }) {
             <ProposalCountdown
               proposal={proposal}
               showIcon={false}
-              textColor="neutral-7"
+              textColor="color-neutral-300"
             />
             {isSnapshotProposal && (
               <Box ml={1}>

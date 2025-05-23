@@ -25,7 +25,7 @@ export function OptionsList({
           pt="0.5rem"
           px="0.5rem"
           textStyle="labels-small"
-          color="neutral-7"
+          color="color-neutral-300"
         >
           {t(titleKey)}
         </Text>

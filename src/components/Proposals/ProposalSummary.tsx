@@ -74,7 +74,7 @@ function ProposalDetailsSection({
           alignItems="center"
         >
           <Text
-            color="neutral-7"
+            color="color-neutral-300"
             w="full"
           >
             {t('snapshotTaken')}
@@ -101,7 +101,7 @@ function ProposalDetailsSection({
             flexWrap="wrap"
           >
             <Text
-              color="neutral-7"
+              color="color-neutral-300"
               w="full"
             >
               {t('transactionHash')}
@@ -162,7 +162,7 @@ function ProposalVotingSection({
           gap={1}
         >
           <Text
-            color="neutral-7"
+            color="color-neutral-300"
             w="full"
           >
             {t('votingPower')}
@@ -174,7 +174,7 @@ function ProposalVotingSection({
           >
             <Icon
               as={Question}
-              color="neutral-7"
+              color="color-neutral-300"
             />
           </DecentTooltip>
         </Flex>

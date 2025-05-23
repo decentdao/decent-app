@@ -62,7 +62,7 @@ function PaymentDate({ label, date }: { label: string; date?: Date }) {
     >
       <Text
         textStyle="labels-small"
-        color="neutral-7"
+        color="color-neutral-300"
       >
         {t(label)}
       </Text>
@@ -95,7 +95,7 @@ function TermedAssigned({ termNumber }: { termNumber: number }) {
     >
       <Text
         textStyle="labels-small"
-        color="neutral-7"
+        color="color-neutral-300"
       >
         {t('assigned')}
       </Text>

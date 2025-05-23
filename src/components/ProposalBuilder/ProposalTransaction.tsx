@@ -269,7 +269,7 @@ export default function ProposalTransaction({
                                             ns: 'proposalTemplate',
                                           })}
                                         </Text>
-                                        <Text color="neutral-7">
+                                        <Text color="color-neutral-300">
                                           {t('labelParameterLabelHelper', {
                                             ns: 'proposalTemplate',
                                           })}
@@ -330,7 +330,7 @@ export default function ProposalTransaction({
                                           ns: 'proposalTemplate',
                                         })}
                                       </Text>
-                                      <Text color="neutral-7">
+                                      <Text color="color-neutral-300">
                                         {t('labelParameterLabelHelper', {
                                           ns: 'proposalTemplate',
                                         })}

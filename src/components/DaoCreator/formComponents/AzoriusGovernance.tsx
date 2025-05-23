@@ -238,7 +238,7 @@ export function AzoriusGovernance(props: ICreationStepProps) {
             />
           </FormControl>
           <Text
-            color="neutral-7"
+            color="color-neutral-300"
             width="50%"
           >
             {t(

@@ -28,7 +28,7 @@ export default function FourOhFourPage() {
         </Text>
         <Text
           data-testid="404-pageTitle"
-          color="neutral-7"
+          color="color-neutral-300"
           marginTop="0.5rem"
           paddingBottom="3.25rem"
         >

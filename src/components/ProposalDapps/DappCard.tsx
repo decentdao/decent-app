@@ -59,7 +59,7 @@ export default function DappCard({
         <Text textStyle="body-large">{title}</Text>
         <Text
           textStyle="labels-large"
-          color="neutral-7"
+          color="color-neutral-300"
           noOfLines={2}
         >
           {description}
@@ -83,13 +83,13 @@ export default function DappCard({
                 bg="color-neutral-800"
               >
                 <Icon
-                  color="neutral-7"
+                  color="color-neutral-300"
                   as={Dot}
                   style={{ transform: 'scale(6)' }}
                 />
                 <TagLabel
                   ml="8px"
-                  color="neutral-7"
+                  color="color-neutral-300"
                 >
                   {category}
                 </TagLabel>

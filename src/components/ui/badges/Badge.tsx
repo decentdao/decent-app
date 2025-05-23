@@ -26,7 +26,7 @@ const BADGE_MAPPING: Record<
     tooltipKey: 'stateTimelockedTip',
     bg: 'neutral-8',
     textColor: 'color-neutral-800',
-    _hover: { bg: 'neutral-7', textColor: 'color-neutral-800' },
+    _hover: { bg: 'color-neutral-300', textColor: 'color-neutral-800' },
   },
   [FractalProposalState.EXECUTED]: {
     tooltipKey: 'stateExecutedTip',
@@ -61,8 +61,8 @@ const BADGE_MAPPING: Record<
   [FractalProposalState.EXPIRED]: {
     tooltipKey: 'stateExpiredTip',
     bg: 'color-neutral-800',
-    textColor: 'neutral-7',
-    _hover: { bg: 'color-neutral-950', textColor: 'neutral-7' },
+    textColor: 'color-neutral-300',
+    _hover: { bg: 'color-neutral-950', textColor: 'color-neutral-300' },
   },
   [FractalProposalState.REJECTED]: {
     tooltipKey: 'stateRejectedTip',
@@ -80,7 +80,7 @@ const BADGE_MAPPING: Record<
     tooltipKey: 'stateClosedTip',
     bg: 'neutral-8',
     textColor: 'color-neutral-800',
-    _hover: { bg: 'neutral-7', textColor: 'color-neutral-800' },
+    _hover: { bg: 'color-neutral-300', textColor: 'color-neutral-800' },
   },
   [DAOState.freezeInit]: {
     tooltipKey: 'stateFreezeInitTip',
@@ -96,8 +96,8 @@ const BADGE_MAPPING: Record<
   },
   ownerApproved: {
     bg: 'color-neutral-800',
-    textColor: 'neutral-7',
-    _hover: { bg: 'color-neutral-950', textColor: 'neutral-7' },
+    textColor: 'color-neutral-300',
+    _hover: { bg: 'color-neutral-950', textColor: 'color-neutral-300' },
   },
   ownerRejected: {
     bg: 'red-0',
