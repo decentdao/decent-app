@@ -15,7 +15,7 @@ function CardContent({ icon, title, subtitle }: CardContentProps) {
   return (
     <GridItem
       p={6}
-      bg="neutral-2"
+      bg="color-neutral-950"
       borderRadius="lg"
       cursor="pointer"
       border="1px solid"

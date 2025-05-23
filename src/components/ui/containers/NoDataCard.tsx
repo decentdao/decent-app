@@ -38,7 +38,7 @@ export default function NoDataCard({
 
   return (
     <Box
-      bg="neutral-2"
+      bg="color-neutral-950"
       boxShadow="layeredShadowBorder"
       borderRadius="0.75rem"
       p="1rem"

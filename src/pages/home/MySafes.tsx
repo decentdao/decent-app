@@ -29,7 +29,7 @@ export function MySafes() {
               justifyContent="center"
               p="1rem"
               my="0.5rem"
-              bg="neutral-2"
+              bg="color-neutral-950"
               borderRadius="0.5rem"
             >
               <Text

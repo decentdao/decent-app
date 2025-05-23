@@ -62,7 +62,7 @@ const BADGE_MAPPING: Record<
     tooltipKey: 'stateExpiredTip',
     bg: 'neutral-4',
     textColor: 'neutral-7',
-    _hover: { bg: 'neutral-2', textColor: 'neutral-7' },
+    _hover: { bg: 'color-neutral-950', textColor: 'neutral-7' },
   },
   [FractalProposalState.REJECTED]: {
     tooltipKey: 'stateRejectedTip',
@@ -97,7 +97,7 @@ const BADGE_MAPPING: Record<
   ownerApproved: {
     bg: 'neutral-4',
     textColor: 'neutral-7',
-    _hover: { bg: 'neutral-2', textColor: 'neutral-7' },
+    _hover: { bg: 'color-neutral-950', textColor: 'neutral-7' },
   },
   ownerRejected: {
     bg: 'red-0',

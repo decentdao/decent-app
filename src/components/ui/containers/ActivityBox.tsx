@@ -21,7 +21,7 @@ export function ActivityBox({
         border="1px"
         borderColor={borderColor}
         _hover={{ bg: 'neutral-3' }}
-        _active={{ bg: 'neutral-2', border: '1px solid', borderColor: 'neutral-3' }}
+        _active={{ bg: 'color-neutral-950', border: '1px solid', borderColor: 'neutral-3' }}
         {...rest}
       >
         {children}

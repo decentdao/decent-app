@@ -233,7 +233,7 @@ export function DaoHierarchyNode({
     return (
       <Flex
         w="full"
-        bg="neutral-2"
+        bg="color-neutral-950"
         p="1.5rem"
         width="100%"
         borderRadius="0.75rem"

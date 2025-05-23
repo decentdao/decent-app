@@ -19,7 +19,7 @@ function ExternalLinks({ closeDrawer }: { closeDrawer?: () => void }) {
       borderRadius={{ md: 8 }}
       borderWidth={{ md: 1 }}
       borderColor={{ md: 'neutral-3' }}
-      bg={{ md: 'neutral-2' }}
+      bg={{ md: 'color-neutral-950' }}
       overflow={{ md: 'hidden' }}
     >
       <NavigationLink

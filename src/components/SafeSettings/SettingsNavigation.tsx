@@ -196,7 +196,7 @@ export function SettingsNavigation({
 
   return (
     <Flex
-      backgroundColor={isSettingsV1Enabled ? 'transparent' : 'neutral-2'}
+      backgroundColor={isSettingsV1Enabled ? 'transparent' : 'color-neutral-950'}
       p={{ base: '1rem', md: '0.25rem' }}
       gap="0.25rem"
       flexDirection="column"

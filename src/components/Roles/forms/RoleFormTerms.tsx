@@ -126,7 +126,7 @@ function RoleTermCreate({
     <Box>
       <Flex
         p="1rem"
-        bg="neutral-2"
+        bg="color-neutral-950"
         boxShadow={DETAILS_BOX_SHADOW}
         borderTopRadius="0.5rem"
         gap="1rem"
@@ -153,7 +153,7 @@ function RoleTermCreate({
       </Flex>
       <Box
         p="1rem"
-        bg="neutral-2"
+        bg="color-neutral-950"
         boxShadow={DETAILS_BOX_SHADOW}
         borderBottomRadius="0.5rem"
         display="flex"
@@ -222,7 +222,7 @@ function RoleTermExpiredTerms({
     <Box
       borderRadius="0.5rem"
       boxShadow="layeredShadowBorder"
-      bg="neutral-2"
+      bg="color-neutral-950"
       p="1.5rem"
     >
       <Accordion allowToggle>

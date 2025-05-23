@@ -130,7 +130,7 @@ export default function RolesDetailsDrawer({
       />
       <DrawerContent
         minW="50%"
-        bg="neutral-2"
+        bg="color-neutral-950"
         pt="1rem"
       >
         <DrawerBody h="100vh">

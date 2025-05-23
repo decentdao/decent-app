@@ -34,7 +34,7 @@ function ActionCard({
       w="full"
       boxShadow={DETAILS_BOX_SHADOW}
       _hover={!isDisabled ? { bg: 'neutral-3' } : undefined}
-      _active={!isDisabled ? { bg: 'neutral-2' } : undefined}
+      _active={!isDisabled ? { bg: 'color-neutral-950' } : undefined}
       transition="all ease-out 300ms"
       justifyContent="flex-start"
     >

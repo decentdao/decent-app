@@ -31,7 +31,7 @@ export default function DappCard({
       flex="0 0 calc(25% - 1rem)"
       my="0"
       p="0"
-      bg="neutral-2"
+      bg="color-neutral-950"
       rounded="xl"
       cursor="pointer"
       _hover={{

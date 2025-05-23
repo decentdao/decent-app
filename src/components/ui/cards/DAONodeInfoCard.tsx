@@ -33,7 +33,7 @@ export function DAONodeInfoCard(props: {
   return (
     <Box
       minH={`${NODE_HEIGHT_REM}rem`}
-      bg="neutral-2"
+      bg="color-neutral-950"
       _hover={
         !isCurrentViewingDAO
           ? {

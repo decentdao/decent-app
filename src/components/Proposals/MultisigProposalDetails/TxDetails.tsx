@@ -16,7 +16,7 @@ export function TxDetails({ proposal }: { proposal: MultisigProposal }) {
   return (
     <ContentBox
       containerBoxProps={{
-        bg: 'neutral-2',
+        bg: 'color-neutral-950',
         border: '1px solid',
         borderColor: 'neutral-3',
         borderRadius: '0.5rem',

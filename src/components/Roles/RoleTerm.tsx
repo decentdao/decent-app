@@ -30,7 +30,7 @@ function Container({
   return (
     <Box
       p="1rem"
-      bg="neutral-2"
+      bg="color-neutral-950"
       boxShadow={displayLightContainer ? 'layeredShadowBorder' : DETAILS_BOX_SHADOW}
       borderTopRadius={isTop ? '0.5rem' : undefined}
       borderBottomRadius={!isTop ? '0.5rem' : undefined}

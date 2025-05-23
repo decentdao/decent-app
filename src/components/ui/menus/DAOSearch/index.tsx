@@ -127,7 +127,7 @@ export function DAOSearch() {
                 />
               </InputLeftElement>
               <Input
-                background="neutral-2"
+                background="color-neutral-950"
                 size="baseAddonLeft"
                 w="full"
                 placeholder={t('searchDAOPlaceholder')}
@@ -146,7 +146,7 @@ export function DAOSearch() {
           <Box
             marginTop="0.25rem"
             rounded="0.5rem"
-            bg="neutral-2"
+            bg="color-neutral-950"
             boxShadow={resolvedAddressesWithPrefix.length ? SEXY_BOX_SHADOW_T_T : 'none'}
             hidden={!showResults}
             w="full"

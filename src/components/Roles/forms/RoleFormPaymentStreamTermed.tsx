@@ -245,7 +245,7 @@ function TermSelectorMenu({ paymentIndex }: { paymentIndex: number }) {
               borderRadius={isOpen ? '0.75rem 0.75rem 0 0' : '0.75rem'}
               boxShadow={DETAILS_BOX_SHADOW}
               _hover={{ bg: 'neutral-3' }}
-              _active={{ bg: 'neutral-2' }}
+              _active={{ bg: 'color-neutral-950' }}
               transition="all ease-out 300ms"
               type="button"
             >
@@ -301,7 +301,7 @@ function TermSelectorMenu({ paymentIndex }: { paymentIndex: number }) {
                       mx={2}
                       borderRadius="0.75rem"
                       _hover={{ bg: 'neutral-3' }}
-                      _active={{ bg: 'neutral-2' }}
+                      _active={{ bg: 'color-neutral-950' }}
                       transition="all ease-out 100ms"
                     >
                       <Flex
@@ -335,7 +335,7 @@ function TermSelectorMenu({ paymentIndex }: { paymentIndex: number }) {
                     boxShadow={DETAILS_BOX_SHADOW}
                     _hover={{ bg: 'neutral-3' }}
                     _active={{ bg: 'neutral-3' }}
-                    bg="neutral-2"
+                    bg="color-neutral-950"
                     p="1rem"
                     onClick={() => {
                       setSelectedTerm(term);
@@ -370,7 +370,7 @@ export default function RoleFormPaymentStreamTermed({ paymentIndex }: { paymentI
   return (
     <>
       <Box
-        bg="neutral-2"
+        bg="color-neutral-950"
         borderRadius="0.5rem"
         p="1.5rem"
         mt={4}

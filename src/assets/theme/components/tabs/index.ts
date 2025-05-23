@@ -22,7 +22,7 @@ const twoToneVariant = definePartsStyle({
     whiteSpace: 'nowrap',
     color: 'neutral-6',
     _selected: {
-      background: 'neutral-2',
+      background: 'color-neutral-950',
       color: 'color-lilac-100',
       boxShadow: CARD_SHADOW,
     },

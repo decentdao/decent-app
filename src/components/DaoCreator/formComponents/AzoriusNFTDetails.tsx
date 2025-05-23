@@ -58,7 +58,7 @@ export default function AzoriusNFTDetails(props: ICreationStepProps) {
               alignItems="flex-start"
               mt="1.5rem"
               padding="1.5rem"
-              bg="neutral-2"
+              bg="color-neutral-950"
               borderRadius="0.25rem"
             >
               <ContentBoxTitle>{t('titleNFTsParams')}</ContentBoxTitle>

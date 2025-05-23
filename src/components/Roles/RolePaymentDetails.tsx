@@ -29,7 +29,7 @@ function getPaymentContainerProps(section: 'top' | 'bottom', isActiveStream: boo
 
   return isActiveStream
     ? {
-        bg: 'neutral-2',
+        bg: 'color-neutral-950',
         sx: undefined,
         boxShadow: DETAILS_BOX_SHADOW,
         borderTopRadius,

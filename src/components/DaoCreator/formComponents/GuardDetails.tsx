@@ -221,7 +221,7 @@ function GuardDetails(props: ICreationStepProps) {
       </StepWrapper>
       <Box
         padding="1.5rem"
-        bg="neutral-2"
+        bg="color-neutral-950"
         borderRadius="0.25rem"
         mt="1.5rem"
         mb={showCustomNonce ? '1.5rem' : 0}
@@ -252,7 +252,7 @@ function GuardDetails(props: ICreationStepProps) {
       {showCustomNonce && (
         <Box
           padding="1.5rem"
-          bg="neutral-2"
+          bg="color-neutral-950"
           borderRadius="0.25rem"
           my="1.5rem"
         >

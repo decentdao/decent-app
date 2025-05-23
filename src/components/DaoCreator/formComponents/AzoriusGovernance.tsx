@@ -214,7 +214,7 @@ export function AzoriusGovernance(props: ICreationStepProps) {
       {!!subgraphInfo?.parentAddress && (
         <Box
           padding="1.5rem"
-          bg="neutral-2"
+          bg="color-neutral-950"
           borderRadius="0.25rem"
           mt="1.5rem"
           mb={showCustomNonce ? '1.5rem' : 0}
@@ -250,7 +250,7 @@ export function AzoriusGovernance(props: ICreationStepProps) {
       {showCustomNonce && (
         <Box
           padding="1.5rem"
-          bg="neutral-2"
+          bg="color-neutral-950"
           borderRadius="0.25rem"
           my="1.5rem"
         >

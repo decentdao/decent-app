@@ -112,7 +112,7 @@ function DatePickerContainer({
             borderRadius="0.5rem"
             boxShadow={boxShadow}
             maxW={maxBoxW}
-            bg="neutral-2"
+            bg="color-neutral-950"
             pt="1.5rem"
           >
             {children}
@@ -148,7 +148,7 @@ function DatePickerContainer({
                 borderRadius="0.5rem"
                 boxShadow={boxShadow}
                 maxW={maxBoxW}
-                bg="neutral-2"
+                bg="color-neutral-950"
                 pt="1.5rem"
               >
                 {children}

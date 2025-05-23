@@ -64,7 +64,7 @@ export default function ExternalLink({
     },
     grey: {
       hover: {
-        bg: 'neutral-2',
+        bg: 'color-neutral-950',
       },
       active: {
         bg: 'neutral-5',

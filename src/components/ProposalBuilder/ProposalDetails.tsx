@@ -12,7 +12,7 @@ import Divider from '../ui/utils/Divider';
 function TransactionValueContainer({ children }: PropsWithChildren<{}>) {
   return (
     <Box
-      bg="neutral-2"
+      bg="color-neutral-950"
       borderRadius={4}
       padding={2}
     >

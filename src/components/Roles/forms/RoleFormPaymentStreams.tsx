@@ -98,7 +98,7 @@ export function RoleFormPaymentStreams() {
           )}
           {sortedPayments.length === 0 && (
             <Flex
-              bg="neutral-2"
+              bg="color-neutral-950"
               padding="1.5rem"
               border="1px solid"
               borderColor="neutral-3"

@@ -22,7 +22,7 @@ function LoadingProblem({
       maxW={CONTENT_MAXW}
     >
       <Flex
-        bg="neutral-2"
+        bg="color-neutral-950"
         border="1px solid"
         borderColor="neutral-3"
         borderRadius={8}

@@ -55,7 +55,7 @@ export function SafeDisplayRow({
       gap="0.75rem"
       alignItems="center"
       onClick={onClickNav}
-      backgroundColor="neutral-2"
+      backgroundColor="color-neutral-950"
       cursor="pointer"
       _hover={{
         backgroundColor: 'neutral-3',
