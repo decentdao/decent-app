@@ -30,7 +30,7 @@ export function TopErrorFallback() {
             justifyContent="center"
             width={{ base: 'full', md: '50%' }}
           >
-            <Text textStyle="heading-large">{t('errorSentryFallbackTitle')}</Text>
+            <Text textStyle="text-3xl-regular">{t('errorSentryFallbackTitle')}</Text>
             <Text textStyle="heading-medium">{t('errorSentryFallbackMessage')}</Text>
             <Flex
               flexDir="column"

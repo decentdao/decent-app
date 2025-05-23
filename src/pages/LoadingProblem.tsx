@@ -41,7 +41,7 @@ function LoadingProblem({
         >
           <Text
             w="full"
-            textStyle="heading-large"
+            textStyle="text-3xl-regular"
           >
             {t('errorSentryFallbackTitle')}
           </Text>
