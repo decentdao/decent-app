@@ -84,15 +84,15 @@ const BADGE_MAPPING: Record<
   },
   [DAOState.freezeInit]: {
     tooltipKey: 'stateFreezeInitTip',
-    bg: 'blue-2',
-    textColor: 'blue-0',
-    _hover: { bg: 'blue-1', textColor: 'blue-0' },
+    bg: 'color-blue-300',
+    textColor: 'color-blue-900',
+    _hover: { bg: 'color-blue-200', textColor: 'color-blue-900' },
   },
   [DAOState.frozen]: {
     tooltipKey: 'stateFrozenTip',
-    bg: 'blue-1',
-    textColor: 'blue--1',
-    _hover: { bg: 'blue-2', textColor: 'blue--1' },
+    bg: 'color-blue-300',
+    textColor: 'color-blue-900',
+    _hover: { bg: 'color-blue-200', textColor: 'color-blue-900' },
   },
   ownerApproved: {
     bg: 'neutral-4',
