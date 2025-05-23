@@ -24,7 +24,7 @@ function LoadingProblem({
       <Flex
         bg="color-neutral-950"
         border="1px solid"
-        borderColor="neutral-3"
+        borderColor="color-neutral-900"
         borderRadius={8}
         justifyContent={{ base: 'center', lg: 'space-between' }}
         w={{ base: '100%', lg: '93%' }}

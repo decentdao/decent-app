@@ -37,7 +37,7 @@ export function DAONodeInfoCard(props: {
       _hover={
         !isCurrentViewingDAO
           ? {
-              bg: 'neutral-3',
+              bg: 'color-neutral-900',
               border: '1px solid',
               borderColor: 'neutral-4',
             }
@@ -84,7 +84,7 @@ export function DAONodeInfoCard(props: {
             <Box
               key={index}
               borderRadius="9999px"
-              bg="neutral-3"
+              bg="color-neutral-900"
               px="0.75rem"
               py="0.25rem"
               h="fit-content"

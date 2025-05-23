@@ -115,7 +115,7 @@ export default function RoleFormInfo() {
                 padding={4}
                 borderRadius={8}
                 border="1px solid"
-                borderColor="neutral-3"
+                borderColor="color-neutral-900"
                 bg="color-neutral-950"
                 boxShadow={{
                   base: DETAILS_BOX_SHADOW,

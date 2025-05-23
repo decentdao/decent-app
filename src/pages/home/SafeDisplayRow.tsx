@@ -58,7 +58,7 @@ export function SafeDisplayRow({
       backgroundColor="color-neutral-950"
       cursor="pointer"
       _hover={{
-        backgroundColor: 'neutral-3',
+        backgroundColor: 'color-neutral-900',
         border: '1px solid',
         borderColor: 'neutral-4',
       }}

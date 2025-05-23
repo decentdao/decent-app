@@ -166,7 +166,7 @@ export function PaginationButton({ onClick }: { onClick: () => void }) {
         py="0.25rem"
         px="0.75rem"
         borderRadius="full"
-        bg="neutral-3"
+        bg="color-neutral-900"
         color="color-lilac-100"
         onClick={onClick}
       >

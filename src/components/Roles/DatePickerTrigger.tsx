@@ -18,7 +18,7 @@ export function DatePickerTrigger({ selectedDate, disabled }: DatePickerTriggerP
       borderRadius="0.5rem"
       bg={disabled ? DISABLED_INPUT : 'color-black'}
       borderWidth="1px"
-      borderColor={disabled ? 'white-alpha-16' : 'neutral-3'}
+      borderColor={disabled ? 'white-alpha-16' : 'color-neutral-900'}
       padding="0.5rem 1rem"
       alignItems="center"
       minW={{ base: 'full', md: '10rem' }}

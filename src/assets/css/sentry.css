@@ -2,7 +2,7 @@
   z-index: 1;
   --font-family: 'DM Sans';
   --background: var(--colors-color-neutral-950);
-  --actor-hover-background: var(--colors-neutral-3);
+  --actor-hover-background: var(--colors-color-neutral-900);
   --actor-border: '1px solid var(--colors-neutral-4)';
   --actor-border-radius: 0.75rem;
   --foreground: var(--colors-white-0);

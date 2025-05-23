@@ -60,7 +60,7 @@ export function SettingsPermissionsStrategyForm({
             gap={3}
             alignItems="center"
             border="1px solid"
-            borderColor="neutral-3"
+            borderColor="color-neutral-900"
             borderRadius="9999px"
             w="fit-content"
             className="payment-menu-asset"

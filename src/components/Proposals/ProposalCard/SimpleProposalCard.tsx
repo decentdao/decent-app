@@ -72,7 +72,7 @@ export function SimpleProposalCard({ proposal }: { proposal: FractalProposal }) 
     <Link to={DAO_ROUTES.proposal.relative(addressPrefix, safeAddress, proposal.proposalId)}>
       <Box
         minHeight="6.25rem"
-        bg="neutral-3"
+        bg="color-neutral-900"
         _hover={{ bg: 'neutral-4' }}
         _active={{ bg: 'neutral-4', border: '1px solid', borderColor: 'neutral-4' }}
         transition="all ease-out 300ms"

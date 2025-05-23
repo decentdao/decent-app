@@ -41,7 +41,7 @@ function ProposalDetailsSection({
     <ContentBox
       containerBoxProps={{
         border: '1px solid',
-        borderColor: 'neutral-3',
+        borderColor: 'color-neutral-900',
         borderRadius: '0.75rem',
         my: 0,
       }}
@@ -145,7 +145,7 @@ function ProposalVotingSection({
     <ContentBox
       containerBoxProps={{
         border: '1px solid',
-        borderColor: 'neutral-3',
+        borderColor: 'color-neutral-900',
         borderRadius: '0.75rem',
         py: 4,
       }}

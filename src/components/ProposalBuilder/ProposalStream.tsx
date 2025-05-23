@@ -130,7 +130,7 @@ export function ProposalStream({
               <Select
                 {...field}
                 bgColor="color-black"
-                borderColor="neutral-3"
+                borderColor="color-neutral-900"
                 rounded="lg"
                 cursor="pointer"
                 iconSize="1.5rem"
@@ -227,7 +227,7 @@ export function ProposalStream({
                 borderBottom="none"
                 padding="1rem"
                 borderRadius={4}
-                bg="neutral-3"
+                bg="color-neutral-900"
                 px={0}
                 py="1.5rem"
               >

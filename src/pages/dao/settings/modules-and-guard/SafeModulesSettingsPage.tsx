@@ -46,7 +46,7 @@ export function SafeModulesSettingsPage() {
 
           <Box
             border="1px solid"
-            borderColor="neutral-3"
+            borderColor="color-neutral-900"
             borderRadius="0.75rem"
             p={4}
           >
@@ -98,7 +98,7 @@ export function SafeModulesSettingsPage() {
 
           <Box
             border="1px solid"
-            borderColor="neutral-3"
+            borderColor="color-neutral-900"
             borderRadius="0.75rem"
             p={4}
           >

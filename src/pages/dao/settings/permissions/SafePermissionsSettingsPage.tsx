@@ -123,7 +123,7 @@ export function SafePermissionsSettingsPage() {
             }
             sx={{
               _hover: {
-                backgroundColor: 'neutral-3',
+                backgroundColor: 'color-neutral-900',
                 button: {
                   opacity: 1,
                 },
@@ -137,7 +137,7 @@ export function SafePermissionsSettingsPage() {
               >
                 <Box
                   borderRadius="50%"
-                  bg="neutral-3"
+                  bg="color-neutral-900"
                   color="color-lilac-100"
                   padding={1}
                 >

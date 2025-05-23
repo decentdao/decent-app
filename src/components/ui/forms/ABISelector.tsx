@@ -46,7 +46,7 @@ export default function ABISelector({ target, onChange }: IABISelector) {
         placeholder={t('select')}
         variant="outline"
         bg="color-black"
-        borderColor="neutral-3"
+        borderColor="color-neutral-900"
         borderWidth="1px"
         borderRadius="4px"
         color="white-0"

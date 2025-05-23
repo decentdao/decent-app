@@ -31,9 +31,9 @@ const primary = defineStyle({
 
 const secondaryDisabled = {
   track: {
-    backgroundColor: 'neutral-3',
+    backgroundColor: 'color-neutral-900',
     _checked: {
-      backgroundColor: 'neutral-3',
+      backgroundColor: 'color-neutral-900',
     },
   },
   thumb: {

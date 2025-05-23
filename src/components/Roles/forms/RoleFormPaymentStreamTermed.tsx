@@ -244,7 +244,7 @@ function TermSelectorMenu({ paymentIndex }: { paymentIndex: number }) {
               p={4}
               borderRadius={isOpen ? '0.75rem 0.75rem 0 0' : '0.75rem'}
               boxShadow={DETAILS_BOX_SHADOW}
-              _hover={{ bg: 'neutral-3' }}
+              _hover={{ bg: 'color-neutral-900' }}
               _active={{ bg: 'color-neutral-950' }}
               transition="all ease-out 300ms"
               type="button"
@@ -300,7 +300,7 @@ function TermSelectorMenu({ paymentIndex }: { paymentIndex: number }) {
                       px={6}
                       mx={2}
                       borderRadius="0.75rem"
-                      _hover={{ bg: 'neutral-3' }}
+                      _hover={{ bg: 'color-neutral-900' }}
                       _active={{ bg: 'color-neutral-950' }}
                       transition="all ease-out 100ms"
                     >
@@ -333,8 +333,8 @@ function TermSelectorMenu({ paymentIndex }: { paymentIndex: number }) {
                   <MenuItem
                     key={index}
                     boxShadow={DETAILS_BOX_SHADOW}
-                    _hover={{ bg: 'neutral-3' }}
-                    _active={{ bg: 'neutral-3' }}
+                    _hover={{ bg: 'color-neutral-900' }}
+                    _active={{ bg: 'color-neutral-900' }}
                     bg="color-neutral-950"
                     p="1rem"
                     onClick={() => {

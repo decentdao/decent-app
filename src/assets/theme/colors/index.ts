@@ -1,5 +1,4 @@
 export default {
-  'neutral-3': '#2e2833',
   'neutral-4': '#3e3743',
   'neutral-5': '#57515c',
   'neutral-6': '#8f8796',

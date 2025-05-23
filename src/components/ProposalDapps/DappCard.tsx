@@ -35,7 +35,7 @@ export default function DappCard({
       rounded="xl"
       cursor="pointer"
       _hover={{
-        bg: 'neutral-3',
+        bg: 'color-neutral-900',
       }}
       boxShadow={SEXY_BOX_SHADOW_T_T}
       onClick={() => {

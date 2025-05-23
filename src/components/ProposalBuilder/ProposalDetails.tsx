@@ -152,7 +152,7 @@ export default function ProposalDetails({
     <Box
       rounded="lg"
       border="1px solid"
-      borderColor="neutral-3"
+      borderColor="color-neutral-900"
       p={6}
       maxWidth="400px"
     >

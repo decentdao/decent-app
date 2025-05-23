@@ -36,7 +36,7 @@ function DateDisplayBox({ date }: { date: Date | undefined }) {
       bg="color-black"
       borderWidth="1px"
       borderRadius="0.25rem"
-      borderColor="neutral-3"
+      borderColor="color-neutral-900"
     >
       <Icon
         as={CalendarBlank}

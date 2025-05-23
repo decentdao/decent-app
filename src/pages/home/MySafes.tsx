@@ -63,13 +63,13 @@ export function MySafes() {
           {/* TODO: This Button style should be made a variant in UI repo */}
           <Button
             variant="primary"
-            bg={'neutral-3'}
+            bg={'color-neutral-900'}
             borderRadius="625rem"
             color={'color-lilac-100'}
             borderWidth="1px"
             borderColor="transparent"
             _hover={{ textDecoration: 'none', bg: 'neutral-4' }}
-            _active={{ bg: 'neutral-3', borderColor: 'neutral-4' }}
+            _active={{ bg: 'color-neutral-900', borderColor: 'neutral-4' }}
             size={'sm'}
             p={'0.25rem 0.75rem'}
             width={'fit-content'}

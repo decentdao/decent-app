@@ -46,7 +46,7 @@ function SettingsLink({
       onClick={onClick}
       borderRadius={{ md: '0.5rem' }}
       transition="all ease-out 300ms"
-      _hover={{ bgColor: 'neutral-3' }}
+      _hover={{ bgColor: 'color-neutral-900' }}
       bg={
         isCurrentPath ||
         (!isMobile &&
@@ -124,7 +124,7 @@ function SettingsNavigationItem({
       onClick={onClick}
       borderRadius={{ md: '0.5rem' }}
       transition="all ease-out 300ms"
-      _hover={{ bgColor: 'neutral-3' }}
+      _hover={{ bgColor: 'color-neutral-900' }}
       bg={currentItem === item ? 'white-alpha-04' : 'transparent'}
       p={{ base: 0, md: '0.5rem' }}
     >
@@ -205,9 +205,9 @@ export function SettingsNavigation({
       borderBottomRightRadius={{ base: '0.75rem', md: '0' }}
       borderRight={{
         base: 'none',
-        md: !isSettingsV1Enabled ? '1px solid var(--colors-neutral-3)' : 'none',
+        md: !isSettingsV1Enabled ? '1px solid var(--colors-color-neutral-900)' : 'none',
       }}
-      borderColor="neutral-3"
+      borderColor="color-neutral-900"
       boxShadow="1px 0px 0px 0px #100414"
       minWidth="220px"
       width={{ base: '100%', md: 'auto' }}

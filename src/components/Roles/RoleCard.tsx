@@ -74,8 +74,8 @@ export function AvatarAndRoleName({
             </Text>
             <Box
               bg="color-green-500"
-              color="neutral-3"
-              borderColor="neutral-3"
+              color="color-neutral-900"
+              borderColor="color-neutral-900"
               borderWidth="2px"
               borderRadius="50%"
               w="1.25rem"

@@ -55,7 +55,7 @@ export function ProposalInfo({
     <Box
       borderRadius={8}
       border="1px solid"
-      borderColor="neutral-3"
+      borderColor="color-neutral-900"
       padding="1.5rem"
     >
       <Flex

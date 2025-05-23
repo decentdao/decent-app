@@ -140,7 +140,7 @@ export default function ProposalTransaction({
               borderBottom="none"
               padding="1rem"
               borderRadius={4}
-              bg="neutral-3"
+              bg="color-neutral-900"
               px={0}
               py="1.5rem"
             >

@@ -111,7 +111,7 @@ export function WithdrawGasTankModal({
                 flexDirection="column"
                 justify="space-between"
                 border="1px solid"
-                borderColor="neutral-3"
+                borderColor="color-neutral-900"
                 borderRadius="0.75rem"
                 mt={4}
                 px={4}

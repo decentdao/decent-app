@@ -91,7 +91,7 @@ function RefillForm({ onSubmit, onClose, isDirectDeposit, showNonceInput }: Refi
               flexDirection="row"
               justify="space-between"
               border="1px solid"
-              borderColor="neutral-3"
+              borderColor="color-neutral-900"
               borderRadius="0.75rem"
               px={4}
               py={3}

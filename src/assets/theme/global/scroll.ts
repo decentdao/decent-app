@@ -12,6 +12,6 @@ export default {
     minHeight: '2.5rem',
   },
   '.scroll-dark::-webkit-scrollbar-thumb:hover': {
-    backgroundColor: 'neutral-3',
+    backgroundColor: 'color-neutral-900',
   },
 };

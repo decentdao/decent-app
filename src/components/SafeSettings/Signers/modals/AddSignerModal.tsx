@@ -123,7 +123,7 @@ function AddSignerModal({
                   mt={4}
                   width="8rem"
                   bgColor="color-black"
-                  borderColor="neutral-3"
+                  borderColor="color-neutral-900"
                   rounded="sm"
                   cursor="pointer"
                 >

@@ -185,7 +185,7 @@ export function AirdropModal({
                       <Select
                         {...field}
                         bgColor="color-black"
-                        borderColor="neutral-3"
+                        borderColor="color-neutral-900"
                         rounded="sm"
                         cursor="pointer"
                         iconSize="1.5rem"

@@ -232,7 +232,11 @@ export function ProposalActionCard({
     >
       <Card
         backgroundColor={
-          isAddAction || isEditAction ? 'color-neutral-950' : isDeleteAction ? 'red-2' : 'neutral-3'
+          isAddAction || isEditAction
+            ? 'color-neutral-950'
+            : isDeleteAction
+              ? 'red-2'
+              : 'color-neutral-900'
         }
       >
         <Flex

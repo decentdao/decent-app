@@ -181,7 +181,7 @@ export default function AzoriusNFTDetails(props: ICreationStepProps) {
             <Box
               rounded="lg"
               border="1px solid"
-              borderColor="neutral-3"
+              borderColor="color-neutral-900"
               p={6}
               maxWidth="400px"
               mt="1.5rem"

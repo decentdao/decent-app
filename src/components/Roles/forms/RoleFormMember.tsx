@@ -238,7 +238,7 @@ function RoleFormMemberTermToggle() {
     <Box
       padding="1.5rem"
       border="1px solid"
-      borderColor="neutral-3"
+      borderColor="color-neutral-900"
       bg="color-neutral-950"
       borderRadius="0.25rem"
       mt="1.5rem"

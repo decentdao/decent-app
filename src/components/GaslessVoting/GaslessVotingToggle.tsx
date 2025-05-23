@@ -240,7 +240,7 @@ export function GaslessVotingToggleDAOSettings(props: GaslessVotingToggleProps) 
       display="flex"
       flexDirection="column"
       border="1px solid"
-      borderColor="neutral-3"
+      borderColor="color-neutral-900"
       borderRadius="0.75rem"
       mb={2}
     >

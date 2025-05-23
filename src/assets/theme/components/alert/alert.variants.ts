@@ -6,7 +6,7 @@ const { definePartsStyle } = createMultiStyleConfigHelpers(alertAnatomy.keys);
 const info = definePartsStyle({
   title: {},
   container: {
-    bg: 'neutral-3',
+    bg: 'color-neutral-900',
     border: '1px solid',
     borderColor: 'neutral-4',
     color: 'color-lilac-100',

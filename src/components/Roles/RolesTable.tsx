@@ -158,8 +158,8 @@ function PaymentsColumn({ paymentsCount }: { paymentsCount?: number }) {
           lineHeight="1rem"
           textAlign="center"
           bg="color-green-500"
-          color="neutral-3"
-          borderColor="neutral-3"
+          color="color-neutral-900"
+          borderColor="color-neutral-900"
           borderWidth="2px"
           borderRadius="50%"
           w="1.25rem"
@@ -189,8 +189,8 @@ export function RolesRow({
           '.edit-role-icon': { opacity: 1 },
         },
       }}
-      _hover={{ bg: 'neutral-3' }}
-      _active={{ bg: 'color-neutral-950', border: '1px solid', borderColor: 'neutral-3' }}
+      _hover={{ bg: 'color-neutral-900' }}
+      _active={{ bg: 'color-neutral-950', border: '1px solid', borderColor: 'color-neutral-900' }}
       transition="all ease-out 300ms"
       cursor="pointer"
       onClick={handleRoleClick}
@@ -229,8 +229,8 @@ export function RolesRowEdit({
           '.edit-role-icon': { opacity: isRemovedRole ? 0 : 1 },
         },
       }}
-      _hover={{ bg: 'neutral-3' }}
-      _active={{ bg: 'color-neutral-950', border: '1px solid', borderColor: 'neutral-3' }}
+      _hover={{ bg: 'color-neutral-900' }}
+      _active={{ bg: 'color-neutral-950', border: '1px solid', borderColor: 'color-neutral-900' }}
       transition="all ease-out 300ms"
       onClick={!isRemovedRole ? handleRoleClick : undefined}
       cursor={!isRemovedRole ? 'pointer' : 'not-allowed'}

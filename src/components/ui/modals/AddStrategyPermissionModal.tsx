@@ -57,7 +57,7 @@ export function AddStrategyPermissionModal({
           display="flex"
           flexDirection="column"
           gap={2}
-          bg="neutral-3"
+          bg="color-neutral-900"
           _hover={{
             backgroundColor: 'white-alpha-04',
           }}

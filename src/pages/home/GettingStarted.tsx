@@ -21,7 +21,7 @@ function CardContent({ icon, title, subtitle }: CardContentProps) {
       border="1px solid"
       borderColor="transparent"
       _hover={{
-        backgroundColor: 'neutral-3',
+        backgroundColor: 'color-neutral-900',
         border: '1px solid',
         borderColor: 'neutral-4',
       }}

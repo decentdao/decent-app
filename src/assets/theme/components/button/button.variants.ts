@@ -98,7 +98,7 @@ const danger = defineStyle({
 
 const stepper = defineStyle({
   border: '1px solid',
-  borderColor: 'neutral-3',
+  borderColor: 'color-neutral-900',
   bg: 'color-black',
   color: 'color-lilac-100',
   _active: {

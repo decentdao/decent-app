@@ -16,7 +16,7 @@ const baseStyle = defineStyle({
   color: 'white-0',
   bg: 'color-black',
   border: '1px solid',
-  borderColor: 'neutral-3',
+  borderColor: 'color-neutral-900',
   transitionDuration: 'normal',
   transitionProperty: 'common',
   width: '100%',

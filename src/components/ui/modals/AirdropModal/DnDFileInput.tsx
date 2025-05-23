@@ -100,7 +100,7 @@ export function DnDFileInput() {
         {...getRootProps()}
         p="1rem"
         border="1px dashed"
-        borderColor={isDragActive ? 'color-lilac-100' : 'neutral-3'}
+        borderColor={isDragActive ? 'color-lilac-100' : 'color-neutral-900'}
         borderRadius="sm"
         bg="color-black"
         cursor="pointer"

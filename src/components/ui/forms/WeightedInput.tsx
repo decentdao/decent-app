@@ -13,7 +13,7 @@ export default function WeightedInput({ label, value, totalValue, onChange }: IW
   return (
     <Flex
       color="color-lilac-100"
-      bg="neutral-3"
+      bg="color-neutral-900"
       borderRadius="0.5rem"
       mt={4}
       mb={4}

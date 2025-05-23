@@ -37,7 +37,7 @@ const baseStyle = definePartsStyle({
     color: 'white-0',
     bg: 'color-black',
     boxShadow: '0px 1px 0px 0px rgba(255, 255, 255, 0.16), 0px 0px 0px 1px rgba(0, 0, 0, 0.68)',
-    borderColor: 'neutral-3',
+    borderColor: 'color-neutral-900',
     transitionDuration: 'normal',
     transitionProperty: 'common',
     width: '100%',
