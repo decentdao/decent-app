@@ -223,5 +223,6 @@
   "rejectProposalAreYouSure": "Sind Sie sicher, dass Sie diesen Vorschlag ablehnen wollen?",
   "rejectProposalAreYouSureDescription": "Bitte beachten Sie: Diese Aktion ist unumkehrbar.",
   "confirmExecution": "Bestätigen Sie die Ausführung",
-  "executionDescription": "Sie führen nur diesen Vorschlag aus. Alle anderen Vorschläge mit <color>Nonce {{nonce}</color> } werden automatisch abgelehnt."
+  "executionDescription": "Sie führen nur diesen Vorschlag aus. Alle anderen Vorschläge mit <color>Nonce {{nonce}</color> } werden automatisch abgelehnt.",
+  "nonceLabelBannerPassedThreshold": "Für diese Nonce sind genügend Ablehnungsunterschriften eingegangen, um alle entsprechenden Vorschläge abzulehnen."
 }

@@ -9,7 +9,7 @@ import {
 } from '@chakra-ui/react';
 
 function ContentCountBadge({ count }: { count: number | undefined }) {
-  if (!count) {
+  if (!count || count === 0) {
     return null;
   }
   return (
@@ -68,15 +68,21 @@ export function AccordionDropdown({
                   textStyle="heading-small"
                   color="lilac-0"
                 >
-                  <Flex alignItems="center">
-                    <AccordionIcon
-                      marginRight={3}
-                      transform={`rotate(-${isExpanded ? '0' : '90'}deg)`}
-                    />
+                  <Flex
+                    alignItems="center"
+                    justifyContent="space-between"
+                    width="100%"
+                  >
                     {sectionTitle}
+                    <Flex alignItems="center">
+                      <ContentCountBadge count={contentCount} />
+                      <AccordionIcon
+                        transform={`rotate(-${isExpanded ? '0' : '90'}deg)`}
+                        boxSize="1.25rem"
+                      />
+                    </Flex>
                   </Flex>
                 </AccordionButton>
-                <ContentCountBadge count={contentCount} />
               </Flex>
               <AccordionPanel paddingBottom={4}>
                 <Flex

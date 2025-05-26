@@ -223,5 +223,6 @@
   "rejectProposalAreYouSure": "Are you sure you want to reject this proposal?",
   "rejectProposalAreYouSureDescription": "Please note: This action is irreversible.",
   "confirmExecution": "Confirm Execution",
-  "executionDescription": "You are executing this proposal only. All other proposals with <color>Nonce {{nonce}}</color> will automatically be rejected."
+  "executionDescription": "You are executing this proposal only. All other proposals with <color>Nonce {{nonce}}</color> will automatically be rejected.",
+  "nonceLabelBannerPassedThreshold": "该 nonce 收到的否决签名数量足以否决所有相关提案。"
 }

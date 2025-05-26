@@ -223,5 +223,6 @@
   "rejectProposalAreYouSure": "이 제안을 거부하시겠습니까?",
   "rejectProposalAreYouSureDescription": "참고: 이 작업은 되돌릴 수 없습니다.",
   "confirmExecution": "실행 확인",
-  "executionDescription": "이 제안만 실행 중입니다. <color>Nonce {{nonce}</color> }가 포함된 다른 모든 제안은 자동으로 거부됩니다."
+  "executionDescription": "이 제안만 실행 중입니다. <color>Nonce {{nonce}</color> }가 포함된 다른 모든 제안은 자동으로 거부됩니다.",
+  "nonceLabelBannerPassedThreshold": "모든 관련 제안을 거부할 수 있을 만큼 충분한 거부 서명을 받았습니다."
 }

@@ -1,5 +1,6 @@
-import { Box, Flex, Show, Text, useBreakpointValue } from '@chakra-ui/react';
-import { Bank, CaretRight, CheckSquare, GearFine, Stack } from '@phosphor-icons/react';
+import { Box, Flex, Icon, Show, Text, useBreakpointValue } from '@chakra-ui/react';
+import { Bank, CaretRight, CheckSquare, Dot, GearFine, Stack } from '@phosphor-icons/react';
+import { useFormikContext } from 'formik';
 import { PropsWithChildren, ReactNode, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useLocation, useMatch } from 'react-router-dom';
@@ -14,6 +15,7 @@ import { useDAOStore } from '../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
 import { AzoriusGovernance } from '../../types';
 import { BarLoader } from '../ui/loaders/BarLoader';
+import { SafeSettingsEdits } from '../ui/modals/SafeSettingsModal';
 import Divider from '../ui/utils/Divider';
 
 function SettingsLink({
@@ -107,6 +109,7 @@ function SettingsNavigationItem({
   currentItem = 'general',
   item = 'general',
   onClick,
+  hasEdits = false,
 }: PropsWithChildren<{
   title: string;
   leftIcon: ReactNode;
@@ -114,6 +117,7 @@ function SettingsNavigationItem({
   item: (typeof settingsNavigationItems)[number];
   currentItem: (typeof settingsNavigationItems)[number];
   onClick?: () => void;
+  hasEdits?: boolean;
 }>) {
   return (
     <Box
@@ -132,10 +136,17 @@ function SettingsNavigationItem({
           gap={4}
           alignItems="center"
           color="lilac-0"
+          justifyContent="space-between"
         >
           {leftIcon}
           <Text color="white-0">{title}</Text>
         </Flex>
+        {hasEdits && (
+          <Icon
+            as={Dot}
+            style={{ transform: 'scale(5)' }}
+          />
+        )}
         <Show below="md">
           <Flex
             alignItems="center"
@@ -181,6 +192,8 @@ export function SettingsNavigation({
   const [currentItem, setCurrentItem] =
     useState<(typeof settingsNavigationItems)[number]>('general');
 
+  const { values } = useFormikContext<SafeSettingsEdits>();
+
   return (
     <Flex
       backgroundColor={isSettingsV1Enabled ? 'transparent' : 'neutral-2'}
@@ -219,6 +232,7 @@ export function SettingsNavigation({
               onSettingsNavigationClick(<SafeGeneralSettingsPage />);
               setCurrentItem('general');
             }}
+            hasEdits={values.general !== undefined}
           />
           <SettingsNavigationItem
             title={t('daoSettingsGovernance')}
@@ -229,6 +243,7 @@ export function SettingsNavigation({
               onSettingsNavigationClick(<SafeGovernanceSettingsPage />);
               setCurrentItem('governance');
             }}
+            hasEdits={values.azorius !== undefined || values.multisig !== undefined}
           >
             <Text color="neutral-7">
               {t(azoriusGovernance.votingStrategy?.strategyType ?? 'labelMultisig')}
@@ -257,6 +272,7 @@ export function SettingsNavigation({
                 onSettingsNavigationClick(<SafePermissionsSettingsContent />);
                 setCurrentItem('permissions');
               }}
+              hasEdits={values.permissions !== undefined}
             >
               <Text color="neutral-7">{azoriusGovernance.votingStrategy ? 1 : 0}</Text>
             </SettingsNavigationItem>

@@ -54,22 +54,29 @@ export const useERC20LinearStrategy = () => {
       quorumNumerator,
       quorumDenominator,
       timeLockPeriod,
+      executionPeriod,
       proposerThreshold,
     ] = await Promise.all([
       ozLinearVotingContract.read.votingPeriod(),
       ozLinearVotingContract.read.quorumNumerator(),
       ozLinearVotingContract.read.QUORUM_DENOMINATOR(),
       azoriusContract.read.timelockPeriod(),
+      azoriusContract.read.executionPeriod(),
       ozLinearVotingContract.read.requiredProposerWeight(),
     ]);
 
     const quorumPercentage = (quorumNumerator * 100n) / quorumDenominator;
     const votingPeriodValue = await blocksToSeconds(votingPeriodBlocks, publicClient);
     const timeLockPeriodValue = await blocksToSeconds(timeLockPeriod, publicClient);
+    const executionPeriodValue = await blocksToSeconds(executionPeriod, publicClient);
     const votingData = {
       votingPeriod: {
         value: BigInt(votingPeriodValue),
         formatted: getTimeDuration(votingPeriodValue),
+      },
+      executionPeriod: {
+        value: BigInt(executionPeriodValue),
+        formatted: getTimeDuration(executionPeriodValue),
       },
       proposerThreshold: {
         value: proposerThreshold,
@@ -77,7 +84,7 @@ export const useERC20LinearStrategy = () => {
       },
       quorumPercentage: {
         value: quorumPercentage,
-        formatted: quorumPercentage.toString() + '%',
+        formatted: quorumPercentage.toString(),
       },
       timeLockPeriod: {
         value: BigInt(timeLockPeriodValue),

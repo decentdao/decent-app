@@ -1,17 +1,17 @@
 import { Container, Input, VStack } from '@chakra-ui/react';
-import { NanceEditor } from '@nance/nance-editor';
 import { FormikProps } from 'formik';
 import { TFunction } from 'i18next';
-import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import useFeatureFlag from '../../helpers/environmentFeatureFlags';
-import { GATEWAY_URL, INFURA_AUTH } from '../../providers/App/hooks/useIPFSClient';
 import { useProposalActionsStore } from '../../store/actions/useProposalActionsStore';
 import { CreateProposalForm } from '../../types/proposalBuilder';
+import { MarkdownEditor } from '../Markdown/MarkdownEditor';
 import { CustomNonceInput } from '../ui/forms/CustomNonceInput';
 import { InputComponent, TextareaComponent } from '../ui/forms/InputComponent';
-import '@nance/nance-editor/lib/css/editor.css';
-import '@nance/nance-editor/lib/css/dark.css';
+// eslint-disable-next-line import/no-extraneous-dependencies
+import '@toast-ui/editor/dist/toastui-editor.css';
+// eslint-disable-next-line import/no-extraneous-dependencies
+import '@toast-ui/editor/dist/theme/toastui-editor-dark.css';
 
 export interface ProposalMetadataTypeProps {
   titleLabel: string;
@@ -102,12 +102,6 @@ export function MarkdownProposalMetadata({
   const { t } = useTranslation(['proposal']);
   const { setProposalMetadata } = useProposalActionsStore();
 
-  const initialDescription = proposalMetadata.description || typeProps.descriptionHelper;
-
-  useEffect(() => {
-    setProposalMetadata('description', initialDescription);
-  }, [initialDescription, setProposalMetadata]);
-
   return (
     <VStack
       align="left"
@@ -127,11 +121,10 @@ export function MarkdownProposalMetadata({
         padding={0}
         maxW={{ base: '350px', sm: '440px', md: '768px', lg: '1100px', xl: '1200px' }}
       >
-        <NanceEditor
-          initialValue={initialDescription}
-          onEditorChange={value => setProposalMetadata('description', value)}
-          fileUploadIPFS={{ gateway: GATEWAY_URL, auth: INFURA_AUTH }}
-          darkMode={true}
+        <MarkdownEditor
+          initialValue={proposalMetadata.description}
+          placeholder={typeProps.descriptionHelper}
+          onChange={value => setProposalMetadata('description', value)}
           height="400px"
         />
       </Container>

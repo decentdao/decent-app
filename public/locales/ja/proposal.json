@@ -223,5 +223,6 @@
   "rejectProposalAreYouSure": "本当にこの提案を拒否したいのか？",
   "rejectProposalAreYouSureDescription": "注意：この処置は不可逆的です。",
   "confirmExecution": "実行の確認",
-  "executionDescription": "このプロポーザルのみを実行します。<color>Nonce{{nonce}</color>}を含む他の提案はすべて自動的に却下されます。"
+  "executionDescription": "このプロポーザルのみを実行します。<color>Nonce{{nonce}</color>}を含む他の提案はすべて自動的に却下されます。",
+  "nonceLabelBannerPassedThreshold": "関連するすべてのプロポーザルを拒否するのに十分な拒否署名が、このノンスに寄せられた。"
 }

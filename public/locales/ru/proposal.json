@@ -223,5 +223,6 @@
   "rejectProposalAreYouSure": "Вы уверены, что хотите отклонить это предложение?",
   "rejectProposalAreYouSureDescription": "Обратите внимание: это действие необратимо.",
   "confirmExecution": "Подтвердить выполнение",
-  "executionDescription": "You are executing this proposal only. All other proposals with <color>Nonce {{nonce}}</color> will automatically be rejected."
+  "executionDescription": "You are executing this proposal only. All other proposals with <color>Nonce {{nonce}}</color> will automatically be rejected.",
+  "nonceLabelBannerPassedThreshold": "Для этого нонса было получено достаточно подписей отказа, чтобы отклонить все связанные с ним предложения."
 }

@@ -1,7 +1,6 @@
 import { Box, Show, Text } from '@chakra-ui/react';
 import { useTranslation } from 'react-i18next';
 import { zeroAddress } from 'viem';
-import { InfoGovernance } from '../../../../components/DaoDashboard/Info/InfoGovernance';
 import { ERC20TokenContainer } from '../../../../components/SafeSettings/ERC20TokenContainer';
 import { ERC721TokensContainer } from '../../../../components/SafeSettings/ERC721TokensContainer';
 import { SettingsContentBox } from '../../../../components/SafeSettings/SettingsContentBox';
@@ -12,6 +11,7 @@ import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
 import { useDAOStore } from '../../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../../providers/NetworkConfig/useNetworkConfigStore';
 import { GovernanceType } from '../../../../types';
+import { GovernanceParams } from './GovernanceParams';
 
 export function SafeGovernanceSettingsPage() {
   const { t } = useTranslation('settings');
@@ -40,27 +40,9 @@ export function SafeGovernanceSettingsPage() {
       <SettingsContentBox
         display="flex"
         flexDirection="column"
-        gap="1.5rem"
+        gap={12}
+        px={0}
       >
-        {(isERC20Governance || isERC721Governance) && (
-          <Box width="100%">
-            <Text
-              textStyle="heading-small"
-              mb={4}
-            >
-              {t('daoSettingsGovernance')}
-            </Text>
-            <Box
-              p="1.5rem"
-              borderWidth="0.06rem"
-              borderColor="neutral-3"
-              borderRadius="0.75rem"
-              mx={0}
-            >
-              <InfoGovernance showTitle={false} />
-            </Box>
-          </Box>
-        )}
         {isERC20Governance ? (
           <ERC20TokenContainer />
         ) : isERC721Governance ? (
@@ -68,6 +50,23 @@ export function SafeGovernanceSettingsPage() {
         ) : isMultisigGovernance ? (
           <SignersContainer />
         ) : null}
+        {(isERC20Governance || isERC721Governance) && (
+          <Box width="100%">
+            <Text
+              textStyle="heading-small"
+              mb={4}
+            >
+              {t('daoSettingsGovernanceParameters')}
+            </Text>
+            <Box
+              borderWidth="0.06rem"
+              borderColor="neutral-3"
+              borderRadius="0.75rem"
+            >
+              <GovernanceParams />
+            </Box>
+          </Box>
+        )}
       </SettingsContentBox>
     </>
   );

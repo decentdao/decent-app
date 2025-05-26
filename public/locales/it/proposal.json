@@ -223,5 +223,6 @@
   "rejectProposalAreYouSure": "Siete sicuri di voler rifiutare questa proposta?",
   "rejectProposalAreYouSureDescription": "Nota bene: questa azione è irreversibile.",
   "confirmExecution": "Confermare l'esecuzione",
-  "executionDescription": "Si sta eseguendo solo questa proposta. Tutte le altre proposte con <color>Nonce {{nonce}</color> } saranno automaticamente rifiutate."
+  "executionDescription": "Si sta eseguendo solo questa proposta. Tutte le altre proposte con <color>Nonce {{nonce}</color> } saranno automaticamente rifiutate.",
+  "nonceLabelBannerPassedThreshold": "Sono state ricevute abbastanza firme di rifiuto per questo nonce per rifiutare tutte le proposte correlate."
 }

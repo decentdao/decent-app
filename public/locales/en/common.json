@@ -26,6 +26,7 @@
   "move": "Move",
   "hours": "Hours",
   "minutes": "Minutes",
+  "minutesShort": "min",
   "quorum": "Quorum",
   "deploy": "Deploy",
   "loading": "Loading...",
@@ -34,7 +35,6 @@
   "learnMore": "Learn More",
   "home": "Home",
   "labelViewDAO": "View Safe",
-  "labelDAOFound": "Safe Found",
   "labelCurrentDAO": "You are currently viewing this Safe.",
   "labelEtherscan": "View on Etherscan",
   "errorInvalidENSAddress": "Invalid ENS name or address on {{chain}}",
@@ -129,5 +129,8 @@
   "unsavedChangesDescription": "You have unsaved changes that will be lost if you continue. Do you want to discard your changes?",
   "discardChanges": "Discard",
   "keepEditing": "Keep Editing",
-  "selectStatusLabel": "Select Status"
+  "selectStatusLabel": "Select Status",
+  "addressRequired": "Address is required",
+  "save": "Save",
+  "daoNameRequired": "DAO name is required"
 }
