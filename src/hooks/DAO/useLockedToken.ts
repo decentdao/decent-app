@@ -9,6 +9,7 @@ interface LockedTokenState {
   whitelisted: boolean;
   owner: Address;
   canTransfer: boolean;
+  needWhitelist: boolean;
 }
 
 const DEFAULT_STATE = {
@@ -16,25 +17,28 @@ const DEFAULT_STATE = {
   whitelisted: false,
   owner: zeroAddress,
   canTransfer: true,
+  needWhitelist: false,
 };
 
-export default function useLockedToken({ token, account }: { token: Address; account: Address }) {
+export default function useLockedToken(
+  params: { token: Address; account: Address } | undefined = undefined,
+) {
   const publicClient = useNetworkPublicClient();
   const { safeAddress } = useCurrentDAOKey();
   const [tokenState, setTokenState] = useState<LockedTokenState>(DEFAULT_STATE);
 
   const loadTokenState = useCallback(
-    async (tokenParam: Address, accountParam: Address): Promise<LockedTokenState> => {
+    async (token: Address, account: Address): Promise<LockedTokenState> => {
       const contract = getContract({
         abi: VotesERC20LockableV1Abi,
-        address: tokenParam,
+        address: token,
         client: publicClient,
       });
 
       try {
         const [locked, whitelisted, owner] = await Promise.all([
           contract.read.locked(),
-          contract.read.whitelisted([accountParam]),
+          contract.read.whitelisted([account]),
           contract.read.owner(),
         ]);
 
@@ -42,7 +46,8 @@ export default function useLockedToken({ token, account }: { token: Address; acc
           locked,
           whitelisted,
           owner,
-          canTransfer: !locked || whitelisted || owner === safeAddress,
+          canTransfer: !locked || whitelisted || owner === account || owner === safeAddress,
+          needWhitelist: locked && !whitelisted && owner !== account,
         };
       } catch {
         return DEFAULT_STATE;
@@ -52,8 +57,10 @@ export default function useLockedToken({ token, account }: { token: Address; acc
   );
 
   useEffect(() => {
-    loadTokenState(token, account).then(s => setTokenState(s));
-  }, [account, loadTokenState, token]);
+    if (params) {
+      loadTokenState(params.token, params.account).then(s => setTokenState(s));
+    }
+  }, [params, loadTokenState]);
 
   return {
     tokenState,
