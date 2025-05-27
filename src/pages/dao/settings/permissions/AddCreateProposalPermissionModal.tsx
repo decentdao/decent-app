@@ -76,7 +76,11 @@ export function AddCreateProposalPermissionModal({
         setProposerThreshold={val => {
           let newProposerThresholdValue;
 
-          if (permissionsEdits?.proposerThreshold === undefined) {
+          if (
+            permissionsEdits?.proposerThreshold === undefined &&
+            val.bigintValue !== undefined &&
+            val.bigintValue !== existingProposerThreshold.bigintValue
+          ) {
             newProposerThresholdValue = val;
           } else if (val.bigintValue !== existingProposerThreshold.bigintValue) {
             newProposerThresholdValue = val;
