@@ -929,7 +929,6 @@ export function SafeSettingsModal({
 
     resetActions();
     const { general, multisig, azorius, permissions } = values;
-    console.log('submitting', { general, multisig, azorius, permissions });
     if (general) {
       const { action, title } = await handleEditGeneral(values);
 
@@ -966,7 +965,6 @@ export function SafeSettingsModal({
       addAction(action);
     }
 
-    console.log('navigating');
     navigate(DAO_ROUTES.proposalWithActionsNew.relative(addressPrefix, safe.address));
   };
 
