@@ -57,7 +57,7 @@ export function AzoriusGovernance(props: ICreationStepProps) {
   const { daoKey } = useCurrentDAOKey();
   const {
     node: { safe, subgraphInfo, modules },
-  } = useDAOStore({ daoKey: daoKey || 'no-key' });
+  } = useDAOStore({ daoKey });
 
   const fractalModule = useMemo(() => {
     if (!modules) return null;
