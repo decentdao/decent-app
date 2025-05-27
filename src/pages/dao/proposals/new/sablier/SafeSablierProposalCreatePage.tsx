@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { Address, encodeFunctionData, erc20Abi, getAddress, Hash, zeroAddress } from 'viem';
 import SablierV2BatchAbi from '../../../../../assets/abi/SablierV2Batch';
+import { VotesERC20LockableV1Abi } from '../../../../../assets/abi/VotesERC20LockableV1';
 import { ProposalBuilder } from '../../../../../components/ProposalBuilder/ProposalBuilder';
 import { StreamsDetails } from '../../../../../components/ProposalBuilder/ProposalDetails';
 import { DEFAULT_PROPOSAL_METADATA_TYPE_PROPS } from '../../../../../components/ProposalBuilder/ProposalMetadata';
@@ -28,7 +29,6 @@ import {
   CreateProposalSteps,
   CreateSablierProposalForm,
 } from '../../../../../types';
-import { VotesERC20LockableV1Abi } from '../../../../../assets/abi/VotesERC20LockableV1';
 
 export function SafeSablierProposalCreatePage() {
   useEffect(() => {
@@ -153,7 +153,7 @@ export function SafeSablierProposalCreatePage() {
         metaData: proposalMetadata,
       };
     },
-    [sablierV2Batch, sablierV2LockupTranched, safe?.address],
+    [loadTokenState, sablierV2Batch, sablierV2LockupTranched, safe?.address],
   );
 
   const HEADER_HEIGHT = useHeaderHeight();
