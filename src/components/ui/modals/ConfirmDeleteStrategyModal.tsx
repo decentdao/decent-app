@@ -13,7 +13,13 @@ import { AzoriusGovernance, CreateProposalTransaction, ProposalActionType } from
 import { SENTINEL_MODULE } from '../../../utils/address';
 import { SafePermissionsStrategyAction } from '../../SafeSettings/SafePermissionsStrategyAction';
 
-export function ConfirmDeleteStrategyModal({ onClose }: { onClose: () => void }) {
+export function ConfirmDeleteStrategyModal({
+  onClose,
+  closeAllModals,
+}: {
+  onClose: () => void;
+  closeAllModals: () => void;
+}) {
   const navigate = useNavigate();
   const { t } = useTranslation('settings');
   const { addressPrefix } = useNetworkConfigStore();
@@ -131,8 +137,9 @@ export function ConfirmDeleteStrategyModal({ onClose }: { onClose: () => void })
       ),
       transactions: [transaction],
     });
+
+    closeAllModals();
     navigate(DAO_ROUTES.proposalWithActionsNew.relative(addressPrefix, safe.address));
-    onClose();
   };
 
   return (

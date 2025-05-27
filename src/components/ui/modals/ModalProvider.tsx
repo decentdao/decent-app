@@ -312,7 +312,12 @@ const getModalData = (args: {
       modalSize = 'xl';
       break;
     case ModalType.CONFIRM_DELETE_STRATEGY:
-      modalContent = <ConfirmDeleteStrategyModal onClose={popModal} />;
+      modalContent = (
+        <ConfirmDeleteStrategyModal
+          onClose={popModal}
+          closeAllModals={closeAll}
+        />
+      );
       break;
     case ModalType.SEND_ASSETS:
       modalContent = (
