@@ -23,7 +23,13 @@ export function SafePermissionsSettingsContent() {
   const { daoKey } = useCurrentDAOKey();
   const {
     governance,
-    governanceContracts: { isLoaded, linearVotingErc20Address, linearVotingErc721Address },
+    governanceContracts: {
+      isLoaded,
+      linearVotingErc20Address,
+      linearVotingErc721Address,
+      linearVotingErc20WithHatsWhitelistingAddress,
+      linearVotingErc721WithHatsWhitelistingAddress,
+    },
     node: { safe },
   } = useDAOStore({ daoKey });
 
@@ -49,6 +55,9 @@ export function SafePermissionsSettingsContent() {
   }
 
   const proposerThreshold = azoriusGovernance.votingStrategy?.proposerThreshold?.formatted;
+  const noErc20Address = !linearVotingErc20Address && !linearVotingErc20WithHatsWhitelistingAddress;
+  const noErc721Address =
+    !linearVotingErc721Address && !linearVotingErc721WithHatsWhitelistingAddress;
 
   return (
     <>
@@ -79,8 +88,7 @@ export function SafePermissionsSettingsContent() {
             >
               <BarLoader />
             </Box>
-          ) : (!votesToken || !linearVotingErc20Address) &&
-            (!erc721Tokens || !linearVotingErc721Address) ? (
+          ) : (!votesToken || noErc20Address) && (!erc721Tokens || !noErc721Address) ? (
             <NoDataCard
               emptyText="emptyPermissions"
               emptyTextNotProposer="emptyPermissionsNotProposer"
