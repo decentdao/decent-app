@@ -716,7 +716,7 @@ export function SafeSettingsModal({
           parameters: [
             {
               signature: 'uint256',
-              value: proposerThreshold.toString(),
+              value: proposerThreshold.bigintValue.toString(),
             },
           ],
         },
@@ -733,7 +733,7 @@ export function SafeSettingsModal({
           parameters: [
             {
               signature: 'uint256',
-              value: proposerThreshold.toString(),
+              value: proposerThreshold.bigintValue.toString(),
             },
           ],
         },
