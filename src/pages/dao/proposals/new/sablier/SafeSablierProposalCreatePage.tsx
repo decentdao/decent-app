@@ -63,8 +63,13 @@ export function SafeSablierProposalCreatePage() {
       const calldatas: Hash[] = [];
 
       const groupedStreams = groupBy(streams, 'tokenAddress');
-      const tokenStateOfStreams = await Promise.allSettled(
+      const isBatchWhitelistedOfStreams = await Promise.allSettled(
         Object.keys(groupedStreams).map(token => loadTokenState(token as Address, sablierV2Batch)),
+      );
+      const isLockupWhitelistedOfStreams = await Promise.allSettled(
+        Object.keys(groupedStreams).map(token =>
+          loadTokenState(token as Address, sablierV2LockupTranched),
+        ),
       );
 
       Object.keys(groupedStreams).forEach((token, index) => {
@@ -84,15 +89,28 @@ export function SafeSablierProposalCreatePage() {
         txValues.push(0n);
         calldatas.push(approveCalldata);
 
-        const tokenStatePromiseResult = tokenStateOfStreams[index];
         if (
-          tokenStatePromiseResult.status === 'fulfilled' &&
-          tokenStatePromiseResult.value.needWhitelist
+          isBatchWhitelistedOfStreams[index].status === 'fulfilled' &&
+          isBatchWhitelistedOfStreams[index].value.needWhitelist
         ) {
           const whitelistCalldata = encodeFunctionData({
             abi: VotesERC20LockableV1Abi,
             functionName: 'whitelist',
             args: [sablierV2Batch, true],
+          });
+          targets.push(tokenAddress);
+          txValues.push(0n);
+          calldatas.push(whitelistCalldata);
+        }
+
+        if (
+          isLockupWhitelistedOfStreams[index].status === 'fulfilled' &&
+          isLockupWhitelistedOfStreams[index].value.needWhitelist
+        ) {
+          const whitelistCalldata = encodeFunctionData({
+            abi: VotesERC20LockableV1Abi,
+            functionName: 'whitelist',
+            args: [sablierV2LockupTranched, true],
           });
           targets.push(tokenAddress);
           txValues.push(0n);
