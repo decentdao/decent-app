@@ -43,12 +43,21 @@ export function SafePermissionsSettingsContent() {
     ModalType.ADD_CREATE_PROPOSAL_PERMISSION,
     {
       formikContext,
+      votingStrategyAddress: null,
     },
   );
 
   const openAddPermissionModal = useDecentModal(ModalType.ADD_PERMISSION, {
     openAddCreateProposalPermissionModal,
   });
+
+  const openCreateProposalPermissionModal = useDecentModal(
+    ModalType.ADD_CREATE_PROPOSAL_PERMISSION,
+    {
+      formikContext,
+      votingStrategyAddress: linearVotingErc20Address || null,
+    },
+  );
 
   if (!safe) {
     return null;
@@ -99,7 +108,7 @@ export function SafePermissionsSettingsContent() {
             <Box
               p={4}
               borderRadius="0.75rem"
-              onClick={openAddPermissionModal}
+              onClick={openCreateProposalPermissionModal}
               sx={{
                 _hover: {
                   backgroundColor: 'neutral-3',

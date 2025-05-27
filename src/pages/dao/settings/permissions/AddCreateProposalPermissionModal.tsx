@@ -4,8 +4,9 @@ import { ArrowLeft, Trash, X } from '@phosphor-icons/react';
 import { FormikContextType } from 'formik';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import {
+  Address,
   encodeAbiParameters,
   encodeFunctionData,
   encodePacked,
@@ -50,9 +51,11 @@ import {
 export function AddCreateProposalPermissionModal({
   closeModal,
   formikContext,
+  votingStrategyAddress,
 }: {
   closeModal: () => void;
   formikContext: FormikContextType<SafeSettingsEdits>;
+  votingStrategyAddress: Address | null;
 }) {
   const publicClient = useNetworkPublicClient();
   const { t } = useTranslation(['settings', 'common', 'modals']);
@@ -68,8 +71,7 @@ export function AddCreateProposalPermissionModal({
       accountAbstraction,
     },
   } = useNetworkConfigStore();
-  const [searchParams] = useSearchParams();
-  const votingStrategyAddress = searchParams.get('votingStrategy');
+
   const navigate = useNavigate();
   const { daoKey } = useCurrentDAOKey();
   const {
