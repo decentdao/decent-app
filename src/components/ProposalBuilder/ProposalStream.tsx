@@ -131,10 +131,12 @@ export function ProposalStream({
               disabled={pendingTransaction}
               errorMessage={tokenState.canTransfer ? undefined : t('streamIsNotTransferable')}
               subLabel={
-                <DisplayAddress
-                  address={stream.tokenAddress as Address}
-                  truncate={false}
-                />
+                <Box marginX="-0.75rem">
+                  <DisplayAddress
+                    address={stream.tokenAddress as Address}
+                    truncate={false}
+                  />
+                </Box>
               }
             >
               <Select
