@@ -163,6 +163,7 @@
   "streamTitle": "Stream {{index}} ({{type}})",
   "addStream": "Add stream",
   "removeStream": "Remove stream",
+  "streamIsNotTransferable": "Token is locked, can't be used for streaming",
   "streamStartNotice": "Stream will be started in the moment of proposal execution. In order to\n\"emulate\" delay of stream start - first tranche should have amount set to\n0 with desired \"delay\" duration.",
   "streamOnSablierNotice": "This proposal will create payment streams using Sablier. After it is executed, recipients will need to use Sablier to manage those streams.",
   "streamedTokenAddress": "Streamed Token Address",
