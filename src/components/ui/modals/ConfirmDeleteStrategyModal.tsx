@@ -35,10 +35,7 @@ export function ConfirmDeleteStrategyModal({
   const { getVotingStrategies } = useVotingStrategiesAddresses();
 
   const handleDeleteStrategy = async () => {
-    // if (!safe || !governanceContracts.moduleAzoriusAddress) {
-    //   return;
-    // }
-    if (!safe || !safe.modulesAddresses.length) {
+    if (!safe || !governanceContracts.moduleAzoriusAddress) {
       return;
     }
 
@@ -69,7 +66,7 @@ export function ConfirmDeleteStrategyModal({
         prevStrategy = strategies[i].strategyAddress;
       }
       transaction = {
-        targetAddress: governanceContracts.moduleAzoriusAddress ?? safe.modulesAddresses[0],
+        targetAddress: governanceContracts.moduleAzoriusAddress,
         ethValue: {
           bigintValue: 0n,
           value: '0',
@@ -103,7 +100,7 @@ export function ConfirmDeleteStrategyModal({
         prevStrategy = strategies[i].strategyAddress;
       }
       transaction = {
-        targetAddress: governanceContracts.moduleAzoriusAddress ?? safe.modulesAddresses[0],
+        targetAddress: governanceContracts.moduleAzoriusAddress,
         ethValue: {
           bigintValue: 0n,
           value: '0',

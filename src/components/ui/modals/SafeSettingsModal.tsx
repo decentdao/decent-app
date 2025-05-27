@@ -108,7 +108,7 @@ export function SafeSettingsModal({
     governance,
     governanceContracts: {
       strategies,
-      moduleAzoriusAddress: stateModuleAzoriusAddress,
+      moduleAzoriusAddress,
       linearVotingErc20Address,
       linearVotingErc721Address,
       linearVotingErc20WithHatsWhitelistingAddress,
@@ -535,7 +535,7 @@ export function SafeSettingsModal({
       throw new Error('Azorius settings are not set');
     }
 
-    if (!stateModuleAzoriusAddress) {
+    if (!moduleAzoriusAddress) {
       throw new Error('Azorius module address is not set');
     }
 
@@ -636,7 +636,7 @@ export function SafeSettingsModal({
     if (timelockPeriod) {
       const numberOfBlocks = await getEstimatedNumberOfBlocks(timelockPeriod, publicClient);
       transactions.push({
-        targetAddress: stateModuleAzoriusAddress,
+        targetAddress: moduleAzoriusAddress,
         ethValue,
         functionName: 'updateTimelockPeriod',
         parameters: [
@@ -653,7 +653,7 @@ export function SafeSettingsModal({
     if (executionPeriod) {
       const numberOfBlocks = await getEstimatedNumberOfBlocks(executionPeriod / 60n, publicClient);
       transactions.push({
-        targetAddress: stateModuleAzoriusAddress,
+        targetAddress: moduleAzoriusAddress,
         ethValue,
         functionName: 'updateExecutionPeriod',
         parameters: [
@@ -692,15 +692,9 @@ export function SafeSettingsModal({
 
     const azoriusGovernance = governance as AzoriusGovernance;
 
-    // if (!stateModuleAzoriusAddress) {
-    //   throw new Error('Azorius module address is not set');
-    // }
-
-    if (!safe.modulesAddresses.length) {
-      throw new Error('No modules addresses found');
+    if (!moduleAzoriusAddress) {
+      throw new Error('Azorius module address is not set');
     }
-
-    const moduleAzoriusAddress = safe.modulesAddresses[0];
 
     let actionType: ProposalActionType = ProposalActionType.EDIT;
 
