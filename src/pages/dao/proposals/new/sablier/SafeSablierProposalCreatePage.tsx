@@ -17,6 +17,7 @@ import { BarLoader } from '../../../../../components/ui/loaders/BarLoader';
 import { useHeaderHeight } from '../../../../../constants/common';
 import { DAO_ROUTES } from '../../../../../constants/routes';
 import { useCurrentDAOKey } from '../../../../../hooks/DAO/useCurrentDAOKey';
+import useLockedToken from '../../../../../hooks/DAO/useLockedToken';
 import { useFilterSpamTokens } from '../../../../../hooks/utils/useFilterSpamTokens';
 import { analyticsEvents } from '../../../../../insights/analyticsEvents';
 import { useDAOStore } from '../../../../../providers/App/AppProvider';
@@ -27,6 +28,7 @@ import {
   CreateProposalSteps,
   CreateSablierProposalForm,
 } from '../../../../../types';
+import { VotesERC20LockableV1Abi } from '../../../../../assets/abi/VotesERC20LockableV1';
 
 export function SafeSablierProposalCreatePage() {
   useEffect(() => {
@@ -46,6 +48,7 @@ export function SafeSablierProposalCreatePage() {
   const { t } = useTranslation('proposal');
   const navigate = useNavigate();
   const { proposalMetadata: actionsProposalMetadata } = useProposalActionsStore();
+  const { loadTokenState } = useLockedToken();
 
   const prepareProposalData = useCallback(
     async (values: CreateProposalForm | CreateSablierProposalForm) => {
@@ -60,8 +63,11 @@ export function SafeSablierProposalCreatePage() {
       const calldatas: Hash[] = [];
 
       const groupedStreams = groupBy(streams, 'tokenAddress');
+      const tokenStateOfStreams = await Promise.allSettled(
+        Object.keys(groupedStreams).map(token => loadTokenState(token as Address, sablierV2Batch)),
+      );
 
-      Object.keys(groupedStreams).forEach(token => {
+      Object.keys(groupedStreams).forEach((token, index) => {
         const tokenAddress = getAddress(token);
         const tokenStreams = groupedStreams[token];
         const approvedTotal = tokenStreams.reduce(
@@ -77,6 +83,21 @@ export function SafeSablierProposalCreatePage() {
         targets.push(tokenAddress);
         txValues.push(0n);
         calldatas.push(approveCalldata);
+
+        const tokenStatePromiseResult = tokenStateOfStreams[index];
+        if (
+          tokenStatePromiseResult.status === 'fulfilled' &&
+          tokenStatePromiseResult.value.needWhitelist
+        ) {
+          const whitelistCalldata = encodeFunctionData({
+            abi: VotesERC20LockableV1Abi,
+            functionName: 'whitelist',
+            args: [sablierV2Batch, true],
+          });
+          targets.push(tokenAddress);
+          txValues.push(0n);
+          calldatas.push(whitelistCalldata);
+        }
 
         const createStreamsCalldata = encodeFunctionData({
           abi: SablierV2BatchAbi,
