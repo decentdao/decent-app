@@ -31,6 +31,7 @@ export const BACKGROUND_SEMI_TRANSPARENT = '#16121980';
 export const NEUTRAL_2_82_TRANSPARENT = '#221D25D6';
 export const NEUTRAL_2_50_TRANSPARENT = '#221D2580';
 export const COLOR_TEXT_SUCCESS = '#59CA9C';
+export const COLOR_CHARCOAL_300 = '#ACA1B2';
 export const COLOR_YELLOW_1 = '#F5E18D';
 export const COLOR_YELLOW_2 = '#5D551B';
 export const SEXY_BOX_SHADOW_T_T =

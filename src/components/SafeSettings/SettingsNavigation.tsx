@@ -127,6 +127,7 @@ function SettingsNavigationItem({
       _hover={{ bgColor: 'neutral-3' }}
       bg={currentItem === item ? 'white-alpha-04' : 'transparent'}
       p={{ base: 0, md: '0.5rem' }}
+      cursor="pointer"
     >
       <Flex
         alignItems="center"
