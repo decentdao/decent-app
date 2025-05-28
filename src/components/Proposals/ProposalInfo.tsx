@@ -12,6 +12,7 @@ import {
   ExtendedSnapshotProposal,
   FractalProposal,
   FractalProposalState,
+  GovernanceType,
   MultisigProposal,
 } from '../../types';
 import { ActivityDescription } from '../Activity/ActivityDescription';
@@ -24,6 +25,26 @@ import { ProposalCountdown } from '../ui/proposal/ProposalCountdown';
 import ProposalExecutableCode from '../ui/proposal/ProposalExecutableCode';
 import CeleryButtonWithIcon from '../ui/utils/CeleryButtonWithIcon';
 import { MultisigConflictingProposals } from './MultisigProposalDetails/MultisigConflictingProposals';
+
+function NonceLabel({ nonce }: { nonce: number | undefined }) {
+  const { t } = useTranslation('proposal');
+  const { daoKey } = useCurrentDAOKey();
+  const { governance } = useDAOStore({ daoKey });
+  const isMultisig = governance.type === GovernanceType.MULTISIG;
+
+  if (!isMultisig || nonce === undefined) return null;
+  return (
+    <Text
+      mb={2}
+      textStyle="labels-large"
+      color="neutral-7"
+    >
+      {t('nonceLabel', {
+        number: nonce,
+      })}
+    </Text>
+  );
+}
 
 export function ProposalInfo({
   proposal,
@@ -117,14 +138,7 @@ export function ProposalInfo({
           gap={4}
           alignItems="center"
         >
-          <Text
-            textStyle="labels-large"
-            color="neutral-7"
-          >
-            {t('nonceLabel', {
-              number: (proposal as MultisigProposal).nonce,
-            })}
-          </Text>
+          <NonceLabel nonce={(proposal as MultisigProposal).nonce} />
           <SignerThresholdBadge
             numberOfConfirmedSigners={(proposal as MultisigProposal).confirmations?.length}
             proposalThreshold={(proposal as MultisigProposal).signersThreshold}

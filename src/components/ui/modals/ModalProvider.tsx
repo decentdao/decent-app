@@ -76,6 +76,7 @@ export type ModalPropsTypes = {
   };
   [ModalType.ADD_CREATE_PROPOSAL_PERMISSION]: {
     formikContext: FormikContextType<SafeSettingsEdits>;
+    votingStrategyAddress: Address | null;
   };
   [ModalType.CONFIRM_DELETE_STRATEGY]: {};
   [ModalType.CONFIRM_URL]: { url: string };
@@ -321,12 +322,18 @@ const getModalData = (args: {
         <AddCreateProposalPermissionModal
           closeModal={popModal}
           formikContext={current.props.formikContext}
+          votingStrategyAddress={current.props.votingStrategyAddress}
         />
       );
       modalSize = 'xl';
       break;
     case ModalType.CONFIRM_DELETE_STRATEGY:
-      modalContent = <ConfirmDeleteStrategyModal onClose={popModal} />;
+      modalContent = (
+        <ConfirmDeleteStrategyModal
+          onClose={popModal}
+          closeAllModals={closeAll}
+        />
+      );
       break;
     case ModalType.SEND_ASSETS:
       modalContent = (
