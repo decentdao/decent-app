@@ -104,7 +104,7 @@ function ConfirmRejectProposalAdditionalContent() {
       <Flex
         alignItems="center"
         gap="0.5rem"
-        color="yellow-0"
+        color="color-yellow-200"
         justifyContent="center"
         my="1rem"
         pt="1rem"

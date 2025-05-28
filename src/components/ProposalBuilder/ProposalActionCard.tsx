@@ -235,7 +235,7 @@ export function ProposalActionCard({
           isAddAction || isEditAction
             ? 'color-neutral-950'
             : isDeleteAction
-              ? 'red-2'
+              ? 'color-error-900'
               : 'color-neutral-900'
         }
       >
