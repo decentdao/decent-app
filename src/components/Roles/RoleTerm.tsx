@@ -109,8 +109,8 @@ function RoleTermHeaderStatus({
       },
       revoked: {
         text: t('revoked'),
-        textColor: 'red-1',
-        iconColor: 'red-1',
+        textColor: 'color-error-400',
+        iconColor: 'color-error-400',
       },
     };
 

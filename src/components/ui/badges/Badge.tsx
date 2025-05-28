@@ -42,9 +42,9 @@ const BADGE_MAPPING: Record<
   },
   [FractalProposalState.FAILED]: {
     tooltipKey: 'stateFailedTip',
-    bg: 'red-0',
-    textColor: 'red-4',
-    _hover: { bg: 'red--1', textColor: 'red-4' },
+    bg: 'color-error-500',
+    textColor: 'color-error-50',
+    _hover: { bg: 'color-error-800', textColor: 'color-error-50' },
   },
   [FractalProposalState.TIMELOCKABLE]: {
     tooltipKey: 'stateTimelockableTip',
@@ -66,15 +66,15 @@ const BADGE_MAPPING: Record<
   },
   [FractalProposalState.REJECTED]: {
     tooltipKey: 'stateRejectedTip',
-    bg: 'red-0',
-    textColor: 'red-4',
-    _hover: { bg: 'red--1', textColor: 'red-4' },
+    bg: 'color-error-500',
+    textColor: 'color-error-50',
+    _hover: { bg: 'color-error-800', textColor: 'color-error-50' },
   },
   [FractalProposalState.PENDING]: {
     tooltipKey: 'statePendingTip',
-    bg: 'yellow-0',
+    bg: 'color-yellow-200',
     textColor: 'color-black',
-    _hover: { bg: 'yellow-0', textColor: 'yellow--2' },
+    _hover: { bg: 'color-yellow-200', textColor: 'color-yellow-950' },
   },
   [FractalProposalState.CLOSED]: {
     tooltipKey: 'stateClosedTip',
@@ -100,9 +100,9 @@ const BADGE_MAPPING: Record<
     _hover: { bg: 'color-neutral-950', textColor: 'color-neutral-300' },
   },
   ownerRejected: {
-    bg: 'red-0',
-    textColor: 'red-4',
-    _hover: { bg: 'red--1', textColor: 'red-4' },
+    bg: 'color-error-500',
+    textColor: 'color-error-50',
+    _hover: { bg: 'color-error-800', textColor: 'color-error-50' },
   },
 };
 

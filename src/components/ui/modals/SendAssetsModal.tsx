@@ -180,7 +180,7 @@ export function SendAssetsModal({
                           placeholder="0"
                           maxValue={BigInt(values.selectedAsset.balance)}
                           isInvalid={overDraft}
-                          errorBorderColor="red-0"
+                          errorBorderColor="color-error-500"
                         />
                       </LabelWrapper>
                     </Box>
@@ -196,7 +196,7 @@ export function SendAssetsModal({
                 marginTop="0.75rem"
               >
                 <Text
-                  color={overDraft ? 'red-0' : 'color-neutral-300'}
+                  color={overDraft ? 'color-error-500' : 'color-neutral-300'}
                   textStyle="labels-large"
                   as="span"
                 >

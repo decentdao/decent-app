@@ -133,7 +133,7 @@ export function AddCreateProposalPermissionModal({
                 rightIcon={<Trash size={24} />}
                 padding={0}
                 onClick={openConfirmDeleteStrategyModal}
-                color="red-1"
+                color="color-error-400"
               >
                 {t('delete', { ns: 'common' })}
               </Button>
@@ -173,7 +173,7 @@ export function AddCreateProposalPermissionModal({
               <IconButton
                 size="button-md"
                 variant="ghost"
-                color="red-1"
+                color="color-error-400"
                 icon={<Trash size={24} />}
                 aria-label={t('delete', { ns: 'common' })}
                 onClick={openConfirmDeleteStrategyModal}

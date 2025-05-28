@@ -231,7 +231,7 @@ export function AirdropModal({
                 marginTop="0.75rem"
               >
                 <Text
-                  color={overDraft ? 'red-0' : 'color-neutral-300'}
+                  color={overDraft ? 'color-error-500' : 'color-neutral-300'}
                   textStyle="labels-large"
                   as="span"
                 >
@@ -323,7 +323,7 @@ export function AirdropModal({
                               BigInt(recipient.amount.bigintValue || 0n)
                             }
                             isInvalid={overDraft}
-                            errorBorderColor="red-0"
+                            errorBorderColor="color-error-500"
                           />
                         </LabelWrapper>
                         {/* Remove parameter button */}

@@ -122,7 +122,7 @@ export function AirdropAction({
           </Text>
         </Flex>
         <Button
-          color="red-0"
+          color="color-error-500"
           variant="tertiary"
           size="sm"
           onClick={onRemove}
@@ -167,7 +167,7 @@ export function TransactionBuilderAction({
           </Text>
         </Flex>
         <Button
-          color="red-0"
+          color="color-error-500"
           variant="tertiary"
           size="sm"
           onClick={onRemove}
@@ -235,7 +235,7 @@ export function ProposalActionCard({
           isAddAction || isEditAction
             ? 'color-neutral-950'
             : isDeleteAction
-              ? 'red-2'
+              ? 'color-error-900'
               : 'color-neutral-900'
         }
       >
@@ -245,7 +245,7 @@ export function ProposalActionCard({
         >
           <Icon
             as={isAddAction ? CheckSquare : isEditAction ? PencilWithLineIcon : Trash}
-            color={isEditAction || isAddAction ? 'color-neutral-300' : 'red-1'}
+            color={isEditAction || isAddAction ? 'color-neutral-300' : 'color-error-400'}
           />
           {action.content}
         </Flex>
@@ -255,7 +255,7 @@ export function ProposalActionCard({
         icon={<Trash />}
         variant="ghost"
         size="icon-sm"
-        color="red-1"
+        color="color-error-400"
         onClick={() => removeAction(index)}
       />
     </Flex>

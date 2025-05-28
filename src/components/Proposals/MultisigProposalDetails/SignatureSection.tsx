@@ -106,7 +106,7 @@ function getTriggerButtonColor(
   }
 
   if (rejectionTimestamp) {
-    return 'red-1';
+    return 'color-error-400';
   }
 
   return 'white-0';
@@ -346,7 +346,7 @@ export function SignatureSection({ proposal }: { proposal: MultisigProposal }) {
             renderer: () => (
               <SignatureOption
                 label="reject"
-                color="red-1"
+                color="color-error-400"
                 isDisabled={!!userRejectionProposalConfirmation}
                 menuItemOnClick={() =>
                   showConfirmRejectProposalModal

@@ -152,19 +152,19 @@ function AddSignerModal({
                 mt={6}
                 p="1rem"
                 border="1px"
-                borderColor="yellow--1"
-                bg="yellow--2"
+                borderColor="color-yellow-800"
+                bg="color-yellow-950"
                 borderRadius="0.25rem"
                 alignItems="center"
                 gap="1rem"
               >
                 <Icon
-                  color="yellow-0"
+                  color="color-yellow-200"
                   as={WarningCircle}
                   boxSize="1.5rem"
                 />
                 <Text
-                  color="yellow-0"
+                  color="color-yellow-200"
                   whiteSpace="pre-wrap"
                 >
                   {t('updateSignerWarning', { ns: 'modals' })}

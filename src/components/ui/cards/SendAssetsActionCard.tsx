@@ -36,7 +36,7 @@ export function SendAssetsActionCard({
           <Text color="color-lilac-100">{displayName}</Text>
         </Flex>
         <Button
-          color="red-0"
+          color="color-error-500"
           variant="tertiary"
           size="sm"
           onClick={onRemove}

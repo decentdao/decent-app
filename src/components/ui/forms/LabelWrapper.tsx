@@ -57,7 +57,7 @@ function LabelWrapper({
             <Flex gap="0.25rem">
               <Image src="/images/input-error.svg" />
               <Text
-                color="red-0"
+                color="color-error-500"
                 mt="0.2rem"
                 mb="0.25rem"
               >
