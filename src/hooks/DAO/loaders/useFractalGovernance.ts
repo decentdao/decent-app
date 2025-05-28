@@ -1,11 +1,11 @@
 import { useEffect, useRef } from 'react';
 import { createDecentSubgraphClient } from '../../../graphql';
 import { DAOQuery, DAOQueryResponse } from '../../../graphql/DAOQueries';
-import { useStore } from '../../../providers/App/AppProvider';
+import useFeatureFlag from '../../../helpers/environmentFeatureFlags';
+import { useDAOStore } from '../../../providers/App/AppProvider';
 import { FractalGovernanceAction } from '../../../providers/App/governance/action';
 import useIPFSClient from '../../../providers/App/hooks/useIPFSClient';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
-import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
 import { GovernanceType, ProposalTemplate } from '../../../types';
 import { useCurrentDAOKey } from '../useCurrentDAOKey';
 import { useERC20LinearStrategy } from './governance/useERC20LinearStrategy';
@@ -22,8 +22,8 @@ export const useFractalGovernance = () => {
     action,
     governance: { type },
     guardContracts: { isGuardLoaded },
-  } = useStore({ daoKey });
-  const { safe } = useDaoInfoStore();
+    node: { safe },
+  } = useDAOStore({ daoKey });
   const { getConfigByChainId, chain } = useNetworkConfigStore();
 
   const safeAddress = safe?.address;
@@ -35,11 +35,12 @@ export const useFractalGovernance = () => {
   const { loadLockedVotesToken } = useLockRelease({});
   const loadERC721Tokens = useERC721Tokens();
   const ipfsClient = useIPFSClient();
+  const storeFeatureEnabled = useFeatureFlag('flag_store_v2');
 
   const subgraphLoadKey = useRef<string>();
   useEffect(() => {
     const getSubgraphData = async () => {
-      if (!safeAddress) return;
+      if (!safeAddress || storeFeatureEnabled) return;
 
       try {
         const client = createDecentSubgraphClient(getConfigByChainId(chain.id));
@@ -122,7 +123,7 @@ export const useFractalGovernance = () => {
     if (!safeAddress) {
       subgraphLoadKey.current = undefined;
     }
-  }, [action, chain.id, getConfigByChainId, ipfsClient, safeAddress]);
+  }, [action, chain.id, getConfigByChainId, ipfsClient, safeAddress, storeFeatureEnabled]);
 
   useEffect(() => {
     const {
@@ -134,6 +135,8 @@ export const useFractalGovernance = () => {
       linearVotingErc20WithHatsWhitelistingAddress,
       linearVotingErc721WithHatsWhitelistingAddress,
     } = governanceContracts;
+
+    if (storeFeatureEnabled) return;
 
     if (isLoaded && !type) {
       if (moduleAzoriusAddress) {
@@ -171,17 +174,24 @@ export const useFractalGovernance = () => {
     loadERC721Tokens,
     action,
     type,
+    storeFeatureEnabled,
   ]);
 
   const proposalsLoadKey = useRef<string>();
   useEffect(() => {
     const newLoadKey = safeAddress || '0x';
-    if (type && safeAddress && safeAddress !== proposalsLoadKey.current && isGuardLoaded) {
+    if (
+      type &&
+      safeAddress &&
+      safeAddress !== proposalsLoadKey.current &&
+      isGuardLoaded &&
+      !storeFeatureEnabled
+    ) {
       proposalsLoadKey.current = newLoadKey;
       loadDAOProposals();
     }
     if (!type || !safeAddress) {
       proposalsLoadKey.current = undefined;
     }
-  }, [type, loadDAOProposals, isGuardLoaded, safeAddress]);
+  }, [type, loadDAOProposals, isGuardLoaded, safeAddress, storeFeatureEnabled]);
 };

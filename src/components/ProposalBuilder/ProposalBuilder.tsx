@@ -6,17 +6,19 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { DAO_ROUTES } from '../../constants/routes';
+import useFeatureFlag from '../../helpers/environmentFeatureFlags';
 import { logError } from '../../helpers/errorLogging';
 import useSubmitProposal from '../../hooks/DAO/proposal/useSubmitProposal';
 import { useCurrentDAOKey } from '../../hooks/DAO/useCurrentDAOKey';
 import useCreateProposalSchema from '../../hooks/schemas/proposalBuilder/useCreateProposalSchema';
 import { useUnsavedChangesBlocker } from '../../hooks/useUnsavedChangesBlocker';
 import { useCanUserCreateProposal } from '../../hooks/utils/useCanUserSubmitProposal';
-import { ActionsExperience } from '../../pages/dao/proposals/actions/new/ActionsExperience';
-import { useStore } from '../../providers/App/AppProvider';
+import {
+  ActionsExperience,
+  ActionsExperienceV1,
+} from '../../pages/dao/proposals/actions/new/ActionsExperience';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
 import { useProposalActionsStore } from '../../store/actions/useProposalActionsStore';
-import { useDaoInfoStore } from '../../store/daoInfo/useDaoInfoStore';
 import { BigIntValuePair, CreateProposalSteps, ProposalExecuteData } from '../../types';
 import {
   CreateProposalForm,
@@ -24,47 +26,11 @@ import {
   CreateSablierProposalForm,
   Stream,
 } from '../../types/proposalBuilder';
-import { CustomNonceInput } from '../ui/forms/CustomNonceInput';
 import { Crumb } from '../ui/page/Header/Breadcrumbs';
 import PageHeader from '../ui/page/Header/PageHeader';
 import ProposalDetails from './ProposalDetails';
 import ProposalMetadata, { ProposalMetadataTypeProps } from './ProposalMetadata';
 import StepButtons from './StepButtons';
-
-export function ShowNonceInputOnMultisig({
-  nonce,
-  nonceOnChange,
-}: {
-  nonce: number | undefined;
-  nonceOnChange: (nonce?: string) => void;
-}) {
-  const { daoKey } = useCurrentDAOKey();
-  const {
-    governance: { isAzorius },
-  } = useStore({ daoKey });
-
-  if (isAzorius) {
-    return null;
-  }
-
-  return (
-    <Flex
-      alignItems="center"
-      justifyContent="space-between"
-      marginBottom="2rem"
-      rounded="lg"
-      p="1.5rem"
-      bg="neutral-2"
-    >
-      <CustomNonceInput
-        nonce={nonce}
-        onChange={nonceOnChange}
-        align="end"
-        renderTrimmed={false}
-      />
-    </Flex>
-  );
-}
 
 interface ProposalBuilderProps {
   pageHeaderTitle: string;
@@ -112,9 +78,9 @@ export function ProposalBuilder({
 }: ProposalBuilderProps) {
   const navigate = useNavigate();
   const { t } = useTranslation(['proposalTemplate', 'proposal']);
+  const proposalV1FeatureEnabled = useFeatureFlag('flag_proposal_v1');
   const [currentStep, setCurrentStep] = useState<CreateProposalSteps>(CreateProposalSteps.METADATA);
-  const { safe } = useDaoInfoStore();
-  const safeAddress = safe?.address;
+  const { safeAddress } = useCurrentDAOKey();
 
   const { resetActions } = useProposalActionsStore();
   const { addressPrefix } = useNetworkConfigStore();
@@ -156,7 +122,7 @@ export function ProposalBuilder({
           if (proposalData) {
             submitProposal({
               proposalData,
-              nonce: values?.nonce,
+              nonce: values?.proposalMetadata?.nonce,
               pendingToastMessage: t('proposalCreatePendingToastMessage', { ns: 'proposal' }),
               successToastMessage: t('proposalCreateSuccessToastMessage', { ns: 'proposal' }),
               failedToastMessage: t('proposalCreateFailureToastMessage', { ns: 'proposal' }),
@@ -173,9 +139,8 @@ export function ProposalBuilder({
         const {
           handleSubmit,
           values: {
-            proposalMetadata: { title, description },
+            proposalMetadata: { title, description, nonce },
             transactions,
-            nonce,
           },
           errors,
         } = formikProps;
@@ -185,16 +150,28 @@ export function ProposalBuilder({
         }
 
         const trimmedTitle = title.trim();
+        let createProposalButtonDisabled = false;
 
-        const noTransactionsOrStreams =
-          transactions.length === 0 &&
-          (formikProps.values as CreateSablierProposalForm).streams?.length === 0;
-        const createProposalButtonDisabled =
-          !canUserCreateProposal ||
+        // check sablier streams length if details are available
+        if (streamsDetails !== null) {
+          if ((formikProps.values as CreateSablierProposalForm).streams?.length === 0) {
+            createProposalButtonDisabled = true;
+          }
+        } else {
+          // otherwise check transactions length
+          if (transactions.length === 0) {
+            createProposalButtonDisabled = true;
+          }
+        }
+        // check form errors, title, description and pending create tx
+        if (
           Object.keys(formikProps.errors).length > 0 ||
           !trimmedTitle ||
-          noTransactionsOrStreams ||
-          pendingCreateTx;
+          !description ||
+          pendingCreateTx
+        ) {
+          createProposalButtonDisabled = true;
+        }
 
         const renderButtons = (step: CreateProposalSteps) => {
           const buttons = stepButtons({
@@ -244,16 +221,18 @@ export function ProposalBuilder({
                             typeProps={proposalMetadataTypeProps}
                             {...formikProps}
                           />
-                          <ShowNonceInputOnMultisig
-                            nonce={nonce}
-                            nonceOnChange={newNonce => formikProps.setFieldValue('nonce', newNonce)}
-                          />
                         </>
                       ) : (
                         <>{mainContent(formikProps, pendingCreateTx, nonce, currentStep)}</>
                       )}
                     </Box>
-                    {showActionsExperience ? <ActionsExperience /> : null}
+                    {showActionsExperience ? (
+                      proposalV1FeatureEnabled ? (
+                        <ActionsExperienceV1 />
+                      ) : (
+                        <ActionsExperience />
+                      )
+                    ) : null}
                     <StepButtons
                       renderButtons={renderButtons}
                       currentStep={currentStep}

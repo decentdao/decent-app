@@ -14,9 +14,8 @@ import useSnapshotProposal from '../../../../hooks/DAO/loaders/snapshot/useSnaps
 import { useGetMetadata } from '../../../../hooks/DAO/proposal/useGetMetadata';
 import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
 import { analyticsEvents } from '../../../../insights/analyticsEvents';
-import { useStore } from '../../../../providers/App/AppProvider';
+import { useDAOStore } from '../../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../../providers/NetworkConfig/useNetworkConfigStore';
-import { useDaoInfoStore } from '../../../../store/daoInfo/useDaoInfoStore';
 import { AzoriusProposal, SnapshotProposal } from '../../../../types';
 
 export function SafeProposalDetailsPage() {
@@ -28,8 +27,8 @@ export function SafeProposalDetailsPage() {
   const { daoKey } = useCurrentDAOKey();
   const {
     governance: { proposals, loadingProposals, allProposalsLoaded, isAzorius },
-  } = useStore({ daoKey });
-  const { safe } = useDaoInfoStore();
+    node: { safe },
+  } = useDAOStore({ daoKey });
   const { addressPrefix } = useNetworkConfigStore();
   const { proposalId } = useParams();
 

@@ -9,9 +9,8 @@ import { EntryPoint07Abi } from '../../../assets/abi/EntryPoint07Abi';
 import { ModalType } from '../../../components/ui/modals/ModalProvider';
 import { useDecentModal } from '../../../components/ui/modals/useDecentModal';
 import useFeatureFlag from '../../../helpers/environmentFeatureFlags';
-import { useStore } from '../../../providers/App/AppProvider';
+import { useDAOStore } from '../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
-import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
 import { fetchMaxPriorityFeePerGas } from '../../../utils/gaslessVoting';
 import useNetworkPublicClient from '../../useNetworkPublicClient';
 import { useNetworkWalletClient } from '../../useNetworkWalletClient';
@@ -28,7 +27,8 @@ const useCastVote = (proposalId: string, strategy: Address) => {
       linearVotingErc721Address,
       linearVotingErc721WithHatsWhitelistingAddress,
     },
-  } = useStore({ daoKey });
+    governance: { paymasterAddress },
+  } = useDAOStore({ daoKey });
   const {
     contracts: { accountAbstraction },
     rpcEndpoint,
@@ -37,7 +37,7 @@ const useCastVote = (proposalId: string, strategy: Address) => {
 
   const [contractCall, castVotePending] = useTransaction();
   const [castGaslessVotePending, setCastGaslessVotePending] = useState(false);
-  const [canCastGaslessVote, setCanCastGaslessVote] = useState(false);
+  const [canCastGaslessVote, setCanCastGaslessVote] = useState<boolean | undefined>();
 
   const { remainingTokenIds, remainingTokenAddresses } = useUserERC721VotingTokens(
     null,
@@ -160,8 +160,6 @@ const useCastVote = (proposalId: string, strategy: Address) => {
       strategy,
     ],
   );
-
-  const { paymasterAddress } = useDaoInfoStore();
   const publicClient = useNetworkPublicClient();
 
   const prepareGaslessVoteOperation = useCallback(async () => {
@@ -247,6 +245,10 @@ const useCastVote = (proposalId: string, strategy: Address) => {
         return;
       }
 
+      if (typeof canCastGaslessVote === 'boolean') {
+        return;
+      }
+
       const entryPoint = getContract({
         address: accountAbstraction.entryPointv07,
         abi: EntryPoint07Abi,
@@ -266,7 +268,13 @@ const useCastVote = (proposalId: string, strategy: Address) => {
     estimateGaslessVoteGas().catch(() => {
       setCanCastGaslessVote(false);
     });
-  }, [accountAbstraction, paymasterAddress, prepareGaslessVoteOperation, publicClient]);
+  }, [
+    accountAbstraction,
+    canCastGaslessVote,
+    paymasterAddress,
+    prepareGaslessVoteOperation,
+    publicClient,
+  ]);
 
   const gaslessVoteLoadingModal = useDecentModal(ModalType.GASLESS_VOTE_LOADING);
   const closeModal = useDecentModal(ModalType.NONE);

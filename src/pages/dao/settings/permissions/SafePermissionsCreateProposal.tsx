@@ -34,10 +34,9 @@ import useFeatureFlag from '../../../../helpers/environmentFeatureFlags';
 import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
 import useNetworkPublicClient from '../../../../hooks/useNetworkPublicClient';
 import { generateContractByteCodeLinear } from '../../../../models/helpers/utils';
-import { useStore } from '../../../../providers/App/AppProvider';
+import { useDAOStore } from '../../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../../providers/NetworkConfig/useNetworkConfigStore';
 import { useProposalActionsStore } from '../../../../store/actions/useProposalActionsStore';
-import { useDaoInfoStore } from '../../../../store/daoInfo/useDaoInfoStore';
 import {
   AzoriusGovernance,
   BigIntValuePair,
@@ -73,8 +72,8 @@ export function SafePermissionsCreateProposal() {
       linearVotingErc721WithHatsWhitelistingAddress,
       moduleAzoriusAddress,
     },
-  } = useStore({ daoKey });
-  const { safe } = useDaoInfoStore();
+    node: { safe },
+  } = useDAOStore({ daoKey });
   const azoriusGovernance = governance as AzoriusGovernance;
   const openSelectAddPermissionModal = useDecentModal(ModalType.ADD_PERMISSION);
   const openConfirmDeleteStrategyModal = useDecentModal(ModalType.CONFIRM_DELETE_STRATEGY);
@@ -396,6 +395,7 @@ export function SafePermissionsCreateProposal() {
         <ModalBase
           isOpen
           onClose={handleClose}
+          closeOnOverlayClick
         >
           <Flex
             height="376px" // @dev - fixed height from design

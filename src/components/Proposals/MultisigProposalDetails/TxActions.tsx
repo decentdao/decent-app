@@ -17,10 +17,9 @@ import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import { useNetworkWalletClient } from '../../../hooks/useNetworkWalletClient';
 import { useAsyncRequest } from '../../../hooks/utils/useAsyncRequest';
 import { useTransaction } from '../../../hooks/utils/useTransaction';
-import { useStore } from '../../../providers/App/AppProvider';
+import { useDAOStore } from '../../../providers/App/AppProvider';
 import { useSafeAPI } from '../../../providers/App/hooks/useSafeAPI';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
-import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
 import { FractalProposalState, MultisigProposal } from '../../../types';
 import { DecentTooltip } from '../../ui/DecentTooltip';
 import ContentBox from '../../ui/containers/ContentBox';
@@ -106,10 +105,10 @@ export function TxActions({ proposal }: { proposal: MultisigProposal }) {
   const {
     guardContracts: { freezeGuardContractAddress },
     governance: { proposals },
-  } = useStore({ daoKey });
+    node: { safe },
+  } = useDAOStore({ daoKey });
   const userAccount = useAccount();
   const safeAPI = useSafeAPI();
-  const { safe } = useDaoInfoStore();
   const { submitRejectionMultisigProposal } = useSubmitProposal();
 
   const [isSubmitDisabled, setIsSubmitDisabled] = useState(false);

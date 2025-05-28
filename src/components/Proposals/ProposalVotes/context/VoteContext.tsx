@@ -15,8 +15,7 @@ import useSnapshotProposal from '../../../../hooks/DAO/loaders/snapshot/useSnaps
 import useUserERC721VotingTokens from '../../../../hooks/DAO/proposal/useUserERC721VotingTokens';
 import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
 import useNetworkPublicClient from '../../../../hooks/useNetworkPublicClient';
-import { useStore } from '../../../../providers/App/AppProvider';
-import { useDaoInfoStore } from '../../../../store/daoInfo/useDaoInfoStore';
+import { useDAOStore } from '../../../../providers/App/AppProvider';
 import {
   AzoriusGovernance,
   AzoriusProposal,
@@ -59,9 +58,11 @@ export function VoteContextProvider({
   const [hasVoted, setHasVoted] = useState(false);
   const [hasVotedLoading, setHasVotedLoading] = useState(false);
   const { daoKey } = useCurrentDAOKey();
-  const { governance } = useStore({ daoKey });
+  const {
+    governance,
+    node: { safe },
+  } = useDAOStore({ daoKey });
   const userAccount = useAccount();
-  const { safe } = useDaoInfoStore();
   const { loadVotingWeight, snapshotProposal } = useSnapshotProposal(proposal);
   const { remainingTokenIds } = useUserERC721VotingTokens(null, proposal.proposalId, true);
   const publicClient = useNetworkPublicClient();

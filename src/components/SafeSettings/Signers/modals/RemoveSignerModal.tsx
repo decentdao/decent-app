@@ -3,8 +3,9 @@ import { WarningCircle, WarningDiamond } from '@phosphor-icons/react';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Address } from 'viem';
+import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
 import { useNetworkEnsName } from '../../../../hooks/useNetworkEnsName';
-import { useDaoInfoStore } from '../../../../store/daoInfo/useDaoInfoStore';
+import { useDAOStore } from '../../../../providers/App/AppProvider';
 import { SENTINEL_MODULE } from '../../../../utils/address';
 import SupportTooltip from '../../../ui/badges/SupportTooltip';
 import { CustomNonceInput } from '../../../ui/forms/CustomNonceInput';
@@ -22,7 +23,10 @@ function RemoveSignerModal({
   signers: Address[];
   currentThreshold: number;
 }) {
-  const { safe } = useDaoInfoStore();
+  const { daoKey } = useCurrentDAOKey();
+  const {
+    node: { safe },
+  } = useDAOStore({ daoKey });
   const [thresholdOptions, setThresholdOptions] = useState<number[]>();
   const [prevSigner, setPrevSigner] = useState<Address>();
 

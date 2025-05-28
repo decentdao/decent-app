@@ -1,13 +1,18 @@
 import { Flex, useBreakpointValue } from '@chakra-ui/react';
 import { useTranslation } from 'react-i18next';
 import { Outlet, useLocation } from 'react-router-dom';
-import SettingsNavigation from '../../../components/SafeSettings/SettingsNavigation';
+import { SettingsNavigation } from '../../../components/SafeSettings/SettingsNavigation';
 import PageHeader from '../../../components/ui/page/Header/PageHeader';
-import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
+import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
+import { useDAOStore } from '../../../providers/App/AppProvider';
 
+/**  @deprecated */
 export function SafeSettingsPage() {
   const { t } = useTranslation(['settings']);
-  const { subgraphInfo } = useDaoInfoStore();
+  const { daoKey } = useCurrentDAOKey();
+  const {
+    node: { subgraphInfo },
+  } = useDAOStore({ daoKey });
   const location = useLocation();
   const paths = location.pathname.split('/');
   const isMobile = useBreakpointValue({ base: true, md: false });
@@ -27,7 +32,9 @@ export function SafeSettingsPage() {
         />
       )}
       <Flex flexDirection={{ base: 'column', md: 'row' }}>
-        {(!isMobile || isIndexSettingsPage) && <SettingsNavigation />}
+        {(!isMobile || isIndexSettingsPage) && (
+          <SettingsNavigation onSettingsNavigationClick={() => {}} />
+        )}
         {(!isMobile || (isMobile && !isIndexSettingsPage)) && <Outlet />}
       </Flex>
     </>

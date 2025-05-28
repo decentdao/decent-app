@@ -39,10 +39,9 @@ import { DAO_ROUTES } from '../../constants/routes';
 import { getRandomBytes } from '../../helpers';
 import useFeatureFlag from '../../helpers/environmentFeatureFlags';
 import { generateContractByteCodeLinear } from '../../models/helpers/utils';
-import { useStore } from '../../providers/App/AppProvider';
+import { useDAOStore } from '../../providers/App/AppProvider';
 import useIPFSClient from '../../providers/App/hooks/useIPFSClient';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
-import { useDaoInfoStore } from '../../store/daoInfo/useDaoInfoStore';
 import { useRolesStore } from '../../store/roles/useRolesStore';
 import {
   AzoriusGovernance,
@@ -101,8 +100,9 @@ export default function useCreateRoles() {
       linearVotingErc721WithHatsWhitelistingAddress,
       moduleAzoriusAddress,
     },
-  } = useStore({ daoKey });
-  const { safe, subgraphInfo, gaslessVotingEnabled, paymasterAddress } = useDaoInfoStore();
+    node: { safe, subgraphInfo },
+    governance: { gaslessVotingEnabled, paymasterAddress },
+  } = useDAOStore({ daoKey });
   const { hatsTree, hatsTreeId, getHat } = useRolesStore();
   const {
     addressPrefix,

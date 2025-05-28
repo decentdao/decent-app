@@ -1,8 +1,7 @@
 import { Box, Divider, Flex, HStack, Image, Text } from '@chakra-ui/react';
 import { useTranslation } from 'react-i18next';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
-import { useStore } from '../../../providers/App/AppProvider';
-import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
+import { useDAOStore } from '../../../providers/App/AppProvider';
 import { DefiBalance } from '../../../types';
 import { formatCoin, formatPercentage, formatUSD } from '../../../utils';
 import { DecentTooltip } from '../../ui/DecentTooltip';
@@ -50,9 +49,8 @@ export function DeFiRow({ asset }: { asset: DefiBalance }) {
   const { daoKey } = useCurrentDAOKey();
   const {
     treasury: { totalUsdValue },
-  } = useStore({ daoKey });
-
-  const { safe } = useDaoInfoStore();
+    node: { safe },
+  } = useDAOStore({ daoKey });
 
   // Really only used for etherscan link below. Will not work for non-ETH chains
   const isNativePosition =

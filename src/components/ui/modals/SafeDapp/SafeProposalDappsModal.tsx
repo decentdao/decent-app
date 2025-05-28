@@ -2,10 +2,11 @@ import * as amplitude from '@amplitude/analytics-browser';
 import { Box, CloseButton, Flex, Text } from '@chakra-ui/react';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import useFeatureFlag from '../../../../helpers/environmentFeatureFlags';
 import { useSupportedDapps } from '../../../../hooks/DAO/loaders/useSupportedDapps';
+import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
 import { analyticsEvents } from '../../../../insights/analyticsEvents';
 import { useNetworkConfigStore } from '../../../../providers/NetworkConfig/useNetworkConfigStore';
-import { useDaoInfoStore } from '../../../../store/daoInfo/useDaoInfoStore';
 import DappCard from '../../../ProposalDapps/DappCard';
 import NoDataCard from '../../containers/NoDataCard';
 import { InfoBoxLoader } from '../../loaders/InfoBoxLoader';
@@ -17,10 +18,10 @@ export function SafeProposalDappsModal({ onClose }: { onClose: () => void }) {
 
   const { t } = useTranslation(['proposalDapps']);
   const { chain } = useNetworkConfigStore();
-  const { safe } = useDaoInfoStore();
   const { dapps } = useSupportedDapps(chain.id);
+  const { safeAddress } = useCurrentDAOKey();
+  const devMode = useFeatureFlag('flag_dev');
 
-  const safeAddress = safe?.address;
   const loading = !dapps || !safeAddress;
 
   return (
@@ -53,6 +54,17 @@ export function SafeProposalDappsModal({ onClose }: { onClose: () => void }) {
         flexWrap="wrap"
         gap="1rem"
       >
+        {devMode && (
+          <DappCard
+            title="Custom dApp"
+            appUrl=""
+            iconUrl=""
+            description="A custom decentralized application URL provided by the user."
+            categories={['Custom']}
+            onClose={onClose}
+          />
+        )}
+
         {loading ? (
           <Box>
             <InfoBoxLoader />

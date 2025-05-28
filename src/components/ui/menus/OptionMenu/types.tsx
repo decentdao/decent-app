@@ -4,6 +4,7 @@ export interface IOption {
   onClick: () => void;
   isSelected?: boolean;
   renderer?: () => JSX.Element;
+  isDisabled?: boolean;
 }
 
 export interface IOptionsList {

@@ -13,8 +13,7 @@ import { Field, FieldAttributes, FieldProps } from 'formik';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
-import { useStore } from '../../../providers/App/AppProvider';
-import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
+import { useDAOStore } from '../../../providers/App/AppProvider';
 import { BigIntValuePair, GovernanceType, ICreationStepProps } from '../../../types';
 import { formatBigIntToHumanReadableString } from '../../../utils/numberFormats';
 import ContentBoxTitle from '../../ui/containers/ContentBox/ContentBoxTitle';
@@ -29,8 +28,10 @@ import useStepRedirect from '../hooks/useStepRedirect';
 function GuardDetails(props: ICreationStepProps) {
   const { values, isSubmitting, transactionPending, isSubDAO, setFieldValue, mode, errors } = props;
   const { daoKey } = useCurrentDAOKey();
-  const { governance } = useStore({ daoKey });
-  const { safe } = useDaoInfoStore();
+  const {
+    governance,
+    node: { safe },
+  } = useDAOStore({ daoKey });
   const { type } = governance;
   const [showCustomNonce, setShowCustomNonce] = useState<boolean>();
   const { t } = useTranslation(['daoCreate', 'common', 'proposal']);

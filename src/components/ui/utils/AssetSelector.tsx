@@ -5,9 +5,8 @@ import { useTranslation } from 'react-i18next';
 import { Address, getAddress } from 'viem';
 import { useBalance } from 'wagmi';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
-import { useStore } from '../../../providers/App/AppProvider';
+import { useDAOStore } from '../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
-import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
 import { formatCoin, formatUSD } from '../../../utils';
 import { DropdownMenu } from '../menus/DropdownMenu';
 
@@ -32,18 +31,18 @@ export function AssetSelector({
   onlyNativeToken,
 }: AssetSelectorProps) {
   const { t } = useTranslation(['roles', 'treasury', 'modals']);
-  const { safe } = useDaoInfoStore();
-
-  const { data: nativeTokenBalance } = useBalance({
-    address: safe?.address,
-  });
 
   const { getConfigByChainId, chain } = useNetworkConfigStore();
   const networkConfig = getConfigByChainId(chain.id);
   const { daoKey } = useCurrentDAOKey();
   const {
     treasury: { assetsFungible },
-  } = useStore({ daoKey });
+    node: { safe },
+  } = useDAOStore({ daoKey });
+
+  const { data: nativeTokenBalance } = useBalance({
+    address: safe?.address,
+  });
 
   const [selectedAssetIndex, setSelectedAssetIndex] = useState<number | null>(
     onlyNativeToken ? 0 : null,

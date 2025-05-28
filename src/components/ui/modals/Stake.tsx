@@ -5,9 +5,8 @@ import { useNavigate } from 'react-router-dom';
 import { DAO_ROUTES } from '../../../constants/routes';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import useLidoStaking from '../../../hooks/stake/lido/useLidoStaking';
-import { useStore } from '../../../providers/App/AppProvider';
+import { useDAOStore } from '../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
-import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
 import { BigIntValuePair, TokenBalance } from '../../../types';
 import { BigIntInput } from '../forms/BigIntInput';
 
@@ -15,8 +14,8 @@ export default function StakeModal({ close }: { close: () => void }) {
   const { daoKey } = useCurrentDAOKey();
   const {
     treasury: { assetsFungible },
-  } = useStore({ daoKey });
-  const { safe } = useDaoInfoStore();
+    node: { safe },
+  } = useDAOStore({ daoKey });
   const { addressPrefix } = useNetworkConfigStore();
   const navigate = useNavigate();
   const { t } = useTranslation('stake');

@@ -3,10 +3,11 @@ import { useTranslation } from 'react-i18next';
 import { Address, getAddress, isAddress } from 'viem';
 import { normalize } from 'viem/ens';
 import { AnyObject } from 'yup';
+import { useDAOStore } from '../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
-import { useDaoInfoStore } from '../../../store/daoInfo/useDaoInfoStore';
 import { AddressValidationMap, ERC721TokenConfig } from '../../../types';
 import { validateENSName } from '../../../utils/url';
+import { useCurrentDAOKey } from '../../DAO/useCurrentDAOKey';
 import { useNetworkEnsAddressAsync } from '../../useNetworkEnsAddress';
 
 export const useValidationAddress = () => {
@@ -20,7 +21,10 @@ export const useValidationAddress = () => {
   const addressValidationMap = useRef<AddressValidationMap>(new Map());
 
   const { t } = useTranslation(['daoCreate', 'common', 'modals']);
-  const { safe } = useDaoInfoStore();
+  const { daoKey } = useCurrentDAOKey();
+  const {
+    node: { safe },
+  } = useDAOStore({ daoKey });
   const { chain } = useNetworkConfigStore();
 
   const { getEnsAddress } = useNetworkEnsAddressAsync();

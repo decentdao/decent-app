@@ -1,8 +1,12 @@
 import { useEffect } from 'react';
-import { useDaoInfoStore } from '../../store/daoInfo/useDaoInfoStore';
+import { useDAOStore } from '../../providers/App/AppProvider';
+import { useCurrentDAOKey } from '../DAO/useCurrentDAOKey';
 
 export const usePageTitle = () => {
-  const { subgraphInfo } = useDaoInfoStore();
+  const { daoKey } = useCurrentDAOKey();
+  const {
+    node: { subgraphInfo },
+  } = useDAOStore({ daoKey });
   useEffect(() => {
     if (subgraphInfo?.daoName) {
       document.title = `${import.meta.env.VITE_APP_NAME} | ${subgraphInfo?.daoName}`;

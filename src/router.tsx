@@ -182,6 +182,7 @@ export const router = (addressPrefix: string, daoAddress: string | undefined) =>
               ],
             },
             {
+              // @todo: remove. Using modal instead
               path: DAO_ROUTES.settings.path,
               element: <SafeSettingsPage />,
               children: [

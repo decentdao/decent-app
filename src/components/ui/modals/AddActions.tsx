@@ -3,7 +3,7 @@ import { ArrowsDownUp, CraneTower, Plus, SquaresFour } from '@phosphor-icons/rea
 import { useTranslation } from 'react-i18next';
 import { DETAILS_BOX_SHADOW } from '../../../constants/common';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
-import { useStore } from '../../../providers/App/AppProvider';
+import { useDAOStore } from '../../../providers/App/AppProvider';
 import { useProposalActionsStore } from '../../../store/actions/useProposalActionsStore';
 import { ProposalActionType } from '../../../types';
 import { prepareSendAssetsActionData } from '../../../utils/dao/prepareSendAssetsActionData';
@@ -36,6 +36,7 @@ function ActionCard({
       _hover={!isDisabled ? { bg: 'neutral-3' } : undefined}
       _active={!isDisabled ? { bg: 'neutral-2' } : undefined}
       transition="all ease-out 300ms"
+      justifyContent="flex-start"
     >
       <Flex
         p="1.5rem"
@@ -73,7 +74,7 @@ export function AddActions() {
   const { daoKey } = useCurrentDAOKey();
   const {
     treasury: { assetsFungible },
-  } = useStore({ daoKey });
+  } = useDAOStore({ daoKey });
 
   const { t } = useTranslation(['actions', 'modals']);
   const { addAction } = useProposalActionsStore();

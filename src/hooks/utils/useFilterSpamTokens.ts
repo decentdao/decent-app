@@ -1,6 +1,6 @@
 import { useCallback, useMemo } from 'react';
 import { Address } from 'viem';
-import { useStore } from '../../providers/App/AppProvider';
+import { useDAOStore } from '../../providers/App/AppProvider';
 import { AzoriusGovernance, GovernanceType, TokenBalance } from '../../types';
 import { useCurrentDAOKey } from '../DAO/useCurrentDAOKey';
 
@@ -15,7 +15,7 @@ interface TokenListFilterOptions {
 export function useFilterSpamTokens(options: TokenListFilterOptions = {}) {
   const { includeNativeToken = false, includeZeroBalanceToken = false } = options;
   const { daoKey } = useCurrentDAOKey();
-  const { governance } = useStore({ daoKey });
+  const { governance } = useDAOStore({ daoKey });
   const voteTokens: Address[] = useMemo(() => {
     const tokens: Address[] = [];
     if (governance.type === GovernanceType.AZORIUS_ERC20) {
@@ -36,9 +36,13 @@ export function useFilterSpamTokens(options: TokenListFilterOptions = {}) {
   const tokenListFilter = useCallback(
     (tokens: TokenBalance[]) => {
       return tokens.filter(asset => {
-        const passSpamCheck = voteTokens.includes(asset.tokenAddress) || !asset.possibleSpam;
         const passNativeCheck = includeNativeToken || !asset.nativeToken;
         const passBalanceCheck = includeZeroBalanceToken || parseFloat(asset.balance) > 0;
+
+        const passSpamDetection = !asset.possibleSpam;
+        const passAsciiNameCheck = Array.from(asset.symbol).every(char => char.charCodeAt(0) < 128);
+        const passSpamCheck =
+          voteTokens.includes(asset.tokenAddress) || (passSpamDetection && passAsciiNameCheck);
 
         return passSpamCheck && passBalanceCheck && passNativeCheck;
       });

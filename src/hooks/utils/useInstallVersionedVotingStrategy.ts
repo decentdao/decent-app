@@ -19,9 +19,8 @@ import {
 } from '../../constants/params';
 import { getRandomBytes } from '../../helpers';
 import { generateContractByteCodeLinear, generateSalt } from '../../models/helpers/utils';
-import { useStore } from '../../providers/App/AppProvider';
+import { useDAOStore } from '../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
-import { useDaoInfoStore } from '../../store/daoInfo/useDaoInfoStore';
 import {
   AzoriusGovernance,
   ERC721TokenData,
@@ -34,11 +33,14 @@ import useNetworkPublicClient from '../useNetworkPublicClient';
 import useVotingStrategiesAddresses from './useVotingStrategiesAddresses';
 
 export const useInstallVersionedVotingStrategy = () => {
-  const { safe } = useDaoInfoStore();
+  const { daoKey } = useCurrentDAOKey();
+  const {
+    governance,
+    governanceContracts,
+    node: { safe },
+  } = useDAOStore({ daoKey });
 
   const safeAddress = safe?.address;
-  const { daoKey } = useCurrentDAOKey();
-  const { governance, governanceContracts } = useStore({ daoKey });
 
   const publicClient = useNetworkPublicClient();
   const { getVotingStrategies } = useVotingStrategiesAddresses();
