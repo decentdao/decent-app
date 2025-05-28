@@ -8,7 +8,7 @@ import breakpoints from './breakpoints';
 import colors, { semanticColors } from './colors';
 import components from './components';
 import styles from './global';
-import textStyles from './textStyle';
+import { textStyles } from './textStyle';
 
 const { definePartsStyle } = createMultiStyleConfigHelpers(modalAnatomy.keys);
 // @todo Menu button must be removed from the default components, there is some overriding going on.
