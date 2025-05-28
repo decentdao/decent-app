@@ -134,7 +134,7 @@ export function ConfirmRejectProposalModal({
         <Icon
           as={WarningCircle}
           boxSize="2rem"
-          color="lilac-0"
+          color="color-lilac-100"
         />
       }
       description={<ConfirmRejectProposalAdditionalContent />}
@@ -167,7 +167,7 @@ export function ConfirmExecutionModal({
         <Icon
           as={WarningCircle}
           boxSize="2rem"
-          color="lilac-0"
+          color="color-lilac-100"
         />
       }
       description={
