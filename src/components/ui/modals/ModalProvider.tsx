@@ -16,6 +16,7 @@ import { AirdropData, AirdropModal } from './AirdropModal/AirdropModal';
 import { ConfirmDeleteStrategyModal } from './ConfirmDeleteStrategyModal';
 import { ConfirmModifyGovernanceModal } from './ConfirmModifyGovernanceModal';
 import { ConfirmUrlModal } from './ConfirmUrlModal';
+import { ConfirmExecutionModal, ConfirmRejectProposalModal } from './ConfirmationModal';
 import { DelegateModal } from './DelegateModal';
 import ForkProposalTemplateModal from './ForkProposalTemplateModal';
 import { GaslessVoteFailedModal } from './GaslessVoting/GaslessVoteFailedModal';
@@ -61,6 +62,9 @@ export enum ModalType {
   DAPPS_BROWSER,
   DAPP_BROWSER,
   SAFE_SETTINGS,
+  CONFIRM_NONCE_EXECUTION,
+  CONFIRM_REJECT_PROPOSAL,
+  CONFIRM_EXECUTION,
 }
 
 export type ModalPropsTypes = {
@@ -72,6 +76,7 @@ export type ModalPropsTypes = {
   };
   [ModalType.ADD_CREATE_PROPOSAL_PERMISSION]: {
     formikContext: FormikContextType<SafeSettingsEdits>;
+    votingStrategyAddress: Address | null;
   };
   [ModalType.CONFIRM_DELETE_STRATEGY]: {};
   [ModalType.CONFIRM_URL]: { url: string };
@@ -135,6 +140,18 @@ export type ModalPropsTypes = {
     appUrl: string;
   };
   [ModalType.SAFE_SETTINGS]: {};
+  [ModalType.CONFIRM_NONCE_EXECUTION]: {
+    nonce: number | undefined;
+    continue: () => void;
+    cancel: () => void;
+  };
+  [ModalType.CONFIRM_REJECT_PROPOSAL]: {
+    submitRejection: () => void;
+  };
+  [ModalType.CONFIRM_EXECUTION]: {
+    nonce: number | undefined;
+    submitExecution: () => void;
+  };
 };
 
 export type ModalTypeWithProps = {
@@ -305,12 +322,18 @@ const getModalData = (args: {
         <AddCreateProposalPermissionModal
           closeModal={popModal}
           formikContext={current.props.formikContext}
+          votingStrategyAddress={current.props.votingStrategyAddress}
         />
       );
       modalSize = 'xl';
       break;
     case ModalType.CONFIRM_DELETE_STRATEGY:
-      modalContent = <ConfirmDeleteStrategyModal onClose={popModal} />;
+      modalContent = (
+        <ConfirmDeleteStrategyModal
+          onClose={popModal}
+          closeAllModals={closeAll}
+        />
+      );
       break;
     case ModalType.SEND_ASSETS:
       modalContent = (
@@ -417,6 +440,32 @@ const getModalData = (args: {
         backgroundColor: NEUTRAL_2_50_TRANSPARENT,
         padding: '0',
       };
+      break;
+
+    case ModalType.CONFIRM_REJECT_PROPOSAL:
+      modalContent = (
+        <ConfirmRejectProposalModal
+          submitRejection={() => {
+            current.props.submitRejection();
+            popModal();
+          }}
+          cancel={popModal}
+        />
+      );
+      modalSize = 'md';
+      break;
+    case ModalType.CONFIRM_EXECUTION:
+      modalContent = (
+        <ConfirmExecutionModal
+          nonce={current.props.nonce}
+          submitExecution={() => {
+            current.props.submitExecution();
+            popModal();
+          }}
+          cancel={popModal}
+        />
+      );
+      modalSize = 'md';
       break;
     case ModalType.NONE:
     default:

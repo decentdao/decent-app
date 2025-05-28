@@ -5,7 +5,7 @@ import { Execute } from '../../../assets/theme/custom/icons/Execute';
 import { Lock } from '../../../assets/theme/custom/icons/Lock';
 import { Vote } from '../../../assets/theme/custom/icons/Vote';
 import useSnapshotProposal from '../../../hooks/DAO/loaders/snapshot/useSnapshotProposal';
-import { FractalProposal, FractalProposalState } from '../../../types';
+import { FractalProposal, FractalProposalState, MultisigProposal } from '../../../types';
 import { DecentTooltip } from '../DecentTooltip';
 import { useProposalCountdown } from './useProposalCountdown';
 
@@ -25,23 +25,36 @@ export function ProposalCountdown({
   proposal,
   showIcon = true,
   textColor = 'color-white',
+  rejectionProposal,
 }: {
   proposal: FractalProposal;
+  rejectionProposal?: MultisigProposal;
   showIcon?: boolean;
   // custom text color and style
   textColor?: string;
 }) {
   const totalSecondsLeft = useProposalCountdown(proposal);
+  const rejectionTotalSecondsLeft = useProposalCountdown(
+    rejectionProposal ?? ({} as FractalProposal),
+  );
+
+  const timerSecondsLeft = totalSecondsLeft ?? rejectionTotalSecondsLeft;
   const { t } = useTranslation('proposal');
 
   const state: FractalProposalState | null = useMemo(() => proposal.state, [proposal]);
 
+  const rejectionState: FractalProposalState | null = useMemo(
+    () => (rejectionProposal?.state ?? null) as FractalProposalState | null,
+    [rejectionProposal],
+  );
+
   const { snapshotProposal } = useSnapshotProposal(proposal);
   const showCountdown =
-    !!totalSecondsLeft &&
-    totalSecondsLeft > 0 &&
+    !!timerSecondsLeft &&
+    timerSecondsLeft > 0 &&
     (state === FractalProposalState.ACTIVE ||
       state === FractalProposalState.TIMELOCKED ||
+      rejectionState === FractalProposalState.TIMELOCKED ||
       state === FractalProposalState.EXECUTABLE ||
       !!snapshotProposal);
 
@@ -66,10 +79,10 @@ export function ProposalCountdown({
           ? Execute
           : null;
 
-  const daysLeft = Math.floor(totalSecondsLeft / (60 * 60 * 24));
-  const hoursLeft = Math.floor((totalSecondsLeft / (60 * 60)) % 24);
-  const minutesLeft = Math.floor((totalSecondsLeft / 60) % 60);
-  const secondsLeft = Math.floor(totalSecondsLeft % 60);
+  const daysLeft = Math.floor(timerSecondsLeft / (60 * 60 * 24));
+  const hoursLeft = Math.floor((timerSecondsLeft / (60 * 60)) % 24);
+  const minutesLeft = Math.floor((timerSecondsLeft / 60) % 60);
+  const secondsLeft = Math.floor(timerSecondsLeft % 60);
 
   const showDays = daysLeft > 0;
   const showHours = showDays || hoursLeft > 0;
