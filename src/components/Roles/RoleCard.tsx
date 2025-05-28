@@ -73,7 +73,7 @@ export function AvatarAndRoleName({
               {t('activePayments')}
             </Text>
             <Box
-              bg="celery--2"
+              bg="color-green-500"
               color="neutral-3"
               borderColor="neutral-3"
               borderWidth="2px"

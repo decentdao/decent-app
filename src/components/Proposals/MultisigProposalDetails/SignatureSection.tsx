@@ -102,7 +102,7 @@ function getTriggerButtonColor(
     return approvalTimestamp > rejectionTimestamp ? 'green' : 'red';
   }
   if (approvalTimestamp) {
-    return 'celery-0';
+    return 'color-green-400';
   }
 
   if (rejectionTimestamp) {
@@ -334,7 +334,7 @@ export function SignatureSection({ proposal }: { proposal: MultisigProposal }) {
             renderer: () => (
               <SignatureOption
                 label="approve"
-                color="celery-0"
+                color="color-green-400"
                 isDisabled={!!userProposalConfirmation}
                 menuItemOnClick={() => signTransaction(transaction, proposalId)}
               />

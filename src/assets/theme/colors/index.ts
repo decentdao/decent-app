@@ -1,9 +1,4 @@
 export default {
-  'celery-0': '#caff8a',
-  'celery--2': '#acda76',
-  'celery--3': '#95bc66',
-  'celery--5': '#495d32',
-  'celery--6': '#2c381e',
   'cosmic-nebula-0': '#501464',
   'cosmic-nebula-4': '#c46de1',
   'cosmic-nebula-5': '#d493e9',
