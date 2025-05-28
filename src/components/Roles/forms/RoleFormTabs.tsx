@@ -62,7 +62,7 @@ export function RoleFormTabs({
         <Button
           variant="tertiary"
           width="min-content"
-          color="lilac-0"
+          color="color-lilac-100"
           pr={2}
           leftIcon={<ArrowLeft />}
           onClick={() => navigate(DAO_ROUTES.rolesEdit.relative(addressPrefix, safeAddress))}

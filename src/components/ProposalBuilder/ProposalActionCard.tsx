@@ -110,14 +110,14 @@ export function AirdropAction({
             as={ArrowsDownUp}
             w="1.5rem"
             h="1.5rem"
-            color="lilac-0"
+            color="color-lilac-100"
           />
           <Text>{t('airdrop')}</Text>
-          <Text color="lilac-0">
+          <Text color="color-lilac-100">
             {formatUnits(totalAmount, actionAsset.decimals)} {actionAsset.symbol}
           </Text>
           <Text>{t('to').toLowerCase()}</Text>
-          <Text color="lilac-0">
+          <Text color="color-lilac-100">
             {recipientsCount} {t('recipients', { count: recipientsCount })}
           </Text>
         </Flex>
@@ -153,7 +153,7 @@ export function TransactionBuilderAction({
             as={CraneTower}
             w="1.5rem"
             h="1.5rem"
-            color="lilac-0"
+            color="color-lilac-100"
           />
           <Text>
             {action.transactions.length === 1

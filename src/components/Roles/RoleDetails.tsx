@@ -160,7 +160,7 @@ export default function RolesDetails({
         <Button
           variant="tertiary"
           width="min-content"
-          color="lilac-0"
+          color="color-lilac-100"
           pr={2}
           leftIcon={<ArrowLeft />}
           onClick={() => navigate(DAO_ROUTES.roles.relative(addressPrefix, safe.address))}
@@ -204,7 +204,7 @@ export default function RolesDetails({
             ml="-0.75rem"
             rounded="1rem"
             bg="neutral-3"
-            color="lilac-0"
+            color="color-lilac-100"
             _hover={{
               color: 'white-0',
               bg: 'neutral-4',

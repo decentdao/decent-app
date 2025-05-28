@@ -139,7 +139,7 @@ export function AssetSelector({ formIndex, disabled }: { formIndex: number; disa
                       <Icon
                         as={CheckCircle}
                         boxSize="1.5rem"
-                        color="lilac-0"
+                        color="color-lilac-100"
                       />
                     )}
                   </>

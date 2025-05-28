@@ -410,7 +410,7 @@ export function SafePermissionsCreateProposal() {
                   <IconButton
                     size="button-md"
                     variant="ghost"
-                    color="lilac-0"
+                    color="color-lilac-100"
                     aria-label={t('back', { ns: 'common' })}
                     onClick={handleGoBack}
                     icon={<ArrowLeft size={24} />}
@@ -430,7 +430,7 @@ export function SafePermissionsCreateProposal() {
                 <IconButton
                   size="button-md"
                   variant="ghost"
-                  color="lilac-0"
+                  color="color-lilac-100"
                   aria-label={t('close', { ns: 'common' })}
                   onClick={handleClose}
                   icon={<X size={24} />}

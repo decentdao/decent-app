@@ -20,7 +20,7 @@ export function AlertBanner({ message, variant, layout, messageSecondary }: Aler
     },
     info: {
       bg: 'neutral-3',
-      color: 'lilac-0',
+      color: 'color-lilac-100',
     },
   }[variant];
 

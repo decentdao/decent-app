@@ -38,12 +38,12 @@ function CardContent({ icon, title, subtitle }: CardContentProps) {
           <Icon
             as={icon}
             boxSize={6}
-            color="lilac-0"
+            color="color-lilac-100"
           />
           <Icon
             as={ArrowUpRight}
             boxSize={6}
-            color="lilac-0"
+            color="color-lilac-100"
           />
         </Flex>
         <Box textStyle="labels-large">

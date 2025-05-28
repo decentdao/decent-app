@@ -153,7 +153,7 @@ export default function AzoriusNFTDetails(props: ICreationStepProps) {
                             icon={<MinusCircle size="24" />}
                             variant="unstyled"
                             minWidth="auto"
-                            color="lilac-0"
+                            color="color-lilac-100"
                             _disabled={{ opacity: 0.4, cursor: 'default' }}
                             sx={{ '&:disabled:hover': { color: 'inherit', opacity: 0.4 } }}
                             type="button"

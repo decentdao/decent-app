@@ -45,7 +45,7 @@ export default function ExternalLink({
         textDecoration: 'underline',
       },
       active: {
-        color: 'lilac--3',
+        color: 'color-lilac-600',
       },
     },
   };
@@ -89,8 +89,8 @@ export default function ExternalLink({
         borderColor: 'lilac-3',
       },
       active: {
-        bg: 'lilac--3',
-        borderColor: 'lilac--3',
+        bg: 'color-lilac-600',
+        borderColor: 'color-lilac-600',
         borderWidth: '1px',
       },
     },
@@ -100,7 +100,7 @@ export default function ExternalLink({
     green: 'color-green-400',
     grey: 'neutral-6',
     black: 'black',
-    lilac: 'lilac--3',
+    lilac: 'color-lilac-600',
   };
 
   return (

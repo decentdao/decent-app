@@ -95,7 +95,7 @@ function RemoveSignerModal({
           <SupportTooltip
             containerRef={tooltipContainer}
             label={t('updateSignersTooltip')}
-            color="lilac-0"
+            color="color-lilac-100"
             mx="2"
             mt="1"
           />

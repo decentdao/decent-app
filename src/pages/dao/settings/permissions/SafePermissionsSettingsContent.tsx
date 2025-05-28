@@ -126,7 +126,7 @@ export function SafePermissionsSettingsContent() {
                   <Box
                     borderRadius="50%"
                     bg="neutral-3"
-                    color="lilac-0"
+                    color="color-lilac-100"
                     padding={1}
                   >
                     <Coins fontSize="1.5rem" />

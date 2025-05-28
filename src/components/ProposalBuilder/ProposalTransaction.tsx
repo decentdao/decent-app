@@ -166,7 +166,7 @@ export default function ProposalTransaction({
                         }}
                         p={0}
                         textStyle="heading-small"
-                        color="lilac-0"
+                        color="color-lilac-100"
                       >
                         <Text textStyle="heading-small">
                           <Flex
@@ -195,7 +195,7 @@ export default function ProposalTransaction({
                             )
                           }
                           minWidth="auto"
-                          color="lilac-0"
+                          color="color-lilac-100"
                           _disabled={{ opacity: 0.4, cursor: 'default' }}
                           sx={{ '&:disabled:hover': { color: 'inherit', opacity: 0.4 } }}
                           isDisabled={transactionPending}
@@ -250,13 +250,13 @@ export default function ProposalTransaction({
                                       isChecked={!!parameter.label}
                                       isDisabled={!parameter.signature || !!parameter.value}
                                       bg="color-black"
-                                      color="lilac--3"
+                                      color="color-lilac-600"
                                       size="md"
                                       _disabled={{ bg: 'neutral-6', color: 'neutral-5' }}
-                                      _hover={{ bg: 'color-black', color: 'lilac--4' }}
+                                      _hover={{ bg: 'color-black', color: 'color-lilac-800' }}
                                       _checked={{
                                         bg: 'color-black',
-                                        color: 'lilac--3',
+                                        color: 'color-lilac-600',
                                         borderWidth: '6px',
                                       }}
                                     >
@@ -308,13 +308,13 @@ export default function ProposalTransaction({
                                     isChecked={!!parameter.value}
                                     isDisabled={!parameter.signature || !!parameter.label}
                                     bg="color-black"
-                                    color="lilac--3"
+                                    color="color-lilac-600"
                                     size="md"
                                     _disabled={{ bg: 'neutral-6', color: 'neutral-5' }}
-                                    _hover={{ bg: 'color-black', color: 'lilac--4' }}
+                                    _hover={{ bg: 'color-black', color: 'color-lilac-800' }}
                                     _checked={{
                                       bg: 'color-black',
-                                      color: 'lilac--3',
+                                      color: 'color-lilac-600',
                                       borderWidth: '6px',
                                     }}
                                   >

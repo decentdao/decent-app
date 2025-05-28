@@ -65,7 +65,7 @@ export function MySafes() {
             variant="primary"
             bg={'neutral-3'}
             borderRadius="625rem"
-            color={'lilac-0'}
+            color={'color-lilac-100'}
             borderWidth="1px"
             borderColor="transparent"
             _hover={{ textDecoration: 'none', bg: 'neutral-4' }}

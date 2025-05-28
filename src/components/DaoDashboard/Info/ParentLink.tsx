@@ -32,7 +32,7 @@ export function ParentLink() {
     >
       <HStack>
         <Icon
-          color="lilac-0"
+          color="color-lilac-100"
           as={ArrowBendLeftUp}
           width="1.5rem"
           height="1.5rem"

@@ -107,7 +107,7 @@ function Signer({
             <Icon
               as={MinusCircle}
               boxSize="1.5rem"
-              color={showRemoveButton ? 'lilac-0' : 'neutral-5'}
+              color={showRemoveButton ? 'color-lilac-100' : 'neutral-5'}
             />
           </Button>
         )}
@@ -129,7 +129,7 @@ function Signer({
             <Icon
               as={PlusCircle}
               boxSize="1.5rem"
-              color="lilac-0"
+              color="color-lilac-100"
             />
           </Button>
         )}
@@ -248,7 +248,7 @@ export function SignersContainer() {
       {isSettingsV1FeatureEnabled && (
         <Flex
           flexDirection="row"
-          bg="cosmic-nebula-5"
+          bg="color-lilac-200"
           p={4}
           borderRadius="0.75rem"
           mb={12}
@@ -271,14 +271,14 @@ export function SignersContainer() {
             >
               <Text
                 textStyle="labels-small"
-                color="cosmic-nebula-0"
+                color="color-lilac-700"
                 fontWeight="bold"
               >
                 {t('launchTokenTitle', { ns: 'daoEdit' })}
               </Text>
               <Text
                 textStyle="labels-large"
-                color="cosmic-nebula-0"
+                color="color-lilac-700"
                 mb="1rem"
               >
                 {t('launchTokenDescription', { ns: 'daoEdit' })}
