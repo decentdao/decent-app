@@ -166,7 +166,7 @@ function SignatureOption({
       }}
     >
       <Text
-        textStyle="body-small"
+        textStyle="text-lg-regular"
         color={color}
       >
         {t(label)}
@@ -313,7 +313,7 @@ export function SignatureSection({ proposal }: { proposal: MultisigProposal }) {
             justifyContent="space-between"
             w="full"
           >
-            <Text textStyle="body-small">
+            <Text textStyle="text-lg-regular">
               {t(
                 getTriggerButtonLabel(
                   proposalApprovalTimestamp,
