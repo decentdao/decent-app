@@ -88,12 +88,6 @@ export function AddCreateProposalPermissionModal({
             newProposerThresholdValue = undefined;
           }
 
-          console.log({
-            permissionsEdits,
-            existingProposerThreshold,
-            newProposerThresholdValue,
-          });
-
           if (newProposerThresholdValue === undefined) {
             setFieldValue('permissions', undefined);
           } else {
