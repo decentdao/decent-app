@@ -150,15 +150,15 @@ function SignatureOption({
       boxShadow={DETAILS_BOX_SHADOW}
       px="1rem"
       py="0.5rem"
-      bg="neutral-2"
+      bg="color-neutral-950"
       borderRadius="0.5rem"
       w="full"
       cursor="pointer"
       _hover={{
-        bg: 'neutral-3',
+        bg: 'color-neutral-900',
       }}
       _active={{
-        bg: 'neutral-3',
+        bg: 'color-neutral-900',
       }}
       _disabled={{
         cursor: 'not-allowed',
@@ -277,7 +277,7 @@ export function SignatureSection({ proposal }: { proposal: MultisigProposal }) {
     >
       <Text
         textStyle="labels-large"
-        color="neutral-7"
+        color="color-neutral-300"
       >
         {t('yourSignatureLabel', { ns: 'proposal' })}
       </Text>
@@ -294,7 +294,7 @@ export function SignatureSection({ proposal }: { proposal: MultisigProposal }) {
           boxShadow: DETAILS_BOX_SHADOW,
           px: '1rem',
           py: '0.5rem',
-          bg: 'neutral-2',
+          bg: 'color-neutral-950',
           borderRadius: '0.5rem',
           mt: '0.5rem',
           color: getTriggerButtonColor(
@@ -304,7 +304,7 @@ export function SignatureSection({ proposal }: { proposal: MultisigProposal }) {
           // disabled styles
           _disabled: {
             cursor: 'default',
-            color: 'neutral-5',
+            color: 'color-neutral-700',
           },
         }}
         trigger={
@@ -367,7 +367,7 @@ export function SignatureSection({ proposal }: { proposal: MultisigProposal }) {
         {conflictingProposals?.length > 0 && (
           <Text
             textStyle="labels-small"
-            color="neutral-7"
+            color="color-neutral-300"
           >
             {t('conflictingProposalNotice', { ns: 'proposal' })}
           </Text>
