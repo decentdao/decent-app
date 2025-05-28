@@ -53,8 +53,8 @@ export function CastVote({ proposal }: { proposal: FractalProposal }) {
 
   const { canVoteLoading, hasVoted, hasVotedLoading } = useVoteContext();
   const [doRetryGaslessVote, setDoRetryGaslessVote] = useState(false);
-  const gaslessVoteSuccessModal = useDecentModal(ModalType.GASLESS_VOTE_SUCCESS);
-  const gaslessVoteFailedModal = useDecentModal(ModalType.GASLESS_VOTE_FAILED, {
+  const { open: gaslessVoteSuccessModal } = useDecentModal(ModalType.GASLESS_VOTE_SUCCESS);
+  const { open: gaslessVoteFailedModal } = useDecentModal(ModalType.GASLESS_VOTE_FAILED, {
     onRetry: () => {
       setDoRetryGaslessVote(true);
     },

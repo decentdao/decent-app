@@ -38,7 +38,9 @@ export function AddCreateProposalPermissionModal({
   } = useDAOStore({ daoKey });
   const azoriusGovernance = governance as AzoriusGovernance;
 
-  const openConfirmDeleteStrategyModal = useDecentModal(ModalType.CONFIRM_DELETE_STRATEGY);
+  const { open: openConfirmDeleteStrategyModal } = useDecentModal(
+    ModalType.CONFIRM_DELETE_STRATEGY,
+  );
 
   const { values, setFieldValue } = formikContext;
   const { permissions: permissionsEdits } = values;

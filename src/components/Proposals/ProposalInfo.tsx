@@ -1,6 +1,5 @@
 import { Box, Button, Flex, Link, Text } from '@chakra-ui/react';
 import { ArrowUpRight } from '@phosphor-icons/react';
-import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Shield } from '../../assets/theme/custom/icons/Shield';
 import { findMostConfirmedMultisigRejectionProposal } from '../../helpers/multisigProposal';
@@ -60,19 +59,9 @@ export function ProposalInfo({
   } = useDAOStore({ daoKey });
   const { snapshotProposal } = useSnapshotProposal(proposal);
 
-  const [modalType, props] = useMemo(() => {
-    if (!metaData.documentationUrl) {
-      return [ModalType.NONE] as const;
-    }
-    return [
-      ModalType.CONFIRM_URL,
-      {
-        url: metaData.documentationUrl,
-      },
-    ] as const;
-  }, [metaData.documentationUrl]);
-
-  const confirmUrl = useDecentModal(modalType, props);
+  const { open: confirmUrl } = useDecentModal(ModalType.CONFIRM_URL, {
+    url: metaData.documentationUrl,
+  });
 
   const rejectionProposal = findMostConfirmedMultisigRejectionProposal(
     safe?.address,

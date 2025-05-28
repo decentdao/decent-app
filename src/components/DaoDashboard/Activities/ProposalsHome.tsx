@@ -82,7 +82,7 @@ export function ProposalsHome() {
 
   const { addressPrefix } = useNetworkConfigStore();
   const azoriusGovernance = governance as AzoriusGovernance;
-  const delegate = useDecentModal(ModalType.DELEGATE);
+  const { open: delegate } = useDecentModal(ModalType.DELEGATE);
 
   const canDelegate = useMemo(() => {
     if (azoriusGovernance.type === GovernanceType.AZORIUS_ERC20) {

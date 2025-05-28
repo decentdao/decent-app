@@ -121,7 +121,7 @@ export function GaslessVotingToggleDAOSettings(props: GaslessVotingToggleProps) 
   const { addAction, resetActions } = useProposalActionsStore();
   const { data: walletClient } = useNetworkWalletClient();
 
-  const withdrawGas = useDecentModal(ModalType.WITHDRAW_GAS, {
+  const { open: withdrawGas } = useDecentModal(ModalType.WITHDRAW_GAS, {
     onWithdraw: async (withdrawGasData: WithdrawGasData) => {
       if (!safe?.address || !paymasterAddress) {
         return;
@@ -158,7 +158,7 @@ export function GaslessVotingToggleDAOSettings(props: GaslessVotingToggleProps) 
     },
   });
 
-  const refillGas = useDecentModal(ModalType.REFILL_GAS, {
+  const { open: refillGas } = useDecentModal(ModalType.REFILL_GAS, {
     onSubmit: async (refillGasData: RefillGasData) => {
       if (!safe?.address || !paymasterAddress || !accountAbstraction) {
         return;

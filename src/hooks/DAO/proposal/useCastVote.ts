@@ -276,8 +276,9 @@ const useCastVote = (proposalId: string, strategy: Address) => {
     publicClient,
   ]);
 
-  const gaslessVoteLoadingModal = useDecentModal(ModalType.GASLESS_VOTE_LOADING);
-  const closeModal = useDecentModal(ModalType.NONE);
+  const { open: gaslessVoteLoadingModal, close: closeGaslessVoteLoadingModal } = useDecentModal(
+    ModalType.GASLESS_VOTE_LOADING,
+  );
 
   const devFeatureFlag = useFeatureFlag('flag_dev');
 
@@ -311,13 +312,13 @@ const useCastVote = (proposalId: string, strategy: Address) => {
         });
 
         bundlerClient.waitForUserOperationReceipt({ hash }).then(() => {
-          closeModal();
+          closeGaslessVoteLoadingModal();
 
           setCastGaslessVotePending(false);
           onSuccess();
         });
       } catch (error: any) {
-        closeModal();
+        closeGaslessVoteLoadingModal();
         setCastGaslessVotePending(false);
 
         if (!devFeatureFlag && error.name === 'UserRejectedRequestError') {
@@ -332,7 +333,7 @@ const useCastVote = (proposalId: string, strategy: Address) => {
       prepareGaslessVoteOperation,
       prepareCastVoteData,
       gaslessVoteLoadingModal,
-      closeModal,
+      closeGaslessVoteLoadingModal,
       devFeatureFlag,
       t,
     ],

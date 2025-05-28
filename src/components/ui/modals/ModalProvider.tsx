@@ -36,7 +36,6 @@ import StakeModal from './Stake';
 import { UnsavedChangesWarningContent } from './UnsavedChangesWarningContent';
 
 export enum ModalType {
-  NONE,
   DELEGATE,
   STAKE,
   CONFIRM_URL,
@@ -68,7 +67,6 @@ export enum ModalType {
 }
 
 export type ModalPropsTypes = {
-  [ModalType.NONE]: {};
   [ModalType.DELEGATE]: {};
   [ModalType.STAKE]: {};
   [ModalType.ADD_PERMISSION]: {
@@ -79,13 +77,13 @@ export type ModalPropsTypes = {
     votingStrategyAddress: Address | null;
   };
   [ModalType.CONFIRM_DELETE_STRATEGY]: {};
-  [ModalType.CONFIRM_URL]: { url: string };
+  [ModalType.CONFIRM_URL]: { url: string | undefined };
   [ModalType.REMOVE_SIGNER]: {
     selectedSigner: Address;
     signers: Address[];
     currentThreshold: number;
   };
-  [ModalType.ADD_SIGNER]: { signers: Address[]; currentThreshold: number };
+  [ModalType.ADD_SIGNER]: { signers: Address[]; currentThreshold: number | undefined };
   [ModalType.CREATE_PROPOSAL_FROM_TEMPLATE]: { proposalTemplate: ProposalTemplate };
   [ModalType.COPY_PROPOSAL_TEMPLATE]: {
     proposalTemplate: ProposalTemplate;
@@ -101,13 +99,13 @@ export type ModalPropsTypes = {
     paymentAssetSymbol: string;
     paymentAssetDecimals: number;
     paymentStreamId?: string;
-    paymentContractAddress: Address;
+    paymentContractAddress: Address | undefined;
     withdrawInformation: {
       roleHatSmartAccountAddress: Address | undefined;
-      recipient: Address;
-      withdrawableAmount: bigint;
+      recipient: Address | undefined;
+      withdrawableAmount: bigint | undefined;
     };
-    onSuccess: () => Promise<void>;
+    onSuccess: () => void;
   };
   [ModalType.CONFIRM_CANCEL_PAYMENT]: {
     onSubmit: () => void;
@@ -208,6 +206,10 @@ const getModalData = (args: {
       modalContent = <StakeModal close={popModal} />;
       break;
     case ModalType.CONFIRM_URL:
+      if (!current.props.url) {
+        throw new Error('URL is required for CONFIRM_URL modal');
+      }
+
       modalTitle = t('confirmUrlTitle');
       hasWarning = true;
       modalContent = (
@@ -229,6 +231,10 @@ const getModalData = (args: {
       );
       break;
     case ModalType.ADD_SIGNER:
+      if (!current.props.currentThreshold) {
+        throw new Error('Current threshold is required for ADD_SIGNER modal');
+      }
+
       modalTitle = t('addSignerTitle');
       modalContent = (
         <AddSignerModal
@@ -283,7 +289,14 @@ const getModalData = (args: {
         />
       );
       break;
-    case ModalType.WITHDRAW_PAYMENT: {
+    case ModalType.WITHDRAW_PAYMENT:
+      if (!current.props.withdrawInformation.withdrawableAmount) {
+        throw new Error('Withdrawable amount is required for WITHDRAW_PAYMENT modal');
+      }
+      if (!current.props.withdrawInformation.recipient) {
+        throw new Error('Recipient is required for WITHDRAW_PAYMENT modal');
+      }
+
       modalContent = (
         <PaymentWithdrawModal
           paymentAssetLogo={current.props.paymentAssetLogo}
@@ -291,17 +304,20 @@ const getModalData = (args: {
           paymentAssetDecimals={current.props.paymentAssetDecimals}
           paymentStreamId={current.props.paymentStreamId}
           paymentContractAddress={current.props.paymentContractAddress}
-          withdrawInformation={current.props.withdrawInformation}
+          withdrawInformation={{
+            ...current.props.withdrawInformation,
+            withdrawableAmount: current.props.withdrawInformation.withdrawableAmount,
+            recipient: current.props.withdrawInformation.recipient,
+          }}
           onSuccess={current.props.onSuccess}
           onClose={popModal}
         />
       );
       break;
-    }
     case ModalType.CONFIRM_CANCEL_PAYMENT: {
       modalContent = (
         <PaymentCancelConfirmModal
-          onClose={popModal}
+          closeModal={popModal}
           onSubmit={current.props.onSubmit}
         />
       );
@@ -467,13 +483,11 @@ const getModalData = (args: {
       );
       modalSize = 'md';
       break;
-    case ModalType.NONE:
+
     default:
       modalTitle = '';
       modalContent = null;
-    // @todo - confirm behaviour of NONE modal type, potentially remove. (https://linear.app/decent-labs/issue/ENG-826/confirm-behaviour-of-none-modal-type-potentially-remove)
-    // onClose();
-    // closeModal();
+      break;
   }
 
   return {
@@ -593,6 +607,11 @@ export function ModalProvider({ children }: { children: ReactNode }) {
     setOpenModals(prev => prev.slice(0, -1));
   }, []);
 
+  const closeAllModals = useCallback(() => {
+    setOpenModals([]);
+    onClose();
+  }, [onClose]);
+
   useEffect(() => {
     if (openModals.length > 0) {
       onOpen();
@@ -605,10 +624,7 @@ export function ModalProvider({ children }: { children: ReactNode }) {
     const modalData = getModalData({
       current: modal,
       popModal,
-      closeAll: () => {
-        setOpenModals([]);
-        onClose();
-      },
+      closeAll: closeAllModals,
       t,
     });
     return (

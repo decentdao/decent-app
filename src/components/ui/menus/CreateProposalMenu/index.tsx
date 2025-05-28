@@ -17,7 +17,7 @@ export function CreateProposalMenu({ safeAddress }: { safeAddress: Address }) {
 
   const { addressPrefix } = useNetworkConfigStore();
   const { resetActions } = useProposalActionsStore();
-  const openDappsBrowserModal = useDecentModal(ModalType.DAPPS_BROWSER);
+  const { open: openDappsBrowserModal } = useDecentModal(ModalType.DAPPS_BROWSER);
 
   const navigate = useNavigate();
   const iframeFeatureEnabled = useFeatureFlag('flag_iframe_template');

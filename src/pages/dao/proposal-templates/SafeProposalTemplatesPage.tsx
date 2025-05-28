@@ -102,7 +102,7 @@ export function SafeProposalTemplatesPage() {
     navigate(DAO_ROUTES.proposalWithActionsNew.relative(addressPrefix, safeAddress));
   };
 
-  const openAirdropModal = useDecentModal(ModalType.AIRDROP, {
+  const { open: openAirdropModal } = useDecentModal(ModalType.AIRDROP, {
     onSubmit: handleAirdropSubmit,
     submitButtonText: tModals('submitProposal'),
   });

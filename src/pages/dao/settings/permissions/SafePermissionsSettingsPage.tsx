@@ -39,7 +39,7 @@ export function SafePermissionsSettingsPage() {
   const [searchParams] = useSearchParams();
   const votingStrategyAddress = searchParams.get('votingStrategy');
 
-  const openAddPermissionModal = useDecentModal(ModalType.ADD_PERMISSION);
+  const { open: openAddPermissionModal } = useDecentModal(ModalType.ADD_PERMISSION);
 
   if (isMobile && votingStrategyAddress) {
     return <Outlet />;

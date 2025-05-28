@@ -39,7 +39,7 @@ export function SafePermissionsSettingsContent() {
 
   const formikContext = useFormikContext<SafeSettingsEdits>();
 
-  const openAddCreateProposalPermissionModal = useDecentModal(
+  const { open: openAddCreateProposalPermissionModal } = useDecentModal(
     ModalType.ADD_CREATE_PROPOSAL_PERMISSION,
     {
       formikContext,
@@ -47,11 +47,11 @@ export function SafePermissionsSettingsContent() {
     },
   );
 
-  const openAddPermissionModal = useDecentModal(ModalType.ADD_PERMISSION, {
+  const { open: openAddPermissionModal } = useDecentModal(ModalType.ADD_PERMISSION, {
     openAddCreateProposalPermissionModal,
   });
 
-  const openCreateProposalPermissionModal = useDecentModal(
+  const { open: openCreateProposalPermissionModal } = useDecentModal(
     ModalType.ADD_CREATE_PROPOSAL_PERMISSION,
     {
       formikContext,

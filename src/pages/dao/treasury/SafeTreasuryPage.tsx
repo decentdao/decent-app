@@ -42,7 +42,7 @@ export function SafeTreasuryPage() {
   const showLoadMoreTransactions = totalTransfers > shownTransactions && shownTransactions < 100;
   const { openSendAssetsModal } = useSendAssetsActionModal();
   const safeAddress = safe?.address;
-  const openDappBrowserModal = useDecentModal(ModalType.DAPP_BROWSER, {
+  const { open: openDappBrowserModal } = useDecentModal(ModalType.DAPP_BROWSER, {
     appUrl: 'https://swap.cow.fi',
   });
 

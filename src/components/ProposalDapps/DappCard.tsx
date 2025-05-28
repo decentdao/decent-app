@@ -22,7 +22,7 @@ export default function DappCard({
   categories,
   onClose,
 }: DappCardProps) {
-  const openDappBrowserModal = useDecentModal(ModalType.DAPP_BROWSER, {
+  const { open: openDappBrowserModal } = useDecentModal(ModalType.DAPP_BROWSER, {
     appUrl,
   });
 
