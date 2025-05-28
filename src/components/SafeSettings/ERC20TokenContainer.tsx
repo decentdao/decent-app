@@ -25,7 +25,7 @@ export function ERC20TokenContainer() {
           flexWrap={{ base: 'wrap', md: 'nowrap' }}
           mt={4}
           borderWidth="0.06rem"
-          borderColor="neutral-3"
+          borderColor="color-neutral-900"
           borderRadius="0.75rem"
           flexDirection="column"
         >
@@ -57,7 +57,7 @@ export function ERC20TokenContainer() {
           >
             <Text textStyle="text-base-regular">{t('governanceTokenSymbolLabel')}</Text>
             <Text
-              color="neutral-7"
+              color="color-neutral-300"
               textStyle="text-base-regular"
             >
               ${votesToken.symbol}
@@ -75,7 +75,7 @@ export function ERC20TokenContainer() {
           >
             <Text textStyle="text-base-regular">{t('governanceTokenSupplyLabel')}</Text>
             <Text
-              color="neutral-7"
+              color="color-neutral-300"
               textStyle="text-base-regular"
             >
               {formatCoin(

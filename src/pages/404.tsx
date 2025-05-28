@@ -22,13 +22,13 @@ export default function FourOhFourPage() {
           paddingTop="3.25rem"
           data-testid="404-pageCode"
           textStyle="display-3xl"
-          color="neutral-6"
+          color="color-neutral-400"
         >
           404
         </Text>
         <Text
           data-testid="404-pageTitle"
-          color="neutral-7"
+          color="color-neutral-300"
           marginTop="0.5rem"
           paddingBottom="3.25rem"
         >

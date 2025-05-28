@@ -64,7 +64,7 @@ export function DropdownMenu<T>({
             sx={{
               '&:disabled': {
                 '.payment-menu-asset *': {
-                  color: 'neutral-6',
+                  color: 'color-neutral-400',
                   bg: 'transparent',
                 },
               },
@@ -74,7 +74,7 @@ export function DropdownMenu<T>({
               gap={2}
               alignItems="center"
               border="1px solid"
-              borderColor="neutral-4"
+              borderColor="color-neutral-800"
               borderRadius="9999px"
               w="fit-content"
               className="payment-menu-asset"
@@ -93,12 +93,12 @@ export function DropdownMenu<T>({
               >
                 <Text
                   textStyle="text-lg-regular"
-                  color="white-0"
+                  color="color-white"
                 >
                   {selectedItem?.label ?? selectPlaceholder}
                 </Text>
                 <Icon
-                  color="neutral-6"
+                  color="color-neutral-400"
                   as={CaretDown}
                   boxSize="1.5rem"
                 />
@@ -141,7 +141,7 @@ export function DropdownMenu<T>({
                   >
                     <Text
                       textStyle="text-xl-regular"
-                      color="neutral-7"
+                      color="color-neutral-300"
                     >
                       {emptyMessage}
                     </Text>
@@ -182,7 +182,7 @@ export function DropdownMenu<T>({
                             )}
                             <Text
                               textStyle="labels-large"
-                              color="white-0"
+                              color="color-white"
                             >
                               {item.label}
                             </Text>
@@ -191,7 +191,7 @@ export function DropdownMenu<T>({
                             <Icon
                               as={CheckCircle}
                               boxSize="1.5rem"
-                              color="lilac-0"
+                              color="color-lilac-100"
                             />
                           )}
                         </>
@@ -221,7 +221,7 @@ export function DropdownMenu<T>({
                     <Text
                       px="1rem"
                       textStyle="labels-small"
-                      color="neutral-7"
+                      color="color-neutral-300"
                     >
                       {title}
                     </Text>
@@ -242,7 +242,7 @@ export function DropdownMenu<T>({
                   >
                     <Text
                       textStyle="text-xl-regular"
-                      color="neutral-7"
+                      color="color-neutral-300"
                     >
                       {emptyMessage}
                     </Text>
@@ -280,7 +280,7 @@ export function DropdownMenu<T>({
                             )}
                             <Text
                               textStyle="labels-large"
-                              color="white-0"
+                              color="color-white"
                             >
                               {item.label}
                             </Text>
@@ -289,7 +289,7 @@ export function DropdownMenu<T>({
                             <Icon
                               as={CheckCircle}
                               boxSize="1.5rem"
-                              color="lilac-0"
+                              color="color-lilac-100"
                             />
                           )}
                         </>

@@ -8,7 +8,7 @@ export function InfoBox({ children, ...rest }: BoxProps) {
       p="1.5rem"
       mx="0.3rem"
       borderWidth="0.06rem"
-      borderColor="neutral-3"
+      borderColor="color-neutral-900"
       borderRadius="0.75rem"
       {...rest}
     >

@@ -175,7 +175,7 @@ function GuardDetails(props: ICreationStepProps) {
             </InputGroup>
             <Text
               textStyle="labels-large"
-              color="neutral-7"
+              color="color-neutral-300"
               mt="0.5rem"
             >
               {t('exampleFreezeProposalPeriod')}
@@ -199,7 +199,7 @@ function GuardDetails(props: ICreationStepProps) {
             </InputGroup>
             <Text
               textStyle="labels-large"
-              color="neutral-7"
+              color="color-neutral-300"
               mt="0.5rem"
             >
               {t('exampleFreezePeriod')}
@@ -221,7 +221,7 @@ function GuardDetails(props: ICreationStepProps) {
       </StepWrapper>
       <Box
         padding="1.5rem"
-        bg="neutral-2"
+        bg="color-neutral-950"
         borderRadius="0.25rem"
         mt="1.5rem"
         mb={showCustomNonce ? '1.5rem' : 0}
@@ -243,7 +243,7 @@ function GuardDetails(props: ICreationStepProps) {
           />
         </FormControl>
         <Text
-          color="neutral-7"
+          color="color-neutral-300"
           width="50%"
         >
           {t('attachFractalModuleDescription')}
@@ -252,7 +252,7 @@ function GuardDetails(props: ICreationStepProps) {
       {showCustomNonce && (
         <Box
           padding="1.5rem"
-          bg="neutral-2"
+          bg="color-neutral-950"
           borderRadius="0.25rem"
           my="1.5rem"
         >

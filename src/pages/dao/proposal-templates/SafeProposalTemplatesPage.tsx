@@ -198,7 +198,7 @@ export function SafeProposalTemplatesPage() {
       />
       <Text
         textStyle="text-3xl-regular"
-        color="white-0"
+        color="color-white"
         mb="1rem"
       >
         {tProposalTemplate('defaultTemplates')}

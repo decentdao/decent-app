@@ -18,7 +18,7 @@ export function TopErrorFallback() {
     >
       <Box
         borderRadius="0.5rem"
-        bg="neutral-2"
+        bg="color-neutral-950"
         py="2rem"
         px={{ base: '1.25rem', md: '2rem' }}
         overflow="hidden"

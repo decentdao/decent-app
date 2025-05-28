@@ -20,12 +20,12 @@ export function DappInteractionActionCard({
             as={ArrowsDownUp}
             w="1.5rem"
             h="1.5rem"
-            color="lilac-0"
+            color="color-lilac-100"
           />
           {action.content}
         </Flex>
         <Button
-          color="red-0"
+          color="color-error-500"
           variant="tertiary"
           size="sm"
           onClick={onRemove}

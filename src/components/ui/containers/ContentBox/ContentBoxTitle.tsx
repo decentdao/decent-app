@@ -5,7 +5,7 @@ function ContentBoxTitle({ children }: { children: ReactNode }) {
   return (
     <Text
       textStyle="text-xl-regular"
-      color="white-0"
+      color="color-white"
     >
       {children}
     </Text>

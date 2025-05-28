@@ -129,7 +129,7 @@ export function AssetSelector({
               <Flex flexDir="column">
                 <Text
                   textStyle="labels-large"
-                  color="white-0"
+                  color="color-white"
                 >
                   {item.label}
                 </Text>
@@ -139,7 +139,7 @@ export function AssetSelector({
                 >
                   <Text
                     textStyle="text-lg-regular"
-                    color="neutral-7"
+                    color="color-neutral-300"
                   >
                     {balanceText}
                   </Text>
@@ -147,13 +147,13 @@ export function AssetSelector({
                     <>
                       <Text
                         textStyle="text-lg-regular"
-                        color="neutral-7"
+                        color="color-neutral-300"
                       >
                         {'•'}
                       </Text>
                       <Text
                         textStyle="text-lg-regular"
-                        color="neutral-7"
+                        color="color-neutral-300"
                       >
                         {formatUSD(usdValue)}
                       </Text>
@@ -166,7 +166,7 @@ export function AssetSelector({
               <Icon
                 as={CheckCircle}
                 boxSize="1.5rem"
-                color="lilac-0"
+                color="color-lilac-100"
               />
             )}
           </>
