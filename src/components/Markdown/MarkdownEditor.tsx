@@ -59,11 +59,35 @@ export function MarkdownEditor({
         usageStatistics={false}
         placeholder={placeholder}
         initialValue={editorInitialValue}
-        previewStyle="tab"
+        previewStyle="vertical"
         height={height}
         initialEditType="wysiwyg"
         useCommandShortcut={true}
         referenceDefinition={true}
+        toolbarItems={[
+          [
+            'heading',
+            'bold',
+            'italic',
+            'strike',
+            'ul',
+            'ol',
+            'task',
+            'indent',
+            'outdent',
+            'table',
+            'image',
+            'link',
+            'code',
+            'codeblock',
+            'hr',
+            'quote',
+          ],
+        ]}
+        linkAttributes={{
+          target: '_blank',
+          rel: 'noopener noreferrer',
+        }}
         onBeforeConvertWysiwygToMarkdown={(md: string) => {
           return md.replace(/\\(_)/g, '$1'); // Remove escaped underscores
         }}

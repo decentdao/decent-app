@@ -201,6 +201,9 @@ export const governanceReducer = (state: FractalGovernance, action: FractalGover
     case FractalGovernanceAction.PENDING_PROPOSAL_ADD: {
       return { ...state, pendingProposals: [action.payload, ...(state.pendingProposals || [])] };
     }
+    case FractalGovernanceAction.SET_GASLESS_VOTING_DATA: {
+      return { ...state, ...action.payload };
+    }
     // Decent Governance only
     case DecentGovernanceAction.SET_LOCKED_TOKEN_ACCOUNT_DATA: {
       const { lockedVotesToken } = state as DecentGovernance;

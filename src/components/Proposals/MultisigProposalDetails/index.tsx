@@ -1,14 +1,13 @@
 import { GridItem } from '@chakra-ui/react';
-import { useAccount } from 'wagmi';
 import { MultisigProposal } from '../../../types';
 import { ProposalDetailsGrid } from '../../ui/containers/ProposalDetailsGrid';
 import { ProposalInfo } from '../ProposalInfo';
+import { ExecutionSection } from './ExecutionSection';
+import { SignatureSection } from './SignatureSection';
 import { SignerDetails } from './SignerDetails';
-import { TxActions } from './TxActions';
 import { TxDetails } from './TxDetails';
 
 export function MultisigProposalDetails({ proposal }: { proposal: MultisigProposal }) {
-  const user = useAccount();
   return (
     <ProposalDetailsGrid>
       <GridItem colSpan={2}>
@@ -17,7 +16,8 @@ export function MultisigProposalDetails({ proposal }: { proposal: MultisigPropos
       </GridItem>
       <GridItem colSpan={1}>
         <TxDetails proposal={proposal} />
-        {user.address && <TxActions proposal={proposal} />}
+        <SignatureSection proposal={proposal} />
+        <ExecutionSection proposal={proposal} />
       </GridItem>
     </ProposalDetailsGrid>
   );

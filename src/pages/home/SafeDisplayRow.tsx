@@ -5,9 +5,11 @@ import { useNavigate } from 'react-router-dom';
 import { Address } from 'viem';
 import Avatar from '../../components/ui/page/Header/Avatar';
 import { DAO_ROUTES } from '../../constants/routes';
+import { useCurrentDAOKey } from '../../hooks/DAO/useCurrentDAOKey';
 import { useNetworkEnsAvatar } from '../../hooks/useNetworkEnsAvatar';
 import { createAccountSubstring } from '../../hooks/utils/useGetAccountName';
 import { useGetSafeName } from '../../hooks/utils/useGetSafeName';
+import { useDAOStore } from '../../providers/App/AppProvider';
 import { getChainIdFromPrefix, getChainName, getNetworkIcon } from '../../utils/url';
 
 interface SafeDisplayRowProps {
@@ -26,7 +28,8 @@ export function SafeDisplayRow({
   name,
 }: SafeDisplayRowProps) {
   const navigate = useNavigate();
-
+  const { daoKey } = useCurrentDAOKey();
+  const { action } = useDAOStore({ daoKey });
   const { getSafeName } = useGetSafeName(getChainIdFromPrefix(network));
   const [safeName, setSafeName] = useState(name);
 
@@ -42,7 +45,11 @@ export function SafeDisplayRow({
 
   const onClickNav = () => {
     if (onClick) onClick();
+
     navigate(DAO_ROUTES.dao.relative(network, address));
+
+    // TODO: remove this after releasing complete release of useGlobalStore
+    action.resetSafeState();
   };
 
   const nameColor = showAddress ? 'color-neutral-300' : 'white-0';

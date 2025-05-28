@@ -31,4 +31,29 @@ function ContentBox({ title, children, containerBoxProps, onClick }: ContentBoxP
   );
 }
 
+export function SectionContentBox({
+  children,
+  containerBoxProps,
+}: {
+  children: ReactNode;
+  containerBoxProps?: BoxProps;
+}) {
+  return (
+    <ContentBox
+      containerBoxProps={{
+        ...containerBoxProps,
+        bg: 'neutral-2',
+        border: '1px solid',
+        borderColor: 'neutral-3',
+        rounded: 'unset',
+        py: 2,
+        px: 4,
+        my: 0,
+      }}
+    >
+      {children}
+    </ContentBox>
+  );
+}
+
 export default ContentBox;
