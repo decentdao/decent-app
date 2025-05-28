@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import { Address } from 'viem';
 import { DAO_ROUTES } from '../../../constants/routes';
 import { useDateTimeDisplay } from '../../../helpers/dateTime';
+import { findMostConfirmedMultisigRejectionProposal } from '../../../helpers/multisigProposal';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import { useNetworkEnsAvatar } from '../../../hooks/useNetworkEnsAvatar';
 import { useGetAccountName } from '../../../hooks/utils/useGetAccountName';
@@ -19,7 +20,7 @@ import {
   FractalProposalState,
 } from '../../../types';
 import { ActivityDescription } from '../../Activity/ActivityDescription';
-import { Badge } from '../../ui/badges/Badge';
+import { ProposalStateBadge } from '../../ui/badges/Badge';
 import QuorumBadge from '../../ui/badges/QuorumBadge';
 import { SignerThresholdBadge } from '../../ui/badges/SignerThresholdBadge';
 import { SnapshotIcon } from '../../ui/badges/Snapshot';
@@ -92,7 +93,11 @@ function NonceLabel({ nonce }: { nonce: number | undefined }) {
 }
 
 function ProposalCard({ proposal }: { proposal: FractalProposal }) {
-  const { safeAddress } = useCurrentDAOKey();
+  const { safeAddress, daoKey } = useCurrentDAOKey();
+  const {
+    governance: { proposals },
+    node: { safe },
+  } = useDAOStore({ daoKey });
   const { addressPrefix } = useNetworkConfigStore();
 
   if (!safeAddress) {
@@ -101,6 +106,12 @@ function ProposalCard({ proposal }: { proposal: FractalProposal }) {
 
   const isSnapshotProposal = !!(proposal as SnapshotProposal).snapshotProposalId;
   const isAzoriusProposal = !!(proposal as AzoriusProposal).votesSummary;
+
+  const rejectionProposal = findMostConfirmedMultisigRejectionProposal(
+    safe?.address,
+    (proposal as MultisigProposal).nonce,
+    proposals,
+  );
 
   return (
     <Link to={DAO_ROUTES.proposal.relative(addressPrefix, safeAddress, proposal.proposalId)}>
@@ -124,12 +135,16 @@ function ProposalCard({ proposal }: { proposal: FractalProposal }) {
             alignItems="center"
             w={{ base: '100%', md: 'auto' }}
           >
-            <Badge
-              labelKey={proposal.state!}
-              size="sm"
-            />
+            {proposal.state && (
+              <ProposalStateBadge
+                labelKey={proposal.state}
+                rejectionProposalState={rejectionProposal?.state}
+                size="sm"
+              />
+            )}
             <ProposalCountdown
               proposal={proposal}
+              rejectionProposal={rejectionProposal}
               showIcon={false}
               textColor="neutral-7"
             />

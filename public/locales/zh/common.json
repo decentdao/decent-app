@@ -129,5 +129,6 @@
   "unsavedChanges": "未保存的更改",
   "unsavedChangesDescription": "如果继续，您未保存的更改将丢失。您想放弃更改吗？",
   "discardChanges": "丢弃",
-  "keepEditing": "继续编辑"
+  "keepEditing": "继续编辑",
+  "selectStatusLabel": "选择状态"
 }
