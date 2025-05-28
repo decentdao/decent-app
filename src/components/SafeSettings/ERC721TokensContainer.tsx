@@ -24,7 +24,7 @@ export function ERC721TokensContainer() {
           flexWrap={{ base: 'wrap', md: 'nowrap' }}
           mt={4}
           borderWidth="0.06rem"
-          borderColor="neutral-3"
+          borderColor="color-neutral-900"
           borderRadius="0.75rem"
           flexDirection="column"
         >
@@ -58,7 +58,7 @@ export function ERC721TokensContainer() {
               >
                 <Text textStyle="text-base-regular">{t('governanceTokenSymbolLabel')}</Text>
                 <Text
-                  color="neutral-7"
+                  color="color-neutral-300"
                   textStyle="text-base-regular"
                 >
                   ${token.symbol}
@@ -76,7 +76,7 @@ export function ERC721TokensContainer() {
               >
                 <Text textStyle="text-base-regular">{t('governanceTokenWeightLabel')}</Text>
                 <Text
-                  color="neutral-7"
+                  color="color-neutral-300"
                   textStyle="text-base-regular"
                 >
                   {token.votingWeight.toString()}
@@ -94,7 +94,7 @@ export function ERC721TokensContainer() {
               >
                 <Text textStyle="text-base-regular">{t('governanceTokenTotalWeightLabel')}</Text>
                 <Text
-                  color="neutral-7"
+                  color="color-neutral-300"
                   textStyle="text-base-regular"
                 >
                   {token.totalSupply ? (token.totalSupply * token.votingWeight).toString() : 'n/a'}

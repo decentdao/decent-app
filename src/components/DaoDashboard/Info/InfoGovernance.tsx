@@ -109,7 +109,7 @@ export function InfoGovernance() {
         mb="0.25rem"
         gap="0.5rem"
       >
-        <Text color="neutral-7">{t('titleType')}</Text>
+        <Text color="color-neutral-300">{t('titleType')}</Text>
         <Text textAlign="right">
           {governance.type
             ? t(governance.type.toString(), {
@@ -128,7 +128,7 @@ export function InfoGovernance() {
           mb="0.25rem"
           gap="0.5rem"
         >
-          <Text color="neutral-7">{t('titleVotingPeriod')}</Text>
+          <Text color="color-neutral-300">{t('titleVotingPeriod')}</Text>
           <Text textAlign="right">{governanceAzorius.votingStrategy.votingPeriod.formatted}</Text>
         </Flex>
       )}
@@ -139,7 +139,7 @@ export function InfoGovernance() {
           mb="0.25rem"
           gap="0.5rem"
         >
-          <Text color="neutral-7">{t('titleQuorum')}</Text>
+          <Text color="color-neutral-300">{t('titleQuorum')}</Text>
           <Text textAlign="right">
             {`${governanceAzorius.votingStrategy.quorumPercentage.formatted}%`}
           </Text>
@@ -152,7 +152,7 @@ export function InfoGovernance() {
           mb="0.25rem"
           gap="0.5rem"
         >
-          <Text color="neutral-7">{t('titleQuorum')}</Text>
+          <Text color="color-neutral-300">{t('titleQuorum')}</Text>
           <Text textAlign="right">
             {governanceAzorius.votingStrategy.quorumThreshold.formatted}
           </Text>
@@ -165,7 +165,7 @@ export function InfoGovernance() {
           mb="0.25rem"
           gap="0.5rem"
         >
-          <Text color="neutral-7">{t('timelock', { ns: 'common' })}</Text>
+          <Text color="color-neutral-300">{t('timelock', { ns: 'common' })}</Text>
           <Text textAlign="right">{timelockPeriod}</Text>
         </Flex>
       )}
@@ -176,7 +176,7 @@ export function InfoGovernance() {
           mb="0.25rem"
           gap="0.5rem"
         >
-          <Text color="neutral-7">{t('execution', { ns: 'common' })}</Text>
+          <Text color="color-neutral-300">{t('execution', { ns: 'common' })}</Text>
           <Text textAlign="right">{executionPeriod}</Text>
         </Flex>
       )}

@@ -134,8 +134,8 @@ export function SendAssetsModal({
                       <LabelWrapper label={t('selectLabel')}>
                         <Select
                           {...field}
-                          bgColor="neutral-1"
-                          borderColor="neutral-3"
+                          bgColor="color-black"
+                          borderColor="color-neutral-900"
                           rounded="sm"
                           cursor="pointer"
                           iconSize="1.5rem"
@@ -180,7 +180,7 @@ export function SendAssetsModal({
                           placeholder="0"
                           maxValue={BigInt(values.selectedAsset.balance)}
                           isInvalid={overDraft}
-                          errorBorderColor="red-0"
+                          errorBorderColor="color-error-500"
                         />
                       </LabelWrapper>
                     </Box>
@@ -191,12 +191,12 @@ export function SendAssetsModal({
               {/* AVAILABLE BALANCE HINT */}
               <HStack
                 justify="space-between"
-                textStyle="neutral-7"
-                color="white-0"
+                textStyle="color-neutral-300"
+                color="color-white"
                 marginTop="0.75rem"
               >
                 <Text
-                  color={overDraft ? 'red-0' : 'neutral-7'}
+                  color={overDraft ? 'color-error-500' : 'color-neutral-300'}
                   textStyle="text-sm-medium"
                   as="span"
                 >

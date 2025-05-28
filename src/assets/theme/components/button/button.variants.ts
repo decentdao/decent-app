@@ -1,14 +1,14 @@
 import { defineStyle } from '@chakra-ui/react';
 const primaryDisabled = {
-  bg: 'neutral-5',
-  color: 'neutral-7',
+  bg: 'color-neutral-700',
+  color: 'color-neutral-300',
 };
 
 const primary = defineStyle({
-  bg: 'lilac-0',
-  color: 'cosmic-nebula-0',
+  bg: 'color-lilac-100',
+  color: 'color-lilac-700',
   _hover: {
-    bg: 'lilac--1',
+    bg: 'color-lilac-200',
     _disabled: {
       ...primaryDisabled,
     },
@@ -17,21 +17,21 @@ const primary = defineStyle({
     ...primaryDisabled,
   },
   _active: {
-    bg: 'lilac--2',
+    bg: 'color-lilac-300',
   },
 });
 
 const secondaryDisabled = {
-  borderColor: 'neutral-5',
-  color: 'neutral-5',
+  borderColor: 'color-neutral-700',
+  color: 'color-neutral-700',
 };
 const secondary = defineStyle({
   border: '1px solid',
-  borderColor: 'lilac-0',
-  color: 'lilac-0',
+  borderColor: 'color-lilac-100',
+  color: 'color-lilac-100',
   _hover: {
-    borderColor: 'lilac--1',
-    color: 'lilac--1',
+    borderColor: 'color-lilac-200',
+    color: 'color-lilac-200',
     _disabled: {
       ...secondaryDisabled,
     },
@@ -40,13 +40,13 @@ const secondary = defineStyle({
     ...secondaryDisabled,
   },
   _active: {
-    borderColor: 'lilac--2',
-    color: 'lilac--2',
+    borderColor: 'color-lilac-300',
+    color: 'color-lilac-300',
   },
 });
 
 const tertiaryDisabled = {
-  color: 'neutral-5',
+  color: 'color-neutral-700',
 };
 
 const tertiaryLoading = {
@@ -54,10 +54,10 @@ const tertiaryLoading = {
 };
 const tertiary = defineStyle({
   bg: 'transparent',
-  color: 'lilac-0',
+  color: 'color-lilac-100',
   _hover: {
     bg: 'white-alpha-04',
-    color: 'lilac--1',
+    color: 'color-lilac-200',
     _disabled: {
       ...tertiaryDisabled,
       _loading: tertiaryLoading,
@@ -69,48 +69,48 @@ const tertiary = defineStyle({
   },
   _active: {
     bg: 'white-alpha-08',
-    color: 'lilac--2',
+    color: 'color-lilac-300',
   },
   _focus: {},
 });
 
 const dangerDisabled = {
-  borderColor: 'red--2',
-  color: 'red--1',
+  borderColor: 'color-error-900',
+  color: 'color-error-800',
 };
 
 const danger = defineStyle({
   border: '1px solid',
-  borderColor: 'red-1',
-  color: 'red-1',
+  borderColor: 'color-error-400',
+  color: 'color-error-400',
   _disabled: {
     ...dangerDisabled,
   },
   _hover: {
-    borderColor: 'red-0',
-    color: 'red-0',
+    borderColor: 'color-error-500',
+    color: 'color-error-500',
   },
   _active: {
-    borderColor: 'red-0',
-    color: 'red-0',
+    borderColor: 'color-error-500',
+    color: 'color-error-500',
   },
 });
 
 const stepper = defineStyle({
   border: '1px solid',
-  borderColor: 'neutral-3',
-  bg: 'neutral-1',
-  color: 'lilac-0',
+  borderColor: 'color-neutral-900',
+  bg: 'color-black',
+  color: 'color-lilac-100',
   _active: {
-    borderColor: 'neutral-4',
+    borderColor: 'color-neutral-800',
     boxShadow: '0px 0px 0px 3px #534D58',
   },
   _hover: {
-    borderColor: 'neutral-4',
+    borderColor: 'color-neutral-800',
   },
   _focus: {
     outline: 'none',
-    borderColor: 'neutral-4',
+    borderColor: 'color-neutral-800',
     boxShadow: '0px 0px 0px 3px #534D58',
   },
 });

@@ -25,7 +25,7 @@ export function OptionsList({
           pt="0.5rem"
           px="0.5rem"
           textStyle="text-xs-medium"
-          color="neutral-7"
+          color="color-neutral-300"
         >
           {t(titleKey)}
         </Text>
@@ -46,7 +46,7 @@ export function OptionsList({
                 onClick={clickListener}
                 isDisabled={option.isDisabled}
                 cursor="pointer"
-                _hover={{ bg: 'neutral-3', textDecoration: 'none' }}
+                _hover={{ bg: 'color-neutral-900', textDecoration: 'none' }}
                 _disabled={{ cursor: 'not-allowed', opacity: 0.5 }}
                 p="0.5rem"
                 borderRadius="0.5rem"

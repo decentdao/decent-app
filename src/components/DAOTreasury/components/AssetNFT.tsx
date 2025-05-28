@@ -18,7 +18,7 @@ export function NFTHeader() {
       />
       <Text
         textStyle="text-xs-medium"
-        color="neutral-7"
+        color="color-neutral-300"
         px={{ base: '1rem', lg: '1.5rem' }}
       >
         {t('columnNFTs')}
@@ -70,7 +70,7 @@ export function NFTRow({ asset, isLast }: { asset: NFTBalance; isLast: boolean }
           type="address"
           value={asset.tokenAddress}
           _hover={{ bg: 'transparent' }}
-          color="white-0"
+          color="color-white"
           wordBreak="break-word"
         >
           {name}
@@ -81,7 +81,7 @@ export function NFTRow({ asset, isLast }: { asset: NFTBalance; isLast: boolean }
           type="token"
           value={asset.tokenAddress}
           secondaryValue={id}
-          color="white-0"
+          color="color-white"
           _hover={{ bg: 'transparent' }}
         >
           <Text as="span">{`#${createAccountSubstring(id)}`}</Text>

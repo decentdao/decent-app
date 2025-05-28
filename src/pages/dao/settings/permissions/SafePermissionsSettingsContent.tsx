@@ -23,7 +23,13 @@ export function SafePermissionsSettingsContent() {
   const { daoKey } = useCurrentDAOKey();
   const {
     governance,
-    governanceContracts: { isLoaded, linearVotingErc20Address, linearVotingErc721Address },
+    governanceContracts: {
+      isLoaded,
+      linearVotingErc20Address,
+      linearVotingErc721Address,
+      linearVotingErc20WithHatsWhitelistingAddress,
+      linearVotingErc721WithHatsWhitelistingAddress,
+    },
     node: { safe },
   } = useDAOStore({ daoKey });
 
@@ -37,6 +43,7 @@ export function SafePermissionsSettingsContent() {
     ModalType.ADD_CREATE_PROPOSAL_PERMISSION,
     {
       formikContext,
+      votingStrategyAddress: null,
     },
   );
 
@@ -44,11 +51,22 @@ export function SafePermissionsSettingsContent() {
     openAddCreateProposalPermissionModal,
   });
 
+  const openCreateProposalPermissionModal = useDecentModal(
+    ModalType.ADD_CREATE_PROPOSAL_PERMISSION,
+    {
+      formikContext,
+      votingStrategyAddress: linearVotingErc20Address || null,
+    },
+  );
+
   if (!safe) {
     return null;
   }
 
   const proposerThreshold = azoriusGovernance.votingStrategy?.proposerThreshold?.formatted;
+  const noErc20Address = !linearVotingErc20Address && !linearVotingErc20WithHatsWhitelistingAddress;
+  const noErc721Address =
+    !linearVotingErc721Address && !linearVotingErc721WithHatsWhitelistingAddress;
 
   return (
     <>
@@ -68,7 +86,7 @@ export function SafePermissionsSettingsContent() {
         <Flex
           flexDirection="column"
           border="1px solid"
-          borderColor="neutral-3"
+          borderColor="color-neutral-900"
           borderRadius="0.75rem"
         >
           {!isLoaded ? (
@@ -79,8 +97,7 @@ export function SafePermissionsSettingsContent() {
             >
               <BarLoader />
             </Box>
-          ) : (!votesToken || !linearVotingErc20Address) &&
-            (!erc721Tokens || !linearVotingErc721Address) ? (
+          ) : (!votesToken || noErc20Address) && (!erc721Tokens || !noErc721Address) ? (
             <NoDataCard
               emptyText="emptyPermissions"
               emptyTextNotProposer="emptyPermissionsNotProposer"
@@ -91,10 +108,10 @@ export function SafePermissionsSettingsContent() {
             <Box
               p={4}
               borderRadius="0.75rem"
-              onClick={openAddPermissionModal}
+              onClick={openCreateProposalPermissionModal}
               sx={{
                 _hover: {
-                  backgroundColor: 'neutral-3',
+                  backgroundColor: 'color-neutral-900',
                   button: {
                     opacity: 1,
                   },
@@ -108,8 +125,8 @@ export function SafePermissionsSettingsContent() {
                 >
                   <Box
                     borderRadius="50%"
-                    bg="neutral-3"
-                    color="lilac-0"
+                    bg="color-neutral-900"
+                    color="color-lilac-100"
                     padding={1}
                   >
                     <Coins fontSize="1.5rem" />
@@ -118,7 +135,7 @@ export function SafePermissionsSettingsContent() {
                     <Text>{t('permissionCreateProposalsTitle')}</Text>
                     <Text
                       textStyle="text-sm-medium"
-                      color="neutral-7"
+                      color="color-neutral-300"
                     >
                       {votesToken
                         ? t('permissionsErc20CreateProposalsDescription', {
@@ -140,7 +157,7 @@ export function SafePermissionsSettingsContent() {
                     icon={<PencilWithLineIcon />}
                     aria-label={t('edit')}
                     opacity={0}
-                    color="neutral-6"
+                    color="color-neutral-400"
                     border="none"
                   />
                 )}

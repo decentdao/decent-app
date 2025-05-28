@@ -53,7 +53,7 @@ export function Assets() {
     <Box mt={{ base: '1rem', lg: 0 }}>
       <Text
         textStyle="text-xs-medium"
-        color="neutral-7"
+        color="color-neutral-300"
         px={{ base: '1rem', lg: '1.5rem' }}
       >
         {t('subtitleTreasuryBalance')}
@@ -88,7 +88,7 @@ export function Assets() {
                       <AccordionButton
                         onClick={() => toggleAccordionItem(0)}
                         p="0.25rem"
-                        color="white-0"
+                        color="color-white"
                         ml="0.75rem"
                       >
                         <Flex
@@ -138,7 +138,7 @@ export function Assets() {
                       <AccordionButton
                         onClick={() => toggleAccordionItem(hasCoins ? 1 : 0)}
                         p="0.25rem"
-                        color="white-0"
+                        color="color-white"
                         ml="0.75rem"
                       >
                         <Flex
@@ -188,7 +188,7 @@ export function Assets() {
                       <AccordionButton
                         onClick={() => toggleAccordionItem(nftAccordionItemsIndex)}
                         p="0.25rem"
-                        color="white-0"
+                        color="color-white"
                         ml="0.75rem"
                       >
                         <Flex

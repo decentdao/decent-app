@@ -5,9 +5,11 @@ import { useNavigate } from 'react-router-dom';
 import { Address } from 'viem';
 import Avatar from '../../components/ui/page/Header/Avatar';
 import { DAO_ROUTES } from '../../constants/routes';
+import { useCurrentDAOKey } from '../../hooks/DAO/useCurrentDAOKey';
 import { useNetworkEnsAvatar } from '../../hooks/useNetworkEnsAvatar';
 import { createAccountSubstring } from '../../hooks/utils/useGetAccountName';
 import { useGetSafeName } from '../../hooks/utils/useGetSafeName';
+import { useDAOStore } from '../../providers/App/AppProvider';
 import { getChainIdFromPrefix, getChainName, getNetworkIcon } from '../../utils/url';
 
 interface SafeDisplayRowProps {
@@ -26,7 +28,8 @@ export function SafeDisplayRow({
   name,
 }: SafeDisplayRowProps) {
   const navigate = useNavigate();
-
+  const { daoKey } = useCurrentDAOKey();
+  const { action } = useDAOStore({ daoKey });
   const { getSafeName } = useGetSafeName(getChainIdFromPrefix(network));
   const [safeName, setSafeName] = useState(name);
 
@@ -42,10 +45,14 @@ export function SafeDisplayRow({
 
   const onClickNav = () => {
     if (onClick) onClick();
+
     navigate(DAO_ROUTES.dao.relative(network, address));
+
+    // TODO: remove this after releasing complete release of useGlobalStore
+    action.resetSafeState();
   };
 
-  const nameColor = showAddress ? 'neutral-7' : 'white-0';
+  const nameColor = showAddress ? 'color-neutral-300' : 'color-white';
 
   return (
     <Flex
@@ -55,18 +62,18 @@ export function SafeDisplayRow({
       gap="0.75rem"
       alignItems="center"
       onClick={onClickNav}
-      backgroundColor="neutral-2"
+      backgroundColor="color-neutral-950"
       cursor="pointer"
       _hover={{
-        backgroundColor: 'neutral-3',
+        backgroundColor: 'color-neutral-900',
         border: '1px solid',
-        borderColor: 'neutral-4',
+        borderColor: 'color-neutral-800',
       }}
       transition="all ease-out 300ms"
       borderRadius="0.5rem"
       border="1px solid"
       borderColor="transparent"
-      _active={{ borderColor: 'neutral-4' }}
+      _active={{ borderColor: 'color-neutral-800' }}
     >
       <Avatar
         size="lg"
@@ -75,7 +82,7 @@ export function SafeDisplayRow({
       />
       <Flex flexDir="column">
         <Text
-          color={safeName ? nameColor : 'neutral-6'}
+          color={safeName ? nameColor : 'color-neutral-400'}
           textStyle={showAddress ? 'text-sm-medium' : 'text-lg-regular'}
         >
           {safeName || t('loadingFavorite')}

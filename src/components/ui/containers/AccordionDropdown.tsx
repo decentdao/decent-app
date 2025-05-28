@@ -16,10 +16,10 @@ function ContentCountBadge({ count }: { count: number | undefined }) {
     <Box
       textStyle="text-xs-medium"
       rounded="9999px"
-      bg="celery--2"
+      bg="color-green-500"
       border="1px solid"
-      borderColor="celery--5"
-      color="celery--6"
+      borderColor="color-green-800"
+      color="color-green-950"
       boxSize="1.25rem"
       textAlign="center"
     >
@@ -44,9 +44,9 @@ export function AccordionDropdown({
       marginTop={4}
       padding="1rem"
       borderRadius="0.75rem"
-      bg="neutral-2"
+      bg="color-neutral-950"
       border="1px solid"
-      borderColor="neutral-3"
+      borderColor="color-neutral-900"
     >
       <Accordion
         allowToggle
@@ -66,7 +66,7 @@ export function AccordionDropdown({
                 <AccordionButton
                   p={0}
                   textStyle="text-xl-regular"
-                  color="lilac-0"
+                  color="color-lilac-100"
                 >
                   <Flex
                     alignItems="center"

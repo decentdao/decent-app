@@ -9,18 +9,18 @@ const disabled = {
   bg: DISABLED_INPUT,
   border: '1px solid',
   borderColor: 'white-alpha-16',
-  color: 'neutral-6',
+  color: 'color-neutral-400',
   _placeholder: {
-    color: 'neutral-5',
+    color: 'color-neutral-700',
   },
   boxShadow: 'unset',
 };
 
 const invalid = {
-  bg: 'red--3',
-  color: 'red-1',
+  bg: 'color-error-950',
+  color: 'color-error-400',
   _placeholder: {
-    color: 'red-0',
+    color: 'color-error-500',
   },
   boxShadow:
     '0px 0px 0px 2px #AF3A48, 0px 1px 0px 0px rgba(242, 161, 171, 0.30), 0px 0px 0px 1px rgba(0, 0, 0, 0.80)',
@@ -31,15 +31,15 @@ const loading = {};
 const baseStyle = definePartsStyle({
   field: {
     borderRadius: '0.5rem',
-    color: 'white-0',
-    bg: 'neutral-1',
+    color: 'color-white',
+    bg: 'color-black',
     boxShadow: '0px 1px 0px 0px rgba(255, 255, 255, 0.16), 0px 0px 0px 1px rgba(0, 0, 0, 0.68)',
     transitionDuration: 'normal',
     transitionProperty: 'common',
     width: '100%',
     _invalid: invalid,
     _placeholder: {
-      color: 'neutral-5',
+      color: 'color-neutral-700',
     },
     _active: {
       boxShadow:
@@ -57,7 +57,7 @@ const baseStyle = definePartsStyle({
       },
       _invalid: {
         ...invalid,
-        borderColor: 'red-1',
+        borderColor: 'color-error-400',
       },
     },
     _disabled: {

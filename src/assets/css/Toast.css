@@ -54,47 +54,47 @@
 
 .sonner-toast[data-rich-colors='true'][data-sonner-toast][data-type='info'],
 .sonner-toast[data-rich-colors='true'][data-sonner-toast][data-type='loading'] {
-  background-color: var(--colors-neutral-3);
-  border: 1px solid var(--colors-neutral-4);
-  color: var(--colors-lilac-0);
+  background-color: var(--colors-color-neutral-900);
+  border: 1px solid var(--colors-color-neutral-800);
+  color: var(--colors-color-lilac-100);
 }
 
 .sonner-toast[data-rich-colors='true'][data-sonner-toast][data-type='info']
   button[data-close-button],
 .sonner-toast[data-rich-colors='true'][data-sonner-toast][data-type='loading']
   button[data-close-button] {
-  color: var(--colors-lilac-0);
+  color: var(--colors-color-lilac-100);
 }
 
 .sonner-toast[data-rich-colors='true'][data-sonner-toast][data-type='error'] {
-  background-color: var(--colors-red--2);
-  border: 1px solid var(--colors-red--1);
-  color: var(--colors-red-1);
+  background-color: var(--colors-color-error-900);
+  border: 1px solid var(--colors-color-error-800);
+  color: var(--colors-color-error-400);
 }
 
 .sonner-toast[data-rich-colors='true'][data-sonner-toast][data-type='error']
   button[data-close-button] {
-  color: var(--colors-red-1);
+  color: var(--colors-color-error-400);
 }
 
 .sonner-toast[data-rich-colors='true'][data-sonner-toast][data-type='warning'] {
-  background-color: var(--colors-yellow--2);
-  border: 1px solid var(--colors-yellow--1);
-  color: var(--colors-yellow-0);
+  background-color: var(--colors-color-yellow-950);
+  border: 1px solid var(--colors-color-yellow-800);
+  color: var(--colors-color-yellow-200);
 }
 
 .sonner-toast[data-rich-colors='true'][data-sonner-toast][data-type='warning']
   button[data-close-button] {
-  color: var(--colors-yellow-0);
+  color: var(--colors-color-yellow-200);
 }
 
 .sonner-toast[data-rich-colors='true'][data-sonner-toast][data-type='success'] {
-  background-color: var(--colors-celery--6);
-  border: 1px solid var(--colors-celery--5);
-  color: var(--colors-celery-0);
+  background-color: var(--colors-color-green-950);
+  border: 1px solid var(--colors-color-green-800);
+  color: var(--colors-color-green-400);
 }
 
 .sonner-toast[data-rich-colors='true'][data-sonner-toast][data-type='success']
   button[data-close-button] {
-  color: var(--colors-celery-0);
+  color: var(--colors-color-green-400);
 }

@@ -126,11 +126,11 @@ export const BadgeStatus: Record<EditBadgeStatus, string> = {
   [EditBadgeStatus.Inactive]: 'Inactive',
 };
 export const BadgeStatusColor: Record<EditBadgeStatus, string> = {
-  [EditBadgeStatus.Updated]: 'lilac-0',
-  [EditBadgeStatus.New]: 'celery--2',
-  [EditBadgeStatus.Removed]: 'red-1',
-  [EditBadgeStatus.NewTermedRole]: 'celery--2',
-  [EditBadgeStatus.Inactive]: 'neutral-6',
+  [EditBadgeStatus.Updated]: 'color-lilac-100',
+  [EditBadgeStatus.New]: 'color-green-500',
+  [EditBadgeStatus.Removed]: 'color-error-400',
+  [EditBadgeStatus.NewTermedRole]: 'color-green-500',
+  [EditBadgeStatus.Inactive]: 'color-neutral-400',
 };
 
 export enum RoleFormTermStatus {

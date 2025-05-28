@@ -25,14 +25,14 @@ function Step({ index, stepNumber, label }: { index: number; stepNumber: number;
     <Box width="100%">
       <Box
         height="4px"
-        bg={stepNumber >= index ? 'lilac-0' : 'neutral-6'}
+        bg={stepNumber >= index ? 'color-lilac-100' : 'color-neutral-400'}
         borderRadius="full"
       />
       <Text
         mx="0.25rem"
         mt="0.5rem"
         textStyle="text-sm-medium"
-        color={stepNumber === index ? 'white-0' : 'neutral-6'}
+        color={stepNumber === index ? 'color-white' : 'color-neutral-400'}
       >
         {index}. {label}
       </Text>
@@ -81,7 +81,7 @@ export function StepWrapper({
           >
             <Text
               textStyle="text-3xl-regular"
-              color="white-0"
+              color="color-white"
             >
               {title}
             </Text>
@@ -155,7 +155,7 @@ export function StepWrapper({
         <Box
           mt="1.5rem"
           padding="1.5rem"
-          bg="neutral-2"
+          bg="color-neutral-950"
           borderRadius="0.25rem"
         >
           {children}

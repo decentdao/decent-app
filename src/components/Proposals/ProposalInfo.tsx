@@ -3,6 +3,7 @@ import { ArrowUpRight } from '@phosphor-icons/react';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Shield } from '../../assets/theme/custom/icons/Shield';
+import { findMostConfirmedMultisigRejectionProposal } from '../../helpers/multisigProposal';
 import useSnapshotProposal from '../../hooks/DAO/loaders/snapshot/useSnapshotProposal';
 import { useGetMetadata } from '../../hooks/DAO/proposal/useGetMetadata';
 import { useCurrentDAOKey } from '../../hooks/DAO/useCurrentDAOKey';
@@ -11,10 +12,11 @@ import {
   ExtendedSnapshotProposal,
   FractalProposal,
   FractalProposalState,
+  GovernanceType,
   MultisigProposal,
 } from '../../types';
 import { ActivityDescription } from '../Activity/ActivityDescription';
-import { Badge } from '../ui/badges/Badge';
+import { ProposalStateBadge } from '../ui/badges/Badge';
 import { SignerThresholdBadge } from '../ui/badges/SignerThresholdBadge';
 import { SnapshotButton } from '../ui/badges/Snapshot';
 import { ModalType } from '../ui/modals/ModalProvider';
@@ -23,6 +25,26 @@ import { ProposalCountdown } from '../ui/proposal/ProposalCountdown';
 import ProposalExecutableCode from '../ui/proposal/ProposalExecutableCode';
 import CeleryButtonWithIcon from '../ui/utils/CeleryButtonWithIcon';
 import { MultisigConflictingProposals } from './MultisigProposalDetails/MultisigConflictingProposals';
+
+function NonceLabel({ nonce }: { nonce: number | undefined }) {
+  const { t } = useTranslation('proposal');
+  const { daoKey } = useCurrentDAOKey();
+  const { governance } = useDAOStore({ daoKey });
+  const isMultisig = governance.type === GovernanceType.MULTISIG;
+
+  if (!isMultisig || nonce === undefined) return null;
+  return (
+    <Text
+      mb={2}
+      textStyle="text-sm-medium"
+      color="color-neutral-300"
+    >
+      {t('nonceLabel', {
+        number: nonce,
+      })}
+    </Text>
+  );
+}
 
 export function ProposalInfo({
   proposal,
@@ -33,7 +55,8 @@ export function ProposalInfo({
   const { t } = useTranslation('proposal');
   const { daoKey } = useCurrentDAOKey();
   const {
-    node: { subgraphInfo },
+    node: { subgraphInfo, safe },
+    governance: { proposals },
   } = useDAOStore({ daoKey });
   const { snapshotProposal } = useSnapshotProposal(proposal);
 
@@ -51,11 +74,17 @@ export function ProposalInfo({
 
   const confirmUrl = useDecentModal(modalType, props);
 
+  const rejectionProposal = findMostConfirmedMultisigRejectionProposal(
+    safe?.address,
+    (proposal as MultisigProposal).nonce,
+    proposals,
+  );
+
   return (
     <Box
       borderRadius={8}
       border="1px solid"
-      borderColor="neutral-3"
+      borderColor="color-neutral-900"
       padding="1.5rem"
     >
       <Flex
@@ -68,15 +97,17 @@ export function ProposalInfo({
           alignItems="center"
         >
           {proposal.state && (
-            <Badge
+            <ProposalStateBadge
               size="base"
               labelKey={proposal.state}
+              rejectionProposalState={rejectionProposal?.state}
             />
           )}
           <ProposalCountdown
             proposal={proposal}
+            rejectionProposal={rejectionProposal}
             showIcon={false}
-            textColor="neutral-7"
+            textColor="color-neutral-300"
           />
           {snapshotProposal && subgraphInfo && (
             <>
@@ -107,14 +138,7 @@ export function ProposalInfo({
           gap={4}
           alignItems="center"
         >
-          <Text
-            textStyle="text-sm-medium"
-            color="neutral-7"
-          >
-            {t('nonceLabel', {
-              number: (proposal as MultisigProposal).nonce,
-            })}
-          </Text>
+          <NonceLabel nonce={(proposal as MultisigProposal).nonce} />
           <SignerThresholdBadge
             numberOfConfirmedSigners={(proposal as MultisigProposal).confirmations?.length}
             proposalThreshold={(proposal as MultisigProposal).signersThreshold}

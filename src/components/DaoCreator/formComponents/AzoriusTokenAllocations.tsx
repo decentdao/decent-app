@@ -84,7 +84,7 @@ export function AzoriusTokenAllocations(props: ICreationStepProps) {
             </Grid>
 
             <Text
-              color="neutral-7"
+              color="color-neutral-300"
               textStyle="text-sm-medium"
             >
               {t('helperAllocations')}
@@ -113,7 +113,7 @@ export function AzoriusTokenAllocations(props: ICreationStepProps) {
                         <AccordionButton
                           p={0}
                           textStyle="text-xl-regular"
-                          color="lilac-0"
+                          color="color-lilac-100"
                         >
                           {isExpanded ? <CaretDown /> : <CaretRight />}
                           {t('advanced', { ns: 'common' })}

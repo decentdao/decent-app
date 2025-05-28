@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import { Address } from 'viem';
 import { DAO_ROUTES } from '../../../constants/routes';
 import { useDateTimeDisplay } from '../../../helpers/dateTime';
+import { findMostConfirmedMultisigRejectionProposal } from '../../../helpers/multisigProposal';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import { useNetworkEnsAvatar } from '../../../hooks/useNetworkEnsAvatar';
 import { useGetAccountName } from '../../../hooks/utils/useGetAccountName';
@@ -19,7 +20,7 @@ import {
   FractalProposalState,
 } from '../../../types';
 import { ActivityDescription } from '../../Activity/ActivityDescription';
-import { Badge } from '../../ui/badges/Badge';
+import { ProposalStateBadge } from '../../ui/badges/Badge';
 import QuorumBadge from '../../ui/badges/QuorumBadge';
 import { SignerThresholdBadge } from '../../ui/badges/SignerThresholdBadge';
 import { SnapshotIcon } from '../../ui/badges/Snapshot';
@@ -36,7 +37,7 @@ function ProposalCreatedDate({ date }: { date: Date }) {
     >
       <Text
         textStyle="text-xs-medium"
-        color="neutral-7"
+        color="color-neutral-300"
       >
         {createdDateLabel}
       </Text>
@@ -56,7 +57,7 @@ function ProposalCreatedBy({ createdBy }: { createdBy: Address }) {
     >
       <Text
         textStyle="text-xs-medium"
-        color="neutral-7"
+        color="color-neutral-300"
       >
         <Flex gap="1">
           {t('by')}
@@ -81,8 +82,8 @@ function NonceLabel({ nonce }: { nonce: number | undefined }) {
   if (!isMultisig || nonce === undefined) return null;
   return (
     <Text
-      textStyle="text-sm-medium"
-      color="neutral-7"
+      textStyle="text-xs-medium"
+      color="color-neutral-300"
     >
       {t('nonceLabel', {
         number: nonce,
@@ -92,7 +93,11 @@ function NonceLabel({ nonce }: { nonce: number | undefined }) {
 }
 
 function ProposalCard({ proposal }: { proposal: FractalProposal }) {
-  const { safeAddress } = useCurrentDAOKey();
+  const { safeAddress, daoKey } = useCurrentDAOKey();
+  const {
+    governance: { proposals },
+    node: { safe },
+  } = useDAOStore({ daoKey });
   const { addressPrefix } = useNetworkConfigStore();
 
   if (!safeAddress) {
@@ -102,13 +107,19 @@ function ProposalCard({ proposal }: { proposal: FractalProposal }) {
   const isSnapshotProposal = !!(proposal as SnapshotProposal).snapshotProposalId;
   const isAzoriusProposal = !!(proposal as AzoriusProposal).votesSummary;
 
+  const rejectionProposal = findMostConfirmedMultisigRejectionProposal(
+    safe?.address,
+    (proposal as MultisigProposal).nonce,
+    proposals,
+  );
+
   return (
     <Link to={DAO_ROUTES.proposal.relative(addressPrefix, safeAddress, proposal.proposalId)}>
       <Box
         minHeight="6.25rem"
-        bg="neutral-2"
-        _hover={{ bg: 'neutral-3' }}
-        _active={{ bg: 'neutral-2', border: '1px solid', borderColor: 'neutral-3' }}
+        bg="color-neutral-950"
+        _hover={{ bg: 'color-neutral-900' }}
+        _active={{ bg: 'color-neutral-950', border: '1px solid', borderColor: 'color-neutral-900' }}
         transition="all ease-out 300ms"
         p="1.5rem"
         borderRadius="0.75rem"
@@ -124,14 +135,18 @@ function ProposalCard({ proposal }: { proposal: FractalProposal }) {
             alignItems="center"
             w={{ base: '100%', md: 'auto' }}
           >
-            <Badge
-              labelKey={proposal.state!}
-              size="sm"
-            />
+            {proposal.state && (
+              <ProposalStateBadge
+                labelKey={proposal.state}
+                rejectionProposalState={rejectionProposal?.state}
+                size="sm"
+              />
+            )}
             <ProposalCountdown
               proposal={proposal}
+              rejectionProposal={rejectionProposal}
               showIcon={false}
-              textColor="neutral-7"
+              textColor="color-neutral-300"
             />
             {isSnapshotProposal && (
               <Box ml={1}>
@@ -139,13 +154,18 @@ function ProposalCard({ proposal }: { proposal: FractalProposal }) {
               </Box>
             )}
           </Flex>
-          {isAzoriusProposal && <QuorumBadge proposal={proposal as AzoriusProposal} />}
-          <NonceLabel nonce={(proposal as MultisigProposal).nonce} />
-          <SignerThresholdBadge
-            numberOfConfirmedSigners={(proposal as MultisigProposal).confirmations?.length}
-            proposalThreshold={(proposal as MultisigProposal).signersThreshold}
-            isRejected={proposal.state === FractalProposalState.REJECTED}
-          />
+          <Flex
+            gap={4}
+            alignItems="center"
+          >
+            <NonceLabel nonce={(proposal as MultisigProposal).nonce} />
+            {isAzoriusProposal && <QuorumBadge proposal={proposal as AzoriusProposal} />}
+            <SignerThresholdBadge
+              numberOfConfirmedSigners={(proposal as MultisigProposal).confirmations?.length}
+              proposalThreshold={(proposal as MultisigProposal).signersThreshold}
+              isRejected={proposal.state === FractalProposalState.REJECTED}
+            />
+          </Flex>
         </Flex>
         <ActivityDescription activity={proposal} />
         <Flex

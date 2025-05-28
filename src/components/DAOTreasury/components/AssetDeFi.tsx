@@ -22,21 +22,21 @@ export function DeFiHeader() {
         <Text
           w="40%"
           textStyle="text-xs-medium"
-          color="neutral-7"
+          color="color-neutral-300"
         >
           {t('columnProtocols')}
         </Text>
         <Text
           w="35%"
           textStyle="text-xs-medium"
-          color="neutral-7"
+          color="color-neutral-300"
         >
           {t('columnValue')}
         </Text>
         <Text
           w="25%"
           textStyle="text-xs-medium"
-          color="neutral-7"
+          color="color-neutral-300"
         >
           {t('columnAllocation')}
         </Text>
@@ -90,7 +90,7 @@ export function DeFiRow({ asset }: { asset: DefiBalance }) {
           />
         </DecentTooltip>
         <EtherscanLink
-          color="white-0"
+          color="color-white"
           _hover={{ bg: 'transparent' }}
           padding={0}
           borderWidth={0}

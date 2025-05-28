@@ -21,7 +21,7 @@ function LabelWrapper({
   tooltipContent,
   children,
   isRequired,
-  labelColor = 'white-0',
+  labelColor = 'color-white',
 }: LabelWrapperProps) {
   return (
     <Box position="relative">
@@ -35,7 +35,7 @@ function LabelWrapper({
           textStyle="text-sm-medium"
         >
           <Text>{label}</Text>
-          {isRequired && <Text color="lilac-0">*</Text>}
+          {isRequired && <Text color="color-lilac-100">*</Text>}
           {!!tooltipContent && (
             <DecentTooltip
               hasArrow
@@ -49,7 +49,7 @@ function LabelWrapper({
         {children}
         <Box
           textStyle="text-sm-medium"
-          color="neutral-7"
+          color="color-neutral-300"
           mt="2"
           h="0.5rem"
         >
@@ -57,7 +57,7 @@ function LabelWrapper({
             <Flex gap="0.25rem">
               <Image src="/images/input-error.svg" />
               <Text
-                color="red-0"
+                color="color-error-500"
                 mt="0.2rem"
                 mb="0.25rem"
               >

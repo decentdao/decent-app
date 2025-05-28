@@ -26,7 +26,7 @@ export default function LidoButtons() {
           />
           <Text
             textStyle="text-xs-medium"
-            color="neutral-7"
+            color="color-neutral-300"
             my="1rem"
             px={{ base: '1rem', lg: '1.5rem' }}
           >

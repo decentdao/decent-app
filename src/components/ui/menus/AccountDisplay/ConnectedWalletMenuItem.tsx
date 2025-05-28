@@ -32,7 +32,7 @@ export function ConnectedWalletMenuItem() {
       <Text
         px="0.5rem"
         textStyle="text-xs-medium"
-        color="neutral-7"
+        color="color-neutral-300"
       >
         {t('wallet')}
       </Text>

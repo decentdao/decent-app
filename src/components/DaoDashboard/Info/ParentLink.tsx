@@ -23,8 +23,8 @@ export function ParentLink() {
 
   return (
     <Link
-      color="celery-0"
-      _hover={{ textDecoration: 'none', color: 'celery--6' }}
+      color="color-green-400"
+      _hover={{ textDecoration: 'none', color: 'color-green-950' }}
       to={DAO_ROUTES.dao.relative(addressPrefix, subgraphInfo.parentAddress)}
       marginBottom="1rem"
       as={RouterLink}
@@ -32,7 +32,7 @@ export function ParentLink() {
     >
       <HStack>
         <Icon
-          color="lilac-0"
+          color="color-lilac-100"
           as={ArrowBendLeftUp}
           width="1.5rem"
           height="1.5rem"

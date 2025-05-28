@@ -102,7 +102,7 @@ export function AssetSelector({ formIndex, disabled }: { formIndex: number; disa
                       <Flex flexDir="column">
                         <Text
                           textStyle="text-sm-medium"
-                          color="white-0"
+                          color="color-white"
                         >
                           {item.label}
                         </Text>
@@ -112,7 +112,7 @@ export function AssetSelector({ formIndex, disabled }: { formIndex: number; disa
                         >
                           <Text
                             textStyle="text-lg-regular"
-                            color="neutral-7"
+                            color="color-neutral-300"
                           >
                             {balanceText}
                           </Text>
@@ -120,13 +120,13 @@ export function AssetSelector({ formIndex, disabled }: { formIndex: number; disa
                             <>
                               <Text
                                 textStyle="text-lg-regular"
-                                color="neutral-7"
+                                color="color-neutral-300"
                               >
                                 {'•'}
                               </Text>
                               <Text
                                 textStyle="text-lg-regular"
-                                color="neutral-7"
+                                color="color-neutral-300"
                               >
                                 {formatUSD(usdValue)}
                               </Text>
@@ -139,7 +139,7 @@ export function AssetSelector({ formIndex, disabled }: { formIndex: number; disa
                       <Icon
                         as={CheckCircle}
                         boxSize="1.5rem"
-                        color="lilac-0"
+                        color="color-lilac-100"
                       />
                     )}
                   </>
@@ -170,7 +170,7 @@ export function AssetSelector({ formIndex, disabled }: { formIndex: number; disa
             return (
               <LabelWrapper
                 label={t('totalAmount')}
-                labelColor="neutral-7"
+                labelColor="color-neutral-300"
                 errorMessage={
                   paymentAmountBigIntTouched && paymentAmountBigIntError?.bigintValue
                     ? paymentAmountBigIntError.bigintValue

@@ -31,7 +31,7 @@ function NavigationIconLink(props: {
           px="6px"
           borderRadius={{ md: 4 }}
           transition="all ease-out 300ms"
-          _hover={{ bgColor: 'neutral-3' }}
+          _hover={{ bgColor: 'color-neutral-900' }}
         >
           <ChakraIcon
             as={DisplayIcon}

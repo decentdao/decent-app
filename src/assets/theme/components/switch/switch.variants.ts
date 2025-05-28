@@ -2,53 +2,53 @@ import { defineStyle } from '@chakra-ui/react';
 
 const primaryDisabled = {
   track: {
-    backgroundColor: 'neutral-5',
+    backgroundColor: 'color-neutral-700',
     _checked: {
-      backgroundColor: 'neutral-5',
+      backgroundColor: 'color-neutral-700',
     },
   },
   thumb: {
-    backgroundColor: 'neutral-6',
+    backgroundColor: 'color-neutral-400',
     _checked: {
-      backgroundColor: 'neutral-6',
+      backgroundColor: 'color-neutral-400',
     },
   },
 };
 
 const primary = defineStyle({
   track: {
-    backgroundColor: 'neutral-6',
+    backgroundColor: 'color-neutral-400',
     _checked: {
-      backgroundColor: 'lilac--3',
+      backgroundColor: 'color-lilac-600',
     },
     _disabled: primaryDisabled.track,
   },
   thumb: {
-    backgroundColor: 'lilac--2',
+    backgroundColor: 'color-lilac-300',
     _disabled: primaryDisabled.thumb,
   },
 });
 
 const secondaryDisabled = {
   track: {
-    backgroundColor: 'neutral-3',
+    backgroundColor: 'color-neutral-900',
     _checked: {
-      backgroundColor: 'neutral-3',
+      backgroundColor: 'color-neutral-900',
     },
   },
   thumb: {
-    backgroundColor: 'neutral-4',
+    backgroundColor: 'color-neutral-800',
     _checked: {
-      backgroundColor: 'neutral-4',
+      backgroundColor: 'color-neutral-800',
     },
   },
 };
 
 const secondary = defineStyle({
   track: {
-    backgroundColor: 'black-0',
+    backgroundColor: 'color-black',
     _checked: {
-      backgroundColor: 'celery--3',
+      backgroundColor: 'color-green-600',
     },
     _hover: {
       _disabled: secondaryDisabled.track,
@@ -56,8 +56,8 @@ const secondary = defineStyle({
     _disabled: secondaryDisabled.track,
   },
   thumb: {
-    backgroundColor: 'neutral-10',
-    borderColor: 'white-0',
+    backgroundColor: 'color-neutral-50',
+    borderColor: 'color-white',
     _hover: {
       _disabled: secondaryDisabled.thumb,
     },
