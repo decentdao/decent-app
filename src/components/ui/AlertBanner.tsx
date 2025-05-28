@@ -43,14 +43,14 @@ export function AlertBanner({ message, variant, layout, messageSecondary }: Aler
         />
         <Text
           color={variantProps.color}
-          textStyle="body-small"
+          textStyle="text-base-regular"
         >
           {message}
         </Text>
         {messageSecondary && (
           <Text
             color={variantProps.color}
-            textStyle="body-small"
+            textStyle="text-base-regular"
           >
             {messageSecondary}
           </Text>

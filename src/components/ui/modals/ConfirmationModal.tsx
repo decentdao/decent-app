@@ -113,7 +113,7 @@ function ConfirmRejectProposalAdditionalContent() {
           src={warningSVG}
           boxSize="1.5rem"
         />
-        <Text textStyle="body-small">{t('rejectProposalAreYouSureDescription')}</Text>
+        <Text textStyle="text-lg-regular">{t('rejectProposalAreYouSureDescription')}</Text>
       </Flex>
     </Box>
   );

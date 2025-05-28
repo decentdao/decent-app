@@ -138,7 +138,7 @@ export function AssetSelector({
                   gap={2}
                 >
                   <Text
-                    textStyle="body-large"
+                    textStyle="text-lg-regular"
                     color="color-neutral-300"
                   >
                     {balanceText}
@@ -146,13 +146,13 @@ export function AssetSelector({
                   {usdValue && (
                     <>
                       <Text
-                        textStyle="body-large"
+                        textStyle="text-lg-regular"
                         color="color-neutral-300"
                       >
                         {'•'}
                       </Text>
                       <Text
-                        textStyle="body-large"
+                        textStyle="text-lg-regular"
                         color="color-neutral-300"
                       >
                         {formatUSD(usdValue)}

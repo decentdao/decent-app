@@ -1,13 +1,13 @@
 export default {
   lg: {
-    apply: 'textStyles.body-large',
+    apply: 'textStyles.text-lg-regular',
     height: '2rem',
     width: '2rem',
     padding: '0.5rem',
     borderRadius: '0.5rem',
   },
   base: {
-    apply: 'textStyles.body-large',
+    apply: 'textStyles.text-lg-regular',
     height: '1.5rem',
     width: '1.5rem',
     padding: '0.25rem',
@@ -21,13 +21,13 @@ export default {
     borderRadius: '0.25rem',
   },
   'icon-lg': {
-    apply: 'textStyles.body-large',
+    apply: 'textStyles.text-lg-regular',
     height: '2.25rem',
     width: '2.25rem',
     borderRadius: '0.5rem',
   },
   'icon-md': {
-    apply: 'textStyles.body-large',
+    apply: 'textStyles.text-lg-regular',
     height: '1.5rem',
     width: '1.5rem',
     padding: '0.25rem',

@@ -83,11 +83,11 @@ export function SafeDisplayRow({
       <Flex flexDir="column">
         <Text
           color={safeName ? nameColor : 'color-neutral-400'}
-          textStyle={showAddress ? 'labels-large' : 'body-large'}
+          textStyle={showAddress ? 'labels-large' : 'text-lg-regular'}
         >
           {safeName || t('loadingFavorite')}
         </Text>
-        {showAddress && <Text textStyle="body-large">{createAccountSubstring(address)}</Text>}
+        {showAddress && <Text textStyle="text-lg-regular">{createAccountSubstring(address)}</Text>}
       </Flex>
 
       <Spacer />

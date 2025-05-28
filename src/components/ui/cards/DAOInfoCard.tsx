@@ -70,7 +70,7 @@ export function DAOInfoCard() {
                 color="color-lilac-100"
                 borderRadius="625rem"
                 p="0.25rem 0.75rem"
-                textStyle="body-large"
+                textStyle="text-lg-regular"
               >
                 Parent
               </Link>

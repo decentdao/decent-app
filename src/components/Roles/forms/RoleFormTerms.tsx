@@ -248,7 +248,7 @@ function RoleTermExpiredTerms({
                     color="color-lilac-100"
                   />
                   <Text
-                    textStyle="body-large"
+                    textStyle="text-lg-regular"
                     color="color-lilac-100"
                   >
                     {t('showPreviousTerms')}

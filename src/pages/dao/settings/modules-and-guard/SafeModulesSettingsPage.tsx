@@ -39,7 +39,7 @@ export function SafeModulesSettingsPage() {
         >
           <Text
             ml={6}
-            textStyle="body-large"
+            textStyle="text-lg-regular"
           >
             {t('modulesTitle')}
           </Text>
@@ -64,7 +64,7 @@ export function SafeModulesSettingsPage() {
                       key={moduleAddress}
                       flexDirection="column"
                     >
-                      {moduleHelper && <Text textStyle="body-small">{moduleHelper}</Text>}
+                      {moduleHelper && <Text textStyle="text-base-regular">{moduleHelper}</Text>}
                       <DisplayAddress
                         ml={-3.5}
                         address={moduleAddress}
@@ -91,7 +91,7 @@ export function SafeModulesSettingsPage() {
         >
           <Text
             ml={6}
-            textStyle="body-large"
+            textStyle="text-lg-regular"
           >
             {t('guardsTitle')}
           </Text>
@@ -104,7 +104,7 @@ export function SafeModulesSettingsPage() {
           >
             {safe?.guard && safe?.guard !== zeroAddress ? (
               <Flex flexDirection="column">
-                <Text textStyle="body-small">
+                <Text textStyle="text-base-regular">
                   {!!freezeGuardContractAddress || !!freezeVotingContractAddress
                     ? 'Freeze Guard'
                     : 'Guard'}

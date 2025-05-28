@@ -160,7 +160,7 @@ function TermSelection({
       justifyContent="space-between"
     >
       <Text
-        textStyle="body-small"
+        textStyle="text-base-regular"
         color="color-white"
       >
         {t('termNumber', { number: selectedTermNumber })}

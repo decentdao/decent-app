@@ -111,7 +111,7 @@ export function AssetSelector({ formIndex, disabled }: { formIndex: number; disa
                           gap={2}
                         >
                           <Text
-                            textStyle="body-large"
+                            textStyle="text-lg-regular"
                             color="color-neutral-300"
                           >
                             {balanceText}
@@ -119,13 +119,13 @@ export function AssetSelector({ formIndex, disabled }: { formIndex: number; disa
                           {usdValue && (
                             <>
                               <Text
-                                textStyle="body-large"
+                                textStyle="text-lg-regular"
                                 color="color-neutral-300"
                               >
                                 {'•'}
                               </Text>
                               <Text
-                                textStyle="body-large"
+                                textStyle="text-lg-regular"
                                 color="color-neutral-300"
                               >
                                 {formatUSD(usdValue)}

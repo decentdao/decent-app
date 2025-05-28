@@ -92,7 +92,7 @@ export function DropdownMenu<T>({
                 gap="0.75rem"
               >
                 <Text
-                  textStyle="body-large"
+                  textStyle="text-lg-regular"
                   color="color-white"
                 >
                   {selectedItem?.label ?? selectPlaceholder}

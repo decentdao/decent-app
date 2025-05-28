@@ -56,7 +56,7 @@ export default function DappCard({
             color="color-lilac-100"
           />
         </Flex>
-        <Text textStyle="body-large">{title}</Text>
+        <Text textStyle="text-lg-regular">{title}</Text>
         <Text
           textStyle="labels-large"
           color="color-neutral-300"

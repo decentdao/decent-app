@@ -48,7 +48,7 @@ export function SafeMenuItem({ address, network, name }: SafeMenuItemProps) {
       <Flex flexDir="column">
         <Text
           color={name ? 'color-white' : 'color-neutral-400'}
-          textStyle="body-large"
+          textStyle="text-lg-regular"
         >
           {name || t('loadingFavorite')}
         </Text>

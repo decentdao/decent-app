@@ -72,7 +72,7 @@ export function SettingsPermissionsStrategyForm({
               boxSize="2.25rem"
             />
             <Text
-              textStyle="body-small"
+              textStyle="text-base-regular"
               color="color-white"
             >
               {votesToken?.symbol || erc721Tokens?.map(token => token.symbol).join(', ')}
