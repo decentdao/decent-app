@@ -17,7 +17,7 @@ export function DecentTooltip(props: TooltipProps) {
       hasArrow
       borderRadius="8px"
       padding="0.25rem 0.5rem"
-      color="black-0"
+      color="color-black"
       backgroundColor="neutral-9"
     />
   );

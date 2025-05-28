@@ -249,13 +249,13 @@ export default function ProposalTransaction({
                                       }}
                                       isChecked={!!parameter.label}
                                       isDisabled={!parameter.signature || !!parameter.value}
-                                      bg="black-0"
+                                      bg="color-black"
                                       color="lilac--3"
                                       size="md"
                                       _disabled={{ bg: 'neutral-6', color: 'neutral-5' }}
-                                      _hover={{ bg: 'black-0', color: 'lilac--4' }}
+                                      _hover={{ bg: 'color-black', color: 'lilac--4' }}
                                       _checked={{
-                                        bg: 'black-0',
+                                        bg: 'color-black',
                                         color: 'lilac--3',
                                         borderWidth: '6px',
                                       }}
@@ -307,13 +307,13 @@ export default function ProposalTransaction({
                                     }}
                                     isChecked={!!parameter.value}
                                     isDisabled={!parameter.signature || !!parameter.label}
-                                    bg="black-0"
+                                    bg="color-black"
                                     color="lilac--3"
                                     size="md"
                                     _disabled={{ bg: 'neutral-6', color: 'neutral-5' }}
-                                    _hover={{ bg: 'black-0', color: 'lilac--4' }}
+                                    _hover={{ bg: 'color-black', color: 'lilac--4' }}
                                     _checked={{
-                                      bg: 'black-0',
+                                      bg: 'color-black',
                                       color: 'lilac--3',
                                       borderWidth: '6px',
                                     }}
