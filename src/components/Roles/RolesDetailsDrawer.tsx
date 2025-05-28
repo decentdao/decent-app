@@ -48,8 +48,8 @@ export function RoleProposalPermissionBadge({
       label={t('permissionsProposalsTooltip')}
     >
       <Badge
-        color="celery-0"
-        bgColor="celery--6"
+        color="color-green-400"
+        bgColor="color-green-950"
         textTransform="unset"
         fontSize="1rem"
         lineHeight="1.5rem"
@@ -71,7 +71,7 @@ function RoleAndDescriptionLabel({ label, icon }: { label: string; icon: React.E
       <Icon as={icon} />
       <Text
         textStyle="labels-large"
-        color="neutral-7"
+        color="color-neutral-300"
       >
         {label}
       </Text>
@@ -130,7 +130,7 @@ export default function RolesDetailsDrawer({
       />
       <DrawerContent
         minW="50%"
-        bg="neutral-2"
+        bg="color-neutral-950"
         pt="1rem"
       >
         <DrawerBody h="100vh">
@@ -165,7 +165,7 @@ export default function RolesDetailsDrawer({
           </Flex>
           <Text
             textStyle="text-3xl-regular"
-            color="white-0"
+            color="color-white"
             my="1rem"
           >
             {roleHat.name}
@@ -207,11 +207,11 @@ export default function RolesDetailsDrawer({
                 p="0.25rem 0.5rem"
                 ml="-0.75rem"
                 rounded="1rem"
-                bg="neutral-3"
-                color="lilac-0"
+                bg="color-neutral-900"
+                color="color-lilac-100"
                 _hover={{
-                  color: 'white-0',
-                  bg: 'neutral-4',
+                  color: 'color-white',
+                  bg: 'color-neutral-800',
                 }}
                 cursor="pointer"
                 maxW="fit-content"

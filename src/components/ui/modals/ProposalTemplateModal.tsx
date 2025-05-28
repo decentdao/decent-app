@@ -210,7 +210,7 @@ export default function ProposalTemplateModal({
           isChecked={showAll}
           onChange={() => setShowAll(!showAll)}
           colorScheme="lilac"
-          bg="neutral-7"
+          bg="color-neutral-300"
           borderRadius="9999px"
         />
       </FormControl>

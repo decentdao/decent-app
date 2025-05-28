@@ -88,7 +88,7 @@ function StartDatePicker({ paymentIndex, disabled }: { paymentIndex: number; dis
         {({ field, form: { setFieldValue } }: FieldProps<Date, RoleFormValues>) => (
           <LabelWrapper
             label={t('date')}
-            labelColor="neutral-7"
+            labelColor="color-neutral-300"
           >
             <DatePicker
               onChange={(date: Date) => setFieldValue(field.name, date)}
@@ -126,7 +126,7 @@ function CliffDatePicker({ paymentIndex, disabled }: { paymentIndex: number; dis
         {({ field, form: { setFieldValue } }: FieldProps<Date, RoleFormValues>) => (
           <LabelWrapper
             label={t('date')}
-            labelColor="neutral-7"
+            labelColor="color-neutral-300"
           >
             <DatePicker
               onChange={(date: Date) => setFieldValue(field.name, date)}
@@ -145,7 +145,7 @@ function CliffDatePicker({ paymentIndex, disabled }: { paymentIndex: number; dis
 function TermSelection({
   selectedTermNumber,
   selectedTermEndDate,
-  defaultDateColor = 'white-0',
+  defaultDateColor = 'color-white',
 }: {
   selectedTermNumber: number;
   selectedTermEndDate: Date;
@@ -161,7 +161,7 @@ function TermSelection({
     >
       <Text
         textStyle="body-small"
-        color="white-0"
+        color="color-white"
       >
         {t('termNumber', { number: selectedTermNumber })}
       </Text>
@@ -244,8 +244,8 @@ function TermSelectorMenu({ paymentIndex }: { paymentIndex: number }) {
               p={4}
               borderRadius={isOpen ? '0.75rem 0.75rem 0 0' : '0.75rem'}
               boxShadow={DETAILS_BOX_SHADOW}
-              _hover={{ bg: 'neutral-3' }}
-              _active={{ bg: 'neutral-2' }}
+              _hover={{ bg: 'color-neutral-900' }}
+              _active={{ bg: 'color-neutral-950' }}
               transition="all ease-out 300ms"
               type="button"
             >
@@ -261,7 +261,7 @@ function TermSelectorMenu({ paymentIndex }: { paymentIndex: number }) {
                   <Icon
                     as={CaretDown}
                     boxSize="1.5rem"
-                    color="white-0"
+                    color="color-white"
                   />
                 </Flex>
               )}
@@ -289,7 +289,7 @@ function TermSelectorMenu({ paymentIndex }: { paymentIndex: number }) {
                         mb="1.5rem"
                         px={8}
                         textStyle="text-xl-regular"
-                        color="white-0"
+                        color="color-white"
                       >
                         {t('selectTerm')}
                       </Text>
@@ -300,8 +300,8 @@ function TermSelectorMenu({ paymentIndex }: { paymentIndex: number }) {
                       px={6}
                       mx={2}
                       borderRadius="0.75rem"
-                      _hover={{ bg: 'neutral-3' }}
-                      _active={{ bg: 'neutral-2' }}
+                      _hover={{ bg: 'color-neutral-900' }}
+                      _active={{ bg: 'color-neutral-950' }}
                       transition="all ease-out 100ms"
                     >
                       <Flex
@@ -311,12 +311,12 @@ function TermSelectorMenu({ paymentIndex }: { paymentIndex: number }) {
                         <TermSelection
                           selectedTermNumber={term.termNumber}
                           selectedTermEndDate={term.termEndDate}
-                          defaultDateColor="neutral-7"
+                          defaultDateColor="color-neutral-300"
                         />
                         <Icon
                           as={CheckCircle}
                           boxSize="1.5rem"
-                          color="lilac-0"
+                          color="color-lilac-100"
                         />
                       </Flex>
                     </Box>
@@ -333,9 +333,9 @@ function TermSelectorMenu({ paymentIndex }: { paymentIndex: number }) {
                   <MenuItem
                     key={index}
                     boxShadow={DETAILS_BOX_SHADOW}
-                    _hover={{ bg: 'neutral-3' }}
-                    _active={{ bg: 'neutral-3' }}
-                    bg="neutral-2"
+                    _hover={{ bg: 'color-neutral-900' }}
+                    _active={{ bg: 'color-neutral-900' }}
+                    bg="color-neutral-950"
                     p="1rem"
                     onClick={() => {
                       setSelectedTerm(term);
@@ -346,7 +346,7 @@ function TermSelectorMenu({ paymentIndex }: { paymentIndex: number }) {
                     <TermSelection
                       selectedTermNumber={term.termNumber}
                       selectedTermEndDate={term.termEndDate}
-                      defaultDateColor="neutral-7"
+                      defaultDateColor="color-neutral-300"
                     />
                   </MenuItem>
                 ))}
@@ -370,7 +370,7 @@ export default function RoleFormPaymentStreamTermed({ paymentIndex }: { paymentI
   return (
     <>
       <Box
-        bg="neutral-2"
+        bg="color-neutral-950"
         borderRadius="0.5rem"
         p="1.5rem"
         mt={4}

@@ -20,8 +20,8 @@ export function ActivityBox({
         minHeight="6.25rem"
         border="1px"
         borderColor={borderColor}
-        _hover={{ bg: 'neutral-3' }}
-        _active={{ bg: 'neutral-2', border: '1px solid', borderColor: 'neutral-3' }}
+        _hover={{ bg: 'color-neutral-900' }}
+        _active={{ bg: 'color-neutral-950', border: '1px solid', borderColor: 'color-neutral-900' }}
         {...rest}
       >
         {children}

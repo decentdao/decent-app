@@ -33,17 +33,19 @@ function DateDisplayBox({ date }: { date: Date | undefined }) {
       gap="0.5rem"
       p="0.5rem 1rem"
       width={{ base: '100%', md: '11.125rem' }}
-      bg="neutral-1"
+      bg="color-black"
       borderWidth="1px"
       borderRadius="0.25rem"
-      borderColor="neutral-3"
+      borderColor="color-neutral-900"
     >
       <Icon
         as={CalendarBlank}
         boxSize="24px"
-        color="neutral-5"
+        color="color-neutral-700"
       />
-      <Box color="neutral-7">{(date && format(date, DEFAULT_DATE_FORMAT)) ?? t('select')}</Box>
+      <Box color="color-neutral-300">
+        {(date && format(date, DEFAULT_DATE_FORMAT)) ?? t('select')}
+      </Box>
     </Flex>
   );
 }
@@ -112,7 +114,7 @@ function DatePickerContainer({
             borderRadius="0.5rem"
             boxShadow={boxShadow}
             maxW={maxBoxW}
-            bg="neutral-2"
+            bg="color-neutral-950"
             pt="1.5rem"
           >
             {children}
@@ -148,7 +150,7 @@ function DatePickerContainer({
                 borderRadius="0.5rem"
                 boxShadow={boxShadow}
                 maxW={maxBoxW}
-                bg="neutral-2"
+                bg="color-neutral-950"
                 pt="1.5rem"
               >
                 {children}
@@ -167,7 +169,7 @@ function TodayBox({ isTodaySelected }: { isTodaySelected: () => boolean }) {
   return (
     <Box
       ml={todayDotLeftMargin}
-      bg={isTodaySelected() ? 'cosmic-nebula-0' : 'white-1'}
+      bg={isTodaySelected() ? 'color-lilac-700' : 'color-lilac-100'}
       borderRadius="50%"
       w="4px"
       h="4px"

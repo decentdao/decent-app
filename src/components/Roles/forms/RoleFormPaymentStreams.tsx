@@ -98,10 +98,10 @@ export function RoleFormPaymentStreams() {
           )}
           {sortedPayments.length === 0 && (
             <Flex
-              bg="neutral-2"
+              bg="color-neutral-950"
               padding="1.5rem"
               border="1px solid"
-              borderColor="neutral-3"
+              borderColor="color-neutral-900"
               borderRadius="0.25rem"
               my="1.5rem"
               justifyContent="space-between"
@@ -110,7 +110,7 @@ export function RoleFormPaymentStreams() {
                 <Text textStyle="label-large">{t('noPaymentsTitle')}</Text>
                 <Text
                   textStyle="label-small"
-                  color="neutral-7"
+                  color="color-neutral-300"
                 >
                   {t('noPaymentsSubTitle')}
                 </Text>

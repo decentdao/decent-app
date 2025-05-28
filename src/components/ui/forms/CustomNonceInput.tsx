@@ -102,7 +102,7 @@ export function CustomNonceInput({
                 <Text>{t('customNonceTrimmed', { ns: 'proposal' })}</Text>
                 <SupportTooltip
                   containerRef={tooltipContainer}
-                  color="lilac-0"
+                  color="color-lilac-100"
                   label={t('customNonceTooltip', { ns: 'proposal' })}
                   mx="2"
                   mt="1"
@@ -118,7 +118,8 @@ export function CustomNonceInput({
           subLabel={
             renderTrimmed ? null : (
               <Text>
-                {t('example', { ns: 'common' })}: <ExampleLabel bg="neutral-4">14</ExampleLabel>{' '}
+                {t('example', { ns: 'common' })}:{' '}
+                <ExampleLabel bg="color-neutral-800">14</ExampleLabel>{' '}
               </Text>
             )
           }
@@ -143,11 +144,11 @@ export function CustomNonceInput({
             width="full"
           />
         </LabelComponent>
-        {errorMessage && <Text color="red-0">{errorMessage}</Text>}
+        {errorMessage && <Text color="color-error-500">{errorMessage}</Text>}
       </Flex>
       <MenuList
         borderWidth="1px"
-        borderColor="neutral-3"
+        borderColor="color-neutral-900"
         borderRadius="0.78rem"
         zIndex="popover"
       >

@@ -13,7 +13,13 @@ import { AzoriusGovernance, CreateProposalTransaction, ProposalActionType } from
 import { SENTINEL_MODULE } from '../../../utils/address';
 import { SafePermissionsStrategyAction } from '../../SafeSettings/SafePermissionsStrategyAction';
 
-export function ConfirmDeleteStrategyModal({ onClose }: { onClose: () => void }) {
+export function ConfirmDeleteStrategyModal({
+  onClose,
+  closeAllModals,
+}: {
+  onClose: () => void;
+  closeAllModals: () => void;
+}) {
   const navigate = useNavigate();
   const { t } = useTranslation('settings');
   const { addressPrefix } = useNetworkConfigStore();
@@ -128,8 +134,9 @@ export function ConfirmDeleteStrategyModal({ onClose }: { onClose: () => void })
       ),
       transactions: [transaction],
     });
+
+    closeAllModals();
     navigate(DAO_ROUTES.proposalWithActionsNew.relative(addressPrefix, safe.address));
-    onClose();
   };
 
   return (
@@ -158,9 +165,9 @@ export function ConfirmDeleteStrategyModal({ onClose }: { onClose: () => void })
         </Button>
         <Button
           variant="secondary"
-          color="red-1"
-          borderColor="red-1"
-          _hover={{ color: 'red-0', borderColor: 'red-0' }}
+          color="color-error-400"
+          borderColor="color-error-400"
+          _hover={{ color: 'color-error-500', borderColor: 'color-error-500' }}
           onClick={handleDeleteStrategy}
         >
           {t('deletePermission')}

@@ -52,7 +52,7 @@ function HeaderLogo() {
               <Icon
                 boxSize="1.5rem"
                 as={List}
-                color="white-0"
+                color="color-white"
                 aria-hidden
               />
             }
@@ -131,7 +131,7 @@ function Header({ headerContainerRef }: { headerContainerRef: RefObject<HTMLDivE
       px={{ base: '1rem', md: '1.5rem' }}
       maxW="100vw"
       borderBottom="1px"
-      borderBottomColor="neutral-3"
+      borderBottomColor="color-neutral-900"
     >
       <HeaderLogo />
       <Flex

@@ -129,8 +129,8 @@ export function ProposalStream({
             >
               <Select
                 {...field}
-                bgColor="neutral-1"
-                borderColor="neutral-3"
+                bgColor="color-black"
+                borderColor="color-neutral-900"
                 rounded="lg"
                 cursor="pointer"
                 iconSize="1.5rem"
@@ -194,7 +194,7 @@ export function ProposalStream({
             />
             <Text>{t('cancelable')}</Text>
           </Flex>
-          <Text color="neutral-7">{t('streamCancelableHelper')}</Text>
+          <Text color="color-neutral-300">{t('streamCancelableHelper')}</Text>
         </Box>
         <Box>
           <Flex gap="0.5rem">
@@ -209,7 +209,7 @@ export function ProposalStream({
             />
             <Text>{t('transferable')}</Text>
           </Flex>
-          <Text color="neutral-7">{t('streamTransferableHelper')}</Text>
+          <Text color="color-neutral-300">{t('streamTransferableHelper')}</Text>
         </Box>
         <Divider
           variant="light"
@@ -227,7 +227,7 @@ export function ProposalStream({
                 borderBottom="none"
                 padding="1rem"
                 borderRadius={4}
-                bg="neutral-3"
+                bg="color-neutral-900"
                 px={0}
                 py="1.5rem"
               >
@@ -253,7 +253,7 @@ export function ProposalStream({
                           }}
                           p={0}
                           textStyle="text-xl-regular"
-                          color="lilac-0"
+                          color="color-lilac-100"
                         >
                           <Text textStyle="text-xl-regular">
                             <Flex
@@ -281,7 +281,7 @@ export function ProposalStream({
                               })
                             }
                             minWidth="auto"
-                            color="lilac-0"
+                            color="color-lilac-100"
                             _disabled={{ opacity: 0.4, cursor: 'default' }}
                             sx={{ '&:disabled:hover': { color: 'inherit', opacity: 0.4 } }}
                             isDisabled={pendingTransaction}
@@ -306,7 +306,7 @@ export function ProposalStream({
                                   <HStack wordBreak="break-all">
                                     <Text>
                                       {t('example', { ns: 'common' })}:{' '}
-                                      <ExampleLabel bg="neutral-4">1000</ExampleLabel>
+                                      <ExampleLabel bg="color-neutral-800">1000</ExampleLabel>
                                     </Text>
                                   </HStack>
                                 }
@@ -349,7 +349,7 @@ export function ProposalStream({
                                     </Text>
                                     <Text>
                                       {t('example', { ns: 'common' })}:{' '}
-                                      <ExampleLabel bg="neutral-4">
+                                      <ExampleLabel bg="color-neutral-800">
                                         {SECONDS_IN_DAY * 30} (1 month)
                                       </ExampleLabel>
                                     </Text>

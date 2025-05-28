@@ -28,7 +28,7 @@ export function ProposalTitle({ activity }: { activity: FractalProposal }) {
   return (
     <Box
       textStyle="text-xl-regular"
-      color="white-0"
+      color="color-white"
       pr="1.5rem"
     >
       <Flex

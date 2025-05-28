@@ -105,7 +105,7 @@ export function DelegateModal({ close }: { close: Function }) {
     <Box>
       <SimpleGrid
         columns={2}
-        color="neutral-7"
+        color="color-neutral-300"
       >
         <Text
           align="start"
@@ -115,7 +115,7 @@ export function DelegateModal({ close }: { close: Function }) {
         </Text>
         <Text
           align="end"
-          color="neutral-7"
+          color="color-neutral-300"
         >
           {formatCoin(
             azoriusGovernance.votesToken.balance || 0n,
@@ -132,7 +132,7 @@ export function DelegateModal({ close }: { close: Function }) {
         </Text>
         <Text
           align="end"
-          color="neutral-7"
+          color="color-neutral-300"
         >
           {azoriusGovernance.votesToken.delegatee === zeroAddress ? (
             '--'
@@ -150,7 +150,7 @@ export function DelegateModal({ close }: { close: Function }) {
         decentGovernance.lockedVotesToken?.balance !== undefined && (
           <SimpleGrid
             columns={2}
-            color="neutral-6"
+            color="color-neutral-400"
           >
             <Text
               align="start"
@@ -160,7 +160,7 @@ export function DelegateModal({ close }: { close: Function }) {
             </Text>
             <Text
               align="end"
-              color="neutral-7"
+              color="color-neutral-300"
             >
               {formatCoin(
                 decentGovernance.lockedVotesToken.balance || 0n,
@@ -177,7 +177,7 @@ export function DelegateModal({ close }: { close: Function }) {
             </Text>
             <Text
               align="end"
-              color="neutral-7"
+              color="color-neutral-300"
             >
               {decentGovernance.lockedVotesToken.delegatee === zeroAddress ? (
                 '--'
@@ -203,12 +203,12 @@ export function DelegateModal({ close }: { close: Function }) {
         {({ handleSubmit, setFieldValue, values, errors }) => (
           <form onSubmit={handleSubmit}>
             <Flex alignItems="center">
-              <Text color="neutral-7">{t('labelDelegateInput')}</Text>
+              <Text color="color-neutral-300">{t('labelDelegateInput')}</Text>
               <Spacer />
               <Button
                 pr={0}
                 variant="text"
-                color="lilac--3"
+                color="color-lilac-600"
                 onClick={() => (user.address ? setFieldValue('address', user.address) : null)}
               >
                 {t('linkSelfDelegate')}

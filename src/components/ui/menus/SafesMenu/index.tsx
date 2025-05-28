@@ -27,7 +27,7 @@ export function SafesMenu() {
           icon={
             <Icon
               as={Star}
-              color="white-0"
+              color="color-white"
               boxSize="1.5rem"
               aria-hidden
             />
@@ -44,7 +44,7 @@ export function SafesMenu() {
               alignItems="center"
               gap={2}
               px={0}
-              color="white-0"
+              color="color-white"
             >
               <Text>{t('mySafes')}</Text>
               <Icon
@@ -79,11 +79,11 @@ export function SafesMenu() {
           buttonAs={Button}
           buttonProps={{
             variant: 'tertiary',
-            color: 'white-0',
-            _hover: { color: 'white-0', bg: 'neutral-3' },
+            color: 'color-white',
+            _hover: { color: 'color-white', bg: 'color-neutral-900' },
             _active: {
-              color: 'white-0',
-              bg: 'neutral-3',
+              color: 'color-white',
+              bg: 'color-neutral-900',
             },
             paddingX: '0.75rem',
             paddingY: '0.25rem',

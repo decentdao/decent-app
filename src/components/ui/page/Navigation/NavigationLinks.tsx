@@ -18,8 +18,8 @@ function ExternalLinks({ closeDrawer }: { closeDrawer?: () => void }) {
       width={{ base: 'full', md: 'auto' }}
       borderRadius={{ md: 8 }}
       borderWidth={{ md: 1 }}
-      borderColor={{ md: 'neutral-3' }}
-      bg={{ md: 'neutral-2' }}
+      borderColor={{ md: 'color-neutral-900' }}
+      bg={{ md: 'color-neutral-950' }}
       overflow={{ md: 'hidden' }}
     >
       <NavigationLink
@@ -63,7 +63,7 @@ function InternalLinks({ closeDrawer }: { closeDrawer?: () => void }) {
         mt={{ md: 12 }}
         mb={{ md: 3 }}
         bg={{ md: '#26212AD6' }}
-        borderColor={{ md: 'neutral-3' }}
+        borderColor={{ md: 'color-neutral-900' }}
         borderRadius={{ md: 8 }}
         borderWidth={{ md: 1 }}
         backdropFilter={{ md: 'blur(12px)' }}
