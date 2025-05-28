@@ -1,8 +1,4 @@
 export default {
-  'blue-0': '#3f5c97',
-  'blue-1': '#afc2e9',
-  'blue-2': '#dce6f9',
-  'blue--1': '#1c4087',
   'celery-0': '#caff8a',
   'celery--2': '#acda76',
   'celery--3': '#95bc66',
