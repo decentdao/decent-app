@@ -60,7 +60,7 @@ export function SettingsPermissionsStrategyForm({
             gap={3}
             alignItems="center"
             border="1px solid"
-            borderColor="neutral-3"
+            borderColor="color-neutral-900"
             borderRadius="9999px"
             w="fit-content"
             className="payment-menu-asset"
@@ -82,7 +82,7 @@ export function SettingsPermissionsStrategyForm({
       </Flex>
       <LabelWrapper
         label={t('permissionAmountLabel')}
-        labelColor="neutral-7"
+        labelColor="color-neutral-300"
       >
         <BigIntInput
           onChange={setProposerThreshold}

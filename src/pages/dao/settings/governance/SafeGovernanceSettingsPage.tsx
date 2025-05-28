@@ -60,7 +60,7 @@ export function SafeGovernanceSettingsPage() {
             </Text>
             <Box
               borderWidth="0.06rem"
-              borderColor="neutral-3"
+              borderColor="color-neutral-900"
               borderRadius="0.75rem"
             >
               <GovernanceParams />

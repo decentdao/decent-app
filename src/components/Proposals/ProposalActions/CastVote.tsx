@@ -182,7 +182,7 @@ export function CastVote({ proposal }: { proposal: FractalProposal }) {
         {hasVoted && (
           <Box
             mt={4}
-            color="neutral-6"
+            color="color-neutral-400"
             fontWeight="600"
           >
             <Flex>
@@ -198,7 +198,7 @@ export function CastVote({ proposal }: { proposal: FractalProposal }) {
         )}
         <Box
           mt={4}
-          color="neutral-7"
+          color="color-neutral-300"
         >
           <Text>{t('poweredBy')}</Text>
           <Flex>
@@ -258,7 +258,7 @@ export function CastVote({ proposal }: { proposal: FractalProposal }) {
             bg="color-black"
             color="color-lilac-600"
             size="md"
-            _disabled={{ bg: 'neutral-6', color: 'neutral-5' }}
+            _disabled={{ bg: 'color-neutral-400', color: 'color-neutral-700' }}
             _hover={{ bg: 'color-black', color: 'color-lilac-800' }}
             _checked={{
               bg: 'color-black',

@@ -61,7 +61,9 @@ function OwnerInfoRow({
       </GridItem>
       <GridItem my="auto">
         {latestConfirmation && (
-          <Text color="neutral-7">{format(latestConfirmation.date, DEFAULT_DATE_TIME_FORMAT)}</Text>
+          <Text color="color-neutral-300">
+            {format(latestConfirmation.date, DEFAULT_DATE_TIME_FORMAT)}
+          </Text>
         )}
       </GridItem>
     </>
@@ -91,7 +93,7 @@ export function SignerDetails({ proposal }: { proposal: MultisigProposal }) {
       containerBoxProps={{
         bg: 'transparent',
         border: '1px solid',
-        borderColor: 'neutral-3',
+        borderColor: 'color-neutral-900',
         borderRadius: '0.5rem',
       }}
     >

@@ -140,7 +140,7 @@ export default function ProposalTransaction({
               borderBottom="none"
               padding="1rem"
               borderRadius={4}
-              bg="neutral-3"
+              bg="color-neutral-900"
               px={0}
               py="1.5rem"
             >
@@ -226,9 +226,9 @@ export default function ProposalTransaction({
                               <HStack>
                                 <Text>
                                   {t('example', { ns: 'common' })}:{' '}
-                                  <ExampleLabel bg="neutral-4">address to</ExampleLabel>{' '}
+                                  <ExampleLabel bg="color-neutral-800">address to</ExampleLabel>{' '}
                                   {t('or', { ns: 'common' })}{' '}
-                                  <ExampleLabel bg="neutral-4">uint amount</ExampleLabel>
+                                  <ExampleLabel bg="color-neutral-800">uint amount</ExampleLabel>
                                 </Text>
                               </HStack>
                             }
@@ -252,7 +252,10 @@ export default function ProposalTransaction({
                                       bg="color-black"
                                       color="color-lilac-600"
                                       size="md"
-                                      _disabled={{ bg: 'neutral-6', color: 'neutral-5' }}
+                                      _disabled={{
+                                        bg: 'color-neutral-400',
+                                        color: 'color-neutral-700',
+                                      }}
                                       _hover={{ bg: 'color-black', color: 'color-lilac-800' }}
                                       _checked={{
                                         bg: 'color-black',
@@ -266,7 +269,7 @@ export default function ProposalTransaction({
                                             ns: 'proposalTemplate',
                                           })}
                                         </Text>
-                                        <Text color="neutral-7">
+                                        <Text color="color-neutral-300">
                                           {t('labelParameterLabelHelper', {
                                             ns: 'proposalTemplate',
                                           })}
@@ -310,7 +313,10 @@ export default function ProposalTransaction({
                                     bg="color-black"
                                     color="color-lilac-600"
                                     size="md"
-                                    _disabled={{ bg: 'neutral-6', color: 'neutral-5' }}
+                                    _disabled={{
+                                      bg: 'color-neutral-400',
+                                      color: 'color-neutral-700',
+                                    }}
                                     _hover={{ bg: 'color-black', color: 'color-lilac-800' }}
                                     _checked={{
                                       bg: 'color-black',
@@ -324,7 +330,7 @@ export default function ProposalTransaction({
                                           ns: 'proposalTemplate',
                                         })}
                                       </Text>
-                                      <Text color="neutral-7">
+                                      <Text color="color-neutral-300">
                                         {t('labelParameterLabelHelper', {
                                           ns: 'proposalTemplate',
                                         })}
@@ -352,7 +358,7 @@ export default function ProposalTransaction({
                                 <HStack wordBreak="break-all">
                                   <Text>
                                     {t('example', { ns: 'common' })}:{' '}
-                                    <ExampleLabel bg="neutral-4">1.2</ExampleLabel>
+                                    <ExampleLabel bg="color-neutral-800">1.2</ExampleLabel>
                                   </Text>
                                 </HStack>
                               }

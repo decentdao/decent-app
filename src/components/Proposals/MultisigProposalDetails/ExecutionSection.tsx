@@ -351,7 +351,7 @@ export function ExecutionSection({ proposal }: { proposal: MultisigProposal }) {
     >
       <Text
         textStyle="labels-large"
-        color="neutral-7"
+        color="color-neutral-300"
       >
         {t('proposalExecutionSectionTitle')}
       </Text>

@@ -29,7 +29,7 @@ function getPaymentContainerProps(section: 'top' | 'bottom', isActiveStream: boo
 
   return isActiveStream
     ? {
-        bg: 'neutral-2',
+        bg: 'color-neutral-950',
         sx: undefined,
         boxShadow: DETAILS_BOX_SHADOW,
         borderTopRadius,
@@ -39,7 +39,7 @@ function getPaymentContainerProps(section: 'top' | 'bottom', isActiveStream: boo
     : {
         sx: {
           p: {
-            color: 'neutral-6',
+            color: 'color-neutral-400',
           },
         },
         bg: 'none',
@@ -49,7 +49,7 @@ function getPaymentContainerProps(section: 'top' | 'bottom', isActiveStream: boo
         borderTopRadius,
         borderBottomRadius,
         py: '1rem',
-        borderColor: 'neutral-4',
+        borderColor: 'color-neutral-800',
       };
 }
 
@@ -62,7 +62,7 @@ function PaymentDate({ label, date }: { label: string; date?: Date }) {
     >
       <Text
         textStyle="labels-small"
-        color="neutral-7"
+        color="color-neutral-300"
       >
         {t(label)}
       </Text>
@@ -73,11 +73,11 @@ function PaymentDate({ label, date }: { label: string; date?: Date }) {
         <Icon
           boxSize="1rem"
           as={CalendarBlank}
-          color={date ? 'color-lilac-100' : 'neutral-6'}
+          color={date ? 'color-lilac-100' : 'color-neutral-400'}
         />
         <Text
           textStyle="labels-small"
-          color={date ? 'white-0' : 'neutral-6'}
+          color={date ? 'white-0' : 'color-neutral-400'}
         >
           {date ? format(date, DEFAULT_DATE_FORMAT) : '---'}
         </Text>
@@ -95,7 +95,7 @@ function TermedAssigned({ termNumber }: { termNumber: number }) {
     >
       <Text
         textStyle="labels-small"
-        color="neutral-7"
+        color="color-neutral-300"
       >
         {t('assigned')}
       </Text>

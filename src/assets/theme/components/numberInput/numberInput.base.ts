@@ -9,9 +9,9 @@ const disabled = {
   bg: DISABLED_INPUT,
   border: '1px solid',
   borderColor: 'white-alpha-16',
-  color: 'neutral-6',
+  color: 'color-neutral-400',
   _placeholder: {
-    color: 'neutral-5',
+    color: 'color-neutral-700',
   },
   boxShadow: 'unset',
 };
@@ -35,15 +35,15 @@ const baseStyle = definePartsStyle({
   field: {
     borderRadius: '0.5rem',
     color: 'white-0',
-    bg: 'neutral-1',
+    bg: 'color-black',
     boxShadow: '0px 1px 0px 0px rgba(255, 255, 255, 0.16), 0px 0px 0px 1px rgba(0, 0, 0, 0.68)',
-    borderColor: 'neutral-3',
+    borderColor: 'color-neutral-900',
     transitionDuration: 'normal',
     transitionProperty: 'common',
     width: '100%',
     _invalid: invalid,
     _placeholder: {
-      color: 'neutral-5',
+      color: 'color-neutral-700',
     },
     _active: {
       boxShadow:

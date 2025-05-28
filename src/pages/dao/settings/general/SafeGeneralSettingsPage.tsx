@@ -314,7 +314,7 @@ export function SafeGeneralSettingsPage() {
               flexDirection="column"
               w="100%"
               border="1px solid"
-              borderColor="neutral-3"
+              borderColor="color-neutral-900"
               borderRadius="0.75rem"
             >
               <Flex

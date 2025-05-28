@@ -15,7 +15,7 @@ function ContentBox({ title, children, containerBoxProps, onClick }: ContentBoxP
       rounded="lg"
       p="1.5rem"
       my="1.25rem"
-      bg="neutral-2"
+      bg="color-neutral-950"
       {...containerBoxProps}
       cursor={!!onClick ? 'pointer' : 'default'}
       onClick={onClick}
@@ -42,9 +42,9 @@ export function SectionContentBox({
     <ContentBox
       containerBoxProps={{
         ...containerBoxProps,
-        bg: 'neutral-2',
+        bg: 'color-neutral-950',
         border: '1px solid',
-        borderColor: 'neutral-3',
+        borderColor: 'color-neutral-900',
         rounded: 'unset',
         py: 2,
         px: 4,

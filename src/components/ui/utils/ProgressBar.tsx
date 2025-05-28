@@ -101,7 +101,7 @@ export function QuorumProgressBar({
       />
       {helperText && (
         <Text
-          color="neutral-7"
+          color="color-neutral-300"
           marginTop={3}
         >
           {helperText}

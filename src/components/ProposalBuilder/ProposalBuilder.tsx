@@ -213,7 +213,7 @@ export function ProposalBuilder({
                     <Box
                       marginBottom="2rem"
                       rounded="lg"
-                      bg="neutral-2"
+                      bg="color-neutral-950"
                     >
                       {currentStep === CreateProposalSteps.METADATA ? (
                         <>

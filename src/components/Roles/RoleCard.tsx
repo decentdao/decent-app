@@ -54,7 +54,7 @@ export function AvatarAndRoleName({
           color="color-lilac-100"
           _hover={{
             color: 'white-0',
-            bg: 'neutral-4',
+            bg: 'color-neutral-800',
           }}
           maxW="fit-content"
         >
@@ -67,15 +67,15 @@ export function AvatarAndRoleName({
           >
             <Text
               textStyle="labels-large"
-              color="neutral-7"
+              color="color-neutral-300"
               alignSelf="center"
             >
               {t('activePayments')}
             </Text>
             <Box
               bg="color-green-500"
-              color="neutral-3"
-              borderColor="neutral-3"
+              color="color-neutral-900"
+              borderColor="color-neutral-900"
               borderWidth="2px"
               borderRadius="50%"
               w="1.25rem"

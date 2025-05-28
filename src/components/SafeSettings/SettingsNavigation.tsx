@@ -46,7 +46,7 @@ function SettingsLink({
       onClick={onClick}
       borderRadius={{ md: '0.5rem' }}
       transition="all ease-out 300ms"
-      _hover={{ bgColor: 'neutral-3' }}
+      _hover={{ bgColor: 'color-neutral-900' }}
       bg={
         isCurrentPath ||
         (!isMobile &&
@@ -72,7 +72,7 @@ function SettingsLink({
         <Show below="md">
           <Flex
             alignItems="center"
-            color="neutral-6"
+            color="color-neutral-400"
             gap={2}
           >
             {children}
@@ -124,7 +124,7 @@ function SettingsNavigationItem({
       onClick={onClick}
       borderRadius={{ md: '0.5rem' }}
       transition="all ease-out 300ms"
-      _hover={{ bgColor: 'neutral-3' }}
+      _hover={{ bgColor: 'color-neutral-900' }}
       bg={currentItem === item ? 'white-alpha-04' : 'transparent'}
       p={{ base: 0, md: '0.5rem' }}
       cursor="pointer"
@@ -151,7 +151,7 @@ function SettingsNavigationItem({
         <Show below="md">
           <Flex
             alignItems="center"
-            color="neutral-6"
+            color="color-neutral-400"
             gap={2}
           >
             {children}
@@ -197,7 +197,7 @@ export function SettingsNavigation({
 
   return (
     <Flex
-      backgroundColor={isSettingsV1Enabled ? 'transparent' : 'neutral-2'}
+      backgroundColor={isSettingsV1Enabled ? 'transparent' : 'color-neutral-950'}
       p={{ base: '1rem', md: '0.25rem' }}
       gap="0.25rem"
       flexDirection="column"
@@ -206,9 +206,9 @@ export function SettingsNavigation({
       borderBottomRightRadius={{ base: '0.75rem', md: '0' }}
       borderRight={{
         base: 'none',
-        md: !isSettingsV1Enabled ? '1px solid var(--colors-neutral-3)' : 'none',
+        md: !isSettingsV1Enabled ? '1px solid var(--colors-color-neutral-900)' : 'none',
       }}
-      borderColor="neutral-3"
+      borderColor="color-neutral-900"
       boxShadow="1px 0px 0px 0px #100414"
       minWidth="220px"
       width={{ base: '100%', md: 'auto' }}
@@ -246,7 +246,7 @@ export function SettingsNavigation({
             }}
             hasEdits={values.azorius !== undefined || values.multisig !== undefined}
           >
-            <Text color="neutral-7">
+            <Text color="color-neutral-300">
               {t(azoriusGovernance.votingStrategy?.strategyType ?? 'labelMultisig')}
             </Text>
           </SettingsNavigationItem>
@@ -260,7 +260,7 @@ export function SettingsNavigation({
               setCurrentItem('modulesAndGuard');
             }}
           >
-            <Text color="neutral-7">{(modules ?? []).length + (safe?.guard ? 1 : 0)}</Text>
+            <Text color="color-neutral-300">{(modules ?? []).length + (safe?.guard ? 1 : 0)}</Text>
           </SettingsNavigationItem>
           {governance.isAzorius && (
             <SettingsNavigationItem
@@ -275,7 +275,7 @@ export function SettingsNavigation({
               }}
               hasEdits={values.permissions !== undefined}
             >
-              <Text color="neutral-7">{azoriusGovernance.votingStrategy ? 1 : 0}</Text>
+              <Text color="color-neutral-300">{azoriusGovernance.votingStrategy ? 1 : 0}</Text>
             </SettingsNavigationItem>
           )}
         </>
@@ -292,7 +292,7 @@ export function SettingsNavigation({
             leftIcon={<Bank fontSize="1.5rem" />}
             title={t('daoSettingsGovernance')}
           >
-            <Text color="neutral-7">
+            <Text color="color-neutral-300">
               {t(azoriusGovernance.votingStrategy?.strategyType ?? 'labelMultisig')}
             </Text>
           </SettingsLink>
@@ -301,7 +301,7 @@ export function SettingsNavigation({
             leftIcon={<Stack fontSize="1.5rem" />}
             title={t('modulesAndGuardsTitle')}
           >
-            <Text color="neutral-7">{(modules ?? []).length + (safe?.guard ? 1 : 0)}</Text>
+            <Text color="color-neutral-300">{(modules ?? []).length + (safe?.guard ? 1 : 0)}</Text>
           </SettingsLink>
           {governance.isAzorius && (
             <SettingsLink
@@ -310,7 +310,7 @@ export function SettingsNavigation({
               title={t('permissionsTitle')}
               showDivider={false}
             >
-              <Text color="neutral-7">{azoriusGovernance.votingStrategy ? 1 : 0}</Text>
+              <Text color="color-neutral-300">{azoriusGovernance.votingStrategy ? 1 : 0}</Text>
             </SettingsLink>
           )}
         </>

@@ -30,7 +30,7 @@ function Container({
   return (
     <Box
       p="1rem"
-      bg="neutral-2"
+      bg="color-neutral-950"
       boxShadow={displayLightContainer ? 'layeredShadowBorder' : DETAILS_BOX_SHADOW}
       borderTopRadius={isTop ? '0.5rem' : undefined}
       borderBottomRadius={!isTop ? '0.5rem' : undefined}
@@ -38,7 +38,7 @@ function Container({
       flexDirection="column"
       gap="1rem"
       border={displayLightContainer ? '1px solid' : undefined}
-      borderColor={displayLightContainer ? 'neutral-4' : undefined}
+      borderColor={displayLightContainer ? 'color-neutral-800' : undefined}
     >
       {children}
     </Box>
@@ -62,7 +62,7 @@ function RoleTermHeaderTitle({
       <Text textStyle="heading-small">{t('termNumber', { number: termNumber })}</Text>
       <Text
         textStyle="labels-small"
-        color="neutral-5"
+        color="color-neutral-700"
       >
         {!!termPosition && t(termPosition)}
       </Text>
@@ -84,27 +84,27 @@ function RoleTermHeaderStatus({
     const statusTextData = {
       ended: {
         text: t('ended'),
-        textColor: 'neutral-6',
-        iconColor: 'neutral-6',
+        textColor: 'color-neutral-400',
+        iconColor: 'color-neutral-400',
       },
       inQueue: {
         text: t('inQueue'),
-        textColor: 'neutral-7',
+        textColor: 'color-neutral-300',
         iconColor: 'color-lilac-100',
       },
       pending: {
         text: t('pending'),
-        textColor: 'neutral-7',
+        textColor: 'color-neutral-300',
         iconColor: 'color-lilac-100',
       },
       readyToStart: {
         text: t('readyToStart'),
-        textColor: 'neutral-7',
+        textColor: 'color-neutral-300',
         iconColor: 'color-lilac-100',
       },
       active: {
         text: dateDisplay,
-        textColor: 'neutral-7',
+        textColor: 'color-neutral-300',
         iconColor: 'color-lilac-100',
       },
       revoked: {
@@ -195,7 +195,7 @@ function RoleTermMemberAddress({ memberAddress }: { memberAddress: Address }) {
     <Flex flexDir="column">
       <Text
         textStyle="labels-small"
-        color="neutral-7"
+        color="color-neutral-300"
       >
         {t('member')}
       </Text>
@@ -240,7 +240,7 @@ function RoleTermEndDate({ termEndDate }: { termEndDate: Date }) {
     <Flex flexDir="column">
       <Text
         textStyle="labels-small"
-        color="neutral-7"
+        color="color-neutral-300"
       >
         {t('ending')}
       </Text>

@@ -13,7 +13,7 @@ export function FreezeDescription({ isFrozen }: { isFrozen: boolean }) {
   const { t } = useTranslation('dashboard');
   return (
     <Text
-      color="neutral-7"
+      color="color-neutral-300"
       gap="0.5rem"
     >
       {t(isFrozen ? 'frozenDescription' : 'freezeDescription')}

@@ -58,7 +58,7 @@ export default function AzoriusNFTDetails(props: ICreationStepProps) {
               alignItems="flex-start"
               mt="1.5rem"
               padding="1.5rem"
-              bg="neutral-2"
+              bg="color-neutral-950"
               borderRadius="0.25rem"
             >
               <ContentBoxTitle>{t('titleNFTsParams')}</ContentBoxTitle>
@@ -181,7 +181,7 @@ export default function AzoriusNFTDetails(props: ICreationStepProps) {
             <Box
               rounded="lg"
               border="1px solid"
-              borderColor="neutral-3"
+              borderColor="color-neutral-900"
               p={6}
               maxWidth="400px"
               mt="1.5rem"

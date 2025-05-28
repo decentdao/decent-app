@@ -23,8 +23,8 @@ export function SearchDisplay({ loading, address, onClickView, chainId }: ISearc
         <Spinner
           thickness="4px"
           speed="0.75s"
-          emptyColor="neutral-3"
-          color="neutral-7"
+          emptyColor="color-neutral-900"
+          color="color-neutral-300"
           size="lg"
         />
       </Flex>

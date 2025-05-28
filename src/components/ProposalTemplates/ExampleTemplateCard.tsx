@@ -38,7 +38,7 @@ export default function ExampleTemplateCard({
       >
         {title}
       </Text>
-      <Box color="neutral-6">
+      <Box color="color-neutral-400">
         <Markdown content={description} />
       </Box>
     </ContentBox>

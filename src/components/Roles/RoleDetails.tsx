@@ -65,7 +65,7 @@ function RoleAndDescriptionLabel({ label, icon }: { label: string; icon: React.E
       <Icon as={icon} />
       <Text
         textStyle="labels-large"
-        color="neutral-7"
+        color="color-neutral-300"
       >
         {label}
       </Text>
@@ -203,11 +203,11 @@ export default function RolesDetails({
             p="0.25rem 0.5rem"
             ml="-0.75rem"
             rounded="1rem"
-            bg="neutral-3"
+            bg="color-neutral-900"
             color="color-lilac-100"
             _hover={{
               color: 'white-0',
-              bg: 'neutral-4',
+              bg: 'color-neutral-800',
             }}
             cursor="pointer"
             maxW="fit-content"

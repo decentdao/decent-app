@@ -53,7 +53,7 @@ export function Assets() {
     <Box mt={{ base: '1rem', lg: 0 }}>
       <Text
         textStyle="labels-small"
-        color="neutral-7"
+        color="color-neutral-300"
         px={{ base: '1rem', lg: '1.5rem' }}
       >
         {t('subtitleTreasuryBalance')}

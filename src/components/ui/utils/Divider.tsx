@@ -9,8 +9,12 @@ export default function Divider({
   const isDarker = variant === 'darker';
   // @todo - This divider should be removed and we should be using the one directly from Chakra
   // But we need proper styling on theme level
-  const border1stColor = isDarker ? '#000000AD' : isDark ? 'neutral-1' : 'neutral-2';
-  const border2ndColor = isDarker ? 'white-alpha-08' : isDark ? 'neutral-3' : 'neutral-4';
+  const border1stColor = isDarker ? '#000000AD' : isDark ? 'color-black' : 'color-neutral-950';
+  const border2ndColor = isDarker
+    ? 'white-alpha-08'
+    : isDark
+      ? 'color-neutral-900'
+      : 'color-neutral-800';
   return (
     <Box
       height={vertical ? '100%' : '0'}

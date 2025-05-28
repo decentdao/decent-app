@@ -16,9 +16,9 @@ export function DatePickerTrigger({ selectedDate, disabled }: DatePickerTriggerP
   return (
     <Flex
       borderRadius="0.5rem"
-      bg={disabled ? DISABLED_INPUT : 'neutral-1'}
+      bg={disabled ? DISABLED_INPUT : 'color-black'}
       borderWidth="1px"
-      borderColor={disabled ? 'white-alpha-16' : 'neutral-3'}
+      borderColor={disabled ? 'white-alpha-16' : 'color-neutral-900'}
       padding="0.5rem 1rem"
       alignItems="center"
       minW={{ base: 'full', md: '10rem' }}
@@ -28,9 +28,11 @@ export function DatePickerTrigger({ selectedDate, disabled }: DatePickerTriggerP
       <Icon
         as={CalendarBlank}
         boxSize="24px"
-        color="neutral-5"
+        color="color-neutral-700"
       />
-      <Text color={disabled ? 'neutral-7' : selectedDateStr ? 'white-0' : 'neutral-5'}>
+      <Text
+        color={disabled ? 'color-neutral-300' : selectedDateStr ? 'white-0' : 'color-neutral-700'}
+      >
         {selectedDateStr ?? t('select')}
       </Text>
     </Flex>

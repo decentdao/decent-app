@@ -95,7 +95,7 @@ export default function RolesDetailsDrawerMobile({
         mb="1rem"
       >
         <Text
-          color="neutral-7"
+          color="color-neutral-300"
           textStyle="labels-large"
           mb="0.25rem"
         >
@@ -115,7 +115,7 @@ export default function RolesDetailsDrawerMobile({
           ref={permissionsContainerRef}
         >
           <Text
-            color="neutral-7"
+            color="color-neutral-300"
             textStyle="labels-large"
           >
             {t('permissions')}

@@ -4,7 +4,7 @@ import scrollStyles from './scroll';
 export default {
   global: () => ({
     body: {
-      background: 'neutral-1',
+      background: 'color-black',
       backgroundRepeat: 'no-repeat',
       fontFamily: 'DM Sans',
       textStyle: 'body-small',
@@ -12,7 +12,7 @@ export default {
       height: '100%',
     },
     html: {
-      background: 'neutral-1',
+      background: 'color-black',
       backgroundAttachment: 'fixed',
       backgroundRepeat: 'no-repeat',
       scrollBehavior: 'smooth',

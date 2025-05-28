@@ -232,7 +232,11 @@ export function ProposalActionCard({
     >
       <Card
         backgroundColor={
-          isAddAction || isEditAction ? 'neutral-2' : isDeleteAction ? 'red-2' : 'neutral-3'
+          isAddAction || isEditAction
+            ? 'color-neutral-950'
+            : isDeleteAction
+              ? 'red-2'
+              : 'color-neutral-900'
         }
       >
         <Flex
@@ -241,7 +245,7 @@ export function ProposalActionCard({
         >
           <Icon
             as={isAddAction ? CheckSquare : isEditAction ? PencilWithLineIcon : Trash}
-            color={isEditAction || isAddAction ? 'neutral-7' : 'red-1'}
+            color={isEditAction || isAddAction ? 'color-neutral-300' : 'red-1'}
           />
           {action.content}
         </Flex>

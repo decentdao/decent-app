@@ -118,7 +118,8 @@ export function CustomNonceInput({
           subLabel={
             renderTrimmed ? null : (
               <Text>
-                {t('example', { ns: 'common' })}: <ExampleLabel bg="neutral-4">14</ExampleLabel>{' '}
+                {t('example', { ns: 'common' })}:{' '}
+                <ExampleLabel bg="color-neutral-800">14</ExampleLabel>{' '}
               </Text>
             )
           }
@@ -147,7 +148,7 @@ export function CustomNonceInput({
       </Flex>
       <MenuList
         borderWidth="1px"
-        borderColor="neutral-3"
+        borderColor="color-neutral-900"
         borderRadius="0.78rem"
         zIndex="popover"
       >

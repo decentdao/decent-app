@@ -54,8 +54,8 @@
 
 .sonner-toast[data-rich-colors='true'][data-sonner-toast][data-type='info'],
 .sonner-toast[data-rich-colors='true'][data-sonner-toast][data-type='loading'] {
-  background-color: var(--colors-neutral-3);
-  border: 1px solid var(--colors-neutral-4);
+  background-color: var(--colors-color-neutral-900);
+  border: 1px solid var(--colors-color-neutral-800);
   color: var(--colors-color-lilac-100);
 }
 
