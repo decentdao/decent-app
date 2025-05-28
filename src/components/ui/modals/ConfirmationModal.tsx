@@ -37,7 +37,7 @@ export function ConfirmationModal({
         {icon}
         <Text
           my="1rem"
-          color="white-0"
+          color="color-white"
           textStyle="heading-medium"
         >
           {title}
@@ -186,7 +186,7 @@ export function ConfirmExecutionModal({
                 color: (
                   <Box
                     as="span"
-                    color="white-0"
+                    color="color-white"
                     fontStyle="normal"
                   />
                 ),
