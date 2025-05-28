@@ -95,7 +95,7 @@ export function CastVote({ proposal }: { proposal: FractalProposal }) {
 
   const castGaslessVoteCallback = useCallback(async () => {
     (async () => {
-      if (!canVoteForFree || !selectedVoteChoice) {
+      if (!canVoteForFree || selectedVoteChoice === undefined) {
         return;
       }
 
