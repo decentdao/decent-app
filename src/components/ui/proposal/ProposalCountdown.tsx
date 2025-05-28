@@ -24,7 +24,7 @@ const zeroPad = (num: number) => String(num).padStart(2, '0');
 export function ProposalCountdown({
   proposal,
   showIcon = true,
-  textColor = 'white-0',
+  textColor = 'color-white',
   rejectionProposal,
 }: {
   proposal: FractalProposal;

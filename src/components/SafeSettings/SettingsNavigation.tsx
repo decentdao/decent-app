@@ -67,7 +67,7 @@ function SettingsLink({
           color="color-lilac-100"
         >
           {leftIcon}
-          <Text color="white-0">{title}</Text>
+          <Text color="color-white">{title}</Text>
         </Flex>
         <Show below="md">
           <Flex
@@ -140,7 +140,7 @@ function SettingsNavigationItem({
           justifyContent="space-between"
         >
           {leftIcon}
-          <Text color="white-0">{title}</Text>
+          <Text color="color-white">{title}</Text>
         </Flex>
         {hasEdits && (
           <Icon

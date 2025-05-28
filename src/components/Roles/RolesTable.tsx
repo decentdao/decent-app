@@ -82,7 +82,7 @@ function RoleNameEditColumn({
         <Icon
           className="edit-role-icon"
           as={PencilWithLineIcon}
-          color="white-0"
+          color="color-white"
           boxSize="1rem"
           opacity={0}
           transition="opacity 0.3s ease-out"
@@ -107,7 +107,7 @@ function MemberColumn({
   const { t } = useTranslation('roles');
 
   // @dev undefined = not termed
-  const memberTextColor = isCurrentTermActive === false ? 'color-neutral-400' : 'white-0';
+  const memberTextColor = isCurrentTermActive === false ? 'color-neutral-400' : 'color-white';
   const isPendingText = isMemberTermPending ? t('wearerPending') : '';
 
   const wearerAddressText = wearerAddress

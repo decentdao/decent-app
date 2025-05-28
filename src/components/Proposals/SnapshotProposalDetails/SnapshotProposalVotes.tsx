@@ -32,7 +32,7 @@ export default function SnapshotProposalVotes({ proposal }: ISnapshotProposalVot
           <Text textStyle="heading-small">{t('breakdownTitle')}</Text>
           <Flex>
             <Text
-              color="white-0"
+              color="color-white"
               textStyle="heading-small"
             >
               {t('totalVotes')}

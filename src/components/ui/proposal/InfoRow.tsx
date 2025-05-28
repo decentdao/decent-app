@@ -29,7 +29,11 @@ export default function InfoRow({
         )
       ) : (
         <DecentTooltip label={tooltip}>
-          {txHash ? <DisplayTransaction txHash={txHash} /> : <Text color="white-0">{value}</Text>}
+          {txHash ? (
+            <DisplayTransaction txHash={txHash} />
+          ) : (
+            <Text color="color-white">{value}</Text>
+          )}
         </DecentTooltip>
       )}
     </Box>

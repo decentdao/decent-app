@@ -52,7 +52,7 @@ export function SafeDisplayRow({
     action.resetSafeState();
   };
 
-  const nameColor = showAddress ? 'color-neutral-300' : 'white-0';
+  const nameColor = showAddress ? 'color-neutral-300' : 'color-white';
 
   return (
     <Flex

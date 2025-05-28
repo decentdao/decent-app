@@ -21,7 +21,7 @@ function LabelWrapper({
   tooltipContent,
   children,
   isRequired,
-  labelColor = 'white-0',
+  labelColor = 'color-white',
 }: LabelWrapperProps) {
   return (
     <Box position="relative">

@@ -71,7 +71,7 @@ export function TransactionsDetails({
               <Text color="color-neutral-300">{chain.nativeCurrency.symbol}</Text>
               <Text
                 textAlign="right"
-                color={valueBiggerThanZero ? 'white-0' : 'color-neutral-300'}
+                color={valueBiggerThanZero ? 'color-white' : 'color-neutral-300'}
                 wordBreak="break-all"
               >
                 {valueBiggerThanZero ? transaction.ethValue.value : 'n/a'}

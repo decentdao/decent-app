@@ -109,7 +109,7 @@ function getTriggerButtonColor(
     return 'color-error-400';
   }
 
-  return 'white-0';
+  return 'color-white';
 }
 
 function getTriggerButtonLabel(
