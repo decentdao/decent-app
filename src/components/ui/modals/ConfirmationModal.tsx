@@ -45,7 +45,7 @@ export function ConfirmationModal({
         {typeof description === 'string' ? (
           <Text
             mt="0.5rem"
-            textStyle="labels-large"
+            textStyle="text-sm-medium"
             color={COLOR_CHARCOAL_300}
           >
             {description}
@@ -88,7 +88,7 @@ function ConfirmRejectProposalAdditionalContent() {
     <Box>
       <Text
         mt="0.5rem"
-        textStyle="labels-large"
+        textStyle="text-sm-medium"
         color={COLOR_CHARCOAL_300}
         fontStyle="italic"
       >
@@ -96,7 +96,7 @@ function ConfirmRejectProposalAdditionalContent() {
       </Text>
       <Text
         my="1rem"
-        textStyle="labels-large"
+        textStyle="text-sm-medium"
         color={COLOR_CHARCOAL_300}
       >
         {t('rejectProposalAreYouSure')}
@@ -174,7 +174,7 @@ export function ConfirmExecutionModal({
         <Box>
           <Text
             mt="0.5rem"
-            textStyle="labels-large"
+            textStyle="text-sm-medium"
             color={COLOR_CHARCOAL_300}
             fontStyle="italic"
           >

@@ -119,7 +119,7 @@ export function WithdrawGasTankModal({
                 gap={2}
               >
                 <Text
-                  textStyle="labels-large"
+                  textStyle="text-sm-medium"
                   color="color-neutral-300"
                 >
                   {t('withdrawAmount')}
@@ -159,7 +159,7 @@ export function WithdrawGasTankModal({
                     />
                     <Text
                       color={overDraft ? 'color-error-500' : 'color-neutral-300'}
-                      textStyle="labels-small"
+                      textStyle="text-xs-medium"
                       px="0.25rem"
                     >
                       {`${t('availableBalance', {
@@ -171,7 +171,7 @@ export function WithdrawGasTankModal({
                 </Flex>
 
                 <Text
-                  textStyle="labels-large"
+                  textStyle="text-sm-medium"
                   color="color-neutral-300"
                 >
                   {t('withdrawAmount')}

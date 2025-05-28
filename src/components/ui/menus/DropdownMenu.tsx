@@ -181,7 +181,7 @@ export function DropdownMenu<T>({
                               />
                             )}
                             <Text
-                              textStyle="labels-large"
+                              textStyle="text-sm-medium"
                               color="color-white"
                             >
                               {item.label}
@@ -220,7 +220,7 @@ export function DropdownMenu<T>({
                   <>
                     <Text
                       px="1rem"
-                      textStyle="labels-small"
+                      textStyle="text-xs-medium"
                       color="color-neutral-300"
                     >
                       {title}
@@ -279,7 +279,7 @@ export function DropdownMenu<T>({
                               />
                             )}
                             <Text
-                              textStyle="labels-large"
+                              textStyle="text-sm-medium"
                               color="color-white"
                             >
                               {item.label}

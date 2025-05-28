@@ -49,7 +49,7 @@ function TransferRow({ displayData }: { displayData: TransferDisplayData }) {
           />
           <Box>
             <Text
-              textStyle="labels-small"
+              textStyle="text-xs-medium"
               color="color-neutral-300"
             >
               {t(getTransferEventLabel(displayData.eventType))}
@@ -192,7 +192,7 @@ export function PaginationCount({ shownTransactions }: { shownTransactions: numb
     <Flex gap="0.25rem">
       <Text
         color="color-neutral-300"
-        textStyle="labels-large"
+        textStyle="text-sm-medium"
       >
         {t('transactionsShownCount', {
           count: totalTransfers > shownTransactions ? shownTransactions : totalTransfers,
@@ -203,7 +203,7 @@ export function PaginationCount({ shownTransactions }: { shownTransactions: numb
         value={safe.address}
         p={0}
         isTextLink
-        textStyle="labels-large"
+        textStyle="text-sm-medium"
         borderWidth={0}
       >
         {t('transactionsTotalCount', { count: totalTransfers })}

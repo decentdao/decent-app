@@ -41,7 +41,7 @@ export function CountProgressBadge(props: { total: number; current: number }) {
       />
 
       <Text
-        textStyle="labels-large"
+        textStyle="text-sm-medium"
         lineHeight="1"
       >
         {t('signersThresholdBadgeLabel', {

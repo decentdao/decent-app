@@ -32,7 +32,7 @@ function RolesHeader() {
       bg="white-alpha-04"
     >
       <Tr
-        textStyle="labels-large"
+        textStyle="text-sm-medium"
         color="color-neutral-300"
       >
         <Th
@@ -154,7 +154,7 @@ function PaymentsColumn({ paymentsCount }: { paymentsCount?: number }) {
         <Box
           as="span"
           display="inline-block"
-          textStyle="labels-small"
+          textStyle="text-xs-medium"
           lineHeight="1rem"
           textAlign="center"
           bg="color-green-500"

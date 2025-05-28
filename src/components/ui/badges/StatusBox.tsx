@@ -11,7 +11,7 @@ export default function StatusBox({ children }: { children: ReactNode }) {
       alignItems="center"
       borderRadius="4px"
       color="color-neutral-300"
-      textStyle="labels-large"
+      textStyle="text-sm-medium"
       border="1px solid"
       borderColor="color-neutral-300"
     >

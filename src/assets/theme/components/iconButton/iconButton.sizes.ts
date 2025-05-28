@@ -14,7 +14,7 @@ export default {
     borderRadius: '0.25rem',
   },
   sm: {
-    apply: 'textStyles.labels-large',
+    apply: 'textStyles.text-sm-medium',
     height: '1.25rem',
     width: '1.25rem',
     padding: '0.25rem',
@@ -34,7 +34,7 @@ export default {
     borderRadius: '0.25rem',
   },
   'icon-sm': {
-    apply: 'textStyles.labels-large',
+    apply: 'textStyles.text-sm-medium',
     height: '1.25rem',
     width: '1.25rem',
     padding: '0.25rem',

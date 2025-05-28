@@ -46,7 +46,7 @@ function CardContent({ icon, title, subtitle }: CardContentProps) {
             color="color-lilac-100"
           />
         </Flex>
-        <Box textStyle="labels-large">
+        <Box textStyle="text-sm-medium">
           <Text>{title}</Text>
           <Text color="color-neutral-300">{subtitle}</Text>
         </Box>

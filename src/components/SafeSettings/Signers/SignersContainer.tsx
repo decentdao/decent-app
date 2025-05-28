@@ -270,14 +270,14 @@ export function SignersContainer() {
               flexDirection="column"
             >
               <Text
-                textStyle="labels-small"
+                textStyle="text-xs-medium"
                 color="color-lilac-700"
                 fontWeight="bold"
               >
                 {t('launchTokenTitle', { ns: 'daoEdit' })}
               </Text>
               <Text
-                textStyle="labels-large"
+                textStyle="text-sm-medium"
                 color="color-lilac-700"
                 mb="1rem"
               >

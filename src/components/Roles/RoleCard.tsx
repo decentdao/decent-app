@@ -50,7 +50,7 @@ export function AvatarAndRoleName({
           {name}
         </Text>
         <Text
-          textStyle="labels-large"
+          textStyle="text-sm-medium"
           color="color-lilac-100"
           _hover={{
             color: 'color-white',
@@ -66,7 +66,7 @@ export function AvatarAndRoleName({
             mt="0.5rem"
           >
             <Text
-              textStyle="labels-large"
+              textStyle="text-sm-medium"
               color="color-neutral-300"
               alignSelf="center"
             >
@@ -82,7 +82,7 @@ export function AvatarAndRoleName({
               h="1.25rem"
             >
               <Text
-                textStyle="labels-small"
+                textStyle="text-xs-medium"
                 lineHeight="1rem"
                 align="center"
               >

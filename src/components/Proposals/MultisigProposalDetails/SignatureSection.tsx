@@ -276,7 +276,7 @@ export function SignatureSection({ proposal }: { proposal: MultisigProposal }) {
       }}
     >
       <Text
-        textStyle="labels-large"
+        textStyle="text-sm-medium"
         color="color-neutral-300"
       >
         {t('yourSignatureLabel', { ns: 'proposal' })}
@@ -366,7 +366,7 @@ export function SignatureSection({ proposal }: { proposal: MultisigProposal }) {
       >
         {conflictingProposals?.length > 0 && (
           <Text
-            textStyle="labels-small"
+            textStyle="text-xs-medium"
             color="color-neutral-300"
           >
             {t('conflictingProposalNotice', { ns: 'proposal' })}

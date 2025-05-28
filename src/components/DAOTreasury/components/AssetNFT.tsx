@@ -17,7 +17,7 @@ export function NFTHeader() {
         marginBottom="1.5rem"
       />
       <Text
-        textStyle="labels-small"
+        textStyle="text-xs-medium"
         color="color-neutral-300"
         px={{ base: '1rem', lg: '1.5rem' }}
       >

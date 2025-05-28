@@ -24,14 +24,14 @@ export function StarterPromoBanner() {
       />
       <Flex direction="column">
         <Text
-          textStyle="labels-large"
+          textStyle="text-sm-medium"
           color="color-lilac-950"
           fontWeight="bold"
         >
           {t('starterPromoTitle')}
         </Text>
         <Text
-          textStyle="labels-large"
+          textStyle="text-sm-medium"
           color="color-lilac-950"
         >
           <Text as="span">{t('starterPromoDescription')}</Text>

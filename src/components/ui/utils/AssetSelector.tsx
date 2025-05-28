@@ -128,7 +128,7 @@ export function AssetSelector({
               />
               <Flex flexDir="column">
                 <Text
-                  textStyle="labels-large"
+                  textStyle="text-sm-medium"
                   color="color-white"
                 >
                   {item.label}

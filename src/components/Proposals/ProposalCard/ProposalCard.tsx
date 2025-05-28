@@ -36,7 +36,7 @@ function ProposalCreatedDate({ date }: { date: Date }) {
       alignItems="center"
     >
       <Text
-        textStyle="labels-small"
+        textStyle="text-xs-medium"
         color="color-neutral-300"
       >
         {createdDateLabel}
@@ -56,7 +56,7 @@ function ProposalCreatedBy({ createdBy }: { createdBy: Address }) {
       alignItems="center"
     >
       <Text
-        textStyle="labels-small"
+        textStyle="text-xs-medium"
         color="color-neutral-300"
       >
         <Flex gap="1">
@@ -82,7 +82,7 @@ function NonceLabel({ nonce }: { nonce: number | undefined }) {
   if (!isMultisig || nonce === undefined) return null;
   return (
     <Text
-      textStyle="labels-large"
+      textStyle="text-xs-medium"
       color="color-neutral-300"
     >
       {t('nonceLabel', {

@@ -174,7 +174,7 @@ function GuardDetails(props: ICreationStepProps) {
               <InputRightElement mr="4">{minutes}</InputRightElement>
             </InputGroup>
             <Text
-              textStyle="labels-large"
+              textStyle="text-sm-medium"
               color="color-neutral-300"
               mt="0.5rem"
             >
@@ -198,7 +198,7 @@ function GuardDetails(props: ICreationStepProps) {
               <InputRightElement mr="4">{minutes}</InputRightElement>
             </InputGroup>
             <Text
-              textStyle="labels-large"
+              textStyle="text-sm-medium"
               color="color-neutral-300"
               mt="0.5rem"
             >

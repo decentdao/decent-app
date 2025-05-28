@@ -96,7 +96,7 @@ export default function RolesDetailsDrawerMobile({
       >
         <Text
           color="color-neutral-300"
-          textStyle="labels-large"
+          textStyle="text-sm-medium"
           mb="0.25rem"
         >
           {t('roleDescription')}
@@ -116,7 +116,7 @@ export default function RolesDetailsDrawerMobile({
         >
           <Text
             color="color-neutral-300"
-            textStyle="labels-large"
+            textStyle="text-sm-medium"
           >
             {t('permissions')}
           </Text>

@@ -21,21 +21,21 @@ export function CoinHeader() {
       <HStack px={{ base: '1rem', lg: '1.5rem' }}>
         <Text
           w="40%"
-          textStyle="labels-small"
+          textStyle="text-xs-medium"
           color="color-neutral-300"
         >
           {t('columnCoins')}
         </Text>
         <Text
           w="35%"
-          textStyle="labels-small"
+          textStyle="text-xs-medium"
           color="color-neutral-300"
         >
           {t('columnValue')}
         </Text>
         <Text
           w="25%"
-          textStyle="labels-small"
+          textStyle="text-xs-medium"
           color="color-neutral-300"
         >
           {t('columnAllocation')}
@@ -105,7 +105,7 @@ export function CoinRow({ asset }: { asset: TokenBalance }) {
         </Text>
         {asset.usdPrice && asset.usdValue && (
           <Text
-            textStyle="labels-small"
+            textStyle="text-xs-medium"
             color="color-neutral-300"
             width="100%"
           >

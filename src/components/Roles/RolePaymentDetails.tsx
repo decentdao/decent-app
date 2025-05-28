@@ -61,7 +61,7 @@ function PaymentDate({ label, date }: { label: string; date?: Date }) {
       gap="0.5rem"
     >
       <Text
-        textStyle="labels-small"
+        textStyle="text-xs-medium"
         color="color-neutral-300"
       >
         {t(label)}
@@ -76,7 +76,7 @@ function PaymentDate({ label, date }: { label: string; date?: Date }) {
           color={date ? 'color-lilac-100' : 'color-neutral-400'}
         />
         <Text
-          textStyle="labels-small"
+          textStyle="text-xs-medium"
           color={date ? 'color-white' : 'color-neutral-400'}
         >
           {date ? format(date, DEFAULT_DATE_FORMAT) : '---'}
@@ -94,7 +94,7 @@ function TermedAssigned({ termNumber }: { termNumber: number }) {
       gap="0.5rem"
     >
       <Text
-        textStyle="labels-small"
+        textStyle="text-xs-medium"
         color="color-neutral-300"
       >
         {t('assigned')}
@@ -109,7 +109,7 @@ function TermedAssigned({ termNumber }: { termNumber: number }) {
           color="lila-0"
         />
         <Text
-          textStyle="labels-small"
+          textStyle="text-xs-medium"
           color="color-white"
         >
           {t('termNumber', { number: termNumber })}

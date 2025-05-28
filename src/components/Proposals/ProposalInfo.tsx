@@ -36,7 +36,7 @@ function NonceLabel({ nonce }: { nonce: number | undefined }) {
   return (
     <Text
       mb={2}
-      textStyle="labels-large"
+      textStyle="text-sm-medium"
       color="color-neutral-300"
     >
       {t('nonceLabel', {
