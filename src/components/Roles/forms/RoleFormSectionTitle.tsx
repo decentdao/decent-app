@@ -39,14 +39,14 @@ export function SectionTitle({
             >
               <Text
                 textStyle="heading-small"
-                color="white-0"
+                color="color-white"
               >
                 {title}
               </Text>
               {tooltipContent && (
                 <Icon
                   as={Info}
-                  color="lilac-0"
+                  color="color-lilac-100"
                 />
               )}
             </Flex>

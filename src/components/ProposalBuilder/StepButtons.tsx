@@ -38,14 +38,14 @@ function GoToMetadataStepButton({ onStepChange }: StepButtonBaseProps) {
     <Button
       variant="text"
       px="2rem"
-      color="lilac-0"
+      color="color-lilac-100"
       onClick={() => onStepChange(CreateProposalSteps.METADATA)}
     >
       <Icon
         bg="transparent"
         aria-label="Back"
         as={CaretLeft}
-        color="lilac-0"
+        color="color-lilac-100"
       />
       {t('back', { ns: 'common' })}
     </Button>

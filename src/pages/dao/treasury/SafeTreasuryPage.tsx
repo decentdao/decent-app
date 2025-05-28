@@ -97,10 +97,10 @@ export function SafeTreasuryPage() {
               variant: 'tertiary',
               paddingX: '0.5rem',
               paddingY: '0.25rem',
-              _hover: { bg: 'neutral-2' },
+              _hover: { bg: 'color-neutral-950' },
               _active: {
-                color: 'lilac-0',
-                bg: 'neutral-2',
+                color: 'color-lilac-100',
+                bg: 'color-neutral-950',
               },
             }}
           />
@@ -119,7 +119,7 @@ export function SafeTreasuryPage() {
           <TitledInfoBox
             title={t('titleTransactions')}
             titleTestId="title-transactions"
-            bg="neutral-2"
+            bg="color-neutral-950"
             w="100%"
             subTitle={
               totalTransfers ? (
@@ -154,7 +154,7 @@ export function SafeTreasuryPage() {
           <TitledInfoBox
             title={t('titleAssets')}
             titleTestId="title-assets"
-            bg={{ base: 'neutral-2', lg: 'none' }}
+            bg={{ base: 'color-neutral-950', lg: 'none' }}
           >
             <Assets />
           </TitledInfoBox>

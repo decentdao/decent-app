@@ -61,7 +61,7 @@ export function ProposalStreams({
                   py="0.25rem"
                   px="1.5rem"
                   textStyle="heading-small"
-                  color="lilac-0"
+                  color="color-lilac-100"
                   justifyContent="space-between"
                 >
                   <Flex
@@ -83,7 +83,7 @@ export function ProposalStreams({
                       variant="unstyled"
                       onClick={() => handleRemoveStream(index)}
                       minWidth="auto"
-                      color="lilac-0"
+                      color="color-lilac-100"
                       _disabled={{ opacity: 0.4, cursor: 'default' }}
                       sx={{ '&:disabled:hover': { color: 'inherit', opacity: 0.4 } }}
                       isDisabled={pendingTransaction}

@@ -51,7 +51,7 @@ export function MarkdownEditor({
     >
       <Box
         height="0.25rem"
-        bgColor="blue-0"
+        bgColor="color-blue-900"
         width={`${uploadedPercent}%`}
       />
       <Editor

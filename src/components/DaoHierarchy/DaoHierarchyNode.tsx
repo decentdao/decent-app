@@ -233,7 +233,7 @@ export function DaoHierarchyNode({
     return (
       <Flex
         w="full"
-        bg="neutral-2"
+        bg="color-neutral-950"
         p="1.5rem"
         width="100%"
         borderRadius="0.75rem"
@@ -243,7 +243,7 @@ export function DaoHierarchyNode({
         <Center w="100%">
           <Text
             textStyle="label-base"
-            color="red-0"
+            color="color-error-500"
           >
             {t('errorMySafesNotLoaded')}
           </Text>
@@ -307,7 +307,9 @@ export function DaoHierarchyNode({
               my={`${NODE_HEIGHT_REM / 2.5}rem`}
               ml="0.5rem"
               boxSize="32px"
-              color={currentSafe?.address === childAddress ? 'celery-0' : 'neutral-6'}
+              color={
+                currentSafe?.address === childAddress ? 'color-green-400' : 'color-neutral-400'
+              }
             />
 
             <DaoHierarchyNode

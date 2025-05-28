@@ -89,7 +89,7 @@ export function QuorumProgressBar({
             >
               {reachedQuorum >= totalQuorum && (
                 <Icon
-                  color="lilac-0"
+                  color="color-lilac-100"
                   mr={2}
                   as={Check}
                 />
@@ -101,7 +101,7 @@ export function QuorumProgressBar({
       />
       {helperText && (
         <Text
-          color="neutral-7"
+          color="color-neutral-300"
           marginTop={3}
         >
           {helperText}

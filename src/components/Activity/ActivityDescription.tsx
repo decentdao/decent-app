@@ -26,7 +26,7 @@ export function ActivityDescription({ activity, showFullDescription }: IActivity
       {description && (
         <Box
           mt={2}
-          textColor={showFullDescription ? 'white-0' : 'neutral-7'}
+          textColor={showFullDescription ? 'color-white' : 'color-neutral-300'}
         >
           <Markdown
             content={description}

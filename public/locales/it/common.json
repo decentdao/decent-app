@@ -129,5 +129,6 @@
   "unsavedChanges": "Modifiche non salvate",
   "unsavedChangesDescription": "Le modifiche non salvate andranno perse se si continua. Volete eliminare le modifiche?",
   "discardChanges": "Scartare",
-  "keepEditing": "Continuare a modificare"
+  "keepEditing": "Continuare a modificare",
+  "selectStatusLabel": "Selezionare lo stato"
 }

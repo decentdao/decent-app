@@ -29,7 +29,7 @@ export function MySafes() {
               justifyContent="center"
               p="1rem"
               my="0.5rem"
-              bg="neutral-2"
+              bg="color-neutral-950"
               borderRadius="0.5rem"
             >
               <Text
@@ -63,13 +63,13 @@ export function MySafes() {
           {/* TODO: This Button style should be made a variant in UI repo */}
           <Button
             variant="primary"
-            bg={'neutral-3'}
+            bg={'color-neutral-900'}
             borderRadius="625rem"
-            color={'lilac-0'}
+            color={'color-lilac-100'}
             borderWidth="1px"
             borderColor="transparent"
-            _hover={{ textDecoration: 'none', bg: 'neutral-4' }}
-            _active={{ bg: 'neutral-3', borderColor: 'neutral-4' }}
+            _hover={{ textDecoration: 'none', bg: 'color-neutral-800' }}
+            _active={{ bg: 'color-neutral-900', borderColor: 'color-neutral-800' }}
             size={'sm'}
             p={'0.25rem 0.75rem'}
             width={'fit-content'}

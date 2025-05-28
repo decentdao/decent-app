@@ -13,7 +13,7 @@ export function ActionsExperienceV1() {
     <Flex
       flexDirection="column"
       rounded="lg"
-      bg="neutral-2"
+      bg="color-neutral-950"
       p="1.5rem"
     >
       <Flex
