@@ -29,17 +29,17 @@ export default function SnapshotProposalVotes({ proposal }: ISnapshotProposalVot
         }}
       >
         <Flex justifyContent="space-between">
-          <Text textStyle="heading-small">{t('breakdownTitle')}</Text>
+          <Text textStyle="text-xl-regular">{t('breakdownTitle')}</Text>
           <Flex>
             <Text
               color="color-white"
-              textStyle="heading-small"
+              textStyle="text-xl-regular"
             >
               {t('totalVotes')}
             </Text>
             <Text
               ml={1}
-              textStyle="heading-small"
+              textStyle="text-xl-regular"
             >
               {totalVotesCasted}
               {strategies.map((strategy, index) =>
@@ -82,7 +82,7 @@ export default function SnapshotProposalVotes({ proposal }: ISnapshotProposalVot
       </ContentBox>
       {votes && votes.length !== 0 && (
         <ContentBox containerBoxProps={{ bg: 'transparent' }}>
-          <Text textStyle="heading-small">
+          <Text textStyle="text-xl-regular">
             {t('votesTitle')} ({votes.length})
           </Text>
           <Divider my={4} />

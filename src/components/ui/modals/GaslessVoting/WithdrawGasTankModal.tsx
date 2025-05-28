@@ -103,7 +103,7 @@ export function WithdrawGasTankModal({
                 justify="space-between"
                 align="center"
               >
-                <Text textStyle="heading-small">{t('withdrawGas')}</Text>
+                <Text textStyle="text-xl-regular">{t('withdrawGas')}</Text>
                 <CloseButton onClick={close} />
               </Flex>
 

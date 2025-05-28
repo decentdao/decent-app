@@ -60,7 +60,7 @@ export function ProposalStreams({
                 <AccordionButton
                   py="0.25rem"
                   px="1.5rem"
-                  textStyle="heading-small"
+                  textStyle="text-xl-regular"
                   color="color-lilac-100"
                   justifyContent="space-between"
                 >
@@ -70,7 +70,7 @@ export function ProposalStreams({
                   >
                     {isExpanded ? <CaretDown /> : <CaretRight />}
                     <Text
-                      textStyle="heading-small"
+                      textStyle="text-xl-regular"
                       textTransform="capitalize"
                     >
                       {t('streamTitle', { index: index + 1, type: t(`${stream.type}Stream`) })}

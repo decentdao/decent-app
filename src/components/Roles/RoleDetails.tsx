@@ -151,7 +151,7 @@ export default function RolesDetails({
       />
       <Flex justifyContent="space-between">
         <Text
-          textStyle="heading-large"
+          textStyle="text-3xl-regular"
           color="color-white"
           my="1rem"
         >

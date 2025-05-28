@@ -166,7 +166,7 @@ export function DAOSearch() {
                   boxSize="1.5rem"
                 />
                 <Text
-                  textStyle="heading-small"
+                  textStyle="text-xl-regular"
                   color="color-error-400"
                 >
                   {errorMessage}

@@ -197,7 +197,7 @@ export function SafeProposalTemplatesPage() {
         my="2rem"
       />
       <Text
-        textStyle="heading-large"
+        textStyle="text-3xl-regular"
         color="color-white"
         mb="1rem"
       >

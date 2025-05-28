@@ -118,7 +118,7 @@ export function DropdownMenu<T>({
                   flexWrap="wrap"
                   gap="1rem"
                 >
-                  {title && <Text textStyle="heading-small">{title}</Text>}
+                  {title && <Text textStyle="text-xl-regular">{title}</Text>}
                   <Divider
                     variant="darker"
                     mx="-1.5rem"
@@ -140,7 +140,7 @@ export function DropdownMenu<T>({
                     justifyContent="center"
                   >
                     <Text
-                      textStyle="heading-small"
+                      textStyle="text-xl-regular"
                       color="color-neutral-300"
                     >
                       {emptyMessage}
@@ -241,7 +241,7 @@ export function DropdownMenu<T>({
                     justifyContent="center"
                   >
                     <Text
-                      textStyle="heading-small"
+                      textStyle="text-xl-regular"
                       color="color-neutral-300"
                     >
                       {emptyMessage}

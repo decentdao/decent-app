@@ -191,7 +191,7 @@ export function RefillGasTankModal({
         align="center"
         mb={4}
       >
-        <Text textStyle="heading-small">{t('refillTank')}</Text>
+        <Text textStyle="text-xl-regular">{t('refillTank')}</Text>
         <CloseButton onClick={close} />
       </Flex>
 

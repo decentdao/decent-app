@@ -109,7 +109,7 @@ export default function ProposalTemplateCard({
           name={title}
           borderRadius={0}
           getInitials={(_title: string) => _title.slice(0, 2)}
-          textStyle="heading-large"
+          textStyle="text-3xl-regular"
           color="color-white"
         />
         <OptionMenu
@@ -127,7 +127,7 @@ export default function ProposalTemplateCard({
         />
       </Flex>
       <Text
-        textStyle="heading-small"
+        textStyle="text-xl-regular"
         color="color-white"
         my="0.5rem"
       >

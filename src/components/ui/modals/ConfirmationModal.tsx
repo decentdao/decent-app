@@ -38,7 +38,7 @@ export function ConfirmationModal({
         <Text
           my="1rem"
           color="color-white"
-          textStyle="heading-medium"
+          textStyle="text-2xl-regular"
         >
           {title}
         </Text>

@@ -164,7 +164,7 @@ export default function RolesDetailsDrawer({
             </Flex>
           </Flex>
           <Text
-            textStyle="heading-large"
+            textStyle="text-3xl-regular"
             color="color-white"
             my="1rem"
           >

@@ -25,7 +25,7 @@ export function GaslessVoteSuccessModal({ close }: { close: () => void }) {
           w="50%"
           mx="auto"
         />
-        <Text textStyle="heading-medium">{t('voteWasSponsoredTitle')}</Text>
+        <Text textStyle="text-2xl-regular">{t('voteWasSponsoredTitle')}</Text>
         <Text
           textStyle="labels-large"
           color="color-neutral-300"

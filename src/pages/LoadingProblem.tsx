@@ -41,17 +41,17 @@ function LoadingProblem({
         >
           <Text
             w="full"
-            textStyle="heading-large"
+            textStyle="text-3xl-regular"
           >
             {t('errorSentryFallbackTitle')}
           </Text>
           <Text
-            textStyle="heading-medium"
+            textStyle="text-2xl-regular"
             mt="0.5rem"
           >
             {t(`${type}1`, { chain: chain.name })}
           </Text>
-          <Text textStyle="heading-medium">{t(`${type}2`)}</Text>
+          <Text textStyle="text-2xl-regular">{t(`${type}2`)}</Text>
         </Box>
         <Flex alignItems="flex-end">
           <Hide above="lg">

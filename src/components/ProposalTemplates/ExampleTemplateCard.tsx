@@ -27,12 +27,12 @@ export default function ExampleTemplateCard({
           h="50px"
           color="color-lilac-100"
           borderRadius={0}
-          textStyle="heading-large"
+          textStyle="text-3xl-regular"
           as={icon}
         />
       </Flex>
       <Text
-        textStyle="heading-small"
+        textStyle="text-xl-regular"
         color="color-white"
         my="0.5rem"
       >

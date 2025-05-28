@@ -40,7 +40,7 @@ export function SettingsPermissionsStrategyForm({
           alignItems="center"
           ref={tooltipContainerRef}
         >
-          <Text textStyle="heading-small">{t('asset')}</Text>
+          <Text textStyle="text-xl-regular">{t('asset')}</Text>
           <Text color="color-lilac-100">*</Text>
           <ModalTooltip
             containerRef={tooltipContainerRef}

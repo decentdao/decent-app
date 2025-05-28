@@ -100,7 +100,7 @@ export function InfoGovernance() {
         mb="0.5rem"
       >
         <Bank size="1.5rem" />
-        <Text textStyle="heading-small">{t('titleGovernance')}</Text>
+        <Text textStyle="text-xl-regular">{t('titleGovernance')}</Text>
       </Flex>
 
       <Flex
