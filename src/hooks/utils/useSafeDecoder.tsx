@@ -49,7 +49,7 @@ export const useSafeDecoder = () => {
       let decoded: DecodedTransaction | DecodedTransaction[];
       try {
         try {
-          const decodedData = await safeAPI.decodeData(data);
+          const decodedData = await safeAPI.decodeData(data, to);
           if (decodedData.parameters && decodedData.method === 'multiSend') {
             const internalTransactionsMap = new Map<number, DecodedTransaction>();
             parseMultiSendTransactions(internalTransactionsMap, decodedData.parameters);
