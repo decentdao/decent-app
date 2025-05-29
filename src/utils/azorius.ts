@@ -1,5 +1,4 @@
 import { abis } from '@fractal-framework/fractal-contracts';
-import { SafeMultisigTransactionResponse } from '@safe-global/safe-core-sdk-types';
 import {
   Address,
   GetContractEventsReturnType,
@@ -311,15 +310,16 @@ export const parseMultiSendTransactions = (
 };
 
 export const parseDecodedData = (
-  multiSigTransaction: SafeMultisigTransactionResponse,
+  to: string,
+  value: string,
+  dataDecoded: DataDecoded,
   isMultiSigTransaction: boolean,
 ): DecodedTransaction[] => {
   const eventTransactionMap = new Map<number, any>();
-  const dataDecoded = multiSigTransaction.dataDecoded as any as DataDecoded;
   if (dataDecoded && isMultiSigTransaction) {
     const decodedTransaction: DecodedTransaction = {
-      target: getAddress(multiSigTransaction.to),
-      value: multiSigTransaction.value,
+      target: getAddress(to),
+      value,
       function: dataDecoded.method,
       parameterTypes: dataDecoded.parameters ? dataDecoded.parameters.map(p => p.type) : [],
       parameterValues: dataDecoded.parameters
