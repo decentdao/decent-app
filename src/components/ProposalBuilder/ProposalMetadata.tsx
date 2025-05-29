@@ -128,6 +128,12 @@ export function MarkdownProposalMetadata({
           height="400px"
         />
       </Container>
+      <CustomNonceInput
+        nonce={proposalMetadata.nonce}
+        onChange={newNonce => setProposalMetadata('nonce', newNonce)}
+        align="end"
+        renderTrimmed={false}
+      />
     </VStack>
   );
 }
