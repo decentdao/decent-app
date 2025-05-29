@@ -55,7 +55,15 @@ export function SafePermissionsSettingsContent() {
     return null;
   }
 
-  const proposerThreshold = azoriusGovernance.votingStrategy?.proposerThreshold?.formatted;
+  const editedProposerThreshold =
+    formikContext.values.permissions?.proposerThreshold?.bigintValue?.toString();
+
+  const proposerThresholdValue =
+    editedProposerThreshold || azoriusGovernance.votingStrategy?.proposerThreshold?.formatted;
+
+  const proposerThreshold = editedProposerThreshold
+    ? `${proposerThresholdValue}*`
+    : proposerThresholdValue;
 
   return (
     <>
@@ -129,8 +137,8 @@ export function SafePermissionsSettingsContent() {
                     >
                       {votesToken
                         ? t('permissionsErc20CreateProposalsDescription', {
-                            symbol: votesToken.symbol,
                             proposerThreshold,
+                            symbol: votesToken.symbol,
                           })
                         : t('permissionsErc721CreateProposalsDescription', {
                             proposerThreshold,
