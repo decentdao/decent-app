@@ -103,7 +103,7 @@ export function WithdrawGasTankModal({
                 justify="space-between"
                 align="center"
               >
-                <Text textStyle="heading-small">{t('withdrawGas')}</Text>
+                <Text textStyle="text-xl-regular">{t('withdrawGas')}</Text>
                 <CloseButton onClick={close} />
               </Flex>
 
@@ -111,7 +111,7 @@ export function WithdrawGasTankModal({
                 flexDirection="column"
                 justify="space-between"
                 border="1px solid"
-                borderColor="neutral-3"
+                borderColor="color-neutral-900"
                 borderRadius="0.75rem"
                 mt={4}
                 px={4}
@@ -119,8 +119,8 @@ export function WithdrawGasTankModal({
                 gap={2}
               >
                 <Text
-                  textStyle="labels-large"
-                  color="neutral-7"
+                  textStyle="text-sm-medium"
+                  color="color-neutral-300"
                 >
                   {t('withdrawAmount')}
                 </Text>
@@ -141,7 +141,7 @@ export function WithdrawGasTankModal({
                           parentFormikValue={values.inputAmount}
                           placeholder="0"
                           isInvalid={overDraft}
-                          errorBorderColor="red-0"
+                          errorBorderColor="color-error-500"
                         />
                       </LabelWrapper>
                     )}
@@ -158,8 +158,8 @@ export function WithdrawGasTankModal({
                       disabled
                     />
                     <Text
-                      color={overDraft ? 'red-0' : 'neutral-7'}
-                      textStyle="labels-small"
+                      color={overDraft ? 'color-error-500' : 'color-neutral-300'}
+                      textStyle="text-xs-medium"
                       px="0.25rem"
                     >
                       {`${t('availableBalance', {
@@ -171,8 +171,8 @@ export function WithdrawGasTankModal({
                 </Flex>
 
                 <Text
-                  textStyle="labels-large"
-                  color="neutral-7"
+                  textStyle="text-sm-medium"
+                  color="color-neutral-300"
                 >
                   {t('withdrawAmount')}
                 </Text>

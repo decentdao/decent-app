@@ -79,7 +79,7 @@ export function PaginationControls({
         </MenuButton>
         <MenuList
           borderWidth="1px"
-          borderColor="neutral-3"
+          borderColor="color-neutral-900"
           borderRadius="0.75rem"
           bg={NEUTRAL_2_82_TRANSPARENT}
           backdropFilter="auto"
@@ -95,7 +95,7 @@ export function PaginationControls({
                 borderRadius="0.75rem"
                 p="0.5rem 0.5rem"
                 sx={{
-                  '&:hover': { bg: 'neutral-3' },
+                  '&:hover': { bg: 'color-neutral-900' },
                 }}
                 onClick={() => onPageSizeChange(size)}
               >
@@ -121,7 +121,7 @@ export function PaginationControls({
         <Text
           fontSize="sm"
           px={2}
-          color="lilac-0"
+          color="color-lilac-100"
         >
           {t('pageXofY', { current: currentPage, total: totalPages })}
         </Text>

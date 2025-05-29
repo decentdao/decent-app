@@ -80,7 +80,7 @@ export default function RolesDetailsDrawerMobile({
                 icon={
                   <Icon
                     as={PencilWithLineIcon}
-                    color="lilac-0"
+                    color="color-lilac-100"
                     aria-hidden
                   />
                 }
@@ -95,8 +95,8 @@ export default function RolesDetailsDrawerMobile({
         mb="1rem"
       >
         <Text
-          color="neutral-7"
-          textStyle="labels-large"
+          color="color-neutral-300"
+          textStyle="text-sm-medium"
           mb="0.25rem"
         >
           {t('roleDescription')}
@@ -115,8 +115,8 @@ export default function RolesDetailsDrawerMobile({
           ref={permissionsContainerRef}
         >
           <Text
-            color="neutral-7"
-            textStyle="labels-large"
+            color="color-neutral-300"
+            textStyle="text-sm-medium"
           >
             {t('permissions')}
           </Text>

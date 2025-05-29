@@ -45,7 +45,7 @@ import {
 } from '../../../../types';
 
 // @todo Remove in favour of AddCreateProposalPermissionModal.
-// ttps://linear.app/decent-labs/issue/ENG-842/fix-permissions-settings-ux-flows
+// https://linear.app/decent-labs/issue/ENG-842/fix-permissions-settings-ux-flows
 export function SafePermissionsCreateProposal() {
   const publicClient = useNetworkPublicClient();
   const { t } = useTranslation(['settings', 'common', 'modals']);
@@ -370,7 +370,7 @@ export function SafePermissionsCreateProposal() {
                 rightIcon={<Trash size={24} />}
                 padding={0}
                 onClick={openConfirmDeleteStrategyModal}
-                color="red-1"
+                color="color-error-400"
               >
                 {t('delete', { ns: 'common' })}
               </Button>
@@ -410,7 +410,7 @@ export function SafePermissionsCreateProposal() {
                   <IconButton
                     size="button-md"
                     variant="ghost"
-                    color="lilac-0"
+                    color="color-lilac-100"
                     aria-label={t('back', { ns: 'common' })}
                     onClick={handleGoBack}
                     icon={<ArrowLeft size={24} />}
@@ -421,7 +421,7 @@ export function SafePermissionsCreateProposal() {
                 <IconButton
                   size="button-md"
                   variant="ghost"
-                  color="red-1"
+                  color="color-error-400"
                   icon={<Trash size={24} />}
                   aria-label={t('delete', { ns: 'common' })}
                   onClick={openConfirmDeleteStrategyModal}
@@ -430,7 +430,7 @@ export function SafePermissionsCreateProposal() {
                 <IconButton
                   size="button-md"
                   variant="ghost"
-                  color="lilac-0"
+                  color="color-lilac-100"
                   aria-label={t('close', { ns: 'common' })}
                   onClick={handleClose}
                   icon={<X size={24} />}

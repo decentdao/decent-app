@@ -37,9 +37,9 @@ function RejectionBanner({ rejectionProposal }: { rejectionProposal: MultisigPro
         borderColor: COLOR_YELLOW_1,
       }
     : {
-        bg: 'red--2',
-        color: 'red-1',
-        borderColor: 'red--1',
+        bg: 'color-error-900',
+        color: 'color-error-400',
+        borderColor: 'color-error-800',
       };
   return (
     <Flex
@@ -55,7 +55,7 @@ function RejectionBanner({ rejectionProposal }: { rejectionProposal: MultisigPro
         as={WarningCircle}
         boxSize="1.5rem"
       />
-      <Text textStyle="labels-large">
+      <Text textStyle="text-sm-medium">
         {hasRejectionExecuted
           ? rejectedProposalLabel
           : hasPassedThreshold
@@ -73,8 +73,8 @@ function NonceLabel({ nonce }: { nonce: number | undefined }) {
   return (
     <Text
       mb={2}
-      textStyle="labels-large"
-      color="neutral-7"
+      textStyle="text-sm-medium"
+      color="color-neutral-300"
     >
       {t('nonceLabel', {
         number: nonce,

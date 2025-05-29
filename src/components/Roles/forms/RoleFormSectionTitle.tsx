@@ -38,15 +38,15 @@ export function SectionTitle({
               gap="0.25rem"
             >
               <Text
-                textStyle="heading-small"
-                color="white-0"
+                textStyle="text-xl-regular"
+                color="color-white"
               >
                 {title}
               </Text>
               {tooltipContent && (
                 <Icon
                   as={Info}
-                  color="lilac-0"
+                  color="color-lilac-100"
                 />
               )}
             </Flex>
@@ -58,7 +58,7 @@ export function SectionTitle({
               alignItems="center"
               gap="0.25rem"
             >
-              <Text textStyle="labels-small">{t('learnMore')}</Text>
+              <Text textStyle="text-xs-medium">{t('learnMore')}</Text>
               <Icon
                 as={ArrowUpRight}
                 boxSize="1rem"

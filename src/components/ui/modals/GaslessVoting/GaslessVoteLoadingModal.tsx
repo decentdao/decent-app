@@ -17,7 +17,7 @@ export function GaslessVoteLoadingModal() {
         <CircleLoader />
         <Text
           textAlign="center"
-          textStyle="heading-medium"
+          textStyle="text-2xl-regular"
         >
           {t('voteIsSponsoredLoading')}
         </Text>

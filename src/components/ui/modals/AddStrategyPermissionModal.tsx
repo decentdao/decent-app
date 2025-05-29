@@ -41,11 +41,11 @@ export function AddStrategyPermissionModal({
         justifyContent="space-between"
         alignItems="center"
       >
-        <Text textStyle="heading-small">{t('addPermissionTitle')}</Text>
+        <Text textStyle="text-xl-regular">{t('addPermissionTitle')}</Text>
         <Show above="md">
           <IconButton
             variant="ghost"
-            color="lilac-0"
+            color="color-lilac-100"
             aria-label={t('close', { ns: 'common' })}
             onClick={closeModal}
             icon={<X size={24} />}
@@ -57,7 +57,7 @@ export function AddStrategyPermissionModal({
           display="flex"
           flexDirection="column"
           gap={2}
-          bg="neutral-3"
+          bg="color-neutral-900"
           _hover={{
             backgroundColor: 'white-alpha-04',
           }}
@@ -76,15 +76,15 @@ export function AddStrategyPermissionModal({
             }
           }}
         >
-          <Box color="lilac-0">
+          <Box color="color-lilac-100">
             <Scroll size={24} />
           </Box>
           <Flex
             flexDirection="column"
             gap={1}
           >
-            <Text textStyle="heading-small">{t('permissionCreateProposalsTitle')}</Text>
-            <Text color="neutral-7">{t('permissionCreateProposalsDescription')}</Text>
+            <Text textStyle="text-xl-regular">{t('permissionCreateProposalsTitle')}</Text>
+            <Text color="color-neutral-300">{t('permissionCreateProposalsDescription')}</Text>
           </Flex>
         </Card>
 
@@ -95,15 +95,15 @@ export function AddStrategyPermissionModal({
           _hover={{}}
           cursor="not-allowed"
         >
-          <Box color="neutral-6">
+          <Box color="color-neutral-400">
             <CheckSquare size={24} />
           </Box>
           <Flex
             flexDirection="column"
             gap={1}
-            color="neutral-6"
+            color="color-neutral-400"
           >
-            <Text textStyle="heading-small">{t('permissionComingSoonTitle')}</Text>
+            <Text textStyle="text-xl-regular">{t('permissionComingSoonTitle')}</Text>
             <Text>{t('permissionComingSoonDescription')}</Text>
           </Flex>
         </Card>

@@ -64,13 +64,13 @@ export function DAOInfoCard() {
               <Link
                 to={DAO_ROUTES.hierarchy.relative(addressPrefix, displayedAddress)}
                 as={RouterLink}
-                _hover={{ textDecoration: 'none', bg: 'neutral-4' }}
-                _active={{ bg: 'neutral-3', borderColor: 'neutral-4' }}
-                bg="neutral-3"
-                color="lilac-0"
+                _hover={{ textDecoration: 'none', bg: 'color-neutral-800' }}
+                _active={{ bg: 'color-neutral-900', borderColor: 'color-neutral-800' }}
+                bg="color-neutral-900"
+                color="color-lilac-100"
                 borderRadius="625rem"
                 p="0.25rem 0.75rem"
-                textStyle="body-large"
+                textStyle="text-lg-regular"
               >
                 Parent
               </Link>
@@ -97,7 +97,7 @@ export function DAOInfoCard() {
         >
           {/* DAO NAME */}
           <Text
-            textStyle="heading-large"
+            textStyle="text-3xl-regular"
             data-testid="DAOInfo-name"
           >
             {daoName}

@@ -33,8 +33,8 @@ function ActionCard({
       padding={0}
       w="full"
       boxShadow={DETAILS_BOX_SHADOW}
-      _hover={!isDisabled ? { bg: 'neutral-3' } : undefined}
-      _active={!isDisabled ? { bg: 'neutral-2' } : undefined}
+      _hover={!isDisabled ? { bg: 'color-neutral-900' } : undefined}
+      _active={!isDisabled ? { bg: 'color-neutral-950' } : undefined}
       transition="all ease-out 300ms"
       justifyContent="flex-start"
     >
@@ -49,19 +49,19 @@ function ActionCard({
           w="2rem"
           h="2rem"
           mb="1rem"
-          color={isDisabled ? 'neutral-6' : 'lilac-0'}
+          color={isDisabled ? 'color-neutral-400' : 'color-lilac-100'}
         />
         <Text
-          textStyle="heading-small"
+          textStyle="text-xl-regular"
           mb="0.25rem"
-          color={isDisabled ? 'neutral-6' : 'neutral-0'}
+          color={isDisabled ? 'color-neutral-400' : 'neutral-0'}
         >
           {title}
         </Text>
         <Text
           whiteSpace="pre-wrap"
           textAlign="left"
-          color={isDisabled ? 'neutral-6' : 'neutral-7'}
+          color={isDisabled ? 'color-neutral-400' : 'color-neutral-300'}
         >
           {subtitle}
         </Text>

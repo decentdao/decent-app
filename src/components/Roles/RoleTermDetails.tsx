@@ -87,11 +87,11 @@ function RoleTermExpiredTerms({
                   <Icon
                     as={!isExpanded ? CaretDown : CaretRight}
                     boxSize="1.25rem"
-                    color="lilac-0"
+                    color="color-lilac-100"
                   />
                   <Text
-                    textStyle="body-large"
-                    color="lilac-0"
+                    textStyle="text-lg-regular"
+                    color="color-lilac-100"
                   >
                     {t('showPreviousTerms')}
                   </Text>

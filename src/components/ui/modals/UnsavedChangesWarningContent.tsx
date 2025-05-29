@@ -23,7 +23,7 @@ export function UnsavedChangesWarningContent({
         <WarningCircle size="2.5rem" />
         <Text
           mt="1rem"
-          textStyle="heading-medium"
+          textStyle="text-2xl-regular"
         >
           {t('unsavedChanges')}
         </Text>
@@ -39,9 +39,9 @@ export function UnsavedChangesWarningContent({
         gap="0.75rem"
       >
         <Button
-          color="red-1"
+          color="color-error-400"
           borderWidth="1px"
-          borderColor="red-1"
+          borderColor="color-error-400"
           border-radius="0.25rem"
           leftIcon={<Trash />}
           variant="outline"

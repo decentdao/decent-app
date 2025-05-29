@@ -22,7 +22,7 @@ function BackButton({ text, onClick, href }: BackButtonProps) {
       <Button
         variant="link"
         width="min-content"
-        color="neutral-7"
+        color="color-neutral-300"
         padding={0}
         leftIcon={<ArrowLeft />}
         onClick={onClick}
@@ -38,7 +38,7 @@ function BackButton({ text, onClick, href }: BackButtonProps) {
       to={href}
       variant="link"
       width="min-content"
-      color="neutral-7"
+      color="color-neutral-300"
       padding={0}
       leftIcon={<ArrowLeft />}
     >

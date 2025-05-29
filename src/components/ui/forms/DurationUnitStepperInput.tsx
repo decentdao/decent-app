@@ -27,7 +27,7 @@ export default function DurationUnitStepperInput({
   secondsValue,
   onSecondsValueChange,
   minSeconds = 0,
-  color = 'white-0',
+  color = 'color-white',
 }: {
   secondsValue: number;
   onSecondsValueChange: (val: number) => void;
@@ -55,7 +55,7 @@ export default function DurationUnitStepperInput({
   const stepperButton = (direction: 'inc' | 'dec') => (
     <Button
       variant="secondary"
-      borderColor="neutral-3"
+      borderColor="color-neutral-900"
       p="0.5rem"
       size="md"
     >
@@ -78,12 +78,12 @@ export default function DurationUnitStepperInput({
             color={color}
           />
           <InputRightElement
-            color="neutral-5"
+            color="color-neutral-700"
             minWidth="fit-content"
           >
             <Select
-              bgColor="neutral-1"
-              borderColor="neutral-3"
+              bgColor="color-black"
+              borderColor="color-neutral-900"
               rounded="lg"
               cursor="pointer"
               border="none"

@@ -101,8 +101,8 @@ export function AssetSelector({ formIndex, disabled }: { formIndex: number; disa
                       />
                       <Flex flexDir="column">
                         <Text
-                          textStyle="labels-large"
-                          color="white-0"
+                          textStyle="text-sm-medium"
+                          color="color-white"
                         >
                           {item.label}
                         </Text>
@@ -111,22 +111,22 @@ export function AssetSelector({ formIndex, disabled }: { formIndex: number; disa
                           gap={2}
                         >
                           <Text
-                            textStyle="body-large"
-                            color="neutral-7"
+                            textStyle="text-lg-regular"
+                            color="color-neutral-300"
                           >
                             {balanceText}
                           </Text>
                           {usdValue && (
                             <>
                               <Text
-                                textStyle="body-large"
-                                color="neutral-7"
+                                textStyle="text-lg-regular"
+                                color="color-neutral-300"
                               >
                                 {'•'}
                               </Text>
                               <Text
-                                textStyle="body-large"
-                                color="neutral-7"
+                                textStyle="text-lg-regular"
+                                color="color-neutral-300"
                               >
                                 {formatUSD(usdValue)}
                               </Text>
@@ -139,7 +139,7 @@ export function AssetSelector({ formIndex, disabled }: { formIndex: number; disa
                       <Icon
                         as={CheckCircle}
                         boxSize="1.5rem"
-                        color="lilac-0"
+                        color="color-lilac-100"
                       />
                     )}
                   </>
@@ -170,7 +170,7 @@ export function AssetSelector({ formIndex, disabled }: { formIndex: number; disa
             return (
               <LabelWrapper
                 label={t('totalAmount')}
-                labelColor="neutral-7"
+                labelColor="color-neutral-300"
                 errorMessage={
                   paymentAmountBigIntTouched && paymentAmountBigIntError?.bigintValue
                     ? paymentAmountBigIntError.bigintValue

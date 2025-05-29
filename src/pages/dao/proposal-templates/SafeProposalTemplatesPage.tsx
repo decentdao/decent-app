@@ -197,8 +197,8 @@ export function SafeProposalTemplatesPage() {
         my="2rem"
       />
       <Text
-        textStyle="heading-large"
-        color="white-0"
+        textStyle="text-3xl-regular"
+        color="color-white"
         mb="1rem"
       >
         {tProposalTemplate('defaultTemplates')}

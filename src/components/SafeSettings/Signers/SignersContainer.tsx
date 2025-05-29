@@ -76,7 +76,7 @@ function Signer({
           value={!!newSigner ? newSigner.inputValue : signer.address}
           isDisabled={!newSigner}
           textDecoration={markedForRemoval ? 'line-through' : 'none'}
-          color={!!newSigner ? 'white-0' : 'neutral-3'}
+          color={!!newSigner ? 'color-white' : 'color-neutral-900'}
           isInvalid={isInvalid}
           onChange={e => {
             // Find and overwrite the address input value of this new signer with the input value
@@ -107,7 +107,7 @@ function Signer({
             <Icon
               as={MinusCircle}
               boxSize="1.5rem"
-              color={showRemoveButton ? 'lilac-0' : 'neutral-5'}
+              color={showRemoveButton ? 'color-lilac-100' : 'color-neutral-700'}
             />
           </Button>
         )}
@@ -129,7 +129,7 @@ function Signer({
             <Icon
               as={PlusCircle}
               boxSize="1.5rem"
-              color="lilac-0"
+              color="color-lilac-100"
             />
           </Button>
         )}
@@ -248,7 +248,7 @@ export function SignersContainer() {
       {isSettingsV1FeatureEnabled && (
         <Flex
           flexDirection="row"
-          bg="cosmic-nebula-5"
+          bg="color-lilac-200"
           p={4}
           borderRadius="0.75rem"
           mb={12}
@@ -270,15 +270,15 @@ export function SignersContainer() {
               flexDirection="column"
             >
               <Text
-                textStyle="labels-small"
-                color="cosmic-nebula-0"
+                textStyle="text-xs-medium"
+                color="color-lilac-700"
                 fontWeight="bold"
               >
                 {t('launchTokenTitle', { ns: 'daoEdit' })}
               </Text>
               <Text
-                textStyle="labels-large"
-                color="cosmic-nebula-0"
+                textStyle="text-sm-medium"
+                color="color-lilac-700"
                 mb="1rem"
               >
                 {t('launchTokenDescription', { ns: 'daoEdit' })}
@@ -286,8 +286,8 @@ export function SignersContainer() {
             </Flex>
           </Flex>
           <Button
-            bg="white-0"
-            _hover={{ bg: 'white-0' }}
+            bg="color-white"
+            _hover={{ bg: 'color-white' }}
             size="sm"
             onClick={handleModifyGovernance}
           >
@@ -298,7 +298,7 @@ export function SignersContainer() {
 
       <Text
         ml={6}
-        textStyle="body-large"
+        textStyle="text-lg-regular"
         mb={0.5}
       >
         {t('owners', { ns: 'common' })}
@@ -306,7 +306,7 @@ export function SignersContainer() {
 
       <Box
         border="1px solid"
-        borderColor="neutral-3"
+        borderColor="color-neutral-900"
         borderRadius="0.75rem"
       >
         {signers.map(signer => (
@@ -376,7 +376,7 @@ export function SignersContainer() {
       {isSettingsV1FeatureEnabled && (
         <Box
           border="1px solid"
-          borderColor="neutral-3"
+          borderColor="color-neutral-900"
           borderRadius="0.75rem"
           mt={3}
           px={6}
@@ -390,14 +390,14 @@ export function SignersContainer() {
           >
             <Flex flexDirection="column">
               <Text
-                textStyle="body-large"
+                textStyle="text-lg-regular"
                 mb={0.5}
               >
                 {t('threshold', { ns: 'common' })}
               </Text>
               <Text
-                textStyle="body-small"
-                color="neutral-7"
+                textStyle="text-base-regular"
+                color="color-neutral-300"
               >
                 {t('thresholdDescription', { ns: 'common' })}
               </Text>
@@ -413,7 +413,11 @@ export function SignersContainer() {
                   }
                   setFieldValue('multisig.signerThreshold', updatedValue);
                 }}
-                color={values.multisig?.signerThreshold === undefined ? 'neutral-7' : 'white-0'}
+                color={
+                  values.multisig?.signerThreshold === undefined
+                    ? 'color-neutral-300'
+                    : 'color-white'
+                }
                 value={values.multisig?.signerThreshold ?? safe?.threshold}
                 isInvalid={!!multisigEditFormikErrors?.threshold}
               />

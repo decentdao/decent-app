@@ -17,14 +17,14 @@ export function ERC721TokensContainer() {
 
   return (
     <Box width="100%">
-      <Text textStyle="body-large">{t('governanceTokenInfoTitle')}</Text>
+      <Text textStyle="text-lg-regular">{t('governanceTokenInfoTitle')}</Text>
       {erc721Tokens ? (
         <Flex
           justifyContent="space-between"
           flexWrap={{ base: 'wrap', md: 'nowrap' }}
           mt={4}
           borderWidth="0.06rem"
-          borderColor="neutral-3"
+          borderColor="color-neutral-900"
           borderRadius="0.75rem"
           flexDirection="column"
         >
@@ -37,7 +37,7 @@ export function ERC721TokensContainer() {
                 px={6}
                 py={2}
               >
-                <Text textStyle="body-small">{t('governanceTokenNameTitle')}</Text>
+                <Text textStyle="text-base-regular">{t('governanceTokenNameTitle')}</Text>
                 <DisplayAddress
                   mb={-2}
                   mr={-4}
@@ -56,10 +56,10 @@ export function ERC721TokensContainer() {
                 px={6}
                 py={2}
               >
-                <Text textStyle="body-small">{t('governanceTokenSymbolLabel')}</Text>
+                <Text textStyle="text-base-regular">{t('governanceTokenSymbolLabel')}</Text>
                 <Text
-                  color="neutral-7"
-                  textStyle="body-small"
+                  color="color-neutral-300"
+                  textStyle="text-base-regular"
                 >
                   ${token.symbol}
                 </Text>
@@ -74,10 +74,10 @@ export function ERC721TokensContainer() {
                 px={6}
                 py={2}
               >
-                <Text textStyle="body-small">{t('governanceTokenWeightLabel')}</Text>
+                <Text textStyle="text-base-regular">{t('governanceTokenWeightLabel')}</Text>
                 <Text
-                  color="neutral-7"
-                  textStyle="body-small"
+                  color="color-neutral-300"
+                  textStyle="text-base-regular"
                 >
                   {token.votingWeight.toString()}
                 </Text>
@@ -92,10 +92,10 @@ export function ERC721TokensContainer() {
                 px={6}
                 py={2}
               >
-                <Text textStyle="body-small">{t('governanceTokenTotalWeightLabel')}</Text>
+                <Text textStyle="text-base-regular">{t('governanceTokenTotalWeightLabel')}</Text>
                 <Text
-                  color="neutral-7"
-                  textStyle="body-small"
+                  color="color-neutral-300"
+                  textStyle="text-base-regular"
                 >
                   {token.totalSupply ? (token.totalSupply * token.votingWeight).toString() : 'n/a'}
                 </Text>

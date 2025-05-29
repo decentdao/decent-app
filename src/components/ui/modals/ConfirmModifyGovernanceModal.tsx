@@ -29,11 +29,11 @@ export function ConfirmModifyGovernanceModal({
     >
       <Image src="/images/warning-yellow.svg" />
 
-      <Text textStyle="heading-medium">{t('confirmModifyGovernanceTitle')}</Text>
+      <Text textStyle="text-2xl-regular">{t('confirmModifyGovernanceTitle')}</Text>
       <Text
         marginBottom="1rem"
         textStyle="label-large"
-        color="neutral-7"
+        color="color-neutral-300"
       >
         {t('confirmModifyGovernanceDesc')}
       </Text>

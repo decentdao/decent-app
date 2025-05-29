@@ -53,14 +53,14 @@ export function SafeGovernanceSettingsPage() {
         {(isERC20Governance || isERC721Governance) && (
           <Box width="100%">
             <Text
-              textStyle="heading-small"
+              textStyle="text-xl-regular"
               mb={4}
             >
               {t('daoSettingsGovernanceParameters')}
             </Text>
             <Box
               borderWidth="0.06rem"
-              borderColor="neutral-3"
+              borderColor="color-neutral-900"
               borderRadius="0.75rem"
             >
               <GovernanceParams />
