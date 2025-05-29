@@ -16,20 +16,12 @@ import { useCanUserCreateProposal } from '../../../../hooks/utils/useCanUserSubm
 import { useDAOStore } from '../../../../providers/App/AppProvider';
 import { AzoriusGovernance } from '../../../../types';
 
-// @todo: Near-duplicate of SafePermissionsSettingsPage.tsx. Pending refactor and/or cleanup.
-// https://linear.app/decent-labs/issue/ENG-842/fix-permissions-settings-ux-flows
 export function SafePermissionsSettingsContent() {
   const { t } = useTranslation(['settings', 'common']);
   const { daoKey } = useCurrentDAOKey();
   const {
     governance,
-    governanceContracts: {
-      isLoaded,
-      linearVotingErc20Address,
-      linearVotingErc721Address,
-      linearVotingErc20WithHatsWhitelistingAddress,
-      linearVotingErc721WithHatsWhitelistingAddress,
-    },
+    governanceContracts: { isLoaded, linearVotingErc20Address, linearVotingErc721Address },
     node: { safe },
   } = useDAOStore({ daoKey });
 
@@ -64,9 +56,6 @@ export function SafePermissionsSettingsContent() {
   }
 
   const proposerThreshold = azoriusGovernance.votingStrategy?.proposerThreshold?.formatted;
-  const noErc20Address = !linearVotingErc20Address && !linearVotingErc20WithHatsWhitelistingAddress;
-  const noErc721Address =
-    !linearVotingErc721Address && !linearVotingErc721WithHatsWhitelistingAddress;
 
   return (
     <>
@@ -97,7 +86,8 @@ export function SafePermissionsSettingsContent() {
             >
               <BarLoader />
             </Box>
-          ) : (!votesToken || noErc20Address) && (!erc721Tokens || !noErc721Address) ? (
+          ) : (!votesToken || !linearVotingErc20Address) &&
+            (!erc721Tokens || !linearVotingErc721Address) ? (
             <NoDataCard
               emptyText="emptyPermissions"
               emptyTextNotProposer="emptyPermissionsNotProposer"
