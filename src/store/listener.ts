@@ -36,7 +36,7 @@ export const useDAOStoreListener = ({ daoKey }: { daoKey: DAOKey | undefined }) 
   const governance = daoKey ? getGovernance(daoKey) : undefined;
   const lockedVotesTokenAddress = governance?.lockReleaseAddress;
   const votesTokenAddress = governance?.votesTokenAddress;
-  const azoriusModuleAddress = governance?.moduleAzoriusAddress;
+  const moduleAzoriusAddress = governance?.moduleAzoriusAddress;
   const erc20StrategyAddress =
     governance?.linearVotingErc20Address ||
     governance?.linearVotingErc20WithHatsWhitelistingAddress;
@@ -109,7 +109,7 @@ export const useDAOStoreListener = ({ daoKey }: { daoKey: DAOKey | undefined }) 
   useGovernanceListeners({
     lockedVotesTokenAddress,
     votesTokenAddress,
-    azoriusModuleAddress,
+    moduleAzoriusAddress,
     erc20StrategyAddress,
     erc721StrategyAddress,
     onProposalCreated,

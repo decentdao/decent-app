@@ -348,6 +348,7 @@ export function useGovernanceFetcher() {
             };
 
             onAzoriusGovernanceLoaded({
+              moduleAzoriusAddress: azoriusContract.address,
               votesToken: tokenData,
               erc721Tokens: undefined,
               linearVotingErc20Address,
@@ -564,6 +565,7 @@ export function useGovernanceFetcher() {
             };
 
             onAzoriusGovernanceLoaded({
+              moduleAzoriusAddress: azoriusContract.address,
               votesToken: undefined,
               erc721Tokens,
               linearVotingErc20Address,

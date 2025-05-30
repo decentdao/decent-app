@@ -22,6 +22,7 @@ import {
 import { GlobalStore, StoreMiddleware, StoreSlice } from '../store';
 
 export type SetAzoriusGovernancePayload = {
+  moduleAzoriusAddress: Address;
   votesToken: VotesTokenData | undefined;
   erc721Tokens: ERC721TokenData[] | undefined;
   linearVotingErc20Address?: Address;

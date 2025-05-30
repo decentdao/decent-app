@@ -24,7 +24,7 @@ import { useGovernanceFetcher } from '../fetchers/governance';
 export function useGovernanceListeners({
   lockedVotesTokenAddress,
   votesTokenAddress,
-  azoriusModuleAddress,
+  moduleAzoriusAddress,
   erc20StrategyAddress,
   erc721StrategyAddress,
   onProposalCreated,
@@ -35,7 +35,7 @@ export function useGovernanceListeners({
 }: {
   votesTokenAddress?: Address;
   lockedVotesTokenAddress?: Address;
-  azoriusModuleAddress?: Address;
+  moduleAzoriusAddress?: Address;
   erc20StrategyAddress?: Address;
   erc721StrategyAddress?: Address;
   onProposalCreated: (proposal: AzoriusProposal) => void;
@@ -160,14 +160,14 @@ export function useGovernanceListeners({
     /**
      * Listen for proposal creation events.
      */
-    if (!azoriusModuleAddress) {
+    if (!moduleAzoriusAddress) {
       return;
     }
 
     const azoriusContract = getContract({
       abi: abis.Azorius,
       client: publicClient,
-      address: azoriusModuleAddress,
+      address: moduleAzoriusAddress,
     });
 
     const unwatch = azoriusContract.watchEvent.ProposalCreated({
@@ -245,7 +245,7 @@ export function useGovernanceListeners({
     });
 
     return unwatch;
-  }, [getAddressContractType, publicClient, decode, onProposalCreated, azoriusModuleAddress]);
+  }, [getAddressContractType, publicClient, decode, onProposalCreated, moduleAzoriusAddress]);
 
   useEffect(() => {
     /**
