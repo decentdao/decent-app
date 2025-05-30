@@ -130,7 +130,7 @@ export function useGuardFetcher() {
           freezeGuardType: FreezeGuardType.AZORIUS,
           ...freezeGuard,
         };
-      } else if (guardAddress) {
+      } else if (guardAddress && guardAddress !== zeroAddress) {
         const multisigFreezeGuardContract = getContract({
           abi: abis.MultisigFreezeGuard,
           address: guardAddress,
