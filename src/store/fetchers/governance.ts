@@ -327,8 +327,7 @@ export function useGovernanceFetcher() {
               };
             }
 
-            // TODO: Transform to multiCall
-
+            // Prepare and execute multicall for governance parameters
             const [
               votingPeriodBlocks,
               quorumNumerator,
@@ -336,14 +335,35 @@ export function useGovernanceFetcher() {
               timeLockPeriod,
               executionPeriod,
               proposerThreshold,
-            ] = await Promise.all([
-              erc20VotingContract.read.votingPeriod(),
-              erc20VotingContract.read.quorumNumerator(),
-              erc20VotingContract.read.QUORUM_DENOMINATOR(),
-              azoriusContract.read.timelockPeriod(),
-              azoriusContract.read.executionPeriod(),
-              erc20VotingContract.read.requiredProposerWeight(),
-            ]);
+            ] = await publicClient.multicall({
+              contracts: [
+                {
+                  ...erc20VotingContract,
+                  functionName: 'votingPeriod',
+                },
+                {
+                  ...erc20VotingContract,
+                  functionName: 'quorumNumerator',
+                },
+                {
+                  ...erc20VotingContract,
+                  functionName: 'QUORUM_DENOMINATOR',
+                },
+                {
+                  ...azoriusContract,
+                  functionName: 'timelockPeriod',
+                },
+                {
+                  ...azoriusContract,
+                  functionName: 'executionPeriod',
+                },
+                {
+                  ...erc20VotingContract,
+                  functionName: 'requiredProposerWeight',
+                },
+              ],
+              allowFailure: false,
+            });
 
             const quorumPercentage = (quorumNumerator * 100n) / quorumDenominator;
             const votingPeriodValue = await blocksToSeconds(votingPeriodBlocks, publicClient);
