@@ -181,8 +181,6 @@ export const createGovernancesSlice: StateCreator<
         } else if (!state.governances[daoKey].proposals) {
           state.governances[daoKey].proposals = proposals;
         } else {
-          // TODO: Sometimes snapshot proposals might be loaded before proposals, then snapshot proposals are lost
-          // Need to tackle this in scope of ENG-813
           const uniqueProposals = getFilterUniqueProposals([
             ...state.governances[daoKey].proposals,
             ...proposals,
