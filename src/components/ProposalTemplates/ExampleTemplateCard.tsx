@@ -25,20 +25,20 @@ export default function ExampleTemplateCard({
         <Icon
           w="50px"
           h="50px"
-          color="lilac-0"
+          color="color-lilac-100"
           borderRadius={0}
-          textStyle="heading-large"
+          textStyle="text-3xl-regular"
           as={icon}
         />
       </Flex>
       <Text
-        textStyle="heading-small"
-        color="white-0"
+        textStyle="text-xl-regular"
+        color="color-white"
         my="0.5rem"
       >
         {title}
       </Text>
-      <Box color="neutral-6">
+      <Box color="color-neutral-400">
         <Markdown content={description} />
       </Box>
     </ContentBox>

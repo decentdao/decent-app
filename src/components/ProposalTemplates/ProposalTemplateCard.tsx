@@ -109,14 +109,14 @@ export default function ProposalTemplateCard({
           name={title}
           borderRadius={0}
           getInitials={(_title: string) => _title.slice(0, 2)}
-          textStyle="heading-large"
-          color="white-0"
+          textStyle="text-3xl-regular"
+          color="color-white"
         />
         <OptionMenu
           trigger={
             <Icon
               as={GearFine}
-              color="lilac-0"
+              color="color-lilac-100"
               width="1.25rem"
               height="1.25rem"
             />
@@ -127,8 +127,8 @@ export default function ProposalTemplateCard({
         />
       </Flex>
       <Text
-        textStyle="heading-small"
-        color="white-0"
+        textStyle="text-xl-regular"
+        color="color-white"
         my="0.5rem"
       >
         {title}

@@ -42,7 +42,7 @@ function DayStepperInput({
         w="250px"
       >
         <NumberStepperInput
-          unitHint={t('days', { ns: 'common' })}
+          rightElement={<Text color="color-neutral-700">{t('days', { ns: 'common' })}</Text>}
           value={inputValue}
           onChange={val => onInputChange(Number(val))}
         />
@@ -214,7 +214,7 @@ export function AzoriusGovernance(props: ICreationStepProps) {
       {!!subgraphInfo?.parentAddress && (
         <Box
           padding="1.5rem"
-          bg="neutral-2"
+          bg="color-neutral-950"
           borderRadius="0.25rem"
           mt="1.5rem"
           mb={showCustomNonce ? '1.5rem' : 0}
@@ -238,7 +238,7 @@ export function AzoriusGovernance(props: ICreationStepProps) {
             />
           </FormControl>
           <Text
-            color="neutral-7"
+            color="color-neutral-300"
             width="50%"
           >
             {t(
@@ -250,7 +250,7 @@ export function AzoriusGovernance(props: ICreationStepProps) {
       {showCustomNonce && (
         <Box
           padding="1.5rem"
-          bg="neutral-2"
+          bg="color-neutral-950"
           borderRadius="0.25rem"
           my="1.5rem"
         >

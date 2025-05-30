@@ -21,7 +21,7 @@ export default function ExternalLink({
         textDecoration: 'underline',
       },
       active: {
-        color: 'celery--2',
+        color: 'color-green-500',
       },
     },
     grey: {
@@ -29,7 +29,7 @@ export default function ExternalLink({
         textDecoration: 'underline',
       },
       active: {
-        color: 'neutral-6',
+        color: 'color-neutral-400',
       },
     },
     black: {
@@ -45,7 +45,7 @@ export default function ExternalLink({
         textDecoration: 'underline',
       },
       active: {
-        color: 'lilac--3',
+        color: 'color-lilac-600',
       },
     },
   };
@@ -53,22 +53,22 @@ export default function ExternalLink({
   const pillLinkStyles = {
     green: {
       hover: {
-        bg: 'celery--6',
-        borderColor: 'celery--6',
+        bg: 'color-green-950',
+        borderColor: 'color-green-950',
       },
       active: {
-        bg: 'celery--5',
-        borderColor: 'celery--5',
+        bg: 'color-green-800',
+        borderColor: 'color-green-800',
         borderWidth: '1px',
       },
     },
     grey: {
       hover: {
-        bg: 'neutral-2',
+        bg: 'color-neutral-950',
       },
       active: {
-        bg: 'neutral-5',
-        borderColor: 'neutral-5',
+        bg: 'color-neutral-700',
+        borderColor: 'color-neutral-700',
         borderWidth: '1px',
       },
     },
@@ -89,18 +89,18 @@ export default function ExternalLink({
         borderColor: 'lilac-3',
       },
       active: {
-        bg: 'lilac--3',
-        borderColor: 'lilac--3',
+        bg: 'color-lilac-600',
+        borderColor: 'color-lilac-600',
         borderWidth: '1px',
       },
     },
   };
 
   const linkColor = {
-    green: 'celery-0',
-    grey: 'neutral-6',
+    green: 'color-green-400',
+    grey: 'color-neutral-400',
     black: 'black',
-    lilac: 'lilac--3',
+    lilac: 'color-lilac-600',
   };
 
   return (

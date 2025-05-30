@@ -26,6 +26,7 @@
   "move": "Mover",
   "hours": "Horas",
   "minutes": "Actas",
+  "minutesShort": "min",
   "quorum": "Quórum",
   "deploy": "Despliegue",
   "loading": "Cargando...",
@@ -128,5 +129,6 @@
   "unsavedChanges": "Cambios no guardados",
   "unsavedChangesDescription": "Tienes cambios sin guardar que se perderán si continúas. ¿Desea descartar los cambios?",
   "discardChanges": "Descartar",
-  "keepEditing": "Seguir editando"
+  "keepEditing": "Seguir editando",
+  "selectStatusLabel": "Seleccionar estado"
 }

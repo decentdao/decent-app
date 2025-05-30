@@ -9,7 +9,7 @@ import { getAddress, zeroAddress } from 'viem';
 import { base } from 'wagmi/chains';
 import { GovernanceType } from '../../../types';
 import { NetworkConfig } from '../../../types/network';
-import { getSafeContractDeploymentAddress } from './utils';
+import { getEtherscanAPIUrl, getSafeContractDeploymentAddress } from './utils';
 
 const SAFE_VERSION = '1.3.0';
 
@@ -22,7 +22,7 @@ export const baseConfig: NetworkConfig = {
   rpcEndpoint: `https://base-mainnet.g.alchemy.com/v2/${import.meta.env?.VITE_APP_ALCHEMY_API_KEY}`,
   safeBaseURL: 'https://safe-transaction-base.safe.global',
   etherscanBaseURL: 'https://basescan.org/',
-  etherscanAPIUrl: `https://api.basescan.org/api?apikey=${import.meta.env?.VITE_APP_ETHERSCAN_BASE_API_KEY}`,
+  etherscanAPIUrl: getEtherscanAPIUrl(chain.id),
   addressPrefix: 'base',
   nativeTokenIcon: '/images/coin-icon-base.svg',
   isENSSupported: false,

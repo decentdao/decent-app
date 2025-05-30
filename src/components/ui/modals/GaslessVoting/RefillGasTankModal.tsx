@@ -91,7 +91,7 @@ function RefillForm({ onSubmit, onClose, isDirectDeposit, showNonceInput }: Refi
               flexDirection="row"
               justify="space-between"
               border="1px solid"
-              borderColor="neutral-3"
+              borderColor="color-neutral-900"
               borderRadius="0.75rem"
               px={4}
               py={3}
@@ -101,7 +101,7 @@ function RefillForm({ onSubmit, onClose, isDirectDeposit, showNonceInput }: Refi
                 {({ field }: FieldAttributes<FieldProps<BigIntValuePair | undefined>>) => (
                   <LabelWrapper
                     label={t(isDirectDeposit ? 'sendingHintDirectDeposit' : 'sendingHint')}
-                    labelColor="neutral-7"
+                    labelColor="color-neutral-300"
                   >
                     <BigIntInput
                       {...field}
@@ -114,7 +114,7 @@ function RefillForm({ onSubmit, onClose, isDirectDeposit, showNonceInput }: Refi
                       placeholder="0"
                       maxValue={!isDirectDeposit ? balance?.value || 0n : undefined}
                       isInvalid={overDraft}
-                      errorBorderColor="red-0"
+                      errorBorderColor="color-error-500"
                       autoFocus
                     />
                   </LabelWrapper>
@@ -132,8 +132,8 @@ function RefillForm({ onSubmit, onClose, isDirectDeposit, showNonceInput }: Refi
                   disabled
                 />
                 <Text
-                  textStyle="labels-small"
-                  color="neutral-7"
+                  textStyle="text-xs-medium"
+                  color="color-neutral-300"
                 >
                   {t('balance', {
                     balance: formatCoinUnits(balance?.value || 0n).toFixed(2),
@@ -191,7 +191,7 @@ export function RefillGasTankModal({
         align="center"
         mb={4}
       >
-        <Text textStyle="heading-small">{t('refillTank')}</Text>
+        <Text textStyle="text-xl-regular">{t('refillTank')}</Text>
         <CloseButton onClick={close} />
       </Flex>
 
@@ -203,8 +203,8 @@ export function RefillGasTankModal({
         <Checkbox
           isChecked={isDirectDeposit}
           onChange={e => setIsDirectDeposit(e.target.checked)}
-          borderColor="lilac-0"
-          iconColor="lilac-0"
+          borderColor="color-lilac-100"
+          iconColor="color-lilac-100"
           sx={{
             '& .chakra-checkbox__control': {
               borderRadius: '0.25rem',

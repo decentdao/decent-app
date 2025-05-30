@@ -70,7 +70,7 @@ export function SafePermissionsSettingsPage() {
                 aria-label={t('addOwner', { ns: 'common' })}
                 size="icon-md"
                 variant="ghost"
-                color="neutral-6"
+                color="color-neutral-400"
                 icon={<Plus size={24} />}
                 onClick={() =>
                   navigate(
@@ -123,7 +123,7 @@ export function SafePermissionsSettingsPage() {
             }
             sx={{
               _hover: {
-                backgroundColor: 'neutral-3',
+                backgroundColor: 'color-neutral-900',
                 button: {
                   opacity: 1,
                 },
@@ -137,8 +137,8 @@ export function SafePermissionsSettingsPage() {
               >
                 <Box
                   borderRadius="50%"
-                  bg="neutral-3"
-                  color="lilac-0"
+                  bg="color-neutral-900"
+                  color="color-lilac-100"
                   padding={1}
                 >
                   <Coins fontSize="1.5rem" />
@@ -146,8 +146,8 @@ export function SafePermissionsSettingsPage() {
                 <Box>
                   <Text>{t('permissionCreateProposalsTitle')}</Text>
                   <Text
-                    textStyle="labels-large"
-                    color="neutral-7"
+                    textStyle="text-sm-medium"
+                    color="color-neutral-300"
                   >
                     {votesToken
                       ? t('permissionsErc20CreateProposalsDescription', {
@@ -169,7 +169,7 @@ export function SafePermissionsSettingsPage() {
                   icon={<PencilWithLineIcon />}
                   aria-label={t('edit')}
                   opacity={0}
-                  color="neutral-6"
+                  color="color-neutral-400"
                   border="none"
                 />
               )}

@@ -7,6 +7,8 @@
   "titleGovernance": "Управление",
   "titleType": "Тип",
   "titleVotingPeriod": "Период голосования",
+  "titleExecutionPeriod": "Период выполнения",
+  "titleTimelockPeriod": "Период блокировки по времени",
   "titleQuorum": "Кворум",
   "titleProposals": "Предложения",
   "titleActive": "Активный",

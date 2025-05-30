@@ -110,19 +110,19 @@ export function AirdropAction({
             as={ArrowsDownUp}
             w="1.5rem"
             h="1.5rem"
-            color="lilac-0"
+            color="color-lilac-100"
           />
           <Text>{t('airdrop')}</Text>
-          <Text color="lilac-0">
+          <Text color="color-lilac-100">
             {formatUnits(totalAmount, actionAsset.decimals)} {actionAsset.symbol}
           </Text>
           <Text>{t('to').toLowerCase()}</Text>
-          <Text color="lilac-0">
+          <Text color="color-lilac-100">
             {recipientsCount} {t('recipients', { count: recipientsCount })}
           </Text>
         </Flex>
         <Button
-          color="red-0"
+          color="color-error-500"
           variant="tertiary"
           size="sm"
           onClick={onRemove}
@@ -153,7 +153,7 @@ export function TransactionBuilderAction({
             as={CraneTower}
             w="1.5rem"
             h="1.5rem"
-            color="lilac-0"
+            color="color-lilac-100"
           />
           <Text>
             {action.transactions.length === 1
@@ -167,7 +167,7 @@ export function TransactionBuilderAction({
           </Text>
         </Flex>
         <Button
-          color="red-0"
+          color="color-error-500"
           variant="tertiary"
           size="sm"
           onClick={onRemove}
@@ -232,7 +232,11 @@ export function ProposalActionCard({
     >
       <Card
         backgroundColor={
-          isAddAction || isEditAction ? 'neutral-2' : isDeleteAction ? 'red-2' : 'neutral-3'
+          isAddAction || isEditAction
+            ? 'color-neutral-950'
+            : isDeleteAction
+              ? 'color-error-900'
+              : 'color-neutral-900'
         }
       >
         <Flex
@@ -241,7 +245,7 @@ export function ProposalActionCard({
         >
           <Icon
             as={isAddAction ? CheckSquare : isEditAction ? PencilWithLineIcon : Trash}
-            color={isEditAction || isAddAction ? 'neutral-7' : 'red-1'}
+            color={isEditAction || isAddAction ? 'color-neutral-300' : 'color-error-400'}
           />
           {action.content}
         </Flex>
@@ -251,7 +255,7 @@ export function ProposalActionCard({
         icon={<Trash />}
         variant="ghost"
         size="icon-sm"
-        color="red-1"
+        color="color-error-400"
         onClick={() => removeAction(index)}
       />
     </Flex>

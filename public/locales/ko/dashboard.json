@@ -7,6 +7,8 @@
   "titleGovernance": "거버넌스",
   "titleType": "유형",
   "titleVotingPeriod": "투표 기간",
+  "titleExecutionPeriod": "실행 기간",
+  "titleTimelockPeriod": "타임락 기간",
   "titleQuorum": "쿼럼",
   "titleProposals": "제안서",
   "titleActive": "활성",

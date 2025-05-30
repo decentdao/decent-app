@@ -21,22 +21,22 @@ export function CoinHeader() {
       <HStack px={{ base: '1rem', lg: '1.5rem' }}>
         <Text
           w="40%"
-          textStyle="labels-small"
-          color="neutral-7"
+          textStyle="text-xs-medium"
+          color="color-neutral-300"
         >
           {t('columnCoins')}
         </Text>
         <Text
           w="35%"
-          textStyle="labels-small"
-          color="neutral-7"
+          textStyle="text-xs-medium"
+          color="color-neutral-300"
         >
           {t('columnValue')}
         </Text>
         <Text
           w="25%"
-          textStyle="labels-small"
-          color="neutral-7"
+          textStyle="text-xs-medium"
+          color="color-neutral-300"
         >
           {t('columnAllocation')}
         </Text>
@@ -75,7 +75,7 @@ export function CoinRow({ asset }: { asset: TokenBalance }) {
           h="1rem"
         />
         <EtherscanLink
-          color="white-0"
+          color="color-white"
           _hover={{ bg: 'transparent' }}
           padding={0}
           borderWidth={0}
@@ -105,8 +105,8 @@ export function CoinRow({ asset }: { asset: TokenBalance }) {
         </Text>
         {asset.usdPrice && asset.usdValue && (
           <Text
-            textStyle="labels-small"
-            color="neutral-7"
+            textStyle="text-xs-medium"
+            color="color-neutral-300"
             width="100%"
           >
             <DecentTooltip

@@ -44,17 +44,17 @@ export function AvatarAndRoleName({
         gap="0.25rem"
       >
         <Text
-          textStyle="heading-small"
-          color="white-0"
+          textStyle="text-xl-regular"
+          color="color-white"
         >
           {name}
         </Text>
         <Text
-          textStyle="labels-large"
-          color="lilac-0"
+          textStyle="text-sm-medium"
+          color="color-lilac-100"
           _hover={{
-            color: 'white-0',
-            bg: 'neutral-4',
+            color: 'color-white',
+            bg: 'color-neutral-800',
           }}
           maxW="fit-content"
         >
@@ -66,23 +66,23 @@ export function AvatarAndRoleName({
             mt="0.5rem"
           >
             <Text
-              textStyle="labels-large"
-              color="neutral-7"
+              textStyle="text-sm-medium"
+              color="color-neutral-300"
               alignSelf="center"
             >
               {t('activePayments')}
             </Text>
             <Box
-              bg="celery--2"
-              color="neutral-3"
-              borderColor="neutral-3"
+              bg="color-green-500"
+              color="color-neutral-900"
+              borderColor="color-neutral-900"
               borderWidth="2px"
               borderRadius="50%"
               w="1.25rem"
               h="1.25rem"
             >
               <Text
-                textStyle="labels-small"
+                textStyle="text-xs-medium"
                 lineHeight="1rem"
                 align="center"
               >
@@ -150,7 +150,7 @@ export function RoleCardEdit({
           <EditBadge editStatus={editStatus} />
           <Icon
             as={CaretRight}
-            color="white-0"
+            color="color-white"
           />
         </Flex>
       </Flex>
@@ -176,8 +176,8 @@ export function RoleCardShort({
     >
       <Flex justifyContent="space-between">
         <Text
-          textStyle="heading-small"
-          color="lilac-0"
+          textStyle="text-xl-regular"
+          color="color-lilac-100"
         >
           {name}
         </Text>
@@ -188,7 +188,7 @@ export function RoleCardShort({
           <EditBadge editStatus={editStatus} />
           <Icon
             as={CaretCircleRight}
-            color="lilac-0"
+            color="color-lilac-100"
             boxSize="1.5rem"
           />
         </Flex>

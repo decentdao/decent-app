@@ -1,16 +1,16 @@
 import { Box, Button, Flex, Icon, Input, Show, Text, Image } from '@chakra-ui/react';
 import { MinusCircle, PlusCircle } from '@phosphor-icons/react';
-import { FormikProps, useFormik } from 'formik';
-import { useEffect, useMemo, useState, useRef, ChangeEvent } from 'react';
+import { useFormikContext } from 'formik';
+import { useEffect, useMemo, useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Address } from 'viem';
 import { useAccount } from 'wagmi';
 import useFeatureFlag from '../../../helpers/environmentFeatureFlags';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
-import { useValidationAddress } from '../../../hooks/schemas/common/useValidationAddress';
 import { useDAOStore } from '../../../providers/App/AppProvider';
 import { NumberStepperInput } from '../../ui/forms/NumberStepperInput';
 import { ModalType } from '../../ui/modals/ModalProvider';
+import { SafeSettingsEdits, SafeSettingsFormikErrors } from '../../ui/modals/SafeSettingsModal';
 import { useDecentModal } from '../../ui/modals/useDecentModal';
 import Divider from '../../ui/utils/Divider';
 
@@ -25,58 +25,38 @@ type ExistingSignerItem = SignerItem & {
   isAdding: false;
 };
 
-type NewSignerItem = SignerItem & {
+export type NewSignerItem = SignerItem & {
   isAdding: true;
   inputValue: string;
 };
 
-type NewSignerFormikErrors = { newSigners?: { key: string; error: string }[] };
-
-type NewSignersFormikValues = { newSigners: NewSignerItem[]; threshold: number };
-
 function Signer({
   signer,
   onRemove,
-  formik,
+  markedForRemoval,
+  canRemove,
 }: {
   signer: SignerItem;
   onRemove: (() => void) | null;
-  formik: FormikProps<NewSignersFormikValues> | null;
+  markedForRemoval?: boolean;
+  canRemove: boolean;
 }) {
   if (!signer.isAdding && !signer.address) {
     throw new Error('Signer does not have an address');
   }
 
-  if (signer.isAdding && !formik) {
-    throw new Error('New signer formik is null');
-  }
-
   const inputRef = useRef<HTMLInputElement>(null);
+  const { values, setFieldValue } = useFormikContext<SafeSettingsEdits>();
+  const { errors } = useFormikContext<SafeSettingsFormikErrors>();
+
+  const multisigEditFormikErrors = (errors as SafeSettingsFormikErrors).multisig;
 
   const newSigner = signer.isAdding ? (signer as NewSignerItem) : null;
   const isInvalid =
     !!newSigner?.inputValue &&
-    formik !== null &&
-    (formik.errors as NewSignerFormikErrors).newSigners?.some(error => error.key === signer.key);
+    multisigEditFormikErrors?.newSigners?.some(error => error.key === signer.key);
 
-  const onNewSignerInputChange =
-    formik !== null
-      ? (e: ChangeEvent<HTMLInputElement>) => {
-          // Find and overwrite the address input value of this new signer with the input value
-          const newSigners = formik.values.newSigners.map((s: NewSignerItem) =>
-            s.key === signer.key
-              ? {
-                  ...s,
-                  inputValue: e.target.value,
-                }
-              : s,
-          );
-
-          formik.setFieldValue('newSigners', newSigners);
-
-          setTimeout(() => inputRef.current?.focus(), 10);
-        }
-      : undefined;
+  const showRemoveButton = onRemove && !markedForRemoval && canRemove;
 
   return (
     <Flex
@@ -95,23 +75,61 @@ function Signer({
           ref={inputRef}
           value={!!newSigner ? newSigner.inputValue : signer.address}
           isDisabled={!newSigner}
-          color={!!newSigner ? 'white-0' : 'neutral-3'}
+          textDecoration={markedForRemoval ? 'line-through' : 'none'}
+          color={!!newSigner ? 'color-white' : 'color-neutral-900'}
           isInvalid={isInvalid}
-          onChange={onNewSignerInputChange}
+          onChange={e => {
+            // Find and overwrite the address input value of this new signer with the input value
+            const newSigners = values.multisig?.newSigners?.map((s: NewSignerItem) =>
+              s.key === signer.key
+                ? {
+                    ...s,
+                    inputValue: e.target.value,
+                  }
+                : s,
+            );
+
+            setFieldValue('multisig.newSigners', newSigners);
+
+            setTimeout(() => inputRef.current?.focus(), 10);
+          }}
         />
 
-        {onRemove && (
+        {!markedForRemoval && (
           <Button
             variant="tertiary"
             aria-label="Remove Signer"
             h="1.5rem"
             p="0"
-            onClick={onRemove}
+            isDisabled={!showRemoveButton}
+            onClick={onRemove ?? (() => {})}
           >
             <Icon
               as={MinusCircle}
               boxSize="1.5rem"
-              color="lilac-0"
+              color={showRemoveButton ? 'color-lilac-100' : 'color-neutral-700'}
+            />
+          </Button>
+        )}
+
+        {markedForRemoval && (
+          <Button
+            variant="tertiary"
+            aria-label="Remove Signer"
+            h="1.5rem"
+            p="0"
+            onClick={() => {
+              setFieldValue('multisig.signersToRemove', [
+                ...(values.multisig?.signersToRemove ?? []).filter(
+                  (s: string) => s !== signer.address,
+                ),
+              ]);
+            }}
+          >
+            <Icon
+              as={PlusCircle}
+              boxSize="1.5rem"
+              color="color-lilac-100"
             />
           </Button>
         )}
@@ -131,43 +149,22 @@ export function SignersContainer() {
   const [signers, setSigners] = useState<ExistingSignerItem[]>([]);
 
   const { t } = useTranslation(['common', 'breadcrumbs', 'daoEdit']);
-  const { validateAddress } = useValidationAddress();
 
-  const formik = useFormik<NewSignersFormikValues>({
-    initialValues: {
-      newSigners: [] as NewSignerItem[],
-      threshold: safe?.threshold ?? 1,
-    },
-    validate: async values => {
-      const errors: NewSignerFormikErrors = {};
+  const { setFieldValue, values } = useFormikContext<SafeSettingsEdits>();
+  const { errors } = useFormikContext<SafeSettingsFormikErrors>();
 
-      if (values.newSigners.length > 0) {
-        const signerErrors = await Promise.all(
-          values.newSigners.map(async signer => {
-            if (!signer.inputValue) {
-              return { key: signer.key, error: t('addressRequired', { ns: 'common' }) };
-            }
+  const multisigEditFormikErrors = (errors as SafeSettingsFormikErrors).multisig;
 
-            const validation = await validateAddress({ address: signer.inputValue });
-            if (!validation.validation.isValidAddress) {
-              return { key: signer.key, error: t('invalidAddress', { ns: 'common' }) };
-            }
-            return null;
-          }),
-        );
-
-        if (signerErrors.some(error => error !== null)) {
-          errors.newSigners = signerErrors.filter(error => error !== null);
-        }
-      }
-
-      return errors;
-    },
-    onSubmit: values => {
-      // Handle form submission
-      console.log(values);
-    },
-  });
+  useEffect(() => {
+    if (
+      values.multisig &&
+      !values.multisig.newSigners?.length &&
+      !values.multisig.signersToRemove?.length &&
+      !values.multisig.signerThreshold
+    ) {
+      setFieldValue('multisig', undefined);
+    }
+  }, [setFieldValue, values.multisig]);
 
   const [addSignerModalType, addSignerModalProps] = useMemo(() => {
     if (safe?.threshold === undefined) {
@@ -236,13 +233,22 @@ export function SignersContainer() {
 
   const handleModifyGovernance = useDecentModal(ModalType.CONFIRM_MODIFY_GOVERNANCE);
 
+  // Calculate if we can remove more signers
+  const canRemoveMoreSigners = useMemo(() => {
+    const activeSigners = signers.filter(
+      signer => !values.multisig?.signersToRemove?.includes(signer.address),
+    ).length;
+    const newSignersCount = values.multisig?.newSigners?.length ?? 0;
+    return activeSigners + newSignersCount > 1;
+  }, [signers, values.multisig?.signersToRemove, values.multisig?.newSigners]);
+
   return (
     <Box width="100%">
       {/* LAUNCH TOKEN BANNER */}
       {isSettingsV1FeatureEnabled && (
         <Flex
           flexDirection="row"
-          bg="cosmic-nebula-5"
+          bg="color-lilac-200"
           p={4}
           borderRadius="0.75rem"
           mb={12}
@@ -264,15 +270,15 @@ export function SignersContainer() {
               flexDirection="column"
             >
               <Text
-                textStyle="labels-small"
-                color="cosmic-nebula-0"
+                textStyle="text-xs-medium"
+                color="color-lilac-700"
                 fontWeight="bold"
               >
                 {t('launchTokenTitle', { ns: 'daoEdit' })}
               </Text>
               <Text
-                textStyle="labels-large"
-                color="cosmic-nebula-0"
+                textStyle="text-sm-medium"
+                color="color-lilac-700"
                 mb="1rem"
               >
                 {t('launchTokenDescription', { ns: 'daoEdit' })}
@@ -280,8 +286,8 @@ export function SignersContainer() {
             </Flex>
           </Flex>
           <Button
-            bg="white-0"
-            _hover={{ bg: 'white-0' }}
+            bg="color-white"
+            _hover={{ bg: 'color-white' }}
             size="sm"
             onClick={handleModifyGovernance}
           >
@@ -292,7 +298,7 @@ export function SignersContainer() {
 
       <Text
         ml={6}
-        textStyle="body-large"
+        textStyle="text-lg-regular"
         mb={0.5}
       >
         {t('owners', { ns: 'common' })}
@@ -300,28 +306,38 @@ export function SignersContainer() {
 
       <Box
         border="1px solid"
-        borderColor="neutral-3"
+        borderColor="color-neutral-900"
         borderRadius="0.75rem"
       >
         {signers.map(signer => (
           <Signer
             key={signer.key}
             signer={signer}
-            onRemove={enableRemove ? () => setRemovingSigner(signer) : null}
-            formik={null}
+            markedForRemoval={values.multisig?.signersToRemove?.includes(signer.address) ?? false}
+            onRemove={
+              enableRemove
+                ? () => {
+                    setFieldValue('multisig.signersToRemove', [
+                      ...(values.multisig?.signersToRemove ?? []),
+                      signer.address,
+                    ]);
+                  }
+                : null
+            }
+            canRemove={canRemoveMoreSigners}
           />
         ))}
-        {formik.values.newSigners.map(signer => (
+        {values.multisig?.newSigners?.map(signer => (
           <Signer
             key={signer.key}
             signer={signer}
             onRemove={() => {
-              formik.setFieldValue(
-                'newSigners',
-                formik.values.newSigners.filter(s => s.key !== signer.key),
+              setFieldValue(
+                'multisig.newSigners',
+                values.multisig?.newSigners?.filter(s => s.key !== signer.key),
               );
             }}
-            formik={formik}
+            canRemove={canRemoveMoreSigners}
           />
         ))}
 
@@ -338,8 +354,8 @@ export function SignersContainer() {
               onClick={() => {
                 if (isSettingsV1FeatureEnabled) {
                   const key = genSignerItemKey();
-                  formik.setFieldValue('newSigners', [
-                    ...formik.values.newSigners,
+                  setFieldValue('multisig.newSigners', [
+                    ...(values.multisig?.newSigners ?? []),
                     { key, address: '', isAdding: true },
                   ]);
                 } else {
@@ -360,7 +376,7 @@ export function SignersContainer() {
       {isSettingsV1FeatureEnabled && (
         <Box
           border="1px solid"
-          borderColor="neutral-3"
+          borderColor="color-neutral-900"
           borderRadius="0.75rem"
           mt={3}
           px={6}
@@ -374,14 +390,14 @@ export function SignersContainer() {
           >
             <Flex flexDirection="column">
               <Text
-                textStyle="body-large"
+                textStyle="text-lg-regular"
                 mb={0.5}
               >
                 {t('threshold', { ns: 'common' })}
               </Text>
               <Text
-                textStyle="body-small"
-                color="neutral-7"
+                textStyle="text-base-regular"
+                color="color-neutral-300"
               >
                 {t('thresholdDescription', { ns: 'common' })}
               </Text>
@@ -390,9 +406,20 @@ export function SignersContainer() {
             {/* stepper */}
             <Flex w="200px">
               <NumberStepperInput
-                onChange={value => formik.setFieldValue('threshold', value)}
-                value={formik.values.threshold}
-                disabled // @todo: Disabled until ready to propagate edit actions into a final proposal
+                onChange={value => {
+                  let updatedValue;
+                  if (value !== `${safe?.threshold}`) {
+                    updatedValue = value;
+                  }
+                  setFieldValue('multisig.signerThreshold', updatedValue);
+                }}
+                color={
+                  values.multisig?.signerThreshold === undefined
+                    ? 'color-neutral-300'
+                    : 'color-white'
+                }
+                value={values.multisig?.signerThreshold ?? safe?.threshold}
+                isInvalid={!!multisigEditFormikErrors?.threshold}
               />
             </Flex>
           </Flex>

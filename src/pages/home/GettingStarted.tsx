@@ -15,15 +15,15 @@ function CardContent({ icon, title, subtitle }: CardContentProps) {
   return (
     <GridItem
       p={6}
-      bg="neutral-2"
+      bg="color-neutral-950"
       borderRadius="lg"
       cursor="pointer"
       border="1px solid"
       borderColor="transparent"
       _hover={{
-        backgroundColor: 'neutral-3',
+        backgroundColor: 'color-neutral-900',
         border: '1px solid',
-        borderColor: 'neutral-4',
+        borderColor: 'color-neutral-800',
       }}
       transition="all 300ms ease-in-out"
     >
@@ -38,17 +38,17 @@ function CardContent({ icon, title, subtitle }: CardContentProps) {
           <Icon
             as={icon}
             boxSize={6}
-            color="lilac-0"
+            color="color-lilac-100"
           />
           <Icon
             as={ArrowUpRight}
             boxSize={6}
-            color="lilac-0"
+            color="color-lilac-100"
           />
         </Flex>
-        <Box textStyle="labels-large">
+        <Box textStyle="text-sm-medium">
           <Text>{title}</Text>
-          <Text color="neutral-7">{subtitle}</Text>
+          <Text color="color-neutral-300">{subtitle}</Text>
         </Box>
       </Flex>
     </GridItem>
@@ -88,7 +88,7 @@ export function GettingStarted() {
       direction="column"
       gap="1.5rem"
     >
-      <Text textStyle="heading-small">{t('gettingStarted')}</Text>
+      <Text textStyle="text-xl-regular">{t('gettingStarted')}</Text>
 
       <Grid
         templateColumns={['1fr', '1fr', 'repeat(2, 1fr)']}

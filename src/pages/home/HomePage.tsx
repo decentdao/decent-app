@@ -20,7 +20,7 @@ export default function HomePage() {
           gap="1.5rem"
         >
           <DAOSearch />
-          <Text textStyle="heading-small">{t('mySafes')}</Text>
+          <Text textStyle="text-xl-regular">{t('mySafes')}</Text>
         </Flex>
       </Hide>
 
@@ -33,7 +33,7 @@ export default function HomePage() {
           justifyContent="space-between"
         >
           <Text
-            textStyle="heading-small"
+            textStyle="text-xl-regular"
             whiteSpace="nowrap"
           >
             {t('mySafes')}

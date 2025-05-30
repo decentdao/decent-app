@@ -9,7 +9,7 @@ import { getAddress, zeroAddress } from 'viem';
 import { polygon } from 'wagmi/chains';
 import { GovernanceType } from '../../../types';
 import { NetworkConfig } from '../../../types/network';
-import { getSafeContractDeploymentAddress } from './utils';
+import { getEtherscanAPIUrl, getSafeContractDeploymentAddress } from './utils';
 
 const SAFE_VERSION = '1.3.0';
 
@@ -22,7 +22,7 @@ export const polygonConfig: NetworkConfig = {
   rpcEndpoint: `https://polygon-mainnet.g.alchemy.com/v2/${import.meta.env?.VITE_APP_ALCHEMY_API_KEY}`,
   safeBaseURL: 'https://safe-transaction-polygon.safe.global',
   etherscanBaseURL: 'https://polygonscan.com',
-  etherscanAPIUrl: `https://api.polygonscan.com/api?apikey=${import.meta.env?.VITE_APP_ETHERSCAN_POLYGON_API_KEY}`,
+  etherscanAPIUrl: getEtherscanAPIUrl(chain.id),
   addressPrefix: 'matic',
   nativeTokenIcon: '/images/coin-icon-pol.svg',
   isENSSupported: false,

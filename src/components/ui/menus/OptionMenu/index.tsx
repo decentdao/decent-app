@@ -38,7 +38,7 @@ export function OptionMenu({
   const menuList = (
     <MenuList
       borderWidth="1px"
-      borderColor="neutral-3"
+      borderColor="color-neutral-900"
       borderRadius="0.78rem"
       mr={menuListMr || ['auto', '1rem']}
       zIndex="popover"

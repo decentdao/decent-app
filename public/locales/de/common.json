@@ -26,6 +26,7 @@
   "move": "Verschieben",
   "hours": "Stunden",
   "minutes": "Protokoll",
+  "minutesShort": "min",
   "quorum": "Quorum",
   "deploy": "Bereitstellung von",
   "loading": "Laden...",
@@ -128,5 +129,6 @@
   "unsavedChanges": "Nicht gespeicherte Änderungen",
   "unsavedChangesDescription": "Sie haben ungespeicherte Änderungen, die verloren gehen, wenn Sie fortfahren. Möchten Sie Ihre Änderungen verwerfen?",
   "discardChanges": "Ablegen",
-  "keepEditing": "Weiter bearbeiten"
+  "keepEditing": "Weiter bearbeiten",
+  "selectStatusLabel": "Status auswählen"
 }

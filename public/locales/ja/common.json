@@ -26,6 +26,7 @@
   "move": "移動",
   "hours": "時間",
   "minutes": "議事録",
+  "minutesShort": "分",
   "quorum": "定足数",
   "deploy": "デプロイ",
   "loading": "読み込み中...",
@@ -128,5 +129,6 @@
   "unsavedChanges": "未保存の変更",
   "unsavedChangesDescription": "保存していない変更があり、このまま続けると失われます。変更を破棄しますか？",
   "discardChanges": "廃棄",
-  "keepEditing": "編集を続ける"
+  "keepEditing": "編集を続ける",
+  "selectStatusLabel": "ステータス選択"
 }

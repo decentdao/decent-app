@@ -184,8 +184,8 @@ export function AirdropModal({
                     <LabelWrapper label={t('selectLabel')}>
                       <Select
                         {...field}
-                        bgColor="neutral-1"
-                        borderColor="neutral-3"
+                        bgColor="color-black"
+                        borderColor="color-neutral-900"
                         rounded="sm"
                         cursor="pointer"
                         iconSize="1.5rem"
@@ -226,13 +226,13 @@ export function AirdropModal({
               {/* AVAILABLE BALANCE HINT */}
               <HStack
                 justify="space-between"
-                textStyle="neutral-7"
-                color="white-0"
+                textStyle="color-neutral-300"
+                color="color-white"
                 marginTop="0.75rem"
               >
                 <Text
-                  color={overDraft ? 'red-0' : 'neutral-7'}
-                  textStyle="labels-large"
+                  color={overDraft ? 'color-error-500' : 'color-neutral-300'}
+                  textStyle="text-sm-medium"
                   as="span"
                 >
                   {t('selectSublabel', {
@@ -323,7 +323,7 @@ export function AirdropModal({
                               BigInt(recipient.amount.bigintValue || 0n)
                             }
                             isInvalid={overDraft}
-                            errorBorderColor="red-0"
+                            errorBorderColor="color-error-500"
                           />
                         </LabelWrapper>
                         {/* Remove parameter button */}
@@ -342,7 +342,7 @@ export function AirdropModal({
                               )
                             }
                             minWidth="auto"
-                            color="lilac-0"
+                            color="color-lilac-100"
                             _disabled={{ opacity: 0.4, cursor: 'default' }}
                             sx={{ '&:disabled:hover': { color: 'inherit', opacity: 0.4 } }}
                           />

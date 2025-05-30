@@ -301,19 +301,22 @@ export function useGovernanceFetcher() {
               quorumNumerator,
               quorumDenominator,
               timeLockPeriod,
+              executionPeriod,
               proposerThreshold,
             ] = await Promise.all([
               erc20VotingContract.read.votingPeriod(),
               erc20VotingContract.read.quorumNumerator(),
               erc20VotingContract.read.QUORUM_DENOMINATOR(),
               azoriusContract.read.timelockPeriod(),
+              azoriusContract.read.executionPeriod(),
               erc20VotingContract.read.requiredProposerWeight(),
             ]);
 
             const quorumPercentage = (quorumNumerator * 100n) / quorumDenominator;
             const votingPeriodValue = await blocksToSeconds(votingPeriodBlocks, publicClient);
             const timeLockPeriodValue = await blocksToSeconds(timeLockPeriod, publicClient);
-            const votingData = {
+            const executionPeriodValue = await blocksToSeconds(executionPeriod, publicClient);
+            const votingStrategy = {
               votingPeriod: {
                 value: BigInt(votingPeriodValue),
                 formatted: getTimeDuration(votingPeriodValue),
@@ -324,11 +327,15 @@ export function useGovernanceFetcher() {
               },
               quorumPercentage: {
                 value: quorumPercentage,
-                formatted: `${quorumPercentage}%`,
+                formatted: `${quorumPercentage}`,
               },
               timeLockPeriod: {
                 value: BigInt(timeLockPeriodValue),
                 formatted: getTimeDuration(timeLockPeriodValue),
+              },
+              executionPeriod: {
+                value: BigInt(executionPeriodValue),
+                formatted: getTimeDuration(executionPeriodValue),
               },
               strategyType: VotingStrategyType.LINEAR_ERC20,
             };
@@ -342,7 +349,7 @@ export function useGovernanceFetcher() {
               linearVotingErc721WithHatsWhitelistingAddress,
               isLoaded: true,
               strategies,
-              votingStrategy: votingData,
+              votingStrategy,
               isAzorius: true,
               lockedVotesToken: lockedVotesTokenData,
               type: GovernanceType.AZORIUS_ERC20,
@@ -507,17 +514,25 @@ export function useGovernanceFetcher() {
 
             // TODO: Transform to multiCall
 
-            const [votingPeriodBlocks, quorumThreshold, proposerThreshold, timeLockPeriod] =
-              await Promise.all([
-                erc721LinearVotingContract.read.votingPeriod(),
-                erc721LinearVotingContract.read.quorumThreshold(),
-                erc721LinearVotingContract.read.proposerThreshold(),
-                azoriusContract.read.timelockPeriod(),
-              ]);
+            const [
+              votingPeriodBlocks,
+              quorumThreshold,
+              proposerThreshold,
+              timeLockPeriod,
+              executionPeriod,
+            ] = await Promise.all([
+              erc721LinearVotingContract.read.votingPeriod(),
+              erc721LinearVotingContract.read.quorumThreshold(),
+              erc721LinearVotingContract.read.proposerThreshold(),
+              azoriusContract.read.timelockPeriod(),
+              azoriusContract.read.executionPeriod(),
+            ]);
 
             const votingPeriodValue = await blocksToSeconds(votingPeriodBlocks, publicClient);
             const timeLockPeriodValue = await blocksToSeconds(timeLockPeriod, publicClient);
-            const votingData = {
+            const executionPeriodValue = await blocksToSeconds(executionPeriod, publicClient);
+
+            const votingStrategy = {
               proposerThreshold: {
                 value: proposerThreshold,
                 formatted: proposerThreshold.toString(),
@@ -534,6 +549,10 @@ export function useGovernanceFetcher() {
                 value: BigInt(timeLockPeriodValue),
                 formatted: getTimeDuration(timeLockPeriodValue),
               },
+              executionPeriod: {
+                value: BigInt(executionPeriodValue),
+                formatted: getTimeDuration(executionPeriodValue),
+              },
               strategyType: VotingStrategyType.LINEAR_ERC721,
             };
 
@@ -546,7 +565,7 @@ export function useGovernanceFetcher() {
               linearVotingErc721WithHatsWhitelistingAddress,
               isLoaded: true,
               strategies,
-              votingStrategy: votingData,
+              votingStrategy,
               isAzorius: true,
               type: GovernanceType.AZORIUS_ERC721,
             });

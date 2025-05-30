@@ -1,6 +1,7 @@
 import { Box, Flex, Icon, Text } from '@chakra-ui/react';
 import { WarningCircle } from '@phosphor-icons/react';
 import { useTranslation } from 'react-i18next';
+import { COLOR_YELLOW_1, COLOR_YELLOW_2 } from '../../../constants/common';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import { useDAOStore } from '../../../providers/App/AppProvider';
 import {
@@ -15,34 +16,51 @@ import { SimpleProposalCard } from '../ProposalCard/SimpleProposalCard';
 
 function RejectionBanner({ rejectionProposal }: { rejectionProposal: MultisigProposal }) {
   const { t } = useTranslation('proposal');
+
+  const hasRejectionExecuted = rejectionProposal.state === FractalProposalState.EXECUTED;
+  const rejectedProposalLabel = t('nonceLabelBannerRejected', {
+    nonce: rejectionProposal.nonce,
+  });
+
+  const hasPassedThreshold = rejectionProposal.state === FractalProposalState.EXECUTABLE;
+  const rejectedProposalPassedThresholdLabel = t('nonceLabelBannerPassedThreshold');
+
   const activeRejectionLabel = t('nonceLabelBannerActive', {
     confirmations: rejectionProposal.confirmations?.length,
     signersThreshold: rejectionProposal.signersThreshold,
     nonce: rejectionProposal.nonce,
   });
-  const rejectedProposalLabel = t('nonceLabelBannerRejected', {
-    nonce: rejectionProposal.nonce,
-  });
+  const containerColors = hasPassedThreshold
+    ? {
+        bg: COLOR_YELLOW_2,
+        color: COLOR_YELLOW_1,
+        borderColor: COLOR_YELLOW_1,
+      }
+    : {
+        bg: 'color-error-900',
+        color: 'color-error-400',
+        borderColor: 'color-error-800',
+      };
   return (
     <Flex
       mb={2}
       alignItems="center"
       gap={2}
-      p="1.5rem"
-      bg="red--2"
-      color="red-1"
+      p="1rem"
       border="1px solid"
-      borderColor="red--1"
       borderRadius="0.75rem"
+      {...containerColors}
     >
       <Icon
         as={WarningCircle}
-        boxSize={4}
+        boxSize="1.5rem"
       />
-      <Text>
-        {rejectionProposal.state === FractalProposalState.EXECUTED
+      <Text textStyle="text-sm-medium">
+        {hasRejectionExecuted
           ? rejectedProposalLabel
-          : activeRejectionLabel}
+          : hasPassedThreshold
+            ? rejectedProposalPassedThresholdLabel
+            : activeRejectionLabel}
       </Text>
     </Flex>
   );
@@ -55,8 +73,8 @@ function NonceLabel({ nonce }: { nonce: number | undefined }) {
   return (
     <Text
       mb={2}
-      textStyle="labels-large"
-      color="neutral-7"
+      textStyle="text-sm-medium"
+      color="color-neutral-300"
     >
       {t('nonceLabel', {
         number: nonce,
@@ -103,7 +121,7 @@ export function MultisigConflictingProposals({ proposal }: { proposal: MultisigP
         sectionTitle={t('conflictingProposals')}
         // @dev expands if there is a rejection proposal
         defaultExpandedIndices={rejectionProposal ? [0] : undefined}
-        contentCount={conflictingProposals.length}
+        contentCount={conflictingProposalsOnlyNonRejections.length}
         content={
           <Box mt={4}>
             <NonceLabel nonce={proposalNonce} />

@@ -6,6 +6,7 @@ import { AzoriusGovernance } from '../../types';
 import { formatCoin } from '../../utils';
 import { DisplayAddress } from '../ui/links/DisplayAddress';
 import { BarLoader } from '../ui/loaders/BarLoader';
+import Divider from '../ui/utils/Divider';
 
 export function ERC20TokenContainer() {
   const { t } = useTranslation(['settings']);
@@ -17,50 +18,66 @@ export function ERC20TokenContainer() {
 
   return (
     <Box width="100%">
-      <Text textStyle="heading-small">{t('governanceTokenTitle')}</Text>
+      <Text textStyle="text-lg-regular">{t('governanceTokenInfoTitle')}</Text>
       {votesToken ? (
         <Flex
           justifyContent="space-between"
           flexWrap={{ base: 'wrap', md: 'nowrap' }}
           mt={4}
-          p="1.5rem"
           borderWidth="0.06rem"
-          borderColor="neutral-3"
+          borderColor="color-neutral-900"
           borderRadius="0.75rem"
+          flexDirection="column"
         >
           {/* TOKEN NAME */}
-          <Box w={{ base: 'full', sm: 'auto' }}>
-            <Text
-              color="neutral-7"
-              textStyle="labels-small"
+          <Flex
+            alignItems="center"
+            justifyContent="space-between"
+            px={6}
+            py={2}
+          >
+            <Text textStyle="text-base-regular">{t('governanceTokenNameTitle')}</Text>
+            <DisplayAddress
+              mb={-2}
+              mr={-4}
+              address={votesToken.address}
             >
-              {t('governanceTokenNameLabel')}
-            </Text>
-            <Flex mt="0.5rem">
-              <DisplayAddress address={votesToken.address}>{votesToken.name}</DisplayAddress>
-            </Flex>
-          </Box>
+              {votesToken.name}
+            </DisplayAddress>
+          </Flex>
+
+          <Divider />
 
           {/* TOKEN SYMBOL */}
-          <Box w={{ base: 'full', sm: 'auto' }}>
+          <Flex
+            alignItems="center"
+            justifyContent="space-between"
+            px={6}
+            py={2}
+          >
+            <Text textStyle="text-base-regular">{t('governanceTokenSymbolLabel')}</Text>
             <Text
-              color="neutral-7"
-              textStyle="labels-small"
+              color="color-neutral-300"
+              textStyle="text-base-regular"
             >
-              {t('governanceTokenSymbolLabel')}
+              ${votesToken.symbol}
             </Text>
-            <Text mt="0.5rem">{votesToken.symbol}</Text>
-          </Box>
+          </Flex>
+
+          <Divider />
 
           {/* TOTAL SUPPLY */}
-          <Box w={{ base: 'full', sm: 'auto' }}>
+          <Flex
+            alignItems="center"
+            justifyContent="space-between"
+            px={6}
+            py={2}
+          >
+            <Text textStyle="text-base-regular">{t('governanceTokenSupplyLabel')}</Text>
             <Text
-              color="neutral-7"
-              textStyle="labels-small"
+              color="color-neutral-300"
+              textStyle="text-base-regular"
             >
-              {t('governanceTokenSupplyLabel')}
-            </Text>
-            <Text mt="0.5rem">
               {formatCoin(
                 votesToken.totalSupply,
                 false,
@@ -69,7 +86,7 @@ export function ERC20TokenContainer() {
                 false,
               )}
             </Text>
-          </Box>
+          </Flex>
         </Flex>
       ) : (
         <Flex

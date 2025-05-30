@@ -9,17 +9,17 @@ import {
 } from '@chakra-ui/react';
 
 function ContentCountBadge({ count }: { count: number | undefined }) {
-  if (!count) {
+  if (!count || count === 0) {
     return null;
   }
   return (
     <Box
-      textStyle="labels-small"
+      textStyle="text-xs-medium"
       rounded="9999px"
-      bg="celery--2"
+      bg="color-green-500"
       border="1px solid"
-      borderColor="celery--5"
-      color="celery--6"
+      borderColor="color-green-800"
+      color="color-green-950"
       boxSize="1.25rem"
       textAlign="center"
     >
@@ -44,9 +44,9 @@ export function AccordionDropdown({
       marginTop={4}
       padding="1rem"
       borderRadius="0.75rem"
-      bg="neutral-2"
+      bg="color-neutral-950"
       border="1px solid"
-      borderColor="neutral-3"
+      borderColor="color-neutral-900"
     >
       <Accordion
         allowToggle
@@ -65,18 +65,24 @@ export function AccordionDropdown({
               >
                 <AccordionButton
                   p={0}
-                  textStyle="heading-small"
-                  color="lilac-0"
+                  textStyle="text-xl-regular"
+                  color="color-lilac-100"
                 >
-                  <Flex alignItems="center">
-                    <AccordionIcon
-                      marginRight={3}
-                      transform={`rotate(-${isExpanded ? '0' : '90'}deg)`}
-                    />
+                  <Flex
+                    alignItems="center"
+                    justifyContent="space-between"
+                    width="100%"
+                  >
                     {sectionTitle}
+                    <Flex alignItems="center">
+                      <ContentCountBadge count={contentCount} />
+                      <AccordionIcon
+                        transform={`rotate(-${isExpanded ? '0' : '90'}deg)`}
+                        boxSize="1.25rem"
+                      />
+                    </Flex>
                   </Flex>
                 </AccordionButton>
-                <ContentCountBadge count={contentCount} />
               </Flex>
               <AccordionPanel paddingBottom={4}>
                 <Flex

@@ -104,8 +104,8 @@ function PageHeader({
       {title && (
         <Text
           marginTop="2rem"
-          textStyle="heading-large"
-          color="white-0"
+          textStyle="text-3xl-regular"
+          color="color-white"
         >
           {title}
         </Text>

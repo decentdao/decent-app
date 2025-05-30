@@ -9,8 +9,8 @@ export function StarterPromoBanner() {
     <Flex
       borderRadius="0.75rem"
       border="1px solid"
-      borderColor="cosmic-nebula-4"
-      bg="cosmic-nebula-5"
+      borderColor="color-primary-300"
+      bg="color-lilac-200"
       p={4}
       display="flex"
       gap="1.5rem"
@@ -24,15 +24,15 @@ export function StarterPromoBanner() {
       />
       <Flex direction="column">
         <Text
-          textStyle="labels-large"
-          color="cosmic-nebula--1"
+          textStyle="text-sm-medium"
+          color="color-lilac-950"
           fontWeight="bold"
         >
           {t('starterPromoTitle')}
         </Text>
         <Text
-          textStyle="labels-large"
-          color="cosmic-nebula--1"
+          textStyle="text-sm-medium"
+          color="color-lilac-950"
         >
           <Text as="span">{t('starterPromoDescription')}</Text>
           <Text

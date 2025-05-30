@@ -16,7 +16,7 @@ export default function InfoRow({
   return (
     <Box marginTop="1rem">
       <Text
-        color="neutral-7"
+        color="color-neutral-300"
         w="full"
       >
         {property}
@@ -29,7 +29,11 @@ export default function InfoRow({
         )
       ) : (
         <DecentTooltip label={tooltip}>
-          {txHash ? <DisplayTransaction txHash={txHash} /> : <Text color="white-0">{value}</Text>}
+          {txHash ? (
+            <DisplayTransaction txHash={txHash} />
+          ) : (
+            <Text color="color-white">{value}</Text>
+          )}
         </DecentTooltip>
       )}
     </Box>

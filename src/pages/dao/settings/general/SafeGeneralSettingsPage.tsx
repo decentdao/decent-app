@@ -1,6 +1,7 @@
 import { Box, Button, Flex, Show, Text } from '@chakra-ui/react';
 import { abis } from '@fractal-framework/fractal-contracts';
-import { ChangeEventHandler, useEffect, useState } from 'react';
+import { useFormikContext } from 'formik';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { encodeAbiParameters, encodeFunctionData, parseAbiParameters, zeroAddress } from 'viem';
@@ -9,9 +10,14 @@ import { GaslessVotingToggleDAOSettings } from '../../../../components/GaslessVo
 import { SettingsContentBox } from '../../../../components/SafeSettings/SettingsContentBox';
 import { InputComponent } from '../../../../components/ui/forms/InputComponent';
 import { BarLoader } from '../../../../components/ui/loaders/BarLoader';
+import {
+  SafeSettingsEdits,
+  SafeSettingsFormikErrors,
+} from '../../../../components/ui/modals/SafeSettingsModal';
 import NestedPageHeader from '../../../../components/ui/page/Header/NestedPageHeader';
 import Divider from '../../../../components/ui/utils/Divider';
 import { DAO_ROUTES } from '../../../../constants/routes';
+import useFeatureFlag from '../../../../helpers/environmentFeatureFlags';
 import { usePaymasterDepositInfo } from '../../../../hooks/DAO/accountAbstraction/usePaymasterDepositInfo';
 import useSubmitProposal from '../../../../hooks/DAO/proposal/useSubmitProposal';
 import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
@@ -22,17 +28,19 @@ import { useDAOStore } from '../../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../../providers/NetworkConfig/useNetworkConfigStore';
 import { GovernanceType, ProposalExecuteData } from '../../../../types';
 import {
-  getPaymasterAddress,
   getPaymasterSaltNonce,
+  getPaymasterAddress,
   getVoteSelectorAndValidator,
 } from '../../../../utils/gaslessVoting';
-import { validateENSName } from '../../../../utils/url';
 
 export function SafeGeneralSettingsPage() {
   const { t } = useTranslation('settings');
-  const [name, setName] = useState('');
-  const [snapshotENS, setSnapshotENS] = useState('');
-  const [snapshotENSValid, setSnapshotENSValid] = useState<boolean>();
+  const { setFieldValue, values: formValues } = useFormikContext<SafeSettingsEdits>();
+  const { errors } = useFormikContext<SafeSettingsFormikErrors>();
+  const generalEditFormikErrors = (errors as SafeSettingsFormikErrors).general;
+
+  const [existingDaoName, setExistingDaoName] = useState('');
+  const [existingSnapshotENS, setExistingSnapshotENS] = useState('');
 
   const { daoKey } = useCurrentDAOKey();
   const {
@@ -41,26 +49,16 @@ export function SafeGeneralSettingsPage() {
     node: { subgraphInfo, safe },
   } = useDAOStore({ daoKey });
 
-  const [isGaslessVotingEnabledToggled, setIsGaslessVotingEnabledToggled] =
+  const [existingIsGaslessVotingEnabledToggled, setExistingIsGaslessVotingEnabledToggled] =
     useState(gaslessVotingEnabled);
 
   useEffect(() => {
-    setIsGaslessVotingEnabledToggled(gaslessVotingEnabled);
+    setExistingIsGaslessVotingEnabledToggled(gaslessVotingEnabled);
   }, [gaslessVotingEnabled]);
 
-  const navigate = useNavigate();
-
-  const { submitProposal } = useSubmitProposal();
   const { canUserCreateProposal } = useCanUserCreateProposal();
-  const {
-    addressPrefix,
-    chain: { id: chainId },
-    contracts: { keyValuePairs, accountAbstraction, paymaster, zodiacModuleProxyFactory },
-    bundlerMinimumStake,
-  } = useNetworkConfigStore();
-  const { depositInfo } = usePaymasterDepositInfo();
+  const { addressPrefix, bundlerMinimumStake } = useNetworkConfigStore();
   const accountAbstractionSupported = bundlerMinimumStake !== undefined;
-  const stakingRequired = accountAbstractionSupported && bundlerMinimumStake > 0n;
 
   const isMultisigGovernance = votingStrategyType === GovernanceType.MULTISIG;
   const gaslessVotingSupported = !isMultisigGovernance && accountAbstractionSupported;
@@ -73,53 +71,54 @@ export function SafeGeneralSettingsPage() {
       safeAddress &&
       createAccountSubstring(safeAddress) !== subgraphInfo?.daoName
     ) {
-      setName(subgraphInfo.daoName);
+      setExistingDaoName(subgraphInfo.daoName);
     }
 
     if (subgraphInfo?.daoSnapshotENS) {
-      setSnapshotENS(subgraphInfo?.daoSnapshotENS);
+      setExistingSnapshotENS(subgraphInfo?.daoSnapshotENS);
     }
   }, [subgraphInfo?.daoName, subgraphInfo?.daoSnapshotENS, safeAddress]);
 
-  const handleSnapshotENSChange: ChangeEventHandler<HTMLInputElement> = e => {
-    const lowerCasedValue = e.target.value.toLowerCase();
-    setSnapshotENS(lowerCasedValue);
+  useEffect(() => {
     if (
-      validateENSName(lowerCasedValue) ||
-      (e.target.value === '' && subgraphInfo?.daoSnapshotENS)
+      formValues.general?.name === undefined &&
+      formValues.general?.snapshot === undefined &&
+      formValues.general?.sponsoredVoting === undefined
     ) {
-      setSnapshotENSValid(true);
-    } else {
-      setSnapshotENSValid(false);
+      setFieldValue('general', undefined);
     }
-  };
+  }, [setFieldValue, formValues.general]);
 
-  const nameChanged = name !== subgraphInfo?.daoName;
-  const snapshotChanged = snapshotENSValid && snapshotENS !== subgraphInfo?.daoSnapshotENS;
-  const gaslessVotingChanged = isGaslessVotingEnabledToggled !== gaslessVotingEnabled;
-
+  const {
+    chain: { id: chainId },
+    contracts: { keyValuePairs, accountAbstraction, paymaster, zodiacModuleProxyFactory },
+  } = useNetworkConfigStore();
+  const { submitProposal } = useSubmitProposal();
   const { buildInstallVersionedVotingStrategies } = useInstallVersionedVotingStrategy();
-
+  const stakingRequired = accountAbstractionSupported && bundlerMinimumStake > 0n;
+  const { depositInfo } = usePaymasterDepositInfo();
+  const navigate = useNavigate();
+  const isSettingsV1FeatureEnabled = useFeatureFlag('flag_settings_v1');
   const handleEditGeneralGovernance = async () => {
     const changeTitles = [];
     const keyArgs = [];
     const valueArgs = [];
 
-    if (nameChanged) {
+    if (formValues.general?.name !== undefined) {
       changeTitles.push(t('updatesSafeName', { ns: 'proposalMetadata' }));
       keyArgs.push('daoName');
-      valueArgs.push(name);
+      valueArgs.push(formValues.general?.name);
     }
 
-    if (snapshotChanged) {
+    if (formValues.general?.snapshot !== undefined) {
       changeTitles.push(t('updateSnapshotSpace', { ns: 'proposalMetadata' }));
       keyArgs.push('snapshotENS');
-      valueArgs.push(snapshotENS);
+      valueArgs.push(formValues.general?.snapshot);
     }
 
-    if (gaslessVotingChanged) {
+    if (formValues.general?.sponsoredVoting !== undefined) {
       keyArgs.push('gaslessVotingEnabled');
-      if (isGaslessVotingEnabledToggled) {
+      if (formValues.general?.sponsoredVoting) {
         changeTitles.push(t('enableGaslessVoting', { ns: 'proposalMetadata' }));
         valueArgs.push('true');
       } else {
@@ -140,7 +139,7 @@ export function SafeGeneralSettingsPage() {
     ];
     const values = [0n];
 
-    if (gaslessVotingChanged && isGaslessVotingEnabledToggled) {
+    if (formValues.general?.sponsoredVoting !== undefined) {
       if (!safeAddress) {
         throw new Error('Safe address is not set');
       }
@@ -307,7 +306,7 @@ export function SafeGeneralSettingsPage() {
             <Text
               ml={6}
               mb={0.5}
-              textStyle="body-large"
+              textStyle="text-lg-regular"
             >
               {t('daoSettingsGeneral')}
             </Text>
@@ -315,7 +314,7 @@ export function SafeGeneralSettingsPage() {
               flexDirection="column"
               w="100%"
               border="1px solid"
-              borderColor="neutral-3"
+              borderColor="color-neutral-900"
               borderRadius="0.75rem"
             >
               <Flex
@@ -327,17 +326,22 @@ export function SafeGeneralSettingsPage() {
               >
                 <Text
                   mb={2}
-                  textStyle="body-small"
+                  textStyle="text-base-regular"
                 >
                   {t('daoMetadataName')}
                 </Text>
                 <InputComponent
                   isRequired={false}
-                  onChange={e => setName(e.target.value)}
+                  onChange={e => {
+                    const newValue =
+                      e.target.value === existingDaoName ? undefined : e.target.value.trim();
+                    setFieldValue('general.name', newValue);
+                  }}
                   disabled={!canUserCreateProposal}
-                  value={name}
-                  placeholder="Amazing DAO"
+                  value={formValues.general?.name ?? existingDaoName}
+                  placeholder={formValues.general?.name === undefined ? 'Amazing DAO' : ''}
                   testId="daoSettings.name"
+                  isInvalid={!!generalEditFormikErrors?.name}
                   inputContainerProps={{
                     width: { base: '100%', md: '16rem' },
                   }}
@@ -351,15 +355,26 @@ export function SafeGeneralSettingsPage() {
                 px={6}
                 pt={2}
               >
-                <Text textStyle="body-small">
+                <Text textStyle="text-base-regular">
                   {subgraphInfo?.daoSnapshotENS
                     ? t('daoMetadataSnapshot')
                     : t('daoMetadataConnectSnapshot')}
                 </Text>
                 <InputComponent
                   isRequired={false}
-                  onChange={handleSnapshotENSChange}
-                  value={snapshotENS}
+                  onChange={e => {
+                    const lowerCasedValue = e.target.value.toLowerCase().trim();
+                    const newValue =
+                      lowerCasedValue === existingSnapshotENS ? undefined : lowerCasedValue;
+
+                    setFieldValue('general.snapshot', newValue);
+                  }}
+                  isInvalid={!!generalEditFormikErrors?.snapshot}
+                  value={
+                    formValues.general?.snapshot === undefined
+                      ? existingSnapshotENS
+                      : formValues.general?.snapshot
+                  }
                   disabled={!canUserCreateProposal}
                   placeholder="example.eth"
                   testId="daoSettings.snapshotENS"
@@ -378,29 +393,51 @@ export function SafeGeneralSettingsPage() {
                 <Text
                   ml={6}
                   mb={0.5}
-                  textStyle="body-large"
+                  textStyle="text-lg-regular"
                 >
                   {t('gaslessVotingLabelSettings', { ns: 'gaslessVoting' })}
                 </Text>
                 <GaslessVotingToggleDAOSettings
-                  isEnabled={isGaslessVotingEnabledToggled}
+                  isEnabled={
+                    formValues.general?.sponsoredVoting !== undefined
+                      ? formValues.general?.sponsoredVoting
+                      : existingIsGaslessVotingEnabledToggled
+                  }
                   onToggle={() => {
-                    setIsGaslessVotingEnabledToggled(!isGaslessVotingEnabledToggled);
+                    let newValue;
+
+                    if (formValues.general?.sponsoredVoting === undefined) {
+                      // If no value is set yet, toggle from existing state
+                      newValue = !existingIsGaslessVotingEnabledToggled;
+                    } else if (
+                      formValues.general?.sponsoredVoting === existingIsGaslessVotingEnabledToggled
+                    ) {
+                      // If current form value matches existing state, which means resulting toggle results in a new value that is different from existing state, toggle current value
+                      newValue = !formValues.general?.sponsoredVoting;
+                    } else {
+                      // Resulting value will match existing state. No changes made -- reset to undefined
+                      newValue = undefined;
+                    }
+
+                    setFieldValue('general.sponsoredVoting', newValue);
                   }}
                 />
               </>
             )}
           </Flex>
-
-          {/* PROPOSE BUTTON to be removed when batching settings edit actions implemented 
-          (https://linear.app/decent-labs/issue/ENG-806/consolidate-all-settings-edit-actions-into-one-proposal-on-create) */}
-          {canUserCreateProposal && (
+          {/* Remove PROPOSE BUTTON when feature flag is removed
+          (https://linear.app/decent-labs/issue/ENG-894/remove-inner-propose-button-when-feature-flag-removed) */}
+          {!isSettingsV1FeatureEnabled && canUserCreateProposal && (
             <Button
               variant="secondary"
               size="sm"
               marginLeft="auto"
-              isDisabled={!nameChanged && !snapshotChanged && !gaslessVotingChanged}
-              onClick={handleEditGeneralGovernance}
+              isDisabled={
+                formValues.general?.name === undefined &&
+                formValues.general?.snapshot === undefined &&
+                formValues.general?.sponsoredVoting === undefined
+              }
+              onClick={() => handleEditGeneralGovernance()}
             >
               {t('proposeChanges')}
             </Button>

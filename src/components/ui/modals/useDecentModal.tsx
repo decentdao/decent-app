@@ -1,6 +1,6 @@
 import { useContext } from 'react';
 import {
-  CurrentModal,
+  ModalTypeWithProps,
   IModalContext,
   ModalContext,
   ModalPropsTypes,
@@ -15,10 +15,12 @@ import {
  * @returns a Function that when called opens the provided ModalType modal.
  */
 export const useDecentModal = <T extends ModalType>(modal: T, props?: ModalPropsTypes[T]) => {
-  const { setCurrent } = useContext<IModalContext>(ModalContext);
+  const { pushModal, openModals } = useContext<IModalContext>(ModalContext);
   return () => {
-    const modalObject = { type: modal, props: props ?? {} } as CurrentModal;
+    const modalObject = { type: modal, props: props ?? {} } as ModalTypeWithProps;
 
-    setCurrent(modalObject);
+    if (openModals.findIndex(m => m.type === modal) === -1) {
+      pushModal(modalObject);
+    }
   };
 };

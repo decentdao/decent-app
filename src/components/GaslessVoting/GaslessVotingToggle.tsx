@@ -66,18 +66,18 @@ function GaslessVotingToggleContent({
           gap="0.25rem"
         >
           <Text
-            color="neutral-7"
-            textStyle={isSettings ? 'labels-large' : 'helper-text'}
+            color="color-neutral-300"
+            textStyle={isSettings ? 'text-sm-medium' : 'helper-text'}
           >
             {isSettings ? t('gaslessVotingLabelSettings') : t('gaslessVotingLabel')}
           </Text>
-          <Text textStyle={isSettings ? 'labels-large' : 'helper-text'}>
+          <Text textStyle={isSettings ? 'text-sm-medium' : 'helper-text'}>
             {isSettings ? t('gaslessVotingDescriptionSettings') : t('gaslessVotingDescription')}
           </Text>
           {displayNeedStakingLabel && (
             <Text
-              textStyle={isSettings ? 'labels-small' : 'helper-text'}
-              color="neutral-7"
+              textStyle={isSettings ? 'text-sm-medium' : 'helper-text'}
+              color="color-neutral-300"
             >
               {t('gaslessStakingRequirement', {
                 amount: formattedMinStakeAmount,
@@ -240,7 +240,7 @@ export function GaslessVotingToggleDAOSettings(props: GaslessVotingToggleProps) 
       display="flex"
       flexDirection="column"
       border="1px solid"
-      borderColor="neutral-3"
+      borderColor="color-neutral-900"
       borderRadius="0.75rem"
       mb={2}
     >
@@ -263,14 +263,14 @@ export function GaslessVotingToggleDAOSettings(props: GaslessVotingToggleProps) 
               justifyContent="space-between"
             >
               <Text
-                textStyle="labels-small"
-                color="neutral-7"
+                textStyle="text-xs-medium"
+                color="color-neutral-300"
                 mb="0.25rem"
               >
                 {t('paymasterBalance')}
               </Text>
               <Text
-                textStyle="labels-large"
+                textStyle="text-sm-medium"
                 display="flex"
                 alignItems="center"
               >
@@ -321,14 +321,14 @@ export function GaslessVotingToggleDAOSettings(props: GaslessVotingToggleProps) 
               justifyContent="space-between"
             >
               <Text
-                textStyle="labels-small"
-                color="neutral-7"
+                textStyle="text-xs-medium"
+                color="color-neutral-300"
                 mb="0.25rem"
               >
                 {t('paymasterStakedAmount')}
               </Text>
               <Text
-                textStyle="labels-large"
+                textStyle="text-sm-medium"
                 display="flex"
                 alignItems="center"
               >

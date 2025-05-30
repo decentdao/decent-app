@@ -18,7 +18,7 @@ export function TopErrorFallback() {
     >
       <Box
         borderRadius="0.5rem"
-        bg="neutral-2"
+        bg="color-neutral-950"
         py="2rem"
         px={{ base: '1.25rem', md: '2rem' }}
         overflow="hidden"
@@ -30,8 +30,8 @@ export function TopErrorFallback() {
             justifyContent="center"
             width={{ base: 'full', md: '50%' }}
           >
-            <Text textStyle="heading-large">{t('errorSentryFallbackTitle')}</Text>
-            <Text textStyle="heading-medium">{t('errorSentryFallbackMessage')}</Text>
+            <Text textStyle="text-3xl-regular">{t('errorSentryFallbackTitle')}</Text>
+            <Text textStyle="text-2xl-regular">{t('errorSentryFallbackMessage')}</Text>
             <Flex
               flexDir="column"
               gap="1rem"

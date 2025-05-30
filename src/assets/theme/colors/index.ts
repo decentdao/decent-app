@@ -1,35 +1,200 @@
-import colorTokens from './color.styles.tokens.json';
+export default {
+  'white-alpha-16': '#f8f4fc29',
+  'white-alpha-04': '#ffffff0a',
+  'white-alpha-08': '#ffffff14',
 
-interface ColorValue {
-  $value?: string;
-}
+  // Solid colors
+  'color-white': '#f8f4fc',
+  'color-black': '#151217',
 
-interface ColorToken {
-  [key: string]: ColorValue | ColorToken;
-}
+  // Green shades
+  'color-green-50': '#c1f1d2',
+  'color-green-100': '#a3e8bf',
+  'color-green-200': '#87deaf',
+  'color-green-300': '#6cd3a1',
+  'color-green-400': '#5bc89c',
+  'color-green-500': '#3db582',
+  'color-green-600': '#33986a',
+  'color-green-700': '#297b53',
+  'color-green-800': '#205e3e',
+  'color-green-900': '#16422a',
+  'color-green-950': '#0c2517',
 
-const extractColorsFromJson = (tokens: ColorToken, prefix = ''): Record<string, string> => {
-  const colors: Record<string, string> = {};
-  Object.entries(tokens).forEach(([key, value]) => {
-    // Replace spaces with dashes in the key
-    const formattedKey = key.replace(/\s+/g, '-').toLowerCase();
-    if (typeof value === 'object' && value !== null) {
-      if ('$value' in value && typeof value.$value === 'string') {
-        colors[`${prefix}${formattedKey}`] = value.$value;
-      } else {
-        const nestedColors = extractColorsFromJson(
-          value as ColorToken,
-          `${prefix}${formattedKey}-`,
-        );
-        Object.assign(colors, nestedColors);
-      }
-    }
-  });
+  // Charcoal shades
+  'color-charcoal-50': '#e1dde3',
+  'color-charcoal-100': '#cec8d2',
+  'color-charcoal-200': '#bcb3c1',
+  'color-charcoal-300': '#a99eb0',
+  'color-charcoal-400': '#96889f',
+  'color-charcoal-500': '#83738e',
+  'color-charcoal-600': '#6f617a',
+  'color-charcoal-700': '#5b5065',
+  'color-charcoal-800': '#483f4f',
+  'color-charcoal-900': '#342e3a',
+  'color-charcoal-950': '#221d25',
 
-  return colors;
-};
+  // Lilac shades
+  'color-lilac-50': '#ecddf8',
+  'color-lilac-100': '#dcc8f0',
+  'color-lilac-200': '#b993e1',
+  'color-lilac-300': '#a677d8',
+  'color-lilac-400': '#925ace',
+  'color-lilac-500': '#7f3fc4',
+  'color-lilac-600': '#6c35a8',
+  'color-lilac-700': '#5a2d8a',
+  'color-lilac-800': '#47256d',
+  'color-lilac-900': '#341c50',
+  'color-lilac-950': '#221233',
 
-const colors = extractColorsFromJson(colorTokens as unknown as ColorToken);
+  // Red shades (Error colors)
+  'color-red-50': '#f9ddde',
+  'color-red-100': '#f4c3c6',
+  'color-red-200': '#eb989c',
+  'color-red-300': '#e4777c',
+  'color-red-400': '#db555d',
+  'color-red-500': '#c62f39',
+  'color-red-600': '#b42b34',
+  'color-red-700': '#95282f',
+  'color-red-800': '#6c1f25',
+  'color-red-900': '#4b181c',
+  'color-red-950': '#2a0f11',
 
-export type Colors = typeof colors;
-export default colors;
+  // Yellow shades (Warning colors)
+  'color-yellow-50': '#f6ebb8',
+  'color-yellow-100': '#f4e294',
+  'color-yellow-200': '#f2d970',
+  'color-yellow-300': '#f0d04c',
+  'color-yellow-400': '#eec728',
+  'color-yellow-500': '#e6b912',
+  'color-yellow-600': '#c49b11',
+  'color-yellow-700': '#a27d0f',
+  'color-yellow-800': '#7f5f0c',
+  'color-yellow-900': '#5d410a',
+  'color-yellow-950': '#3b2307',
+
+  // Blue shades (Info colors)
+  'color-blue-50': '#bdddf2',
+  'color-blue-100': '#a5d0ec',
+  'color-blue-200': '#8dc3e7',
+  'color-blue-300': '#75b6e1',
+  'color-blue-400': '#5da9db',
+  'color-blue-500': '#459cd6',
+  'color-blue-600': '#3a83b5',
+  'color-blue-700': '#306a94',
+  'color-blue-800': '#255173',
+  'color-blue-900': '#1b3852',
+  'color-blue-950': '#101f31',
+
+  // Alpha variants
+  'color-alpha-white-100': '#ffffffe6',
+  'color-alpha-white-90': '#ffffffcc',
+  'color-alpha-white-80': '#ffffff99',
+  'color-alpha-white-70': '#ffffff66',
+  'color-alpha-white-60': '#ffffff40',
+  'color-alpha-white-50': '#ffffff33',
+  'color-alpha-white-40': '#ffffff26',
+  'color-alpha-white-30': '#ffffff1a',
+  'color-alpha-white-20': '#ffffff0d',
+  'color-alpha-white-10': '#ffffff05',
+
+  'color-alpha-black-100': '#000000e6',
+  'color-alpha-black-90': '#000000cc',
+  'color-alpha-black-80': '#00000099',
+  'color-alpha-black-70': '#00000066',
+  'color-alpha-black-60': '#00000040',
+  'color-alpha-black-50': '#00000033',
+  'color-alpha-black-40': '#00000026',
+  'color-alpha-black-30': '#0000001a',
+  'color-alpha-black-20': '#0000000d',
+  'color-alpha-black-10': '#00000005',
+} as const;
+
+export const semanticColors = {
+  // Primary colors
+  'color-primary-50': 'color-lilac-50',
+  'color-primary-100': 'color-lilac-100',
+  'color-primary-200': 'color-lilac-200',
+  'color-primary-300': 'color-lilac-300',
+  'color-primary-400': 'color-lilac-400',
+  'color-primary-500': 'color-lilac-500',
+  'color-primary-600': 'color-lilac-600',
+  'color-primary-700': 'color-lilac-700',
+  'color-primary-800': 'color-lilac-800',
+  'color-primary-900': 'color-lilac-900',
+  'color-primary-950': 'color-lilac-950',
+
+  // Neutral colors
+  'color-neutral-50': 'color-charcoal-50',
+  'color-neutral-100': 'color-charcoal-100',
+  'color-neutral-200': 'color-charcoal-200',
+  'color-neutral-300': 'color-charcoal-300',
+  'color-neutral-400': 'color-charcoal-400',
+  'color-neutral-500': 'color-charcoal-500',
+  'color-neutral-600': 'color-charcoal-600',
+  'color-neutral-700': 'color-charcoal-700',
+  'color-neutral-800': 'color-charcoal-800',
+  'color-neutral-900': 'color-charcoal-900',
+  'color-neutral-950': 'color-charcoal-950',
+
+  // Error colors
+  'color-error-50': 'color-red-50',
+  'color-error-100': 'color-red-100',
+  'color-error-200': 'color-red-200',
+  'color-error-300': 'color-red-300',
+  'color-error-400': 'color-red-400',
+  'color-error-500': 'color-red-500',
+  'color-error-600': 'color-red-600',
+  'color-error-700': 'color-red-700',
+  'color-error-800': 'color-red-800',
+  'color-error-900': 'color-red-900',
+  'color-error-950': 'color-red-950',
+
+  // Warning colors
+  'color-warning-50': 'color-yellow-50',
+  'color-warning-100': 'color-yellow-100',
+  'color-warning-200': 'color-yellow-200',
+  'color-warning-300': 'color-yellow-300',
+  'color-warning-400': 'color-yellow-400',
+  'color-warning-500': 'color-yellow-500',
+  'color-warning-600': 'color-yellow-600',
+  'color-warning-700': 'color-yellow-700',
+  'color-warning-800': 'color-yellow-800',
+  'color-warning-900': 'color-yellow-900',
+  'color-warning-950': 'color-yellow-950',
+
+  // Info colors
+  'color-info-50': 'color-blue-50',
+  'color-info-100': 'color-blue-100',
+  'color-info-200': 'color-blue-200',
+  'color-info-300': 'color-blue-300',
+  'color-info-400': 'color-blue-400',
+  'color-info-500': 'color-blue-500',
+  'color-info-600': 'color-blue-600',
+  'color-info-700': 'color-blue-700',
+  'color-info-800': 'color-blue-800',
+  'color-info-900': 'color-blue-900',
+  'color-info-950': 'color-blue-950',
+
+  // Success colors
+  'color-success-50': 'color-green-50',
+  'color-success-100': 'color-green-100',
+  'color-success-200': 'color-green-200',
+  'color-success-300': 'color-green-300',
+  'color-success-400': 'color-green-400',
+  'color-success-500': 'color-green-500',
+  'color-success-600': 'color-green-600',
+  'color-success-700': 'color-green-700',
+  'color-success-800': 'color-green-800',
+  'color-success-900': 'color-green-900',
+  'color-success-950': 'color-green-950',
+
+  // Base colors
+  'color-base-white': 'color-white',
+  'color-base-black': 'color-black',
+  'color-base-neutral': 'color-neutral-950',
+  'color-base-primary': 'color-primary-500',
+  'color-base-error': 'color-error-500',
+  'color-base-warning': 'color-warning-500',
+  'color-base-info': 'color-info-500',
+  'color-base-success': 'color-success-500',
+} as const;

@@ -22,9 +22,9 @@ function LoadingProblem({
       maxW={CONTENT_MAXW}
     >
       <Flex
-        bg="neutral-2"
+        bg="color-neutral-950"
         border="1px solid"
-        borderColor="neutral-3"
+        borderColor="color-neutral-900"
         borderRadius={8}
         justifyContent={{ base: 'center', lg: 'space-between' }}
         w={{ base: '100%', lg: '93%' }}
@@ -35,23 +35,23 @@ function LoadingProblem({
       >
         <Box
           w={{ base: 'full', lg: '250px' }}
-          color="white-0"
+          color="color-white"
           pt={{ base: 0, lg: '2.25rem' }}
           pb={{ base: '1.5rem', lg: '4.5rem' }}
         >
           <Text
             w="full"
-            textStyle="heading-large"
+            textStyle="text-3xl-regular"
           >
             {t('errorSentryFallbackTitle')}
           </Text>
           <Text
-            textStyle="heading-medium"
+            textStyle="text-2xl-regular"
             mt="0.5rem"
           >
             {t(`${type}1`, { chain: chain.name })}
           </Text>
-          <Text textStyle="heading-medium">{t(`${type}2`)}</Text>
+          <Text textStyle="text-2xl-regular">{t(`${type}2`)}</Text>
         </Box>
         <Flex alignItems="flex-end">
           <Hide above="lg">

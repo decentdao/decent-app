@@ -29,7 +29,7 @@ function getPaymentContainerProps(section: 'top' | 'bottom', isActiveStream: boo
 
   return isActiveStream
     ? {
-        bg: 'neutral-2',
+        bg: 'color-neutral-950',
         sx: undefined,
         boxShadow: DETAILS_BOX_SHADOW,
         borderTopRadius,
@@ -39,7 +39,7 @@ function getPaymentContainerProps(section: 'top' | 'bottom', isActiveStream: boo
     : {
         sx: {
           p: {
-            color: 'neutral-6',
+            color: 'color-neutral-400',
           },
         },
         bg: 'none',
@@ -49,7 +49,7 @@ function getPaymentContainerProps(section: 'top' | 'bottom', isActiveStream: boo
         borderTopRadius,
         borderBottomRadius,
         py: '1rem',
-        borderColor: 'neutral-4',
+        borderColor: 'color-neutral-800',
       };
 }
 
@@ -61,8 +61,8 @@ function PaymentDate({ label, date }: { label: string; date?: Date }) {
       gap="0.5rem"
     >
       <Text
-        textStyle="labels-small"
-        color="neutral-7"
+        textStyle="text-xs-medium"
+        color="color-neutral-300"
       >
         {t(label)}
       </Text>
@@ -73,11 +73,11 @@ function PaymentDate({ label, date }: { label: string; date?: Date }) {
         <Icon
           boxSize="1rem"
           as={CalendarBlank}
-          color={date ? 'lilac-0' : 'neutral-6'}
+          color={date ? 'color-lilac-100' : 'color-neutral-400'}
         />
         <Text
-          textStyle="labels-small"
-          color={date ? 'white-0' : 'neutral-6'}
+          textStyle="text-xs-medium"
+          color={date ? 'color-white' : 'color-neutral-400'}
         >
           {date ? format(date, DEFAULT_DATE_FORMAT) : '---'}
         </Text>
@@ -94,8 +94,8 @@ function TermedAssigned({ termNumber }: { termNumber: number }) {
       gap="0.5rem"
     >
       <Text
-        textStyle="labels-small"
-        color="neutral-7"
+        textStyle="text-xs-medium"
+        color="color-neutral-300"
       >
         {t('assigned')}
       </Text>
@@ -109,8 +109,8 @@ function TermedAssigned({ termNumber }: { termNumber: number }) {
           color="lila-0"
         />
         <Text
-          textStyle="labels-small"
-          color="white-0"
+          textStyle="text-xs-medium"
+          color="color-white"
         >
           {t('termNumber', { number: termNumber })}
         </Text>
@@ -127,9 +127,9 @@ function GreenStreamingDot({ isStreaming }: { isStreaming: boolean }) {
     <Box
       boxSize="0.75rem"
       borderRadius="100%"
-      bg="celery--2"
+      bg="color-green-500"
       border="1px solid"
-      borderColor="celery--5"
+      borderColor="color-green-800"
     />
   );
 }
@@ -165,8 +165,8 @@ function PaymentDetailsTop({ payment, onClick, isActiveStream }: PaymentDetailsT
               fallbackSrc="/images/coin-icon-default.svg"
             />
             <Text
-              textStyle="heading-small"
-              color="white-0"
+              textStyle="text-xl-regular"
+              color="color-white"
             >
               {payment.amount?.bigintValue
                 ? formatCoin(
@@ -182,7 +182,7 @@ function PaymentDetailsTop({ payment, onClick, isActiveStream }: PaymentDetailsT
             {(payment.isCancelled || payment.isCancelling) && (
               <Tag
                 variant="outlined"
-                color="red-1"
+                color="color-error-400"
                 outline="unset"
                 border="1px solid"
                 py={0}
@@ -196,7 +196,7 @@ function PaymentDetailsTop({ payment, onClick, isActiveStream }: PaymentDetailsT
             {!payment.isCancelableStream && (
               <Tag
                 variant="outlined"
-                color="yellow-0"
+                color="color-yellow-200"
                 outline="unset"
                 border="1px solid"
                 py={0}
