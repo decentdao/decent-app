@@ -36,6 +36,21 @@ export type SetAzoriusGovernancePayload = {
   type: GovernanceType;
 };
 
+function getFilterUniqueProposals(proposals: FractalProposal[]) {
+  const seenIds = new Set();
+  return proposals.filter(p => {
+    const snapshotProposal = p as SnapshotProposal;
+    const id = snapshotProposal.snapshotProposalId || p.proposalId;
+
+    if (seenIds.has(id)) {
+      return false;
+    }
+
+    seenIds.add(id);
+    return true;
+  });
+}
+
 export type GovernancesSlice = {
   governances: StoreSlice<FractalGovernance & FractalGovernanceContracts>;
   setProposalTemplates: (daoKey: DAOKey, proposalTemplates: ProposalTemplate[]) => void;
@@ -163,10 +178,16 @@ export const createGovernancesSlice: StateCreator<
             ...EMPTY_GOVERNANCE,
             proposals,
           };
+        } else if (!state.governances[daoKey].proposals) {
+          state.governances[daoKey].proposals = proposals;
         } else {
           // TODO: Sometimes snapshot proposals might be loaded before proposals, then snapshot proposals are lost
           // Need to tackle this in scope of ENG-813
-          state.governances[daoKey].proposals = proposals;
+          const uniqueProposals = getFilterUniqueProposals([
+            ...state.governances[daoKey].proposals,
+            ...proposals,
+          ]);
+          state.governances[daoKey].proposals = uniqueProposals;
         }
       },
       false,
@@ -284,7 +305,11 @@ export const createGovernancesSlice: StateCreator<
         } else if (!state.governances[daoKey].proposals) {
           state.governances[daoKey].proposals = snapshotProposals;
         } else {
-          state.governances[daoKey].proposals.push(...snapshotProposals);
+          const uniqueProposals = getFilterUniqueProposals([
+            ...state.governances[daoKey].proposals,
+            ...snapshotProposals,
+          ]);
+          state.governances[daoKey].proposals = uniqueProposals;
         }
       },
       false,
