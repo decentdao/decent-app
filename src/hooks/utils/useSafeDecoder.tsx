@@ -79,6 +79,18 @@ export const useSafeDecoder = () => {
             timeout: 1000,
           });
           const responseData = response.data;
+          if (responseData.result === 'Contract source code not verified') {
+            return [
+              {
+                target: to,
+                value: value,
+                function: 'unknown',
+                parameterTypes: [],
+                parameterValues: [],
+                decodingFailed: true,
+              },
+            ];
+          }
           const abi = JSON.parse(responseData.result);
           const decodedData = decodeFunctionData({
             abi,
