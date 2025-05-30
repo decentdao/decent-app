@@ -9,6 +9,7 @@ import {
   GetContractEventsReturnType,
   zeroAddress,
 } from 'viem';
+import { useAccount } from 'wagmi';
 import LockReleaseAbi from '../../assets/abi/LockRelease';
 import { SENTINEL_ADDRESS } from '../../constants/common';
 import { createSnapshotSubgraphClient } from '../../graphql';
@@ -67,6 +68,7 @@ export function useGovernanceFetcher() {
   const publicClient = useNetworkPublicClient();
   const safeApi = useSafeAPI();
   const { getAddressContractType } = useAddressContractType();
+  const user = useAccount();
   const snaphshotGraphQlClient = useMemo(() => createSnapshotSubgraphClient(), []);
 
   const {
@@ -271,32 +273,56 @@ export function useGovernanceFetcher() {
               client: publicClient,
             });
 
-            // TODO: Transform to multiCall
-            const [name, symbol, decimals, totalSupply] = await Promise.all([
-              tokenContract.read.name(),
-              tokenContract.read.symbol(),
-              tokenContract.read.decimals(),
-              tokenContract.read.totalSupply(),
-            ]);
+            // Prepare multicall requests
+            const multicallCalls = [
+              {
+                ...tokenContract,
+                functionName: 'name',
+              },
+              {
+                ...tokenContract,
+                functionName: 'symbol',
+              },
+              {
+                ...tokenContract,
+                functionName: 'decimals',
+              },
+
+              {
+                ...tokenContract,
+                functionName: 'totalSupply',
+              },
+            ];
+
+            // Execute multicall
+            const [name, symbol, decimals, totalSupply] = await publicClient.multicall({
+              contracts: multicallCalls,
+              allowFailure: false,
+            });
+            let balance: bigint = 0n;
+            if (user.address) {
+              balance = await tokenContract.read.balanceOf([user.address]);
+            }
+
             const tokenData = {
-              name,
-              symbol,
-              decimals,
+              name: name ? name.toString() : '',
+              symbol: symbol ? symbol.toString() : '',
+              decimals: decimals ? Number(decimals) : 18,
               address: tokenContract.address,
-              totalSupply,
-              balance: 0n,
+              totalSupply: totalSupply ? BigInt(totalSupply) : 0n,
+              balance,
               delegatee: zeroAddress as Address,
             };
 
             let lockedVotesTokenData: VotesTokenData | undefined;
             if (lockReleaseAddress) {
               lockedVotesTokenData = {
-                balance: 0n,
+                balance,
                 delegatee: zeroAddress,
-                name,
-                symbol,
-                decimals,
-                totalSupply,
+                name: tokenData.name,
+                symbol: tokenData.symbol,
+                decimals: tokenData.decimals,
+                totalSupply: tokenData.totalSupply,
                 address: lockReleaseAddress,
               };
             }
