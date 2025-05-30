@@ -14,6 +14,7 @@ import { SENTINEL_ADDRESS } from '../../constants/common';
 import { createSnapshotSubgraphClient } from '../../graphql';
 import { ProposalsQuery, ProposalsResponse } from '../../graphql/SnapshotQueries';
 import { logError } from '../../helpers/errorLogging';
+import { useCurrentDAOKey } from '../../hooks/DAO/useCurrentDAOKey';
 import useNetworkPublicClient from '../../hooks/useNetworkPublicClient';
 import { CacheExpiry, CacheKeys } from '../../hooks/utils/cache/cacheDefaults';
 import { getValue, setValue } from '../../hooks/utils/cache/useLocalStorage';
@@ -24,6 +25,7 @@ import {
 import { useSafeDecoder } from '../../hooks/utils/useSafeDecoder';
 import { useSafeTransactions } from '../../hooks/utils/useSafeTransactions';
 import { useTimeHelpers } from '../../hooks/utils/useTimeHelpers';
+import { useUpdateTimer } from '../../hooks/utils/useUpdateTimer';
 import useIPFSClient from '../../providers/App/hooks/useIPFSClient';
 import { useSafeAPI } from '../../providers/App/hooks/useSafeAPI';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
@@ -74,6 +76,9 @@ export function useGovernanceFetcher() {
       paymaster: { decentPaymasterV1MasterCopy },
     },
   } = useNetworkConfigStore();
+  const { safeAddress: currentUrlSafeAddress } = useCurrentDAOKey();
+
+  const { setMethodOnInterval, clearIntervals } = useUpdateTimer(currentUrlSafeAddress);
 
   const fetchDAOGovernance = useCallback(
     async ({
@@ -96,12 +101,14 @@ export function useGovernanceFetcher() {
       onLoadingFirstProposalStateChanged: (loading: boolean) => void;
     }) => {
       const azoriusModule = getAzoriusModuleFromModules(daoModules);
-
+      clearIntervals();
       if (!azoriusModule) {
         onMultisigGovernanceLoaded();
-        const multisigTransactions = await safeApi.getMultisigTransactions(daoAddress);
-        const activities = await parseTransactions(multisigTransactions);
-        onProposalsLoaded(activities);
+        setMethodOnInterval(async () => {
+          const multisigTransactions = await safeApi.getMultisigTransactions(daoAddress);
+          const activities = await parseTransactions(multisigTransactions);
+          onProposalsLoaded(activities);
+        });
       } else {
         const azoriusContract = getContract({
           abi: abis.Azorius,
@@ -692,7 +699,17 @@ export function useGovernanceFetcher() {
         }
       }
     },
-    [getAddressContractType, publicClient, getTimeDuration, parseTransactions, safeApi, t, decode],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [
+      setMethodOnInterval,
+      safeApi,
+      parseTransactions,
+      publicClient,
+      getAddressContractType,
+      t,
+      getTimeDuration,
+      decode,
+    ],
   );
 
   const fetchDAOProposalTemplates = useCallback(
