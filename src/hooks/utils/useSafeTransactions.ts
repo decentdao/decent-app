@@ -5,14 +5,14 @@ import { Address, getAddress, getContract, isAddress } from 'viem';
 import { isApproved, isRejected } from '../../helpers/activity';
 import { isMultisigRejectionProposal } from '../../helpers/multisigProposal';
 import { useDAOStore } from '../../providers/App/AppProvider';
-import { FractalProposal, FractalProposalState } from '../../types';
+import { useSafeAPI } from '../../providers/App/hooks/useSafeAPI';
+import { DataDecoded, FractalProposal, FractalProposalState } from '../../types';
 import { parseDecodedData } from '../../utils';
 import { getAverageBlockTime } from '../../utils/contract';
 import { getTxTimelockedTimestamp } from '../../utils/guard';
 import { useCurrentDAOKey } from '../DAO/useCurrentDAOKey';
 import useNetworkPublicClient from '../useNetworkPublicClient';
 import { useSafeDecoder } from './useSafeDecoder';
-
 type FreezeGuardData = {
   guardTimelockPeriodMs: bigint;
   guardExecutionPeriodMs: bigint;
@@ -24,6 +24,7 @@ export const useSafeTransactions = () => {
   const { guardContracts } = useDAOStore({ daoKey });
   const decode = useSafeDecoder();
   const publicClient = useNetworkPublicClient();
+  const safeAPI = useSafeAPI();
 
   const getState = useCallback(
     async (
@@ -130,10 +131,20 @@ export const useSafeTransactions = () => {
           );
 
           const confirmations = transaction.confirmations ?? [];
-
-          const data = transaction.dataDecoded
+          let decodedData: DataDecoded | undefined;
+          if (transaction.data && transaction.to) {
+            decodedData = await safeAPI
+              .decodeData(transaction.data, transaction.to)
+              .catch(() => undefined);
+          }
+          const data = decodedData
             ? {
-                decodedTransactions: parseDecodedData(transaction, true),
+                decodedTransactions: parseDecodedData(
+                  transaction.to,
+                  transaction.value,
+                  decodedData,
+                  true,
+                ),
               }
             : {
                 decodedTransactions: await decode(
@@ -148,7 +159,10 @@ export const useSafeTransactions = () => {
             : [getAddress(transaction.to)];
 
           const activity: FractalProposal = {
-            transaction,
+            transaction: {
+              ...transaction,
+              dataDecoded: decodedData ? JSON.stringify(decodedData) : undefined,
+            },
             eventDate,
             confirmations,
             signersThreshold: transaction.confirmationsRequired,
@@ -204,7 +218,7 @@ export const useSafeTransactions = () => {
 
       return activitiesWithState;
     },
-    [decode, getState, guardContracts.freezeGuardContractAddress, publicClient],
+    [decode, getState, guardContracts.freezeGuardContractAddress, publicClient, safeAPI],
   );
   return { parseTransactions };
 };

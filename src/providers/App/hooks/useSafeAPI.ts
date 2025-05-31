@@ -388,16 +388,16 @@ class EnhancedSafeApiKit {
     throw new Error('Failed to proposeTransaction()');
   }
 
-  async decodeData(data: string): Promise<any> {
+  async decodeData(data: string, to: string): Promise<any> {
     try {
       const body = {
-        data: data,
+        data,
+        to,
       };
       const value = await axios.post(`${this.safeClientBaseUrl}/data-decoder`, body, {
         headers: {
           accept: 'application/json',
         },
-        timeout: 1000,
       });
 
       return value.data;

@@ -49,7 +49,7 @@ export const useSafeDecoder = () => {
       let decoded: DecodedTransaction | DecodedTransaction[];
       try {
         try {
-          const decodedData = await safeAPI.decodeData(data);
+          const decodedData = await safeAPI.decodeData(data, to);
           if (decodedData.parameters && decodedData.method === 'multiSend') {
             const internalTransactionsMap = new Map<number, DecodedTransaction>();
             parseMultiSendTransactions(internalTransactionsMap, decodedData.parameters);
@@ -79,6 +79,18 @@ export const useSafeDecoder = () => {
             timeout: 1000,
           });
           const responseData = response.data;
+          if (responseData.result === 'Contract source code not verified') {
+            return [
+              {
+                target: to,
+                value: value,
+                function: 'unknown',
+                parameterTypes: [],
+                parameterValues: [],
+                decodingFailed: true,
+              },
+            ];
+          }
           const abi = JSON.parse(responseData.result);
           const decodedData = decodeFunctionData({
             abi,
