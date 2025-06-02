@@ -95,8 +95,19 @@ function AgreementTableRowItem({
   );
 }
 
+interface Agreement {
+  id: string;
+  title: string;
+  amount: string;
+  status: string;
+  counterparties: { current: number; total: number };
+  deadline: string;
+  // TODO: Define actions as string or object array?
+  actions: [];
+}
+
 function useDAOAgreements() {
-  const mockAgreements = [
+  const mockAgreements: Agreement[] = [
     {
       id: '1',
       title: 'Title',
@@ -104,6 +115,7 @@ function useDAOAgreements() {
       status: 'Ready to sign',
       counterparties: { current: 0, total: 10 },
       deadline: '23/05/2025',
+      actions: [],
     },
     {
       id: '2',
@@ -112,6 +124,7 @@ function useDAOAgreements() {
       status: 'Ready to sign',
       counterparties: { current: 0, total: 10 },
       deadline: '23/05/2025',
+      actions: [],
     },
     {
       id: '3',
@@ -120,10 +133,91 @@ function useDAOAgreements() {
       status: 'Ready to sign',
       counterparties: { current: 0, total: 10 },
       deadline: '23/05/2025',
+      actions: [],
     },
   ];
 
   return { agreements: mockAgreements };
+}
+
+function AgreementTable({ agreements }: { agreements: Agreement[] }) {
+  const { t } = useTranslation('agreements');
+
+  return (
+    <Grid
+      templateColumns="1fr 0.8fr 0.8fr 1fr 0.8fr auto"
+      borderRadius="0.75rem"
+      border="1px solid"
+      borderColor="color-charcoal-700"
+      className="scroll-dark"
+      overflow={{ base: 'auto', md: 'hidden' }}
+    >
+      {/* Header Row */}
+      <AgreementTableHeaderRowItem label={t('agreementTableContractHeader')} />
+      <AgreementTableHeaderRowItem label={t('agreementTableAmountHeader')} />
+      <AgreementTableHeaderRowItem label={t('agreementTableStatusHeader')} />
+      <AgreementTableHeaderRowItem label={t('agreementTableCounterPartiesHeader')} />
+      <AgreementTableHeaderRowItem label={t('agreementTableDeadlineHeader')} />
+      <AgreementTableHeaderRowItem />
+
+      {/* Data Rows */}
+      {agreements.map((agreement, index, arr) => {
+        const isLastRow = index === arr.length - 1;
+        const isFirstRow = index === 0;
+        const isEdgeItem = isFirstRow || isLastRow;
+        return (
+          <>
+            <AgreementTableRowItem
+              rowContent={agreement.title}
+              isEdgeItem={isEdgeItem}
+            />
+            <AgreementTableRowItem
+              rowContent={agreement.amount}
+              isEdgeItem={isEdgeItem}
+            />
+
+            <AgreementTableRowItem
+              rowContent={
+                <Badge
+                  borderRadius="full"
+                  px={3}
+                  py={1}
+                  bg="white"
+                  color="black"
+                >
+                  {agreement.status}
+                </Badge>
+              }
+              isEdgeItem={isEdgeItem}
+            />
+            <AgreementTableRowItem
+              rowContent={
+                <HStack>
+                  <Text>
+                    {agreement.counterparties.current} of {agreement.counterparties.total}
+                  </Text>
+                </HStack>
+              }
+              isEdgeItem={isEdgeItem}
+            />
+            <AgreementTableRowItem
+              rowContent={agreement.deadline}
+              isEdgeItem={isEdgeItem}
+            />
+            <AgreementTableRowItem
+              rowContent={
+                <>
+                  {/* TODO: Action Menu */}
+                  <Icon as={DotsThreeVertical} />
+                </>
+              }
+              isEdgeItem={isEdgeItem}
+            />
+          </>
+        );
+      })}
+    </Grid>
+  );
 }
 
 export function AgreementsDashboardPage() {
@@ -160,79 +254,8 @@ export function AgreementsDashboardPage() {
         bg="color-neutral-950"
       >
         <AgreementSearch />
-        <Grid
-          templateColumns="1fr 0.8fr 0.8fr 1fr 0.8fr auto"
-          borderRadius="0.75rem"
-          border="1px solid"
-          borderColor="color-charcoal-700"
-          className="scroll-dark"
-          overflow={{ base: 'auto', md: 'hidden' }}
-        >
-          {/* Header Row */}
-          <AgreementTableHeaderRowItem label={t('agreementTableContractHeader')} />
-          <AgreementTableHeaderRowItem label={t('agreementTableAmountHeader')} />
-          <AgreementTableHeaderRowItem label={t('agreementTableStatusHeader')} />
-          <AgreementTableHeaderRowItem label={t('agreementTableCounterPartiesHeader')} />
-          <AgreementTableHeaderRowItem label={t('agreementTableDeadlineHeader')} />
-          <AgreementTableHeaderRowItem />
 
-          {/* Data Rows */}
-          {agreements.map((agreement, index, arr) => {
-            const isLastRow = index === arr.length - 1;
-            const isFirstRow = index === 0;
-            const isEdgeItem = isFirstRow || isLastRow;
-            return (
-              <>
-                <AgreementTableRowItem
-                  rowContent={agreement.title}
-                  isEdgeItem={isEdgeItem}
-                />
-                <AgreementTableRowItem
-                  rowContent={agreement.amount}
-                  isEdgeItem={isEdgeItem}
-                />
-
-                <AgreementTableRowItem
-                  rowContent={
-                    <Badge
-                      borderRadius="full"
-                      px={3}
-                      py={1}
-                      bg="white"
-                      color="black"
-                    >
-                      {agreement.status}
-                    </Badge>
-                  }
-                  isEdgeItem={isEdgeItem}
-                />
-                <AgreementTableRowItem
-                  rowContent={
-                    <HStack>
-                      <Text>
-                        {agreement.counterparties.current} of {agreement.counterparties.total}
-                      </Text>
-                    </HStack>
-                  }
-                  isEdgeItem={isEdgeItem}
-                />
-                <AgreementTableRowItem
-                  rowContent={agreement.deadline}
-                  isEdgeItem={isEdgeItem}
-                />
-                <AgreementTableRowItem
-                  rowContent={
-                    <>
-                      {/* TODO: Action Menu */}
-                      <Icon as={DotsThreeVertical} />
-                    </>
-                  }
-                  isEdgeItem={isEdgeItem}
-                />
-              </>
-            );
-          })}
-        </Grid>
+        <AgreementTable agreements={agreements} />
       </Box>
     </>
   );
