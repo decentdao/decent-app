@@ -190,6 +190,7 @@ export const semanticColors = {
 
   // Base colors
   'color-neutral-white': 'color-white',
+  'color-neutral-black': 'color-black',
   'color-base-neutral': 'color-neutral-950',
   'color-base-success': 'color-success-400',
   'color-base-info': 'color-info-900',
