@@ -8,6 +8,7 @@ import LoadingProblem from './pages/LoadingProblem';
 import { SafeCreatePage } from './pages/create/SafeCreatePage';
 import { SafeController } from './pages/dao/SafeController';
 import { SafeDashboardPage } from './pages/dao/SafeDashboardPage';
+import { AgreementsDashboardPage } from './pages/dao/agreements/AgreementsDashboardPage';
 import { SafeEditGovernancePage } from './pages/dao/edit/governance/SafeEditGovernancePage';
 import { SafeHierarchyPage } from './pages/dao/hierarchy/SafeHierarchyPage';
 import { SafeSubDaoCreatePage } from './pages/dao/new/SafeSubDaoCreatePage';
@@ -220,7 +221,7 @@ export const router = (addressPrefix: string, daoAddress: string | undefined) =>
             },
             {
               path: DAO_ROUTES.agreements.path,
-              element: <div>Agreements</div>,
+              element: <AgreementsDashboardPage />,
             },
           ],
         },

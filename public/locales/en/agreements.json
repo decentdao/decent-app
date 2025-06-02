@@ -1,0 +1,10 @@
+{
+  "agreements": "Agreements",
+  "createAgreement": "Create Agreement",
+  "agreementTableContractHeader": "Contract",
+  "agreementTableAmountHeader": "Amount",
+  "agreementTableStatusHeader": "Status",
+  "agreementTableCounterPartiesHeader": "Counterparties",
+  "agreementTableDeadlineHeader": "Deadline",
+  "agreementSearchPlaceholder": "Search"
+}
