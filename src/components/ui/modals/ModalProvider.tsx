@@ -12,6 +12,7 @@ import AddSignerModal from '../../SafeSettings/Signers/modals/AddSignerModal';
 import RemoveSignerModal from '../../SafeSettings/Signers/modals/RemoveSignerModal';
 import DraggableDrawer from '../containers/DraggableDrawer';
 import { AddStrategyPermissionModal } from './AddStrategyPermissionModal';
+import { AgreementBuilderModal } from './AgreementBuilderModal';
 import { AirdropData, AirdropModal } from './AirdropModal/AirdropModal';
 import { ConfirmDeleteStrategyModal } from './ConfirmDeleteStrategyModal';
 import { ConfirmModifyGovernanceModal } from './ConfirmModifyGovernanceModal';
@@ -65,6 +66,7 @@ export enum ModalType {
   CONFIRM_NONCE_EXECUTION,
   CONFIRM_REJECT_PROPOSAL,
   CONFIRM_EXECUTION,
+  AGREEMENT_BUILDER,
 }
 
 export type ModalPropsTypes = {
@@ -152,6 +154,7 @@ export type ModalPropsTypes = {
     nonce: number | undefined;
     submitExecution: () => void;
   };
+  [ModalType.AGREEMENT_BUILDER]: {};
 };
 
 export type ModalTypeWithProps = {
@@ -466,6 +469,10 @@ const getModalData = (args: {
         />
       );
       modalSize = 'md';
+      break;
+    case ModalType.AGREEMENT_BUILDER:
+      modalContent = <AgreementBuilderModal closeModal={popModal} />;
+      modalSize = 'max';
       break;
     case ModalType.NONE:
     default:

@@ -7,5 +7,10 @@
   "agreementTableCounterPartiesHeader": "Counterparties",
   "agreementTableDeadlineHeader": "Deadline",
   "agreementSearchPlaceholder": "Search",
-  "noAgreements": "You haven’t created any agreements yet."
+  "noAgreements": "You haven’t created any agreements yet.",
+  "agreementBuilderTitle": "Agreement Builder",
+  "agreementBuilderSectionTitleNewDeal": "New Deal",
+  "agreementBuilderSectionTitleCounterparties": "Counterparties",
+  "agreementBuilderProposeAgreement": "Propose Agreement",
+  "agreementBuilderDiscard": "Discard"
 }

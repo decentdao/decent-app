@@ -15,6 +15,8 @@ import {
 import { DotsThreeVertical, MagnifyingGlass } from '@phosphor-icons/react';
 import { Fragment } from 'react';
 import { useTranslation } from 'react-i18next';
+import { ModalType } from '../../../components/ui/modals/ModalProvider';
+import { useDecentModal } from '../../../components/ui/modals/useDecentModal';
 import PageHeader from '../../../components/ui/page/Header/PageHeader';
 import { DETAILS_BOX_SHADOW } from '../../../constants/common';
 
@@ -227,6 +229,8 @@ export function AgreementsDashboardPage() {
   // Mock data for demonstration
   const { agreements } = useDAOAgreements();
 
+  const openAgreementBuilder = useDecentModal(ModalType.AGREEMENT_BUILDER);
+
   return (
     <>
       <PageHeader
@@ -239,13 +243,7 @@ export function AgreementsDashboardPage() {
         ]}
       >
         {/* Additional actions to right of title */}
-        <Button
-          onClick={() => {
-            // TODO: Open agreement creation modal
-          }}
-        >
-          {t('createAgreement')}
-        </Button>
+        <Button onClick={openAgreementBuilder}>{t('createAgreement')}</Button>
       </PageHeader>
 
       <Box
