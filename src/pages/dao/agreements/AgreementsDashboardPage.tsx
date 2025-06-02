@@ -255,7 +255,17 @@ export function AgreementsDashboardPage() {
       >
         <AgreementSearch />
 
-        <AgreementTable agreements={agreements} />
+        {agreements.length > 0 ? (
+          <AgreementTable agreements={agreements} />
+        ) : (
+          <Text
+            textAlign="center"
+            color="color-neutral-800"
+            p="1rem"
+          >
+            {t('noAgreements')}
+          </Text>
+        )}
       </Box>
     </>
   );
