@@ -13,6 +13,7 @@ import {
   InputLeftElement,
 } from '@chakra-ui/react';
 import { DotsThreeVertical, MagnifyingGlass } from '@phosphor-icons/react';
+import { Fragment } from 'react';
 import { useTranslation } from 'react-i18next';
 import PageHeader from '../../../components/ui/page/Header/PageHeader';
 import { DETAILS_BOX_SHADOW } from '../../../constants/common';
@@ -166,7 +167,7 @@ function AgreementTable({ agreements }: { agreements: Agreement[] }) {
         const isFirstRow = index === 0;
         const isEdgeItem = isFirstRow || isLastRow;
         return (
-          <>
+          <Fragment key={agreement.id}>
             <AgreementTableRowItem
               rowContent={agreement.title}
               isEdgeItem={isEdgeItem}
@@ -213,7 +214,7 @@ function AgreementTable({ agreements }: { agreements: Agreement[] }) {
               }
               isEdgeItem={isEdgeItem}
             />
-          </>
+          </Fragment>
         );
       })}
     </Grid>
