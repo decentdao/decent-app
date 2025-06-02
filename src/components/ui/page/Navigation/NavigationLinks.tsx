@@ -1,7 +1,16 @@
 import { Box, Flex, Hide } from '@chakra-ui/react';
-import { BookOpen, Coins, GitFork, House, Question, UsersThree } from '@phosphor-icons/react';
+import {
+  BookOpen,
+  Coins,
+  GitFork,
+  Handshake,
+  House,
+  Question,
+  UsersThree,
+} from '@phosphor-icons/react';
 import { DAO_ROUTES } from '../../../../constants/routes';
 import { URL_DOCS, URL_FAQ } from '../../../../constants/url';
+import useFeatureFlag from '../../../../helpers/environmentFeatureFlags';
 import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
 import { LanguageSwitcher } from '../../../../i18n/LanguageSwitcher';
 import Divider from '../../utils/Divider';
@@ -45,7 +54,7 @@ function ExternalLinks({ closeDrawer }: { closeDrawer?: () => void }) {
 
 function InternalLinks({ closeDrawer }: { closeDrawer?: () => void }) {
   const { safeAddress, addressPrefix } = useCurrentDAOKey();
-
+  const isAgreementFeatureEnabled = useFeatureFlag('flag_feature_agreement');
   if (!safeAddress) {
     return null;
   }
@@ -101,6 +110,17 @@ function InternalLinks({ closeDrawer }: { closeDrawer?: () => void }) {
           scope="internal"
           closeDrawer={closeDrawer}
         />
+        {isAgreementFeatureEnabled && (
+          <NavigationLink
+            href={DAO_ROUTES.agreements.relative(addressPrefix, safeAddress)}
+            labelKey="agreements"
+            testId="navigation-agreementsLink"
+            NavigationIcon={Handshake}
+            scope="internal"
+            closeDrawer={closeDrawer}
+          />
+        )}
+
         <Hide above="md">
           <Divider variant="darker" />
         </Hide>

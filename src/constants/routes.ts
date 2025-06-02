@@ -132,4 +132,9 @@ export const DAO_ROUTES = {
       `/proposal-templates/new${getDaoQueryParam(addressPrefix, safeAddress)}`,
     path: 'proposal-templates/new',
   },
+  agreements: {
+    relative: (addressPrefix: string, safeAddress: string) =>
+      `/agreements${getDaoQueryParam(addressPrefix, safeAddress)}`,
+    path: 'agreements',
+  },
 };

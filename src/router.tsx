@@ -218,6 +218,10 @@ export const router = (addressPrefix: string, daoAddress: string | undefined) =>
               path: DAO_ROUTES.treasury.path,
               element: <SafeTreasuryPage />,
             },
+            {
+              path: DAO_ROUTES.agreements.path,
+              element: <div>Agreements</div>,
+            },
           ],
         },
         {
