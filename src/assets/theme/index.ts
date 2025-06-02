@@ -50,6 +50,11 @@ export const theme = mergeThemeOverride({
             minH: '90vh',
           },
         }),
+        '4xl': definePartsStyle({
+          dialog: {
+            maxW: '54.9375rem',
+          },
+        }),
       },
     },
   },

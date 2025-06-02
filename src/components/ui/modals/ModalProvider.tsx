@@ -472,7 +472,7 @@ const getModalData = (args: {
       break;
     case ModalType.AGREEMENT_BUILDER:
       modalContent = <AgreementBuilderModal closeModal={popModal} />;
-      modalSize = 'max';
+      modalSize = '4xl';
       break;
     case ModalType.NONE:
     default:
