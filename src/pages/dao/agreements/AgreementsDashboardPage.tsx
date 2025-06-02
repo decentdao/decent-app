@@ -4,7 +4,6 @@ import {
   Grid,
   GridItem,
   Text,
-  Badge,
   HStack,
   Icon,
   Flex,
@@ -17,6 +16,38 @@ import { Fragment } from 'react';
 import { useTranslation } from 'react-i18next';
 import PageHeader from '../../../components/ui/page/Header/PageHeader';
 import { DETAILS_BOX_SHADOW } from '../../../constants/common';
+
+function AgreementStatusLabel({ status }: { status: 'agreementStatusReadyToSign' }) {
+  const { t } = useTranslation('agreements');
+
+  const label = {
+    agreementStatusReadyToSign: {
+      bg: 'color-neutral-white',
+      textColor: 'color-neutral-black',
+    },
+  };
+
+  return (
+    <Flex
+      alignItems="center"
+      gap="0.5rem"
+    >
+      <Box
+        rounded="0.5rem"
+        bg={label[status].bg}
+        py="2px"
+        px="4px"
+      >
+        <Text
+          textStyle="text-sm-medium"
+          color={label[status].textColor}
+        >
+          {t(status)}
+        </Text>
+      </Box>
+    </Flex>
+  );
+}
 
 function AgreementSearch() {
   const { t } = useTranslation('agreements');
@@ -100,7 +131,8 @@ interface Agreement {
   id: string;
   title: string;
   amount: string;
-  status: string;
+  // @dev: this also controls badge UI
+  status: 'agreementStatusReadyToSign';
   counterparties: { current: number; total: number };
   deadline: string;
   // TODO: Define actions as string or object array?
@@ -113,7 +145,7 @@ function useDAOAgreements() {
       id: '1',
       title: 'Title',
       amount: '$24.00',
-      status: 'Ready to sign',
+      status: 'agreementStatusReadyToSign',
       counterparties: { current: 0, total: 10 },
       deadline: '23/05/2025',
       actions: [],
@@ -122,7 +154,7 @@ function useDAOAgreements() {
       id: '2',
       title: 'Title',
       amount: '$24.00',
-      status: 'Ready to sign',
+      status: 'agreementStatusReadyToSign',
       counterparties: { current: 0, total: 10 },
       deadline: '23/05/2025',
       actions: [],
@@ -131,7 +163,7 @@ function useDAOAgreements() {
       id: '3',
       title: 'Title',
       amount: '$24.00',
-      status: 'Ready to sign',
+      status: 'agreementStatusReadyToSign',
       counterparties: { current: 0, total: 10 },
       deadline: '23/05/2025',
       actions: [],
@@ -178,17 +210,7 @@ function AgreementTable({ agreements }: { agreements: Agreement[] }) {
             />
 
             <AgreementTableRowItem
-              rowContent={
-                <Badge
-                  borderRadius="full"
-                  px={3}
-                  py={1}
-                  bg="white"
-                  color="black"
-                >
-                  {agreement.status}
-                </Badge>
-              }
+              rowContent={<AgreementStatusLabel status={agreement.status} />}
               isEdgeItem={isEdgeItem}
             />
             <AgreementTableRowItem
