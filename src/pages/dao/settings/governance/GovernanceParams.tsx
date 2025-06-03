@@ -61,7 +61,7 @@ export function GovernanceParams() {
           ]);
 
           if (timelockSeconds !== undefined) {
-            setExistingTimelockPeriod(BigInt(timelockSeconds / 60));
+            setExistingTimelockPeriod(BigInt(timelockSeconds));
           }
 
           if (executionPeriodSeconds !== undefined) {
@@ -73,7 +73,7 @@ export function GovernanceParams() {
       const timelockPeriodSeconds = votingStrategy?.timeLockPeriod?.value;
 
       if (timelockPeriodSeconds !== undefined) {
-        setExistingTimelockPeriod(timelockPeriodSeconds / 60n);
+        setExistingTimelockPeriod(timelockPeriodSeconds);
       }
 
       const executionPeriodSeconds = votingStrategy?.executionPeriod?.value;
@@ -268,34 +268,25 @@ export function GovernanceParams() {
               helper={t('helperTimelockPeriod', { ns: 'daoCreate' })}
               gridContainerProps={inputGridContainerProps}
             >
-              <InputGroup>
-                <BigIntInput
-                  value={values.azorius?.timelockPeriod ?? existingTimelockPeriod}
-                  minWidth="100%"
-                  color={
-                    values.azorius?.timelockPeriod === undefined
-                      ? 'color-neutral-300'
-                      : 'color-white'
-                  }
-                  decimalPlaces={0}
-                  onChange={e =>
-                    handleInputChange(
-                      'azorius.timelockPeriod',
-                      e.bigintValue,
-                      existingTimelockPeriod,
-                      [
-                        values.azorius?.quorumPercentage,
-                        values.azorius?.quorumThreshold,
-                        values.azorius?.votingPeriod,
-                        values.azorius?.executionPeriod,
-                      ],
-                    )
-                  }
-                />
-                <InputRightElement color="color-neutral-700">
-                  {t('minutesShort', { ns: 'common' })}
-                </InputRightElement>
-              </InputGroup>
+              <DurationUnitStepperInput
+                secondsValue={Number(values.azorius?.timelockPeriod ?? existingTimelockPeriod)}
+                color={
+                  values.azorius?.timelockPeriod === undefined ? 'color-neutral-300' : 'color-white'
+                }
+                onSecondsValueChange={valInSeconds => {
+                  handleInputChange(
+                    'azorius.timelockPeriod',
+                    BigInt(valInSeconds),
+                    existingTimelockPeriod,
+                    [
+                      values.azorius?.quorumPercentage,
+                      values.azorius?.quorumThreshold,
+                      values.azorius?.votingPeriod,
+                      values.azorius?.executionPeriod,
+                    ],
+                  );
+                }}
+              />
             </LabelComponent>
           </Flex>
           <Divider />
