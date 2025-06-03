@@ -1,8 +1,11 @@
-import { Flex, Box, Text } from '@chakra-ui/react';
+import { Flex, Text, Icon, Image } from '@chakra-ui/react';
+import { Link } from '@phosphor-icons/react';
 import { useTranslation } from 'react-i18next';
 import { SettingsContentBox } from '../../../../components/SafeSettings/SettingsContentBox';
 import { BarLoader } from '../../../../components/ui/loaders/BarLoader';
+import Divider from '../../../../components/ui/utils/Divider';
 import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
+import { useGetAccountName } from '../../../../hooks/utils/useGetAccountName';
 import { useDAOStore } from '../../../../providers/App/AppProvider';
 
 export function SafeRevenueSharingSettingsPage() {
@@ -16,6 +19,9 @@ export function SafeRevenueSharingSettingsPage() {
     node: { safe },
   } = useDAOStore({ daoKey });
 
+  const displayedAddress = safe?.address;
+  const { displayName } = useGetAccountName(displayedAddress);
+
   return (
     <>
       {!!safe ? (
@@ -26,16 +32,70 @@ export function SafeRevenueSharingSettingsPage() {
           <Flex
             flexDir="column"
             justifyContent="space-between"
+            gap={2}
           >
-            <Text
-              ml={6}
-              mb={0.5}
-              textStyle="text-lg-regular"
+            {/* DAO Safe Wallet */}
+            <Flex
+              border="1px solid"
+              borderColor="color-neutral-900"
+              borderRadius="0.75rem"
+              gap={2}
+              flexDir="column"
+              p={6}
             >
-              {t('daoSettingsRevenueSharing')}
-            </Text>
+              <Text>{t('DaoSafeWallet')}</Text>
+              <Flex
+                direction="row"
+                alignItems="center"
+                gap={2}
+              >
+                <Text
+                  ml="0.75rem"
+                  textStyle="text-sm-underlined"
+                >
+                  {displayName}
+                </Text>
+                <Icon as={Link} />
+              </Flex>
 
-            <Box h={12} />
+              <Flex
+                flexDir="row"
+                alignItems="center"
+                gap={2}
+              >
+                <Image
+                  boxSize={4}
+                  src="/images/warning-yellow.svg"
+                />
+                <Text color="color-warning-500">{t('revShareDaoSafeWarning')}</Text>
+              </Flex>
+            </Flex>
+
+            <Flex
+              border="1px solid"
+              borderColor="color-neutral-900"
+              borderRadius="0.75rem"
+              gap={2}
+              flexDir="column"
+              p={6}
+            >
+              <Text>{t('revSplitWallet')}</Text>
+              <Flex
+                direction="row"
+                alignItems="center"
+                gap={2}
+              >
+                <Text
+                  ml="0.75rem"
+                  textStyle="text-sm-underlined"
+                >
+                  {displayName}
+                </Text>
+                <Icon as={Link} />
+              </Flex>
+
+              <Divider />
+            </Flex>
           </Flex>
         </SettingsContentBox>
       ) : (
