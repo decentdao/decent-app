@@ -28,11 +28,13 @@ export default function DurationUnitStepperInput({
   onSecondsValueChange,
   minSeconds = 0,
   color = 'color-white',
+  hideSteppers = false,
 }: {
   secondsValue: number;
   onSecondsValueChange: (val: number) => void;
   minSeconds?: number;
   color?: string;
+  hideSteppers?: boolean;
 }) {
   const { t } = useTranslation('common');
 
@@ -71,7 +73,7 @@ export default function DurationUnitStepperInput({
       focusInputOnChange
     >
       <HStack gap="0.25rem">
-        <NumberDecrementStepper>{stepperButton('dec')}</NumberDecrementStepper>
+        {!hideSteppers && <NumberDecrementStepper>{stepperButton('dec')}</NumberDecrementStepper>}
         <InputGroup>
           <NumberInputField
             min={0}
@@ -117,7 +119,7 @@ export default function DurationUnitStepperInput({
             </Select>
           </InputRightElement>
         </InputGroup>
-        <NumberIncrementStepper>{stepperButton('inc')}</NumberIncrementStepper>
+        {!hideSteppers && <NumberIncrementStepper>{stepperButton('inc')}</NumberIncrementStepper>}
       </HStack>
     </NumberInput>
   );
