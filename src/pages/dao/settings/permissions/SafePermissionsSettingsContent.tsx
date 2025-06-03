@@ -73,9 +73,9 @@ export function SafePermissionsSettingsContent() {
         bg={{ base: 'transparent', md: NEUTRAL_2_82_TRANSPARENT }}
       >
         <Text
-          ml={6}
           mb={0.5}
           textStyle="text-lg-regular"
+          color="color-white"
         >
           {t('permissionsTitle')}
         </Text>

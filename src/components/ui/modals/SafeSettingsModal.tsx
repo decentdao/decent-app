@@ -1051,6 +1051,7 @@ export function SafeSettingsModal({
         <Box
           flexDirection="column"
           height="85vh"
+          textColor="color-neutral-100"
         >
           <Flex
             flex="1"

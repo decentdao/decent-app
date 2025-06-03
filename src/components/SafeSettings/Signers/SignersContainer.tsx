@@ -297,8 +297,8 @@ export function SignersContainer() {
       )}
 
       <Text
-        ml={6}
         textStyle="text-lg-regular"
+        color="color-white"
         mb={0.5}
       >
         {t('owners', { ns: 'common' })}
