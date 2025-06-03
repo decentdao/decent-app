@@ -26,7 +26,7 @@
   "labelLinearErc721": "ERC-721",
   "labelLinearErc721WithWhitelisting": "ERC-721 + Whitelisting",
   "addPermission": "Add Permission",
-  "emptyPermissions": "You haven't added any Permissions yet. Create one above.",
+  "emptyPermissions": "There are currently no organization wide permissions set. Permission to create proposals may be granted via roles.",
   "emptyPermissionsNotProposer": "This Safe doesn't have any Permissions yet.",
   "permissionCreateProposalsTitle": "Create Proposals",
   "permissionsErc20CreateProposalsDescription": "Hold at least {{proposerThreshold}} {{symbol}}",
