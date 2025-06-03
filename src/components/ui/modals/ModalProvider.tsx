@@ -435,7 +435,7 @@ const getModalData = (args: {
           closeAllModals={closeAll}
         />
       );
-      modalSize = 'max';
+      modalSize = '6xl';
       modalContentStyle = {
         backgroundColor: NEUTRAL_2_50_TRANSPARENT,
         padding: '0',
