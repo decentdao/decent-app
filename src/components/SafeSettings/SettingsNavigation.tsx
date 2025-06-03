@@ -7,6 +7,7 @@ import {
   GearFine,
   Stack,
   RocketLaunch,
+  Percent,
 } from '@phosphor-icons/react';
 import { useFormikContext } from 'formik';
 import { PropsWithChildren, ReactNode, useState } from 'react';
@@ -19,6 +20,7 @@ import { SafeGeneralSettingsPage } from '../../pages/dao/settings/general/SafeGe
 import { SafeGovernanceSettingsPage } from '../../pages/dao/settings/governance/SafeGovernanceSettingsPage';
 import { SafeModulesSettingsPage } from '../../pages/dao/settings/modules-and-guard/SafeModulesSettingsPage';
 import { SafePermissionsSettingsContent } from '../../pages/dao/settings/permissions/SafePermissionsSettingsContent';
+import { SafeRevenueSharingSettingsPage } from '../../pages/dao/settings/revenue-sharing/SafeRevenueSharingSettingsContent';
 import { SafeTokenSettingsPage } from '../../pages/dao/settings/token/SafeTokenSettingsPage';
 import { useDAOStore } from '../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
@@ -109,6 +111,7 @@ const settingsNavigationItems = [
   'modulesAndGuard',
   'permissions',
   'token',
+  'revenueSharing',
 ] as const;
 
 function SettingsNavigationItem({
@@ -199,6 +202,7 @@ export function SettingsNavigation({
 
   const isSettingsV1Enabled = useFeatureFlag('flag_settings_v1');
   const isTokenDeploymentEnabled = useFeatureFlag('flag_token_deployment');
+  const isRevShareEnabled = useFeatureFlag('flag_revenue_sharing');
   const isMobile = useBreakpointValue({ base: true, md: false });
 
   const [currentItem, setCurrentItem] =
@@ -300,6 +304,19 @@ export function SettingsNavigation({
                 setCurrentItem('token');
               }}
               hasEdits={false}
+            />
+          )}
+          {isRevShareEnabled && (
+            <SettingsNavigationItem
+              title={t('daoSettingsRevenueSharing')}
+              leftIcon={<Percent fontSize="1.5rem" />}
+              item="revenueSharing"
+              currentItem={currentItem}
+              showDivider={false}
+              onClick={() => {
+                onSettingsNavigationClick(<SafeRevenueSharingSettingsPage />);
+                setCurrentItem('revenueSharing');
+              }}
             />
           )}
         </>

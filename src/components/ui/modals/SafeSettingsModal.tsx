@@ -89,9 +89,14 @@ type GeneralEditFormikErrors = {
   snapshot?: string;
 };
 
+type RevenueSharingEditFormikErrors = {
+  revenueSharing?: string; // @TODO placeholder
+};
+
 export type SafeSettingsFormikErrors = {
   multisig?: MultisigEditGovernanceFormikErrors;
   general?: GeneralEditFormikErrors;
+  revenueSharing?: RevenueSharingEditFormikErrors;
 };
 
 export function SafeSettingsModal({
@@ -157,6 +162,12 @@ export function SafeSettingsModal({
         key =>
           (errors.multisig as MultisigEditGovernanceFormikErrors)[
             key as keyof MultisigEditGovernanceFormikErrors
+          ],
+      ) ||
+      Object.keys(errors.revenueSharing ?? {}).some(
+        key =>
+          (errors.revenueSharing as RevenueSharingEditFormikErrors)[
+            key as keyof RevenueSharingEditFormikErrors
           ],
       );
 
