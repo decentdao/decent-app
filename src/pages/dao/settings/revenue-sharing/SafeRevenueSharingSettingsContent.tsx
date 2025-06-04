@@ -28,7 +28,6 @@ export function SafeRevenueSharingSettingsPage() {
   return (
     <>
       {!!safe ? (
-        // Main Settings Container
         <SettingsContentBox
           px={12}
           py={6}
@@ -174,6 +173,36 @@ export function SafeRevenueSharingSettingsPage() {
                   color="transparent"
                 />
               </Flex>
+            </Flex>
+
+            {/* Section 3: Add Revenue Share Card */}
+            <Flex
+              border="1px solid"
+              borderColor="color-neutral-900"
+              borderRadius="0.75rem"
+              gap={2}
+              flexDir="row"
+              justifyContent="space-between"
+              p={5}
+            >
+              <Text>{t('addRevenueShare')}</Text>
+
+              <Button
+                variant="ghost"
+                h="auto"
+                minW="auto"
+                color="color-lilac-100"
+                p={1}
+                _hover={{
+                  bg: 'color-neutral-900',
+                  opacity: 0.8,
+                }}
+              >
+                <Icon
+                  boxSize="1.5rem"
+                  as={Plus}
+                />
+              </Button>
             </Flex>
           </Flex>
         </SettingsContentBox>
