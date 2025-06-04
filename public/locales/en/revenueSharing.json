@@ -1,3 +1,9 @@
 {
-  "revShareDaoSafeWarning": "Sending funds to this address will not be split"
+  "revShareDaoSafeWarning": "Sending funds to this address will not be split",
+  "daoSafeWallet": "DAO Safe Wallet",
+  "revSplitWallet": "Revenue Split Wallet",
+  "counterparties": "Counterparties",
+  "revShareAddSplitWallet": "Add Wallets",
+  "currentDaoTreasureShareLabel": "Current DAO Treasury Share",
+  "revSplitTotalLabel": "Total"
 }

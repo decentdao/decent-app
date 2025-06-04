@@ -9,7 +9,7 @@ import { useGetAccountName } from '../../../../hooks/utils/useGetAccountName';
 import { useDAOStore } from '../../../../providers/App/AppProvider';
 
 export function SafeRevenueSharingSettingsPage() {
-  const { t } = useTranslation('settings');
+  const { t } = useTranslation('revenueSharing');
   // const { setFieldValue, values: formValues } = useFormikContext<SafeSettingsEdits>();
   // const { errors } = useFormikContext<SafeSettingsFormikErrors>();
   // const generalEditFormikErrors = (errors as SafeSettingsFormikErrors).general;
@@ -28,6 +28,7 @@ export function SafeRevenueSharingSettingsPage() {
   return (
     <>
       {!!safe ? (
+        // Main Settings Container
         <SettingsContentBox
           px={12}
           py={6}
@@ -37,7 +38,7 @@ export function SafeRevenueSharingSettingsPage() {
             justifyContent="space-between"
             gap={2}
           >
-            {/* DAO Safe Wallet */}
+            {/* Section 1: DAO Safe Wallet Card */}
             <Flex
               border="1px solid"
               borderColor="color-neutral-900"
@@ -46,7 +47,10 @@ export function SafeRevenueSharingSettingsPage() {
               flexDir="column"
               p={6}
             >
+              {/* DAO Safe Wallet Header */}
               <Text>{t('daoSafeWallet')}</Text>
+
+              {/* DAO Safe Wallet Address Display */}
               <Flex
                 direction="row"
                 alignItems="center"
@@ -61,6 +65,7 @@ export function SafeRevenueSharingSettingsPage() {
                 <Icon as={Link} />
               </Flex>
 
+              {/* DAO Safe Wallet Warning Message */}
               <Flex
                 flexDir="row"
                 alignItems="center"
@@ -74,6 +79,7 @@ export function SafeRevenueSharingSettingsPage() {
               </Flex>
             </Flex>
 
+            {/* Section 2: Revenue Split Wallet Card */}
             <Flex
               border="1px solid"
               borderColor="color-neutral-900"
@@ -82,7 +88,10 @@ export function SafeRevenueSharingSettingsPage() {
               flexDir="column"
               p={6}
             >
+              {/* Revenue Split Wallet Header */}
               <Text>{t('revSplitWallet')}</Text>
+
+              {/* Revenue Split Wallet Address Display */}
               <Flex
                 direction="row"
                 alignItems="center"
@@ -99,6 +108,7 @@ export function SafeRevenueSharingSettingsPage() {
 
               <Divider my={4} />
 
+              {/* Counterparties Section Header with Add Button */}
               <Flex
                 flexDir="row"
                 alignItems="center"
@@ -115,6 +125,7 @@ export function SafeRevenueSharingSettingsPage() {
                 </Button>
               </Flex>
 
+              {/* Current DAO Treasury Share Display */}
               <Flex
                 flexDir="row"
                 alignItems="center"
@@ -144,6 +155,7 @@ export function SafeRevenueSharingSettingsPage() {
                 </Flex>
               </Flex>
 
+              {/* Revenue Split Total Display */}
               <Flex
                 flexDir="row"
                 justifyContent="space-between"
