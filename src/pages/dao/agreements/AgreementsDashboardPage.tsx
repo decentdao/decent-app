@@ -1,6 +1,5 @@
 import {
   Box,
-  Button,
   Grid,
   GridItem,
   Text,
@@ -259,16 +258,7 @@ export function AgreementsDashboardPage() {
             path: '',
           },
         ]}
-      >
-        {/* Additional actions to right of title */}
-        <Button
-          onClick={() => {
-            // TODO: Open agreement creation modal
-          }}
-        >
-          {t('createAgreement')}
-        </Button>
-      </PageHeader>
+      />
 
       <Box
         p="1.5rem"
