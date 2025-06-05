@@ -55,6 +55,7 @@ function getFilterUniqueProposals(proposals: FractalProposal[]) {
 export type GovernancesSlice = {
   governances: StoreSlice<FractalGovernance & FractalGovernanceContracts>;
   setProposalTemplates: (daoKey: DAOKey, proposalTemplates: ProposalTemplate[]) => void;
+  setPendingProposalLoading: (daoKey: DAOKey, txHash: string[]) => void;
   setMultisigGovernance: (daoKey: DAOKey) => void;
   setAzoriusGovernance: (daoKey: DAOKey, payload: SetAzoriusGovernancePayload) => void;
   setTokenClaimContractAddress: (daoKey: DAOKey, tokenClaimContractAddress: Address) => void;
@@ -97,6 +98,19 @@ const EMPTY_GOVERNANCE: FractalGovernance & FractalGovernanceContracts = {
   strategies: [],
   gaslessVotingEnabled: false,
   paymasterAddress: null,
+};
+
+const filterPendingTxHashes = (
+  pendingProposalTxHashes: string[] | null,
+  proposals: FractalProposal[],
+): string[] | null => {
+  if (pendingProposalTxHashes === null || proposals.length === 0) {
+    return null;
+  }
+
+  return pendingProposalTxHashes.filter(
+    pTxHash => !proposals.find(p => p.transactionHash === pTxHash),
+  );
 };
 
 export const createGovernancesSlice: StateCreator<
@@ -187,6 +201,10 @@ export const createGovernancesSlice: StateCreator<
             ...proposals,
           ]);
           state.governances[daoKey].proposals = uniqueProposals;
+          state.governances[daoKey].pendingProposals = filterPendingTxHashes(
+            state.governances[daoKey].pendingProposals,
+            proposals,
+          );
         }
       },
       false,
@@ -206,12 +224,17 @@ export const createGovernancesSlice: StateCreator<
           state.governances[daoKey].proposals[existingProposalIndex] = proposal;
         } else {
           state.governances[daoKey].proposals.push(proposal);
+          state.governances[daoKey].pendingProposals = filterPendingTxHashes(
+            state.governances[daoKey].pendingProposals,
+            [proposal],
+          );
         }
       },
       false,
       'setProposal',
     );
   },
+
   setProposalVote: (daoKey, proposalId, votesSummary, proposalVote) => {
     set(
       state => {
@@ -309,10 +332,33 @@ export const createGovernancesSlice: StateCreator<
             ...snapshotProposals,
           ]);
           state.governances[daoKey].proposals = uniqueProposals;
+          state.governances[daoKey].pendingProposals = filterPendingTxHashes(
+            state.governances[daoKey].pendingProposals,
+            snapshotProposals,
+          );
         }
       },
       false,
       'setSnapshotProposals',
+    );
+  },
+  setPendingProposalLoading: (daoKey, txHashes) => {
+    set(
+      state => {
+        if (!state.governances[daoKey]) {
+          state.governances[daoKey] = {
+            ...EMPTY_GOVERNANCE,
+            pendingProposals: txHashes,
+          };
+        } else {
+          state.governances[daoKey].pendingProposals = [
+            ...txHashes,
+            ...(state.governances[daoKey].pendingProposals || []),
+          ];
+        }
+      },
+      false,
+      'setPendingProposalLoading',
     );
   },
   setGaslessVotingData: (daoKey, gasslesVotingData) => {
