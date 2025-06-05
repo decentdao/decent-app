@@ -1,15 +1,7 @@
-import { Context, createContext, ReactNode, useContext, useMemo, useReducer } from 'react';
-import { DaoInfoStore, useDaoInfoStore } from '../../store/daoInfo/useDaoInfoStore';
+import { createContext } from 'react';
+import { DaoInfoStore } from '../../store/daoInfo/useDaoInfoStore';
 import { useGlobalStore } from '../../store/store';
-import {
-  DAOKey,
-  DAOSubgraph,
-  DecentModule,
-  FractalStore,
-  SafeWithNextNonce,
-  StoreAction,
-} from '../../types';
-import { combinedReducer, initialState } from './combinedReducer';
+import { DAOKey, DAOSubgraph, DecentModule, FractalStore, SafeWithNextNonce } from '../../types';
 
 export const FractalContext = createContext<FractalStore | null>(null);
 
@@ -18,7 +10,6 @@ type FractalStoreWithNode = FractalStore & {
 };
 
 export const useDAOStore = ({ daoKey }: { daoKey: DAOKey | undefined }): FractalStoreWithNode => {
-  const context = useContext(FractalContext as Context<FractalStore>);
   const { getDaoNode, setDaoNode, getTreasury, getGovernance, getGuard } = useGlobalStore();
   if (!daoKey) {
     throw new Error('DAO key is required to access global store');
@@ -30,7 +21,6 @@ export const useDAOStore = ({ daoKey }: { daoKey: DAOKey | undefined }): Fractal
   const governance = getGovernance(daoKey);
   const guard = getGuard(daoKey);
   return {
-    action: context.action,
     node: {
       // TODO: Will be cleaned up in scope of https://linear.app/decent-labs/issue/ENG-630/cleanup-types-from-old-store-structure
       ...getDaoNode(daoKey),
@@ -79,37 +69,3 @@ export const useDAOStore = ({ daoKey }: { daoKey: DAOKey | undefined }): Fractal
     },
   };
 };
-
-export function AppProvider({ children }: { children: ReactNode }) {
-  // Replace individual useReducer calls with a single combined reducer
-  const [state, dispatch] = useReducer(combinedReducer, initialState);
-  // memoize fractal store
-  const nodeStore = useDaoInfoStore();
-
-  const fractalStore = useMemo(() => {
-    return {
-      node: nodeStore,
-      guard: state.guard,
-      governance: state.governance,
-      treasury: state.treasury,
-      governanceContracts: state.governanceContracts,
-      guardContracts: state.guardContracts,
-      action: {
-        dispatch,
-        resetSafeState: async () => {
-          nodeStore.resetDaoInfoStore();
-          await Promise.resolve(dispatch({ type: StoreAction.RESET }));
-        },
-      },
-    };
-  }, [
-    nodeStore,
-    state.guard,
-    state.governance,
-    state.treasury,
-    state.governanceContracts,
-    state.guardContracts,
-  ]);
-
-  return <FractalContext.Provider value={fractalStore}>{children}</FractalContext.Provider>;
-}
