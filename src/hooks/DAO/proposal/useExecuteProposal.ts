@@ -7,17 +7,12 @@ import { AzoriusProposal, FractalProposal, MetaTransaction } from '../../../type
 import { useNetworkWalletClient } from '../../useNetworkWalletClient';
 import { useTransaction } from '../../utils/useTransaction';
 import { useCurrentDAOKey } from '../useCurrentDAOKey';
-import useUpdateProposalState from './useUpdateProposalState';
 
 export default function useExecuteProposal() {
   const { t } = useTranslation('transaction');
   const { daoKey } = useCurrentDAOKey();
-  const { governanceContracts, action } = useDAOStore({ daoKey });
+  const { governanceContracts } = useDAOStore({ daoKey });
   const { moduleAzoriusAddress } = governanceContracts;
-  const updateProposalState = useUpdateProposalState({
-    governanceContracts,
-    governanceDispatch: action.dispatch,
-  });
   const { data: walletClient } = useNetworkWalletClient();
   const [contractCall, pending] = useTransaction();
 
@@ -63,13 +58,10 @@ export default function useExecuteProposal() {
         pendingMessage: t('pendingExecute'),
         failedMessage: t('failedExecute'),
         successMessage: t('successExecute'),
-        successCallback: async () => {
-          // @todo may need to re-add a loader here
-          updateProposalState(Number(proposal.proposalId));
-        },
+        successCallback: async () => {},
       });
     },
-    [moduleAzoriusAddress, contractCall, t, updateProposalState, walletClient],
+    [moduleAzoriusAddress, contractCall, t, walletClient],
   );
 
   return {

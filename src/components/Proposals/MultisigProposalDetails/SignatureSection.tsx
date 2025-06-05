@@ -8,7 +8,6 @@ import { DETAILS_BOX_SHADOW } from '../../../constants/common';
 import { buildSafeTransaction, EIP712_SAFE_TX_TYPE } from '../../../helpers';
 import { logError } from '../../../helpers/errorLogging';
 import { findMostConfirmedMultisigRejectionProposal } from '../../../helpers/multisigProposal';
-import { useSafeMultisigProposals } from '../../../hooks/DAO/loaders/governance/useSafeMultisigProposals';
 import useSubmitProposal from '../../../hooks/DAO/proposal/useSubmitProposal';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import { useNetworkWalletClient } from '../../../hooks/useNetworkWalletClient';
@@ -29,7 +28,6 @@ const useSignTransaction = () => {
     node: { safe },
   } = useDAOStore({ daoKey });
   const { chain } = useNetworkConfigStore();
-  const { loadSafeMultisigProposals } = useSafeMultisigProposals();
   const { data: walletClient } = useNetworkWalletClient();
   const { t } = useTranslation(['proposal']);
 
@@ -81,7 +79,6 @@ const useSignTransaction = () => {
         successMessage: t('successSign'),
         successCallback: async (signature: string) => {
           await safeAPI.confirmTransaction(proposalId, signature);
-          await loadSafeMultisigProposals();
         },
       });
     } catch (e) {
