@@ -131,18 +131,16 @@ export function RoleFormPaymentStream({ formIndex }: { formIndex: number }) {
     ? existingPayment.canUserCancel() && !payment?.isCancelling
     : false;
 
-  const cancelModal = useDecentModal(ModalType.NONE);
   const handleConfirmCancelPayment = useCallback(() => {
     if (!payment) {
       return;
     }
 
     setFieldValue(`roleEditing.payments.${formIndex}`, { ...payment, isCancelling: true });
-    cancelModal();
     setFieldValue('roleEditing.roleEditingPaymentIndex', undefined);
-  }, [setFieldValue, formIndex, cancelModal, payment]);
+  }, [setFieldValue, formIndex, payment]);
 
-  const confirmCancelPayment = useDecentModal(ModalType.CONFIRM_CANCEL_PAYMENT, {
+  const { open: confirmCancelPayment } = useDecentModal(ModalType.CONFIRM_CANCEL_PAYMENT, {
     onSubmit: handleConfirmCancelPayment,
   });
 

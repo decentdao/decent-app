@@ -55,6 +55,7 @@ export function SafeGovernanceSettingsPage() {
             <Text
               textStyle="text-xl-regular"
               mb={4}
+              color="color-white"
             >
               {t('daoSettingsGovernanceParameters')}
             </Text>

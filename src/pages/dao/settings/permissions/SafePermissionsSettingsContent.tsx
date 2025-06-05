@@ -31,7 +31,7 @@ export function SafePermissionsSettingsContent() {
 
   const formikContext = useFormikContext<SafeSettingsEdits>();
 
-  const openAddCreateProposalPermissionModal = useDecentModal(
+  const { open: openAddCreateProposalPermissionModal } = useDecentModal(
     ModalType.ADD_CREATE_PROPOSAL_PERMISSION,
     {
       formikContext,
@@ -39,11 +39,11 @@ export function SafePermissionsSettingsContent() {
     },
   );
 
-  const openAddPermissionModal = useDecentModal(ModalType.ADD_PERMISSION, {
+  const { open: openAddPermissionModal } = useDecentModal(ModalType.ADD_PERMISSION, {
     openAddCreateProposalPermissionModal,
   });
 
-  const openCreateProposalPermissionModal = useDecentModal(
+  const { open: openCreateProposalPermissionModal } = useDecentModal(
     ModalType.ADD_CREATE_PROPOSAL_PERMISSION,
     {
       formikContext,
@@ -56,7 +56,7 @@ export function SafePermissionsSettingsContent() {
   }
 
   const editedProposerThreshold =
-    formikContext.values.permissions?.proposerThreshold?.bigintValue?.toString();
+    formikContext.values.permissions?.proposerThreshold?.value?.toString();
 
   const proposerThresholdValue =
     editedProposerThreshold || azoriusGovernance.votingStrategy?.proposerThreshold?.formatted;
@@ -73,9 +73,9 @@ export function SafePermissionsSettingsContent() {
         bg={{ base: 'transparent', md: NEUTRAL_2_82_TRANSPARENT }}
       >
         <Text
-          ml={6}
           mb={0.5}
           textStyle="text-lg-regular"
+          color="color-white"
         >
           {t('permissionsTitle')}
         </Text>

@@ -40,10 +40,10 @@ export default function ProposalTemplateCard({
   const { canUserCreateProposal } = useCanUserCreateProposal();
   const { title, description } = proposalTemplate;
 
-  const openProposalForm = useDecentModal(ModalType.CREATE_PROPOSAL_FROM_TEMPLATE, {
+  const { open: openProposalForm } = useDecentModal(ModalType.CREATE_PROPOSAL_FROM_TEMPLATE, {
     proposalTemplate,
   });
-  const openForkTemplateForm = useDecentModal(ModalType.COPY_PROPOSAL_TEMPLATE, {
+  const { open: openForkTemplateForm } = useDecentModal(ModalType.COPY_PROPOSAL_TEMPLATE, {
     proposalTemplate,
     templateIndex,
   });

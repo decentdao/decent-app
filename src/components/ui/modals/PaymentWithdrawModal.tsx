@@ -35,7 +35,7 @@ export function PaymentWithdrawModal({
     recipient: Address;
     withdrawableAmount: bigint;
   };
-  onSuccess: () => Promise<void>;
+  onSuccess: () => void;
   onClose: () => void;
 }) {
   const { data: walletClient } = useNetworkWalletClient();
@@ -89,8 +89,8 @@ export function PaymentWithdrawModal({
         failedMessage: t('withdrawRevertedMessage'),
         successMessage: t('withdrawSuccessMessage'),
         failedCallback: () => {},
-        successCallback: async () => {
-          await onSuccess();
+        successCallback: () => {
+          onSuccess();
           onClose();
         },
         completedCallback: () => {},

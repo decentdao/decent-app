@@ -182,7 +182,7 @@ function useProposalExecutionButtonAction(
     }
   };
 
-  const openExecutionConfirmModal = useDecentModal(ModalType.CONFIRM_EXECUTION, {
+  const { open: openExecutionConfirmModal } = useDecentModal(ModalType.CONFIRM_EXECUTION, {
     nonce: proposalNonce,
     submitExecution: () =>
       executeMultisigProposal({

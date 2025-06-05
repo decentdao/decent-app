@@ -18,7 +18,12 @@ export function ERC20TokenContainer() {
 
   return (
     <Box width="100%">
-      <Text textStyle="text-lg-regular">{t('governanceTokenInfoTitle')}</Text>
+      <Text
+        color="color-white"
+        textStyle="text-lg-regular"
+      >
+        {t('governanceTokenInfoTitle')}
+      </Text>
       {votesToken ? (
         <Flex
           justifyContent="space-between"

@@ -166,17 +166,10 @@ export function SignersContainer() {
     }
   }, [setFieldValue, values.multisig]);
 
-  const [addSignerModalType, addSignerModalProps] = useMemo(() => {
-    if (safe?.threshold === undefined) {
-      return [ModalType.NONE] as const;
-    }
-
-    return [
-      ModalType.ADD_SIGNER,
-      { signers: signers.map(s => s.address), currentThreshold: safe.threshold },
-    ] as const;
-  }, [signers, safe?.threshold]);
-  const showAddSignerModal = useDecentModal(addSignerModalType, addSignerModalProps);
+  const { open: showAddSignerModal } = useDecentModal(ModalType.ADD_SIGNER, {
+    signers: signers.map(s => s.address),
+    currentThreshold: safe?.threshold,
+  });
 
   const { address: account } = useAccount();
   const enableRemove = userIsSigner && signers.length > 1;
@@ -206,32 +199,7 @@ export function SignersContainer() {
 
   const isSettingsV1FeatureEnabled = useFeatureFlag('flag_settings_v1');
 
-  const [removingSigner, setRemovingSigner] = useState<SignerItem>();
-
-  const [removeSignerModalType, removeSignerModalProps] = useMemo(() => {
-    if (!safe?.threshold || !removingSigner?.address) {
-      return [ModalType.NONE] as const;
-    }
-
-    return [
-      ModalType.REMOVE_SIGNER,
-      {
-        selectedSigner: removingSigner.address,
-        signers: signers.map(s => s.address),
-        currentThreshold: safe.threshold,
-      },
-    ] as const;
-  }, [removingSigner, signers, safe?.threshold]);
-  const showRemoveSignerModal = useDecentModal(removeSignerModalType, removeSignerModalProps);
-
-  useEffect(() => {
-    if (removingSigner) {
-      showRemoveSignerModal();
-      setRemovingSigner(undefined);
-    }
-  }, [removingSigner, showRemoveSignerModal]);
-
-  const handleModifyGovernance = useDecentModal(ModalType.CONFIRM_MODIFY_GOVERNANCE);
+  const { open: handleModifyGovernance } = useDecentModal(ModalType.CONFIRM_MODIFY_GOVERNANCE);
 
   // Calculate if we can remove more signers
   const canRemoveMoreSigners = useMemo(() => {
@@ -297,8 +265,8 @@ export function SignersContainer() {
       )}
 
       <Text
-        ml={6}
         textStyle="text-lg-regular"
+        color="color-white"
         mb={0.5}
       >
         {t('owners', { ns: 'common' })}

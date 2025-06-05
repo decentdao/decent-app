@@ -14,7 +14,7 @@ export function useUnsavedChangesBlocker({
 }: UseUnsavedBlockerOptions): void {
   const blocker = useBlocker(when);
 
-  const openModal = useDecentModal(ModalType.WARN_UNSAVED_CHANGES, {
+  const { open: openModal } = useDecentModal(ModalType.WARN_UNSAVED_CHANGES, {
     discardChanges: () => {
       if (blocker.state === 'blocked' && blocker.proceed) {
         blocker.proceed();
