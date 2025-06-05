@@ -378,44 +378,38 @@ export function RolePaymentDetails({
     return roleTerms.find(term => term.termEndDate.getTime() === payment.endDate.getTime());
   }, [payment.endDate, roleTerms]);
 
-  const [modalType, props] = useMemo(() => {
-    if (!payment.streamId || !payment.contractAddress || !roleHatWearerAddress || !roleHatId) {
-      return [ModalType.NONE] as const;
+  const recipient = useMemo(() => {
+    if (!assignedTerm) {
+      return roleHatWearerAddress;
     }
-    let recipient = roleHatWearerAddress;
-    if (assignedTerm) {
-      if (!assignedTerm.nominee) {
-        throw new Error('Assigned term nominee is missing');
-      }
-      recipient = getAddress(assignedTerm.nominee);
+    if (!assignedTerm.nominee) {
+      throw new Error('Assigned term nominee is missing');
     }
-    return [
-      ModalType.WITHDRAW_PAYMENT,
-      {
-        paymentAssetLogo: payment.asset.logo,
-        paymentAssetSymbol: payment.asset.symbol,
-        paymentAssetDecimals: payment.asset.decimals,
-        paymentStreamId: payment.streamId,
-        paymentContractAddress: payment.contractAddress,
-        onSuccess: () => refreshWithdrawableAmount(roleHatId, payment.streamId!, publicClient),
-        withdrawInformation: {
-          withdrawableAmount: payment.withdrawableAmount,
-          recipient,
-          roleHatSmartAccountAddress,
-        },
-      },
-    ] as const;
-  }, [
-    payment,
-    roleHatSmartAccountAddress,
-    roleHatWearerAddress,
-    refreshWithdrawableAmount,
-    publicClient,
-    roleHatId,
-    assignedTerm,
-  ]);
+    return getAddress(assignedTerm.nominee);
+  }, [assignedTerm, roleHatWearerAddress]);
 
-  const withdraw = useDecentModal(modalType, props);
+  const { open: withdraw } = useDecentModal(ModalType.WITHDRAW_PAYMENT, {
+    paymentAssetLogo: payment.asset.logo,
+    paymentAssetSymbol: payment.asset.symbol,
+    paymentAssetDecimals: payment.asset.decimals,
+    paymentStreamId: payment.streamId,
+    paymentContractAddress: payment.contractAddress,
+    onSuccess: () => {
+      if (!roleHatId) {
+        throw new Error('Role hat ID is missing');
+      }
+      if (!payment.streamId) {
+        throw new Error('Payment stream ID is missing');
+      }
+
+      refreshWithdrawableAmount(roleHatId, payment.streamId, publicClient);
+    },
+    withdrawInformation: {
+      withdrawableAmount: payment.withdrawableAmount,
+      recipient,
+      roleHatSmartAccountAddress,
+    },
+  });
   const { addAction, resetActions } = useProposalActionsStore();
   const { t } = useTranslation('roles');
   const { getHat } = useRolesStore();

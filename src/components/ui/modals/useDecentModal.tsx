@@ -8,19 +8,23 @@ import {
 } from './ModalProvider';
 
 /**
- * Returns a Function intended to be used in a click listener to open the provided ModalType.
+ * Returns an object with `open` and `close` functions to control the provided ModalType modal.
  *
  * @param modal the ModalType to open.
  * @param props optional arbitrary key:value properties to pass to the modal
- * @returns a Function that when called opens the provided ModalType modal.
  */
 export const useDecentModal = <T extends ModalType>(modal: T, props?: ModalPropsTypes[T]) => {
-  const { pushModal, openModals } = useContext<IModalContext>(ModalContext);
-  return () => {
-    const modalObject = { type: modal, props: props ?? {} } as ModalTypeWithProps;
+  const { pushModal, openModals, popModal } = useContext<IModalContext>(ModalContext);
+  return {
+    open: () => {
+      const modalObject = { type: modal, props: props ?? {} } as ModalTypeWithProps;
 
-    if (openModals.findIndex(m => m.type === modal) === -1) {
-      pushModal(modalObject);
-    }
+      if (openModals.findIndex(m => m.type === modal) === -1) {
+        pushModal(modalObject);
+      }
+    },
+    close: () => {
+      popModal();
+    },
   };
 };

@@ -77,8 +77,10 @@ export function SafePermissionsCreateProposal() {
     node: { safe },
   } = useDAOStore({ daoKey });
   const azoriusGovernance = governance as AzoriusGovernance;
-  const openSelectAddPermissionModal = useDecentModal(ModalType.ADD_PERMISSION);
-  const openConfirmDeleteStrategyModal = useDecentModal(ModalType.CONFIRM_DELETE_STRATEGY);
+  const { open: openSelectAddPermissionModal } = useDecentModal(ModalType.ADD_PERMISSION);
+  const { open: openConfirmDeleteStrategyModal } = useDecentModal(
+    ModalType.CONFIRM_DELETE_STRATEGY,
+  );
   const { addAction, resetActions } = useProposalActionsStore();
 
   const [proposerThreshold, setProposerThreshold] = useState<BigIntValuePair>({

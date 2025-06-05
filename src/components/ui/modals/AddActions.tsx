@@ -80,7 +80,7 @@ export function AddActions() {
   const { addAction } = useProposalActionsStore();
   const { isOpen, onOpen, onClose } = useDisclosure();
 
-  const openSendAssetsModal = useDecentModal(ModalType.SEND_ASSETS, {
+  const { open: openSendAssetsModal } = useDecentModal(ModalType.SEND_ASSETS, {
     onSubmit: sendAssetsData => {
       const { action } = prepareSendAssetsActionData(sendAssetsData);
 
@@ -89,7 +89,7 @@ export function AddActions() {
     submitButtonText: t('Add Action', { ns: 'modals' }),
   });
 
-  const openTransactionBuilderModal = useDecentModal(ModalType.TRANSACTION_BUILDER, {
+  const { open: openTransactionBuilderModal } = useDecentModal(ModalType.TRANSACTION_BUILDER, {
     onSubmit: transactionBuilderData => {
       const actionType = ProposalActionType.TRANSACTION_BUILDER;
 

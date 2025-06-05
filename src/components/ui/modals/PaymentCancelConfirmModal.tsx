@@ -4,10 +4,10 @@ import { useTranslation } from 'react-i18next';
 
 export default function PaymentCancelConfirmModal({
   onSubmit,
-  onClose,
+  closeModal,
 }: {
   onSubmit: () => void;
-  onClose: () => void;
+  closeModal: () => void;
 }) {
   const { t } = useTranslation(['roles', 'common']);
 
@@ -42,12 +42,15 @@ export default function PaymentCancelConfirmModal({
           _hover={{ color: 'color-error-500', borderColor: 'color-error-500' }}
           variant="secondary"
           leftIcon={<Trash />}
-          onClick={onSubmit}
+          onClick={() => {
+            onSubmit();
+            closeModal();
+          }}
         >
           {t('cancelPayment')}
         </Button>
         <Button
-          onClick={onClose}
+          onClick={closeModal}
           width="100%"
         >
           {t('cancel', { ns: 'common' })}

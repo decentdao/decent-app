@@ -226,9 +226,12 @@ export function SignatureSection({ proposal }: { proposal: MultisigProposal }) {
     });
   };
 
-  const openConfirmRejectProposalModal = useDecentModal(ModalType.CONFIRM_REJECT_PROPOSAL, {
-    submitRejection: handleConfirmSubmitRejectionProposal,
-  });
+  const { open: openConfirmRejectProposalModal } = useDecentModal(
+    ModalType.CONFIRM_REJECT_PROPOSAL,
+    {
+      submitRejection: handleConfirmSubmitRejectionProposal,
+    },
+  );
   const showConfirmRejectProposalModal = !rejectionProposal && conflictingProposals?.length;
 
   const isDoNotShowStates =

@@ -46,7 +46,7 @@ export function ManageDAOMenu() {
 
   const { addressPrefix } = useNetworkConfigStore();
 
-  const openSettingsModal = useDecentModal(ModalType.SAFE_SETTINGS);
+  const { open: openSettingsModal } = useDecentModal(ModalType.SAFE_SETTINGS);
 
   const settingsV1FeatureEnabled = useFeatureFlag('flag_settings_v1');
   const isMobile = useBreakpointValue({ base: true, md: false });
@@ -61,7 +61,7 @@ export function ManageDAOMenu() {
     }
   }, [safeAddress, isMobile, settingsV1FeatureEnabled, navigate, addressPrefix, openSettingsModal]);
 
-  const handleModifyGovernance = useDecentModal(ModalType.CONFIRM_MODIFY_GOVERNANCE);
+  const { open: handleModifyGovernance } = useDecentModal(ModalType.CONFIRM_MODIFY_GOVERNANCE);
 
   const { data: walletClient } = useNetworkWalletClient();
 
