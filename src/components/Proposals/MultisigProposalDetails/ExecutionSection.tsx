@@ -8,7 +8,6 @@ import GnosisSafeL2Abi from '../../../assets/abi/GnosisSafeL2';
 import { buildSafeTransaction, buildSignatureBytes } from '../../../helpers';
 import { logError } from '../../../helpers/errorLogging';
 import { findMostConfirmedMultisigRejectionProposal } from '../../../helpers/multisigProposal';
-import { useSafeMultisigProposals } from '../../../hooks/DAO/loaders/governance/useSafeMultisigProposals';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import { useNetworkWalletClient } from '../../../hooks/useNetworkWalletClient';
 import { useCanUserCreateProposal } from '../../../hooks/utils/useCanUserSubmitProposal';
@@ -36,7 +35,6 @@ function useProposalExecutionButtonAction(
   const [isSubmitDisabled, setIsSubmitDisabled] = useState(false);
   const [contractCall, contractCallPending] = useTransaction();
   const { data: walletClient } = useNetworkWalletClient();
-  const { loadSafeMultisigProposals } = useSafeMultisigProposals();
   const { t } = useTranslation(['transaction']);
 
   const conflictingProposals =
@@ -104,7 +102,6 @@ function useProposalExecutionButtonAction(
         successMessage: t('successExecute'),
         successCallback: async () => {
           setIsSubmitDisabled(false);
-          await loadSafeMultisigProposals();
         },
       });
     } catch (e) {
@@ -178,9 +175,6 @@ function useProposalExecutionButtonAction(
         failedMessage: options.messages.failed,
         pendingMessage: options.messages.pending,
         successMessage: options.messages.success,
-        successCallback: async () => {
-          await loadSafeMultisigProposals();
-        },
       });
     } catch (e) {
       setIsSubmitDisabled(false);
