@@ -31,7 +31,7 @@ export function SafeTokenSettingsPage() {
         <Flex
           flexDirection="column"
           gap="1.5rem"
-          padding={'1.5rem 3rem'}
+          paddingX="1.5rem"
           alignItems="flex-start"
           alignSelf="stretch"
         >
