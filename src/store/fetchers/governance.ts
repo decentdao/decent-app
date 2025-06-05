@@ -9,11 +9,13 @@ import {
   GetContractEventsReturnType,
   zeroAddress,
 } from 'viem';
+import { useAccount } from 'wagmi';
 import LockReleaseAbi from '../../assets/abi/LockRelease';
 import { SENTINEL_ADDRESS } from '../../constants/common';
 import { createSnapshotSubgraphClient } from '../../graphql';
 import { ProposalsQuery, ProposalsResponse } from '../../graphql/SnapshotQueries';
 import { logError } from '../../helpers/errorLogging';
+import { useCurrentDAOKey } from '../../hooks/DAO/useCurrentDAOKey';
 import useNetworkPublicClient from '../../hooks/useNetworkPublicClient';
 import { CacheExpiry, CacheKeys } from '../../hooks/utils/cache/cacheDefaults';
 import { getValue, setValue } from '../../hooks/utils/cache/useLocalStorage';
@@ -24,6 +26,7 @@ import {
 import { useSafeDecoder } from '../../hooks/utils/useSafeDecoder';
 import { useSafeTransactions } from '../../hooks/utils/useSafeTransactions';
 import { useTimeHelpers } from '../../hooks/utils/useTimeHelpers';
+import { useUpdateTimer } from '../../hooks/utils/useUpdateTimer';
 import useIPFSClient from '../../providers/App/hooks/useIPFSClient';
 import { useSafeAPI } from '../../providers/App/hooks/useSafeAPI';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
@@ -65,6 +68,7 @@ export function useGovernanceFetcher() {
   const publicClient = useNetworkPublicClient();
   const safeApi = useSafeAPI();
   const { getAddressContractType } = useAddressContractType();
+  const user = useAccount();
   const snaphshotGraphQlClient = useMemo(() => createSnapshotSubgraphClient(), []);
 
   const {
@@ -74,6 +78,9 @@ export function useGovernanceFetcher() {
       paymaster: { decentPaymasterV1MasterCopy },
     },
   } = useNetworkConfigStore();
+  const { safeAddress: currentUrlSafeAddress } = useCurrentDAOKey();
+
+  const { setMethodOnInterval, clearIntervals } = useUpdateTimer(currentUrlSafeAddress);
 
   const fetchDAOGovernance = useCallback(
     async ({
@@ -96,13 +103,14 @@ export function useGovernanceFetcher() {
       onLoadingFirstProposalStateChanged: (loading: boolean) => void;
     }) => {
       const azoriusModule = getAzoriusModuleFromModules(daoModules);
-
-      console.log('Fetch DAO Governance');
+      clearIntervals();
       if (!azoriusModule) {
         onMultisigGovernanceLoaded();
-        const multisigTransactions = await safeApi.getMultisigTransactions(daoAddress);
-        const activities = await parseTransactions(multisigTransactions);
-        onProposalsLoaded(activities);
+        setMethodOnInterval(async () => {
+          const multisigTransactions = await safeApi.getMultisigTransactions(daoAddress);
+          const activities = await parseTransactions(multisigTransactions);
+          onProposalsLoaded(activities);
+        });
       } else {
         const azoriusContract = getContract({
           abi: abis.Azorius,
@@ -265,38 +273,61 @@ export function useGovernanceFetcher() {
               client: publicClient,
             });
 
-            // TODO: Transform to multiCall
-            const [name, symbol, decimals, totalSupply] = await Promise.all([
-              tokenContract.read.name(),
-              tokenContract.read.symbol(),
-              tokenContract.read.decimals(),
-              tokenContract.read.totalSupply(),
-            ]);
+            // Prepare multicall requests
+            const multicallCalls = [
+              {
+                ...tokenContract,
+                functionName: 'name',
+              },
+              {
+                ...tokenContract,
+                functionName: 'symbol',
+              },
+              {
+                ...tokenContract,
+                functionName: 'decimals',
+              },
+
+              {
+                ...tokenContract,
+                functionName: 'totalSupply',
+              },
+            ];
+
+            // Execute multicall
+            const [name, symbol, decimals, totalSupply] = await publicClient.multicall({
+              contracts: multicallCalls,
+              allowFailure: false,
+            });
+            let balance: bigint = 0n;
+            if (user.address) {
+              balance = await tokenContract.read.balanceOf([user.address]);
+            }
+
             const tokenData = {
-              name,
-              symbol,
-              decimals,
+              name: name ? name.toString() : '',
+              symbol: symbol ? symbol.toString() : '',
+              decimals: decimals ? Number(decimals) : 18,
               address: tokenContract.address,
-              totalSupply,
-              balance: 0n,
+              totalSupply: totalSupply ? BigInt(totalSupply) : 0n,
+              balance,
               delegatee: zeroAddress as Address,
             };
 
             let lockedVotesTokenData: VotesTokenData | undefined;
             if (lockReleaseAddress) {
               lockedVotesTokenData = {
-                balance: 0n,
+                balance,
                 delegatee: zeroAddress,
-                name,
-                symbol,
-                decimals,
-                totalSupply,
+                name: tokenData.name,
+                symbol: tokenData.symbol,
+                decimals: tokenData.decimals,
+                totalSupply: tokenData.totalSupply,
                 address: lockReleaseAddress,
               };
             }
 
-            // TODO: Transform to multiCall
-
+            // Prepare and execute multicall for governance parameters
             const [
               votingPeriodBlocks,
               quorumNumerator,
@@ -304,14 +335,35 @@ export function useGovernanceFetcher() {
               timeLockPeriod,
               executionPeriod,
               proposerThreshold,
-            ] = await Promise.all([
-              erc20VotingContract.read.votingPeriod(),
-              erc20VotingContract.read.quorumNumerator(),
-              erc20VotingContract.read.QUORUM_DENOMINATOR(),
-              azoriusContract.read.timelockPeriod(),
-              azoriusContract.read.executionPeriod(),
-              erc20VotingContract.read.requiredProposerWeight(),
-            ]);
+            ] = await publicClient.multicall({
+              contracts: [
+                {
+                  ...erc20VotingContract,
+                  functionName: 'votingPeriod',
+                },
+                {
+                  ...erc20VotingContract,
+                  functionName: 'quorumNumerator',
+                },
+                {
+                  ...erc20VotingContract,
+                  functionName: 'QUORUM_DENOMINATOR',
+                },
+                {
+                  ...azoriusContract,
+                  functionName: 'timelockPeriod',
+                },
+                {
+                  ...azoriusContract,
+                  functionName: 'executionPeriod',
+                },
+                {
+                  ...erc20VotingContract,
+                  functionName: 'requiredProposerWeight',
+                },
+              ],
+              allowFailure: false,
+            });
 
             const quorumPercentage = (quorumNumerator * 100n) / quorumDenominator;
             const votingPeriodValue = await blocksToSeconds(votingPeriodBlocks, publicClient);
@@ -342,6 +394,7 @@ export function useGovernanceFetcher() {
             };
 
             onAzoriusGovernanceLoaded({
+              moduleAzoriusAddress: azoriusContract.address,
               votesToken: tokenData,
               erc721Tokens: undefined,
               linearVotingErc20Address,
@@ -558,6 +611,7 @@ export function useGovernanceFetcher() {
             };
 
             onAzoriusGovernanceLoaded({
+              moduleAzoriusAddress: azoriusContract.address,
               votesToken: undefined,
               erc721Tokens,
               linearVotingErc20Address,
@@ -693,7 +747,17 @@ export function useGovernanceFetcher() {
         }
       }
     },
-    [getAddressContractType, publicClient, getTimeDuration, parseTransactions, safeApi, t, decode],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [
+      setMethodOnInterval,
+      safeApi,
+      parseTransactions,
+      publicClient,
+      getAddressContractType,
+      t,
+      getTimeDuration,
+      decode,
+    ],
   );
 
   const fetchDAOProposalTemplates = useCallback(

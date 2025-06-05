@@ -3,7 +3,6 @@ import { useCallback, useEffect } from 'react';
 import { Address, getContract } from 'viem';
 import { useAccount } from 'wagmi';
 import LockReleaseAbi from '../../assets/abi/LockRelease';
-import useFeatureFlag from '../../helpers/environmentFeatureFlags';
 import { logError } from '../../helpers/errorLogging';
 import useNetworkPublicClient from '../../hooks/useNetworkPublicClient';
 import { useAddressContractType } from '../../hooks/utils/useAddressContractType';
@@ -25,7 +24,7 @@ import { useGovernanceFetcher } from '../fetchers/governance';
 export function useGovernanceListeners({
   lockedVotesTokenAddress,
   votesTokenAddress,
-  azoriusModuleAddress,
+  moduleAzoriusAddress,
   erc20StrategyAddress,
   erc721StrategyAddress,
   onProposalCreated,
@@ -36,7 +35,7 @@ export function useGovernanceListeners({
 }: {
   votesTokenAddress?: Address;
   lockedVotesTokenAddress?: Address;
-  azoriusModuleAddress?: Address;
+  moduleAzoriusAddress?: Address;
   erc20StrategyAddress?: Address;
   erc721StrategyAddress?: Address;
   onProposalCreated: (proposal: AzoriusProposal) => void;
@@ -59,7 +58,6 @@ export function useGovernanceListeners({
     vote: ERC721ProposalVote,
   ) => void;
 }) {
-  const storeFeatureEnabled = useFeatureFlag('flag_store_v2');
   const { fetchVotingTokenAccountData, fetchLockReleaseAccountData } = useGovernanceFetcher();
   const { address } = useAccount();
   const publicClient = useNetworkPublicClient();
@@ -94,7 +92,7 @@ export function useGovernanceListeners({
     /**
      * Watch locked token votes when delegation changes.
      */
-    if (!address || !lockedVotesTokenAddress || !storeFeatureEnabled) {
+    if (!address || !lockedVotesTokenAddress) {
       return;
     }
 
@@ -122,13 +120,13 @@ export function useGovernanceListeners({
       unwatchToDelegate();
       unwatchFromDelegate();
     };
-  }, [address, lockedVotesTokenAddress, loadLockedVotesToken, publicClient, storeFeatureEnabled]);
+  }, [address, lockedVotesTokenAddress, loadLockedVotesToken, publicClient]);
 
   useEffect(() => {
     /**
      * Load ERC-20 token votes when delegation changes.
      */
-    if (!address || !votesTokenAddress || !storeFeatureEnabled) {
+    if (!address || !votesTokenAddress) {
       return;
     }
 
@@ -156,20 +154,20 @@ export function useGovernanceListeners({
       unwatchFromDelegate();
       unwatchToDelegate();
     };
-  }, [address, loadERC20TokenAccountData, publicClient, votesTokenAddress, storeFeatureEnabled]);
+  }, [address, loadERC20TokenAccountData, publicClient, votesTokenAddress]);
 
   useEffect(() => {
     /**
      * Listen for proposal creation events.
      */
-    if (!azoriusModuleAddress || !storeFeatureEnabled) {
+    if (!moduleAzoriusAddress) {
       return;
     }
 
     const azoriusContract = getContract({
       abi: abis.Azorius,
       client: publicClient,
-      address: azoriusModuleAddress,
+      address: moduleAzoriusAddress,
     });
 
     const unwatch = azoriusContract.watchEvent.ProposalCreated({
@@ -247,20 +245,13 @@ export function useGovernanceListeners({
     });
 
     return unwatch;
-  }, [
-    getAddressContractType,
-    publicClient,
-    decode,
-    onProposalCreated,
-    azoriusModuleAddress,
-    storeFeatureEnabled,
-  ]);
+  }, [getAddressContractType, publicClient, decode, onProposalCreated, moduleAzoriusAddress]);
 
   useEffect(() => {
     /**
      * Listen for proposal vote events for ERC-20 strategy.
      */
-    if (!erc20StrategyAddress || !storeFeatureEnabled) {
+    if (!erc20StrategyAddress) {
       return;
     }
 
@@ -293,20 +284,13 @@ export function useGovernanceListeners({
     });
 
     return unwatch;
-  }, [
-    erc20StrategyAddress,
-    onERC20VoteCreated,
-    getAddressContractType,
-    publicClient,
-    decode,
-    storeFeatureEnabled,
-  ]);
+  }, [erc20StrategyAddress, onERC20VoteCreated, getAddressContractType, publicClient, decode]);
 
   useEffect(() => {
     /**
      * Listen for proposal vote events for ERC-721 strategy.
      */
-    if (!erc721StrategyAddress || !storeFeatureEnabled) {
+    if (!erc721StrategyAddress) {
       return;
     }
 
@@ -350,12 +334,5 @@ export function useGovernanceListeners({
     });
 
     return unwatch;
-  }, [
-    getAddressContractType,
-    publicClient,
-    decode,
-    onERC721VoteCreated,
-    erc721StrategyAddress,
-    storeFeatureEnabled,
-  ]);
+  }, [getAddressContractType, publicClient, decode, onERC721VoteCreated, erc721StrategyAddress]);
 }

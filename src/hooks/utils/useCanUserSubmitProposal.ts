@@ -6,12 +6,13 @@ import { useDAOStore } from '../../providers/App/AppProvider';
 import { useSafeAPI } from '../../providers/App/hooks/useSafeAPI';
 import { GovernanceType } from '../../types';
 import { isDemoMode } from '../../utils/demoMode';
+import { getChainIdFromPrefix } from '../../utils/url';
 import { useCurrentDAOKey } from '../DAO/useCurrentDAOKey';
 import useNetworkPublicClient from '../useNetworkPublicClient';
 import useVotingStrategiesAddresses from './useVotingStrategiesAddresses';
 
 export function useCanUserCreateProposal() {
-  const { daoKey } = useCurrentDAOKey();
+  const { daoKey, addressPrefix } = useCurrentDAOKey();
   const {
     governance: { type },
     governanceContracts: {
@@ -116,16 +117,19 @@ export function useCanUserCreateProposal() {
       user.address,
     ],
   );
-
   useEffect(() => {
     const loadCanUserCreateProposal = async () => {
+      // This prevents unnecessary calls to getCanUserCreateProposal when the user refreshes the page on a different chain from mainnet
+      if (addressPrefix && getChainIdFromPrefix(addressPrefix) !== publicClient.chain.id) {
+        return;
+      }
       const newCanCreateProposal = isDemoMode() || (await getCanUserCreateProposal());
       if (newCanCreateProposal !== canUserCreateProposal) {
         setCanUserCreateProposal(newCanCreateProposal);
       }
     };
     loadCanUserCreateProposal();
-  }, [getCanUserCreateProposal, canUserCreateProposal]);
+  }, [getCanUserCreateProposal, canUserCreateProposal, addressPrefix, publicClient.chain.id]);
 
   return { canUserCreateProposal, getCanUserCreateProposal };
 }
