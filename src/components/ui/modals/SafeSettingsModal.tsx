@@ -634,7 +634,7 @@ export function SafeSettingsModal({
     }
 
     if (timelockPeriod) {
-      const numberOfBlocks = await getEstimatedNumberOfBlocks(timelockPeriod, publicClient);
+      const numberOfBlocks = await getEstimatedNumberOfBlocks(timelockPeriod / 60n, publicClient);
       transactions.push({
         targetAddress: moduleAzoriusAddress,
         ethValue,

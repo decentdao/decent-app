@@ -62,6 +62,7 @@ export function AddStrategyPermissionModal({
             backgroundColor: 'white-alpha-04',
           }}
           onClick={() => {
+            closeModal();
             if (!isSettingsV1Enabled) {
               navigate(
                 DAO_ROUTES.settingsPermissionsCreateProposal.relative(
@@ -71,7 +72,6 @@ export function AddStrategyPermissionModal({
                 ),
               );
             } else {
-              closeModal();
               openAddCreateProposalPermissionModal();
             }
           }}

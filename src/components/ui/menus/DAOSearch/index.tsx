@@ -131,7 +131,7 @@ export function DAOSearch() {
                 size="baseAddonLeft"
                 w="full"
                 placeholder={t('searchDAOPlaceholder')}
-                onChange={e => setLocalInput(e.target.value.trim())}
+                onChange={e => setLocalInput(e.target.value)}
                 value={localInput}
                 spellCheck="false"
                 autoCapitalize="none"
