@@ -8,7 +8,7 @@ import {
 } from '../../../constants/common';
 import Divider from '../utils/Divider';
 
-export type ModalBaseSize = 'sm' | 'md' | 'lg' | 'xl' | '2xl' | 'max';
+export type ModalBaseSize = 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '6xl' | 'max';
 
 export type ModalContentStyle = {
   backgroundColor?: string;

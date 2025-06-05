@@ -304,9 +304,9 @@ export function SafeGeneralSettingsPage() {
           >
             {/* GENERAL */}
             <Text
-              ml={6}
               mb={0.5}
               textStyle="text-lg-regular"
+              color="color-white"
             >
               {t('daoSettingsGeneral')}
             </Text>
@@ -391,9 +391,9 @@ export function SafeGeneralSettingsPage() {
             {gaslessVotingSupported && (
               <>
                 <Text
-                  ml={6}
                   mb={0.5}
                   textStyle="text-lg-regular"
+                  color="color-white"
                 >
                   {t('gaslessVotingLabelSettings', { ns: 'gaslessVoting' })}
                 </Text>

@@ -38,8 +38,8 @@ export function SafeModulesSettingsPage() {
           gap="1rem"
         >
           <Text
-            ml={6}
             textStyle="text-lg-regular"
+            color="color-white"
           >
             {t('modulesTitle')}
           </Text>
@@ -90,8 +90,8 @@ export function SafeModulesSettingsPage() {
           mt="2rem"
         >
           <Text
-            ml={6}
             textStyle="text-lg-regular"
+            color="color-white"
           >
             {t('guardsTitle')}
           </Text>

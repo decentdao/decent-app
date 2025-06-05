@@ -56,7 +56,7 @@ export function SafePermissionsSettingsContent() {
   }
 
   const editedProposerThreshold =
-    formikContext.values.permissions?.proposerThreshold?.bigintValue?.toString();
+    formikContext.values.permissions?.proposerThreshold?.value?.toString();
 
   const proposerThresholdValue =
     editedProposerThreshold || azoriusGovernance.votingStrategy?.proposerThreshold?.formatted;
@@ -73,9 +73,9 @@ export function SafePermissionsSettingsContent() {
         bg={{ base: 'transparent', md: NEUTRAL_2_82_TRANSPARENT }}
       >
         <Text
-          ml={6}
           mb={0.5}
           textStyle="text-lg-regular"
+          color="color-white"
         >
           {t('permissionsTitle')}
         </Text>
