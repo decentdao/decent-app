@@ -197,8 +197,8 @@ export const createGovernancesSlice: StateCreator<
           state.governances[daoKey].proposals = proposals;
         } else {
           const uniqueProposals = getFilterUniqueProposals([
-            ...state.governances[daoKey].proposals,
             ...proposals,
+            ...state.governances[daoKey].proposals,
           ]);
           state.governances[daoKey].proposals = uniqueProposals;
           state.governances[daoKey].pendingProposals = filterPendingTxHashes(
