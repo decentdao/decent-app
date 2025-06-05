@@ -1,6 +1,5 @@
 import { TokenInfoResponse, TransferResponse } from '@safe-global/api-kit';
 import { SafeMultisigTransactionResponse } from '@safe-global/safe-core-sdk-types';
-import { Dispatch } from 'react';
 import { Address } from 'viem';
 import { FractalGovernanceActions } from '../providers/App/governance/action';
 import { GovernanceContractActions } from '../providers/App/governanceContracts/action';
@@ -180,12 +179,7 @@ export interface ITokenAccount {
   votingWeightString: string | undefined;
 }
 
-export interface FractalStore extends Fractal {
-  action: {
-    dispatch: Dispatch<FractalActions>;
-    resetSafeState: () => Promise<void>;
-  };
-}
+export interface FractalStore extends Fractal {}
 export enum StoreAction {
   RESET = 'RESET',
 }
