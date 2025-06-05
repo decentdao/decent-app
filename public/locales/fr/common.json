@@ -35,7 +35,6 @@
   "learnMore": "En savoir plus",
   "home": "Accueil",
   "labelViewDAO": "Voir le coffre-fort",
-  "labelDAOFound": "Trouvé en toute sécurité",
   "labelCurrentDAO": "Vous consultez actuellement ce Safe.",
   "labelEtherscan": "Voir sur Etherscan",
   "errorInvalidENSAddress": "Nom ou adresse ENS non valide sur {{chain}}",
@@ -130,5 +129,8 @@
   "unsavedChangesDescription": "Vous avez des modifications non sauvegardées qui seront perdues si vous continuez. Voulez-vous annuler vos modifications ?",
   "discardChanges": "Rejeter",
   "keepEditing": "Continuer à éditer",
-  "selectStatusLabel": "Sélectionner le statut"
+  "selectStatusLabel": "Sélectionner le statut",
+  "addressRequired": "L'adresse est obligatoire",
+  "save": "Économiser",
+  "daoNameRequired": "Le nom du DAO est obligatoire"
 }

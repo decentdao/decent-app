@@ -16,5 +16,13 @@
   "unstakeStEthTitle": "Détachement de l'ETH",
   "unstakeStEthDescription": "Cette proposition déstockera l'ETH du Lido et créera un NFT de retrait du Lido qui pourra être utilisé pour réclamer votre ETH.",
   "stakeWithLidoTitle": "Miser sur l'ETH avec Lido",
-  "stakeWithLidoDescription": "Cette proposition mettra en jeu l'ETH dans le Lido, retournant l'ETH dans votre trésorerie."
+  "stakeWithLidoDescription": "Cette proposition mettra en jeu l'ETH dans le Lido, retournant l'ETH dans votre trésorerie.",
+  "addSigners": "Ajouter des signataires",
+  "removeSigners": "Supprimer les signataires",
+  "changeThreshold": "Mise à jour du seuil de signature",
+  "changeVotingPeriod": "Mise à jour de la période de vote",
+  "changeTimelockPeriod": "Mise à jour de la période de verrouillage",
+  "changeExecutionPeriod": "Période d'exécution de la mise à jour",
+  "changeQuorumNumerator": "Mise à jour du pourcentage de quorum",
+  "changeQuorumThreshold": "Mise à jour du seuil de quorum"
 }
