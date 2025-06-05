@@ -235,6 +235,7 @@ export function GovernanceParams() {
                 color={
                   values.azorius?.votingPeriod === undefined ? 'color-neutral-300' : 'color-white'
                 }
+                hideSteppers={true}
                 onSecondsValueChange={valInSeconds => {
                   handleInputChange(
                     'azorius.votingPeriod',
@@ -273,6 +274,7 @@ export function GovernanceParams() {
                 color={
                   values.azorius?.timelockPeriod === undefined ? 'color-neutral-300' : 'color-white'
                 }
+                hideSteppers={true}
                 onSecondsValueChange={valInSeconds => {
                   handleInputChange(
                     'azorius.timelockPeriod',
@@ -313,6 +315,7 @@ export function GovernanceParams() {
                     ? 'color-neutral-300'
                     : 'color-white'
                 }
+                hideSteppers={true}
                 onSecondsValueChange={valInSeconds =>
                   handleInputChange(
                     'azorius.executionPeriod',
