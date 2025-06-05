@@ -1,4 +1,4 @@
-import { Box, Button, Flex, Text } from '@chakra-ui/react';
+import { Button, Flex, Text } from '@chakra-ui/react';
 import { abis } from '@fractal-framework/fractal-contracts';
 import { Formik, Form, useFormikContext } from 'formik';
 import { useState } from 'react';
@@ -164,10 +164,10 @@ export function SafeSettingsModal({
       <Flex
         flexDirection="row"
         justifyContent="flex-end"
-        mt="1rem"
+        my="1rem"
         mr={4}
         alignItems="center"
-        alignSelf="center"
+        alignSelf="flex-end"
         alignContent="center"
         gap="0.5rem"
       >
@@ -1048,9 +1048,9 @@ export function SafeSettingsModal({
       }}
     >
       <Form>
-        <Box
+        <Flex
           flexDirection="column"
-          height="85vh"
+          height="90vh"
           textColor="color-neutral-100"
         >
           <Flex
@@ -1065,7 +1065,7 @@ export function SafeSettingsModal({
 
           <Divider />
           <ActionButtons />
-        </Box>
+        </Flex>
       </Form>
     </Formik>
   );
