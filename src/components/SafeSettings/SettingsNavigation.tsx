@@ -198,6 +198,7 @@ export function SettingsNavigation({
   const azoriusGovernance = governance as AzoriusGovernance;
 
   const isSettingsV1Enabled = useFeatureFlag('flag_settings_v1');
+  const isTokenDeploymentEnabled = useFeatureFlag('flag_token_deployment');
   const isMobile = useBreakpointValue({ base: true, md: false });
 
   const [currentItem, setCurrentItem] =
@@ -288,17 +289,19 @@ export function SettingsNavigation({
               <Text color="color-neutral-300">{azoriusGovernance.votingStrategy ? 1 : 0}</Text>
             </SettingsNavigationItem>
           )}
-          <SettingsNavigationItem
-            title={t('tokenTitle')}
-            leftIcon={<RocketLaunch fontSize="1.5rem" />}
-            item="token"
-            currentItem={currentItem}
-            onClick={() => {
-              onSettingsNavigationClick(<SafeTokenSettingsPage />);
-              setCurrentItem('token');
-            }}
-            hasEdits={false}
-          />
+          {!governance.isAzorius && isTokenDeploymentEnabled && (
+            <SettingsNavigationItem
+              title={t('tokenTitle')}
+              leftIcon={<RocketLaunch fontSize="1.5rem" />}
+              item="token"
+              currentItem={currentItem}
+              onClick={() => {
+                onSettingsNavigationClick(<SafeTokenSettingsPage />);
+                setCurrentItem('token');
+              }}
+              hasEdits={false}
+            />
+          )}
         </>
       ) : (
         <>
@@ -334,12 +337,14 @@ export function SettingsNavigation({
               <Text color="color-neutral-300">{azoriusGovernance.votingStrategy ? 1 : 0}</Text>
             </SettingsLink>
           )}
-          <SettingsLink
-            path={DAO_ROUTES.settingsToken.relative(addressPrefix, safe.address)}
-            leftIcon={<RocketLaunch fontSize="1.5rem" />}
-            title={t('tokenTitle')}
-            onClick={() => onSettingsNavigationClick(<SafeTokenSettingsPage />)}
-          />
+          {!governance.isAzorius && isTokenDeploymentEnabled && (
+            <SettingsLink
+              path={DAO_ROUTES.settingsToken.relative(addressPrefix, safe.address)}
+              leftIcon={<RocketLaunch fontSize="1.5rem" />}
+              title={t('tokenTitle')}
+              onClick={() => onSettingsNavigationClick(<SafeTokenSettingsPage />)}
+            />
+          )}
         </>
       )}
     </Flex>
