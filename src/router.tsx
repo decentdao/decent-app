@@ -28,6 +28,7 @@ import { SafeGovernanceSettingsPage } from './pages/dao/settings/governance/Safe
 import { SafeModulesSettingsPage } from './pages/dao/settings/modules-and-guard/SafeModulesSettingsPage';
 import { SafePermissionsCreateProposal } from './pages/dao/settings/permissions/SafePermissionsCreateProposal';
 import { SafePermissionsSettingsPage } from './pages/dao/settings/permissions/SafePermissionsSettingsPage';
+import { SafeTokenSettingsPage } from './pages/dao/settings/token/SafeTokenSettingsPage';
 import { SafeTreasuryPage } from './pages/dao/treasury/SafeTreasuryPage';
 import HomePage from './pages/home/HomePage';
 
@@ -211,6 +212,10 @@ export const router = (addressPrefix: string, daoAddress: string | undefined) =>
                       element: <SafePermissionsCreateProposal />,
                     },
                   ],
+                },
+                {
+                  path: DAO_ROUTES.settingsToken.path,
+                  element: <SafeTokenSettingsPage />,
                 },
               ],
             },

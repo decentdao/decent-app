@@ -1,5 +1,13 @@
 import { Box, Flex, Icon, Show, Text, useBreakpointValue } from '@chakra-ui/react';
-import { Bank, CaretRight, CheckSquare, Dot, GearFine, Stack } from '@phosphor-icons/react';
+import {
+  Bank,
+  CaretRight,
+  CheckSquare,
+  Dot,
+  GearFine,
+  Stack,
+  RocketLaunch,
+} from '@phosphor-icons/react';
 import { useFormikContext } from 'formik';
 import { PropsWithChildren, ReactNode, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -11,6 +19,7 @@ import { SafeGeneralSettingsPage } from '../../pages/dao/settings/general/SafeGe
 import { SafeGovernanceSettingsPage } from '../../pages/dao/settings/governance/SafeGovernanceSettingsPage';
 import { SafeModulesSettingsPage } from '../../pages/dao/settings/modules-and-guard/SafeModulesSettingsPage';
 import { SafePermissionsSettingsContent } from '../../pages/dao/settings/permissions/SafePermissionsSettingsContent';
+import { SafeTokenSettingsPage } from '../../pages/dao/settings/token/SafeTokenSettingsPage';
 import { useDAOStore } from '../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
 import { AzoriusGovernance } from '../../types';
@@ -99,6 +108,7 @@ const settingsNavigationItems = [
   'governance',
   'modulesAndGuard',
   'permissions',
+  'token',
 ] as const;
 
 function SettingsNavigationItem({
@@ -278,6 +288,17 @@ export function SettingsNavigation({
               <Text color="color-neutral-300">{azoriusGovernance.votingStrategy ? 1 : 0}</Text>
             </SettingsNavigationItem>
           )}
+          <SettingsNavigationItem
+            title={t('tokenTitle')}
+            leftIcon={<RocketLaunch fontSize="1.5rem" />}
+            item="token"
+            currentItem={currentItem}
+            onClick={() => {
+              onSettingsNavigationClick(<SafeTokenSettingsPage />);
+              setCurrentItem('token');
+            }}
+            hasEdits={false}
+          />
         </>
       ) : (
         <>
@@ -313,6 +334,12 @@ export function SettingsNavigation({
               <Text color="color-neutral-300">{azoriusGovernance.votingStrategy ? 1 : 0}</Text>
             </SettingsLink>
           )}
+          <SettingsLink
+            path={DAO_ROUTES.settingsToken.relative(addressPrefix, safe.address)}
+            leftIcon={<RocketLaunch fontSize="1.5rem" />}
+            title={t('tokenTitle')}
+            onClick={() => onSettingsNavigationClick(<SafeTokenSettingsPage />)}
+          />
         </>
       )}
     </Flex>
