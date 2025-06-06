@@ -17,7 +17,8 @@ type BadgeLabelKey =
   | DAOState
   | 'ownerApproved'
   | 'ownerRejected'
-  | 'revShareDaoSafeWarning';
+  | 'revShareDaoSafeWarning'
+  | 'revShareTotalError';
 
 const BADGE_MAPPING: Record<BadgeLabelKey, BadgeType> = {
   [FractalProposalState.ACTIVE]: {
@@ -113,6 +114,11 @@ const BADGE_MAPPING: Record<BadgeLabelKey, BadgeType> = {
     textColor: 'color-warning-200',
     _hover: { bg: 'color-warning-900', textColor: 'color-warning-200' },
   },
+  revShareTotalError: {
+    bg: 'color-error-400',
+    textColor: 'color-error-50',
+    _hover: { bg: 'color-error-400', textColor: 'color-error-50' },
+  },
 };
 
 type Size = 'sm' | 'base';
@@ -152,7 +158,9 @@ export function Badge({ labelKey, children, size, leftIcon }: IBadge) {
         {...sizes}
         {...colors}
       >
-        {leftIcon || (
+        {leftIcon !== undefined ? (
+          leftIcon
+        ) : (
           <Box
             rounded="full"
             bg={colors.textColor}

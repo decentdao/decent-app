@@ -1,4 +1,4 @@
-import { Flex, Text, Icon, Button, Input, Box } from '@chakra-ui/react';
+import { Flex, Text, Icon, Button, Input } from '@chakra-ui/react';
 import { Empty, PencilSimple, Plus, TrashSimple, WarningCircle } from '@phosphor-icons/react';
 import { useTranslation } from 'react-i18next';
 import { Address } from 'viem';
@@ -21,15 +21,7 @@ interface RevSplitWallet {
   splits: { address: Address; revenueShare: number }[];
 }
 
-function ShareRow({
-  label,
-  share,
-  onDelete,
-}: {
-  label: string;
-  share: number;
-  onDelete?: () => void;
-}) {
+function DefaultShareRow({ label, share }: { label: string; share: number }) {
   return (
     <>
       <Flex
@@ -125,7 +117,6 @@ function RevSplitWalletCard({ wallet }: { wallet: RevSplitWallet }) {
               </Button>
             </Flex>
 
-            {/* DAO SHARE */}
             <Flex
               flexDir="column"
               alignItems="center"
@@ -134,15 +125,15 @@ function RevSplitWalletCard({ wallet }: { wallet: RevSplitWallet }) {
               borderColor="color-neutral-900"
               borderRadius="0.75rem"
             >
-              <ShareRow
+              <DefaultShareRow
                 label={t('currentDaoTreasureShareLabel')}
                 share={wallet.daoShare}
               />
-              <ShareRow
+              <DefaultShareRow
                 label={t('parentDaoTreasureShareLabel')}
                 share={wallet.parentDaoShare}
               />
-              <ShareRow
+              <DefaultShareRow
                 label={t('currentTokenHolderShareLabel')}
                 share={wallet.tokenHolderShare}
               />
@@ -180,7 +171,7 @@ function RevSplitWalletCard({ wallet }: { wallet: RevSplitWallet }) {
                         <Icon
                           boxSize="1rem"
                           as={TrashSimple}
-                          color="color-lilac-100"
+                          color="color-error-400"
                         />
                       </Button>
                     </Flex>
@@ -195,16 +186,29 @@ function RevSplitWalletCard({ wallet }: { wallet: RevSplitWallet }) {
               flexDir="row"
               justifyContent="space-between"
               w="100%"
-              p={6}
             >
-              <Text
-                color="color-neutral-500"
-                flex={4}
-              >
-                {t('revSplitTotalLabel')}
-              </Text>
-              <Text flex={2}>{revSplitTotal.toFixed(2)}%</Text>
+              <Flex flex={4}>
+                <Text
+                  mr={1}
+                  color="color-charcoal-500"
+                >
+                  {t('revSplitTotalLabel')}:
+                </Text>
+                <Text color="color-white">{wallet.splits.length} wallets</Text>
+              </Flex>
+
+              <Flex flex={4}>
+                <Badge
+                  labelKey="revShareTotalError"
+                  size="base"
+                  leftIcon={<Icon as={WarningCircle} />}
+                >
+                  <Text>Blah blah error blah</Text>
+                </Badge>
+              </Flex>
+
               <Icon
+                flex={1}
                 as={Empty}
                 color="transparent"
               />
