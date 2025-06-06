@@ -1,4 +1,4 @@
-import { Flex, Text, Icon, Button, Input } from '@chakra-ui/react';
+import { Flex, Text, Icon, Button, Input, Box } from '@chakra-ui/react';
 import { Empty, PencilSimple, Plus, TrashSimple, WarningCircle } from '@phosphor-icons/react';
 import { useTranslation } from 'react-i18next';
 import { Address } from 'viem';
@@ -19,6 +19,41 @@ interface RevSplitWallet {
   parentDaoShare: number;
   tokenHolderShare: number;
   splits: { address: Address; revenueShare: number }[];
+}
+
+function ShareRow({
+  label,
+  share,
+  onDelete,
+}: {
+  label: string;
+  share: number;
+  onDelete?: () => void;
+}) {
+  return (
+    <>
+      <Flex
+        flexDir="row"
+        justifyContent="space-between"
+        w="100%"
+      >
+        <Text
+          color="color-neutral-400"
+          flex={4}
+        >
+          {label}
+        </Text>
+        <Flex flex={4}>
+          <Divider vertical />
+          <Text color="color-neutral-400">% {share}</Text>
+        </Flex>
+        <Flex flex={1}>
+          <Divider vertical />
+        </Flex>
+      </Flex>
+      <Divider />
+    </>
+  );
 }
 
 function RevSplitWalletCard({ wallet }: { wallet: RevSplitWallet }) {
@@ -99,70 +134,18 @@ function RevSplitWalletCard({ wallet }: { wallet: RevSplitWallet }) {
               borderColor="color-neutral-900"
               borderRadius="0.75rem"
             >
-              <Flex
-                flexDir="row"
-                justifyContent="space-between"
-                w="100%"
-                p={3}
-              >
-                <Text flex={4}>{t('currentDaoTreasureShareLabel')}</Text>
-                <Text
-                  color="color-neutral-400"
-                  flex={2}
-                >
-                  {wallet.daoShare} %
-                </Text>
-                <Icon
-                  as={TrashSimple}
-                  color="color-lilac-100"
-                />
-              </Flex>
-
-              <Divider />
-
-              {/* PARENT DAO SHARE */}
-              <Flex
-                flexDir="row"
-                justifyContent="space-between"
-                w="100%"
-                p={3}
-              >
-                <Text flex={4}>{t('parentDaoTreasureShareLabel')}</Text>
-                <Text
-                  color="color-neutral-400"
-                  flex={2}
-                >
-                  {wallet.tokenHolderShare} %
-                </Text>
-                <Icon
-                  as={TrashSimple}
-                  color="color-lilac-100"
-                />
-              </Flex>
-
-              <Divider />
-
-              {/* TOKEN HOLDER SHARE */}
-              <Flex
-                flexDir="row"
-                justifyContent="space-between"
-                w="100%"
-                p={3}
-              >
-                <Text flex={4}>{t('currentTokenHolderShareLabel')}</Text>
-                <Text
-                  color="color-neutral-400"
-                  flex={2}
-                >
-                  {wallet.tokenHolderShare} %
-                </Text>
-                <Icon
-                  as={TrashSimple}
-                  color="color-lilac-100"
-                />
-              </Flex>
-
-              <Divider />
+              <ShareRow
+                label={t('currentDaoTreasureShareLabel')}
+                share={wallet.daoShare}
+              />
+              <ShareRow
+                label={t('parentDaoTreasureShareLabel')}
+                share={wallet.parentDaoShare}
+              />
+              <ShareRow
+                label={t('currentTokenHolderShareLabel')}
+                share={wallet.tokenHolderShare}
+              />
 
               {/* SPLITS */}
               {wallet.splits.map((split, i) => (
@@ -172,23 +155,35 @@ function RevSplitWalletCard({ wallet }: { wallet: RevSplitWallet }) {
                     flexDir="row"
                     justifyContent="space-between"
                     w="100%"
-                    p={3}
                   >
-                    {/* <Text
-                    color="color-white"
-                    flex={4}
-                  >
-                    {createAccountSubstring(split.address)}
-                  </Text> */}
-                    <Flex>
-                      <Input value={createAccountSubstring(split.address)} />
+                    <Input
+                      flex={4}
+                      variant="unstyled"
+                      color="color-white"
+                      value={createAccountSubstring(split.address)}
+                    />
+
+                    <Flex flex={4}>
+                      <Divider vertical />
+                      <Text color="color-white">% {split.revenueShare}</Text>
                     </Flex>
 
-                    <Text>{split.revenueShare}%</Text>
-                    <Icon
-                      as={TrashSimple}
-                      color="color-lilac-100"
-                    />
+                    <Flex flex={1}>
+                      <Divider vertical />
+                      <Button
+                        variant="tertiary"
+                        h="auto"
+                        minW="auto"
+                        p={1}
+                        flex={1}
+                      >
+                        <Icon
+                          boxSize="1rem"
+                          as={TrashSimple}
+                          color="color-lilac-100"
+                        />
+                      </Button>
+                    </Flex>
                   </Flex>
                   {i !== wallet.splits.length - 1 && <Divider />}
                 </>
