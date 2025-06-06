@@ -1,17 +1,225 @@
-import { Flex, Text, Icon, Image, Button, Box } from '@chakra-ui/react';
-import { Empty, Link, Plus, TrashSimple, WarningCircle } from '@phosphor-icons/react';
+import { Flex, Text, Icon, Button, Input } from '@chakra-ui/react';
+import { Empty, PencilSimple, Plus, TrashSimple, WarningCircle } from '@phosphor-icons/react';
 import { useTranslation } from 'react-i18next';
+import { Address } from 'viem';
 import { SettingsContentBox } from '../../../../components/SafeSettings/SettingsContentBox';
+import { Badge } from '../../../../components/ui/badges/Badge';
+import { AccordionDropdown } from '../../../../components/ui/containers/AccordionDropdown';
+import { DisplayAddress } from '../../../../components/ui/links/DisplayAddress';
 import { BarLoader } from '../../../../components/ui/loaders/BarLoader';
 import Divider from '../../../../components/ui/utils/Divider';
 import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
-import {
-  createAccountSubstring,
-  useGetAccountName,
-} from '../../../../hooks/utils/useGetAccountName';
+import { createAccountSubstring } from '../../../../hooks/utils/useGetAccountName';
 import { useDAOStore } from '../../../../providers/App/AppProvider';
-import { DisplayAddress } from '../../../../components/ui/links/DisplayAddress';
-import { Badge } from '../../../../components/ui/badges/Badge';
+
+interface RevSplitWallet {
+  address: Address;
+  displayName?: string;
+  daoShare: number;
+  parentDaoShare: number;
+  tokenHolderShare: number;
+  splits: { address: Address; revenueShare: number }[];
+}
+
+function RevSplitWalletCard({ wallet }: { wallet: RevSplitWallet }) {
+  const { t } = useTranslation('revenueSharing');
+
+  const revSplitTotal =
+    wallet.splits.reduce((acc, split) => acc + split.revenueShare, 0) +
+    wallet.parentDaoShare +
+    wallet.tokenHolderShare;
+
+  return (
+    <Flex
+      flexDir="column"
+      justifyContent="space-between"
+      gap={2}
+    >
+      <AccordionDropdown
+        sectionTitle={
+          <Flex
+            direction="row"
+            alignItems="center"
+            gap={1}
+          >
+            <Text color="color-white">{wallet.displayName || t('revSplitWallet')}</Text>
+            <Button
+              variant="tertiary"
+              h="auto"
+              minW="auto"
+              color="color-lilac-100"
+              p={1}
+              onClick={e => {
+                e.stopPropagation();
+              }}
+            >
+              <Icon
+                boxSize="1rem"
+                as={PencilSimple}
+              />
+            </Button>
+            <DisplayAddress
+              address={wallet.address}
+              color="color-white"
+              textStyle="text-sm-underlined"
+              onClick={e => e.stopPropagation()}
+            >
+              {createAccountSubstring(wallet.address)}
+            </DisplayAddress>
+          </Flex>
+        }
+        content={
+          <Flex direction="column">
+            <Divider
+              my={4}
+              ml={-4}
+            />
+            <Flex
+              flexDir="row"
+              alignItems="center"
+              justifyContent="space-between"
+              gap={2}
+            >
+              <Text color="color-neutral-50">{t('counterparties')}</Text>
+              <Button
+                variant="secondary"
+                size="sm"
+                leftIcon={<Icon as={Plus} />}
+              >
+                {t('revShareAddSplitWallet')}
+              </Button>
+            </Flex>
+
+            {/* DAO SHARE */}
+            <Flex
+              flexDir="column"
+              alignItems="center"
+              mt={4}
+              border="1px solid"
+              borderColor="color-neutral-900"
+              borderRadius="0.75rem"
+            >
+              <Flex
+                flexDir="row"
+                justifyContent="space-between"
+                w="100%"
+                p={3}
+              >
+                <Text flex={4}>{t('currentDaoTreasureShareLabel')}</Text>
+                <Text
+                  color="color-neutral-400"
+                  flex={2}
+                >
+                  {wallet.daoShare} %
+                </Text>
+                <Icon
+                  as={TrashSimple}
+                  color="color-lilac-100"
+                />
+              </Flex>
+
+              <Divider />
+
+              {/* PARENT DAO SHARE */}
+              <Flex
+                flexDir="row"
+                justifyContent="space-between"
+                w="100%"
+                p={3}
+              >
+                <Text flex={4}>{t('parentDaoTreasureShareLabel')}</Text>
+                <Text
+                  color="color-neutral-400"
+                  flex={2}
+                >
+                  {wallet.tokenHolderShare} %
+                </Text>
+                <Icon
+                  as={TrashSimple}
+                  color="color-lilac-100"
+                />
+              </Flex>
+
+              <Divider />
+
+              {/* TOKEN HOLDER SHARE */}
+              <Flex
+                flexDir="row"
+                justifyContent="space-between"
+                w="100%"
+                p={3}
+              >
+                <Text flex={4}>{t('currentTokenHolderShareLabel')}</Text>
+                <Text
+                  color="color-neutral-400"
+                  flex={2}
+                >
+                  {wallet.tokenHolderShare} %
+                </Text>
+                <Icon
+                  as={TrashSimple}
+                  color="color-lilac-100"
+                />
+              </Flex>
+
+              <Divider />
+
+              {/* SPLITS */}
+              {wallet.splits.map((split, i) => (
+                <>
+                  <Flex
+                    key={split.address}
+                    flexDir="row"
+                    justifyContent="space-between"
+                    w="100%"
+                    p={3}
+                  >
+                    {/* <Text
+                    color="color-white"
+                    flex={4}
+                  >
+                    {createAccountSubstring(split.address)}
+                  </Text> */}
+                    <Flex>
+                      <Input value={createAccountSubstring(split.address)} />
+                    </Flex>
+
+                    <Text>{split.revenueShare}%</Text>
+                    <Icon
+                      as={TrashSimple}
+                      color="color-lilac-100"
+                    />
+                  </Flex>
+                  {i !== wallet.splits.length - 1 && <Divider />}
+                </>
+              ))}
+            </Flex>
+
+            {/* Revenue Split Total Display */}
+            <Flex
+              flexDir="row"
+              justifyContent="space-between"
+              w="100%"
+              p={6}
+            >
+              <Text
+                color="color-neutral-500"
+                flex={4}
+              >
+                {t('revSplitTotalLabel')}
+              </Text>
+              <Text flex={2}>{revSplitTotal.toFixed(2)}%</Text>
+              <Icon
+                as={Empty}
+                color="transparent"
+              />
+            </Flex>
+          </Flex>
+        }
+      />
+    </Flex>
+  );
+}
 
 export function SafeRevenueSharingSettingsPage() {
   const { t } = useTranslation('revenueSharing');
@@ -25,10 +233,26 @@ export function SafeRevenueSharingSettingsPage() {
   } = useDAOStore({ daoKey });
 
   const displayedAddress = safe?.address;
-  const { displayName } = useGetAccountName(displayedAddress);
 
-  const currentDaoTreasureShare = 30;
-  const revSplitTotal = 100;
+  const revSplitWallets: RevSplitWallet[] = [
+    {
+      address: '0x1234567890123456789012345678901234567890',
+      displayName: 'Rev Split Wallet 1',
+      daoShare: 50,
+      parentDaoShare: 30,
+      tokenHolderShare: 10,
+      splits: [
+        {
+          address: '0x1234567890123456789012345678901234567890',
+          revenueShare: 6,
+        },
+        {
+          address: '0x1234567890123456789012345678901234567890',
+          revenueShare: 4,
+        },
+      ],
+    },
+  ];
 
   return (
     <>
@@ -110,138 +334,12 @@ export function SafeRevenueSharingSettingsPage() {
             </Flex>
           </Flex>
 
-          <Flex
-            flexDir="column"
-            justifyContent="space-between"
-            gap={2}
-          >
-            {/* Section 2: Revenue Split Wallet Card */}
-            <Flex
-              border="1px solid"
-              borderColor="color-neutral-900"
-              borderRadius="0.75rem"
-              gap={2}
-              flexDir="column"
-              p={6}
-            >
-              {/* Revenue Split Wallet Header */}
-              <Text>{t('revSplitWallet')}</Text>
-
-              {/* Revenue Split Wallet Address Display */}
-              <Flex
-                direction="row"
-                alignItems="center"
-                gap={2}
-              >
-                <Text
-                  ml="0.75rem"
-                  textStyle="text-sm-underlined"
-                >
-                  {displayName}
-                </Text>
-                <Icon as={Link} />
-              </Flex>
-
-              <Divider my={4} />
-
-              {/* Counterparties Section Header with Add Button */}
-              <Flex
-                flexDir="row"
-                alignItems="center"
-                justifyContent="space-between"
-                gap={2}
-              >
-                <Text>{t('counterparties')}</Text>
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  leftIcon={<Icon as={Plus} />}
-                >
-                  {t('revShareAddSplitWallet')}
-                </Button>
-              </Flex>
-
-              {/* Current DAO Treasury Share Display */}
-              <Flex
-                flexDir="row"
-                alignItems="center"
-                mt={4}
-                border="1px solid"
-                borderColor="color-neutral-900"
-                borderRadius="0.75rem"
-                p={2}
-              >
-                <Flex
-                  flexDir="row"
-                  justifyContent="space-between"
-                  w="100%"
-                  p={3}
-                >
-                  <Text flex={4}>{t('currentDaoTreasureShareLabel')}</Text>
-                  <Text
-                    color="color-neutral-400"
-                    flex={2}
-                  >
-                    {currentDaoTreasureShare} %
-                  </Text>
-                  <Icon
-                    as={TrashSimple}
-                    color="color-lilac-100"
-                  />
-                </Flex>
-              </Flex>
-
-              {/* Revenue Split Total Display */}
-              <Flex
-                flexDir="row"
-                justifyContent="space-between"
-                w="100%"
-                p={6}
-              >
-                <Text
-                  color="color-neutral-500"
-                  flex={4}
-                >
-                  {t('revSplitTotalLabel')}
-                </Text>
-                <Text flex={2}>{revSplitTotal}%</Text>
-                <Icon
-                  as={Empty}
-                  color="transparent"
-                />
-              </Flex>
-            </Flex>
-
-            {/* Section 3: Add Revenue Share Card */}
-            <Flex
-              border="1px solid"
-              borderColor="color-neutral-900"
-              borderRadius="0.75rem"
-              gap={2}
-              flexDir="row"
-              justifyContent="space-between"
-              p={5}
-            >
-              <Text>{t('addRevenueShare')}</Text>
-
-              <Button
-                variant="ghost"
-                h="auto"
-                minW="auto"
-                color="color-lilac-100"
-                p={1}
-                _hover={{
-                  bg: 'color-neutral-900',
-                  opacity: 0.8,
-                }}
-              >
-                <Icon
-                  boxSize="1.5rem"
-                  as={Plus}
-                />
-              </Button>
-            </Flex>
-          </Flex>
+          {revSplitWallets.map(wallet => (
+            <RevSplitWalletCard
+              key={wallet.address}
+              wallet={wallet}
+            />
+          ))}
         </SettingsContentBox>
       ) : (
         <Flex

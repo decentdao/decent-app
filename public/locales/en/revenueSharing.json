@@ -5,6 +5,8 @@
   "counterparties": "Counterparties",
   "revShareAddSplitWallet": "Add Wallets",
   "currentDaoTreasureShareLabel": "Current DAO Treasury Share",
+  "parentDaoTreasureShareLabel": "Parent DAO",
+  "currentTokenHolderShareLabel": "Current Token Holder Staking",
   "revSplitTotalLabel": "Total",
   "addRevenueShare": "Add Revenue Share"
 }
