@@ -1,12 +1,17 @@
-import { Flex, Text, Icon, Image, Button } from '@chakra-ui/react';
-import { Empty, Link, Plus, TrashSimple } from '@phosphor-icons/react';
+import { Flex, Text, Icon, Image, Button, Box } from '@chakra-ui/react';
+import { Empty, Link, Plus, TrashSimple, WarningCircle } from '@phosphor-icons/react';
 import { useTranslation } from 'react-i18next';
 import { SettingsContentBox } from '../../../../components/SafeSettings/SettingsContentBox';
 import { BarLoader } from '../../../../components/ui/loaders/BarLoader';
 import Divider from '../../../../components/ui/utils/Divider';
 import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
-import { useGetAccountName } from '../../../../hooks/utils/useGetAccountName';
+import {
+  createAccountSubstring,
+  useGetAccountName,
+} from '../../../../hooks/utils/useGetAccountName';
 import { useDAOStore } from '../../../../providers/App/AppProvider';
+import { DisplayAddress } from '../../../../components/ui/links/DisplayAddress';
+import { Badge } from '../../../../components/ui/badges/Badge';
 
 export function SafeRevenueSharingSettingsPage() {
   const { t } = useTranslation('revenueSharing');
@@ -33,51 +38,83 @@ export function SafeRevenueSharingSettingsPage() {
           py={6}
         >
           <Flex
+            flexDirection="column"
+            gap="1rem"
+          >
+            <Flex
+              alignItems="center"
+              justifyContent="flex-start"
+              w="100%"
+            >
+              <Text
+                textStyle="text-lg-regular"
+                color="color-white"
+              >
+                {t('revenueSharingTitle')}
+              </Text>
+
+              <Button
+                variant="ghost"
+                h="auto"
+                minW="auto"
+                color="color-lilac-100"
+                p={1}
+                ml="auto"
+                _hover={{
+                  bg: 'color-neutral-900',
+                  opacity: 0.8,
+                }}
+              >
+                <Icon
+                  boxSize="1.5rem"
+                  as={Plus}
+                />
+              </Button>
+            </Flex>
+
+            {/* Section 1: DAO Safe Wallet Card */}
+            <Flex
+              flexDir="column"
+              gap={4}
+              border="1px solid"
+              borderColor="color-neutral-900"
+              borderRadius="0.75rem"
+              p={4}
+            >
+              <Flex
+                direction="row"
+                alignItems="center"
+                gap={1}
+              >
+                <Text color="color-white">{t('daoSafeWallet')}</Text>
+
+                {displayedAddress && (
+                  <DisplayAddress
+                    address={displayedAddress}
+                    color="color-white"
+                    textStyle="text-sm-underlined"
+                  >
+                    {createAccountSubstring(displayedAddress)}
+                  </DisplayAddress>
+                )}
+              </Flex>
+
+              {/* DAO Safe Wallet Warning Message */}
+              <Badge
+                labelKey="revShareDaoSafeWarning"
+                size="base"
+                leftIcon={<Icon as={WarningCircle} />}
+              >
+                <Text>{t('revShareDaoSafeWarning')}</Text>
+              </Badge>
+            </Flex>
+          </Flex>
+
+          <Flex
             flexDir="column"
             justifyContent="space-between"
             gap={2}
           >
-            {/* Section 1: DAO Safe Wallet Card */}
-            <Flex
-              border="1px solid"
-              borderColor="color-neutral-900"
-              borderRadius="0.75rem"
-              gap={2}
-              flexDir="column"
-              p={6}
-            >
-              {/* DAO Safe Wallet Header */}
-              <Text>{t('daoSafeWallet')}</Text>
-
-              {/* DAO Safe Wallet Address Display */}
-              <Flex
-                direction="row"
-                alignItems="center"
-                gap={2}
-              >
-                <Text
-                  ml="0.75rem"
-                  textStyle="text-sm-underlined"
-                >
-                  {displayName}
-                </Text>
-                <Icon as={Link} />
-              </Flex>
-
-              {/* DAO Safe Wallet Warning Message */}
-              <Flex
-                flexDir="row"
-                alignItems="center"
-                gap={2}
-              >
-                <Image
-                  boxSize={4}
-                  src="/images/warning-yellow.svg"
-                />
-                <Text color="color-warning-500">{t('revShareDaoSafeWarning')}</Text>
-              </Flex>
-            </Flex>
-
             {/* Section 2: Revenue Split Wallet Card */}
             <Flex
               border="1px solid"

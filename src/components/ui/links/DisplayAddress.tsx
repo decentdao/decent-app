@@ -17,6 +17,7 @@ export function DisplayAddress({
   children?: ReactNode;
 } & LinkProps) {
   const displayAddress = useGetAccountName(address, truncate);
+  const textStyle = rest.textStyle;
   return (
     <EtherscanLink
       {...rest}
@@ -32,6 +33,7 @@ export function DisplayAddress({
         <Text
           as="span"
           isTruncated
+          textStyle={textStyle}
         >
           {children || displayAddress.displayName}
         </Text>

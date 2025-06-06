@@ -12,10 +12,14 @@ type BadgeType = {
   textColor: string;
 };
 
-const BADGE_MAPPING: Record<
-  FractalProposalState | DAOState | 'ownerApproved' | 'ownerRejected',
-  BadgeType
-> = {
+type BadgeLabelKey =
+  | FractalProposalState
+  | DAOState
+  | 'ownerApproved'
+  | 'ownerRejected'
+  | 'revShareDaoSafeWarning';
+
+const BADGE_MAPPING: Record<BadgeLabelKey, BadgeType> = {
   [FractalProposalState.ACTIVE]: {
     tooltipKey: 'stateActiveTip',
     bg: 'color-lilac-100',
@@ -104,6 +108,11 @@ const BADGE_MAPPING: Record<
     textColor: 'color-error-50',
     _hover: { bg: 'color-error-800', textColor: 'color-error-50' },
   },
+  revShareDaoSafeWarning: {
+    bg: 'color-warning-900',
+    textColor: 'color-warning-200',
+    _hover: { bg: 'color-warning-900', textColor: 'color-warning-200' },
+  },
 };
 
 type Size = 'sm' | 'base';
@@ -117,9 +126,10 @@ interface IBadge {
   size: Size;
   labelKey: keyof typeof BADGE_MAPPING;
   children?: ReactNode;
+  leftIcon?: ReactNode;
 }
 
-export function Badge({ labelKey, children, size }: IBadge) {
+export function Badge({ labelKey, children, size, leftIcon }: IBadge) {
   const { tooltipKey, ...colors } = BADGE_MAPPING[labelKey];
   const sizes = BADGE_SIZES[size];
 
@@ -142,12 +152,14 @@ export function Badge({ labelKey, children, size }: IBadge) {
         {...sizes}
         {...colors}
       >
-        <Box
-          rounded="full"
-          bg={colors.textColor}
-          w="0.5rem"
-          h="0.5rem"
-        />
+        {leftIcon || (
+          <Box
+            rounded="full"
+            bg={colors.textColor}
+            w="0.5rem"
+            h="0.5rem"
+          />
+        )}
         <Text
           textStyle="text-sm-medium"
           lineHeight="1"

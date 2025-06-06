@@ -1,5 +1,5 @@
 {
-  "revShareDaoSafeWarning": "Sending funds to this address will not be split",
+  "revShareDaoSafeWarning": "Funds sent to this address will not be split",
   "daoSafeWallet": "DAO Safe Wallet",
   "revSplitWallet": "Revenue Split Wallet",
   "counterparties": "Counterparties",
