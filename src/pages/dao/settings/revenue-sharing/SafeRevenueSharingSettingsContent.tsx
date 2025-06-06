@@ -22,6 +22,7 @@ interface RevSplitWallet {
 }
 
 function DefaultShareRow({ label, share }: { label: string; share: number }) {
+  const padding = 3;
   return (
     <>
       <Flex
@@ -32,12 +33,18 @@ function DefaultShareRow({ label, share }: { label: string; share: number }) {
         <Text
           color="color-neutral-400"
           flex={4}
+          p={padding}
         >
           {label}
         </Text>
         <Flex flex={4}>
           <Divider vertical />
-          <Text color="color-neutral-400">% {share}</Text>
+          <Text
+            p={padding}
+            color="color-neutral-400"
+          >
+            % {share}
+          </Text>
         </Flex>
         <Flex flex={1}>
           <Divider vertical />
@@ -53,8 +60,13 @@ function RevSplitWalletCard({ wallet }: { wallet: RevSplitWallet }) {
 
   const revSplitTotal =
     wallet.splits.reduce((acc, split) => acc + split.revenueShare, 0) +
+    wallet.daoShare +
     wallet.parentDaoShare +
     wallet.tokenHolderShare;
+
+  const isTotalError = revSplitTotal > 100;
+
+  const padding = 3;
 
   return (
     <Flex
@@ -147,31 +159,46 @@ function RevSplitWalletCard({ wallet }: { wallet: RevSplitWallet }) {
                     justifyContent="space-between"
                     w="100%"
                   >
-                    <Input
+                    <Flex
                       flex={4}
-                      variant="unstyled"
-                      color="color-white"
-                      value={createAccountSubstring(split.address)}
-                    />
+                      p={padding}
+                    >
+                      <Input
+                        variant="unstyled"
+                        color="color-white"
+                        value={createAccountSubstring(split.address)}
+                      />
+                    </Flex>
 
                     <Flex flex={4}>
                       <Divider vertical />
-                      <Text color="color-white">% {split.revenueShare}</Text>
+                      <Text
+                        p={padding}
+                        color="color-white"
+                      >
+                        % {split.revenueShare}
+                      </Text>
                     </Flex>
 
-                    <Flex flex={1}>
+                    <Flex
+                      flex={1}
+                      justifyContent="space-between"
+                    >
                       <Divider vertical />
                       <Button
-                        variant="tertiary"
-                        h="auto"
-                        minW="auto"
-                        p={1}
-                        flex={1}
+                        variant="unstyled"
+                        h={1}
+                        w={1}
+                        mt="15%"
+                        mr="30%"
+                        color="color-error-400"
+                        _hover={{
+                          backgroundColor: 'color-layout-focus-destructive',
+                        }}
                       >
                         <Icon
                           boxSize="1rem"
                           as={TrashSimple}
-                          color="color-error-400"
                         />
                       </Button>
                     </Flex>
@@ -181,11 +208,12 @@ function RevSplitWalletCard({ wallet }: { wallet: RevSplitWallet }) {
               ))}
             </Flex>
 
-            {/* Revenue Split Total Display */}
+            {/* TOTAL WALLETS AND ERROR BADGE */}
             <Flex
               flexDir="row"
               justifyContent="space-between"
               w="100%"
+              mt={2}
             >
               <Flex flex={4}>
                 <Text
@@ -194,17 +222,19 @@ function RevSplitWalletCard({ wallet }: { wallet: RevSplitWallet }) {
                 >
                   {t('revSplitTotalLabel')}:
                 </Text>
-                <Text color="color-white">{wallet.splits.length} wallets</Text>
+                <Text color="color-white">{wallet.splits.length + 3} wallets</Text>
               </Flex>
 
               <Flex flex={4}>
-                <Badge
-                  labelKey="revShareTotalError"
-                  size="base"
-                  leftIcon={<Icon as={WarningCircle} />}
-                >
-                  <Text>Blah blah error blah</Text>
-                </Badge>
+                {isTotalError && (
+                  <Badge
+                    labelKey="revShareTotalError"
+                    size="base"
+                    leftIcon={<Icon as={WarningCircle} />}
+                  >
+                    <Text>{t('revShareTotalError')}</Text>
+                  </Badge>
+                )}
               </Flex>
 
               <Icon
@@ -222,9 +252,6 @@ function RevSplitWalletCard({ wallet }: { wallet: RevSplitWallet }) {
 
 export function SafeRevenueSharingSettingsPage() {
   const { t } = useTranslation('revenueSharing');
-  // const { setFieldValue, values: formValues } = useFormikContext<SafeSettingsEdits>();
-  // const { errors } = useFormikContext<SafeSettingsFormikErrors>();
-  // const generalEditFormikErrors = (errors as SafeSettingsFormikErrors).general;
 
   const { daoKey } = useCurrentDAOKey();
   const {
@@ -236,18 +263,31 @@ export function SafeRevenueSharingSettingsPage() {
   const revSplitWallets: RevSplitWallet[] = [
     {
       address: '0x1234567890123456789012345678901234567890',
-      displayName: 'Rev Split Wallet 1',
+      displayName: 'Test 1',
       daoShare: 50,
       parentDaoShare: 30,
       tokenHolderShare: 10,
       splits: [
         {
-          address: '0x1234567890123456789012345678901234567890',
+          address: '0x123456789012345678901234567890123456789b',
           revenueShare: 6,
         },
         {
-          address: '0x1234567890123456789012345678901234567890',
+          address: '0x123456789012345678901234567890123456789c',
           revenueShare: 4,
+        },
+      ],
+    },
+    {
+      address: '0x123456789012345678901234567890123456789a',
+      displayName: 'Test 2',
+      daoShare: 10,
+      parentDaoShare: 20,
+      tokenHolderShare: 50,
+      splits: [
+        {
+          address: '0x123456789012345678901234567890123456789d',
+          revenueShare: 22,
         },
       ],
     },
