@@ -16,5 +16,13 @@
   "unstakeStEthTitle": "Desenganchar stETH",
   "unstakeStEthDescription": "Esta propuesta desinvertirá stETH de Lido y acuñará un Lido Withdrawal NFT que se puede utilizar para reclamar su ETH.",
   "stakeWithLidoTitle": "Apuesta ETH con Lido",
-  "stakeWithLidoDescription": "Esta propuesta apostará ETH en Lido, devolviendo stETH a su tesorería."
+  "stakeWithLidoDescription": "Esta propuesta apostará ETH en Lido, devolviendo stETH a su tesorería.",
+  "addSigners": "Añadir firmantes",
+  "removeSigners": "Eliminar firmantes",
+  "changeThreshold": "Actualizar el umbral de firmantes",
+  "changeVotingPeriod": "Actualizar el periodo de votación",
+  "changeTimelockPeriod": "Actualizar el periodo de bloqueo",
+  "changeExecutionPeriod": "Periodo de ejecución de la actualización",
+  "changeQuorumNumerator": "Actualizar el porcentaje de quórum",
+  "changeQuorumThreshold": "Actualizar el umbral de quórum"
 }

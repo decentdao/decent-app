@@ -16,5 +16,13 @@
   "unstakeStEthTitle": "ステッチを外す",
   "unstakeStEthDescription": "この提案は、Lidoからstethをアンステークし、お客様のETHを請求するために使用できるLido Withdrawal NFTを作成します。",
   "stakeWithLidoTitle": "リドとETHを賭ける",
-  "stakeWithLidoDescription": "この提案はリドにETHを賭け、stETHをあなたの国庫に戻す。"
+  "stakeWithLidoDescription": "この提案はリドにETHを賭け、stETHをあなたの国庫に戻す。",
+  "addSigners": "署名者の追加",
+  "removeSigners": "署名者の削除",
+  "changeThreshold": "署名者のしきい値を更新",
+  "changeVotingPeriod": "投票期間の更新",
+  "changeTimelockPeriod": "タイムロック期間の更新",
+  "changeExecutionPeriod": "アップデート実行期間",
+  "changeQuorumNumerator": "定足数の割合を更新",
+  "changeQuorumThreshold": "定足数のしきい値を更新"
 }

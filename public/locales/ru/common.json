@@ -35,7 +35,6 @@
   "learnMore": "Узнать больше",
   "home": "Главная",
   "labelViewDAO": "Посмотреть сейф",
-  "labelDAOFound": "Сейф найден",
   "labelCurrentDAO": "В данный момент вы просматриваете этот Сейф.",
   "labelEtherscan": "Посмотреть на Etherscan",
   "errorInvalidENSAddress": "Неверное имя или адрес ENS на {{chain}}",
@@ -130,5 +129,8 @@
   "unsavedChangesDescription": "У вас есть несохраненные изменения, которые будут потеряны, если вы продолжите работу. Вы хотите отменить изменения?",
   "discardChanges": "Выбросить",
   "keepEditing": "Продолжайте редактировать",
-  "selectStatusLabel": "Выберите статус"
+  "selectStatusLabel": "Выберите статус",
+  "addressRequired": "Адрес обязателен",
+  "save": "Сохранить",
+  "daoNameRequired": "Имя DAO является обязательным"
 }
