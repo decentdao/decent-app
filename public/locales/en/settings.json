@@ -16,6 +16,7 @@
   "tokenTitle": "Token",
   "tokenPageTitle": "Token Information",
   "tokenPageNotDeployedDescription": "Your DAO doesn’t have a token yet. You can deploy one now and configure your governance schema whenever you’re ready.",
+  "tokenPageDeployTokenButton": "Deploy Token",
   "daoSettingsGeneral": "General",
   "daoSettingsGovernance": "Governance",
   "daoSettingsGovernanceParameters": "Parameters",

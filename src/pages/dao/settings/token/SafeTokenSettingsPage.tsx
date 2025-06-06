@@ -44,7 +44,7 @@ export function SafeTokenSettingsPage() {
             <Text textStyle="text-sm-regular">{t('tokenPageNotDeployedDescription')}</Text>
           </Flex>
 
-          <Button>Deploy Token</Button>
+          <Button>{t('tokenPageDeployTokenButton')}</Button>
         </Flex>
       </SettingsContentBox>
     </>
