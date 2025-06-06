@@ -117,6 +117,11 @@ export const DAO_ROUTES = {
       `/settings/permissions/create-proposal${getDaoQueryParam(addressPrefix, daoAddress)}${votingStrategyAddress ? `&votingStrategy=${votingStrategyAddress}` : ''}`,
     path: 'create-proposal',
   },
+  settingsToken: {
+    relative: (addressPrefix: string, daoAddress: string) =>
+      `/settings/token${getDaoQueryParam(addressPrefix, daoAddress)}`,
+    path: 'token',
+  },
   proposalTemplates: {
     relative: (addressPrefix: string, safeAddress: string) =>
       `/proposal-templates${getDaoQueryParam(addressPrefix, safeAddress)}`,
