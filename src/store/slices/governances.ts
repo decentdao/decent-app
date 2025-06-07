@@ -12,6 +12,7 @@ import {
   FractalGovernanceContracts,
   FractalProposal,
   FractalVotingStrategy,
+  GaslessVotingDaoData,
   GovernanceType,
   ProposalTemplate,
   ProposalVote,
@@ -80,13 +81,7 @@ export type GovernancesSlice = {
     daoKey: DAOKey,
     lockReleaseAccountData: { balance: bigint; delegatee: Address },
   ) => void;
-  setGaslessVotingData: (
-    daoKey: DAOKey,
-    gasslesVotingData: {
-      gaslessVotingEnabled: boolean;
-      paymasterAddress: Address | null;
-    },
-  ) => void;
+  setGaslessVotingData: (daoKey: DAOKey, gasslesVotingData: GaslessVotingDaoData) => void;
   setERC20Token: (daoKey: DAOKey, erc20Token: ERC20TokenData | undefined) => void;
 };
 

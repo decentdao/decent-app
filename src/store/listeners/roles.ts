@@ -3,6 +3,7 @@ import { useEffect } from 'react';
 import { Address, getContract } from 'viem';
 import useNetworkPublicClient from '../../hooks/useNetworkPublicClient';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
+import { GaslessVotingDaoData } from '../../types';
 import { useGovernanceFetcher } from '../fetchers/governance';
 import { useRolesFetcher } from '../fetchers/roles';
 
@@ -17,10 +18,7 @@ export function useRolesListener({
     hatsTreeId: number | null | undefined;
     streamIdsToHatIds: { hatId: bigint; streamId: string }[];
   }) => void;
-  onGaslessVotingDataFetched: (gasslesVotingData: {
-    gaslessVotingEnabled: boolean;
-    paymasterAddress: Address | null;
-  }) => void;
+  onGaslessVotingDataFetched: (gasslesVotingData: GaslessVotingDaoData) => void;
 }) {
   const { getStreamIdsToHatIds, getHatsTreeId } = useRolesFetcher();
   const { fetchGaslessVotingDAOData } = useGovernanceFetcher();
