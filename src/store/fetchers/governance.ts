@@ -53,6 +53,7 @@ import {
 } from '../../utils/azorius';
 import { blocksToSeconds } from '../../utils/contract';
 import { getPaymasterAddress } from '../../utils/gaslessVoting';
+import { getStakingContractAddress } from '../../utils/stakingContractUtils';
 import { SetAzoriusGovernancePayload } from '../slices/governances';
 
 /**
@@ -983,6 +984,25 @@ export function useGovernanceFetcher() {
     [publicClient],
   );
 
+  const fetchStakingDAOData = useCallback(
+    async (safeAddress: Address) => {
+      if (!publicClient.chain) {
+        return;
+      }
+
+      // @todo: `getStakingContractAddress` is WIP
+      const stakingAddress = getStakingContractAddress({
+        safeAddress,
+        zodiacModuleProxyFactory,
+        stakingContractMastercopy: '0x1234567890123456789012345678901234567890',
+        chainId: publicClient.chain.id,
+      });
+
+      return { stakingAddress };
+    },
+    [publicClient.chain, zodiacModuleProxyFactory],
+  );
+
   return {
     fetchDAOGovernance,
     fetchDAOProposalTemplates,
@@ -991,5 +1011,6 @@ export function useGovernanceFetcher() {
     fetchDAOSnapshotProposals,
     fetchGaslessVotingDAOData,
     fetchMultisigERC20Token,
+    fetchStakingDAOData,
   };
 }

@@ -1,16 +1,6 @@
-import { Address, getAddress } from 'viem';
+import { getAddress } from 'viem';
 import { create } from 'zustand';
-import {
-  DAOSubgraph,
-  DecentModule,
-  GaslessVotingDaoData,
-  IDAO,
-  SafeWithNextNonce,
-} from '../../types';
-
-export type DAOOwnedEntities = GaslessVotingDaoData & {
-  stakingAddress: Address | null;
-};
+import { DAOOwnedEntities, DAOSubgraph, DecentModule, IDAO, SafeWithNextNonce } from '../../types';
 
 export const initialDaoInfoStore: IDAO & DAOOwnedEntities = {
   safe: null,

@@ -1,14 +1,14 @@
 import { TokenInfoResponse, TransferResponse } from '@safe-global/api-kit';
 import { SafeMultisigTransactionResponse } from '@safe-global/safe-core-sdk-types';
 import { Address } from 'viem';
+import { ERC20TokenData, ERC721TokenData, VotesTokenData } from './account';
+import { DAOOwnedEntities } from './daoGeneral';
 import { FreezeGuardType, FreezeVotingType } from './daoGovernance';
 import { AzoriusProposal, MultisigProposal, ProposalData } from './daoProposal';
 import { DefiBalance, NFTBalance, TokenBalance, TokenEventType, TransferType } from './daoTreasury';
 import { ProposalTemplate } from './proposalBuilder';
 import { SafeInfoResponseWithGuard } from './safeGlobal';
 import { SnapshotProposal } from './snapshot';
-import { VotesTokenData, ERC721TokenData, ERC20TokenData } from './account';
-import { GaslessVotingDaoData } from './daoGeneral';
 
 /**
  * The possible states of a DAO proposal, for both Token Voting (Azorius) and Multisignature
@@ -285,7 +285,7 @@ export type Governance = {
   tokenClaimContractAddress?: Address;
   isAzorius: boolean;
   erc20Token: ERC20TokenData | undefined;
-} & GaslessVotingDaoData;
+} & DAOOwnedEntities;
 
 export interface VotingStrategyAzorius extends VotingStrategy {
   strategyType?: VotingStrategyType;
