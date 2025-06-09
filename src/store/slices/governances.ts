@@ -5,6 +5,7 @@ import {
   AzoriusProposal,
   DAOKey,
   DecentGovernance,
+  ERC20TokenData,
   ERC721ProposalVote,
   ERC721TokenData,
   FractalGovernance,
@@ -86,6 +87,7 @@ export type GovernancesSlice = {
       paymasterAddress: Address | null;
     },
   ) => void;
+  setERC20Token: (daoKey: DAOKey, erc20Token: ERC20TokenData | undefined) => void;
 };
 
 const EMPTY_GOVERNANCE: FractalGovernance & FractalGovernanceContracts = {
@@ -98,6 +100,7 @@ const EMPTY_GOVERNANCE: FractalGovernance & FractalGovernanceContracts = {
   strategies: [],
   gaslessVotingEnabled: false,
   paymasterAddress: null,
+  erc20Token: undefined,
 };
 
 const filterPendingTxHashes = (
@@ -377,6 +380,22 @@ export const createGovernancesSlice: StateCreator<
       },
       false,
       'setGaslessVotingData',
+    );
+  },
+  setERC20Token: (daoKey, erc20Token) => {
+    set(
+      state => {
+        if (!state.governances[daoKey]) {
+          state.governances[daoKey] = {
+            ...EMPTY_GOVERNANCE,
+            erc20Token: erc20Token,
+          };
+        } else {
+          state.governances[daoKey].erc20Token = erc20Token;
+        }
+      },
+      false,
+      'setERC20Token',
     );
   },
   getGovernance: daoKey => {

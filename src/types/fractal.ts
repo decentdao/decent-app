@@ -6,7 +6,7 @@ import { GovernanceContractActions } from '../providers/App/governanceContracts/
 import { FractalGuardActions } from '../providers/App/guard/action';
 import { GuardContractActions } from '../providers/App/guardContracts/action';
 import { TreasuryActions } from '../providers/App/treasury/action';
-import { ERC721TokenData, VotesTokenData } from './account';
+import { ERC20TokenData, ERC721TokenData, VotesTokenData } from './account';
 import { FreezeGuardType, FreezeVotingType } from './daoGovernance';
 import { AzoriusProposal, MultisigProposal, ProposalData } from './daoProposal';
 import { DefiBalance, NFTBalance, TokenBalance, TokenEventType, TransferType } from './daoTreasury';
@@ -300,6 +300,7 @@ export interface Governance {
   gaslessVotingEnabled: boolean;
   // null -- Paymaster contract has not been deployed at the address we expect it to be at
   paymasterAddress: Address | null;
+  erc20Token: ERC20TokenData | undefined;
 }
 
 export interface VotingStrategyAzorius extends VotingStrategy {
