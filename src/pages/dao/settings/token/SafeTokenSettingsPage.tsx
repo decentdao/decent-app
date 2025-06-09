@@ -117,17 +117,14 @@ export function SafeTokenSettingsPage() {
           ) : (
             <Flex
               flexDirection="column"
-              gap="1.5rem"
-              paddingX="1.5rem"
               alignItems="flex-start"
               alignSelf="stretch"
             >
               <Flex
                 flexDirection="column"
-                gap="0.5rem"
+                mt="0.5rem"
+                mb="1rem"
               >
-                <Text textStyle="text-lg-regular">{t('tokenPageTitle')}</Text>
-
                 <Text textStyle="text-sm-regular">{t('tokenPageNotDeployedDescription')}</Text>
               </Flex>
 
