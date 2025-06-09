@@ -5,13 +5,17 @@ import { useTranslation } from 'react-i18next';
 import { initialState } from '../../../components/DaoCreator/constants';
 import { AzoriusTokenDetails } from '../../../components/DaoCreator/formComponents/AzoriusTokenDetails';
 import { DAOCreateMode } from '../../../components/DaoCreator/formComponents/EstablishEssentials';
+import { usePrepareFormData } from '../../../components/DaoCreator/hooks/usePrepareFormData';
 import PageHeader from '../../../components/ui/page/Header/PageHeader';
+import useDeployToken from '../../../hooks/DAO/useDeployToken';
 import { useERC20TokenSchema } from '../../../hooks/schemas/DAOCreate/useERC20TokenSchema';
 import { CreatorFormState, CreatorSteps, GovernanceType, ICreationStepProps } from '../../../types';
 
 export function SafeDeployTokenPage() {
   const { t } = useTranslation();
   const { erc20TokenValidation } = useERC20TokenSchema();
+  const { deployToken, pending: transactionPending } = useDeployToken();
+  const { prepareAzoriusERC20FormData } = usePrepareFormData();
 
   const pageHeaderBreadcrumbs = [
     {
@@ -44,12 +48,21 @@ export function SafeDeployTokenPage() {
         }}
         validationSchema={erc20TokenValidation}
         onSubmit={async values => {
-          console.debug('DeployToken.values', values);
+          const daoData = await prepareAzoriusERC20FormData({
+            ...initialState.essentials,
+            ...initialState.azorius,
+            ...values.erc20Token,
+            freezeGuard: undefined,
+          });
+
+          if (daoData) {
+            deployToken(daoData, () => {});
+          }
         }}
         enableReinitialize
         validateOnMount
       >
-        {({ handleSubmit, ...rest }) => (
+        {({ handleSubmit, isSubmitting, ...rest }) => (
           <form onSubmit={handleSubmit}>
             <AzoriusTokenDetails
               steps={[CreatorSteps.ERC20_DETAILS]}
@@ -65,7 +78,12 @@ export function SafeDeployTokenPage() {
               mt="1.5rem"
               gap="0.75rem"
             >
-              <Button type="submit">{t('createProposal', { ns: 'proposal' })}</Button>
+              <Button
+                type="submit"
+                isDisabled={transactionPending || isSubmitting}
+              >
+                {t('createProposal', { ns: 'proposal' })}
+              </Button>
             </Flex>
           </form>
         )}
