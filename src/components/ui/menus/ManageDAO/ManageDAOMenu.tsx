@@ -1,11 +1,8 @@
-import { Icon, IconButton, useBreakpointValue } from '@chakra-ui/react';
+import { Icon, IconButton } from '@chakra-ui/react';
 import { abis } from '@fractal-framework/fractal-contracts';
 import { GearFine } from '@phosphor-icons/react';
-import { useCallback, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useMemo } from 'react';
 import { getContract } from 'viem';
-import { DAO_ROUTES } from '../../../../constants/routes';
-import useFeatureFlag from '../../../../helpers/environmentFeatureFlags';
 import {
   isWithinFreezePeriod,
   isWithinFreezeProposalPeriod,
@@ -17,7 +14,6 @@ import { useNetworkWalletClient } from '../../../../hooks/useNetworkWalletClient
 import useBlockTimestamp from '../../../../hooks/utils/useBlockTimestamp';
 import { useCanUserCreateProposal } from '../../../../hooks/utils/useCanUserSubmitProposal';
 import { useDAOStore } from '../../../../providers/App/AppProvider';
-import { useNetworkConfigStore } from '../../../../providers/NetworkConfig/useNetworkConfigStore';
 import { FractalModuleType, FreezeVotingType, GovernanceType } from '../../../../types';
 import { ModalType } from '../../modals/ModalProvider';
 import { useDecentModal } from '../../modals/useDecentModal';
@@ -31,8 +27,9 @@ export function ManageDAOMenu() {
     guardContracts,
     node: { safe, subgraphInfo, modules },
   } = useDAOStore({ daoKey });
+
   const currentTime = BigInt(useBlockTimestamp());
-  const navigate = useNavigate();
+
   const safeAddress = safe?.address;
   const { canUserCreateProposal } = useCanUserCreateProposal();
   const { getUserERC721VotingTokens } = useUserERC721VotingTokens(safeAddress ?? null, null, false);
@@ -44,22 +41,7 @@ export function ManageDAOMenu() {
     },
   });
 
-  const { addressPrefix } = useNetworkConfigStore();
-
   const { open: openSettingsModal } = useDecentModal(ModalType.SAFE_SETTINGS);
-
-  const settingsV1FeatureEnabled = useFeatureFlag('flag_settings_v1');
-  const isMobile = useBreakpointValue({ base: true, md: false });
-
-  const handleNavigateToSettings = useCallback(() => {
-    if (safeAddress) {
-      if (!isMobile && settingsV1FeatureEnabled) {
-        openSettingsModal();
-      } else {
-        navigate(DAO_ROUTES.settings.relative(addressPrefix, safeAddress));
-      }
-    }
-  }, [safeAddress, isMobile, settingsV1FeatureEnabled, navigate, addressPrefix, openSettingsModal]);
 
   const { open: handleModifyGovernance } = useDecentModal(ModalType.CONFIRM_MODIFY_GOVERNANCE);
 
@@ -142,7 +124,7 @@ export function ManageDAOMenu() {
 
     const settingsOption = {
       optionKey: 'optionSettings',
-      onClick: handleNavigateToSettings,
+      onClick: openSettingsModal,
     };
 
     if (
@@ -157,7 +139,7 @@ export function ManageDAOMenu() {
       !isWithinFreezePeriod(guard.freezeProposalCreatedTime, guard.freezePeriod, currentTime) &&
       guard.userHasVotes
     ) {
-      if (!settingsV1FeatureEnabled && type === GovernanceType.MULTISIG) {
+      if (type === GovernanceType.MULTISIG) {
         return [settingsOption, freezeOption, modifyGovernanceOption];
       } else {
         return [settingsOption, freezeOption];
@@ -180,7 +162,7 @@ export function ManageDAOMenu() {
     } else {
       return [
         settingsOption,
-        ...(!settingsV1FeatureEnabled && canUserCreateProposal && type === GovernanceType.MULTISIG
+        ...(canUserCreateProposal && type === GovernanceType.MULTISIG
           ? [modifyGovernanceOption]
           : []),
       ];
@@ -190,9 +172,8 @@ export function ManageDAOMenu() {
     currentTime,
     type,
     handleClawBack,
-    settingsV1FeatureEnabled,
     handleModifyGovernance,
-    handleNavigateToSettings,
+    openSettingsModal,
     freezeOption,
     modules,
     canUserCreateProposal,
