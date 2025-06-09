@@ -1,5 +1,5 @@
 import * as amplitude from '@amplitude/analytics-browser';
-import { Box, Button, Flex, Show, Text } from '@chakra-ui/react';
+import { Box, Button, Flex, Grid, Show, Text } from '@chakra-ui/react';
 import { ArrowsDownUp, HourglassMedium, Parachute } from '@phosphor-icons/react';
 import { useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -203,10 +203,9 @@ export function SafeProposalTemplatesPage() {
       >
         {tProposalTemplate('defaultTemplates')}
       </Text>
-      <Flex
-        flexDirection="row"
-        flexWrap="wrap"
-        gap="1rem"
+      <Grid
+        templateColumns="repeat(4, 1fr)"
+        columnGap="1rem"
       >
         {EXAMPLE_TEMPLATES.map((exampleTemplate, i) => (
           <ExampleTemplateCard
@@ -217,7 +216,7 @@ export function SafeProposalTemplatesPage() {
             onProposalTemplateClick={exampleTemplate.onProposalTemplateClick}
           />
         ))}
-      </Flex>
+      </Grid>
     </div>
   );
 }
