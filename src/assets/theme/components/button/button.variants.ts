@@ -114,10 +114,35 @@ const stepper = defineStyle({
     boxShadow: '0px 0px 0px 3px #534D58',
   },
 });
+const secondaryV1Disabled = {
+  borderColor: 'color-neutral-700',
+  color: 'color-base-secondary-foreground',
+  opacity: 0.5,
+};
+const secondaryV1 = defineStyle({
+  borderTop: '1px solid',
+  borderColor: 'color-layout-border',
+  bg: 'color-content-content2',
+  color: 'color-base-secondary-foreground',
+  _disabled: {
+    ...secondaryV1Disabled,
+  },
+  _hover: {
+    bg: 'color-content-content3',
+    _disabled: {
+      ...secondaryV1Disabled,
+    },
+  },
+  _active: {
+    bg: 'color-content-content4',
+    borderColor: 'color-base-information-foreground',
+  },
+});
 
 const buttonVariants = {
   primary,
   secondary,
+  secondaryV1,
   tertiary,
   stepper,
   danger,
