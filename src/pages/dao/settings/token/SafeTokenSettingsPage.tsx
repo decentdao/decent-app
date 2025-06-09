@@ -1,9 +1,10 @@
 import { Button, Flex, Show, Text } from '@chakra-ui/react';
+import { useContext } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import { zeroAddress } from 'viem';
 import { SettingsContentBox } from '../../../../components/SafeSettings/SettingsContentBox';
-import { ModalType } from '../../../../components/ui/modals/ModalProvider';
-import { useDecentModal } from '../../../../components/ui/modals/useDecentModal';
+import { ModalContext } from '../../../../components/ui/modals/ModalProvider';
 import NestedPageHeader from '../../../../components/ui/page/Header/NestedPageHeader';
 import { DAO_ROUTES } from '../../../../constants/routes';
 import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
@@ -11,13 +12,15 @@ import { useDAOStore } from '../../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../../providers/NetworkConfig/useNetworkConfigStore';
 
 export function SafeTokenSettingsPage() {
+  const navigate = useNavigate();
   const { t } = useTranslation('settings');
   const { addressPrefix } = useNetworkConfigStore();
   const { daoKey } = useCurrentDAOKey();
   const {
     node: { safe },
   } = useDAOStore({ daoKey });
-  const { open: openDeployModal } = useDecentModal(ModalType.DEPLOY_TOKEN);
+
+  const { popModal } = useContext(ModalContext);
 
   return (
     <>
@@ -47,7 +50,15 @@ export function SafeTokenSettingsPage() {
             <Text textStyle="text-sm-regular">{t('tokenPageNotDeployedDescription')}</Text>
           </Flex>
 
-          <Button onClick={() => openDeployModal()}>{t('tokenPageDeployTokenButton')}</Button>
+          <Button
+            onClick={() => {
+              if (!safe) return;
+              popModal();
+              navigate(DAO_ROUTES.deployToken.relative(addressPrefix, safe.address));
+            }}
+          >
+            {t('tokenPageDeployTokenButton')}
+          </Button>
         </Flex>
       </SettingsContentBox>
     </>

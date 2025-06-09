@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Address } from 'viem';
 import * as Yup from 'yup';
-import { DAOEssentials, BigIntValuePair, TokenCreationType, GovernanceType } from '../../../types';
+import { DAOEssentials, GovernanceType } from '../../../types';
 import { useValidationAddress } from '../common/useValidationAddress';
 import { useDAOCreateTests } from './useDAOCreateTests';
 import { useERC20TokenSchema } from './useERC20TokenSchema';
@@ -25,11 +25,7 @@ export const useDAOCreateSchema = ({
     uniqueNFTAddressValidationTest,
     ensNameValidationTest,
   } = useValidationAddress();
-  const {
-    minValueValidation,
-    validERC721Address,
-    isBigIntValidation,
-  } = useDAOCreateTests();
+  const { minValueValidation, validERC721Address, isBigIntValidation } = useDAOCreateTests();
 
   const { erc20TokenShape } = useERC20TokenSchema();
 

@@ -5,7 +5,6 @@ import { useTranslation } from 'react-i18next';
 import { Address } from 'viem';
 import { NEUTRAL_2_50_TRANSPARENT } from '../../../constants/common';
 import { AddCreateProposalPermissionModal } from '../../../pages/dao/settings/permissions/AddCreateProposalPermissionModal';
-import { SafeTokenDeployModal } from '../../../pages/dao/settings/token/SafeTokenDeployModal';
 import { CreateProposalTransaction, ProposalTemplate } from '../../../types';
 import { SendAssetsData } from '../../../utils/dao/prepareSendAssetsActionData';
 import { ProposalTransactionsFormModal } from '../../ProposalBuilder/ProposalTransactionsForm';
@@ -65,7 +64,6 @@ export enum ModalType {
   CONFIRM_NONCE_EXECUTION,
   CONFIRM_REJECT_PROPOSAL,
   CONFIRM_EXECUTION,
-  DEPLOY_TOKEN,
 }
 
 export type ModalPropsTypes = {
@@ -152,7 +150,6 @@ export type ModalPropsTypes = {
     nonce: number | undefined;
     submitExecution: () => void;
   };
-  [ModalType.DEPLOY_TOKEN]: {};
 };
 
 export type ModalTypeWithProps = {
@@ -485,15 +482,6 @@ const getModalData = (args: {
         />
       );
       modalSize = 'md';
-      break;
-    case ModalType.DEPLOY_TOKEN:
-      modalContent = (
-        <SafeTokenDeployModal
-          closeModal={popModal}
-          closeAllModals={closeAll}
-        />
-      );
-      modalSize = 'max';
       break;
 
     default:

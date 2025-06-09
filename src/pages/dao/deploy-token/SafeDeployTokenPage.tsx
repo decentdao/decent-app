@@ -1,23 +1,12 @@
 import { Box } from '@chakra-ui/react';
 import { Formik } from 'formik';
-import { initialState } from '../../../../components/DaoCreator/constants';
-import { AzoriusTokenDetails } from '../../../../components/DaoCreator/formComponents/AzoriusTokenDetails';
-import { DAOCreateMode } from '../../../../components/DaoCreator/formComponents/EstablishEssentials';
-import { useERC20TokenSchema } from '../../../../hooks/schemas/DAOCreate/useERC20TokenSchema';
-import {
-  CreatorFormState,
-  CreatorSteps,
-  GovernanceType,
-  ICreationStepProps,
-} from '../../../../types';
+import { initialState } from '../../../components/DaoCreator/constants';
+import { AzoriusTokenDetails } from '../../../components/DaoCreator/formComponents/AzoriusTokenDetails';
+import { DAOCreateMode } from '../../../components/DaoCreator/formComponents/EstablishEssentials';
+import { useERC20TokenSchema } from '../../../hooks/schemas/DAOCreate/useERC20TokenSchema';
+import { CreatorFormState, CreatorSteps, GovernanceType, ICreationStepProps } from '../../../types';
 
-export function SafeTokenDeployModal({
-  closeModal,
-  closeAllModals,
-}: {
-  closeModal: () => void;
-  closeAllModals: () => void;
-}) {
+export function SafeDeployTokenPage() {
   const { erc20TokenValidation } = useERC20TokenSchema();
 
   return (

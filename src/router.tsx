@@ -8,6 +8,7 @@ import LoadingProblem from './pages/LoadingProblem';
 import { SafeCreatePage } from './pages/create/SafeCreatePage';
 import { SafeController } from './pages/dao/SafeController';
 import { SafeDashboardPage } from './pages/dao/SafeDashboardPage';
+import { SafeDeployTokenPage } from './pages/dao/deploy-token/SafeDeployTokenPage';
 import { SafeEditGovernancePage } from './pages/dao/edit/governance/SafeEditGovernancePage';
 import { SafeHierarchyPage } from './pages/dao/hierarchy/SafeHierarchyPage';
 import { SafeSubDaoCreatePage } from './pages/dao/new/SafeSubDaoCreatePage';
@@ -77,6 +78,10 @@ export const router = (addressPrefix: string, daoAddress: string | undefined) =>
             {
               path: DAO_ROUTES.dao.path,
               element: <SafeDashboardPage />,
+            },
+            {
+              path: DAO_ROUTES.deployToken.path,
+              element: <SafeDeployTokenPage />,
             },
             {
               path: 'edit/governance/*',
