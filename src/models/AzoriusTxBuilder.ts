@@ -20,6 +20,7 @@ import {
   AzoriusERC20DAO,
   AzoriusERC721DAO,
   AzoriusGovernanceDAO,
+  CreateProposalTransaction,
   SafeTransaction,
   TokenLockType,
   VotingStrategyType,
@@ -262,19 +263,69 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
     });
   }
 
-  public buildUpdateERC20AddressTx(keyValuePairs: Address): SafeTransaction {
+  public getCreateTokenTx(): CreateProposalTransaction {
+    const azoriusErc20DaoData = this.daoData as AzoriusERC20DAO;
+
+    if (
+      !this.encodedSetupTokenData ||
+      !this.votesErc20MasterCopy ||
+      !this.votesErc20LockableMasterCopy
+    ) {
+      throw new Error('Encoded setup token data or votes erc20 master copy not set');
+    }
+
+    const votesErc20MasterCopy =
+      azoriusErc20DaoData.locked === TokenLockType.LOCKED
+        ? this.votesErc20LockableMasterCopy
+        : this.votesErc20MasterCopy;
+
+    return {
+      targetAddress: this.zodiacModuleProxyFactory,
+      ethValue: {
+        bigintValue: 0n,
+        value: '0',
+      },
+      functionName: 'deployModule',
+      parameters: [
+        {
+          signature: 'address',
+          value: votesErc20MasterCopy,
+        },
+        {
+          signature: 'bytes',
+          value: this.encodedSetupTokenData,
+        },
+        {
+          signature: 'uint256',
+          value: this.tokenNonce.toString(),
+        },
+      ],
+    };
+  }
+
+  public getUpdateERC20AddressTx(keyValuePairs: Address): CreateProposalTransaction {
     if (!this.predictedTokenAddress) {
       throw new Error('predictedTokenAddress not set');
     }
 
-    return buildContractCall({
-      target: keyValuePairs,
-      encodedFunctionData: encodeFunctionData({
-        functionName: 'updateValues',
-        args: [['erc20Address'], [this.predictedTokenAddress]],
-        abi: abis.KeyValuePairs,
-      }),
-    });
+    return {
+      targetAddress: keyValuePairs,
+      ethValue: {
+        bigintValue: 0n,
+        value: '0',
+      },
+      functionName: 'updateValues',
+      parameters: [
+        {
+          signature: 'string[]',
+          valueArray: ['erc20Address'],
+        },
+        {
+          signature: 'string[]',
+          valueArray: [this.predictedTokenAddress],
+        },
+      ],
+    };
   }
 
   public buildDeployStrategyTx(): SafeTransaction {

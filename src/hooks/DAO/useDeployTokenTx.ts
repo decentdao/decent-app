@@ -1,18 +1,13 @@
 import { useCallback } from 'react';
-import { useTranslation } from 'react-i18next';
-import { getContract, isHex } from 'viem';
 import { useAccount } from 'wagmi';
-import MultiSendCallOnlyAbi from '../../assets/abi/MultiSendCallOnly';
-import { encodeMultiSend } from '../../helpers';
 import { TxBuilderFactory } from '../../models/TxBuilderFactory';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
-import { AzoriusERC20DAO, SafeTransaction } from '../../types';
+import { AzoriusERC20DAO, CreateProposalTransaction } from '../../types';
 import useNetworkPublicClient from '../useNetworkPublicClient';
 import { useNetworkWalletClient } from '../useNetworkWalletClient';
-import { useTransaction } from '../utils/useTransaction';
 import { useCurrentDAOKey } from './useCurrentDAOKey';
 
-export default function useDeployToken() {
+export default function useDeployTokenTx() {
   const {
     contracts: {
       compatibilityFallbackHandler,
@@ -38,12 +33,10 @@ export default function useDeployToken() {
   const user = useAccount();
   const publicClient = useNetworkPublicClient();
   const { data: walletClient } = useNetworkWalletClient();
-  const [contractCall, pending] = useTransaction();
-  const { t } = useTranslation('transaction');
   const { safeAddress } = useCurrentDAOKey();
 
   const deployToken = useCallback(
-    async (daoData: AzoriusERC20DAO, successCallback: () => void) => {
+    async (daoData: AzoriusERC20DAO) => {
       if (!user.address || !walletClient || !safeAddress) {
         return;
       }
@@ -75,37 +68,19 @@ export default function useDeployToken() {
       );
       txBuilderFactory.setSafeContract(safeAddress);
       const azoriusTxBuilder = await txBuilderFactory.createAzoriusTxBuilder();
-      const txs: SafeTransaction[] = [];
+      const txs: CreateProposalTransaction[] = [];
 
       // deploy(and allocate) token if token is not imported
       if (!daoData.isTokenImported) {
-        txs.push(azoriusTxBuilder.buildCreateTokenTx());
+        txs.push(azoriusTxBuilder.getCreateTokenTx());
       }
-      txs.push(azoriusTxBuilder.buildUpdateERC20AddressTx(keyValuePairs));
-      const safeTx = encodeMultiSend(txs);
+      txs.push(azoriusTxBuilder.getUpdateERC20AddressTx(keyValuePairs));
 
-      if (!isHex(safeTx)) {
-        throw new Error('built transaction is not a hex string');
-      }
-
-      const multiSendCallOnlyContract = getContract({
-        abi: MultiSendCallOnlyAbi,
-        address: multiSendCallOnly,
-        client: walletClient,
-      });
-
-      contractCall({
-        contractFn: () => multiSendCallOnlyContract.write.multiSend([safeTx]),
-        pendingMessage: t('pendingDeployToken'),
-        failedMessage: t('failedDeployToken'),
-        successMessage: t('successDeployToken'),
-        successCallback,
-      });
+      return txs;
     },
     [
       claimErc20MasterCopy,
       compatibilityFallbackHandler,
-      contractCall,
       freezeGuardAzoriusMasterCopy,
       freezeGuardMultisigMasterCopy,
       freezeVotingErc20MasterCopy,
@@ -121,7 +96,6 @@ export default function useDeployToken() {
       multiSendCallOnly,
       publicClient,
       safeAddress,
-      t,
       user.address,
       votesErc20LockableMasterCopy,
       votesErc20MasterCopy,
@@ -130,5 +104,5 @@ export default function useDeployToken() {
     ],
   );
 
-  return { deployToken, pending };
+  return { deployToken };
 }

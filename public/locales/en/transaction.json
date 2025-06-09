@@ -22,8 +22,5 @@
   "successTokenClaim": "You have successfully claimed {{amount}} {{symbol}}",
   "snapshotRecastVoteHelper": "You can still change your vote until the voting period ends.",
   "modifyGovernanceSetAzoriusProposalPendingMessage": "Submitting proposal to modify governance...",
-  "errorLoadingParentNode": "Error loading parent",
-  "pendingDeployToken": "Deploying your Token",
-  "failedDeployToken": "Deployment failed",
-  "successDeployToken": "Deployment successful"
+  "errorLoadingParentNode": "Error loading parent"
 }
