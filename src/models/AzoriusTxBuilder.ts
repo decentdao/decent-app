@@ -247,7 +247,7 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
       throw new Error('Encoded setup token data or votes erc20 master copy not set');
     }
 
-    const votingStrategyMasterCopy =
+    const votesErc20MasterCopy =
       azoriusErc20DaoData.locked === TokenLockType.LOCKED
         ? this.votesErc20LockableMasterCopy
         : this.votesErc20MasterCopy;
@@ -256,8 +256,23 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
       target: this.zodiacModuleProxyFactory,
       encodedFunctionData: encodeFunctionData({
         functionName: 'deployModule',
-        args: [votingStrategyMasterCopy, this.encodedSetupTokenData, this.tokenNonce],
+        args: [votesErc20MasterCopy, this.encodedSetupTokenData, this.tokenNonce],
         abi: ZodiacModuleProxyFactoryAbi,
+      }),
+    });
+  }
+
+  public buildUpdateERC20AddressTx(keyValuePairs: Address): SafeTransaction {
+    if (!this.predictedTokenAddress) {
+      throw new Error('predictedTokenAddress not set');
+    }
+
+    return buildContractCall({
+      target: keyValuePairs,
+      encodedFunctionData: encodeFunctionData({
+        functionName: 'updateValues',
+        args: [['erc20Address'], [this.predictedTokenAddress]],
+        abi: abis.KeyValuePairs,
       }),
     });
   }
