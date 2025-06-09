@@ -2,6 +2,8 @@ import { Button, Flex, Show, Text } from '@chakra-ui/react';
 import { useTranslation } from 'react-i18next';
 import { zeroAddress } from 'viem';
 import { SettingsContentBox } from '../../../../components/SafeSettings/SettingsContentBox';
+import { ModalType } from '../../../../components/ui/modals/ModalProvider';
+import { useDecentModal } from '../../../../components/ui/modals/useDecentModal';
 import NestedPageHeader from '../../../../components/ui/page/Header/NestedPageHeader';
 import { DAO_ROUTES } from '../../../../constants/routes';
 import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
@@ -15,6 +17,7 @@ export function SafeTokenSettingsPage() {
   const {
     node: { safe },
   } = useDAOStore({ daoKey });
+  const { open: openDeployModal } = useDecentModal(ModalType.DEPLOY_TOKEN);
 
   return (
     <>
@@ -44,7 +47,7 @@ export function SafeTokenSettingsPage() {
             <Text textStyle="text-sm-regular">{t('tokenPageNotDeployedDescription')}</Text>
           </Flex>
 
-          <Button>{t('tokenPageDeployTokenButton')}</Button>
+          <Button onClick={() => openDeployModal()}>{t('tokenPageDeployTokenButton')}</Button>
         </Flex>
       </SettingsContentBox>
     </>

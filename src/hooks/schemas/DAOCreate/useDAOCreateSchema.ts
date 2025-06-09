@@ -5,6 +5,7 @@ import * as Yup from 'yup';
 import { DAOEssentials, BigIntValuePair, TokenCreationType, GovernanceType } from '../../../types';
 import { useValidationAddress } from '../common/useValidationAddress';
 import { useDAOCreateTests } from './useDAOCreateTests';
+import { useERC20TokenSchema } from './useERC20TokenSchema';
 
 /**
  * validation schema for DAO Create workflow
@@ -26,13 +27,11 @@ export const useDAOCreateSchema = ({
   } = useValidationAddress();
   const {
     minValueValidation,
-    maxAllocationValidation,
-    allocationValidationTest,
-    uniqueAllocationValidationTest,
-    validERC20Address,
     validERC721Address,
     isBigIntValidation,
   } = useDAOCreateTests();
+
+  const { erc20TokenShape } = useERC20TokenSchema();
 
   const { t } = useTranslation(['daoCreate']);
 
@@ -70,55 +69,7 @@ export const useDAOCreateSchema = ({
         }),
         erc20Token: Yup.object().when('essentials', {
           is: ({ governance }: DAOEssentials) => governance === GovernanceType.AZORIUS_ERC20,
-          then: _schema =>
-            _schema.shape({
-              tokenName: Yup.string().when('tokenCreationType', {
-                is: (value: TokenCreationType) => !!value && value === TokenCreationType.NEW,
-                then: __schema => __schema.required(),
-              }),
-              tokenSymbol: Yup.string().when('tokenCreationType', {
-                is: (value: TokenCreationType) => !!value && value === TokenCreationType.NEW,
-                then: __schema => __schema.required(),
-              }),
-              tokenSupply: Yup.object().shape({
-                value: Yup.string().when('tokenCreationType', {
-                  is: (value: TokenCreationType) => !!value && value === TokenCreationType.NEW,
-                  then: __schema => __schema.required(),
-                }),
-              }),
-              locked: Yup.string().when('tokenCreationType', {
-                is: (value: TokenCreationType) => !!value && value === TokenCreationType.NEW,
-                then: __schema => __schema.required(),
-              }),
-              tokenImportAddress: Yup.string().when('tokenCreationType', {
-                is: (value: TokenCreationType) => !!value && value === TokenCreationType.IMPORTED,
-                then: __schema =>
-                  __schema.test(addressValidationTestSimple).test(validERC20Address),
-              }),
-              parentAllocationAmount: Yup.object().when({
-                is: (value: BigIntValuePair) => !!value.value,
-                then: schema =>
-                  schema.shape({
-                    value: Yup.string().test(maxAllocationValidation),
-                  }),
-              }),
-              tokenAllocations: Yup.array().when('tokenCreationType', {
-                is: (value: TokenCreationType) => !!value && value === TokenCreationType.NEW,
-                then: __schema =>
-                  __schema.min(1).of(
-                    Yup.object().shape({
-                      address: Yup.string()
-                        .test(allocationValidationTest)
-                        .test(uniqueAllocationValidationTest),
-                      amount: Yup.object()
-                        .required()
-                        .shape({
-                          value: Yup.string().test(maxAllocationValidation),
-                        }),
-                    }),
-                  ),
-              }),
-            }),
+          then: () => erc20TokenShape,
         }),
         erc721Token: Yup.object().when('essentials', {
           is: ({ governance }: DAOEssentials) => governance === GovernanceType.AZORIUS_ERC721,
@@ -205,10 +156,7 @@ export const useDAOCreateSchema = ({
       addressValidationTest,
       uniqueAddressValidationTest,
       addressValidationTestSimple,
-      validERC20Address,
-      maxAllocationValidation,
-      allocationValidationTest,
-      uniqueAllocationValidationTest,
+      erc20TokenShape,
       uniqueNFTAddressValidationTest,
       validERC721Address,
       isBigIntValidation,
