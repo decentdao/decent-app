@@ -12,7 +12,6 @@ const Input = defineMultiStyleConfig({
   variants,
   defaultProps: {
     size: 'base',
-    variant: 'unstyled',
   },
   variants: {
     tableStyle,
