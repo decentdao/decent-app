@@ -11,6 +11,7 @@
   "proposalTemplates": "Proposal Templates",
   "proposalTemplate": "{{proposalTemplateTitle}}",
   "proposalTemplateNew": "Create Proposal Template",
+  "deployToken": "Deploy Token",
   "editDAO": "Edit DAO",
   "parentLink": "Parent DAO",
   "settings": "Settings"
