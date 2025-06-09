@@ -428,6 +428,7 @@ export function useGovernanceFetcher() {
             ).reverse();
 
             if (!proposalCreatedEvents.length) {
+              onProposalsLoaded([]);
               return;
             }
 
