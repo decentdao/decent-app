@@ -125,6 +125,7 @@ function StepController(props: Omit<ICreationStepProps, 'steps'>) {
             <AzoriusTokenDetails
               {...props}
               steps={steps}
+              withSteps
             />
           }
         />

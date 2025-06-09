@@ -28,14 +28,87 @@ function TokenConfigDisplay(props: ICreationStepProps) {
   }
 }
 
-export function AzoriusTokenDetails(props: ICreationStepProps) {
-  const { transactionPending, isSubDAO, setFieldValue, errors, handleChange, isSubmitting, mode } =
+function TokenCreationTypeHeader(props: { tokenErrorMsg: string; formProps: ICreationStepProps }) {
+  const { t } = useTranslation('daoCreate');
+  const { values, setFieldValue, setTouched, touched, handleChange } = props.formProps;
+
+  return (
+    <Flex
+      flexDirection="column"
+      gap={4}
+    >
+      <ContentBoxTitle>{t('titleTokenContract')}</ContentBoxTitle>
+      <RadioGroup
+        display="flex"
+        flexDirection="row"
+        name="erc20Token.tokenCreationType"
+        gap={8}
+        ml="0.25rem"
+        id="erc20Token.tokenCreationType"
+        value={values.erc20Token.tokenCreationType}
+        onChange={value => {
+          setFieldValue('erc20Token.tokenCreationType', value);
+        }}
+      >
+        <RadioWithText
+          label={t('radioLabelExistingToken')}
+          description={t('helperExistingToken')}
+          testId="choose-existingToken"
+          value={TokenCreationType.IMPORTED}
+          onClick={() => {
+            setFieldValue('erc20Token.tokenName', '');
+            setFieldValue('erc20Token.tokenSymbol', '');
+            setFieldValue('erc20Token.tokenSupply', '');
+          }}
+        />
+        <RadioWithText
+          label={t('radioLabelNewToken')}
+          description={t('helperNewToken')}
+          testId="choose-newToken"
+          value={TokenCreationType.NEW}
+          onClick={() => {
+            setFieldValue('erc20Token.tokenImportAddress', '');
+            setFieldValue('erc20Token.tokenName', '');
+            setFieldValue('erc20Token.tokenSymbol', '');
+            setFieldValue('erc20Token.tokenSupply', '');
+          }}
+        />
+      </RadioGroup>
+      {values.erc20Token.tokenCreationType === TokenCreationType.IMPORTED && (
+        <>
+          <LabelWrapper errorMessage={props.tokenErrorMsg}>
+            <Input
+              name="erc20Token.tokenImportAddress"
+              onChange={e => {
+                setTouched({
+                  erc20Token: {
+                    tokenImportAddress: true,
+                  },
+                  ...touched,
+                });
+
+                handleChange(e);
+              }}
+              value={values.erc20Token.tokenImportAddress}
+              placeholder={createAccountSubstring(zeroAddress)}
+              isInvalid={!!props.tokenErrorMsg}
+              isRequired
+            />
+          </LabelWrapper>
+        </>
+      )}
+    </Flex>
+  );
+}
+
+export function AzoriusTokenDetails(props: ICreationStepProps & { withSteps: boolean }) {
+  const { transactionPending, isSubDAO, setFieldValue, errors, isSubmitting, mode, withSteps } =
     props;
 
   const { t } = useTranslation('daoCreate');
   const publicClient = useNetworkPublicClient();
 
-  const { values, touched, setTouched } = useFormikContext<CreatorFormState>();
+  const { values, touched } = useFormikContext<CreatorFormState>();
 
   const { checkVotesToken } = usePrepareFormData();
   const [isImportedVotesToken, setIsValidERC20VotesToken] = useState<boolean>();
@@ -100,79 +173,34 @@ export function AzoriusTokenDetails(props: ICreationStepProps) {
 
   return (
     <>
-      <StepWrapper
-        mode={mode}
-        isSubDAO={isSubDAO}
-        isFormSubmitting={!!isSubmitting || transactionPending}
-        allSteps={props.steps}
-        stepNumber={2}
-      >
-        <Flex
-          flexDirection="column"
-          gap={4}
+      {withSteps && (
+        <StepWrapper
+          mode={mode}
+          isSubDAO={isSubDAO}
+          isFormSubmitting={!!isSubmitting || transactionPending}
+          allSteps={props.steps}
+          stepNumber={2}
         >
-          <ContentBoxTitle>{t('titleTokenContract')}</ContentBoxTitle>
-          <RadioGroup
-            display="flex"
-            flexDirection="row"
-            name="erc20Token.tokenCreationType"
-            gap={8}
-            ml="0.25rem"
-            id="erc20Token.tokenCreationType"
-            value={values.erc20Token.tokenCreationType}
-            onChange={value => {
-              setFieldValue('erc20Token.tokenCreationType', value);
-            }}
-          >
-            <RadioWithText
-              label={t('radioLabelExistingToken')}
-              description={t('helperExistingToken')}
-              testId="choose-existingToken"
-              value={TokenCreationType.IMPORTED}
-              onClick={() => {
-                setFieldValue('erc20Token.tokenName', '');
-                setFieldValue('erc20Token.tokenSymbol', '');
-                setFieldValue('erc20Token.tokenSupply', '');
-              }}
-            />
-            <RadioWithText
-              label={t('radioLabelNewToken')}
-              description={t('helperNewToken')}
-              testId="choose-newToken"
-              value={TokenCreationType.NEW}
-              onClick={() => {
-                setFieldValue('erc20Token.tokenImportAddress', '');
-                setFieldValue('erc20Token.tokenName', '');
-                setFieldValue('erc20Token.tokenSymbol', '');
-                setFieldValue('erc20Token.tokenSupply', '');
-              }}
-            />
-          </RadioGroup>
-          {values.erc20Token.tokenCreationType === TokenCreationType.IMPORTED && (
-            <>
-              <LabelWrapper errorMessage={tokenErrorMsg}>
-                <Input
-                  name="erc20Token.tokenImportAddress"
-                  onChange={e => {
-                    setTouched({
-                      erc20Token: {
-                        tokenImportAddress: true,
-                      },
-                      ...touched,
-                    });
+          <TokenCreationTypeHeader
+            tokenErrorMsg={tokenErrorMsg}
+            formProps={props}
+          />
+        </StepWrapper>
+      )}
 
-                    handleChange(e);
-                  }}
-                  value={values.erc20Token.tokenImportAddress}
-                  placeholder={createAccountSubstring(zeroAddress)}
-                  isInvalid={!!tokenErrorMsg}
-                  isRequired
-                />
-              </LabelWrapper>
-            </>
-          )}
-        </Flex>
-      </StepWrapper>
+      {!withSteps && (
+        <Box
+          mt="1.5rem"
+          padding="1.5rem"
+          bg="color-neutral-950"
+          borderRadius="0.25rem"
+        >
+          <TokenCreationTypeHeader
+            tokenErrorMsg={tokenErrorMsg}
+            formProps={props}
+          />
+        </Box>
+      )}
       <Box
         mt="1.5rem"
         padding="1.5rem"
@@ -191,7 +219,8 @@ export function AzoriusTokenDetails(props: ICreationStepProps) {
           <AzoriusTokenAllocations {...props} />
         </Box>
       )}
-      <StepButtons {...props} />
+
+      {withSteps && <StepButtons {...props} />}
     </>
   );
 }
