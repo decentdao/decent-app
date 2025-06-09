@@ -3,7 +3,13 @@ import { Address, getAddress } from 'viem';
 import { logError } from '../helpers/errorLogging';
 import { useDecentModules } from '../hooks/DAO/loaders/useDecentModules';
 import { useNetworkConfigStore } from '../providers/NetworkConfig/useNetworkConfigStore';
-import { AzoriusProposal, DAOKey, FractalModuleType, FractalProposal } from '../types';
+import {
+  AzoriusProposal,
+  DAOKey,
+  FractalModuleType,
+  FractalProposal,
+  ProposalTemplate,
+} from '../types';
 import { useGovernanceFetcher } from './fetchers/governance';
 import { useGuardFetcher } from './fetchers/guard';
 import { useNodeFetcher } from './fetchers/node';
@@ -76,15 +82,16 @@ export const useDAOStoreFetcher = ({
           daoInfo,
           modules,
         });
-
+        let proposalTemplates: ProposalTemplate[] = [];
         if (daoInfo.proposalTemplatesHash) {
-          const proposalTemplates = await fetchDAOProposalTemplates({
+          const fetchedProposalTemplates = await fetchDAOProposalTemplates({
             proposalTemplatesHash: daoInfo.proposalTemplatesHash,
           });
-          if (proposalTemplates) {
-            setProposalTemplates(daoKey, proposalTemplates);
+          if (fetchedProposalTemplates) {
+            proposalTemplates = fetchedProposalTemplates;
           }
         }
+        setProposalTemplates(daoKey, proposalTemplates);
 
         const onLoadingFirstProposalStateChanged = (loading: boolean) =>
           setLoadingFirstProposal(daoKey, loading);
