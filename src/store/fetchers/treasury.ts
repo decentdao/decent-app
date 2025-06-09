@@ -4,6 +4,7 @@ import { toast } from 'sonner';
 import { Address, getAddress, zeroAddress } from 'viem';
 import { CacheExpiry, CacheKeys } from '../../hooks/utils/cache/cacheDefaults';
 import { setValue } from '../../hooks/utils/cache/useLocalStorage';
+import { useFilterSpamTokens } from '../../hooks/utils/useFilterSpamTokens';
 import useBalancesAPI from '../../providers/App/hooks/useBalancesAPI';
 import { useSafeAPI } from '../../providers/App/hooks/useSafeAPI';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
@@ -30,6 +31,10 @@ function getTransferEventType(transferFrom: string, safeAddress: Address | undef
 export function useTreasuryFetcher() {
   const safeApi = useSafeAPI();
   const { chain, nativeTokenIcon } = useNetworkConfigStore();
+  const filterSpamTokens = useFilterSpamTokens({
+    includeNativeToken: true,
+    includeZeroBalanceToken: true,
+  });
   const { getTokenBalances, getNFTBalances, getDeFiBalances } = useBalancesAPI();
 
   const formatTransfer = useCallback(
@@ -104,7 +109,7 @@ export function useTreasuryFetcher() {
       if (defiBalancesError) {
         toast.warning(defiBalancesError, { duration: 2000 });
       }
-      const assetsFungible = tokenBalances || [];
+      const assetsFungible = filterSpamTokens(tokenBalances || []);
       const assetsNonFungible = nftBalances || [];
       const assetsDeFi = defiBalances || [];
 
@@ -214,6 +219,7 @@ export function useTreasuryFetcher() {
       getNFTBalances,
       getTokenBalances,
       safeApi,
+      filterSpamTokens,
     ],
   );
 
