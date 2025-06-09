@@ -40,8 +40,7 @@ export const useERC20TokenSchema = () => {
         }),
         tokenImportAddress: Yup.string().when('tokenCreationType', {
           is: (value: TokenCreationType) => !!value && value === TokenCreationType.IMPORTED,
-          then: __schema =>
-            __schema.test(addressValidationTestSimple).test(validERC20Address),
+          then: __schema => __schema.test(addressValidationTestSimple).test(validERC20Address),
         }),
         parentAllocationAmount: Yup.object().when({
           is: (value: BigIntValuePair) => !!value.value,
