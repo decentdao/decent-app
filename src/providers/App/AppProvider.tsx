@@ -1,5 +1,6 @@
 import { createContext } from 'react';
 import { DaoInfoStore } from '../../store/daoInfo/useDaoInfoStore';
+import { EMPTY_GOVERNANCE } from '../../store/slices/governances';
 import { useGlobalStore } from '../../store/store';
 import { DAOKey, DAOSubgraph, DecentModule, FractalStore, SafeWithNextNonce } from '../../types';
 
@@ -9,11 +10,67 @@ type FractalStoreWithNode = FractalStore & {
   node: DaoInfoStore;
 };
 
-export const useDAOStore = ({ daoKey }: { daoKey: DAOKey | undefined }): FractalStoreWithNode => {
+export const useDAOStore = ({
+  daoKey,
+  noDaoContext = false,
+}: {
+  daoKey: DAOKey | undefined;
+  noDaoContext?: boolean;
+}): FractalStoreWithNode => {
   const { getDaoNode, setDaoNode, getTreasury, getGovernance, getGuard } = useGlobalStore();
-  if (!daoKey) {
+  if (!daoKey && !noDaoContext) {
     throw new Error('DAO key is required to access global store');
   }
+
+  if (!daoKey) {
+    return {
+      node: {
+        safe: null,
+        subgraphInfo: null,
+        modules: null,
+        setSafeInfo: () => {},
+        setDaoInfo: () => {},
+        setDecentModules: () => {},
+        resetDaoInfoStore: () => {},
+      },
+      treasury: {
+        assetsDeFi: [],
+        assetsFungible: [],
+        assetsNonFungible: [],
+        totalUsdValue: 0,
+        transfers: [],
+      },
+      governance: EMPTY_GOVERNANCE,
+      guard: {
+        freezeProposalCreatedTime: null,
+        freezePeriod: null,
+        freezeProposalPeriod: null,
+        freezeProposalVoteCount: null,
+        freezeVotesThreshold: null,
+        isFrozen: false,
+        userHasFreezeVoted: false,
+        userHasVotes: false,
+      },
+      guardContracts: {
+        freezeGuardContractAddress: undefined,
+        freezeVotingContractAddress: undefined,
+        freezeGuardType: null,
+        freezeVotingType: null,
+      },
+      governanceContracts: {
+        isLoaded: false,
+        strategies: [],
+        linearVotingErc20Address: undefined,
+        linearVotingErc20WithHatsWhitelistingAddress: undefined,
+        linearVotingErc721Address: undefined,
+        linearVotingErc721WithHatsWhitelistingAddress: undefined,
+        moduleAzoriusAddress: undefined,
+        votesTokenAddress: undefined,
+        lockReleaseAddress: undefined,
+      },
+    };
+  }
+
   // Returning complete data from Zustand store will be handled in future tickets under following project:
   // https://linear.app/decent-labs/project/architecture-zustand-dao-addresses-as-keys-809cf9fe41b0
   const node = getDaoNode(daoKey);
