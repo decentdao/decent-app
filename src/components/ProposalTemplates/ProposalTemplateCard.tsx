@@ -1,4 +1,4 @@
-import { Box, Flex, Icon, Text } from '@chakra-ui/react';
+import { Flex, Icon, Text } from '@chakra-ui/react';
 import { GearFine } from '@phosphor-icons/react';
 import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -137,13 +137,7 @@ export default function ProposalTemplateCard({
         {title}
       </Text>
 
-      <Box
-      // bg="color-alpha-black-900"
-      // p="0.5rem"
-      // borderRadius="0.75rem"
-      >
-        <Markdown content={description} />
-      </Box>
+      <Markdown content={description} />
     </ContentBox>
   );
 }
