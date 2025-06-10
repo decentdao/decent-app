@@ -1,4 +1,4 @@
-import { Flex, Text, Icon, Button, Input } from '@chakra-ui/react';
+import { Flex, Text, Icon, Button, Input, Grid, GridItem } from '@chakra-ui/react';
 import { Empty, PencilSimple, Plus, TrashSimple, WarningCircle } from '@phosphor-icons/react';
 import { useTranslation } from 'react-i18next';
 import { Address } from 'viem';
@@ -12,45 +12,151 @@ import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
 import { createAccountSubstring } from '../../../../hooks/utils/useGetAccountName';
 import { useDAOStore } from '../../../../providers/App/AppProvider';
 
+interface RevenueShare {
+  address: Address;
+  revenueShare: number;
+}
+
 interface RevSplitWallet {
   address: Address;
   displayName?: string;
   daoShare: number;
   parentDaoShare: number;
   tokenHolderShare: number;
-  splits: { address: Address; revenueShare: number }[];
+  splits: RevenueShare[];
 }
 
-function DefaultShareRow({ label, share }: { label: string; share: number }) {
-  const padding = 3;
+function TableRowItem({
+  colSpan,
+  cellContent,
+  isEdgeItem,
+  rightDivider,
+  hasPadding,
+  isFirstColumn,
+}: {
+  colSpan?: number;
+  rightDivider?: boolean;
+  cellContent?: React.ReactNode;
+  isEdgeItem?: boolean;
+  hasPadding?: boolean;
+  isFirstColumn?: boolean;
+}) {
+  const border = isEdgeItem ? { borderTop: '1px solid', borderBottom: '1px solid' } : {};
+  const rightDividerBorder = rightDivider ? { borderRight: '1px solid' } : {};
+  return (
+    <GridItem
+      display="flex"
+      alignItems="center"
+      p={hasPadding ? 4 : '2px'}
+      {...border}
+      {...rightDividerBorder}
+      colSpan={colSpan}
+      borderLeft={isFirstColumn ? '1px solid' : undefined}
+      borderColor="color-layout-border"
+      textStyle="text-sm-medium"
+      color="color-layout-foreground"
+    >
+      {cellContent}
+    </GridItem>
+  );
+}
+
+function DefaultShareRowGrid({ label, share }: { label: string; share: number }) {
   return (
     <>
-      <Flex
-        flexDir="row"
-        justifyContent="space-between"
-        w="100%"
-      >
-        <Text
-          color="color-neutral-400"
-          flex={4}
-          p={padding}
-        >
-          {label}
-        </Text>
-        <Flex flex={4}>
-          <Divider vertical />
+      <TableRowItem
+        colSpan={1}
+        cellContent={
           <Text
-            p={padding}
+            color="color-neutral-400"
+            flex={4}
+          >
+            {label}
+          </Text>
+        }
+        hasPadding
+        isFirstColumn
+        rightDivider
+        isEdgeItem
+      />
+      <TableRowItem
+        colSpan={1}
+        cellContent={
+          <Text
+            pl={3}
             color="color-neutral-400"
           >
             % {share}
           </Text>
-        </Flex>
-        <Flex flex={1}>
-          <Divider vertical />
-        </Flex>
-      </Flex>
-      <Divider />
+        }
+        hasPadding={false}
+        rightDivider
+        isEdgeItem
+      />
+      <TableRowItem
+        colSpan={1}
+        cellContent={null}
+        hasPadding={false}
+        rightDivider
+        isEdgeItem
+      />
+    </>
+  );
+}
+
+function WalletShareRow({ address, revenueShare }: RevenueShare) {
+  return (
+    <>
+      <TableRowItem
+        colSpan={1}
+        cellContent={
+          <Input
+            variant="tableStyle"
+            color="color-white"
+            value={createAccountSubstring(address)}
+          />
+        }
+        isFirstColumn
+        rightDivider
+        isEdgeItem
+      />
+      <TableRowItem
+        colSpan={1}
+        cellContent={
+          <Text
+            pl={3}
+            color="color-neutral-400"
+          >
+            % {revenueShare}
+          </Text>
+        }
+        rightDivider
+        isEdgeItem
+      />
+      <TableRowItem
+        colSpan={1}
+        hasPadding
+        cellContent={
+          <Button
+            variant="unstyled"
+            h={1}
+            w={1}
+            mt="15%"
+            mr="30%"
+            color="color-error-400"
+            _hover={{
+              backgroundColor: 'color-layout-focus-destructive',
+            }}
+          >
+            <Icon
+              boxSize="1rem"
+              as={TrashSimple}
+            />
+          </Button>
+        }
+        rightDivider
+        isEdgeItem
+      />
     </>
   );
 }
@@ -66,8 +172,7 @@ function RevSplitWalletCard({ wallet }: { wallet: RevSplitWallet }) {
 
   const isTotalError = revSplitTotal > 100;
 
-  const padding = 3;
-
+  const gridTemplateColumns = '1fr 1fr auto';
   return (
     <Flex
       flexDir="column"
@@ -109,15 +214,14 @@ function RevSplitWalletCard({ wallet }: { wallet: RevSplitWallet }) {
         }
         content={
           <Flex direction="column">
-            <Divider
-              my={4}
-              ml={-4}
-            />
+            <Divider my={4} />
+
             <Flex
               flexDir="row"
               alignItems="center"
               justifyContent="space-between"
               gap={2}
+              mb={4}
             >
               <Text color="color-neutral-50">{t('counterparties')}</Text>
               <Button
@@ -129,84 +233,36 @@ function RevSplitWalletCard({ wallet }: { wallet: RevSplitWallet }) {
               </Button>
             </Flex>
 
-            <Flex
-              flexDir="column"
-              alignItems="center"
-              mt={4}
-              border="1px solid"
-              borderColor="color-neutral-900"
-              borderRadius="0.75rem"
+            <Grid
+              templateColumns={gridTemplateColumns}
+              borderTop="1px solid"
+              borderColor="color-layout-border"
+              borderTopRadius="0.75rem"
+              whiteSpace="nowrap"
+              className="scroll-dark"
+              overflow={{ base: 'auto', md: 'hidden' }}
             >
-              <DefaultShareRow
+              <DefaultShareRowGrid
                 label={t('currentDaoTreasureShareLabel')}
                 share={wallet.daoShare}
               />
-              <DefaultShareRow
+              <DefaultShareRowGrid
                 label={t('parentDaoTreasureShareLabel')}
                 share={wallet.parentDaoShare}
               />
-              <DefaultShareRow
+              <DefaultShareRowGrid
                 label={t('currentTokenHolderShareLabel')}
                 share={wallet.tokenHolderShare}
               />
 
-              {/* SPLITS */}
               {wallet.splits.map((split, i) => (
-                <>
-                  <Flex
-                    key={split.address}
-                    flexDir="row"
-                    justifyContent="space-between"
-                    w="100%"
-                  >
-                    <Flex
-                      flex={4}
-                      p={padding}
-                    >
-                      <Input
-                        variant="unstyled"
-                        color="color-white"
-                        value={createAccountSubstring(split.address)}
-                      />
-                    </Flex>
-
-                    <Flex flex={4}>
-                      <Divider vertical />
-                      <Text
-                        p={padding}
-                        color="color-white"
-                      >
-                        % {split.revenueShare}
-                      </Text>
-                    </Flex>
-
-                    <Flex
-                      flex={1}
-                      justifyContent="space-between"
-                    >
-                      <Divider vertical />
-                      <Button
-                        variant="unstyled"
-                        h={1}
-                        w={1}
-                        mt="15%"
-                        mr="30%"
-                        color="color-error-400"
-                        _hover={{
-                          backgroundColor: 'color-layout-focus-destructive',
-                        }}
-                      >
-                        <Icon
-                          boxSize="1rem"
-                          as={TrashSimple}
-                        />
-                      </Button>
-                    </Flex>
-                  </Flex>
-                  {i !== wallet.splits.length - 1 && <Divider />}
-                </>
+                <WalletShareRow
+                  key={split.address}
+                  address={split.address}
+                  revenueShare={split.revenueShare}
+                />
               ))}
-            </Flex>
+            </Grid>
 
             {/* TOTAL WALLETS AND ERROR BADGE */}
             <Flex
