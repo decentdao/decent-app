@@ -28,9 +28,9 @@ import { AzoriusTokenAllocation } from './AzoriusTokenAllocation';
 export function AzoriusTokenAllocations(props: ICreationStepProps) {
   const { values, errors, setFieldValue, isSubDAO } = props;
   const { t } = useTranslation('daoCreate');
-  const { daoKey, invalidQuery } = useCurrentDAOKey();
+  const { daoKey } = useCurrentDAOKey();
 
-  const { governance } = useDAOStore({ daoKey, noDaoContext: invalidQuery });
+  const { governance } = useDAOStore({ daoKey });
 
   const azoriusGovernance = governance as AzoriusGovernance;
   const canReceiveParentAllocations = isSubDAO && azoriusGovernance.votesToken?.address;

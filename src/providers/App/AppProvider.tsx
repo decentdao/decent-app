@@ -10,18 +10,8 @@ type FractalStoreWithNode = FractalStore & {
   node: DaoInfoStore;
 };
 
-export const useDAOStore = ({
-  daoKey,
-  noDaoContext = false,
-}: {
-  daoKey: DAOKey | undefined;
-  noDaoContext?: boolean;
-}): FractalStoreWithNode => {
+export const useDAOStore = ({ daoKey }: { daoKey: DAOKey | undefined }): FractalStoreWithNode => {
   const { getDaoNode, setDaoNode, getTreasury, getGovernance, getGuard } = useGlobalStore();
-  if (!daoKey && !noDaoContext) {
-    throw new Error('DAO key is required to access global store');
-  }
-
   if (!daoKey) {
     return {
       node: {
