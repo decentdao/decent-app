@@ -306,6 +306,47 @@ function RevSplitWalletCard({ wallet }: { wallet: RevSplitWallet }) {
   );
 }
 
+function DaoSafeWalletCard({ displayedAddress }: { displayedAddress: Address }) {
+  const { t } = useTranslation('revenueSharing');
+
+  return (
+    <Flex
+      flexDir="column"
+      gap={4}
+      border="1px solid"
+      borderColor="color-neutral-900"
+      borderRadius="0.75rem"
+      p={4}
+    >
+      <Flex
+        direction="row"
+        alignItems="center"
+        gap={1}
+      >
+        <Text color="color-white">{t('daoSafeWallet')}</Text>
+
+        {displayedAddress && (
+          <DisplayAddress
+            address={displayedAddress}
+            color="color-white"
+            textStyle="text-sm-underlined"
+          >
+            {createAccountSubstring(displayedAddress)}
+          </DisplayAddress>
+        )}
+      </Flex>
+
+      <Badge
+        labelKey="revShareDaoSafeWarning"
+        size="base"
+        leftIcon={<Icon as={WarningCircle} />}
+      >
+        <Text>{t('revShareDaoSafeWarning')}</Text>
+      </Badge>
+    </Flex>
+  );
+}
+
 export function SafeRevenueSharingSettingsPage() {
   const { t } = useTranslation('revenueSharing');
 
@@ -313,8 +354,6 @@ export function SafeRevenueSharingSettingsPage() {
   const {
     node: { safe },
   } = useDAOStore({ daoKey });
-
-  const displayedAddress = safe?.address;
 
   const revSplitWallets: RevSplitWallet[] = [
     {
@@ -391,42 +430,8 @@ export function SafeRevenueSharingSettingsPage() {
               </Button>
             </Flex>
 
-            {/* Section 1: DAO Safe Wallet Card */}
-            <Flex
-              flexDir="column"
-              gap={4}
-              border="1px solid"
-              borderColor="color-neutral-900"
-              borderRadius="0.75rem"
-              p={4}
-            >
-              <Flex
-                direction="row"
-                alignItems="center"
-                gap={1}
-              >
-                <Text color="color-white">{t('daoSafeWallet')}</Text>
-
-                {displayedAddress && (
-                  <DisplayAddress
-                    address={displayedAddress}
-                    color="color-white"
-                    textStyle="text-sm-underlined"
-                  >
-                    {createAccountSubstring(displayedAddress)}
-                  </DisplayAddress>
-                )}
-              </Flex>
-
-              {/* DAO Safe Wallet Warning Message */}
-              <Badge
-                labelKey="revShareDaoSafeWarning"
-                size="base"
-                leftIcon={<Icon as={WarningCircle} />}
-              >
-                <Text>{t('revShareDaoSafeWarning')}</Text>
-              </Badge>
-            </Flex>
+            {/* DAO Safe Wallet Card */}
+            {safe?.address && <DaoSafeWalletCard displayedAddress={safe.address} />}
           </Flex>
 
           {revSplitWallets.map(wallet => (
