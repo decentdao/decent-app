@@ -1062,6 +1062,7 @@ export function SafeSettingsModal({
             flex="1"
             height="100%"
             pl="1"
+            overflowY="auto"
           >
             <SettingsNavigation onSettingsNavigationClick={handleSettingsNavigationClick} />
             <Divider vertical />
