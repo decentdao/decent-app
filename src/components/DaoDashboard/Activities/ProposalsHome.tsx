@@ -403,6 +403,7 @@ export function ProposalsHome() {
                   proposals={group}
                   currentPage={1}
                   totalPages={1}
+                  showNonce={false}
                 />
               </Box>
             ))
@@ -411,6 +412,7 @@ export function ProposalsHome() {
             proposals={paginatedProposals}
             currentPage={currentPage}
             totalPages={totalPages}
+            showNonce={true}
           />
         )}
 
