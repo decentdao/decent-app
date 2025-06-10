@@ -374,7 +374,11 @@ export function ExecutionSection({ proposal }: { proposal: MultisigProposal }) {
               py="0.75rem"
               px="1rem"
               onClick={rejectionProposalAction.action}
-              isDisabled={!isRejectedProposalPassThreshold || rejectionProposalAction.actionPending}
+              isDisabled={
+                !isActiveNonce ||
+                !isRejectedProposalPassThreshold ||
+                rejectionProposalAction.actionPending
+              }
             >
               {t(rejectionProposalExecutionButtonLabel)}
             </Button>
