@@ -28,6 +28,7 @@ export function useGovernanceListeners({
   erc20StrategyAddress,
   erc721StrategyAddress,
   onProposalCreated,
+  onProposalExecuted,
   onGovernanceAccountDataUpdated,
   onLockReleaseAccountDataUpdated,
   onERC20VoteCreated,
@@ -39,6 +40,7 @@ export function useGovernanceListeners({
   erc20StrategyAddress?: Address;
   erc721StrategyAddress?: Address;
   onProposalCreated: (proposal: AzoriusProposal) => void;
+  onProposalExecuted: (proposalId: string) => void;
   onGovernanceAccountDataUpdated: (governanceAccountData: {
     balance: bigint;
     delegatee: Address;
@@ -170,7 +172,7 @@ export function useGovernanceListeners({
       address: moduleAzoriusAddress,
     });
 
-    const unwatch = azoriusContract.watchEvent.ProposalCreated({
+    const unwatchProposalCreated = azoriusContract.watchEvent.ProposalCreated({
       onLogs: async logs => {
         for (const log of logs) {
           if (
@@ -243,9 +245,30 @@ export function useGovernanceListeners({
         }
       },
     });
+    const unwatchProposalExecuted = azoriusContract.watchEvent.ProposalExecuted({
+      onLogs: async logs => {
+        for (const log of logs) {
+          if (!log.args.proposalId) {
+            continue;
+          }
 
-    return unwatch;
-  }, [getAddressContractType, publicClient, decode, onProposalCreated, moduleAzoriusAddress]);
+          onProposalExecuted(log.args.proposalId.toString());
+        }
+      },
+    });
+
+    return () => {
+      unwatchProposalCreated();
+      unwatchProposalExecuted();
+    };
+  }, [
+    getAddressContractType,
+    publicClient,
+    decode,
+    onProposalCreated,
+    onProposalExecuted,
+    moduleAzoriusAddress,
+  ]);
 
   useEffect(() => {
     /**

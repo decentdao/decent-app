@@ -10,6 +10,7 @@ import {
   FractalGovernance,
   FractalGovernanceContracts,
   FractalProposal,
+  FractalProposalState,
   FractalVotingStrategy,
   GovernanceType,
   ProposalTemplate,
@@ -62,6 +63,7 @@ export type GovernancesSlice = {
   setProposals: (daoKey: DAOKey, proposals: FractalProposal[]) => void;
   setSnapshotProposals: (daoKey: DAOKey, snapshotProposals: SnapshotProposal[]) => void;
   setProposal: (daoKey: DAOKey, proposal: AzoriusProposal) => void;
+  setProposalExecuted: (daoKey: DAOKey, proposalId: string) => void;
   setProposalVote: (
     daoKey: DAOKey,
     proposalId: string,
@@ -234,7 +236,21 @@ export const createGovernancesSlice: StateCreator<
       'setProposal',
     );
   },
-
+  setProposalExecuted: (daoKey, proposalId) => {
+    set(
+      state => {
+        const proposal = state.governances[daoKey].proposals?.find(
+          p => p.proposalId === proposalId,
+        );
+        if (!proposal) {
+          return;
+        }
+        proposal.state = FractalProposalState.EXECUTED;
+      },
+      false,
+      'setProposalExecuted',
+    );
+  },
   setProposalVote: (daoKey, proposalId, votesSummary, proposalVote) => {
     set(
       state => {
