@@ -89,7 +89,7 @@ export type GovernancesSlice = {
   ) => void;
 };
 
-const EMPTY_GOVERNANCE: FractalGovernance & FractalGovernanceContracts = {
+export const EMPTY_GOVERNANCE: FractalGovernance & FractalGovernanceContracts = {
   loadingProposals: false,
   allProposalsLoaded: false,
   proposals: null,
