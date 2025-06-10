@@ -1,4 +1,4 @@
-import { Flex, Text, Icon, Button, Input, Grid, GridItem } from '@chakra-ui/react';
+import { Flex, Text, Icon, Button, Input, Grid, GridItem, Box } from '@chakra-ui/react';
 import { Empty, PencilSimple, Plus, TrashSimple, WarningCircle } from '@phosphor-icons/react';
 import { useTranslation } from 'react-i18next';
 import { Address } from 'viem';
@@ -33,6 +33,9 @@ function TableRowItem({
   rightDivider,
   hasPadding,
   isFirstColumn,
+  roundedBottomLeftEdge,
+  roundedBottomRightEdge,
+  topMargin,
 }: {
   colSpan?: number;
   rightDivider?: boolean;
@@ -40,6 +43,9 @@ function TableRowItem({
   isEdgeItem?: boolean;
   hasPadding?: boolean;
   isFirstColumn?: boolean;
+  roundedBottomLeftEdge?: boolean;
+  roundedBottomRightEdge?: boolean;
+  topMargin?: boolean;
 }) {
   const border = isEdgeItem ? { borderTop: '1px solid', borderBottom: '1px solid' } : {};
   const rightDividerBorder = rightDivider ? { borderRight: '1px solid' } : {};
@@ -53,8 +59,11 @@ function TableRowItem({
       colSpan={colSpan}
       borderLeft={isFirstColumn ? '1px solid' : undefined}
       borderColor="color-layout-border"
+      borderBottomLeftRadius={roundedBottomLeftEdge ? '0.75rem' : undefined}
+      borderBottomRightRadius={roundedBottomRightEdge ? '0.75rem' : undefined}
       textStyle="text-sm-medium"
       color="color-layout-foreground"
+      mt={topMargin ? 2 : undefined}
     >
       {cellContent}
     </GridItem>
@@ -104,7 +113,11 @@ function DefaultShareRowGrid({ label, share }: { label: string; share: number })
   );
 }
 
-function WalletShareRow({ address, revenueShare }: RevenueShare) {
+function WalletShareRow({
+  address,
+  revenueShare,
+  isLastRow,
+}: RevenueShare & { isLastRow: boolean }) {
   return (
     <>
       <TableRowItem
@@ -114,11 +127,13 @@ function WalletShareRow({ address, revenueShare }: RevenueShare) {
             variant="tableStyle"
             color="color-white"
             value={createAccountSubstring(address)}
+            borderBottomLeftRadius={isLastRow ? '0.75rem' : undefined}
           />
         }
         isFirstColumn
         rightDivider
         isEdgeItem
+        roundedBottomLeftEdge={isLastRow}
       />
       <TableRowItem
         colSpan={1}
@@ -156,12 +171,56 @@ function WalletShareRow({ address, revenueShare }: RevenueShare) {
         }
         rightDivider
         isEdgeItem
+        roundedBottomRightEdge={isLastRow}
       />
     </>
   );
 }
 
-function RevSplitWalletCard({ wallet }: { wallet: RevSplitWallet }) {
+function TotalAndErrorBadgeRow({ total, isTotalError }: { total: number; isTotalError: boolean }) {
+  const { t } = useTranslation('revenueSharing');
+
+  return (
+    <>
+      <TableRowItem
+        colSpan={1}
+        cellContent={
+          <>
+            <Text
+              mr={1}
+              color="color-charcoal-500"
+            >
+              {t('revSplitTotalLabel')}:
+            </Text>
+            <Text color="color-white">{total} wallets</Text>
+          </>
+        }
+      />
+      <TableRowItem
+        colSpan={1}
+        cellContent={
+          isTotalError && (
+            <Badge
+              labelKey="revShareTotalError"
+              size="base"
+              leftIcon={<Icon as={WarningCircle} />}
+            >
+              <Text>{t('revShareTotalError')}</Text>
+            </Badge>
+          )
+        }
+      />
+      <TableRowItem
+        colSpan={1}
+        cellContent={null}
+        hasPadding
+        topMargin
+      />
+    </>
+  );
+}
+
+function RevSplitWalletAccordion({ wallet }: { wallet: RevSplitWallet }) {
   const { t } = useTranslation('revenueSharing');
 
   const revSplitTotal =
@@ -260,45 +319,15 @@ function RevSplitWalletCard({ wallet }: { wallet: RevSplitWallet }) {
                   key={split.address}
                   address={split.address}
                   revenueShare={split.revenueShare}
+                  isLastRow={i === wallet.splits.length - 1}
                 />
               ))}
-            </Grid>
 
-            {/* TOTAL WALLETS AND ERROR BADGE */}
-            <Flex
-              flexDir="row"
-              justifyContent="space-between"
-              w="100%"
-              mt={2}
-            >
-              <Flex flex={4}>
-                <Text
-                  mr={1}
-                  color="color-charcoal-500"
-                >
-                  {t('revSplitTotalLabel')}:
-                </Text>
-                <Text color="color-white">{wallet.splits.length + 3} wallets</Text>
-              </Flex>
-
-              <Flex flex={4}>
-                {isTotalError && (
-                  <Badge
-                    labelKey="revShareTotalError"
-                    size="base"
-                    leftIcon={<Icon as={WarningCircle} />}
-                  >
-                    <Text>{t('revShareTotalError')}</Text>
-                  </Badge>
-                )}
-              </Flex>
-
-              <Icon
-                flex={1}
-                as={Empty}
-                color="transparent"
+              <TotalAndErrorBadgeRow
+                total={wallet.splits.length + 3}
+                isTotalError={isTotalError}
               />
-            </Flex>
+            </Grid>
           </Flex>
         }
       />
@@ -435,7 +464,7 @@ export function SafeRevenueSharingSettingsPage() {
           </Flex>
 
           {revSplitWallets.map(wallet => (
-            <RevSplitWalletCard
+            <RevSplitWalletAccordion
               key={wallet.address}
               wallet={wallet}
             />
