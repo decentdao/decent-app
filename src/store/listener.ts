@@ -27,6 +27,7 @@ export const useDAOStoreListener = ({ daoKey }: { daoKey: DAOKey | undefined }) 
     getGuard,
     setProposal,
     setProposalVote,
+    setProposalExecuted,
     setGuardAccountData,
     setGaslessVotingData,
   } = useGlobalStore();
@@ -68,6 +69,15 @@ export const useDAOStoreListener = ({ daoKey }: { daoKey: DAOKey | undefined }) 
       }
     },
     [daoKey, setProposal],
+  );
+
+  const onProposalExecuted = useCallback(
+    (proposalId: string) => {
+      if (daoKey) {
+        setProposalExecuted(daoKey, proposalId);
+      }
+    },
+    [daoKey, setProposalExecuted],
   );
 
   const onGovernanceAccountDataUpdated = useCallback(
@@ -113,6 +123,7 @@ export const useDAOStoreListener = ({ daoKey }: { daoKey: DAOKey | undefined }) 
     erc20StrategyAddress,
     erc721StrategyAddress,
     onProposalCreated,
+    onProposalExecuted,
     onGovernanceAccountDataUpdated,
     onLockReleaseAccountDataUpdated,
     onERC20VoteCreated,
