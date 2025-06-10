@@ -158,8 +158,6 @@ export function ProposalsHome() {
     }
     setAllFilterOptions(filterOptions);
     setFilters(filterOptions);
-    if (type === GovernanceType.MULTISIG) {
-    }
   }, [subgraphInfo?.daoSnapshotENS, guardContracts.freezeGuardContractAddress, type]);
 
   const toggleFilter = (filter: FractalProposalState) => {
