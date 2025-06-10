@@ -63,7 +63,7 @@ export type GovernancesSlice = {
   setProposals: (daoKey: DAOKey, proposals: FractalProposal[]) => void;
   setSnapshotProposals: (daoKey: DAOKey, snapshotProposals: SnapshotProposal[]) => void;
   setProposal: (daoKey: DAOKey, proposal: AzoriusProposal) => void;
-  setProposalExecuted: (daoKey: DAOKey, proposalId: string) => void;
+  updateProposalState: (daoKey: DAOKey, proposalId: string, state: FractalProposalState) => void;
   setProposalVote: (
     daoKey: DAOKey,
     proposalId: string,
@@ -236,7 +236,7 @@ export const createGovernancesSlice: StateCreator<
       'setProposal',
     );
   },
-  setProposalExecuted: (daoKey, proposalId) => {
+  updateProposalState: (daoKey, proposalId, proposalState) => {
     set(
       state => {
         const proposal = state.governances[daoKey].proposals?.find(
@@ -245,10 +245,10 @@ export const createGovernancesSlice: StateCreator<
         if (!proposal) {
           return;
         }
-        proposal.state = FractalProposalState.EXECUTED;
+        proposal.state = proposalState;
       },
       false,
-      'setProposalExecuted',
+      'updateProposalState',
     );
   },
   setProposalVote: (daoKey, proposalId, votesSummary, proposalVote) => {
