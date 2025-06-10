@@ -239,13 +239,13 @@ export const createGovernancesSlice: StateCreator<
   setProposalExecuted: (daoKey, proposalId) => {
     set(
       state => {
-        const azoriusProposal = state.governances[daoKey].proposals?.find(
+        const proposal = state.governances[daoKey].proposals?.find(
           p => p.proposalId === proposalId,
-        ) as AzoriusProposal;
-        if (!azoriusProposal) {
+        );
+        if (!proposal) {
           return;
         }
-        azoriusProposal.state = FractalProposalState.EXECUTED;
+        proposal.state = FractalProposalState.EXECUTED;
       },
       false,
       'setProposalExecuted',
