@@ -91,7 +91,6 @@ export function useGovernanceFetcher() {
       onProposalsLoaded,
       onProposalLoaded,
       onTokenClaimContractAddressLoaded,
-      onLoadingFirstProposalStateChanged,
     }: {
       daoAddress: Address;
       daoModules: DecentModule[];
@@ -100,7 +99,6 @@ export function useGovernanceFetcher() {
       onProposalsLoaded: (proposals: FractalProposal[]) => void;
       onProposalLoaded: (proposal: AzoriusProposal, index: number, totalProposals: number) => void;
       onTokenClaimContractAddressLoaded: (tokenClaimContractAddress: Address) => void;
-      onLoadingFirstProposalStateChanged: (loading: boolean) => void;
     }) => {
       const azoriusModule = getAzoriusModuleFromModules(daoModules);
       clearIntervals();
@@ -421,10 +419,6 @@ export function useGovernanceFetcher() {
               }
             }
 
-            // Now - fetch proposals
-
-            onLoadingFirstProposalStateChanged(true);
-
             const erc20VotedEvents = await erc20VotingContract.getEvents.Voted({ fromBlock: 0n });
             const executedEvents = await azoriusContract.getEvents.ProposalExecuted({
               fromBlock: 0n,
@@ -434,7 +428,7 @@ export function useGovernanceFetcher() {
             ).reverse();
 
             if (!proposalCreatedEvents.length) {
-              onLoadingFirstProposalStateChanged(false);
+              onProposalsLoaded([]);
               return;
             }
 
@@ -627,8 +621,6 @@ export function useGovernanceFetcher() {
 
             // Now - fetch proposals
 
-            onLoadingFirstProposalStateChanged(true);
-
             const erc721VotedEvents = await erc721LinearVotingContract.getEvents.Voted({
               fromBlock: 0n,
             });
@@ -640,7 +632,6 @@ export function useGovernanceFetcher() {
             ).reverse();
 
             if (!proposalCreatedEvents.length) {
-              onLoadingFirstProposalStateChanged(false);
               return;
             }
 

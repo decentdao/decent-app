@@ -68,7 +68,6 @@ export type GovernancesSlice = {
     votesSummary: ProposalVotesSummary,
     proposalVote: ProposalVote | ERC721ProposalVote,
   ) => void;
-  setLoadingFirstProposal: (daoKey: DAOKey, loading: boolean) => void;
   setAllProposalsLoaded: (daoKey: DAOKey, loaded: boolean) => void;
   getGovernance: (daoKey: DAOKey) => FractalGovernance & FractalGovernanceContracts;
   setGovernanceAccountData: (
@@ -215,7 +214,8 @@ export const createGovernancesSlice: StateCreator<
     set(
       state => {
         if (!state.governances[daoKey].proposals) {
-          state.governances[daoKey].proposals = [];
+          state.governances[daoKey].proposals = [proposal];
+          state.governances[daoKey].loadingProposals = false;
         }
         const existingProposalIndex = state.governances[daoKey].proposals.findIndex(
           p => p.proposalId === proposal.proposalId,
@@ -257,17 +257,6 @@ export const createGovernancesSlice: StateCreator<
       },
       false,
       'setProposalVote',
-    );
-  },
-  setLoadingFirstProposal: (daoKey, loading) => {
-    set(
-      state => {
-        if (!state.governances[daoKey].proposals?.length) {
-          state.governances[daoKey].loadingProposals = loading;
-        }
-      },
-      false,
-      'setLoadingFirstProposal',
     );
   },
   setGovernanceAccountData: (daoKey, governanceAccountData) => {

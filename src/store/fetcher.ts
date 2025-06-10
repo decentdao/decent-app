@@ -3,13 +3,7 @@ import { Address, getAddress } from 'viem';
 import { logError } from '../helpers/errorLogging';
 import { useDecentModules } from '../hooks/DAO/loaders/useDecentModules';
 import { useNetworkConfigStore } from '../providers/NetworkConfig/useNetworkConfigStore';
-import {
-  AzoriusProposal,
-  DAOKey,
-  FractalModuleType,
-  FractalProposal,
-  ProposalTemplate,
-} from '../types';
+import { AzoriusProposal, DAOKey, FractalModuleType, ProposalTemplate } from '../types';
 import { useGovernanceFetcher } from './fetchers/governance';
 import { useGuardFetcher } from './fetchers/guard';
 import { useNodeFetcher } from './fetchers/node';
@@ -45,10 +39,8 @@ export const useDAOStoreFetcher = ({
     setAzoriusGovernance,
     setProposalTemplates,
     setTokenClaimContractAddress,
-    setProposals,
     setSnapshotProposals,
     setProposal,
-    setLoadingFirstProposal,
     setGuard,
     setGaslessVotingData,
     setAllProposalsLoaded,
@@ -93,14 +85,10 @@ export const useDAOStoreFetcher = ({
         }
         setProposalTemplates(daoKey, proposalTemplates);
 
-        const onLoadingFirstProposalStateChanged = (loading: boolean) =>
-          setLoadingFirstProposal(daoKey, loading);
         const onMultisigGovernanceLoaded = () => setMultisigGovernance(daoKey);
         const onAzoriusGovernanceLoaded = (governance: SetAzoriusGovernancePayload) =>
           setAzoriusGovernance(daoKey, governance);
-        const onProposalsLoaded = (proposals: FractalProposal[]) => {
-          setProposals(daoKey, proposals);
-          setLoadingFirstProposal(daoKey, false);
+        const onProposalsLoaded = () => {
           setAllProposalsLoaded(daoKey, true);
         };
         const onProposalLoaded = (
@@ -109,9 +97,7 @@ export const useDAOStoreFetcher = ({
           totalProposals: number,
         ) => {
           setProposal(daoKey, proposal);
-          if (index !== 0) {
-            setLoadingFirstProposal(daoKey, false);
-          }
+
           if (index === totalProposals - 1) {
             setAllProposalsLoaded(daoKey, true);
           }
@@ -122,7 +108,6 @@ export const useDAOStoreFetcher = ({
         fetchDAOGovernance({
           daoAddress: safeAddress,
           daoModules: modules,
-          onLoadingFirstProposalStateChanged,
           onMultisigGovernanceLoaded,
           onAzoriusGovernanceLoaded,
           onProposalsLoaded,
@@ -191,10 +176,8 @@ export const useDAOStoreFetcher = ({
     setProposalTemplates,
     setMultisigGovernance,
     setAzoriusGovernance,
-    setProposals,
     setProposal,
     setTokenClaimContractAddress,
-    setLoadingFirstProposal,
     setGuard,
     setAllProposalsLoaded,
     fetchDAOSnapshotProposals,
