@@ -17,8 +17,7 @@ import { ProposalsQuery, ProposalsResponse } from '../../graphql/SnapshotQueries
 import { logError } from '../../helpers/errorLogging';
 import { useCurrentDAOKey } from '../../hooks/DAO/useCurrentDAOKey';
 import useNetworkPublicClient from '../../hooks/useNetworkPublicClient';
-import { CacheExpiry, CacheKeys } from '../../hooks/utils/cache/cacheDefaults';
-import { getValue, setValue } from '../../hooks/utils/cache/useLocalStorage';
+
 import {
   ContractTypeWithVersion,
   useAddressContractType,
@@ -53,6 +52,7 @@ import {
 import { blocksToSeconds } from '../../utils/contract';
 import { getPaymasterAddress } from '../../utils/gaslessVoting';
 import { SetAzoriusGovernancePayload } from '../slices/governances';
+import { useGlobalStore } from '../store';
 
 /**
  * `useGovernanceFetcher` is used as an abstraction layer over logic of fetching DAO governance data
@@ -70,6 +70,11 @@ export function useGovernanceFetcher() {
   const { getAddressContractType } = useAddressContractType();
   const user = useAccount();
   const snaphshotGraphQlClient = useMemo(() => createSnapshotSubgraphClient(), []);
+
+  const { daoKey } = useCurrentDAOKey();
+  const { getGovernance } = useGlobalStore();
+  const governance = daoKey ? getGovernance(daoKey) : undefined;
+  const cachedProposals = governance?.proposals;
 
   const {
     contracts: {
@@ -435,23 +440,26 @@ export function useGovernanceFetcher() {
               onProposalsLoaded([]);
               return;
             }
-
-            for (const [index, proposalCreatedEvent] of proposalCreatedEvents.entries()) {
+            const entries = proposalCreatedEvents.entries();
+            for (const [index, proposalCreatedEvent] of entries) {
               if (proposalCreatedEvent.args.proposalId === undefined) {
                 continue;
               }
 
-              const cachedProposal = getValue({
-                cacheName: CacheKeys.PROPOSAL_CACHE,
-                proposalId: proposalCreatedEvent.args.proposalId.toString(),
-                contractAddress: azoriusContract.address,
-              });
+              const cachedProposal = cachedProposals?.find(
+                p => p.proposalId === proposalCreatedEvent?.args?.proposalId?.toString(),
+              );
+              const isProposalFossilized =
+                cachedProposal?.state === FractalProposalState.CLOSED ||
+                cachedProposal?.state === FractalProposalState.EXECUTED ||
+                cachedProposal?.state === FractalProposalState.FAILED ||
+                cachedProposal?.state === FractalProposalState.EXPIRED ||
+                cachedProposal?.state === FractalProposalState.REJECTED;
 
-              if (cachedProposal) {
-                onProposalLoaded(cachedProposal, index, proposalCreatedEvents.length);
+              if (cachedProposal && isProposalFossilized) {
+                // @dev skip fossilized proposals, cached proposals already loaded
                 continue;
               }
-
               let proposalData;
 
               if (
@@ -515,25 +523,6 @@ export function useGovernanceFetcher() {
               );
 
               onProposalLoaded(proposal, index, proposalCreatedEvents.length);
-
-              const isProposalFossilized =
-                proposal.state === FractalProposalState.CLOSED ||
-                proposal.state === FractalProposalState.EXECUTED ||
-                proposal.state === FractalProposalState.FAILED ||
-                proposal.state === FractalProposalState.EXPIRED ||
-                proposal.state === FractalProposalState.REJECTED;
-
-              if (isProposalFossilized) {
-                setValue(
-                  {
-                    cacheName: CacheKeys.PROPOSAL_CACHE,
-                    proposalId: proposalCreatedEvent.args.proposalId.toString(),
-                    contractAddress: azoriusContract.address,
-                  },
-                  proposal,
-                  CacheExpiry.NEVER,
-                );
-              }
             }
           } else if (erc721VotingStrategyAddress) {
             const erc721LinearVotingContract = getContract({
@@ -644,14 +633,17 @@ export function useGovernanceFetcher() {
                 continue;
               }
 
-              const cachedProposal = getValue({
-                cacheName: CacheKeys.PROPOSAL_CACHE,
-                proposalId: proposalCreatedEvent.args.proposalId.toString(),
-                contractAddress: azoriusContract.address,
-              });
+              const cachedProposal = cachedProposals?.find(
+                p => p.proposalId === proposalCreatedEvent?.args?.proposalId?.toString(),
+              );
+              const isProposalFossilized =
+                cachedProposal?.state === FractalProposalState.CLOSED ||
+                cachedProposal?.state === FractalProposalState.EXECUTED ||
+                cachedProposal?.state === FractalProposalState.FAILED ||
+                cachedProposal?.state === FractalProposalState.EXPIRED ||
+                cachedProposal?.state === FractalProposalState.REJECTED;
 
-              if (cachedProposal) {
-                onProposalLoaded(cachedProposal, index, proposalCreatedEvents.length);
+              if (cachedProposal && isProposalFossilized) {
                 continue;
               }
 
@@ -718,25 +710,6 @@ export function useGovernanceFetcher() {
               );
 
               onProposalLoaded(proposal, index, proposalCreatedEvents.length);
-
-              const isProposalFossilized =
-                proposal.state === FractalProposalState.CLOSED ||
-                proposal.state === FractalProposalState.EXECUTED ||
-                proposal.state === FractalProposalState.FAILED ||
-                proposal.state === FractalProposalState.EXPIRED ||
-                proposal.state === FractalProposalState.REJECTED;
-
-              if (isProposalFossilized) {
-                setValue(
-                  {
-                    cacheName: CacheKeys.PROPOSAL_CACHE,
-                    proposalId: proposalCreatedEvent.args.proposalId.toString(),
-                    contractAddress: azoriusContract.address,
-                  },
-                  proposal,
-                  CacheExpiry.NEVER,
-                );
-              }
             }
           }
         }
