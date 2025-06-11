@@ -12,9 +12,8 @@ import useClawBack from '../../../../hooks/DAO/useClawBack';
 import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
 import { useNetworkWalletClient } from '../../../../hooks/useNetworkWalletClient';
 import useBlockTimestamp from '../../../../hooks/utils/useBlockTimestamp';
-import { useCanUserCreateProposal } from '../../../../hooks/utils/useCanUserSubmitProposal';
 import { useDAOStore } from '../../../../providers/App/AppProvider';
-import { FractalModuleType, FreezeVotingType, GovernanceType } from '../../../../types';
+import { FractalModuleType, FreezeVotingType } from '../../../../types';
 import { ModalType } from '../../modals/ModalProvider';
 import { useDecentModal } from '../../modals/useDecentModal';
 import { OptionMenu } from '../OptionMenu';
@@ -22,7 +21,6 @@ import { OptionMenu } from '../OptionMenu';
 export function ManageDAOMenu() {
   const { daoKey } = useCurrentDAOKey();
   const {
-    governance: { type },
     guard,
     guardContracts,
     node: { safe, subgraphInfo, modules },
@@ -31,7 +29,6 @@ export function ManageDAOMenu() {
   const currentTime = BigInt(useBlockTimestamp());
 
   const safeAddress = safe?.address;
-  const { canUserCreateProposal } = useCanUserCreateProposal();
   const { getUserERC721VotingTokens } = useUserERC721VotingTokens(safeAddress ?? null, null, false);
   const { handleClawBack } = useClawBack({
     parentAddress: subgraphInfo?.parentAddress ?? null,
@@ -42,8 +39,6 @@ export function ManageDAOMenu() {
   });
 
   const { open: openSettingsModal } = useDecentModal(ModalType.SAFE_SETTINGS);
-
-  const { open: handleModifyGovernance } = useDecentModal(ModalType.CONFIRM_MODIFY_GOVERNANCE);
 
   const { data: walletClient } = useNetworkWalletClient();
 
@@ -116,12 +111,6 @@ export function ManageDAOMenu() {
       onClick: handleClawBack,
     };
 
-    // @todo: Remove after feature flag is removed (https://linear.app/decent-labs/issue/ENG-796/remove-modifygovernanceoption-completely)
-    const modifyGovernanceOption = {
-      optionKey: 'optionModifyGovernance',
-      onClick: handleModifyGovernance,
-    };
-
     const settingsOption = {
       optionKey: 'optionSettings',
       onClick: openSettingsModal,
@@ -139,11 +128,7 @@ export function ManageDAOMenu() {
       !isWithinFreezePeriod(guard.freezeProposalCreatedTime, guard.freezePeriod, currentTime) &&
       guard.userHasVotes
     ) {
-      if (type === GovernanceType.MULTISIG) {
-        return [settingsOption, freezeOption, modifyGovernanceOption];
-      } else {
-        return [settingsOption, freezeOption];
-      }
+      return [settingsOption, freezeOption];
     } else if (
       guard.freezeProposalCreatedTime !== null &&
       guard.freezePeriod !== null &&
@@ -160,24 +145,9 @@ export function ManageDAOMenu() {
         return [settingsOption];
       }
     } else {
-      return [
-        settingsOption,
-        ...(canUserCreateProposal && type === GovernanceType.MULTISIG
-          ? [modifyGovernanceOption]
-          : []),
-      ];
+      return [settingsOption];
     }
-  }, [
-    guard,
-    currentTime,
-    type,
-    handleClawBack,
-    handleModifyGovernance,
-    openSettingsModal,
-    freezeOption,
-    modules,
-    canUserCreateProposal,
-  ]);
+  }, [guard, currentTime, handleClawBack, openSettingsModal, freezeOption, modules]);
 
   return options.length === 1 ? (
     <IconButton
