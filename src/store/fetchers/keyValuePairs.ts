@@ -5,12 +5,14 @@ import { Address, GetContractEventsReturnType, getContract } from 'viem';
 import { logError } from '../../helpers/errorLogging';
 import useNetworkPublicClient from '../../hooks/useNetworkPublicClient';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
+import { useRolesStore } from '../roles/useRolesStore';
 
-export function useRolesFetcher() {
+export function useKeyValuePairsFetcher() {
   const publicClient = useNetworkPublicClient();
   const {
     contracts: { keyValuePairs, sablierV2LockupLinear },
   } = useNetworkConfigStore();
+  const { resetRoles } = useRolesStore();
   const getHatsTreeId = useCallback(
     ({
       events,
@@ -104,7 +106,7 @@ export function useRolesFetcher() {
     [sablierV2LockupLinear],
   );
 
-  const fetchRolesData = useCallback(
+  const fetchKeyValuePairsData = useCallback(
     async ({ safeAddress }: { safeAddress?: Address }) => {
       if (!safeAddress) {
         return;
@@ -115,6 +117,7 @@ export function useRolesFetcher() {
         address: keyValuePairs,
         client: publicClient,
       });
+      resetRoles();
 
       const events = await keyValuePairsContract.getEvents.ValueUpdated(
         { theAddress: safeAddress },
@@ -127,8 +130,8 @@ export function useRolesFetcher() {
         streamIdsToHatIds: getStreamIdsToHatIds({ events, chainId: publicClient.chain.id }),
       };
     },
-    [getHatsTreeId, getStreamIdsToHatIds, keyValuePairs, publicClient],
+    [getHatsTreeId, getStreamIdsToHatIds, keyValuePairs, publicClient, resetRoles],
   );
 
-  return { getHatsTreeId, getStreamIdsToHatIds, fetchRolesData };
+  return { getHatsTreeId, getStreamIdsToHatIds, fetchKeyValuePairsData };
 }
