@@ -177,13 +177,19 @@ export function SafeProposalTemplatesPage() {
             <InfoBoxLoader />
           </Box>
         ) : proposalTemplates.length > 0 ? (
-          proposalTemplates.map((proposalTemplate, i) => (
-            <ProposalTemplateCard
-              key={i}
-              proposalTemplate={proposalTemplate}
-              templateIndex={i}
-            />
-          ))
+          <Grid
+            templateColumns="repeat(3, 1fr)"
+            columnGap="1rem"
+            w="full"
+          >
+            {proposalTemplates.map((proposalTemplate, i) => (
+              <ProposalTemplateCard
+                key={i}
+                proposalTemplate={proposalTemplate}
+                templateIndex={i}
+              />
+            ))}
+          </Grid>
         ) : (
           <NoDataCard
             translationNameSpace="proposalTemplate"
