@@ -1,5 +1,5 @@
 import { HatsSubgraphClient, Tree } from '@hatsprotocol/sdk-v1-subgraph';
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { createSablierSubgraphClient } from '../../../graphql';
@@ -24,7 +24,6 @@ const useHatsTree = () => {
       linearVotingErc721WithHatsWhitelistingAddress,
       isLoaded: governanceContractsLoaded,
     },
-    node: { safe },
   } = useDAOStore({ daoKey });
   const { hatsTreeId, contextChainId, setHatsTree, resetRoles } = useRolesStore();
 
@@ -156,34 +155,26 @@ const useHatsTree = () => {
     ],
   );
 
+  const loadKey = useRef<string | null>();
   useEffect(() => {
-    if (safeAddress !== safe?.address) {
-      resetRoles();
+    const key = `${hatsTreeId}-${contextChainId}-${safeAddress}`;
+    if (loadKey.current === key) {
       return;
     }
+    loadKey.current = key;
     // Whitelisting contracts might be not loaded yet which might lead to wrong permissions loading
     if (!governanceContractsLoaded) {
-      resetRoles();
       return;
     }
 
     if (!hatsTreeId || !contextChainId) {
-      resetRoles();
       return;
     }
     getHatsTree({
       hatsTreeId,
       contextChainId,
     });
-  }, [
-    contextChainId,
-    getHatsTree,
-    hatsTreeId,
-    safeAddress,
-    governanceContractsLoaded,
-    resetRoles,
-    safe?.address,
-  ]);
+  }, [contextChainId, getHatsTree, hatsTreeId, governanceContractsLoaded, resetRoles, safeAddress]);
 };
 
 export { useHatsTree };

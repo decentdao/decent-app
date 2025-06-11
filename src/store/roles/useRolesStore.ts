@@ -157,7 +157,7 @@ const useRolesStore = create<RolesStore>()((set, get) => ({
       hatsTreeId: state.hatsTreeId,
       contextChainId: state.contextChainId,
     })),
-  resetHatsStore: () => set(() => initialHatsStore),
+  resetHatsStore: () => set(() => ({ ...initialHatsStore })),
 }));
 
 export { useRolesStore };
