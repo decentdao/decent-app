@@ -23,10 +23,10 @@ export const getStakingContractAddress = (args: {
   stakingContractMastercopy: Address;
   chainId: number;
 }) => {
+  // @todo: Implement (https://linear.app/decent-labs/issue/ENG-1154/implement-getstakingcontractaddress)
   return '0x1234567890123456789012345678901234567890';
   const { safeAddress, zodiacModuleProxyFactory, stakingContractMastercopy, chainId } = args;
 
-  // @todo: WIP
   const encodedStakingContractInitializationParams = encodeAbiParameters(
     parseAbiParameters('address'),
     [stakingContractMastercopy],

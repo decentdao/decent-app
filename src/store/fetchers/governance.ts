@@ -990,7 +990,7 @@ export function useGovernanceFetcher() {
         return;
       }
 
-      // @todo: `getStakingContractAddress` is WIP
+      // @todo: `getStakingContractAddress` is WIP (https://linear.app/decent-labs/issue/ENG-1154/implement-getstakingcontractaddress)
       const stakingAddress = getStakingContractAddress({
         safeAddress,
         zodiacModuleProxyFactory,

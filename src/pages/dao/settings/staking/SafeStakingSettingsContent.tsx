@@ -33,6 +33,7 @@ export function SafeStakingSettingsContent() {
         <Button
           mt={1.5}
           width="fit-content"
+          onClick={() => {}}
         >
           {t('deployStaking')}
         </Button>
@@ -62,9 +63,7 @@ export function SafeStakingSettingsContent() {
         >
           <DurationUnitStepperInput
             secondsValue={0}
-            onSecondsValueChange={(val: number) => {
-              console.log(val);
-            }}
+            onSecondsValueChange={() => {}}
             hideSteppers
           />
         </LabelComponent>
