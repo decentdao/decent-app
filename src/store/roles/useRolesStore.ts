@@ -151,12 +151,7 @@ const useRolesStore = create<RolesStore>()((set, get) => ({
       },
     }));
   },
-  resetRoles: () =>
-    set(state => ({
-      ...initialHatsStore,
-      hatsTreeId: state.hatsTreeId,
-      contextChainId: state.contextChainId,
-    })),
+
   resetHatsStore: () => set(() => ({ ...initialHatsStore })),
 }));
 

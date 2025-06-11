@@ -25,7 +25,7 @@ const useHatsTree = () => {
       isLoaded: governanceContractsLoaded,
     },
   } = useDAOStore({ daoKey });
-  const { hatsTreeId, contextChainId, setHatsTree, resetRoles } = useRolesStore();
+  const { hatsTreeId, contextChainId, setHatsTree } = useRolesStore();
 
   const ipfsClient = useIPFSClient();
   const {
@@ -174,7 +174,7 @@ const useHatsTree = () => {
       hatsTreeId,
       contextChainId,
     });
-  }, [contextChainId, getHatsTree, hatsTreeId, governanceContractsLoaded, resetRoles, safeAddress]);
+  }, [contextChainId, getHatsTree, hatsTreeId, governanceContractsLoaded, safeAddress]);
 };
 
 export { useHatsTree };

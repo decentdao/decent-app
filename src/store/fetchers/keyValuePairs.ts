@@ -5,14 +5,12 @@ import { Address, GetContractEventsReturnType, getContract } from 'viem';
 import { logError } from '../../helpers/errorLogging';
 import useNetworkPublicClient from '../../hooks/useNetworkPublicClient';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
-import { useRolesStore } from '../roles/useRolesStore';
 
 export function useKeyValuePairsFetcher() {
   const publicClient = useNetworkPublicClient();
   const {
     contracts: { keyValuePairs, sablierV2LockupLinear },
   } = useNetworkConfigStore();
-  const { resetRoles } = useRolesStore();
   const getHatsTreeId = useCallback(
     ({
       events,
@@ -117,7 +115,6 @@ export function useKeyValuePairsFetcher() {
         address: keyValuePairs,
         client: publicClient,
       });
-      resetRoles();
 
       const events = await keyValuePairsContract.getEvents.ValueUpdated(
         { theAddress: safeAddress },
@@ -130,7 +127,7 @@ export function useKeyValuePairsFetcher() {
         streamIdsToHatIds: getStreamIdsToHatIds({ events, chainId: publicClient.chain.id }),
       };
     },
-    [getHatsTreeId, getStreamIdsToHatIds, keyValuePairs, publicClient, resetRoles],
+    [getHatsTreeId, getStreamIdsToHatIds, keyValuePairs, publicClient],
   );
 
   return { getHatsTreeId, getStreamIdsToHatIds, fetchKeyValuePairsData };
