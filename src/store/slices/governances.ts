@@ -87,6 +87,7 @@ export type GovernancesSlice = {
       paymasterAddress: Address | null;
     },
   ) => void;
+  setVotesTokenAddress: (daoKey: DAOKey, votesTokenAddress: Address) => void;
 };
 
 export const EMPTY_GOVERNANCE: FractalGovernance & FractalGovernanceContracts = {
@@ -390,5 +391,14 @@ export const createGovernancesSlice: StateCreator<
       return EMPTY_GOVERNANCE;
     }
     return governance;
+  },
+  setVotesTokenAddress: (daoKey, votesTokenAddress) => {
+    set(
+      state => {
+        state.governances[daoKey].votesTokenAddress = votesTokenAddress;
+      },
+      false,
+      'setVotesTokenAddress',
+    );
   },
 });

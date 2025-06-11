@@ -44,6 +44,7 @@ export const useDAOStoreFetcher = ({
     setGuard,
     setGaslessVotingData,
     setAllProposalsLoaded,
+    setVotesTokenAddress,
   } = useGlobalStore();
   const { chain, getConfigByChainId } = useNetworkConfigStore();
 
@@ -105,6 +106,9 @@ export const useDAOStoreFetcher = ({
         const onTokenClaimContractAddressLoaded = (tokenClaimContractAddress: Address) =>
           setTokenClaimContractAddress(daoKey, tokenClaimContractAddress);
 
+        const onVotesTokenAddressLoaded = (votesTokenAddress: Address) =>
+          setVotesTokenAddress(daoKey, votesTokenAddress);
+
         fetchDAOGovernance({
           daoAddress: safeAddress,
           daoModules: modules,
@@ -113,6 +117,7 @@ export const useDAOStoreFetcher = ({
           onProposalsLoaded,
           onProposalLoaded,
           onTokenClaimContractAddressLoaded,
+          onVotesTokenAddressLoaded,
         });
 
         fetchDAOGuard({
@@ -182,6 +187,7 @@ export const useDAOStoreFetcher = ({
     setAllProposalsLoaded,
     fetchDAOSnapshotProposals,
     setSnapshotProposals,
+    setVotesTokenAddress,
     fetchRolesData,
     setGaslessVotingData,
     fetchGaslessVotingDAOData,

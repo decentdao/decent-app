@@ -91,6 +91,7 @@ export function useGovernanceFetcher() {
       onProposalsLoaded,
       onProposalLoaded,
       onTokenClaimContractAddressLoaded,
+      onVotesTokenAddressLoaded,
     }: {
       daoAddress: Address;
       daoModules: DecentModule[];
@@ -99,6 +100,7 @@ export function useGovernanceFetcher() {
       onProposalsLoaded: (proposals: FractalProposal[]) => void;
       onProposalLoaded: (proposal: AzoriusProposal, index: number, totalProposals: number) => void;
       onTokenClaimContractAddressLoaded: (tokenClaimContractAddress: Address) => void;
+      onVotesTokenAddressLoaded: (votesTokenAddress: Address) => void;
     }) => {
       const azoriusModule = getAzoriusModuleFromModules(daoModules);
       clearIntervals();
@@ -167,6 +169,8 @@ export function useGovernanceFetcher() {
               throw new Error('Unknown governance token type');
             }
           }
+
+          onVotesTokenAddressLoaded(votesTokenAddress);
         };
 
         let strategies: FractalVotingStrategy[] = [];
