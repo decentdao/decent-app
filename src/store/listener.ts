@@ -11,7 +11,7 @@ import {
 } from '../types';
 import { useAccountListeners } from './listeners/account';
 import { useGovernanceListeners } from './listeners/governance';
-import { useRolesListener } from './listeners/roles';
+import { useKeyValuePairsListener } from './listeners/keyValuePairs';
 import { useRolesStore } from './roles/useRolesStore';
 import { useGlobalStore } from './store';
 
@@ -203,7 +203,7 @@ export const useDAOStoreListener = ({ daoKey }: { daoKey: DAOKey | undefined }) 
     [daoKey, setGaslessVotingData],
   );
 
-  useRolesListener({
+  useKeyValuePairsListener({
     safeAddress: node?.safe?.address,
     onRolesDataFetched,
     onGaslessVotingDataFetched,

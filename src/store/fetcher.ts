@@ -12,8 +12,8 @@ import {
 } from '../types';
 import { useGovernanceFetcher } from './fetchers/governance';
 import { useGuardFetcher } from './fetchers/guard';
+import { useKeyValuePairsFetcher } from './fetchers/keyValuePairs';
 import { useNodeFetcher } from './fetchers/node';
-import { useRolesFetcher } from './fetchers/roles';
 import { useTreasuryFetcher } from './fetchers/treasury';
 import { useRolesStore } from './roles/useRolesStore';
 import { SetAzoriusGovernancePayload } from './slices/governances';
@@ -64,10 +64,11 @@ export const useDAOStoreFetcher = ({
     fetchGaslessVotingDAOData,
   } = useGovernanceFetcher();
   const { fetchDAOGuard } = useGuardFetcher();
-  const { fetchRolesData } = useRolesFetcher();
-  const { setHatKeyValuePairData } = useRolesStore();
+  const { fetchKeyValuePairsData } = useKeyValuePairsFetcher();
+  const { setHatKeyValuePairData, resetHatsStore } = useRolesStore();
 
   useEffect(() => {
+    resetHatsStore();
     async function loadDAOData() {
       if (!daoKey || !safeAddress || invalidQuery || wrongNetwork) return;
       try {
@@ -82,6 +83,7 @@ export const useDAOStoreFetcher = ({
           daoInfo,
           modules,
         });
+
         let proposalTemplates: ProposalTemplate[] = [];
         if (daoInfo.proposalTemplatesHash) {
           const fetchedProposalTemplates = await fetchDAOProposalTemplates({
@@ -92,6 +94,26 @@ export const useDAOStoreFetcher = ({
           }
         }
         setProposalTemplates(daoKey, proposalTemplates);
+        const keyValuePairsData = await fetchKeyValuePairsData({
+          safeAddress,
+        });
+
+        if (keyValuePairsData) {
+          setHatKeyValuePairData({
+            contextChainId: chain.id,
+            hatsTreeId: keyValuePairsData.hatsTreeId,
+            streamIdsToHatIds: keyValuePairsData.streamIdsToHatIds,
+          });
+
+          const gaslessVotingData = await fetchGaslessVotingDAOData({
+            safeAddress,
+            events: keyValuePairsData.events,
+          });
+
+          if (gaslessVotingData) {
+            setGaslessVotingData(daoKey, gaslessVotingData);
+          }
+        }
 
         const onMultisigGovernanceLoaded = () => setMultisigGovernance(daoKey);
         const onAzoriusGovernanceLoaded = (governance: SetAzoriusGovernancePayload) =>
@@ -146,26 +168,6 @@ export const useDAOStoreFetcher = ({
             },
           );
         }
-
-        const rolesData = await fetchRolesData({
-          safeAddress,
-        });
-
-        if (rolesData) {
-          setHatKeyValuePairData({
-            contextChainId: chain.id,
-            hatsTreeId: rolesData.hatsTreeId,
-            streamIdsToHatIds: rolesData.streamIdsToHatIds,
-          });
-          const gaslessVotingData = await fetchGaslessVotingDAOData({
-            safeAddress,
-            events: rolesData.events,
-          });
-
-          if (gaslessVotingData) {
-            setGaslessVotingData(daoKey, gaslessVotingData);
-          }
-        }
       } catch (e) {
         logError(e);
         setErrorLoading(true);
@@ -197,10 +199,11 @@ export const useDAOStoreFetcher = ({
     fetchDAOSnapshotProposals,
     setSnapshotProposals,
     setVotesTokenAddress,
-    fetchRolesData,
+    fetchKeyValuePairsData,
     setGaslessVotingData,
     fetchGaslessVotingDAOData,
     setHatKeyValuePairData,
+    resetHatsStore,
   ]);
 
   useEffect(() => {

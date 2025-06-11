@@ -17,14 +17,13 @@ const hatsSubgraphClient = new HatsSubgraphClient({});
 
 const useHatsTree = () => {
   const { t } = useTranslation('roles');
-  const { daoKey } = useCurrentDAOKey();
+  const { daoKey, safeAddress } = useCurrentDAOKey();
   const {
     governanceContracts: {
       linearVotingErc20WithHatsWhitelistingAddress,
       linearVotingErc721WithHatsWhitelistingAddress,
       isLoaded: governanceContractsLoaded,
     },
-    node: { safe },
   } = useDAOStore({ daoKey });
   const { hatsTreeId, contextChainId, setHatsTree } = useRolesStore();
 
@@ -156,38 +155,26 @@ const useHatsTree = () => {
     ],
   );
 
-  const safeAddress = safe?.address;
-  const daoHatTreeloadKey = useRef<string | null>();
-
+  const loadKey = useRef<string | null>();
   useEffect(() => {
-    const key = safeAddress && hatsTreeId ? `${safeAddress}:${hatsTreeId}` : null;
-
-    const previousSafeAddress = daoHatTreeloadKey.current?.split(':')[0];
-    const previousHatsTreeId = daoHatTreeloadKey.current?.split(':')[1];
-
+    const key = `${hatsTreeId}-${contextChainId}-${safeAddress}`;
+    if (loadKey.current === key) {
+      return;
+    }
+    loadKey.current = key;
     // Whitelisting contracts might be not loaded yet which might lead to wrong permissions loading
     if (!governanceContractsLoaded) {
       return;
     }
 
-    if (
-      !!hatsTreeId &&
-      !!contextChainId &&
-      key !== null &&
-      key !== daoHatTreeloadKey.current &&
-      previousHatsTreeId !== `${hatsTreeId}` // don't try to load hats tree if this new DAO is stuck with the same hats tree id as the previous DAO
-    ) {
-      getHatsTree({
-        hatsTreeId,
-        contextChainId,
-      });
-
-      daoHatTreeloadKey.current = key;
-    } else if (!!safeAddress && safeAddress !== previousSafeAddress) {
-      // If the safe address changes, reset the load key
-      daoHatTreeloadKey.current = key;
+    if (!hatsTreeId || !contextChainId) {
+      return;
     }
-  }, [contextChainId, getHatsTree, hatsTreeId, safeAddress, governanceContractsLoaded]);
+    getHatsTree({
+      hatsTreeId,
+      contextChainId,
+    });
+  }, [contextChainId, getHatsTree, hatsTreeId, governanceContractsLoaded, safeAddress]);
 };
 
 export { useHatsTree };

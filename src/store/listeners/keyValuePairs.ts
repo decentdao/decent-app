@@ -4,9 +4,9 @@ import { Address, getContract } from 'viem';
 import useNetworkPublicClient from '../../hooks/useNetworkPublicClient';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
 import { useGovernanceFetcher } from '../fetchers/governance';
-import { useRolesFetcher } from '../fetchers/roles';
+import { useKeyValuePairsFetcher } from '../fetchers/keyValuePairs';
 
-export function useRolesListener({
+export function useKeyValuePairsListener({
   safeAddress,
   onRolesDataFetched,
   onGaslessVotingDataFetched,
@@ -22,7 +22,7 @@ export function useRolesListener({
     paymasterAddress: Address | null;
   }) => void;
 }) {
-  const { getStreamIdsToHatIds, getHatsTreeId } = useRolesFetcher();
+  const { getStreamIdsToHatIds, getHatsTreeId } = useKeyValuePairsFetcher();
   const { fetchGaslessVotingDAOData } = useGovernanceFetcher();
   const publicClient = useNetworkPublicClient();
   const {

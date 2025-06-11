@@ -152,7 +152,7 @@ const useRolesStore = create<RolesStore>()((set, get) => ({
     }));
   },
 
-  resetHatsStore: () => set(() => initialHatsStore),
+  resetHatsStore: () => set(() => ({ ...initialHatsStore })),
 }));
 
 export { useRolesStore };
