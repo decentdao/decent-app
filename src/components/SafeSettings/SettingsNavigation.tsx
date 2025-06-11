@@ -8,6 +8,7 @@ import {
   Stack,
   RocketLaunch,
   Percent,
+  PiggyBank,
 } from '@phosphor-icons/react';
 import { useFormikContext } from 'formik';
 import { PropsWithChildren, ReactNode, useState } from 'react';
@@ -21,6 +22,7 @@ import { SafeGovernanceSettingsPage } from '../../pages/dao/settings/governance/
 import { SafeModulesSettingsPage } from '../../pages/dao/settings/modules-and-guard/SafeModulesSettingsPage';
 import { SafePermissionsSettingsContent } from '../../pages/dao/settings/permissions/SafePermissionsSettingsContent';
 import { SafeRevenueSharingSettingsPage } from '../../pages/dao/settings/revenue-sharing/SafeRevenueSharingSettingsContent';
+import { SafeStakingSettingsContent } from '../../pages/dao/settings/staking/SafeStakingSettingsContent';
 import { SafeTokenSettingsPage } from '../../pages/dao/settings/token/SafeTokenSettingsPage';
 import { useDAOStore } from '../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
@@ -112,6 +114,7 @@ const settingsNavigationItems = [
   'permissions',
   'token',
   'revenueSharing',
+  'staking',
 ] as const;
 
 function SettingsNavigationItem({
@@ -315,6 +318,19 @@ export function SettingsNavigation({
               onClick={() => {
                 onSettingsNavigationClick(<SafeRevenueSharingSettingsPage />);
                 setCurrentItem('revenueSharing');
+              }}
+            />
+          )}
+          {isRevShareEnabled && (
+            <SettingsNavigationItem
+              title={t('daoSettingsStaking')}
+              leftIcon={<PiggyBank fontSize="1.5rem" />}
+              item="staking"
+              currentItem={currentItem}
+              showDivider={false}
+              onClick={() => {
+                onSettingsNavigationClick(<SafeStakingSettingsContent />);
+                setCurrentItem('staking');
               }}
             />
           )}

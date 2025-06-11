@@ -1,5 +1,5 @@
-import { Flex, Text, Icon, Button, Input, Grid, GridItem, Box } from '@chakra-ui/react';
-import { Empty, PencilSimple, Plus, TrashSimple, WarningCircle } from '@phosphor-icons/react';
+import { Flex, Text, Icon, Button, Input, Grid, GridItem } from '@chakra-ui/react';
+import { PencilSimple, Plus, TrashSimple, WarningCircle } from '@phosphor-icons/react';
 import { useTranslation } from 'react-i18next';
 import { Address } from 'viem';
 import { SettingsContentBox } from '../../../../components/SafeSettings/SettingsContentBox';
