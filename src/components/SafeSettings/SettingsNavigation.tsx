@@ -200,7 +200,6 @@ export function SettingsNavigation({
   } = useDAOStore({ daoKey });
   const azoriusGovernance = governance as AzoriusGovernance;
 
-  const isSettingsV1Enabled = useFeatureFlag('flag_settings_v1');
   const isTokenDeploymentEnabled = useFeatureFlag('flag_token_deployment');
   const isRevShareEnabled = useFeatureFlag('flag_revenue_sharing');
   const isMobile = useBreakpointValue({ base: true, md: false });
@@ -212,7 +211,7 @@ export function SettingsNavigation({
 
   return (
     <Flex
-      backgroundColor={isSettingsV1Enabled ? 'transparent' : 'color-neutral-950'}
+      backgroundColor="transparent"
       p={{ base: '1rem', md: '0.25rem' }}
       gap="0.25rem"
       flexDirection="column"
@@ -221,7 +220,7 @@ export function SettingsNavigation({
       borderBottomRightRadius={{ base: '0.75rem', md: '0' }}
       borderRight={{
         base: 'none',
-        md: !isSettingsV1Enabled ? '1px solid var(--colors-color-neutral-900)' : 'none',
+        md: 'none',
       }}
       borderColor="color-neutral-900"
       boxShadow="1px 0px 0px 0px #100414"
@@ -237,7 +236,7 @@ export function SettingsNavigation({
         >
           <BarLoader />
         </Flex>
-      ) : isSettingsV1Enabled && !isMobile ? (
+      ) : !isMobile ? (
         <>
           <SettingsNavigationItem
             title={t('daoSettingsGeneral')}
