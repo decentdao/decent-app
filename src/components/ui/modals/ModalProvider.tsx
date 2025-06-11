@@ -39,8 +39,8 @@ export enum ModalType {
   DELEGATE,
   STAKE,
   CONFIRM_URL,
-  REMOVE_SIGNER, // @TODO: remove this modal
-  ADD_SIGNER, // @TODO: remove this modal
+  REMOVE_SIGNER, // @TODO: remove this modal (https://linear.app/decent-labs/issue/ENG-1150/remove-add-remove-signer-modals)
+  ADD_SIGNER, // @TODO: remove this modal (https://linear.app/decent-labs/issue/ENG-1150/remove-add-remove-signer-modals)
   ADD_PERMISSION,
   ADD_CREATE_PROPOSAL_PERMISSION,
   CREATE_PROPOSAL_FROM_TEMPLATE,
