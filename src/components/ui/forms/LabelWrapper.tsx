@@ -27,7 +27,7 @@ function LabelWrapper({
     <Box position="relative">
       <FormLabel m="0px">
         <Flex
-          gap="2"
+          gap="0.5"
           alignItems="center"
           h="fit-content"
           color={labelColor}
@@ -35,7 +35,7 @@ function LabelWrapper({
           textStyle="text-sm-medium"
         >
           <Text>{label}</Text>
-          {isRequired && <Text color="color-lilac-100">*</Text>}
+          {isRequired && <Text color="color-base-error">*</Text>}
           {!!tooltipContent && (
             <DecentTooltip
               hasArrow

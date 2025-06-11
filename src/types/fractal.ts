@@ -1,11 +1,6 @@
 import { TokenInfoResponse, TransferResponse } from '@safe-global/api-kit';
 import { SafeMultisigTransactionResponse } from '@safe-global/safe-core-sdk-types';
 import { Address } from 'viem';
-import { FractalGovernanceActions } from '../providers/App/governance/action';
-import { GovernanceContractActions } from '../providers/App/governanceContracts/action';
-import { FractalGuardActions } from '../providers/App/guard/action';
-import { GuardContractActions } from '../providers/App/guardContracts/action';
-import { TreasuryActions } from '../providers/App/treasury/action';
 import { ERC20TokenData, ERC721TokenData, VotesTokenData } from './account';
 import { FreezeGuardType, FreezeVotingType } from './daoGovernance';
 import { AzoriusProposal, MultisigProposal, ProposalData } from './daoProposal';
@@ -180,16 +175,7 @@ export interface ITokenAccount {
 }
 
 export interface FractalStore extends Fractal {}
-export enum StoreAction {
-  RESET = 'RESET',
-}
-export type FractalActions =
-  | { type: StoreAction.RESET }
-  | FractalGuardActions
-  | FractalGovernanceActions
-  | TreasuryActions
-  | GovernanceContractActions
-  | GuardContractActions;
+
 export interface Fractal {
   guard: FreezeGuard;
   governance: FractalGovernance;
