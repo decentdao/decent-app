@@ -36,7 +36,7 @@ export function AccordionDropdown({
 }: {
   content: React.ReactNode;
   contentCount?: number;
-  sectionTitle: string;
+  sectionTitle: React.ReactNode;
   defaultExpandedIndices?: number[];
 }) {
   return (
