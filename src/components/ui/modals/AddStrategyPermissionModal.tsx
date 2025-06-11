@@ -1,13 +1,8 @@
 import { Box, Flex, IconButton, Show, Text } from '@chakra-ui/react';
 import { CheckSquare, Scroll, X } from '@phosphor-icons/react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
-import { zeroAddress } from 'viem';
-import { DAO_ROUTES } from '../../../constants/routes';
-import useFeatureFlag from '../../../helpers/environmentFeatureFlags';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import { useDAOStore } from '../../../providers/App/AppProvider';
-import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
 import { Card } from '../cards/Card';
 
 export function AddStrategyPermissionModal({
@@ -18,14 +13,10 @@ export function AddStrategyPermissionModal({
   openAddCreateProposalPermissionModal: () => void;
 }) {
   const { t } = useTranslation(['settings', 'common']);
-  const navigate = useNavigate();
-  const { addressPrefix } = useNetworkConfigStore();
   const { daoKey } = useCurrentDAOKey();
   const {
     node: { safe },
   } = useDAOStore({ daoKey });
-
-  const isSettingsV1Enabled = useFeatureFlag('flag_settings_v1');
 
   if (!safe) {
     return null;
@@ -63,17 +54,7 @@ export function AddStrategyPermissionModal({
           }}
           onClick={() => {
             closeModal();
-            if (!isSettingsV1Enabled) {
-              navigate(
-                DAO_ROUTES.settingsPermissionsCreateProposal.relative(
-                  addressPrefix,
-                  safe.address,
-                  zeroAddress,
-                ),
-              );
-            } else {
-              openAddCreateProposalPermissionModal();
-            }
+            openAddCreateProposalPermissionModal();
           }}
         >
           <Box color="color-lilac-100">

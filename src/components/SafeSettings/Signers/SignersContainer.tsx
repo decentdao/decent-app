@@ -5,7 +5,6 @@ import { useEffect, useMemo, useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Address } from 'viem';
 import { useAccount } from 'wagmi';
-import useFeatureFlag from '../../../helpers/environmentFeatureFlags';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import { useDAOStore } from '../../../providers/App/AppProvider';
 import { NumberStepperInput } from '../../ui/forms/NumberStepperInput';
@@ -166,11 +165,6 @@ export function SignersContainer() {
     }
   }, [setFieldValue, values.multisig]);
 
-  const { open: showAddSignerModal } = useDecentModal(ModalType.ADD_SIGNER, {
-    signers: signers.map(s => s.address),
-    currentThreshold: safe?.threshold,
-  });
-
   const { address: account } = useAccount();
   const enableRemove = userIsSigner && signers.length > 1;
 
@@ -197,8 +191,6 @@ export function SignersContainer() {
     );
   }, [account, signers]);
 
-  const isSettingsV1FeatureEnabled = useFeatureFlag('flag_settings_v1');
-
   const { open: handleModifyGovernance } = useDecentModal(ModalType.CONFIRM_MODIFY_GOVERNANCE);
 
   // Calculate if we can remove more signers
@@ -213,56 +205,54 @@ export function SignersContainer() {
   return (
     <Box width="100%">
       {/* LAUNCH TOKEN BANNER */}
-      {isSettingsV1FeatureEnabled && (
+      <Flex
+        flexDirection="row"
+        bg="color-lilac-200"
+        p={4}
+        borderRadius="0.75rem"
+        mb={12}
+        justifyContent="space-between"
+        alignItems="center"
+      >
         <Flex
           flexDirection="row"
-          bg="color-lilac-200"
-          p={4}
-          borderRadius="0.75rem"
-          mb={12}
-          justifyContent="space-between"
+          gap={4}
           alignItems="center"
         >
+          <Image
+            src="/images/token-banner.svg"
+            w="3.52244rem"
+            h="3.75rem"
+          />
           <Flex
-            flexDirection="row"
-            gap={4}
-            alignItems="center"
+            mt={4}
+            flexDirection="column"
           >
-            <Image
-              src="/images/token-banner.svg"
-              w="3.52244rem"
-              h="3.75rem"
-            />
-            <Flex
-              mt={4}
-              flexDirection="column"
+            <Text
+              textStyle="text-xs-medium"
+              color="color-lilac-700"
+              fontWeight="bold"
             >
-              <Text
-                textStyle="text-xs-medium"
-                color="color-lilac-700"
-                fontWeight="bold"
-              >
-                {t('launchTokenTitle', { ns: 'daoEdit' })}
-              </Text>
-              <Text
-                textStyle="text-sm-medium"
-                color="color-lilac-700"
-                mb="1rem"
-              >
-                {t('launchTokenDescription', { ns: 'daoEdit' })}
-              </Text>
-            </Flex>
+              {t('launchTokenTitle', { ns: 'daoEdit' })}
+            </Text>
+            <Text
+              textStyle="text-sm-medium"
+              color="color-lilac-700"
+              mb="1rem"
+            >
+              {t('launchTokenDescription', { ns: 'daoEdit' })}
+            </Text>
           </Flex>
-          <Button
-            bg="color-white"
-            _hover={{ bg: 'color-white' }}
-            size="sm"
-            onClick={handleModifyGovernance}
-          >
-            {t('launchToken', { ns: 'daoEdit' })}
-          </Button>
         </Flex>
-      )}
+        <Button
+          bg="color-white"
+          _hover={{ bg: 'color-white' }}
+          size="sm"
+          onClick={handleModifyGovernance}
+        >
+          {t('launchToken', { ns: 'daoEdit' })}
+        </Button>
+      </Flex>
 
       <Text
         textStyle="text-lg-regular"
@@ -320,15 +310,11 @@ export function SignersContainer() {
               variant="secondary"
               size="sm"
               onClick={() => {
-                if (isSettingsV1FeatureEnabled) {
-                  const key = genSignerItemKey();
-                  setFieldValue('multisig.newSigners', [
-                    ...(values.multisig?.newSigners ?? []),
-                    { key, address: '', isAdding: true },
-                  ]);
-                } else {
-                  showAddSignerModal();
-                }
+                const key = genSignerItemKey();
+                setFieldValue('multisig.newSigners', [
+                  ...(values.multisig?.newSigners ?? []),
+                  { key, address: '', isAdding: true },
+                ]);
               }}
               leftIcon={<PlusCircle size="16" />}
               iconSpacing="0"
@@ -341,58 +327,54 @@ export function SignersContainer() {
         )}
       </Box>
 
-      {isSettingsV1FeatureEnabled && (
-        <Box
-          border="1px solid"
-          borderColor="color-neutral-900"
-          borderRadius="0.75rem"
-          mt={3}
-          px={6}
-          py={3}
+      <Box
+        border="1px solid"
+        borderColor="color-neutral-900"
+        borderRadius="0.75rem"
+        mt={3}
+        px={6}
+        py={3}
+      >
+        <Flex
+          flexDirection="row"
+          gap={3}
+          justifyContent="space-between"
+          alignItems="center"
         >
-          <Flex
-            flexDirection="row"
-            gap={3}
-            justifyContent="space-between"
-            alignItems="center"
-          >
-            <Flex flexDirection="column">
-              <Text
-                textStyle="text-lg-regular"
-                mb={0.5}
-              >
-                {t('threshold', { ns: 'common' })}
-              </Text>
-              <Text
-                textStyle="text-base-regular"
-                color="color-neutral-300"
-              >
-                {t('thresholdDescription', { ns: 'common' })}
-              </Text>
-            </Flex>
-
-            {/* stepper */}
-            <Flex w="200px">
-              <NumberStepperInput
-                onChange={value => {
-                  let updatedValue;
-                  if (value !== `${safe?.threshold}`) {
-                    updatedValue = value;
-                  }
-                  setFieldValue('multisig.signerThreshold', updatedValue);
-                }}
-                color={
-                  values.multisig?.signerThreshold === undefined
-                    ? 'color-neutral-300'
-                    : 'color-white'
-                }
-                value={values.multisig?.signerThreshold ?? safe?.threshold}
-                isInvalid={!!multisigEditFormikErrors?.threshold}
-              />
-            </Flex>
+          <Flex flexDirection="column">
+            <Text
+              textStyle="text-lg-regular"
+              mb={0.5}
+            >
+              {t('threshold', { ns: 'common' })}
+            </Text>
+            <Text
+              textStyle="text-base-regular"
+              color="color-neutral-300"
+            >
+              {t('thresholdDescription', { ns: 'common' })}
+            </Text>
           </Flex>
-        </Box>
-      )}
+
+          {/* stepper */}
+          <Flex w="200px">
+            <NumberStepperInput
+              onChange={value => {
+                let updatedValue;
+                if (value !== `${safe?.threshold}`) {
+                  updatedValue = value;
+                }
+                setFieldValue('multisig.signerThreshold', updatedValue);
+              }}
+              color={
+                values.multisig?.signerThreshold === undefined ? 'color-neutral-300' : 'color-white'
+              }
+              value={values.multisig?.signerThreshold ?? safe?.threshold}
+              isInvalid={!!multisigEditFormikErrors?.threshold}
+            />
+          </Flex>
+        </Flex>
+      </Box>
     </Box>
   );
 }
