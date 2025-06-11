@@ -45,6 +45,7 @@ export const useDAOStoreFetcher = ({
     setLoadingFirstProposal,
     setGuard,
     setGaslessVotingData,
+    setERC20Token,
     setAllProposalsLoaded,
   } = useGlobalStore();
   const { chain, getConfigByChainId } = useNetworkConfigStore();
@@ -56,6 +57,7 @@ export const useDAOStoreFetcher = ({
     fetchDAOProposalTemplates,
     fetchDAOSnapshotProposals,
     fetchGaslessVotingDAOData,
+    fetchMultisigERC20Token,
   } = useGovernanceFetcher();
   const { fetchDAOGuard } = useGuardFetcher();
   const { fetchRolesData } = useRolesFetcher();
@@ -152,13 +154,18 @@ export const useDAOStoreFetcher = ({
             hatsTreeId: rolesData.hatsTreeId,
             streamIdsToHatIds: rolesData.streamIdsToHatIds,
           });
+
           const gaslessVotingData = await fetchGaslessVotingDAOData({
             safeAddress,
             events: rolesData.events,
           });
-
           if (gaslessVotingData) {
             setGaslessVotingData(daoKey, gaslessVotingData);
+          }
+
+          const erc20Token = await fetchMultisigERC20Token({ events: rolesData.events });
+          if (erc20Token) {
+            setERC20Token(daoKey, erc20Token);
           }
         }
       } catch (e) {
@@ -196,6 +203,8 @@ export const useDAOStoreFetcher = ({
     setGaslessVotingData,
     fetchGaslessVotingDAOData,
     setHatKeyValuePairData,
+    fetchMultisigERC20Token,
+    setERC20Token,
   ]);
 
   useEffect(() => {

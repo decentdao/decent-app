@@ -12,6 +12,7 @@ import { DAO_ROUTES } from '../../../constants/routes';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import useDeployTokenTx from '../../../hooks/DAO/useDeployTokenTx';
 import { useERC20TokenSchema } from '../../../hooks/schemas/DAOCreate/useERC20TokenSchema';
+import { useCanUserCreateProposal } from '../../../hooks/utils/useCanUserSubmitProposal';
 import { useDAOStore } from '../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
 import { useProposalActionsStore } from '../../../store/actions/useProposalActionsStore';
@@ -33,6 +34,7 @@ export function SafeDeployTokenPage() {
   const navigate = useNavigate();
   const { addressPrefix } = useNetworkConfigStore();
   const { daoKey } = useCurrentDAOKey();
+  const { canUserCreateProposal } = useCanUserCreateProposal();
 
   const {
     node: { safe },
@@ -119,7 +121,7 @@ export function SafeDeployTokenPage() {
             >
               <Button
                 type="submit"
-                isDisabled={isSubmitting}
+                isDisabled={isSubmitting || !canUserCreateProposal}
               >
                 {t('createProposal', { ns: 'proposal' })}
               </Button>
