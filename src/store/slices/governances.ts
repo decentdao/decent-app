@@ -1,3 +1,4 @@
+import { SafeMultisigConfirmationResponse } from '@safe-global/safe-core-sdk-types';
 import { Address } from 'viem';
 import { StateCreator } from 'zustand';
 import {
@@ -13,6 +14,7 @@ import {
   FractalProposalState,
   FractalVotingStrategy,
   GovernanceType,
+  MultisigProposal,
   ProposalTemplate,
   ProposalVote,
   ProposalVotesSummary,
@@ -63,7 +65,12 @@ export type GovernancesSlice = {
   setProposals: (daoKey: DAOKey, proposals: FractalProposal[]) => void;
   setSnapshotProposals: (daoKey: DAOKey, snapshotProposals: SnapshotProposal[]) => void;
   setProposal: (daoKey: DAOKey, proposal: AzoriusProposal) => void;
-  setProposalExecuted: (daoKey: DAOKey, proposalId: string) => void;
+  updateProposalState: (daoKey: DAOKey, proposalId: string, state: FractalProposalState) => void;
+  updateProposalConfirmations: (
+    daoKey: DAOKey,
+    proposalId: string,
+    confirmations: SafeMultisigConfirmationResponse,
+  ) => void;
   setProposalVote: (
     daoKey: DAOKey,
     proposalId: string,
@@ -236,7 +243,7 @@ export const createGovernancesSlice: StateCreator<
       'setProposal',
     );
   },
-  setProposalExecuted: (daoKey, proposalId) => {
+  updateProposalState: (daoKey, proposalId, proposalState) => {
     set(
       state => {
         const proposal = state.governances[daoKey].proposals?.find(
@@ -245,10 +252,30 @@ export const createGovernancesSlice: StateCreator<
         if (!proposal) {
           return;
         }
-        proposal.state = FractalProposalState.EXECUTED;
+        proposal.state = proposalState;
       },
       false,
-      'setProposalExecuted',
+      'updateProposalState',
+    );
+  },
+  updateProposalConfirmations: (daoKey, proposalId, confirmation) => {
+    set(
+      state => {
+        const proposal = state.governances[daoKey].proposals?.find(
+          p => p.proposalId === proposalId,
+        );
+        if (!proposal) {
+          return;
+        }
+        const msProposal = proposal as MultisigProposal;
+        if (!msProposal.confirmations?.length) {
+          msProposal.confirmations = [confirmation];
+        } else if (!msProposal.confirmations.find(c => c.owner !== confirmation.owner)) {
+          msProposal.confirmations.push(confirmation);
+        }
+      },
+      false,
+      'updateProposalConfirmations',
     );
   },
   setProposalVote: (daoKey, proposalId, votesSummary, proposalVote) => {

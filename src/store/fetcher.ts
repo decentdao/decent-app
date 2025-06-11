@@ -3,7 +3,13 @@ import { Address, getAddress } from 'viem';
 import { logError } from '../helpers/errorLogging';
 import { useDecentModules } from '../hooks/DAO/loaders/useDecentModules';
 import { useNetworkConfigStore } from '../providers/NetworkConfig/useNetworkConfigStore';
-import { AzoriusProposal, DAOKey, FractalModuleType, ProposalTemplate } from '../types';
+import {
+  AzoriusProposal,
+  DAOKey,
+  FractalModuleType,
+  FractalProposal,
+  ProposalTemplate,
+} from '../types';
 import { useGovernanceFetcher } from './fetchers/governance';
 import { useGuardFetcher } from './fetchers/guard';
 import { useNodeFetcher } from './fetchers/node';
@@ -41,6 +47,7 @@ export const useDAOStoreFetcher = ({
     setTokenClaimContractAddress,
     setSnapshotProposals,
     setProposal,
+    setProposals,
     setGuard,
     setGaslessVotingData,
     setAllProposalsLoaded,
@@ -88,8 +95,9 @@ export const useDAOStoreFetcher = ({
         const onMultisigGovernanceLoaded = () => setMultisigGovernance(daoKey);
         const onAzoriusGovernanceLoaded = (governance: SetAzoriusGovernancePayload) =>
           setAzoriusGovernance(daoKey, governance);
-        const onProposalsLoaded = () => {
+        const onProposalsLoaded = (proposals: FractalProposal[]) => {
           setAllProposalsLoaded(daoKey, true);
+          setProposals(daoKey, proposals);
         };
         const onProposalLoaded = (
           proposal: AzoriusProposal,
@@ -177,6 +185,7 @@ export const useDAOStoreFetcher = ({
     setMultisigGovernance,
     setAzoriusGovernance,
     setProposal,
+    setProposals,
     setTokenClaimContractAddress,
     setGuard,
     setAllProposalsLoaded,

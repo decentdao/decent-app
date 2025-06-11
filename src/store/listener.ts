@@ -4,6 +4,7 @@ import {
   AzoriusProposal,
   DAOKey,
   ERC721ProposalVote,
+  FractalProposalState,
   GovernanceType,
   ProposalVote,
   ProposalVotesSummary,
@@ -27,7 +28,7 @@ export const useDAOStoreListener = ({ daoKey }: { daoKey: DAOKey | undefined }) 
     getGuard,
     setProposal,
     setProposalVote,
-    setProposalExecuted,
+    updateProposalState,
     setGuardAccountData,
     setGaslessVotingData,
   } = useGlobalStore();
@@ -74,10 +75,10 @@ export const useDAOStoreListener = ({ daoKey }: { daoKey: DAOKey | undefined }) 
   const onProposalExecuted = useCallback(
     (proposalId: string) => {
       if (daoKey) {
-        setProposalExecuted(daoKey, proposalId);
+        updateProposalState(daoKey, proposalId, FractalProposalState.EXECUTED);
       }
     },
-    [daoKey, setProposalExecuted],
+    [daoKey, updateProposalState],
   );
 
   const onGovernanceAccountDataUpdated = useCallback(
