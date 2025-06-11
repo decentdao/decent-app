@@ -1,5 +1,5 @@
 import { HatsSubgraphClient, Tree } from '@hatsprotocol/sdk-v1-subgraph';
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { createSablierSubgraphClient } from '../../../graphql';
@@ -17,7 +17,7 @@ const hatsSubgraphClient = new HatsSubgraphClient({});
 
 const useHatsTree = () => {
   const { t } = useTranslation('roles');
-  const { daoKey } = useCurrentDAOKey();
+  const { daoKey, safeAddress } = useCurrentDAOKey();
   const {
     governanceContracts: {
       linearVotingErc20WithHatsWhitelistingAddress,
@@ -26,7 +26,7 @@ const useHatsTree = () => {
     },
     node: { safe },
   } = useDAOStore({ daoKey });
-  const { hatsTreeId, contextChainId, setHatsTree } = useRolesStore();
+  const { hatsTreeId, contextChainId, setHatsTree, resetRoles } = useRolesStore();
 
   const ipfsClient = useIPFSClient();
   const {
@@ -156,38 +156,34 @@ const useHatsTree = () => {
     ],
   );
 
-  const safeAddress = safe?.address;
-  const daoHatTreeloadKey = useRef<string | null>();
-
   useEffect(() => {
-    const key = safeAddress && hatsTreeId ? `${safeAddress}:${hatsTreeId}` : null;
-
-    const previousSafeAddress = daoHatTreeloadKey.current?.split(':')[0];
-    const previousHatsTreeId = daoHatTreeloadKey.current?.split(':')[1];
-
+    if (safeAddress !== safe?.address) {
+      resetRoles();
+      return;
+    }
     // Whitelisting contracts might be not loaded yet which might lead to wrong permissions loading
     if (!governanceContractsLoaded) {
+      resetRoles();
       return;
     }
 
-    if (
-      !!hatsTreeId &&
-      !!contextChainId &&
-      key !== null &&
-      key !== daoHatTreeloadKey.current &&
-      previousHatsTreeId !== `${hatsTreeId}` // don't try to load hats tree if this new DAO is stuck with the same hats tree id as the previous DAO
-    ) {
-      getHatsTree({
-        hatsTreeId,
-        contextChainId,
-      });
-
-      daoHatTreeloadKey.current = key;
-    } else if (!!safeAddress && safeAddress !== previousSafeAddress) {
-      // If the safe address changes, reset the load key
-      daoHatTreeloadKey.current = key;
+    if (!hatsTreeId || !contextChainId) {
+      resetRoles();
+      return;
     }
-  }, [contextChainId, getHatsTree, hatsTreeId, safeAddress, governanceContractsLoaded]);
+    getHatsTree({
+      hatsTreeId,
+      contextChainId,
+    });
+  }, [
+    contextChainId,
+    getHatsTree,
+    hatsTreeId,
+    safeAddress,
+    governanceContractsLoaded,
+    resetRoles,
+    safe?.address,
+  ]);
 };
 
 export { useHatsTree };

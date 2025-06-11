@@ -262,4 +262,5 @@ export interface RolesStore extends RolesStoreData {
   refreshWithdrawableAmount: (hatId: Hex, streamId: string, publicClient: PublicClient) => void;
   updateCurrentTermStatus: (hatId: Hex, termStatus: 'active' | 'inactive') => void;
   resetHatsStore: () => void;
+  resetRoles: () => void;
 }
