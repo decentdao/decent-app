@@ -20,6 +20,7 @@ import {
   AzoriusERC20DAO,
   AzoriusERC721DAO,
   AzoriusGovernanceDAO,
+  CreateProposalTransaction,
   SafeTransaction,
   TokenLockType,
   VotingStrategyType,
@@ -247,7 +248,7 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
       throw new Error('Encoded setup token data or votes erc20 master copy not set');
     }
 
-    const votingStrategyMasterCopy =
+    const votesErc20MasterCopy =
       azoriusErc20DaoData.locked === TokenLockType.LOCKED
         ? this.votesErc20LockableMasterCopy
         : this.votesErc20MasterCopy;
@@ -256,10 +257,75 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
       target: this.zodiacModuleProxyFactory,
       encodedFunctionData: encodeFunctionData({
         functionName: 'deployModule',
-        args: [votingStrategyMasterCopy, this.encodedSetupTokenData, this.tokenNonce],
+        args: [votesErc20MasterCopy, this.encodedSetupTokenData, this.tokenNonce],
         abi: ZodiacModuleProxyFactoryAbi,
       }),
     });
+  }
+
+  public getCreateTokenTx(): CreateProposalTransaction {
+    const azoriusErc20DaoData = this.daoData as AzoriusERC20DAO;
+
+    if (
+      !this.encodedSetupTokenData ||
+      !this.votesErc20MasterCopy ||
+      !this.votesErc20LockableMasterCopy
+    ) {
+      throw new Error('Encoded setup token data or votes erc20 master copy not set');
+    }
+
+    const votesErc20MasterCopy =
+      azoriusErc20DaoData.locked === TokenLockType.LOCKED
+        ? this.votesErc20LockableMasterCopy
+        : this.votesErc20MasterCopy;
+
+    return {
+      targetAddress: this.zodiacModuleProxyFactory,
+      ethValue: {
+        bigintValue: 0n,
+        value: '0',
+      },
+      functionName: 'deployModule',
+      parameters: [
+        {
+          signature: 'address',
+          value: votesErc20MasterCopy,
+        },
+        {
+          signature: 'bytes',
+          value: this.encodedSetupTokenData,
+        },
+        {
+          signature: 'uint256',
+          value: this.tokenNonce.toString(),
+        },
+      ],
+    };
+  }
+
+  public getUpdateERC20AddressTx(keyValuePairs: Address): CreateProposalTransaction {
+    if (!this.predictedTokenAddress) {
+      throw new Error('predictedTokenAddress not set');
+    }
+
+    return {
+      targetAddress: keyValuePairs,
+      ethValue: {
+        bigintValue: 0n,
+        value: '0',
+      },
+      functionName: 'updateValues',
+      parameters: [
+        {
+          signature: 'string[]',
+          valueArray: ['erc20Address'],
+        },
+        {
+          signature: 'string[]',
+          valueArray: [this.predictedTokenAddress],
+        },
+      ],
+    };
   }
 
   public buildDeployStrategyTx(): SafeTransaction {

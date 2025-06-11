@@ -92,7 +92,7 @@ function NonceLabel({ nonce }: { nonce: number | undefined }) {
   );
 }
 
-function ProposalCard({ proposal }: { proposal: FractalProposal }) {
+function ProposalCard({ proposal, showNonce }: { proposal: FractalProposal; showNonce?: boolean }) {
   const { safeAddress, daoKey } = useCurrentDAOKey();
   const {
     governance: { proposals },
@@ -158,7 +158,7 @@ function ProposalCard({ proposal }: { proposal: FractalProposal }) {
             gap={4}
             alignItems="center"
           >
-            <NonceLabel nonce={(proposal as MultisigProposal).nonce} />
+            {showNonce && <NonceLabel nonce={(proposal as MultisigProposal).nonce} />}
             {isAzoriusProposal && <QuorumBadge proposal={proposal as AzoriusProposal} />}
             <SignerThresholdBadge
               numberOfConfirmedSigners={(proposal as MultisigProposal).confirmations?.length}
