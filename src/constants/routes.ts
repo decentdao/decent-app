@@ -17,6 +17,11 @@ export const DAO_ROUTES = {
       `/home${getDaoQueryParam(addressPrefix, safeAddress)}`,
     path: 'home',
   },
+  deployToken: {
+    relative: (addressPrefix: string, safeAddress: string) =>
+      `/deployToken${getDaoQueryParam(addressPrefix, safeAddress)}`,
+    path: 'deployToken',
+  },
   newSubDao: {
     relative: (addressPrefix: string, safeAddress: string) =>
       `/new/essentials${getDaoQueryParam(addressPrefix, safeAddress)}`,
