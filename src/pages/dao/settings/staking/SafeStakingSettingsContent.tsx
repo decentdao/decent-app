@@ -79,6 +79,34 @@ export function SafeStakingSettingsContent() {
                   hideSteppers
                 />
               </LabelComponent>
+
+              <Flex
+                flexDir="row"
+                px={4}
+                py={2}
+                border="1px solid"
+                borderColor="color-layout-border"
+                borderRadius="0.75rem"
+                mt={6}
+              >
+                <Flex
+                  flexDir="column"
+                  gap={2}
+                >
+                  <Text
+                    textStyle="text-sm-regular"
+                    color="color-layout-foreground"
+                  >
+                    {t('includeStakingInVoting')}
+                  </Text>
+                  <Text
+                    textStyle="text-sm-regular"
+                    color="color-secondary-500"
+                  >
+                    {t('includeStakingInVotingDesc')}
+                  </Text>
+                </Flex>
+              </Flex>
             </>
           ) : (
             <NoStakingContract />
