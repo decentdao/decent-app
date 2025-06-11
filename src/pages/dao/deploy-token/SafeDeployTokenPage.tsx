@@ -37,6 +37,7 @@ export function SafeDeployTokenPage() {
         initialValues={{
           erc20Token: initialState.erc20Token,
           essentials: {
+            //@todo refactor ticket: https://linear.app/decent-labs/issue/ENG-1147/untangle-the-typing-for-the-separate-form
             daoName: 'to_pass_useStepRedirect_check',
             governance: GovernanceType.AZORIUS_ERC20,
             snapshotENS: '',
