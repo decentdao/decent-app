@@ -10,7 +10,6 @@ import {
   keccak256,
   parseAbiParameters,
 } from 'viem';
-import { ZodiacModuleProxyFactoryAbi } from '../../assets/abi/ZodiacModuleProxyFactoryAbi';
 import {
   linearERC20VotingV1SetupParams,
   linearERC20VotingWithWhitelistV1SetupParams,
@@ -48,11 +47,6 @@ export const useInstallVersionedVotingStrategy = () => {
 
   const azoriusGovernance = governance as AzoriusGovernance;
   const { votesToken, erc721Tokens } = azoriusGovernance;
-
-  type TargetAddressAndCalldata = {
-    targetAddress: `0x${string}`;
-    calldata: `0x${string}`;
-  };
 
   const {
     contracts: {
@@ -412,8 +406,8 @@ export const useInstallVersionedVotingStrategy = () => {
       tokenAddress?: Address,
       erc721TokenAddresses?: ERC721TokenData[],
     ): Promise<{
-      deployTx: [TargetAddressAndCalldata, CreateProposalTransaction];
-      enableTx: [TargetAddressAndCalldata, CreateProposalTransaction];
+      deployTx: CreateProposalTransaction;
+      enableTx: CreateProposalTransaction;
       newStrategy: FractalVotingStrategy;
     }> => {
       const encodedStrategySetupData = await setupParams(
@@ -426,38 +420,28 @@ export const useInstallVersionedVotingStrategy = () => {
       const masterAddress = getMasterCopyAddress(strategyToRemove);
 
       const strategyNonce = getRandomBytes();
-      const deployVotingStrategyTx: [TargetAddressAndCalldata, CreateProposalTransaction] = [
-        {
-          targetAddress: zodiacModuleProxyFactory,
-          calldata: encodeFunctionData({
-            abi: ZodiacModuleProxyFactoryAbi,
-            functionName: 'deployModule',
-            args: [masterAddress, encodedStrategySetupData, strategyNonce],
-          }),
+      const deployVotingStrategyTx: CreateProposalTransaction = {
+        targetAddress: zodiacModuleProxyFactory,
+        functionName: 'deployModule',
+        ethValue: {
+          value: '0n',
+          bigintValue: 0n,
         },
-        {
-          targetAddress: zodiacModuleProxyFactory,
-          functionName: 'deployModule',
-          ethValue: {
-            value: '0n',
-            bigintValue: 0n,
+        parameters: [
+          {
+            signature: 'address',
+            value: masterAddress,
           },
-          parameters: [
-            {
-              signature: 'address',
-              value: masterAddress,
-            },
-            {
-              signature: 'bytes',
-              value: encodedStrategySetupData,
-            },
-            {
-              signature: 'uint256',
-              value: strategyNonce.toString(),
-            },
-          ],
-        },
-      ];
+          {
+            signature: 'bytes',
+            value: encodedStrategySetupData,
+          },
+          {
+            signature: 'uint256',
+            value: strategyNonce.toString(),
+          },
+        ],
+      };
 
       const strategySalt = generateSalt(encodedStrategySetupData, strategyNonce);
 
@@ -468,27 +452,15 @@ export const useInstallVersionedVotingStrategy = () => {
         bytecodeHash: keccak256(encodePacked(['bytes'], [strategyByteCode])),
       });
 
-      const enableDeployedVotingStrategyTx: [TargetAddressAndCalldata, CreateProposalTransaction] =
-        [
-          {
-            targetAddress: moduleAzoriusAddress,
-            calldata: encodeFunctionData({
-              abi: abis.Azorius,
-              functionName: 'enableStrategy',
-              args: [predictedStrategyAddress],
-            }),
-          },
-          {
-            targetAddress: moduleAzoriusAddress,
-            functionName: 'enableStrategy',
-            ethValue: {
-              value: '0n',
-              bigintValue: 0n,
-            },
-            parameters: [{ signature: 'address', value: predictedStrategyAddress }],
-          },
-        ];
-
+      const enableDeployedVotingStrategyTx: CreateProposalTransaction = {
+        targetAddress: moduleAzoriusAddress,
+        functionName: 'enableStrategy',
+        ethValue: {
+          value: '0n',
+          bigintValue: 0n,
+        },
+        parameters: [{ signature: 'address', value: predictedStrategyAddress }],
+      };
       return {
         deployTx: deployVotingStrategyTx,
         enableTx: enableDeployedVotingStrategyTx,
@@ -502,7 +474,6 @@ export const useInstallVersionedVotingStrategy = () => {
   );
 
   const buildInstallVersionedVotingStrategies = useCallback(async (): Promise<{
-    installVersionedStrategyTxDatas: TargetAddressAndCalldata[];
     newStrategies: FractalVotingStrategy[];
     installVersionedStrategyCreateProposalTxs: CreateProposalTransaction[];
   }> => {
@@ -523,11 +494,8 @@ export const useInstallVersionedVotingStrategy = () => {
     const strategiesToRemove = strategies.filter(strategy => strategy.version === undefined);
 
     if (strategiesToRemove.length > 0) {
-      let installVersionedStrategyTxDatas: TargetAddressAndCalldata[] = [];
       let installVersionedStrategyCreateProposalTxs: CreateProposalTransaction[] = [];
-      const getDisableStrategyTx = (
-        strategy: FractalVotingStrategy,
-      ): [TargetAddressAndCalldata, CreateProposalTransaction] => {
+      const getDisableStrategyTx = (strategy: FractalVotingStrategy): CreateProposalTransaction => {
         // Find the previous strategy for the one to disable
         let prevStrategy: Address = SENTINEL_MODULE;
         for (let j = 0; j < strategies.length; j++) {
@@ -538,40 +506,31 @@ export const useInstallVersionedVotingStrategy = () => {
         }
 
         // Disable the old strategy
-        return [
-          {
-            targetAddress: moduleAzoriusAddress,
-            calldata: encodeFunctionData({
-              abi: abis.Azorius,
-              functionName: 'disableStrategy',
-              args: [prevStrategy, strategy.address],
-            }),
+        return {
+          targetAddress: moduleAzoriusAddress,
+          functionName: 'disableStrategy',
+          ethValue: {
+            value: '0n',
+            bigintValue: 0n,
           },
-          {
-            targetAddress: moduleAzoriusAddress,
-            functionName: 'disableStrategy',
-            ethValue: {
-              value: '0n',
-              bigintValue: 0n,
+          parameters: [
+            {
+              signature: 'address',
+              value: prevStrategy,
             },
-            parameters: [
-              {
-                signature: 'address',
-                value: prevStrategy,
-              },
-              {
-                signature: 'address',
-                value: strategy.address,
-              },
-            ],
-          },
-        ];
+            {
+              signature: 'address',
+              value: strategy.address,
+            },
+          ],
+        };
       };
 
       // Handle all the removals first
       // There can be multiple strategies to replace. Use reverse so we can get prevStrategy correctly
-      const disableStrategyTxs: [TargetAddressAndCalldata, CreateProposalTransaction][] =
-        strategiesToRemove.reverse().map(getDisableStrategyTx);
+      const disableStrategyTxs: CreateProposalTransaction[] = strategiesToRemove
+        .reverse()
+        .map(getDisableStrategyTx);
 
       const deployAndEnablePromises = strategiesToRemove.map(oldStrategy =>
         getAddAndEnableStrategyTxs(
@@ -584,18 +543,12 @@ export const useInstallVersionedVotingStrategy = () => {
       const deployAndEnableNewStrategyTxs = await Promise.all(deployAndEnablePromises);
 
       if (disableStrategyTxs.length === deployAndEnableNewStrategyTxs.length) {
-        installVersionedStrategyTxDatas.push(...disableStrategyTxs.flatMap(tx => [tx[0]]));
-        installVersionedStrategyTxDatas.push(
-          ...deployAndEnableNewStrategyTxs.flatMap(tx => [tx.deployTx[0], tx.enableTx[0]]),
-        );
-
         installVersionedStrategyCreateProposalTxs.push(
-          ...disableStrategyTxs.flatMap(tx => [tx[1]]),
-          ...deployAndEnableNewStrategyTxs.flatMap(tx => [tx.deployTx[1], tx.enableTx[1]]),
+          ...disableStrategyTxs,
+          ...deployAndEnableNewStrategyTxs.flatMap(tx => [tx.deployTx, tx.enableTx]),
         );
 
         return {
-          installVersionedStrategyTxDatas,
           installVersionedStrategyCreateProposalTxs,
           newStrategies: deployAndEnableNewStrategyTxs.map(tx => tx.newStrategy),
         };
@@ -605,7 +558,6 @@ export const useInstallVersionedVotingStrategy = () => {
     } else {
       // The installed strategies already support gasless voting, so no need to replace with new ones
       return {
-        installVersionedStrategyTxDatas: [],
         installVersionedStrategyCreateProposalTxs: [],
         newStrategies: [],
       };
