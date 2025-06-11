@@ -1,5 +1,6 @@
 import { Button, Flex, Text } from '@chakra-ui/react';
 import { useTranslation } from 'react-i18next';
+import { Address } from 'viem';
 import { SettingsContentBox } from '../../../../components/SafeSettings/SettingsContentBox';
 import DurationUnitStepperInput from '../../../../components/ui/forms/DurationUnitStepperInput';
 import { LabelComponent } from '../../../../components/ui/forms/InputComponent';
@@ -39,6 +40,66 @@ export function SafeStakingSettingsContent() {
     );
   }
 
+  function StakingPeriodForm({ stakingContractAddress }: { stakingContractAddress: Address }) {
+    return (
+      <>
+        <DisplayAddress
+          address={stakingContractAddress}
+          color="color-charcoal-50"
+          textStyle="text-sm-underlined"
+          p={0}
+        >
+          {stakingContractAddress}
+        </DisplayAddress>
+        <LabelComponent
+          label={t('stakingPeriod')}
+          isRequired
+          gridContainerProps={{
+            my: 6,
+            templateColumns: '1fr',
+            width: { base: '100%', md: '50%' },
+          }}
+        >
+          <DurationUnitStepperInput
+            secondsValue={0}
+            onSecondsValueChange={(val: number) => {
+              console.log(val);
+            }}
+            hideSteppers
+          />
+        </LabelComponent>
+
+        <Flex
+          flexDir="row"
+          px={4}
+          py={2}
+          border="1px solid"
+          borderColor="color-layout-border"
+          borderRadius="0.75rem"
+          mt={6}
+        >
+          <Flex
+            flexDir="column"
+            gap={2}
+          >
+            <Text
+              textStyle="text-sm-regular"
+              color="color-layout-foreground"
+            >
+              {t('includeStakingInVoting')}
+            </Text>
+            <Text
+              textStyle="text-sm-regular"
+              color="color-secondary-500"
+            >
+              {t('includeStakingInVotingDesc')}
+            </Text>
+          </Flex>
+        </Flex>
+      </>
+    );
+  }
+
   return (
     <>
       {!!safe ? (
@@ -53,61 +114,7 @@ export function SafeStakingSettingsContent() {
             {t('stakingTitle')}
           </Text>
           {stakingAddress ? (
-            <>
-              <DisplayAddress
-                address={stakingAddress}
-                color="color-charcoal-50"
-                textStyle="text-sm-underlined"
-                p={0}
-              >
-                {stakingAddress}
-              </DisplayAddress>
-              <LabelComponent
-                label={t('stakingPeriod')}
-                isRequired
-                gridContainerProps={{
-                  my: 6,
-                  templateColumns: '1fr',
-                  width: { base: '100%', md: '50%' },
-                }}
-              >
-                <DurationUnitStepperInput
-                  secondsValue={0}
-                  onSecondsValueChange={(val: number) => {
-                    console.log(val);
-                  }}
-                  hideSteppers
-                />
-              </LabelComponent>
-
-              <Flex
-                flexDir="row"
-                px={4}
-                py={2}
-                border="1px solid"
-                borderColor="color-layout-border"
-                borderRadius="0.75rem"
-                mt={6}
-              >
-                <Flex
-                  flexDir="column"
-                  gap={2}
-                >
-                  <Text
-                    textStyle="text-sm-regular"
-                    color="color-layout-foreground"
-                  >
-                    {t('includeStakingInVoting')}
-                  </Text>
-                  <Text
-                    textStyle="text-sm-regular"
-                    color="color-secondary-500"
-                  >
-                    {t('includeStakingInVotingDesc')}
-                  </Text>
-                </Flex>
-              </Flex>
-            </>
+            <StakingPeriodForm stakingContractAddress={stakingAddress} />
           ) : (
             <NoStakingContract />
           )}
