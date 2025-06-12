@@ -340,23 +340,20 @@ export function useGovernanceFetcher() {
               name,
               symbol,
               decimals,
-              address: tokenContract.address,
               totalSupply,
               balance,
               delegatee,
             };
 
-            let lockedVotesTokenData: VotesTokenData | undefined;
+            const votesToken = {
+              ...tokenData,
+              address: tokenContract.address,
+            };
+
+            let lockedVotesToken: VotesTokenData | undefined;
             if (lockReleaseAddress) {
-              lockedVotesTokenData = {
-                balance: balance ? BigInt(balance.toString()) : 0n,
-                delegatee: !!delegatee
-                  ? getAddress(delegatee.toString())
-                  : (zeroAddress as Address),
-                name: tokenData.name,
-                symbol: tokenData.symbol,
-                decimals: tokenData.decimals,
-                totalSupply: tokenData.totalSupply,
+              lockedVotesToken = {
+                ...tokenData,
                 address: lockReleaseAddress,
               };
             }
@@ -429,7 +426,7 @@ export function useGovernanceFetcher() {
 
             onAzoriusGovernanceLoaded({
               moduleAzoriusAddress: azoriusContract.address,
-              votesToken: tokenData,
+              votesToken,
               erc721Tokens: undefined,
               linearVotingErc20Address,
               linearVotingErc20WithHatsWhitelistingAddress,
@@ -439,7 +436,7 @@ export function useGovernanceFetcher() {
               strategies,
               votingStrategy,
               isAzorius: true,
-              lockedVotesToken: lockedVotesTokenData,
+              lockedVotesToken,
               type: GovernanceType.AZORIUS_ERC20,
             });
 
