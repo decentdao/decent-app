@@ -20,9 +20,11 @@ import {
 } from 'viem';
 import GnosisSafeL2Abi from '../../../assets/abi/GnosisSafeL2';
 import { SENTINEL_ADDRESS } from '../../../constants/common';
+import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import { SafeWithNextNonce } from '../../../types';
 import { NetworkConfig } from '../../../types/network';
-import { useNetworkConfigStore } from '../../NetworkConfig/useNetworkConfigStore';
+import { getChainIdFromPrefix } from '../../../utils/url';
+import { getNetworkConfig, useNetworkConfigStore } from '../../NetworkConfig/useNetworkConfigStore';
 
 /*
 Interface to map the response from Safe Client's transactions/history
@@ -157,7 +159,7 @@ class EnhancedSafeApiKit {
 
     try {
       // Fetch necessary details from the contract
-      const [nonce, threshold, owners, version] = await this.publicClient.multicall({
+      const [nonceRes, thresholdRes, ownersRes, versionRes] = await this.publicClient.multicall({
         contracts: [
           {
             abi: GnosisSafeL2Abi,
@@ -180,8 +182,13 @@ class EnhancedSafeApiKit {
             functionName: 'VERSION',
           },
         ],
-        allowFailure: false,
+        allowFailure: true,
       });
+
+      const nonce = nonceRes.result;
+      const threshold = thresholdRes.result;
+      const owners = ownersRes.result;
+      const version = versionRes.result || 'Unknown';
 
       // keccak256("guard_manager.guard.address")
       // https://github.com/safe-global/safe-smart-account/blob/1c8b24a0a438e8c2cd089a9d830d1688a47a28d5/contracts/base/GuardManager.sol#L66
@@ -435,10 +442,13 @@ class EnhancedSafeApiKit {
 
 export function useSafeAPI() {
   const networkConfig = useNetworkConfigStore();
-
+  const { addressPrefix: urlAddressPrefix } = useCurrentDAOKey();
   const safeAPI = useMemo(() => {
+    if (urlAddressPrefix && urlAddressPrefix !== networkConfig.addressPrefix) {
+      return new EnhancedSafeApiKit(getNetworkConfig(getChainIdFromPrefix(urlAddressPrefix)));
+    }
     return new EnhancedSafeApiKit(networkConfig);
-  }, [networkConfig]);
+  }, [networkConfig, urlAddressPrefix]);
 
   return safeAPI;
 }
