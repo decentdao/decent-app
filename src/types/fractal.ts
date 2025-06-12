@@ -287,6 +287,9 @@ export interface DecentGovernance extends AzoriusGovernance {
   lockedVotesToken?: VotesTokenData;
 }
 export interface SafeMultisigGovernance extends Governance {
+  // This is here so that FractalGovernance can be used freely without
+  // having to cast `as AzoriusGovernance` in order to access `votesToken`.
+  // `SafeMultisigGovernance` doesn't have this, so `undefined` is its only possible value.
   votesToken?: undefined;
 }
 
