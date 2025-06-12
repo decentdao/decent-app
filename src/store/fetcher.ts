@@ -65,10 +65,9 @@ export const useDAOStoreFetcher = ({
   } = useGovernanceFetcher();
   const { fetchDAOGuard } = useGuardFetcher();
   const { fetchKeyValuePairsData } = useKeyValuePairsFetcher();
-  const { setHatKeyValuePairData, resetHatsStore } = useRolesStore();
+  const { setHatKeyValuePairData } = useRolesStore();
 
   useEffect(() => {
-    resetHatsStore();
     async function loadDAOData() {
       if (!daoKey || !safeAddress || invalidQuery || wrongNetwork) return;
       try {
@@ -100,6 +99,7 @@ export const useDAOStoreFetcher = ({
 
         if (keyValuePairsData) {
           setHatKeyValuePairData({
+            daoKey,
             contextChainId: chain.id,
             hatsTreeId: keyValuePairsData.hatsTreeId,
             streamIdsToHatIds: keyValuePairsData.streamIdsToHatIds,
@@ -203,7 +203,6 @@ export const useDAOStoreFetcher = ({
     setGaslessVotingData,
     fetchGaslessVotingDAOData,
     setHatKeyValuePairData,
-    resetHatsStore,
   ]);
 
   useEffect(() => {

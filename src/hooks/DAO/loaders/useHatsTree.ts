@@ -1,5 +1,5 @@
 import { HatsSubgraphClient, Tree } from '@hatsprotocol/sdk-v1-subgraph';
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { createSablierSubgraphClient } from '../../../graphql';
@@ -17,7 +17,7 @@ const hatsSubgraphClient = new HatsSubgraphClient({});
 
 const useHatsTree = () => {
   const { t } = useTranslation('roles');
-  const { daoKey, safeAddress } = useCurrentDAOKey();
+  const { daoKey } = useCurrentDAOKey();
   const {
     governanceContracts: {
       linearVotingErc20WithHatsWhitelistingAddress,
@@ -25,7 +25,7 @@ const useHatsTree = () => {
       isLoaded: governanceContractsLoaded,
     },
   } = useDAOStore({ daoKey });
-  const { hatsTreeId, contextChainId, setHatsTree } = useRolesStore();
+  const { hatsTreeId, contextChainId, setHatsTree, resetRoles } = useRolesStore();
 
   const ipfsClient = useIPFSClient();
   const {
@@ -155,26 +155,27 @@ const useHatsTree = () => {
     ],
   );
 
-  const loadKey = useRef<string | null>();
   useEffect(() => {
-    const key = `${hatsTreeId}-${contextChainId}-${safeAddress}`;
-    if (loadKey.current === key) {
-      return;
-    }
-    loadKey.current = key;
     // Whitelisting contracts might be not loaded yet which might lead to wrong permissions loading
     if (!governanceContractsLoaded) {
       return;
     }
 
-    if (!hatsTreeId || !contextChainId) {
+    if (!daoKey || !hatsTreeId || !contextChainId) {
+      resetRoles();
+      return;
+    }
+    const hatsTreeIdValue = hatsTreeId[daoKey];
+    // @dev for some reason `hatsTreeId` can stile be null or undefined
+    if (hatsTreeIdValue === null || hatsTreeIdValue === undefined) {
+      resetRoles();
       return;
     }
     getHatsTree({
-      hatsTreeId,
+      hatsTreeId: hatsTreeIdValue,
       contextChainId,
     });
-  }, [contextChainId, getHatsTree, hatsTreeId, governanceContractsLoaded, safeAddress]);
+  }, [contextChainId, getHatsTree, hatsTreeId, governanceContractsLoaded, daoKey, resetRoles]);
 };
 
 export { useHatsTree };

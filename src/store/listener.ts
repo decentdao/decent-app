@@ -185,13 +185,16 @@ export const useDAOStoreListener = ({ daoKey }: { daoKey: DAOKey | undefined }) 
       streamIdsToHatIds: { hatId: bigint; streamId: string }[];
     }) => {
       // TODO: Implement setting to global store in scope of ENG-632
-      setHatKeyValuePairData({
-        contextChainId,
-        hatsTreeId,
-        streamIdsToHatIds,
-      });
+      if (daoKey) {
+        setHatKeyValuePairData({
+          daoKey,
+          contextChainId,
+          hatsTreeId,
+          streamIdsToHatIds,
+        });
+      }
     },
-    [setHatKeyValuePairData],
+    [setHatKeyValuePairData, daoKey],
   );
 
   const onGaslessVotingDataFetched = useCallback(
