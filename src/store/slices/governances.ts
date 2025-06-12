@@ -306,16 +306,18 @@ export const createGovernancesSlice: StateCreator<
   setGovernanceAccountData: (daoKey, governanceAccountData) => {
     set(
       state => {
-        const azoirusGovernance = state.governances[daoKey] as AzoriusGovernance;
+        const azoriusGovernance = state.governances[daoKey];
+
         if (
           !state.governances[daoKey] ||
           !state.governances[daoKey].isAzorius ||
-          !azoirusGovernance.votesToken
+          !azoriusGovernance.votesToken
         ) {
           return;
         }
-        azoirusGovernance.votesToken.balance = governanceAccountData.balance;
-        azoirusGovernance.votesToken.delegatee = governanceAccountData.delegatee;
+
+        azoriusGovernance.votesToken.balance = governanceAccountData.balance;
+        azoriusGovernance.votesToken.delegatee = governanceAccountData.delegatee;
       },
       false,
       'setGovernanceAccountData',

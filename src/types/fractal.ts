@@ -286,7 +286,9 @@ export interface AzoriusGovernance extends Governance {
 export interface DecentGovernance extends AzoriusGovernance {
   lockedVotesToken?: VotesTokenData;
 }
-export interface SafeMultisigGovernance extends Governance {}
+export interface SafeMultisigGovernance extends Governance {
+  votesToken?: undefined;
+}
 
 export interface Governance {
   type?: GovernanceType;

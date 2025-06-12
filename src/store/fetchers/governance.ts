@@ -83,7 +83,7 @@ export function useGovernanceFetcher() {
       paymaster: { decentPaymasterV1MasterCopy },
     },
   } = useNetworkConfigStore();
-  const { safeAddress: currentUrlSafeAddress } = useCurrentDAOKey();
+  const { safeAddress: currentUrlSafeAddress, wrongNetwork } = useCurrentDAOKey();
 
   const { setMethodOnInterval, clearIntervals } = useUpdateTimer(currentUrlSafeAddress);
 
@@ -754,19 +754,31 @@ export function useGovernanceFetcher() {
 
   const fetchVotingTokenAccountData = useCallback(
     async (votingTokenAddress: Address, account: Address) => {
-      const tokenContract = getContract({
-        abi: abis.VotesERC20,
-        address: votingTokenAddress,
-        client: publicClient,
+      if (wrongNetwork) {
+        return { balance: 0n, delegatee: zeroAddress };
+      }
+
+      const [balance, delegatee] = await publicClient.multicall({
+        contracts: [
+          {
+            abi: abis.VotesERC20,
+            address: votingTokenAddress,
+            functionName: 'balanceOf',
+            args: [account],
+          },
+          {
+            abi: abis.VotesERC20,
+            address: votingTokenAddress,
+            functionName: 'delegates',
+            args: [account],
+          },
+        ],
+        allowFailure: false,
       });
-      const [balance, delegatee] = await Promise.all([
-        tokenContract.read.balanceOf([account]),
-        tokenContract.read.delegates([account]),
-      ]);
 
       return { balance, delegatee };
     },
-    [publicClient],
+    [publicClient, wrongNetwork],
   );
 
   const fetchLockReleaseAccountData = useCallback(
