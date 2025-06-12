@@ -5,6 +5,7 @@ import {
   Address,
   erc721Abi,
   formatUnits,
+  getAddress,
   getContract,
   GetContractEventsReturnType,
   zeroAddress,
@@ -299,17 +300,23 @@ export function useGovernanceFetcher() {
                 ...tokenContract,
                 functionName: 'totalSupply',
               },
+              {
+                ...tokenContract,
+                functionName: 'balanceOf',
+                args: [user.address],
+              },
+              {
+                ...tokenContract,
+                functionName: 'delegates',
+              },
             ];
 
             // Execute multicall
-            const [name, symbol, decimals, totalSupply] = await publicClient.multicall({
-              contracts: multicallCalls,
-              allowFailure: false,
-            });
-            let balance: bigint = 0n;
-            if (user.address) {
-              balance = await tokenContract.read.balanceOf([user.address]);
-            }
+            const [name, symbol, decimals, totalSupply, balance, delegatee] =
+              await publicClient.multicall({
+                contracts: multicallCalls,
+                allowFailure: false,
+              });
 
             const tokenData = {
               name: name ? name.toString() : '',
@@ -317,15 +324,17 @@ export function useGovernanceFetcher() {
               decimals: decimals ? Number(decimals) : 18,
               address: tokenContract.address,
               totalSupply: totalSupply ? BigInt(totalSupply) : 0n,
-              balance,
-              delegatee: zeroAddress as Address,
+              balance: balance ? BigInt(balance.toString()) : 0n,
+              delegatee: !!delegatee ? getAddress(delegatee.toString()) : (zeroAddress as Address),
             };
 
             let lockedVotesTokenData: VotesTokenData | undefined;
             if (lockReleaseAddress) {
               lockedVotesTokenData = {
-                balance,
-                delegatee: zeroAddress,
+                balance: balance ? BigInt(balance.toString()) : 0n,
+                delegatee: !!delegatee
+                  ? getAddress(delegatee.toString())
+                  : (zeroAddress as Address),
                 name: tokenData.name,
                 symbol: tokenData.symbol,
                 decimals: tokenData.decimals,
