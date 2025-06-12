@@ -312,18 +312,35 @@ export function useGovernanceFetcher() {
             ];
 
             // Execute multicall
-            const [name, symbol, decimals, totalSupply, balance, delegatee] =
-              await publicClient.multicall({
-                contracts: multicallCalls,
-                allowFailure: false,
-              });
+            const [
+              nameData,
+              symbolData,
+              decimalsData,
+              totalSupplyData,
+              balanceData,
+              delegateeData,
+            ] = await publicClient.multicall({
+              contracts: multicallCalls,
+              allowFailure: true,
+            });
+
+            const [name, symbol, decimals, totalSupply, balance, delegatee] = [
+              nameData.result?.toString() ?? '',
+              symbolData.result?.toString() ?? '',
+              decimalsData.result !== undefined ? Number(decimalsData.result) : 18,
+              totalSupplyData.result !== undefined ? BigInt(totalSupplyData.result) : 0n,
+              balanceData.result !== undefined ? BigInt(balanceData.result) : 0n,
+              delegateeData.result !== undefined
+                ? getAddress(delegateeData.result.toString())
+                : zeroAddress,
+            ];
 
             const tokenData = {
-              name: name ? name.toString() : '',
-              symbol: symbol ? symbol.toString() : '',
-              decimals: decimals ? Number(decimals) : 18,
+              name,
+              symbol,
+              decimals,
               address: tokenContract.address,
-              totalSupply: totalSupply ? BigInt(totalSupply) : 0n,
+              totalSupply,
               balance: balance ? BigInt(balance.toString()) : 0n,
               delegatee: !!delegatee ? getAddress(delegatee.toString()) : (zeroAddress as Address),
             };
