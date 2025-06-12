@@ -1,4 +1,5 @@
 import { Box, Button, Flex, HStack, Image, Switch, Text } from '@chakra-ui/react';
+import { useFormikContext } from 'formik';
 import { useTranslation } from 'react-i18next';
 import useFeatureFlag from '../../helpers/environmentFeatureFlags';
 import { usePaymasterDepositInfo } from '../../hooks/DAO/accountAbstraction/usePaymasterDepositInfo';
@@ -9,6 +10,7 @@ import { useDAOStore } from '../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
 import { formatCoin } from '../../utils';
 import { ModalType } from '../ui/modals/ModalProvider';
+import { SafeSettingsEdits } from '../ui/modals/SafeSettingsModal';
 import { useDecentModal } from '../ui/modals/useDecentModal';
 import Divider from '../ui/utils/Divider';
 
@@ -91,6 +93,7 @@ function GaslessVotingToggleContent({
 export function GaslessVotingToggleDAOSettings(props: GaslessVotingToggleProps) {
   const { t } = useTranslation('gaslessVoting');
   const { bundlerMinimumStake, nativeTokenIcon } = useNetworkConfigStore();
+  const settingsModalFormikContext = useFormikContext<SafeSettingsEdits>();
 
   const publicClient = useNetworkPublicClient();
   const nativeCurrency = publicClient.chain.nativeCurrency;
@@ -101,9 +104,12 @@ export function GaslessVotingToggleDAOSettings(props: GaslessVotingToggleProps) 
   } = useDAOStore({ daoKey });
   const { depositInfo } = usePaymasterDepositInfo();
 
-  const { open: openWithdrawGasModal } = useDecentModal(ModalType.WITHDRAW_GAS);
-
-  const { open: openRefillGasModal } = useDecentModal(ModalType.REFILL_GAS);
+  const { open: openWithdrawGasModal } = useDecentModal(ModalType.WITHDRAW_GAS, {
+    formikContext: settingsModalFormikContext,
+  });
+  const { open: openRefillGasModal } = useDecentModal(ModalType.REFILL_GAS, {
+    formikContext: settingsModalFormikContext,
+  });
 
   const gaslessFeatureEnabled = useFeatureFlag('flag_gasless_voting');
   const gaslessStakingEnabled = gaslessFeatureEnabled && bundlerMinimumStake !== undefined;

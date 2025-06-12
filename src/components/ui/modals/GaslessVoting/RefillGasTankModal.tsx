@@ -1,5 +1,5 @@
 import { Box, Button, Checkbox, CloseButton, Flex, Text } from '@chakra-ui/react';
-import { Field, FieldAttributes, FieldProps, useFormikContext } from 'formik';
+import { FormikContextType } from 'formik';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAccount, useBalance } from 'wagmi';
@@ -7,7 +7,6 @@ import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
 import { useCanUserCreateProposal } from '../../../../hooks/utils/useCanUserSubmitProposal';
 import { useDAOStore } from '../../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../../providers/NetworkConfig/useNetworkConfigStore';
-import { BigIntValuePair } from '../../../../types';
 import { formatCoinUnits } from '../../../../utils/numberFormats';
 import { BigIntInput } from '../../forms/BigIntInput';
 import { CustomNonceInput } from '../../forms/CustomNonceInput';
@@ -24,9 +23,10 @@ export interface RefillGasData {
 interface RefillFormProps {
   onClose: () => void;
   showNonceInput?: boolean;
+  formikContext: FormikContextType<SafeSettingsEdits>;
 }
 
-function RefillForm({ onClose, showNonceInput }: RefillFormProps) {
+function RefillForm({ onClose, showNonceInput, formikContext }: RefillFormProps) {
   const { t } = useTranslation('gaslessVoting');
   const { address } = useAccount();
   const { daoKey } = useCurrentDAOKey();
@@ -38,7 +38,7 @@ function RefillForm({ onClose, showNonceInput }: RefillFormProps) {
 
   const { canUserCreateProposal } = useCanUserCreateProposal();
 
-  const { values, setFieldValue } = useFormikContext<SafeSettingsEdits>();
+  const { values, setFieldValue } = formikContext;
 
   const isDirectDeposit = values.paymasterGasTank?.deposit?.isDirectDeposit;
 
@@ -77,29 +77,24 @@ function RefillForm({ onClose, showNonceInput }: RefillFormProps) {
         py={3}
         gap={2}
       >
-        <Field name="inputAmount">
-          {({ field }: FieldAttributes<FieldProps<BigIntValuePair | undefined>>) => (
-            <LabelWrapper
-              label={t(isDirectDeposit ? 'sendingHintDirectDeposit' : 'sendingHint')}
-              labelColor="color-neutral-300"
-            >
-              <BigIntInput
-                {...field}
-                value={field.value?.bigintValue}
-                onChange={value => {
-                  setFieldValue('paymasterGasTank.deposit.amount', value);
-                }}
-                parentFormikValue={values.paymasterGasTank?.deposit?.amount}
-                decimalPlaces={balance?.decimals || 0}
-                placeholder="0"
-                maxValue={!isDirectDeposit ? balance?.value || 0n : undefined}
-                isInvalid={overDraft}
-                errorBorderColor="color-error-500"
-                autoFocus
-              />
-            </LabelWrapper>
-          )}
-        </Field>
+        <LabelWrapper
+          label={t(isDirectDeposit ? 'sendingHintDirectDeposit' : 'sendingHint')}
+          labelColor="color-neutral-300"
+        >
+          <BigIntInput
+            value={values.paymasterGasTank?.deposit?.amount?.bigintValue}
+            onChange={value => {
+              setFieldValue('paymasterGasTank.deposit.amount', value);
+            }}
+            parentFormikValue={values.paymasterGasTank?.deposit?.amount}
+            decimalPlaces={balance?.decimals || 0}
+            placeholder="0"
+            maxValue={!isDirectDeposit ? balance?.value || 0n : undefined}
+            isInvalid={overDraft}
+            errorBorderColor="color-error-500"
+            autoFocus
+          />
+        </LabelWrapper>
 
         <Flex
           flexDirection="column"
@@ -151,10 +146,16 @@ function RefillForm({ onClose, showNonceInput }: RefillFormProps) {
   );
 }
 
-export function RefillGasTankModal({ close }: { close: () => void }) {
+export function RefillGasTankModal({
+  close,
+  formikContext,
+}: {
+  close: () => void;
+  formikContext: FormikContextType<SafeSettingsEdits>;
+}) {
   const { t } = useTranslation('gaslessVoting');
 
-  const { values, setFieldValue } = useFormikContext<SafeSettingsEdits>();
+  const { values, setFieldValue } = formikContext;
 
   return (
     <Box>
@@ -192,6 +193,7 @@ export function RefillGasTankModal({ close }: { close: () => void }) {
       <RefillForm
         showNonceInput={false}
         onClose={close}
+        formikContext={formikContext}
       />
     </Box>
   );

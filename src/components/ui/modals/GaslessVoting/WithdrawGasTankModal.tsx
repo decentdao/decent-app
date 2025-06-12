@@ -1,10 +1,9 @@
 import { Box, Button, CloseButton, Flex, Text } from '@chakra-ui/react';
-import { Field, FieldAttributes, FieldProps, useFormikContext } from 'formik';
+import { FormikContextType } from 'formik';
 import { useTranslation } from 'react-i18next';
 import { usePaymasterDepositInfo } from '../../../../hooks/DAO/accountAbstraction/usePaymasterDepositInfo';
 import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
 import { useDAOStore } from '../../../../providers/App/AppProvider';
-import { BigIntValuePair } from '../../../../types';
 import { formatCoinUnits } from '../../../../utils/numberFormats';
 import { BigIntInput } from '../../forms/BigIntInput';
 import { AddressInput } from '../../forms/EthAddressInput';
@@ -12,7 +11,13 @@ import LabelWrapper from '../../forms/LabelWrapper';
 import { AssetSelector } from '../../utils/AssetSelector';
 import { SafeSettingsEdits, SafeSettingsFormikErrors } from '../SafeSettingsModal';
 
-export function WithdrawGasTankModal({ close }: { close: () => void }) {
+export function WithdrawGasTankModal({
+  close,
+  formikContext,
+}: {
+  close: () => void;
+  formikContext: FormikContextType<SafeSettingsEdits>;
+}) {
   const { depositInfo } = usePaymasterDepositInfo();
 
   const { t } = useTranslation('gaslessVoting');
@@ -22,8 +27,8 @@ export function WithdrawGasTankModal({ close }: { close: () => void }) {
     node: { safe },
   } = useDAOStore({ daoKey });
 
-  const { values, setFieldValue } = useFormikContext<SafeSettingsEdits>();
-  const { errors } = useFormikContext<SafeSettingsFormikErrors>();
+  const { values, setFieldValue } = formikContext;
+  const { errors } = formikContext;
 
   const paymasterGasTankErrors = (errors as SafeSettingsFormikErrors).paymasterGasTank;
 
@@ -68,23 +73,18 @@ export function WithdrawGasTankModal({ close }: { close: () => void }) {
           justify="space-between"
           align="flex-start"
         >
-          <Field name="inputAmount">
-            {({ field }: FieldAttributes<FieldProps<BigIntValuePair | undefined>>) => (
-              <LabelWrapper>
-                <BigIntInput
-                  {...field}
-                  value={field.value?.bigintValue}
-                  onChange={value => {
-                    setFieldValue('paymasterGasTank.withdraw.amount', value);
-                  }}
-                  parentFormikValue={values.paymasterGasTank?.withdraw?.amount}
-                  placeholder="0"
-                  isInvalid={overDraft}
-                  errorBorderColor="color-error-500"
-                />
-              </LabelWrapper>
-            )}
-          </Field>
+          <LabelWrapper>
+            <BigIntInput
+              value={values.paymasterGasTank?.withdraw?.amount?.bigintValue}
+              onChange={value => {
+                setFieldValue('paymasterGasTank.withdraw.amount', value);
+              }}
+              parentFormikValue={values.paymasterGasTank?.withdraw?.amount}
+              placeholder="0"
+              isInvalid={overDraft}
+              errorBorderColor="color-error-500"
+            />
+          </LabelWrapper>
 
           <Flex
             flexDirection="column"
@@ -115,16 +115,15 @@ export function WithdrawGasTankModal({ close }: { close: () => void }) {
         >
           {t('recipientAddress')}
         </Text>
-        <Field name="recipientAddress">
-          {({ field }: FieldAttributes<FieldProps<string | undefined>>) => (
-            <LabelWrapper errorMessage={paymasterGasTankErrors?.withdraw?.recipientAddress}>
-              <AddressInput
-                {...field}
-                isInvalid={!!paymasterGasTankErrors?.withdraw?.recipientAddress}
-              />
-            </LabelWrapper>
-          )}
-        </Field>
+        <LabelWrapper errorMessage={paymasterGasTankErrors?.withdraw?.recipientAddress}>
+          <AddressInput
+            value={values.paymasterGasTank?.withdraw?.recipientAddress}
+            onChange={value => {
+              setFieldValue('paymasterGasTank.withdraw.recipientAddress', value);
+            }}
+            isInvalid={!!paymasterGasTankErrors?.withdraw?.recipientAddress}
+          />
+        </LabelWrapper>
         <Button
           variant="tertiary"
           size="sm"

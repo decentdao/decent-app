@@ -118,8 +118,12 @@ export type ModalPropsTypes = {
     onSubmit: (airdropData: AirdropData) => void;
     submitButtonText: string;
   };
-  [ModalType.REFILL_GAS]: {};
-  [ModalType.WITHDRAW_GAS]: {};
+  [ModalType.REFILL_GAS]: {
+    formikContext: FormikContextType<SafeSettingsEdits>;
+  };
+  [ModalType.WITHDRAW_GAS]: {
+    formikContext: FormikContextType<SafeSettingsEdits>;
+  };
   [ModalType.GASLESS_VOTE_LOADING]: {};
   [ModalType.GASLESS_VOTE_SUCCESS]: {};
   [ModalType.GASLESS_VOTE_FAILED]: {
@@ -360,10 +364,20 @@ const getModalData = (args: {
       );
       break;
     case ModalType.REFILL_GAS:
-      modalContent = <RefillGasTankModal close={popModal} />;
+      modalContent = (
+        <RefillGasTankModal
+          close={popModal}
+          formikContext={current.props.formikContext}
+        />
+      );
       break;
     case ModalType.WITHDRAW_GAS:
-      modalContent = <WithdrawGasTankModal close={popModal} />;
+      modalContent = (
+        <WithdrawGasTankModal
+          close={popModal}
+          formikContext={current.props.formikContext}
+        />
+      );
       break;
     case ModalType.GASLESS_VOTE_SUCCESS:
       modalContent = <GaslessVoteSuccessModal close={popModal} />;
