@@ -341,8 +341,8 @@ export function useGovernanceFetcher() {
               decimals,
               address: tokenContract.address,
               totalSupply,
-              balance: balance ? BigInt(balance.toString()) : 0n,
-              delegatee: !!delegatee ? getAddress(delegatee.toString()) : (zeroAddress as Address),
+              balance,
+              delegatee,
             };
 
             let lockedVotesTokenData: VotesTokenData | undefined;
