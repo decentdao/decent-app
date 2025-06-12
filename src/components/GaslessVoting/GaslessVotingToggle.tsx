@@ -1,23 +1,13 @@
 import { Box, Button, Flex, HStack, Image, Switch, Text } from '@chakra-ui/react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
-import { getContract } from 'viem';
-import { EntryPoint07Abi } from '../../assets/abi/EntryPoint07Abi';
-import { DAO_ROUTES } from '../../constants/routes';
 import useFeatureFlag from '../../helpers/environmentFeatureFlags';
 import { usePaymasterDepositInfo } from '../../hooks/DAO/accountAbstraction/usePaymasterDepositInfo';
 import { useCurrentDAOKey } from '../../hooks/DAO/useCurrentDAOKey';
 import useNetworkPublicClient from '../../hooks/useNetworkPublicClient';
-import { useNetworkWalletClient } from '../../hooks/useNetworkWalletClient';
 import { useCanUserCreateProposal } from '../../hooks/utils/useCanUserSubmitProposal';
 import { useDAOStore } from '../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
-import { useProposalActionsStore } from '../../store/actions/useProposalActionsStore';
 import { formatCoin } from '../../utils';
-import { prepareRefillPaymasterAction } from '../../utils/dao/prepareRefillPaymasterActionData';
-import { prepareWithdrawPaymasterAction } from '../../utils/dao/prepareWithdrawPaymasterActionData';
-import { RefillGasData } from '../ui/modals/GaslessVoting/RefillGasTankModal';
-import { WithdrawGasData } from '../ui/modals/GaslessVoting/WithdrawGasTankModal';
 import { ModalType } from '../ui/modals/ModalProvider';
 import { useDecentModal } from '../ui/modals/useDecentModal';
 import Divider from '../ui/utils/Divider';
@@ -100,121 +90,24 @@ function GaslessVotingToggleContent({
 
 export function GaslessVotingToggleDAOSettings(props: GaslessVotingToggleProps) {
   const { t } = useTranslation('gaslessVoting');
-  const {
-    addressPrefix,
-    contracts: { accountAbstraction },
-    bundlerMinimumStake,
-    nativeTokenIcon,
-  } = useNetworkConfigStore();
+  const { bundlerMinimumStake, nativeTokenIcon } = useNetworkConfigStore();
 
-  const navigate = useNavigate();
   const publicClient = useNetworkPublicClient();
   const nativeCurrency = publicClient.chain.nativeCurrency;
 
   const { daoKey } = useCurrentDAOKey();
   const {
-    node: { safe },
-    governance: { gaslessVotingEnabled, paymasterAddress },
+    governance: { gaslessVotingEnabled },
   } = useDAOStore({ daoKey });
   const { depositInfo } = usePaymasterDepositInfo();
 
-  const { addAction, resetActions } = useProposalActionsStore();
-  const { data: walletClient } = useNetworkWalletClient();
+  const { open: openWithdrawGasModal } = useDecentModal(ModalType.WITHDRAW_GAS);
 
-  const { open: withdrawGas } = useDecentModal(ModalType.WITHDRAW_GAS, {
-    onWithdraw: async (withdrawGasData: WithdrawGasData) => {
-      if (!safe?.address || !paymasterAddress) {
-        return;
-      }
-
-      const action = prepareWithdrawPaymasterAction({
-        withdrawData: withdrawGasData,
-        paymasterAddress,
-      });
-      const formattedWithdrawAmount = formatCoin(
-        withdrawGasData.withdrawAmount,
-        true,
-        nativeCurrency.decimals,
-        nativeCurrency.symbol,
-        false,
-      );
-
-      resetActions();
-      addAction({
-        ...action,
-        content: (
-          <Box>
-            <Text>
-              {t('withdrawGasAction', {
-                amount: formattedWithdrawAmount,
-                symbol: nativeCurrency.symbol,
-              })}
-            </Text>
-          </Box>
-        ),
-      });
-
-      navigate(DAO_ROUTES.proposalWithActionsNew.relative(addressPrefix, safe.address));
-    },
-  });
-
-  const { open: refillGas } = useDecentModal(ModalType.REFILL_GAS, {
-    onSubmit: async (refillGasData: RefillGasData) => {
-      if (!safe?.address || !paymasterAddress || !accountAbstraction) {
-        return;
-      }
-
-      if (refillGasData.isDirectDeposit) {
-        if (!walletClient) {
-          throw new Error('Wallet client not found');
-        }
-
-        const entryPoint = getContract({
-          address: accountAbstraction.entryPointv07,
-          abi: EntryPoint07Abi,
-          client: walletClient,
-        });
-
-        entryPoint.write.depositTo([paymasterAddress], {
-          value: refillGasData.transferAmount,
-        });
-        return;
-      }
-
-      const action = prepareRefillPaymasterAction({
-        refillAmount: refillGasData.transferAmount,
-        paymasterAddress,
-        nativeToken: nativeCurrency,
-        entryPointAddress: accountAbstraction.entryPointv07,
-      });
-      const formattedRefillAmount = formatCoin(
-        refillGasData.transferAmount,
-        true,
-        nativeCurrency.decimals,
-        nativeCurrency.symbol,
-        false,
-      );
-      resetActions();
-      addAction({
-        ...action,
-        content: (
-          <Box>
-            <Text>
-              {t('refillPaymasterAction', {
-                amount: formattedRefillAmount,
-                symbol: nativeCurrency.symbol,
-              })}
-            </Text>
-          </Box>
-        ),
-      });
-
-      navigate(DAO_ROUTES.proposalWithActionsNew.relative(addressPrefix, safe.address));
-    },
-  });
+  const { open: openRefillGasModal } = useDecentModal(ModalType.REFILL_GAS);
 
   const gaslessFeatureEnabled = useFeatureFlag('flag_gasless_voting');
   const gaslessStakingEnabled = gaslessFeatureEnabled && bundlerMinimumStake !== undefined;
+
   if (!gaslessFeatureEnabled) return null;
 
   const paymasterBalance = depositInfo?.balance || 0n;
@@ -292,14 +185,14 @@ export function GaslessVotingToggleDAOSettings(props: GaslessVotingToggleProps) 
               <Button
                 variant="secondary"
                 size="sm"
-                onClick={withdrawGas}
+                onClick={openWithdrawGasModal}
               >
                 {t('withdrawGas')}
               </Button>
               <Button
                 variant="secondary"
                 size="sm"
-                onClick={refillGas}
+                onClick={openRefillGasModal}
               >
                 {t('addGas')}
               </Button>

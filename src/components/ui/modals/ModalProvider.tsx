@@ -22,8 +22,8 @@ import ForkProposalTemplateModal from './ForkProposalTemplateModal';
 import { GaslessVoteFailedModal } from './GaslessVoting/GaslessVoteFailedModal';
 import { GaslessVoteLoadingModal } from './GaslessVoting/GaslessVoteLoadingModal';
 import { GaslessVoteSuccessModal } from './GaslessVoting/GaslessVoteSuccessModal';
-import { RefillGasData, RefillGasTankModal } from './GaslessVoting/RefillGasTankModal';
-import { WithdrawGasData, WithdrawGasTankModal } from './GaslessVoting/WithdrawGasTankModal';
+import { RefillGasTankModal } from './GaslessVoting/RefillGasTankModal';
+import { WithdrawGasTankModal } from './GaslessVoting/WithdrawGasTankModal';
 import { ModalBase, ModalBaseSize, ModalContentStyle } from './ModalBase';
 import PaymentCancelConfirmModal from './PaymentCancelConfirmModal';
 import { PaymentWithdrawModal } from './PaymentWithdrawModal';
@@ -118,12 +118,8 @@ export type ModalPropsTypes = {
     onSubmit: (airdropData: AirdropData) => void;
     submitButtonText: string;
   };
-  [ModalType.REFILL_GAS]: {
-    onSubmit: (refillGasData: RefillGasData) => void;
-  };
-  [ModalType.WITHDRAW_GAS]: {
-    onWithdraw: (withdrawGasData: WithdrawGasData) => void;
-  };
+  [ModalType.REFILL_GAS]: {};
+  [ModalType.WITHDRAW_GAS]: {};
   [ModalType.GASLESS_VOTE_LOADING]: {};
   [ModalType.GASLESS_VOTE_SUCCESS]: {};
   [ModalType.GASLESS_VOTE_FAILED]: {
@@ -364,26 +360,10 @@ const getModalData = (args: {
       );
       break;
     case ModalType.REFILL_GAS:
-      modalContent = (
-        <RefillGasTankModal
-          close={popModal}
-          refillGasData={(data: RefillGasData) => {
-            current.props.onSubmit(data);
-            popModal();
-          }}
-        />
-      );
+      modalContent = <RefillGasTankModal close={popModal} />;
       break;
     case ModalType.WITHDRAW_GAS:
-      modalContent = (
-        <WithdrawGasTankModal
-          close={popModal}
-          withdrawGasData={(data: WithdrawGasData) => {
-            current.props.onWithdraw(data);
-            popModal();
-          }}
-        />
-      );
+      modalContent = <WithdrawGasTankModal close={popModal} />;
       break;
     case ModalType.GASLESS_VOTE_SUCCESS:
       modalContent = <GaslessVoteSuccessModal close={popModal} />;

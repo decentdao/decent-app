@@ -3,7 +3,7 @@ import { SablierV2LockupLinearAbi } from '../../assets/abi/SablierV2LockupLinear
 import { convertStreamIdToBigInt } from '../../hooks/streams/useCreateSablierStream';
 import { CreateProposalActionData, ProposalActionType } from '../../types';
 
-export interface WithdrawStreamData {
+interface WithdrawStreamData {
   daoAddress: Address;
   roleHatSmartAccountAddress: Address;
   paymentContractAddress: Address;
