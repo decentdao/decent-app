@@ -2,7 +2,6 @@ import { SafeMultisigConfirmationResponse } from '@safe-global/safe-core-sdk-typ
 import { Address } from 'viem';
 import { StateCreator } from 'zustand';
 import {
-  AzoriusGovernance,
   AzoriusProposal,
   DAOKey,
   DecentGovernance,
