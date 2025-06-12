@@ -2,12 +2,12 @@ import { Box, Button, Flex, HStack, IconButton, Select, Text } from '@chakra-ui/
 import { CaretDown, MinusCircle, Plus } from '@phosphor-icons/react';
 import { Field, FieldAttributes, FieldProps, Form, Formik } from 'formik';
 import { useTranslation } from 'react-i18next';
-import { Address, getAddress, isAddress, parseUnits } from 'viem';
+import { getAddress, isAddress, parseUnits } from 'viem';
 import * as Yup from 'yup';
 import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
 import useNetworkPublicClient from '../../../../hooks/useNetworkPublicClient';
 import { useDAOStore } from '../../../../providers/App/AppProvider';
-import { BigIntValuePair, TokenBalance } from '../../../../types';
+import { AirdropData, AirdropFormValues, BigIntValuePair, TokenBalance } from '../../../../types';
 import { formatCoinFromAsset } from '../../../../utils';
 import { validateENSName } from '../../../../utils/url';
 import NoDataCard from '../../containers/NoDataCard';
@@ -16,22 +16,6 @@ import { AddressInput } from '../../forms/EthAddressInput';
 import LabelWrapper from '../../forms/LabelWrapper';
 import Divider from '../../utils/Divider';
 import { DnDFileInput, parseRecipients } from './DnDFileInput';
-
-export interface AirdropFormValues {
-  selectedAsset: TokenBalance;
-  recipients: {
-    address: string;
-    amount: BigIntValuePair;
-  }[];
-}
-
-export interface AirdropData {
-  recipients: {
-    address: Address;
-    amount: bigint;
-  }[];
-  asset: TokenBalance;
-}
 
 export function AirdropModal({
   submitButtonText,
