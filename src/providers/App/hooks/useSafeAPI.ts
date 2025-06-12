@@ -159,7 +159,7 @@ class EnhancedSafeApiKit {
 
     try {
       // Fetch necessary details from the contract
-      const [nonceRes, thresholdRes, ownersRes, versionRes] = await this.publicClient.multicall({
+      const [nonce, threshold, owners, version] = await this.publicClient.multicall({
         contracts: [
           {
             abi: GnosisSafeL2Abi,
@@ -182,13 +182,8 @@ class EnhancedSafeApiKit {
             functionName: 'VERSION',
           },
         ],
-        allowFailure: true,
+        allowFailure: false,
       });
-
-      const nonce = nonceRes.result;
-      const threshold = thresholdRes.result;
-      const owners = ownersRes.result;
-      const version = versionRes.result || 'Unknown';
 
       // keccak256("guard_manager.guard.address")
       // https://github.com/safe-global/safe-smart-account/blob/1c8b24a0a438e8c2cd089a9d830d1688a47a28d5/contracts/base/GuardManager.sol#L66
