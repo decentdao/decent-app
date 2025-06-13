@@ -1,5 +1,6 @@
 import { Box, Button, CloseButton, Flex, Text } from '@chakra-ui/react';
 import { FormikContextType } from 'formik';
+import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { usePaymasterDepositInfo } from '../../../../hooks/DAO/accountAbstraction/usePaymasterDepositInfo';
 import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
@@ -18,6 +19,7 @@ export function WithdrawGasTankModal({
   close: () => void;
   formikContext: FormikContextType<SafeSettingsEdits>;
 }) {
+  console.log('withdraw modals');
   const { depositInfo } = usePaymasterDepositInfo();
 
   const { t } = useTranslation('gaslessVoting');
@@ -31,15 +33,24 @@ export function WithdrawGasTankModal({
   const { errors } = formikContext;
 
   const paymasterGasTankErrors = (errors as SafeSettingsFormikErrors).paymasterGasTank;
+  console.log({ paymasterGasTankErrors });
 
-  const overDraft =
-    Number(values.paymasterGasTank?.withdraw?.amount?.value || '0') >
-    formatCoinUnits(depositInfo?.balance ?? 0n);
+  useEffect(() => {
+    // clear the form when there are no values or if they match the existing values
+    if (
+      !values.paymasterGasTank?.withdraw?.amount &&
+      !values.paymasterGasTank?.withdraw?.recipientAddress
+    ) {
+      setFieldValue('paymasterGasTank.withdraw', undefined);
+    }
+  }, [setFieldValue, values]);
 
   const inputBigint = values.paymasterGasTank?.withdraw?.amount?.bigintValue;
   const inputBigintIsZero = inputBigint !== undefined ? inputBigint === 0n : undefined;
   const isSubmitDisabled =
-    !values.paymasterGasTank?.withdraw?.amount || inputBigintIsZero || overDraft;
+    !values.paymasterGasTank?.withdraw?.amount ||
+    inputBigintIsZero ||
+    paymasterGasTankErrors?.withdraw?.amount !== undefined;
 
   return (
     <Box>
@@ -77,11 +88,12 @@ export function WithdrawGasTankModal({
             <BigIntInput
               value={values.paymasterGasTank?.withdraw?.amount?.bigintValue}
               onChange={value => {
-                setFieldValue('paymasterGasTank.withdraw.amount', value);
+                console.log({ value: value });
+                setFieldValue('paymasterGasTank.withdraw.amount', value.value ? value : undefined);
               }}
               parentFormikValue={values.paymasterGasTank?.withdraw?.amount}
               placeholder="0"
-              isInvalid={overDraft}
+              isInvalid={paymasterGasTankErrors?.withdraw?.amount !== undefined}
               errorBorderColor="color-error-500"
             />
           </LabelWrapper>
@@ -97,7 +109,11 @@ export function WithdrawGasTankModal({
               disabled
             />
             <Text
-              color={overDraft ? 'color-error-500' : 'color-neutral-300'}
+              color={
+                paymasterGasTankErrors?.withdraw?.amount !== undefined
+                  ? 'color-error-500'
+                  : 'color-neutral-300'
+              }
               textStyle="text-xs-medium"
               px="0.25rem"
             >
@@ -118,10 +134,13 @@ export function WithdrawGasTankModal({
         <LabelWrapper errorMessage={paymasterGasTankErrors?.withdraw?.recipientAddress}>
           <AddressInput
             value={values.paymasterGasTank?.withdraw?.recipientAddress}
-            onChange={value => {
-              setFieldValue('paymasterGasTank.withdraw.recipientAddress', value);
+            onChange={e => {
+              setFieldValue('paymasterGasTank.withdraw.recipientAddress', e.target.value);
             }}
-            isInvalid={!!paymasterGasTankErrors?.withdraw?.recipientAddress}
+            isInvalid={
+              values.paymasterGasTank?.withdraw?.recipientAddress !== undefined &&
+              paymasterGasTankErrors?.withdraw?.recipientAddress !== undefined
+            }
           />
         </LabelWrapper>
         <Button
@@ -143,7 +162,10 @@ export function WithdrawGasTankModal({
       >
         <Button
           variant="secondary"
-          onClick={close}
+          onClick={() => {
+            setFieldValue('paymasterGasTank.withdraw', undefined);
+            close();
+          }}
         >
           {t('cancel', { ns: 'common' })}
         </Button>

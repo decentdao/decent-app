@@ -1165,36 +1165,36 @@ export function SafeSettingsModal({
           const { withdraw, deposit } = values.paymasterGasTank;
 
           if (withdraw) {
-            if (!withdraw.amount?.value) {
-              errors.paymasterGasTank = {
-                ...errors.paymasterGasTank,
-                withdraw: {
-                  ...errors.paymasterGasTank?.withdraw,
-                  amount: t('amountRequired', { ns: 'common' }),
-                },
-              };
-
-              if (!withdraw.recipientAddress) {
+            if (withdraw.amount?.bigintValue !== undefined && depositInfo?.balance !== undefined) {
+              if (withdraw.amount.bigintValue > depositInfo.balance) {
+                console.log('overdraft');
                 errors.paymasterGasTank = {
                   ...errors.paymasterGasTank,
                   withdraw: {
                     ...errors.paymasterGasTank?.withdraw,
-                    recipientAddress: t('recipientAddressRequired'),
+                    amount: t('errorInsufficientBalance', { ns: 'common' }),
                   },
                 };
-              } else {
-                const validation = await validateAddress({ address: withdraw.recipientAddress });
-                if (!validation.validation.isValidAddress) {
-                  errors.paymasterGasTank = {
-                    ...errors.paymasterGasTank,
-                    withdraw: {
-                      ...errors.paymasterGasTank?.withdraw,
-                      recipientAddress: t('errorInvalidAddress', { ns: 'common' }),
-                    },
-                  };
-                }
               }
             }
+
+            if (withdraw.recipientAddress !== undefined) {
+              const validation = await validateAddress({ address: withdraw.recipientAddress });
+              if (!validation.validation.isValidAddress) {
+                errors.paymasterGasTank = {
+                  ...errors.paymasterGasTank,
+                  withdraw: {
+                    ...errors.paymasterGasTank?.withdraw,
+                    recipientAddress: t('errorInvalidAddress', { ns: 'common' }),
+                  },
+                };
+              }
+            }
+          } else {
+            errors.paymasterGasTank = {
+              ...errors.paymasterGasTank,
+              withdraw: undefined,
+            };
           }
 
           if (deposit) {
@@ -1207,7 +1207,14 @@ export function SafeSettingsModal({
                 },
               };
             }
+          } else {
+            errors.paymasterGasTank = {
+              ...errors.paymasterGasTank,
+              deposit: undefined,
+            };
           }
+        } else {
+          errors.paymasterGasTank = undefined;
         }
 
         if (Object.values(errors).every(e => e === undefined)) {
