@@ -76,7 +76,12 @@ function DepositingGasComponent() {
   const depositingGasAmount = values?.paymasterGasTank?.deposit?.amount?.value;
   const nativeCurrency = useNetworkPublicClient().chain.nativeCurrency;
 
-  if (!depositingGasAmount || paymasterGasTankDepositError !== undefined) return null;
+  if (
+    values?.paymasterGasTank?.deposit?.isDirectDeposit ||
+    !depositingGasAmount ||
+    paymasterGasTankDepositError !== undefined
+  )
+    return null;
 
   return (
     <Flex
@@ -220,6 +225,12 @@ export function GaslessVotingToggleDAOSettings(props: GaslessVotingToggleProps) 
     false,
   );
 
+  const paymasterGasTankEdits = values?.paymasterGasTank;
+
+  const showWithdrawAndDepositButtons =
+    paymasterGasTankEdits?.deposit?.isDirectDeposit ||
+    (paymasterGasTankEdits?.withdraw === undefined && paymasterGasTankEdits?.deposit === undefined);
+
   return (
     <Flex
       display="flex"
@@ -276,25 +287,24 @@ export function GaslessVotingToggleDAOSettings(props: GaslessVotingToggleProps) 
             <Flex gap="0.5rem">
               <WithdrawingGasComponent />
               <DepositingGasComponent />
-              {values?.paymasterGasTank?.withdraw === undefined &&
-                values?.paymasterGasTank?.deposit === undefined && (
-                  <>
-                    <Button
-                      variant="secondary"
-                      size="sm"
-                      onClick={openWithdrawGasModal}
-                    >
-                      {t('withdrawGas')}
-                    </Button>
-                    <Button
-                      variant="secondary"
-                      size="sm"
-                      onClick={openRefillGasModal}
-                    >
-                      {t('addGas')}
-                    </Button>
-                  </>
-                )}
+              {showWithdrawAndDepositButtons && (
+                <>
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    onClick={openWithdrawGasModal}
+                  >
+                    {t('withdrawGas')}
+                  </Button>
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    onClick={openRefillGasModal}
+                  >
+                    {t('addGas')}
+                  </Button>
+                </>
+              )}
             </Flex>
           </Flex>
         </>
