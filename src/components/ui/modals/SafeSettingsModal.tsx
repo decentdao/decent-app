@@ -112,11 +112,15 @@ export type SafeSettingsFormikErrors = {
 };
 
 function FormStateSync({ formikContext }: { formikContext: FormikContextType<SafeSettingsEdits> }) {
-  const { setFormState } = useSettingsFormStore();
+  const { setFormState, setFormErrors } = useSettingsFormStore();
 
   useEffect(() => {
-    setFormState(formikContext.values);
+    setFormState({ ...formikContext.values });
   }, [formikContext.values, setFormState]);
+
+  useEffect(() => {
+    setFormErrors(formikContext.errors as unknown as SafeSettingsFormikErrors);
+  }, [formikContext.errors, setFormErrors]);
 
   return null;
 }
@@ -1178,12 +1182,11 @@ export function SafeSettingsModal({
           if (withdraw) {
             if (withdraw.amount?.bigintValue !== undefined && depositInfo?.balance !== undefined) {
               if (withdraw.amount.bigintValue > depositInfo.balance) {
-                console.log('overdraft');
                 errors.paymasterGasTank = {
                   ...errors.paymasterGasTank,
                   withdraw: {
                     ...errors.paymasterGasTank?.withdraw,
-                    amount: t('errorInsufficientBalance', { ns: 'common' }),
+                    amount: t('amountExceedsAvailableBalance', { ns: 'gaslessVoting' }),
                   },
                 };
               }

@@ -105,7 +105,7 @@ export function GaslessVotingToggleDAOSettings(props: GaslessVotingToggleProps) 
   const { depositInfo } = usePaymasterDepositInfo();
 
   const { open: openWithdrawGasModal } = useDecentModal(ModalType.WITHDRAW_GAS, {
-    formikContext: settingsModalFormikContext,
+    setFieldValue: settingsModalFormikContext.setFieldValue,
   });
   const { open: openRefillGasModal } = useDecentModal(ModalType.REFILL_GAS, {
     formikContext: settingsModalFormikContext,

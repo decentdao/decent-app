@@ -122,7 +122,7 @@ export type ModalPropsTypes = {
     formikContext: FormikContextType<SafeSettingsEdits>;
   };
   [ModalType.WITHDRAW_GAS]: {
-    formikContext: FormikContextType<SafeSettingsEdits>;
+    setFieldValue: (field: string, value: any) => void;
   };
   [ModalType.GASLESS_VOTE_LOADING]: {};
   [ModalType.GASLESS_VOTE_SUCCESS]: {};
@@ -372,7 +372,12 @@ const getModalData = (args: {
       );
       break;
     case ModalType.WITHDRAW_GAS:
-      modalContent = <WithdrawGasTankModal close={popModal} />;
+      modalContent = (
+        <WithdrawGasTankModal
+          close={popModal}
+          setFieldValue={current.props.setFieldValue}
+        />
+      );
       break;
     case ModalType.GASLESS_VOTE_SUCCESS:
       modalContent = <GaslessVoteSuccessModal close={popModal} />;

@@ -1,19 +1,19 @@
 import { create } from 'zustand';
-import { SafeSettingsEdits } from '../../components/ui/modals/SafeSettingsModal';
+import {
+  SafeSettingsEdits,
+  SafeSettingsFormikErrors,
+} from '../../components/ui/modals/SafeSettingsModal';
 
 interface SettingsFormStore {
-  formState: SafeSettingsEdits | null;
+  formState: SafeSettingsEdits | undefined;
+  formErrors: SafeSettingsFormikErrors | undefined;
   setFormState: (state: SafeSettingsEdits) => void;
-  updateFormState: (updates: Partial<SafeSettingsEdits>) => void;
+  setFormErrors: (errors: SafeSettingsFormikErrors) => void;
 }
 
 export const useSettingsFormStore = create<SettingsFormStore>(set => ({
-  formState: null,
+  formState: undefined,
+  formErrors: undefined,
   setFormState: state => set({ formState: state }),
-  updateFormState: updates =>
-    set(state => ({
-      formState: state.formState
-        ? { ...state.formState, ...updates }
-        : (updates as SafeSettingsEdits),
-    })),
+  setFormErrors: errors => set({ formErrors: errors }),
 }));
