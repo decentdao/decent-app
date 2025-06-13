@@ -119,7 +119,7 @@ export type ModalPropsTypes = {
     submitButtonText: string;
   };
   [ModalType.REFILL_GAS]: {
-    formikContext: FormikContextType<SafeSettingsEdits>;
+    setFieldValue: (field: string, value: any) => void;
   };
   [ModalType.WITHDRAW_GAS]: {
     setFieldValue: (field: string, value: any) => void;
@@ -367,7 +367,7 @@ const getModalData = (args: {
       modalContent = (
         <RefillGasTankModal
           close={popModal}
-          formikContext={current.props.formikContext}
+          setFieldValue={current.props.setFieldValue}
         />
       );
       break;

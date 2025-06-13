@@ -83,7 +83,7 @@ export type SafeSettingsEdits = {
   };
   paymasterGasTank?: {
     withdraw?: { recipientAddress?: Address; amount?: BigIntValuePair };
-    deposit?: { amount?: BigIntValuePair; isDirectDeposit: boolean };
+    deposit?: { amount?: BigIntValuePair; isDirectDeposit?: boolean };
   };
   permissions?: {
     proposerThreshold?: BigIntValuePair;
