@@ -1,7 +1,7 @@
 import { Button, Flex, Text } from '@chakra-ui/react';
 import { abis } from '@fractal-framework/fractal-contracts';
-import { Formik, Form, useFormikContext } from 'formik';
-import { useState } from 'react';
+import { Formik, Form, useFormikContext, FormikContextType } from 'formik';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -37,6 +37,7 @@ import { SafeGeneralSettingsPage } from '../../../pages/dao/settings/general/Saf
 import { useDAOStore } from '../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
 import { useProposalActionsStore } from '../../../store/actions/useProposalActionsStore';
+import { useSettingsFormStore } from '../../../store/settings/useSettingsFormStore';
 import {
   AzoriusGovernance,
   BigIntValuePair,
@@ -109,6 +110,16 @@ export type SafeSettingsFormikErrors = {
   general?: GeneralEditFormikErrors;
   paymasterGasTank?: PaymasterGasTankEditFormikErrors;
 };
+
+function FormStateSync({ formikContext }: { formikContext: FormikContextType<SafeSettingsEdits> }) {
+  const { setFormState } = useSettingsFormStore();
+
+  useEffect(() => {
+    setFormState(formikContext.values);
+  }, [formikContext.values, setFormState]);
+
+  return null;
+}
 
 export function SafeSettingsModal({
   closeModal,
@@ -1228,26 +1239,29 @@ export function SafeSettingsModal({
         submitAllSettingsEditsProposal(values);
       }}
     >
-      <Form>
-        <Flex
-          flexDirection="column"
-          height="90vh"
-          textColor="color-neutral-100"
-        >
+      {formikContext => (
+        <Form>
+          <FormStateSync formikContext={formikContext} />
           <Flex
-            flex="1"
-            height="100%"
-            pl="1"
+            flexDirection="column"
+            height="90vh"
+            textColor="color-neutral-100"
           >
-            <SettingsNavigation onSettingsNavigationClick={handleSettingsNavigationClick} />
-            <Divider vertical />
-            {settingsContent}
-          </Flex>
+            <Flex
+              flex="1"
+              height="100%"
+              pl="1"
+            >
+              <SettingsNavigation onSettingsNavigationClick={handleSettingsNavigationClick} />
+              <Divider vertical />
+              {settingsContent}
+            </Flex>
 
-          <Divider />
-          <ActionButtons />
-        </Flex>
-      </Form>
+            <Divider />
+            <ActionButtons />
+          </Flex>
+        </Form>
+      )}
     </Formik>
   );
 }

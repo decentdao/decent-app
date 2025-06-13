@@ -1,56 +1,106 @@
 import { Box, Button, CloseButton, Flex, Text } from '@chakra-ui/react';
 import { FormikContextType } from 'formik';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { usePaymasterDepositInfo } from '../../../../hooks/DAO/accountAbstraction/usePaymasterDepositInfo';
 import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
+import { useValidationAddress } from '../../../../hooks/schemas/common/useValidationAddress';
 import { useDAOStore } from '../../../../providers/App/AppProvider';
+import { useSettingsFormStore } from '../../../../store/settings/useSettingsFormStore';
 import { formatCoinUnits } from '../../../../utils/numberFormats';
 import { BigIntInput } from '../../forms/BigIntInput';
 import { AddressInput } from '../../forms/EthAddressInput';
 import LabelWrapper from '../../forms/LabelWrapper';
 import { AssetSelector } from '../../utils/AssetSelector';
-import { SafeSettingsEdits, SafeSettingsFormikErrors } from '../SafeSettingsModal';
+import { SafeSettingsEdits } from '../SafeSettingsModal';
 
-export function WithdrawGasTankModal({
-  close,
-  formikContext,
-}: {
-  close: () => void;
-  formikContext: FormikContextType<SafeSettingsEdits>;
-}) {
-  console.log('withdraw modals');
+type ValidationErrors = {
+  amount?: string;
+  recipientAddress?: string;
+};
+
+function WithdrawGasTankModalContent({ close }: { close: () => void }) {
   const { depositInfo } = usePaymasterDepositInfo();
-
   const { t } = useTranslation('gaslessVoting');
-
   const { daoKey } = useCurrentDAOKey();
   const {
     node: { safe },
   } = useDAOStore({ daoKey });
 
-  const { values, setFieldValue } = formikContext;
-  const { errors } = formikContext;
+  const { formState, updateFormState } = useSettingsFormStore();
+  const values = formState ?? {};
+  const [paymasterGasTankErrors, setPaymasterGasTankErrors] = useState<ValidationErrors>({});
+  const { addressValidationTest } = useValidationAddress();
 
-  const paymasterGasTankErrors = (errors as SafeSettingsFormikErrors).paymasterGasTank;
-  console.log({ paymasterGasTankErrors });
-
+  // Clean up withdraw object if both fields are empty
   useEffect(() => {
-    // clear the form when there are no values or if they match the existing values
     if (
-      !values.paymasterGasTank?.withdraw?.amount &&
-      !values.paymasterGasTank?.withdraw?.recipientAddress
+      values.paymasterGasTank?.withdraw &&
+      !values.paymasterGasTank.withdraw.amount &&
+      !values.paymasterGasTank.withdraw.recipientAddress
     ) {
-      setFieldValue('paymasterGasTank.withdraw', undefined);
+      updateFormState({
+        paymasterGasTank: {
+          ...values.paymasterGasTank,
+          withdraw: undefined,
+        },
+      });
     }
-  }, [setFieldValue, values]);
+  }, [values.paymasterGasTank?.withdraw, updateFormState, values.paymasterGasTank]);
 
   const inputBigint = values.paymasterGasTank?.withdraw?.amount?.bigintValue;
   const inputBigintIsZero = inputBigint !== undefined ? inputBigint === 0n : undefined;
   const isSubmitDisabled =
     !values.paymasterGasTank?.withdraw?.amount ||
     inputBigintIsZero ||
-    paymasterGasTankErrors?.withdraw?.amount !== undefined;
+    paymasterGasTankErrors.amount !== undefined ||
+    paymasterGasTankErrors.recipientAddress !== undefined;
+
+  const validateAmount = (amount: { bigintValue: bigint; value: string } | undefined) => {
+    if (!amount) return;
+    if (amount.bigintValue === 0n) return 'Amount must be greater than 0';
+    if (amount.bigintValue > (depositInfo?.balance ?? 0n))
+      return 'Amount exceeds available balance';
+    return;
+  };
+
+  const validateRecipientAddress = async (address: string | undefined) => {
+    if (!address) return 'Recipient address is required';
+    try {
+      const isValid = await addressValidationTest.test(address);
+      if (!isValid) return 'Invalid address';
+      return;
+    } catch (error) {
+      return 'Invalid address';
+    }
+  };
+
+  const handleFieldUpdate = async (field: string, value: any) => {
+    const [section, subsection, fieldName] = field.split('.');
+    updateFormState({
+      [section]: {
+        ...values[section as keyof SafeSettingsEdits],
+        [subsection]: {
+          ...(values[section as keyof SafeSettingsEdits] as any)?.[subsection],
+          [fieldName]: value,
+        },
+      },
+    } as Partial<SafeSettingsEdits>);
+
+    // Update validation errors
+    if (field === 'paymasterGasTank.withdraw.amount') {
+      setPaymasterGasTankErrors(prev => ({
+        ...prev,
+        amount: validateAmount(value),
+      }));
+    } else if (field === 'paymasterGasTank.withdraw.recipientAddress') {
+      const error = await validateRecipientAddress(value);
+      setPaymasterGasTankErrors(prev => ({
+        ...prev,
+        recipientAddress: error,
+      }));
+    }
+  };
 
   return (
     <Box>
@@ -84,16 +134,18 @@ export function WithdrawGasTankModal({
           justify="space-between"
           align="flex-start"
         >
-          <LabelWrapper>
+          <LabelWrapper errorMessage={paymasterGasTankErrors.amount}>
             <BigIntInput
               value={values.paymasterGasTank?.withdraw?.amount?.bigintValue}
               onChange={value => {
-                console.log({ value: value });
-                setFieldValue('paymasterGasTank.withdraw.amount', value.value ? value : undefined);
+                handleFieldUpdate(
+                  'paymasterGasTank.withdraw.amount',
+                  value.value ? value : undefined,
+                );
               }}
               parentFormikValue={values.paymasterGasTank?.withdraw?.amount}
               placeholder="0"
-              isInvalid={paymasterGasTankErrors?.withdraw?.amount !== undefined}
+              isInvalid={paymasterGasTankErrors.amount !== undefined}
               errorBorderColor="color-error-500"
             />
           </LabelWrapper>
@@ -110,7 +162,7 @@ export function WithdrawGasTankModal({
             />
             <Text
               color={
-                paymasterGasTankErrors?.withdraw?.amount !== undefined
+                paymasterGasTankErrors.amount !== undefined
                   ? 'color-error-500'
                   : 'color-neutral-300'
               }
@@ -131,15 +183,15 @@ export function WithdrawGasTankModal({
         >
           {t('recipientAddress')}
         </Text>
-        <LabelWrapper errorMessage={paymasterGasTankErrors?.withdraw?.recipientAddress}>
+        <LabelWrapper errorMessage={paymasterGasTankErrors.recipientAddress}>
           <AddressInput
             value={values.paymasterGasTank?.withdraw?.recipientAddress}
             onChange={e => {
-              setFieldValue('paymasterGasTank.withdraw.recipientAddress', e.target.value);
+              handleFieldUpdate('paymasterGasTank.withdraw.recipientAddress', e.target.value);
             }}
             isInvalid={
               values.paymasterGasTank?.withdraw?.recipientAddress !== undefined &&
-              paymasterGasTankErrors?.withdraw?.recipientAddress !== undefined
+              paymasterGasTankErrors.recipientAddress !== undefined
             }
           />
         </LabelWrapper>
@@ -148,7 +200,7 @@ export function WithdrawGasTankModal({
           size="sm"
           alignSelf="flex-end"
           onClick={() => {
-            setFieldValue('recipientAddress', safe?.address);
+            handleFieldUpdate('paymasterGasTank.withdraw.recipientAddress', safe?.address);
           }}
         >
           {t('toDaoTreasury')}
@@ -163,7 +215,7 @@ export function WithdrawGasTankModal({
         <Button
           variant="secondary"
           onClick={() => {
-            setFieldValue('paymasterGasTank.withdraw', undefined);
+            handleFieldUpdate('paymasterGasTank.withdraw', undefined);
             close();
           }}
         >
@@ -172,8 +224,8 @@ export function WithdrawGasTankModal({
         <Button
           onClick={close}
           isDisabled={
-            !!paymasterGasTankErrors?.withdraw?.amount ||
-            !!paymasterGasTankErrors?.withdraw?.recipientAddress ||
+            paymasterGasTankErrors.amount !== undefined ||
+            paymasterGasTankErrors.recipientAddress !== undefined ||
             isSubmitDisabled
           }
         >
@@ -182,4 +234,13 @@ export function WithdrawGasTankModal({
       </Flex>
     </Box>
   );
+}
+
+export function WithdrawGasTankModal({
+  close,
+}: {
+  close: () => void;
+  formikContext?: FormikContextType<SafeSettingsEdits>;
+}) {
+  return <WithdrawGasTankModalContent close={close} />;
 }

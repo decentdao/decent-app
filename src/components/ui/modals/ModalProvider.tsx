@@ -372,12 +372,7 @@ const getModalData = (args: {
       );
       break;
     case ModalType.WITHDRAW_GAS:
-      modalContent = (
-        <WithdrawGasTankModal
-          close={popModal}
-          formikContext={current.props.formikContext}
-        />
-      );
+      modalContent = <WithdrawGasTankModal close={popModal} />;
       break;
     case ModalType.GASLESS_VOTE_SUCCESS:
       modalContent = <GaslessVoteSuccessModal close={popModal} />;
