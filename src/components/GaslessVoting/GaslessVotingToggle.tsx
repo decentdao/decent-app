@@ -1,5 +1,5 @@
 import { Box, Button, Flex, HStack, IconButton, Image, Switch, Text } from '@chakra-ui/react';
-import { TrashSimple, X } from '@phosphor-icons/react';
+import { TrashSimple } from '@phosphor-icons/react';
 import { useFormikContext } from 'formik';
 import { useTranslation } from 'react-i18next';
 import { isAddress } from 'viem';
@@ -41,7 +41,10 @@ function WithdrawingGasComponent() {
       : recipientInput;
 
   return (
-    <Flex gap="0.5rem">
+    <Flex
+      gap="0.5rem"
+      alignItems="center"
+    >
       <Text>
         {t('withdrawingGas', {
           amount: withdrawingGasAmount,
@@ -50,16 +53,14 @@ function WithdrawingGasComponent() {
         })}
       </Text>
       <IconButton
-        aria-label="remove NFT from the list"
-        icon={<X size="24" />}
+        aria-label="Remove gas withdrawal action"
+        icon={<TrashSimple />}
         variant="unstyled"
         minWidth="auto"
-        color="color-red-100"
+        color="color-error-500"
         sx={{ '&:disabled:hover': { color: 'inherit', opacity: 0.4 } }}
         type="button"
         onClick={() => setFieldValue('paymasterGasTank.withdraw', undefined)}
-        mt="-0.25rem"
-        ml="0.5rem"
       />
     </Flex>
   );
@@ -89,7 +90,7 @@ function DepositingGasComponent() {
         })}
       </Text>
       <IconButton
-        aria-label="remove NFT from the list"
+        aria-label="Remove gas deposit action"
         icon={<TrashSimple />}
         variant="unstyled"
         minWidth="auto"

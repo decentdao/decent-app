@@ -284,6 +284,7 @@ export function SafeSettingsModal({
             {t('withdrawGasAction', {
               amount: formattedWithdrawAmount,
               symbol: nativeCurrency.symbol,
+              ns: 'gaslessVoting',
             })}
           </Text>
         ),
@@ -1210,8 +1211,7 @@ export function SafeSettingsModal({
               withdraw: undefined,
             };
           }
-
-          // Deposit validation handled in RefillGasTankModal, necessarily.
+          // Deposit validation handled in RefillGasTankModal.
         } else {
           errors.paymasterGasTank = undefined;
         }
