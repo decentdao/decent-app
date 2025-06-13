@@ -1,8 +1,11 @@
 import { Box, Button, Checkbox, CloseButton, Flex, Text } from '@chakra-ui/react';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { getContract } from 'viem';
 import { useAccount, useBalance } from 'wagmi';
+import { EntryPoint07Abi } from '../../../../assets/abi/EntryPoint07Abi';
 import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
+import { useNetworkWalletClient } from '../../../../hooks/useNetworkWalletClient';
 import { useCanUserCreateProposal } from '../../../../hooks/utils/useCanUserSubmitProposal';
 import { useDAOStore } from '../../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../../providers/NetworkConfig/useNetworkConfigStore';
@@ -27,8 +30,16 @@ export function RefillGasTankModal({
   const { daoKey } = useCurrentDAOKey();
   const {
     node: { safe },
+    governance: { paymasterAddress },
   } = useDAOStore({ daoKey });
-  const { chain } = useNetworkConfigStore();
+  const { data: walletClient } = useNetworkWalletClient();
+
+  const {
+    chain,
+
+    contracts: { accountAbstraction },
+  } = useNetworkConfigStore();
+
   const { canUserCreateProposal } = useCanUserCreateProposal();
 
   const { formState, formErrors, setFormErrors } = useSettingsFormStore();
@@ -190,7 +201,37 @@ export function RefillGasTankModal({
         </Button>
         <Button
           isDisabled={isSubmitDisabled}
-          onClick={close}
+          onClick={() => {
+            if (values.isDirectDeposit) {
+              if (!walletClient) {
+                throw new Error('Wallet client not found');
+              }
+
+              if (!accountAbstraction) {
+                throw new Error('Account abstraction not found');
+              }
+
+              if (!paymasterAddress) {
+                throw new Error('Paymaster address not found');
+              }
+
+              if (!values.amount) {
+                throw new Error('Amount not set');
+              }
+
+              const entryPoint = getContract({
+                address: accountAbstraction.entryPointv07,
+                abi: EntryPoint07Abi,
+                client: walletClient,
+              });
+
+              entryPoint.write.depositTo([paymasterAddress], {
+                value: values.amount.bigintValue,
+              });
+            }
+
+            close();
+          }}
         >
           {t(isDirectDeposit ? 'depositGas' : 'addGas')}
         </Button>

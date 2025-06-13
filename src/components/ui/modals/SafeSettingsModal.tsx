@@ -14,7 +14,6 @@ import {
   keccak256,
   parseAbiParameters,
 } from 'viem';
-import { EntryPoint07Abi } from '../../../assets/abi/EntryPoint07Abi';
 import {
   linearERC20VotingWithWhitelistSetupParams,
   linearERC721VotingWithWhitelistSetupParams,
@@ -29,7 +28,6 @@ import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import { useValidationAddress } from '../../../hooks/schemas/common/useValidationAddress';
 import { useNetworkEnsAddressAsync } from '../../../hooks/useNetworkEnsAddress';
 import useNetworkPublicClient from '../../../hooks/useNetworkPublicClient';
-import { useNetworkWalletClient } from '../../../hooks/useNetworkWalletClient';
 import { useCanUserCreateProposal } from '../../../hooks/utils/useCanUserSubmitProposal';
 import { useInstallVersionedVotingStrategy } from '../../../hooks/utils/useInstallVersionedVotingStrategy';
 import { generateContractByteCodeLinear } from '../../../models/helpers/utils';
@@ -235,7 +233,6 @@ export function SafeSettingsModal({
   const { getEnsAddress } = useNetworkEnsAddressAsync();
 
   const publicClient = useNetworkPublicClient();
-  const { data: walletClient } = useNetworkWalletClient();
 
   const gaslessVotingFeatureEnabled = useFeatureFlag('flag_gasless_voting');
 
@@ -297,19 +294,6 @@ export function SafeSettingsModal({
       }
 
       if (paymasterGasTank.deposit.isDirectDeposit) {
-        if (!walletClient) {
-          throw new Error('Wallet client not found');
-        }
-
-        const entryPoint = getContract({
-          address: accountAbstraction.entryPointv07,
-          abi: EntryPoint07Abi,
-          client: walletClient,
-        });
-
-        entryPoint.write.depositTo([paymasterAddress], {
-          value: paymasterGasTank.deposit.amount.bigintValue,
-        });
         return;
       }
 
