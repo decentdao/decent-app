@@ -9,9 +9,10 @@ import useNetworkPublicClient from '../../hooks/useNetworkPublicClient';
 import { useCanUserCreateProposal } from '../../hooks/utils/useCanUserSubmitProposal';
 import { useDAOStore } from '../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
+import { useSettingsFormStore } from '../../store/settings/useSettingsFormStore';
 import { formatCoin } from '../../utils';
 import { ModalType } from '../ui/modals/ModalProvider';
-import { SafeSettingsEdits, SafeSettingsFormikErrors } from '../ui/modals/SafeSettingsModal';
+import { SafeSettingsEdits } from '../ui/modals/SafeSettingsModal';
 import { useDecentModal } from '../ui/modals/useDecentModal';
 import Divider from '../ui/utils/Divider';
 
@@ -23,13 +24,13 @@ interface GaslessVotingToggleProps {
 function WithdrawingGasComponent() {
   const { t } = useTranslation('gaslessVoting');
   const { values, setFieldValue } = useFormikContext<SafeSettingsEdits>();
-  const { errors } = useFormikContext<SafeSettingsFormikErrors>();
-  const { paymasterGasTank: paymasterGasTankErrors } = errors as SafeSettingsFormikErrors;
+  const { formErrors } = useSettingsFormStore();
+  const paymasterGasTankWithdrawError = formErrors?.paymasterGasTank?.withdraw;
 
   const withdrawingGasAmount = values?.paymasterGasTank?.withdraw?.amount?.value;
   const nativeCurrency = useNetworkPublicClient().chain.nativeCurrency;
 
-  if (!withdrawingGasAmount || paymasterGasTankErrors?.withdraw !== undefined) return null;
+  if (!withdrawingGasAmount || paymasterGasTankWithdrawError !== undefined) return null;
 
   return (
     <Flex gap="0.5rem">
@@ -58,13 +59,14 @@ function WithdrawingGasComponent() {
 function DepositingGasComponent() {
   const { t } = useTranslation('gaslessVoting');
   const { values, setFieldValue } = useFormikContext<SafeSettingsEdits>();
-  const { errors } = useFormikContext<SafeSettingsFormikErrors>();
-  const { paymasterGasTank: paymasterGasTankErrors } = errors as SafeSettingsFormikErrors;
+
+  const { formErrors } = useSettingsFormStore();
+  const paymasterGasTankDepositError = formErrors?.paymasterGasTank?.deposit?.amount;
 
   const depositingGasAmount = values?.paymasterGasTank?.deposit?.amount?.value;
   const nativeCurrency = useNetworkPublicClient().chain.nativeCurrency;
 
-  if (!depositingGasAmount || paymasterGasTankErrors?.deposit?.amount !== undefined) return null;
+  if (!depositingGasAmount || paymasterGasTankDepositError !== undefined) return null;
 
   return (
     <Flex

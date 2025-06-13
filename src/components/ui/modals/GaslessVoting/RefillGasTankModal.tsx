@@ -74,9 +74,7 @@ export function RefillGasTankModal({
         ...formErrors,
         paymasterGasTank: {
           ...formErrors?.paymasterGasTank,
-          deposit: {
-            amount: undefined,
-          },
+          deposit: undefined,
         },
       });
     }
@@ -145,7 +143,6 @@ export function RefillGasTankModal({
             parentFormikValue={values.amount}
             decimalPlaces={balance?.decimals || 0}
             placeholder="0"
-            maxValue={!isDirectDeposit ? balance?.value || 0n : undefined}
             isInvalid={overDraft || paymasterGasTankErrors.deposit?.amount !== undefined}
             errorBorderColor="color-error-500"
             autoFocus
@@ -184,7 +181,10 @@ export function RefillGasTankModal({
       >
         <Button
           variant="secondary"
-          onClick={close}
+          onClick={() => {
+            setFieldValue('paymasterGasTank.deposit', undefined);
+            close();
+          }}
         >
           {t('cancel', { ns: 'common' })}
         </Button>
