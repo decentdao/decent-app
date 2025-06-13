@@ -1,7 +1,7 @@
 import * as amplitude from '@amplitude/analytics-browser';
 import { Box, Button, Flex, Grid, Show, Text } from '@chakra-ui/react';
 import { ArrowsDownUp, HourglassMedium, Parachute } from '@phosphor-icons/react';
-import { useEffect, useMemo } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -16,6 +16,7 @@ import PageHeader from '../../../components/ui/page/Header/PageHeader';
 import Divider from '../../../components/ui/utils/Divider';
 import { DAO_ROUTES } from '../../../constants/routes';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
+import useLockedToken from '../../../hooks/DAO/useLockedToken';
 import useSendAssetsActionModal from '../../../hooks/DAO/useSendAssetsActionModal';
 import { useCanUserCreateProposal } from '../../../hooks/utils/useCanUserSubmitProposal';
 import { analyticsEvents } from '../../../insights/analyticsEvents';
@@ -56,15 +57,15 @@ export function SafeProposalTemplatesPage() {
       asset => !asset.possibleSpam && !asset.nativeToken && parseFloat(asset.balance) > 0,
     ).length > 0;
 
-  const handleAirdropSubmit = (data: AirdropData) => {
-    if (!safeAddress) return;
+  const { loadTokenState } = useLockedToken();
 
-    const totalAmount = data.recipients.reduce((acc, recipient) => acc + recipient.amount, 0n);
-    resetActions();
-    addAction({
-      actionType: ProposalActionType.AIRDROP,
-      content: <></>,
-      transactions: [
+  const handleAirdropSubmit = useCallback(
+    async (data: AirdropData) => {
+      if (!safeAddress) return;
+
+      const totalAmount = data.recipients.reduce((acc, recipient) => acc + recipient.amount, 0n);
+      const tokenState = await loadTokenState(data.asset.tokenAddress, disperse);
+      let transactions = [
         {
           targetAddress: data.asset.tokenAddress,
           ethValue: {
@@ -96,11 +97,36 @@ export function SafeProposalTemplatesPage() {
             },
           ],
         },
-      ],
-    });
+      ];
+      if (tokenState.needWhitelist) {
+        transactions = [
+          {
+            targetAddress: data.asset.tokenAddress,
+            ethValue: {
+              bigintValue: 0n,
+              value: '0',
+            },
+            functionName: 'whitelist',
+            parameters: [
+              { signature: 'address', value: disperse },
+              { signature: 'bool', value: 'true' },
+            ],
+          },
+          ...transactions,
+        ];
+      }
 
-    navigate(DAO_ROUTES.proposalWithActionsNew.relative(addressPrefix, safeAddress));
-  };
+      resetActions();
+      addAction({
+        actionType: ProposalActionType.AIRDROP,
+        content: <></>,
+        transactions,
+      });
+
+      navigate(DAO_ROUTES.proposalWithActionsNew.relative(addressPrefix, safeAddress));
+    },
+    [addAction, addressPrefix, disperse, loadTokenState, navigate, resetActions, safeAddress],
+  );
 
   const { open: openAirdropModal } = useDecentModal(ModalType.AIRDROP, {
     onSubmit: handleAirdropSubmit,
