@@ -63,6 +63,7 @@ import { prepareSendAssetsActionData } from '../../utils/dao/prepareSendAssetsAc
 import { getVoteSelectorAndValidator } from '../../utils/gaslessVoting';
 import useSubmitProposal from '../DAO/proposal/useSubmitProposal';
 import { useCurrentDAOKey } from '../DAO/useCurrentDAOKey';
+import useLockedToken from '../DAO/useLockedToken';
 import useCreateSablierStream from '../streams/useCreateSablierStream';
 import useNetworkPublicClient from '../useNetworkPublicClient';
 import {
@@ -126,6 +127,7 @@ export default function useCreateRoles() {
       accountAbstraction,
     },
   } = useNetworkConfigStore();
+  const { loadTokenState } = useLockedToken();
 
   const { t } = useTranslation(['roles', 'navigation', 'modals', 'common']);
 
@@ -712,11 +714,35 @@ export default function useCreateRoles() {
       if (firstWearer === undefined) {
         throw new Error('Cannot create new hat without wearer');
       }
+
+      const sablierPayments = parseSablierPaymentsFromFormRolePayments(formRole.payments);
+      const sablierUniqueAssets = [...new Set(sablierPayments.map(sp => sp.asset))];
+      const isLinearWhitelistedOfStreams = await Promise.allSettled(
+        sablierUniqueAssets.map(asset => loadTokenState(asset, sablierV2LockupLinear)),
+      );
+      const whitelistSablierTransactions = sablierUniqueAssets
+        .filter((_, index) => {
+          return (
+            isLinearWhitelistedOfStreams[index].status === 'fulfilled' &&
+            isLinearWhitelistedOfStreams[index].value.needWhitelist
+          );
+        })
+        .map(asset => {
+          return {
+            targetAddress: asset,
+            calldata: encodeFunctionData({
+              abi: abis.VotesERC20LockableV1,
+              functionName: 'whitelist',
+              args: [sablierV2LockupLinear, true],
+            }),
+          };
+        });
+
       const hatStruct = await createHatStructWithPayments(
         formRole.name,
         formRole.description,
         firstWearer,
-        parseSablierPaymentsFromFormRolePayments(formRole.payments),
+        sablierPayments,
         termEndDateTs,
       );
 
@@ -743,6 +769,7 @@ export default function useCreateRoles() {
       });
 
       return [
+        ...whitelistSablierTransactions,
         {
           targetAddress: safeAddress,
           calldata: enableDecentHatsModuleData,
@@ -770,6 +797,8 @@ export default function useCreateRoles() {
       hatsAccount1ofNMasterCopy,
       hatsElectionsEligibilityMasterCopy,
       keyValuePairs,
+      loadTokenState,
+      sablierV2LockupLinear,
     ],
   );
 
