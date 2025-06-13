@@ -1177,7 +1177,7 @@ export function SafeSettingsModal({
         }
 
         if (values.paymasterGasTank) {
-          const { withdraw, deposit } = values.paymasterGasTank;
+          const { withdraw } = values.paymasterGasTank;
 
           if (withdraw) {
             if (withdraw.amount?.bigintValue !== undefined && depositInfo?.balance !== undefined) {
@@ -1211,22 +1211,7 @@ export function SafeSettingsModal({
             };
           }
 
-          if (deposit) {
-            if (!deposit.amount?.value || deposit.amount.bigintValue === 0n) {
-              errors.paymasterGasTank = {
-                ...errors.paymasterGasTank,
-                deposit: {
-                  ...errors.paymasterGasTank?.deposit,
-                  amount: t('amountRequired', { ns: 'common' }),
-                },
-              };
-            }
-          } else {
-            errors.paymasterGasTank = {
-              ...errors.paymasterGasTank,
-              deposit: undefined,
-            };
-          }
+          // Deposit validation handled in RefillGasTankModal, necessarily.
         } else {
           errors.paymasterGasTank = undefined;
         }

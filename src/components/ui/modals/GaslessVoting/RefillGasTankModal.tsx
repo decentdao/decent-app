@@ -1,4 +1,5 @@
 import { Box, Button, Checkbox, CloseButton, Flex, Text } from '@chakra-ui/react';
+import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAccount, useBalance } from 'wagmi';
 import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
@@ -30,7 +31,7 @@ export function RefillGasTankModal({
   const { chain } = useNetworkConfigStore();
   const { canUserCreateProposal } = useCanUserCreateProposal();
 
-  const { formState, formErrors } = useSettingsFormStore();
+  const { formState, formErrors, setFormErrors } = useSettingsFormStore();
   const values = formState?.paymasterGasTank?.deposit ?? {};
   const paymasterGasTankErrors = formErrors?.paymasterGasTank ?? {};
 
@@ -56,6 +57,37 @@ export function RefillGasTankModal({
     !values.amount ||
     inputBigintIsZero ||
     overDraft;
+
+  useEffect(() => {
+    if (overDraft && formErrors?.paymasterGasTank?.deposit?.amount === undefined) {
+      setFormErrors({
+        ...formErrors,
+        paymasterGasTank: {
+          ...formErrors?.paymasterGasTank,
+          deposit: {
+            amount: t('amountExceedsAvailableBalance', { ns: 'gaslessVoting' }),
+          },
+        },
+      });
+    } else if (!overDraft && formErrors?.paymasterGasTank?.deposit?.amount !== undefined) {
+      setFormErrors({
+        ...formErrors,
+        paymasterGasTank: {
+          ...formErrors?.paymasterGasTank,
+          deposit: {
+            amount: undefined,
+          },
+        },
+      });
+    }
+  }, [formErrors, overDraft, setFormErrors, t]);
+
+  // Clean up deposit object if amount field is empty
+  useEffect(() => {
+    if (values.amount === undefined) {
+      setFieldValue('paymasterGasTank.deposit.amount', undefined);
+    }
+  }, [values.amount, setFieldValue]);
 
   return (
     <Box>
