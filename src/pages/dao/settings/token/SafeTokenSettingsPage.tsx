@@ -99,7 +99,7 @@ export function SafeTokenSettingsPage() {
                 px={6}
                 py={2}
               >
-                <Text textStyle="text-base-regular">{t('governanceTokenSupplyLabel')}</Text>
+                <Text textStyle="text-base-regular">{t('tokenTabTokenSupplyLabel')}</Text>
                 <Text
                   color="color-neutral-300"
                   textStyle="text-base-regular"
@@ -125,7 +125,12 @@ export function SafeTokenSettingsPage() {
                 mt="0.5rem"
                 mb="1rem"
               >
-                <Text textStyle="text-sm-regular">{t('tokenPageNotDeployedDescription')}</Text>
+                <Text
+                  whiteSpace="pre-wrap"
+                  textStyle="text-sm-regular"
+                >
+                  {t('tokenPageNotDeployedDescription')}
+                </Text>
               </Flex>
 
               <Button
