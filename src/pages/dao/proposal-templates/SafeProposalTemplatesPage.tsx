@@ -22,8 +22,8 @@ import { analyticsEvents } from '../../../insights/analyticsEvents';
 import { useDAOStore } from '../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
 import { useProposalActionsStore } from '../../../store/actions/useProposalActionsStore';
-import { ProposalActionType } from '../../../types/proposalBuilder';
 import { AirdropData } from '../../../types';
+import { ProposalActionType } from '../../../types/proposalBuilder';
 
 export function SafeProposalTemplatesPage() {
   useEffect(() => {
