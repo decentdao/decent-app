@@ -2,11 +2,13 @@ import { Box, Button, Flex, HStack, IconButton, Image, Switch, Text } from '@cha
 import { TrashSimple, X } from '@phosphor-icons/react';
 import { useFormikContext } from 'formik';
 import { useTranslation } from 'react-i18next';
+import { isAddress } from 'viem';
 import useFeatureFlag from '../../helpers/environmentFeatureFlags';
 import { usePaymasterDepositInfo } from '../../hooks/DAO/accountAbstraction/usePaymasterDepositInfo';
 import { useCurrentDAOKey } from '../../hooks/DAO/useCurrentDAOKey';
 import useNetworkPublicClient from '../../hooks/useNetworkPublicClient';
 import { useCanUserCreateProposal } from '../../hooks/utils/useCanUserSubmitProposal';
+import { createAccountSubstring } from '../../hooks/utils/useGetAccountName';
 import { useDAOStore } from '../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
 import { useSettingsFormStore } from '../../store/settings/useSettingsFormStore';
@@ -32,12 +34,19 @@ function WithdrawingGasComponent() {
 
   if (!withdrawingGasAmount || paymasterGasTankWithdrawError !== undefined) return null;
 
+  const recipientInput = values?.paymasterGasTank?.withdraw?.recipientAddress;
+  const recipient =
+    recipientInput !== undefined && isAddress(recipientInput)
+      ? createAccountSubstring(recipientInput)
+      : recipientInput;
+
   return (
     <Flex gap="0.5rem">
       <Text>
         {t('withdrawingGas', {
           amount: withdrawingGasAmount,
           symbol: nativeCurrency.symbol,
+          recipient,
         })}
       </Text>
       <IconButton

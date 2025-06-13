@@ -36,12 +36,14 @@ export function WithdrawGasTankModal({
     }
   }, [values.amount, values.recipientAddress, setFieldValue]);
 
-  const inputBigint = values.amount?.bigintValue;
-  const inputBigintIsZero = inputBigint !== undefined ? inputBigint === 0n : undefined;
+  console.log(paymasterGasTankErrors.withdraw?.amount);
+
   const isSubmitDisabled =
     !values.amount ||
-    inputBigintIsZero ||
+    values.amount.bigintValue === undefined ||
+    values.amount.bigintValue === 0n ||
     paymasterGasTankErrors.withdraw?.amount !== undefined ||
+    values.recipientAddress === undefined ||
     paymasterGasTankErrors.withdraw?.recipientAddress !== undefined;
 
   return (

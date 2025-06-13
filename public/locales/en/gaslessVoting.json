@@ -39,6 +39,6 @@
   "recipientAddress": "Recipient Address",
   "enterRecipientAddress": "Enter recipient address",
   "amountExceedsAvailableBalance": "Insufficient balance",
-  "withdrawingGas": "Withdrawing {{amount}} {{symbol}}",
+  "withdrawingGas": "Withdrawing {{amount}} {{symbol}} to {{recipient}}",
   "depositingGas": "Depositing {{amount}} {{symbol}}"
 }
