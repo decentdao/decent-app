@@ -1,4 +1,5 @@
-import { Box, Button, Flex, HStack, Image, Switch, Text } from '@chakra-ui/react';
+import { Box, Button, Flex, HStack, IconButton, Image, Switch, Text } from '@chakra-ui/react';
+import { TrashSimple, X } from '@phosphor-icons/react';
 import { useFormikContext } from 'formik';
 import { useTranslation } from 'react-i18next';
 import useFeatureFlag from '../../helpers/environmentFeatureFlags';
@@ -10,13 +11,84 @@ import { useDAOStore } from '../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
 import { formatCoin } from '../../utils';
 import { ModalType } from '../ui/modals/ModalProvider';
-import { SafeSettingsEdits } from '../ui/modals/SafeSettingsModal';
+import { SafeSettingsEdits, SafeSettingsFormikErrors } from '../ui/modals/SafeSettingsModal';
 import { useDecentModal } from '../ui/modals/useDecentModal';
 import Divider from '../ui/utils/Divider';
 
 interface GaslessVotingToggleProps {
   isEnabled: boolean;
   onToggle: () => void;
+}
+
+function WithdrawingGasComponent() {
+  const { t } = useTranslation('gaslessVoting');
+  const { values, setFieldValue } = useFormikContext<SafeSettingsEdits>();
+  const { errors } = useFormikContext<SafeSettingsFormikErrors>();
+  const { paymasterGasTank: paymasterGasTankErrors } = errors as SafeSettingsFormikErrors;
+
+  const withdrawingGasAmount = values?.paymasterGasTank?.withdraw?.amount?.value;
+  const nativeCurrency = useNetworkPublicClient().chain.nativeCurrency;
+
+  if (!withdrawingGasAmount || paymasterGasTankErrors?.withdraw !== undefined) return null;
+
+  return (
+    <Flex gap="0.5rem">
+      <Text>
+        {t('withdrawingGas', {
+          amount: withdrawingGasAmount,
+          symbol: nativeCurrency.symbol,
+        })}
+      </Text>
+      <IconButton
+        aria-label="remove NFT from the list"
+        icon={<X size="24" />}
+        variant="unstyled"
+        minWidth="auto"
+        color="color-red-100"
+        sx={{ '&:disabled:hover': { color: 'inherit', opacity: 0.4 } }}
+        type="button"
+        onClick={() => setFieldValue('paymasterGasTank.withdraw', undefined)}
+        mt="-0.25rem"
+        ml="0.5rem"
+      />
+    </Flex>
+  );
+}
+
+function DepositingGasComponent() {
+  const { t } = useTranslation('gaslessVoting');
+  const { values, setFieldValue } = useFormikContext<SafeSettingsEdits>();
+  const { errors } = useFormikContext<SafeSettingsFormikErrors>();
+  const { paymasterGasTank: paymasterGasTankErrors } = errors as SafeSettingsFormikErrors;
+
+  const depositingGasAmount = values?.paymasterGasTank?.deposit?.amount?.value;
+  const nativeCurrency = useNetworkPublicClient().chain.nativeCurrency;
+
+  if (!depositingGasAmount || paymasterGasTankErrors?.deposit?.amount !== undefined) return null;
+
+  return (
+    <Flex
+      gap="0.75rem"
+      alignItems="center"
+    >
+      <Text>
+        {t('depositingGas', {
+          amount: depositingGasAmount,
+          symbol: nativeCurrency.symbol,
+        })}
+      </Text>
+      <IconButton
+        aria-label="remove NFT from the list"
+        icon={<TrashSimple />}
+        variant="unstyled"
+        minWidth="auto"
+        color="color-red-500"
+        sx={{ '&:disabled:hover': { color: 'inherit', opacity: 0.4 } }}
+        type="button"
+        onClick={() => setFieldValue('paymasterGasTank.deposit', undefined)}
+      />
+    </Flex>
+  );
 }
 
 function GaslessVotingToggleContent({
@@ -114,6 +186,8 @@ export function GaslessVotingToggleDAOSettings(props: GaslessVotingToggleProps) 
   const gaslessFeatureEnabled = useFeatureFlag('flag_gasless_voting');
   const gaslessStakingEnabled = gaslessFeatureEnabled && bundlerMinimumStake !== undefined;
 
+  const { values } = settingsModalFormikContext;
+
   if (!gaslessFeatureEnabled) return null;
 
   const paymasterBalance = depositInfo?.balance || 0n;
@@ -188,20 +262,27 @@ export function GaslessVotingToggleDAOSettings(props: GaslessVotingToggleProps) 
             </Flex>
 
             <Flex gap="0.5rem">
-              <Button
-                variant="secondary"
-                size="sm"
-                onClick={openWithdrawGasModal}
-              >
-                {t('withdrawGas')}
-              </Button>
-              <Button
-                variant="secondary"
-                size="sm"
-                onClick={openRefillGasModal}
-              >
-                {t('addGas')}
-              </Button>
+              <WithdrawingGasComponent />
+              <DepositingGasComponent />
+              {values?.paymasterGasTank?.withdraw === undefined &&
+                values?.paymasterGasTank?.deposit === undefined && (
+                  <>
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      onClick={openWithdrawGasModal}
+                    >
+                      {t('withdrawGas')}
+                    </Button>
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      onClick={openRefillGasModal}
+                    >
+                      {t('addGas')}
+                    </Button>
+                  </>
+                )}
             </Flex>
           </Flex>
         </>

@@ -233,7 +233,7 @@ export function SettingsNavigation({
               onSettingsNavigationClick(<SafeGeneralSettingsPage />);
               setCurrentItem('general');
             }}
-            hasEdits={values.general !== undefined}
+            hasEdits={values.general !== undefined || values.paymasterGasTank !== undefined}
           />
           <SettingsNavigationItem
             title={t('daoSettingsGovernance')}

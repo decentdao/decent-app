@@ -139,8 +139,8 @@ export function RefillGasTankModal({
         >
           <BigIntInput
             value={values.amount?.bigintValue}
-            onChange={value => {
-              setFieldValue('paymasterGasTank.deposit.amount', value);
+            onChange={inputValue => {
+              setFieldValue('paymasterGasTank.deposit.amount', inputValue);
             }}
             parentFormikValue={values.amount}
             decimalPlaces={balance?.decimals || 0}
