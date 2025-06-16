@@ -669,6 +669,10 @@ export default function useCreateRoles() {
         isMutable: true,
       };
 
+      const whitelistSablierTxs = await createWhitelistSablierTransactions(
+        modifiedHats.flatMap(mH => mH.payments),
+      );
+
       const addedHats = await createHatStructsForNewTreeFromRolesFormValues(modifiedHats);
       const createAndDeclareTreeData = encodeFunctionData({
         abi: abis.DecentHatsCreationModule,
@@ -691,14 +695,20 @@ export default function useCreateRoles() {
       });
 
       return {
-        targets: [safeAddress, decentHatsCreationModule, safeAddress],
+        targets: [
+          ...whitelistSablierTxs.map(({ targetAddress }) => targetAddress),
+          safeAddress,
+          decentHatsCreationModule,
+          safeAddress,
+        ],
         calldatas: [
+          ...whitelistSablierTxs.map(({ calldata }) => calldata),
           enableDecentHatsModuleData,
           createAndDeclareTreeData,
           disableDecentHatsModuleData,
         ],
         metaData: proposalMetadata,
-        values: [0n, 0n, 0n],
+        values: [...whitelistSablierTxs.map(() => 0n), 0n, 0n, 0n],
       };
     },
     [
@@ -707,7 +717,7 @@ export default function useCreateRoles() {
       decentHatsCreationModule,
       subgraphInfo?.daoName,
       ipfsClient,
-      hatsElectionsEligibilityMasterCopy,
+      createWhitelistSablierTransactions,
       createHatStructsForNewTreeFromRolesFormValues,
       hatsProtocol,
       erc6551Registry,
@@ -715,6 +725,7 @@ export default function useCreateRoles() {
       keyValuePairs,
       decentAutonomousAdminV1MasterCopy,
       hatsAccount1ofNMasterCopy,
+      hatsElectionsEligibilityMasterCopy,
     ],
   );
 
@@ -742,17 +753,11 @@ export default function useCreateRoles() {
       if (firstWearer === undefined) {
         throw new Error('Cannot create new hat without wearer');
       }
-
-      const sablierPayments = parseSablierPaymentsFromFormRolePayments(formRole.payments);
-      const whitelistSablierTransactions = await createWhitelistSablierTransactions(
-        formRole.payments,
-      );
-
       const hatStruct = await createHatStructWithPayments(
         formRole.name,
         formRole.description,
         firstWearer,
-        sablierPayments,
+        parseSablierPaymentsFromFormRolePayments(formRole.payments),
         termEndDateTs,
       );
 
@@ -779,7 +784,6 @@ export default function useCreateRoles() {
       });
 
       return [
-        ...whitelistSablierTransactions,
         {
           targetAddress: safeAddress,
           calldata: enableDecentHatsModuleData,
@@ -799,7 +803,6 @@ export default function useCreateRoles() {
       safeAddress,
       parseRoleTermsFromFormRoleTerms,
       parseSablierPaymentsFromFormRolePayments,
-      createWhitelistSablierTransactions,
       createHatStructWithPayments,
       getEnableDisableDecentHatsModuleData,
       decentHatsModificationModule,
@@ -1382,6 +1385,11 @@ export default function useCreateRoles() {
         )),
       );
 
+      const whitelistSablierTransactions = await createWhitelistSablierTransactions(
+        modifiedHats.flatMap(mH => mH.payments),
+      );
+      allTxs.push(...whitelistSablierTransactions);
+
       for (let index = 0; index < modifiedHats.length; index++) {
         const formHat = modifiedHats[index];
         if (formHat.name === undefined || formHat.description === undefined) {
@@ -1752,8 +1760,8 @@ export default function useCreateRoles() {
     [
       hatsTree,
       safeAddress,
-      publicClient,
       prepareAdminHatTxs,
+      createWhitelistSablierTransactions,
       linearVotingErc20WithHatsWhitelistingAddress,
       linearVotingErc721WithHatsWhitelistingAddress,
       prepareNewHatTxs,
@@ -1769,9 +1777,10 @@ export default function useCreateRoles() {
       prepareTermedRolePaymentUpdateTxs,
       isDecentAutonomousAdminV1,
       hatsElectionsEligibilityMasterCopy,
+      publicClient,
       parseRoleTermsFromFormRoleTerms,
-      buildDeployWhitelistingStrategy,
       prepareConvertRoleToTermedTxs,
+      buildDeployWhitelistingStrategy,
     ],
   );
 
