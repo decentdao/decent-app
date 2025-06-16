@@ -36,8 +36,6 @@ export function WithdrawGasTankModal({
     }
   }, [values.amount, values.recipientAddress, setFieldValue]);
 
-  console.log(paymasterGasTankErrors.withdraw?.amount);
-
   const isSubmitDisabled =
     !values.amount ||
     values.amount.bigintValue === undefined ||
