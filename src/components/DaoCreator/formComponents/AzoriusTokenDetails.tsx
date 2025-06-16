@@ -1,10 +1,12 @@
-import { Box, Flex, Input, RadioGroup } from '@chakra-ui/react';
+import { Box, Flex, Input, RadioGroup, Text } from '@chakra-ui/react';
 import { useFormikContext } from 'formik';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { erc20Abi, getContract, isAddress, zeroAddress } from 'viem';
+import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import useNetworkPublicClient from '../../../hooks/useNetworkPublicClient';
 import { createAccountSubstring } from '../../../hooks/utils/useGetAccountName';
+import { useDAOStore } from '../../../providers/App/AppProvider';
 import { CreatorFormState, ICreationStepProps, TokenCreationType } from '../../../types';
 import ContentBoxTitle from '../../ui/containers/ContentBox/ContentBoxTitle';
 import LabelWrapper from '../../ui/forms/LabelWrapper';
@@ -14,6 +16,7 @@ import { StepWrapper } from '../StepWrapper';
 import { usePrepareFormData } from '../hooks/usePrepareFormData';
 import useStepRedirect from '../hooks/useStepRedirect';
 import { AzoriusTokenAllocations } from './AzoriusTokenAllocations';
+import { DAOCreateMode } from './EstablishEssentials';
 import { VotesTokenImport } from './VotesTokenImport';
 import { VotesTokenNew } from './VotesTokenNew';
 
@@ -30,7 +33,22 @@ function TokenConfigDisplay(props: ICreationStepProps) {
 
 function TokenCreationTypeHeader(props: { tokenErrorMsg: string; formProps: ICreationStepProps }) {
   const { t } = useTranslation('daoCreate');
-  const { values, setFieldValue, setTouched, touched, handleChange } = props.formProps;
+  const { values, setFieldValue, setTouched, touched, handleChange, mode } = props.formProps;
+
+  const { daoKey } = useCurrentDAOKey();
+  const {
+    governance: { erc20Token },
+  } = useDAOStore({ daoKey });
+
+  const deployedTokenAddress = erc20Token?.address;
+  const hasMultisigERC20TokenDeployed =
+    mode === DAOCreateMode.EDIT && deployedTokenAddress !== undefined;
+
+  useEffect(() => {
+    if (hasMultisigERC20TokenDeployed) {
+      setFieldValue('erc20Token.tokenImportAddress', deployedTokenAddress);
+    }
+  }, [deployedTokenAddress, hasMultisigERC20TokenDeployed, setFieldValue]);
 
   return (
     <Flex
@@ -56,9 +74,11 @@ function TokenCreationTypeHeader(props: { tokenErrorMsg: string; formProps: ICre
           testId="choose-existingToken"
           value={TokenCreationType.IMPORTED}
           onClick={() => {
-            setFieldValue('erc20Token.tokenName', '');
-            setFieldValue('erc20Token.tokenSymbol', '');
-            setFieldValue('erc20Token.tokenSupply', '');
+            if (!hasMultisigERC20TokenDeployed) {
+              setFieldValue('erc20Token.tokenName', '');
+              setFieldValue('erc20Token.tokenSymbol', '');
+              setFieldValue('erc20Token.tokenSupply', '');
+            }
           }}
         />
         <RadioWithText
@@ -66,6 +86,7 @@ function TokenCreationTypeHeader(props: { tokenErrorMsg: string; formProps: ICre
           description={t('helperNewToken')}
           testId="choose-newToken"
           value={TokenCreationType.NEW}
+          disabled={hasMultisigERC20TokenDeployed}
           onClick={() => {
             setFieldValue('erc20Token.tokenImportAddress', '');
             setFieldValue('erc20Token.tokenName', '');
@@ -76,7 +97,14 @@ function TokenCreationTypeHeader(props: { tokenErrorMsg: string; formProps: ICre
       </RadioGroup>
       {values.erc20Token.tokenCreationType === TokenCreationType.IMPORTED && (
         <>
-          <LabelWrapper errorMessage={props.tokenErrorMsg}>
+          <LabelWrapper
+            subLabel={
+              hasMultisigERC20TokenDeployed ? (
+                <Text textStyle="text-sm-semibold">{t('labelTokenContractAlreadyConfigured')}</Text>
+              ) : null
+            }
+            errorMessage={props.tokenErrorMsg}
+          >
             <Input
               name="erc20Token.tokenImportAddress"
               onChange={e => {
