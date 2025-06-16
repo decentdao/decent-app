@@ -536,6 +536,34 @@ export default function useCreateRoles() {
     [],
   );
 
+  const createWhitelistSablierTransactions = useCallback(
+    async (payments: SablierPaymentFormValues[]) => {
+      const sablierPayments = parseSablierPaymentsFromFormRolePayments(payments);
+      const sablierUniqueAssets = [...new Set(sablierPayments.map(sp => sp.asset))];
+      const isLinearWhitelistedOfStreams = await Promise.allSettled(
+        sablierUniqueAssets.map(asset => loadTokenState(asset, sablierV2LockupLinear)),
+      );
+      return sablierUniqueAssets
+        .filter((_, index) => {
+          return (
+            isLinearWhitelistedOfStreams[index].status === 'fulfilled' &&
+            isLinearWhitelistedOfStreams[index].value.needWhitelist
+          );
+        })
+        .map(asset => {
+          return {
+            targetAddress: asset,
+            calldata: encodeFunctionData({
+              abi: abis.VotesERC20LockableV1,
+              functionName: 'whitelist',
+              args: [sablierV2LockupLinear, true],
+            }),
+          };
+        });
+    },
+    [loadTokenState, parseSablierPaymentsFromFormRolePayments, sablierV2LockupLinear],
+  );
+
   const createHatStructsForNewTreeFromRolesFormValues = useCallback(
     async (modifiedRoles: RoleHatFormValueEdited[]) => {
       return Promise.all(
@@ -716,27 +744,9 @@ export default function useCreateRoles() {
       }
 
       const sablierPayments = parseSablierPaymentsFromFormRolePayments(formRole.payments);
-      const sablierUniqueAssets = [...new Set(sablierPayments.map(sp => sp.asset))];
-      const isLinearWhitelistedOfStreams = await Promise.allSettled(
-        sablierUniqueAssets.map(asset => loadTokenState(asset, sablierV2LockupLinear)),
+      const whitelistSablierTransactions = await createWhitelistSablierTransactions(
+        formRole.payments,
       );
-      const whitelistSablierTransactions = sablierUniqueAssets
-        .filter((_, index) => {
-          return (
-            isLinearWhitelistedOfStreams[index].status === 'fulfilled' &&
-            isLinearWhitelistedOfStreams[index].value.needWhitelist
-          );
-        })
-        .map(asset => {
-          return {
-            targetAddress: asset,
-            calldata: encodeFunctionData({
-              abi: abis.VotesERC20LockableV1,
-              functionName: 'whitelist',
-              args: [sablierV2LockupLinear, true],
-            }),
-          };
-        });
 
       const hatStruct = await createHatStructWithPayments(
         formRole.name,
@@ -788,8 +798,9 @@ export default function useCreateRoles() {
       hatsTree,
       safeAddress,
       parseRoleTermsFromFormRoleTerms,
-      createHatStructWithPayments,
       parseSablierPaymentsFromFormRolePayments,
+      createWhitelistSablierTransactions,
+      createHatStructWithPayments,
       getEnableDisableDecentHatsModuleData,
       decentHatsModificationModule,
       hatsProtocol,
@@ -797,8 +808,6 @@ export default function useCreateRoles() {
       hatsAccount1ofNMasterCopy,
       hatsElectionsEligibilityMasterCopy,
       keyValuePairs,
-      loadTokenState,
-      sablierV2LockupLinear,
     ],
   );
 
