@@ -15,6 +15,7 @@ import { List } from '@phosphor-icons/react';
 import { RefObject, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
+import { useAccount } from 'wagmi';
 import { DecentLogo } from '../../../../assets/theme/custom/icons/DecentLogo';
 import { DecentSignature } from '../../../../assets/theme/custom/icons/DecentSignature';
 import {
@@ -126,6 +127,7 @@ function Header({ headerContainerRef }: { headerContainerRef: RefObject<HTMLDivE
   const navigate = useNavigate();
   const isRevShareEnabled = useFeatureFlag('flag_revenue_sharing');
   const { t } = useTranslation('menu');
+  const { isConnected } = useAccount();
 
   return (
     <Flex
@@ -146,7 +148,7 @@ function Header({ headerContainerRef }: { headerContainerRef: RefObject<HTMLDivE
         alignItems="center"
         gap={{ base: '2rem', md: '1rem' }}
       >
-        {isRevShareEnabled && (
+        {isRevShareEnabled && isConnected && (
           <Button
             variant="ghost"
             onClick={() => navigate(BASE_ROUTES.tokenManager)}
