@@ -33,7 +33,7 @@ export const createGuardSlice: StateCreator<GlobalStore, StoreMiddleware, [], Gu
   get,
 ) => ({
   guards: {},
-  guardAccountData: { userHasFreezeVoted: false, userHasVotes: false },
+  guardAccountData: {},
   setGuard: (daoKey, guard) => {
     set(
       state => {
