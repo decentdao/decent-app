@@ -4,8 +4,8 @@ import { useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { useTranslation } from 'react-i18next';
 import { formatUnits, isAddress } from 'viem';
+import { AirdropFormValues } from '../../../../types';
 import { floatStringToBigInt, parseCsvText } from '../../../../utils/csvformat';
-import { AirdropFormValues } from './AirdropModal';
 
 const zeroBigInt = BigInt(0);
 
