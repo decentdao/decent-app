@@ -16,6 +16,7 @@ import {
   SECONDS_IN_DAY,
   SECONDS_IN_HOUR,
   SECONDS_IN_MINUTE,
+  SECONDS_IN_YEAR,
 } from '../../ProposalBuilder/constants';
 
 interface DurationUnits {
@@ -52,6 +53,10 @@ export default function DurationUnitStepperInput({
     {
       unit: SECONDS_IN_MINUTE,
       label: t('minutes', { ns: 'common' }),
+    },
+    {
+      unit: SECONDS_IN_YEAR,
+      label: t('years', { ns: 'common' }),
     },
   ];
   const [selectedUnit, setSelectedUnit] = useState(units[0]);
