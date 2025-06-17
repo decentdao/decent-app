@@ -1,7 +1,6 @@
 import { Box, Flex, MenuItem, Checkbox, Text } from '@chakra-ui/react';
 import { ChangeEvent, MouseEvent } from 'react';
 import { useTranslation } from 'react-i18next';
-import Divider from '../../utils/Divider';
 import { IOption, IOptionsList } from './types';
 
 export function OptionsList({
@@ -36,7 +35,7 @@ export function OptionsList({
         return (
           <Box
             px="0.25rem"
-            key={option.optionKey}
+            key={option.optionKey + i}
           >
             {option.renderer ? (
               option.renderer()
@@ -74,8 +73,6 @@ export function OptionsList({
                 {showOptionCount && <Text as="span">{option.count}</Text>}
               </MenuItem>
             )}
-
-            {i !== options.length - 1 && <Divider my="0.25rem" />}
           </Box>
         );
       })}
