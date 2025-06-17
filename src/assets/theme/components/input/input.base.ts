@@ -85,7 +85,7 @@ export const tableStyle = definePartsStyle({
     bg: 'transparent',
     h: 'full',
     overflow: 'hidden',
-    boxShadow: '0px 1px 0px 0px rgba(255, 255, 255, 0.16), 0px 0px 0px 1px rgba(0, 0, 0, 0.68)',
+    margin: '0',
     transitionDuration: 'normal',
     transitionProperty: 'common',
     width: '100%',
@@ -93,15 +93,8 @@ export const tableStyle = definePartsStyle({
     _placeholder: {
       color: 'color-neutral-700',
     },
-    _active: {
-      boxShadow:
-        '0px 0px 0px 2px #534D58, 0px 1px 0px 0px rgba(255, 255, 255, 0.20), 0px 0px 0px 1px rgba(0, 0, 0, 0.80)',
-      _disabled: {
-        ...disabled,
-      },
-    },
     _hover: {
-      boxShadow: '0px 1px 0px 0px rgba(255, 255, 255, 0.24), 0px 0px 0px 1px rgba(0, 0, 0, 0.80)',
+      bg: 'color-alpha-white-950',
       _disabled: {
         ...disabled,
         _loading: loading,
