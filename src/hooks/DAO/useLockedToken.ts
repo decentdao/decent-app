@@ -57,10 +57,10 @@ export default function useLockedToken(
   );
 
   useEffect(() => {
-    if (params) {
+    if (params?.token && params?.account) {
       loadTokenState(params.token, params.account).then(s => setTokenState(s));
     }
-  }, [params, loadTokenState]);
+  }, [params?.token, params?.account, loadTokenState]);
 
   return {
     tokenState,
