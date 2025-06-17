@@ -31,6 +31,8 @@ interface TokenStakingDataResponse {
 }
 
 export async function getTokenStakingData(chainId: number, tokenAddress: Address) {
-  const response: AxiosResponse<TokenStakingDataResponse> = await axiosClient.get(`/t/${chainId}/${tokenAddress}`);
+  const response: AxiosResponse<TokenStakingDataResponse> = await axiosClient.get(
+    `/t/${chainId}/${tokenAddress}`,
+  );
   return response.data;
 }
