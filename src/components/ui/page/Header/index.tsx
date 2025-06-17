@@ -1,5 +1,6 @@
 import {
   Box,
+  Button,
   Drawer,
   DrawerContent,
   DrawerOverlay,
@@ -13,7 +14,7 @@ import {
 import { List } from '@phosphor-icons/react';
 import { RefObject, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { DecentLogo } from '../../../../assets/theme/custom/icons/DecentLogo';
 import { DecentSignature } from '../../../../assets/theme/custom/icons/DecentSignature';
 import {
@@ -23,6 +24,7 @@ import {
   useHeaderHeight,
 } from '../../../../constants/common';
 import { BASE_ROUTES } from '../../../../constants/routes';
+import useFeatureFlag from '../../../../helpers/environmentFeatureFlags';
 import { AccountDisplay } from '../../menus/AccountDisplay';
 import { SafesMenu } from '../../menus/SafesMenu';
 import { Footer } from '../Footer';
@@ -121,6 +123,9 @@ function HeaderLogo() {
 
 function Header({ headerContainerRef }: { headerContainerRef: RefObject<HTMLDivElement | null> }) {
   const HEADER_HEIGHT = useHeaderHeight();
+  const navigate = useNavigate();
+  const isRevShareEnabled = useFeatureFlag('flag_revenue_sharing');
+  const { t } = useTranslation('menu');
 
   return (
     <Flex
@@ -141,6 +146,14 @@ function Header({ headerContainerRef }: { headerContainerRef: RefObject<HTMLDivE
         alignItems="center"
         gap={{ base: '2rem', md: '1rem' }}
       >
+        {isRevShareEnabled && (
+          <Button
+            variant="ghost"
+            onClick={() => navigate(BASE_ROUTES.staking)}
+          >
+            {t('tokenManager')}
+          </Button>
+        )}
         <SafesMenu />
         <AccountDisplay containerRef={headerContainerRef} />
       </Flex>

@@ -9,7 +9,6 @@ interface AccountDisplayProps {
 
 export function AccountDisplay({ containerRef }: AccountDisplayProps) {
   return (
-    // Portal here needed in order to
     <Menu
       placement="bottom-end"
       offset={[0, 4]}
