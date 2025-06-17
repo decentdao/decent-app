@@ -11,7 +11,9 @@ type FractalStoreWithNode = FractalStore & {
 };
 
 export const useDAOStore = ({ daoKey }: { daoKey: DAOKey | undefined }): FractalStoreWithNode => {
-  const { getDaoNode, setDaoNode, getTreasury, getGovernance, getGuard } = useGlobalStore();
+  const { getDaoNode, setDaoNode, getTreasury, getGovernance, getGuard, getGuardAccountData } =
+    useGlobalStore();
+
   if (!daoKey) {
     return {
       node: {
@@ -38,6 +40,8 @@ export const useDAOStore = ({ daoKey }: { daoKey: DAOKey | undefined }): Fractal
         freezeProposalVoteCount: null,
         freezeVotesThreshold: null,
         isFrozen: false,
+      },
+      guardAccountData: {
         userHasFreezeVoted: false,
         userHasVotes: false,
       },
@@ -67,6 +71,7 @@ export const useDAOStore = ({ daoKey }: { daoKey: DAOKey | undefined }): Fractal
   const treasury = getTreasury(daoKey);
   const governance = getGovernance(daoKey);
   const guard = getGuard(daoKey);
+  const guardAccountData = getGuardAccountData(daoKey);
   return {
     node: {
       // TODO: Will be cleaned up in scope of https://linear.app/decent-labs/issue/ENG-630/cleanup-types-from-old-store-structure
@@ -108,6 +113,7 @@ export const useDAOStore = ({ daoKey }: { daoKey: DAOKey | undefined }): Fractal
       lockReleaseAddress: governance.lockReleaseAddress,
     },
     guard,
+    guardAccountData,
     guardContracts: {
       freezeGuardContractAddress: guard.freezeGuardContractAddress,
       freezeVotingContractAddress: guard.freezeVotingContractAddress,
