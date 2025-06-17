@@ -37,5 +37,8 @@
   "recipientAddressRequired": "受取人の住所が必要です",
   "withdrawGasAction": "{{amount}}を引き出す。<x>{{symbol}</x>ペイマスターから",
   "recipientAddress": "受取人住所",
-  "enterRecipientAddress": "受信者のアドレスを入力"
+  "enterRecipientAddress": "受信者のアドレスを入力",
+  "amountExceedsAvailableBalance": "バランス不足",
+  "withdrawingGas": "{{amount}}を撤回する。{{symbol} {{recipient}}へ｝",
+  "depositingGas": "{{amount}} 預け入れ{{symbol}}"
 }
