@@ -32,6 +32,7 @@ import { SafePermissionsSettingsPage } from './pages/dao/settings/permissions/Sa
 import { SafeTokenSettingsPage } from './pages/dao/settings/token/SafeTokenSettingsPage';
 import { SafeTreasuryPage } from './pages/dao/treasury/SafeTreasuryPage';
 import HomePage from './pages/home/HomePage';
+import { UserStakingPage } from './pages/staking/UserStaking';
 
 interface LoaderFunctionArgs {
   request: Request;
@@ -60,6 +61,10 @@ export const router = (addressPrefix: string, daoAddress: string | undefined) =>
         {
           path: 'create',
           loader: () => redirect(BASE_ROUTES.create),
+        },
+        {
+          path: 'staking',
+          element: <UserStakingPage />,
         },
         {
           path: '/',

@@ -3,6 +3,7 @@ import { Hex } from 'viem';
 export const BASE_ROUTES = {
   landing: '/',
   create: '/create/essentials',
+  staking: '/staking',
 };
 
 const getDaoQueryParam = (addressPrefix: string, safeAddress: string) =>
