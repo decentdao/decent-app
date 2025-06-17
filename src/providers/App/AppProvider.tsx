@@ -39,7 +39,6 @@ export const useDAOStore = ({ daoKey }: { daoKey: DAOKey | undefined }): Fractal
         freezeVotesThreshold: null,
         isFrozen: false,
         userHasFreezeVoted: false,
-        userHasVotes: false,
       },
       guardContracts: {
         freezeGuardContractAddress: undefined,
