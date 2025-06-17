@@ -1,18 +1,17 @@
 import { StateCreator } from 'zustand';
-import { DAOKey, FractalGuardContracts, FreezeGuard } from '../../types';
+import { DAOKey, FractalGuardContracts, FreezeGuard, GuardAccountData } from '../../types';
 import { GlobalStore, StoreMiddleware, StoreSlice } from '../store';
 
 export type GuardSlice = {
   guards: StoreSlice<FreezeGuard & FractalGuardContracts>;
-  setGuard: (
-    daoKey: DAOKey,
-    guard: Omit<FreezeGuard & FractalGuardContracts, 'userHasFreezeVoted' | 'userHasVotes'>,
-  ) => void;
-  setGuardAccountData: (
-    daoKey: DAOKey,
-    guardAccountData: { userHasFreezeVoted: boolean; userHasVotes: boolean },
-  ) => void;
+  guardAccountData: StoreSlice<GuardAccountData>;
+  setGuard: (daoKey: DAOKey, guard: FreezeGuard & FractalGuardContracts) => void;
+  setGuardAccountData: (daoKey: DAOKey, guardAccountData: GuardAccountData) => void;
   getGuard: (daoKey: DAOKey) => FreezeGuard & FractalGuardContracts;
+  getGuardAccountData: (daoKey: DAOKey) => {
+    userHasFreezeVoted: boolean;
+    userHasVotes: boolean;
+  };
 };
 
 const EMPTY_GUARD: FreezeGuard & FractalGuardContracts = {
@@ -26,9 +25,7 @@ const EMPTY_GUARD: FreezeGuard & FractalGuardContracts = {
   freezeProposalVoteCount: null,
   freezeProposalPeriod: null,
   freezePeriod: null,
-  userHasFreezeVoted: false,
   isFrozen: false,
-  userHasVotes: false,
 };
 
 export const createGuardSlice: StateCreator<GlobalStore, StoreMiddleware, [], GuardSlice> = (
@@ -36,14 +33,13 @@ export const createGuardSlice: StateCreator<GlobalStore, StoreMiddleware, [], Gu
   get,
 ) => ({
   guards: {},
+  guardAccountData: { userHasFreezeVoted: false, userHasVotes: false },
   setGuard: (daoKey, guard) => {
     set(
       state => {
         state.guards[daoKey] = {
           ...guard,
           isGuardLoaded: true,
-          userHasFreezeVoted: false,
-          userHasVotes: false,
         };
       },
       false,
@@ -53,8 +49,9 @@ export const createGuardSlice: StateCreator<GlobalStore, StoreMiddleware, [], Gu
   setGuardAccountData: (daoKey, guardAccountData) => {
     set(
       state => {
-        state.guards[daoKey].userHasFreezeVoted = guardAccountData.userHasFreezeVoted;
-        state.guards[daoKey].userHasVotes = guardAccountData.userHasVotes;
+        state.guardAccountData[daoKey] = {
+          ...guardAccountData,
+        };
       },
       false,
       'setGuardAccountData',
@@ -62,5 +59,8 @@ export const createGuardSlice: StateCreator<GlobalStore, StoreMiddleware, [], Gu
   },
   getGuard: daoKey => {
     return get().guards[daoKey] || EMPTY_GUARD;
+  },
+  getGuardAccountData: daoKey => {
+    return get().guardAccountData[daoKey] || { userHasFreezeVoted: false, userHasVotes: false };
   },
 });

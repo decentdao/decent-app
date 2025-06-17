@@ -28,6 +28,7 @@ export function ManageDAOMenu() {
   const {
     governance: { type },
     guard,
+    guardAccountData,
     guardContracts,
     node: { safe, subgraphInfo, modules },
   } = useDAOStore({ daoKey });
@@ -155,7 +156,7 @@ export function ManageDAOMenu() {
         currentTime,
       ) &&
       !isWithinFreezePeriod(guard.freezeProposalCreatedTime, guard.freezePeriod, currentTime) &&
-      guard.userHasVotes
+      guardAccountData.userHasVotes
     ) {
       if (!settingsV1FeatureEnabled && type === GovernanceType.MULTISIG) {
         return [settingsOption, freezeOption, modifyGovernanceOption];
@@ -167,7 +168,7 @@ export function ManageDAOMenu() {
       guard.freezePeriod !== null &&
       isWithinFreezePeriod(guard.freezeProposalCreatedTime, guard.freezePeriod, currentTime) &&
       guard.isFrozen &&
-      guard.userHasVotes
+      guardAccountData.userHasVotes
     ) {
       const fractalModule = (modules ?? []).find(
         module => module.moduleType === FractalModuleType.FRACTAL,
@@ -187,6 +188,7 @@ export function ManageDAOMenu() {
     }
   }, [
     guard,
+    guardAccountData,
     currentTime,
     type,
     handleClawBack,

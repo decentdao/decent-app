@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { Address } from 'viem';
 import { useAccount } from 'wagmi';
-import { FreezeVotingType } from '../../types';
+import { FreezeVotingType, GuardAccountData } from '../../types';
 import { useGovernanceFetcher } from '../fetchers/governance';
 import { useGuardFetcher } from '../fetchers/guard';
 
@@ -36,10 +36,7 @@ export function useAccountListeners({
     balance: bigint;
     delegatee: Address;
   }) => void;
-  onGuardAccountDataLoaded: (accountData: {
-    userHasFreezeVoted: boolean;
-    userHasVotes: boolean;
-  }) => void;
+  onGuardAccountDataLoaded: (accountData: GuardAccountData) => void;
 }) {
   const { address: account } = useAccount();
   const { fetchVotingTokenAccountData, fetchLockReleaseAccountData } = useGovernanceFetcher();

@@ -181,6 +181,7 @@ export enum StoreAction {
 
 export interface Fractal {
   guard: FreezeGuard;
+  guardAccountData: GuardAccountData;
   governance: FractalGovernance;
   treasury: DecentTreasury;
   governanceContracts: FractalGovernanceContracts;
@@ -250,9 +251,12 @@ export interface FreezeGuard {
   freezeProposalVoteCount: bigint | null; // Number of accrued freeze votes
   freezeProposalPeriod: bigint | null; // Number of blocks a freeze proposal has to succeed
   freezePeriod: bigint | null; // Number of blocks a freeze lasts, from time of freeze proposal creation
-  userHasFreezeVoted: boolean;
   isFrozen: boolean;
-  userHasVotes?: boolean;
+}
+
+export interface GuardAccountData {
+  userHasFreezeVoted: boolean;
+  userHasVotes: boolean;
 }
 
 export type TransferWithTokenInfo = TransferResponse & { tokenInfo: TokenInfoResponse };
