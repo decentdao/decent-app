@@ -123,6 +123,10 @@ export const optimismConfig: NetworkConfig = {
     GovernanceType.AZORIUS_ERC20,
     GovernanceType.AZORIUS_ERC721,
   ],
+  stablecoins: {
+    // native USDC on Optimism
+    usdc: '0x0f7f961648ae6db43c75663ac7e5414eb79b5704',
+  },
 };
 
 export default optimismConfig;

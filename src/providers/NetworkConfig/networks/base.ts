@@ -123,6 +123,9 @@ export const baseConfig: NetworkConfig = {
     GovernanceType.AZORIUS_ERC20,
     GovernanceType.AZORIUS_ERC721,
   ],
+  stablecoins: {
+    usdc: '0xd9AA94D286C7dD3D34eC3c0E840A2fF5F2875d15',
+  },
 };
 
 export default baseConfig;

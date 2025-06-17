@@ -139,6 +139,9 @@ export const mainnetConfig: NetworkConfig = {
     GovernanceType.AZORIUS_ERC721,
   ],
   bundlerMinimumStake: 100_000_000_000_000_000n, // 0.1 ETH
+  stablecoins: {
+    usdc: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',
+  },
 };
 
 export default mainnetConfig;

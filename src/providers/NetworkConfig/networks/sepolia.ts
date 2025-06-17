@@ -132,7 +132,10 @@ export const sepoliaConfig: NetworkConfig = {
     GovernanceType.AZORIUS_ERC20,
     GovernanceType.AZORIUS_ERC721,
   ],
-  bundlerMinimumStake: 10_000_000_000_000_000n, // 0.01 ETH
+  bundlerMinimumStake: 10_000_000_000_000_000n, // 0.01 ETH,
+  stablecoins: {
+    usdc: '0x0000000000000000000000000000000000000000',
+  },
 };
 
 export default sepoliaConfig;

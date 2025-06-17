@@ -123,6 +123,10 @@ export const polygonConfig: NetworkConfig = {
     GovernanceType.AZORIUS_ERC20,
     GovernanceType.AZORIUS_ERC721,
   ],
+  stablecoins: {
+    // bridged (USDC.e) on Polygon
+    usdc: '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174',
+  },
 };
 
 export default polygonConfig;
