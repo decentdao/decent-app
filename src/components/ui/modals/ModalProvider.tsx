@@ -22,8 +22,8 @@ import ForkProposalTemplateModal from './ForkProposalTemplateModal';
 import { GaslessVoteFailedModal } from './GaslessVoting/GaslessVoteFailedModal';
 import { GaslessVoteLoadingModal } from './GaslessVoting/GaslessVoteLoadingModal';
 import { GaslessVoteSuccessModal } from './GaslessVoting/GaslessVoteSuccessModal';
-import { RefillGasData, RefillGasTankModal } from './GaslessVoting/RefillGasTankModal';
-import { WithdrawGasData, WithdrawGasTankModal } from './GaslessVoting/WithdrawGasTankModal';
+import { RefillGasTankModal } from './GaslessVoting/RefillGasTankModal';
+import { WithdrawGasTankModal } from './GaslessVoting/WithdrawGasTankModal';
 import { ModalBase, ModalBaseSize, ModalContentStyle } from './ModalBase';
 import PaymentCancelConfirmModal from './PaymentCancelConfirmModal';
 import { PaymentWithdrawModal } from './PaymentWithdrawModal';
@@ -119,10 +119,10 @@ export type ModalPropsTypes = {
     submitButtonText: string;
   };
   [ModalType.REFILL_GAS]: {
-    onSubmit: (refillGasData: RefillGasData) => void;
+    setFieldValue: (field: string, value: any) => void;
   };
   [ModalType.WITHDRAW_GAS]: {
-    onWithdraw: (withdrawGasData: WithdrawGasData) => void;
+    setFieldValue: (field: string, value: any) => void;
   };
   [ModalType.GASLESS_VOTE_LOADING]: {};
   [ModalType.GASLESS_VOTE_SUCCESS]: {};
@@ -367,10 +367,7 @@ const getModalData = (args: {
       modalContent = (
         <RefillGasTankModal
           close={popModal}
-          refillGasData={(data: RefillGasData) => {
-            current.props.onSubmit(data);
-            popModal();
-          }}
+          setFieldValue={current.props.setFieldValue}
         />
       );
       break;
@@ -378,10 +375,7 @@ const getModalData = (args: {
       modalContent = (
         <WithdrawGasTankModal
           close={popModal}
-          withdrawGasData={(data: WithdrawGasData) => {
-            current.props.onWithdraw(data);
-            popModal();
-          }}
+          setFieldValue={current.props.setFieldValue}
         />
       );
       break;

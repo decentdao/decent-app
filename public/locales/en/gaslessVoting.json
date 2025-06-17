@@ -37,5 +37,8 @@
   "recipientAddressRequired": "Recipient address is required",
   "withdrawGasAction": "Withdraw {{amount}} {{symbol}} from the paymaster",
   "recipientAddress": "Recipient Address",
-  "enterRecipientAddress": "Enter recipient address"
+  "enterRecipientAddress": "Enter recipient address",
+  "amountExceedsAvailableBalance": "Insufficient balance",
+  "withdrawingGas": "Withdrawing {{amount}} {{symbol}} to {{recipient}}",
+  "depositingGas": "Depositing {{amount}} {{symbol}}"
 }

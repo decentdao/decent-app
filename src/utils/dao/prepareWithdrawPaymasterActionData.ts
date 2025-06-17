@@ -1,6 +1,10 @@
 import { Address } from 'viem';
-import { WithdrawGasData } from '../../components/ui/modals/GaslessVoting/WithdrawGasTankModal';
 import { CreateProposalActionData, ProposalActionType } from '../../types';
+
+interface WithdrawGasData {
+  withdrawAmount: bigint;
+  recipientAddress: Address;
+}
 
 export interface WithdrawPaymasterData {
   paymasterAddress: Address;

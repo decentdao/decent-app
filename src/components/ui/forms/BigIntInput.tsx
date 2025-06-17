@@ -36,6 +36,7 @@ export interface BigIntInputProps
  */
 export function BigIntInput({
   // @todo `value` can most likely either be removed, or be used for what `parentFormikValue` is currently being used for. Currently it works as nothing more than an initial value.
+  // https://linear.app/decent-labs/issue/ENG-1158/remove-bigintinputvalue-not-being-used
   value,
   onChange,
   decimalPlaces = 18,
@@ -149,7 +150,11 @@ export function BigIntInput({
   // if the parent Formik value prop changes, need to update the value
   useEffect(() => {
     // If parentFormikValue is set to undefined, then the input should be blank
-    if (parentFormikValue === undefined) {
+    if (
+      parentFormikValue === undefined ||
+      parentFormikValue.bigintValue === undefined ||
+      parentFormikValue.value === ''
+    ) {
       setInputValue('');
       return;
     }

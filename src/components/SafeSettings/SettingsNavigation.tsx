@@ -233,7 +233,11 @@ export function SettingsNavigation({
               onSettingsNavigationClick(<SafeGeneralSettingsPage />);
               setCurrentItem('general');
             }}
-            hasEdits={values.general !== undefined}
+            hasEdits={
+              values.general !== undefined ||
+              (values.paymasterGasTank !== undefined &&
+                !values.paymasterGasTank.deposit?.isDirectDeposit)
+            }
           />
           <SettingsNavigationItem
             title={t('daoSettingsGovernance')}

@@ -89,6 +89,15 @@ export function SafeGeneralSettingsPage() {
     }
   }, [setFieldValue, formValues.general]);
 
+  useEffect(() => {
+    if (
+      formValues.paymasterGasTank?.withdraw === undefined &&
+      formValues.paymasterGasTank?.deposit === undefined
+    ) {
+      setFieldValue('paymasterGasTank', undefined);
+    }
+  }, [setFieldValue, formValues.paymasterGasTank]);
+
   const {
     chain: { id: chainId },
     contracts: { keyValuePairs, accountAbstraction, paymaster, zodiacModuleProxyFactory },
