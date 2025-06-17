@@ -78,12 +78,12 @@ export function useAccountListeners({
   useEffect(() => {
     async function loadGuardAccountData() {
       if (
-        !account ||
-        !freezeVotingType ||
-        !freezeVotingAddress ||
-        typeof freezeProposalCreatedTime === 'undefined' ||
-        typeof freezeProposalPeriod === 'undefined' ||
-        typeof freezePeriod === 'undefined'
+        account === undefined ||
+        freezeVotingType === undefined ||
+        freezeVotingAddress === undefined ||
+        freezeProposalCreatedTime === undefined ||
+        freezeProposalPeriod === undefined ||
+        freezePeriod === undefined
       ) {
         return;
       }
