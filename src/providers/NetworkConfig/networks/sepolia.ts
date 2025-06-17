@@ -134,7 +134,7 @@ export const sepoliaConfig: NetworkConfig = {
   ],
   bundlerMinimumStake: 10_000_000_000_000_000n, // 0.01 ETH,
   stablecoins: {
-    usdc: '0x0000000000000000000000000000000000000000',
+    usdc: '0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238',
   },
 };
 

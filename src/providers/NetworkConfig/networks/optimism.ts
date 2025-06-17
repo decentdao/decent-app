@@ -125,7 +125,7 @@ export const optimismConfig: NetworkConfig = {
   ],
   stablecoins: {
     // native USDC on Optimism
-    usdc: '0x0f7f961648ae6db43c75663ac7e5414eb79b5704',
+    usdc: '0x0b2C639c533813f4Aa9D7837CAf62653d097Ff85',
   },
 };
 

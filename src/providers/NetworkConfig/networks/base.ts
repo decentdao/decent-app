@@ -124,7 +124,7 @@ export const baseConfig: NetworkConfig = {
     GovernanceType.AZORIUS_ERC721,
   ],
   stablecoins: {
-    usdc: '0xd9AA94D286C7dD3D34eC3c0E840A2fF5F2875d15',
+    usdc: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913',
   },
 };
 
