@@ -4,7 +4,7 @@ import { toast } from 'sonner';
 import { BASE_ROUTES } from '../../constants/routes';
 import useFeatureFlag from '../../helpers/environmentFeatureFlags';
 
-export function UserStakingPage() {
+export function UserTokenManagerPage() {
   const isRevShareEnabled = useFeatureFlag('flag_revenue_sharing');
   useEffect(() => {
     if (!isRevShareEnabled) {
@@ -13,5 +13,5 @@ export function UserStakingPage() {
     }
   }, [isRevShareEnabled]);
 
-  return <div>TODO: The list of user tokens available for staking management</div>;
+  return <div>TODO: The list of user tokens available for user token management</div>;
 }

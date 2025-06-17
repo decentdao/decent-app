@@ -149,7 +149,7 @@ function Header({ headerContainerRef }: { headerContainerRef: RefObject<HTMLDivE
         {isRevShareEnabled && (
           <Button
             variant="ghost"
-            onClick={() => navigate(BASE_ROUTES.staking)}
+            onClick={() => navigate(BASE_ROUTES.tokenManager)}
           >
             {t('tokenManager')}
           </Button>
