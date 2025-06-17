@@ -35,7 +35,7 @@ export function DatePickerTrigger({ selectedDate, disabled }: DatePickerTriggerP
           disabled ? 'color-neutral-300' : selectedDateStr ? 'color-white' : 'color-neutral-700'
         }
       >
-        {selectedDateStr ?? t('select')}
+        {selectedDateStr ?? t('calendarPlaceholder')}
       </Text>
     </Flex>
   );
