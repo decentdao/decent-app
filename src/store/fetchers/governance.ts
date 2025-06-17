@@ -308,7 +308,7 @@ export function useGovernanceFetcher() {
               {
                 ...tokenContract,
                 functionName: 'delegates',
-                args: [votesTokenAddress],
+                args: [user.address],
               },
             ];
 
