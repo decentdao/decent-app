@@ -29,12 +29,14 @@ export default function DurationUnitStepperInput({
   minSeconds = 0,
   color = 'color-white',
   hideSteppers = false,
+  placeholder = '0',
 }: {
-  secondsValue: number;
+  secondsValue: number | undefined;
   onSecondsValueChange: (val: number) => void;
   minSeconds?: number;
   color?: string;
   hideSteppers?: boolean;
+  placeholder?: string;
 }) {
   const { t } = useTranslation('common');
 
@@ -67,7 +69,7 @@ export default function DurationUnitStepperInput({
 
   return (
     <NumberInput
-      value={secondsValue / selectedUnit.unit}
+      value={secondsValue ? secondsValue / selectedUnit.unit : undefined}
       onChange={val => onSecondsValueChange(Number(val) * selectedUnit.unit)}
       min={minSeconds / selectedUnit.unit}
       focusInputOnChange
@@ -78,10 +80,13 @@ export default function DurationUnitStepperInput({
           <NumberInputField
             min={0}
             color={color}
+            placeholder={placeholder}
           />
           <InputRightElement
             color="color-neutral-700"
-            minWidth="fit-content"
+            width="auto"
+            borderLeft="1px solid"
+            borderLeftColor="white-alpha-16"
           >
             <Select
               bgColor="color-black"
@@ -99,7 +104,7 @@ export default function DurationUnitStepperInput({
                 if (unit) {
                   // Calculate ceiling value when changing to bigger unit
                   //   , to avoid long decimals.
-                  if (unit.unit > selectedUnit.unit) {
+                  if (secondsValue && unit.unit > selectedUnit.unit) {
                     const ceil = Math.ceil(secondsValue / unit.unit);
                     onSecondsValueChange(ceil * unit.unit);
                   }
