@@ -12,11 +12,13 @@ import {
   FractalGovernanceContracts,
   FractalProposal,
   FractalVotingStrategy,
+  GaslessVotingDaoData,
   GovernanceType,
   ProposalTemplate,
   ProposalVote,
   ProposalVotesSummary,
   SnapshotProposal,
+  StakingDaoData,
   VotesTokenData,
   VotingStrategy,
 } from '../../types';
@@ -80,14 +82,9 @@ export type GovernancesSlice = {
     daoKey: DAOKey,
     lockReleaseAccountData: { balance: bigint; delegatee: Address },
   ) => void;
-  setGaslessVotingData: (
-    daoKey: DAOKey,
-    gasslesVotingData: {
-      gaslessVotingEnabled: boolean;
-      paymasterAddress: Address | null;
-    },
-  ) => void;
+  setGaslessVotingData: (daoKey: DAOKey, gasslesVotingData: GaslessVotingDaoData) => void;
   setERC20Token: (daoKey: DAOKey, erc20Token: ERC20TokenData | undefined) => void;
+  setStakingData: (daoKey: DAOKey, stakingData: StakingDaoData) => void;
 };
 
 const EMPTY_GOVERNANCE: FractalGovernance & FractalGovernanceContracts = {
@@ -101,6 +98,7 @@ const EMPTY_GOVERNANCE: FractalGovernance & FractalGovernanceContracts = {
   gaslessVotingEnabled: false,
   paymasterAddress: null,
   erc20Token: undefined,
+  stakingAddress: null,
 };
 
 const filterPendingTxHashes = (
@@ -396,6 +394,22 @@ export const createGovernancesSlice: StateCreator<
       },
       false,
       'setERC20Token',
+    );
+  },
+  setStakingData: (daoKey, stakingData) => {
+    set(
+      state => {
+        if (!state.governances[daoKey]) {
+          state.governances[daoKey] = {
+            ...EMPTY_GOVERNANCE,
+            stakingAddress: stakingData.stakingAddress,
+          };
+        } else {
+          state.governances[daoKey].stakingAddress = stakingData.stakingAddress;
+        }
+      },
+      false,
+      'setStakingData',
     );
   },
   getGovernance: daoKey => {

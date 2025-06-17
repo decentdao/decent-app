@@ -2,6 +2,7 @@ import { TokenInfoResponse, TransferResponse } from '@safe-global/api-kit';
 import { SafeMultisigTransactionResponse } from '@safe-global/safe-core-sdk-types';
 import { Address } from 'viem';
 import { ERC20TokenData, ERC721TokenData, VotesTokenData } from './account';
+import { DAOOwnedEntities } from './daoGeneral';
 import { FreezeGuardType, FreezeVotingType } from './daoGovernance';
 import { AzoriusProposal, MultisigProposal, ProposalData } from './daoProposal';
 import { DefiBalance, NFTBalance, TokenBalance, TokenEventType, TransferType } from './daoTreasury';
@@ -274,7 +275,7 @@ export interface DecentGovernance extends AzoriusGovernance {
 }
 export interface SafeMultisigGovernance extends Governance {}
 
-export interface Governance {
+export type Governance = {
   type?: GovernanceType;
   loadingProposals: boolean;
   allProposalsLoaded: boolean;
@@ -283,11 +284,8 @@ export interface Governance {
   proposalTemplates?: ProposalTemplate[] | null;
   tokenClaimContractAddress?: Address;
   isAzorius: boolean;
-  gaslessVotingEnabled: boolean;
-  // null -- Paymaster contract has not been deployed at the address we expect it to be at
-  paymasterAddress: Address | null;
   erc20Token: ERC20TokenData | undefined;
-}
+} & DAOOwnedEntities;
 
 export interface VotingStrategyAzorius extends VotingStrategy {
   strategyType?: VotingStrategyType;

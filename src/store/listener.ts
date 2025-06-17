@@ -4,6 +4,7 @@ import {
   AzoriusProposal,
   DAOKey,
   ERC721ProposalVote,
+  GaslessVotingDaoData,
   GovernanceType,
   ProposalVote,
   ProposalVotesSummary,
@@ -183,7 +184,7 @@ export const useDAOStoreListener = ({ daoKey }: { daoKey: DAOKey | undefined }) 
   );
 
   const onGaslessVotingDataFetched = useCallback(
-    (gasslesVotingData: { paymasterAddress: Address | null; gaslessVotingEnabled: boolean }) => {
+    (gasslesVotingData: GaslessVotingDaoData) => {
       if (daoKey) {
         setGaslessVotingData(daoKey, gasslesVotingData);
       }

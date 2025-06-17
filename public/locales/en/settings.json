@@ -21,6 +21,7 @@
   "daoSettingsGovernance": "Governance",
   "daoSettingsGovernanceParameters": "Parameters",
   "daoSettingsRevenueSharing": "Revenue Share",
+  "daoSettingsStaking": "Staking",
   "daoMetadataName": "DAO Name",
   "daoMetadataSnapshot": "Snapshot Space",
   "daoMetadataConnectSnapshot": "Connect to Snapshot Space",
