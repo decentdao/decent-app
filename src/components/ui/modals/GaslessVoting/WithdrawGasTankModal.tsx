@@ -26,22 +26,22 @@ export function WithdrawGasTankModal({
   } = useDAOStore({ daoKey });
 
   const { formState, formErrors } = useSettingsFormStore();
-  const values = formState?.paymasterGasTank?.withdraw ?? {};
+  const withdrawValues = formState?.paymasterGasTank?.withdraw ?? {};
   const paymasterGasTankErrors = formErrors?.paymasterGasTank ?? {};
 
   // Clean up withdraw object if both fields are empty
   useEffect(() => {
-    if (values.amount === undefined && values.recipientAddress === undefined) {
+    if (withdrawValues.amount === undefined && withdrawValues.recipientAddress === undefined) {
       setFieldValue('paymasterGasTank.withdraw', undefined);
     }
-  }, [values.amount, values.recipientAddress, setFieldValue]);
+  }, [withdrawValues.amount, withdrawValues.recipientAddress, setFieldValue]);
 
   const isSubmitDisabled =
-    !values.amount ||
-    values.amount.bigintValue === undefined ||
-    values.amount.bigintValue === 0n ||
+    !withdrawValues.amount ||
+    withdrawValues.amount.bigintValue === undefined ||
+    withdrawValues.amount.bigintValue === 0n ||
     paymasterGasTankErrors.withdraw?.amount !== undefined ||
-    values.recipientAddress === undefined ||
+    withdrawValues.recipientAddress === undefined ||
     paymasterGasTankErrors.withdraw?.recipientAddress !== undefined;
 
   return (
@@ -81,7 +81,7 @@ export function WithdrawGasTankModal({
               onChange={inputValue => {
                 setFieldValue('paymasterGasTank.withdraw.amount', inputValue);
               }}
-              parentFormikValue={values.amount}
+              parentFormikValue={withdrawValues.amount}
               placeholder="0"
               isInvalid={paymasterGasTankErrors.withdraw?.amount !== undefined}
               errorBorderColor="color-error-500"
@@ -123,7 +123,7 @@ export function WithdrawGasTankModal({
         </Text>
         <LabelWrapper errorMessage={paymasterGasTankErrors.withdraw?.recipientAddress}>
           <AddressInput
-            value={values.recipientAddress}
+            value={withdrawValues.recipientAddress}
             onChange={e => {
               setFieldValue('paymasterGasTank.withdraw.recipientAddress', e.target.value);
             }}
