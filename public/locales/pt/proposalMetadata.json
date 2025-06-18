@@ -24,5 +24,7 @@
   "changeTimelockPeriod": "Atualizar o período de bloqueio de tempo",
   "changeExecutionPeriod": "Período de execução da atualização",
   "changeQuorumNumerator": "Atualizar a percentagem do quórum",
-  "changeQuorumThreshold": "Atualizar o limiar do quórum"
+  "changeQuorumThreshold": "Atualizar o limiar do quórum",
+  "deployToken": "Implantar token",
+  "updateERC20Address": "Atualizar o endereço ERC20"
 }

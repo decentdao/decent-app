@@ -24,5 +24,7 @@
   "changeTimelockPeriod": "Обновление периода блокировки времени",
   "changeExecutionPeriod": "Период выполнения обновления",
   "changeQuorumNumerator": "Обновить процент кворума",
-  "changeQuorumThreshold": "Обновление порога кворума"
+  "changeQuorumThreshold": "Обновление порога кворума",
+  "deployToken": "Развернуть маркер",
+  "updateERC20Address": "Обновление адреса ERC20"
 }

@@ -1,0 +1,8 @@
+{
+  "stakingTitle": "Picchettamento",
+  "stakingNull": "Il vostro DAO non ha ancora un contratto di partecipazione. Potete distribuirne uno ora.",
+  "deployStaking": "Distribuzione del contratto di picchettamento",
+  "stakingPeriod": "Periodo di picchettamento",
+  "includeStakingInVoting": "Includere il token di puntata nella votazione del token",
+  "includeStakingInVotingDesc": "-non c'è ancora una copia-"
+}

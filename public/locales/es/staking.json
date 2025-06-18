@@ -1,0 +1,8 @@
+{
+  "stakingTitle": "Estacas",
+  "stakingNull": "Su DAO aún no tiene un contrato de estafa. Puedes desplegar uno ahora.",
+  "deployStaking": "Desplegar el contrato de replanteo",
+  "stakingPeriod": "Período de estaca",
+  "includeStakingInVoting": "Incluir la ficha de apuesta en la votación de fichas",
+  "includeStakingInVotingDesc": "-todavía no hay copia-"
+}

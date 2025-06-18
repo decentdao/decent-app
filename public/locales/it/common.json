@@ -132,5 +132,6 @@
   "selectStatusLabel": "Selezionare lo stato",
   "addressRequired": "L'indirizzo è richiesto",
   "save": "Risparmiare",
-  "daoNameRequired": "Il nome del DAO è obbligatorio"
+  "daoNameRequired": "Il nome del DAO è obbligatorio",
+  "calendarPlaceholder": "AAAA-MM-GG"
 }

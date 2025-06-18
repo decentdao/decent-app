@@ -132,5 +132,6 @@
   "selectStatusLabel": "Виберіть Статус",
   "addressRequired": "Адреса обов'язкова",
   "save": "Зберегти",
-  "daoNameRequired": "Обов'язкова назва DAO"
+  "daoNameRequired": "Обов'язкова назва DAO",
+  "calendarPlaceholder": "YYYY-MM-DD"
 }

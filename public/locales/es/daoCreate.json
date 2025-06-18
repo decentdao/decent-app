@@ -80,6 +80,7 @@
   "titleProposers": "Proponentes incluidos en la lista blanca",
   "titleTokenParams": "Metadatos",
   "titleTokenContract": "Contrato",
+  "labelTokenContractAlreadyConfigured": "Su DAO ya está configurada con un token ERC-20 que se utilizará para la gobernanza de la DAO con esta modificación.",
   "titleAddress": "Dirección",
   "titleAmount": "Importe",
   "createSubDAOPendingToastMessage": "Creación de su propuesta de DAO hija",

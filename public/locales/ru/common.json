@@ -132,5 +132,6 @@
   "selectStatusLabel": "Выберите статус",
   "addressRequired": "Адрес обязателен",
   "save": "Сохранить",
-  "daoNameRequired": "Имя DAO является обязательным"
+  "daoNameRequired": "Имя DAO является обязательным",
+  "calendarPlaceholder": "ГГГГ-ММ-ДД"
 }

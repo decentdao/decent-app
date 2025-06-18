@@ -24,5 +24,7 @@
   "changeTimelockPeriod": "Mise à jour de la période de verrouillage",
   "changeExecutionPeriod": "Période d'exécution de la mise à jour",
   "changeQuorumNumerator": "Mise à jour du pourcentage de quorum",
-  "changeQuorumThreshold": "Mise à jour du seuil de quorum"
+  "changeQuorumThreshold": "Mise à jour du seuil de quorum",
+  "deployToken": "Déployer le jeton",
+  "updateERC20Address": "Mise à jour de l'adresse ERC20"
 }

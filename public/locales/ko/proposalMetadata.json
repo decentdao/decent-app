@@ -24,5 +24,7 @@
   "changeTimelockPeriod": "타임락 기간 업데이트",
   "changeExecutionPeriod": "업데이트 실행 기간",
   "changeQuorumNumerator": "정족수 비율 업데이트",
-  "changeQuorumThreshold": "쿼럼 임계값 업데이트"
+  "changeQuorumThreshold": "쿼럼 임계값 업데이트",
+  "deployToken": "토큰 배포",
+  "updateERC20Address": "ERC20 주소 업데이트"
 }

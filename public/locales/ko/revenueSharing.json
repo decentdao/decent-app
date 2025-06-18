@@ -1,0 +1,14 @@
+{
+  "revenueSharingTitle": "수익 분배",
+  "revShareDaoSafeWarning": "이 주소로 송금된 자금은 분할되지 않습니다.",
+  "revShareTotalError": "합계가 100% 초과",
+  "daoSafeWallet": "DAO 세이프 월렛",
+  "revSplitWallet": "수익 분할 지갑",
+  "counterparties": "거래 상대방",
+  "revShareAddSplitWallet": "지갑 추가",
+  "currentDaoTreasureShareLabel": "현재 DAO 자사주 지분",
+  "parentDaoTreasureShareLabel": "부모 DAO",
+  "currentTokenHolderShareLabel": "현재 토큰 홀더 스테이킹",
+  "revSplitTotalLabel": "합계",
+  "addRevenueShare": "수익 분배 추가"
+}

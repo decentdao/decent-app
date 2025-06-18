@@ -1,0 +1,14 @@
+{
+  "revenueSharingTitle": "Quota di fatturato",
+  "revShareDaoSafeWarning": "I fondi inviati a questo indirizzo non saranno suddivisi",
+  "revShareTotalError": "Il totale supera il 100%.",
+  "daoSafeWallet": "Portafoglio sicuro DAO",
+  "revSplitWallet": "Portafoglio a ripartizione dei ricavi",
+  "counterparties": "Controparti",
+  "revShareAddSplitWallet": "Aggiungi portafoglio",
+  "currentDaoTreasureShareLabel": "Attuale quota di tesoreria DAO",
+  "parentDaoTreasureShareLabel": "DAO genitore",
+  "currentTokenHolderShareLabel": "Attuale detentore di gettoni che si accaparra",
+  "revSplitTotalLabel": "Totale",
+  "addRevenueShare": "Aggiungere la quota di ricavi"
+}

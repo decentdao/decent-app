@@ -132,5 +132,6 @@
   "selectStatusLabel": "ステータス選択",
   "addressRequired": "住所が必要",
   "save": "セーブ",
-  "daoNameRequired": "DAO名は必須"
+  "daoNameRequired": "DAO名は必須",
+  "calendarPlaceholder": "YYYY-MM-DD"
 }

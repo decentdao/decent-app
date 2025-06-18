@@ -80,6 +80,7 @@
   "titleProposers": "ホワイトリストに掲載された提案者",
   "titleTokenParams": "メタデータ",
   "titleTokenContract": "契約",
+  "labelTokenContractAlreadyConfigured": "あなたのDAOはすでにERC-20トークンで設定されており、この修正でDAOガバナンスに使用されます。",
   "titleAddress": "住所",
   "titleAmount": "金額",
   "createSubDAOPendingToastMessage": "子DAOプロポーザルの作成",

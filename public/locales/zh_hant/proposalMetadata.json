@@ -24,5 +24,7 @@
   "changeTimelockPeriod": "Update timelock period",
   "changeExecutionPeriod": "Update execution period",
   "changeQuorumNumerator": "Update quorum percentage",
-  "changeQuorumThreshold": "Update quorum threshold"
+  "changeQuorumThreshold": "Update quorum threshold",
+  "deployToken": "部署令牌",
+  "updateERC20Address": "更新 ERC20 位址"
 }

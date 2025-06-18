@@ -11,6 +11,7 @@
   "proposalTemplates": "Vorlagen für Vorschläge",
   "proposalTemplate": "{{proposalTemplateTitle}}",
   "proposalTemplateNew": "Vorschlagsvorlage erstellen",
+  "deployToken": "Token bereitstellen",
   "editDAO": "DAO bearbeiten",
   "parentLink": "Übergeordnete DAO",
   "settings": "Einstellungen"

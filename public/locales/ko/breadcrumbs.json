@@ -11,6 +11,7 @@
   "proposalTemplates": "제안서 템플릿",
   "proposalTemplate": "{{proposalTemplateTitle}}",
   "proposalTemplateNew": "제안서 템플릿 만들기",
+  "deployToken": "토큰 배포",
   "editDAO": "DAO 편집",
   "parentLink": "부모 DAO",
   "settings": "설정"

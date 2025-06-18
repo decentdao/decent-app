@@ -24,5 +24,7 @@
   "changeTimelockPeriod": "タイムロック期間の更新",
   "changeExecutionPeriod": "アップデート実行期間",
   "changeQuorumNumerator": "定足数の割合を更新",
-  "changeQuorumThreshold": "定足数のしきい値を更新"
+  "changeQuorumThreshold": "定足数のしきい値を更新",
+  "deployToken": "トークンの配備",
+  "updateERC20Address": "ERC20アドレスの更新"
 }
