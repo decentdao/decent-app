@@ -5,14 +5,14 @@ import { useTranslation } from 'react-i18next';
 import { Address } from 'viem';
 import { NEUTRAL_2_50_TRANSPARENT } from '../../../constants/common';
 import { AddCreateProposalPermissionModal } from '../../../pages/dao/settings/permissions/AddCreateProposalPermissionModal';
-import { CreateProposalTransaction, ProposalTemplate } from '../../../types';
+import { AirdropData, CreateProposalTransaction, ProposalTemplate } from '../../../types';
 import { SendAssetsData } from '../../../utils/dao/prepareSendAssetsActionData';
 import { ProposalTransactionsFormModal } from '../../ProposalBuilder/ProposalTransactionsForm';
 import AddSignerModal from '../../SafeSettings/Signers/modals/AddSignerModal';
 import RemoveSignerModal from '../../SafeSettings/Signers/modals/RemoveSignerModal';
 import DraggableDrawer from '../containers/DraggableDrawer';
 import { AddStrategyPermissionModal } from './AddStrategyPermissionModal';
-import { AirdropData, AirdropModal } from './AirdropModal/AirdropModal';
+import { AirdropModal } from './AirdropModal/AirdropModal';
 import { ConfirmDeleteStrategyModal } from './ConfirmDeleteStrategyModal';
 import { ConfirmModifyGovernanceModal } from './ConfirmModifyGovernanceModal';
 import { ConfirmUrlModal } from './ConfirmUrlModal';
@@ -39,8 +39,8 @@ export enum ModalType {
   DELEGATE,
   STAKE,
   CONFIRM_URL,
-  REMOVE_SIGNER,
-  ADD_SIGNER,
+  REMOVE_SIGNER, // @TODO: remove this modal (https://linear.app/decent-labs/issue/ENG-1150/remove-add-remove-signer-modals)
+  ADD_SIGNER, // @TODO: remove this modal (https://linear.app/decent-labs/issue/ENG-1150/remove-add-remove-signer-modals)
   ADD_PERMISSION,
   ADD_CREATE_PROPOSAL_PERMISSION,
   CREATE_PROPOSAL_FROM_TEMPLATE,

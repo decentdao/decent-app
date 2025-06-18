@@ -83,17 +83,20 @@ export function AirdropAction({
   const {
     treasury: { assetsFungible },
   } = useDAOStore({ daoKey });
-  const totalAmountString = action.transactions[1].parameters[2].value?.slice(1, -1);
+
+  const approveTransaction = action.transactions.find(txn => txn.functionName === 'approve');
+  const disperseTransaction = action.transactions.find(txn => txn.functionName === 'disperseToken');
+  if (!approveTransaction || !disperseTransaction) {
+    return null;
+  }
+
+  const totalAmountString = disperseTransaction.parameters[2].value?.slice(1, -1);
   const totalAmount = BigInt(
     totalAmountString?.split(',').reduce((acc, curr) => acc + BigInt(curr), 0n) || '0',
   );
-  const recipientsCount = action.transactions[1].parameters[1].value?.split(',').length || 0;
-
-  // First transaction in the airdrop proposal will be approval transaction, which is called on the token
-  // Thus we can find the asset by looking at the target address of the first transaction
-
+  const recipientsCount = disperseTransaction.parameters[1].value?.split(',').length || 0;
   const actionAsset = assetsFungible.find(
-    asset => asset.tokenAddress === getAddress(action.transactions[0].targetAddress),
+    asset => asset.tokenAddress === getAddress(approveTransaction.targetAddress),
   );
 
   if (!actionAsset) {

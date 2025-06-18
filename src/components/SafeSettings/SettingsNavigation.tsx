@@ -1,5 +1,15 @@
 import { Box, Flex, Icon, Show, Text, useBreakpointValue } from '@chakra-ui/react';
-import { Bank, CaretRight, CheckSquare, Dot, GearFine, Stack } from '@phosphor-icons/react';
+import {
+  Bank,
+  CaretRight,
+  CheckSquare,
+  Dot,
+  GearFine,
+  Stack,
+  RocketLaunch,
+  Percent,
+  PiggyBank,
+} from '@phosphor-icons/react';
 import { useFormikContext } from 'formik';
 import { PropsWithChildren, ReactNode, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -11,6 +21,9 @@ import { SafeGeneralSettingsPage } from '../../pages/dao/settings/general/SafeGe
 import { SafeGovernanceSettingsPage } from '../../pages/dao/settings/governance/SafeGovernanceSettingsPage';
 import { SafeModulesSettingsPage } from '../../pages/dao/settings/modules-and-guard/SafeModulesSettingsPage';
 import { SafePermissionsSettingsContent } from '../../pages/dao/settings/permissions/SafePermissionsSettingsContent';
+import { SafeRevenueSharingSettingsPage } from '../../pages/dao/settings/revenue-sharing/SafeRevenueSharingSettingsContent';
+import { SafeStakingSettingsContent } from '../../pages/dao/settings/staking/SafeStakingSettingsContent';
+import { SafeTokenSettingsPage } from '../../pages/dao/settings/token/SafeTokenSettingsPage';
 import { useDAOStore } from '../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
 import { AzoriusGovernance } from '../../types';
@@ -99,6 +112,9 @@ const settingsNavigationItems = [
   'governance',
   'modulesAndGuard',
   'permissions',
+  'token',
+  'revenueSharing',
+  'staking',
 ] as const;
 
 function SettingsNavigationItem({
@@ -187,7 +203,8 @@ export function SettingsNavigation({
   } = useDAOStore({ daoKey });
   const azoriusGovernance = governance as AzoriusGovernance;
 
-  const isSettingsV1Enabled = useFeatureFlag('flag_settings_v1');
+  const isTokenDeploymentEnabled = useFeatureFlag('flag_token_deployment');
+  const isRevShareEnabled = useFeatureFlag('flag_revenue_sharing');
   const isMobile = useBreakpointValue({ base: true, md: false });
 
   const [currentItem, setCurrentItem] =
@@ -197,7 +214,7 @@ export function SettingsNavigation({
 
   return (
     <Flex
-      backgroundColor={isSettingsV1Enabled ? 'transparent' : 'color-neutral-950'}
+      backgroundColor="transparent"
       p={{ base: '1rem', md: '0.25rem' }}
       gap="0.25rem"
       flexDirection="column"
@@ -206,7 +223,7 @@ export function SettingsNavigation({
       borderBottomRightRadius={{ base: '0.75rem', md: '0' }}
       borderRight={{
         base: 'none',
-        md: !isSettingsV1Enabled ? '1px solid var(--colors-color-neutral-900)' : 'none',
+        md: 'none',
       }}
       borderColor="color-neutral-900"
       boxShadow="1px 0px 0px 0px #100414"
@@ -222,7 +239,7 @@ export function SettingsNavigation({
         >
           <BarLoader />
         </Flex>
-      ) : isSettingsV1Enabled && !isMobile ? (
+      ) : !isMobile ? (
         <>
           <SettingsNavigationItem
             title={t('daoSettingsGeneral')}
@@ -282,6 +299,45 @@ export function SettingsNavigation({
               <Text color="color-neutral-300">{azoriusGovernance.votingStrategy ? 1 : 0}</Text>
             </SettingsNavigationItem>
           )}
+          {!governance.isAzorius && isTokenDeploymentEnabled && (
+            <SettingsNavigationItem
+              title={t('tokenTitle')}
+              leftIcon={<RocketLaunch fontSize="1.5rem" />}
+              item="token"
+              currentItem={currentItem}
+              onClick={() => {
+                onSettingsNavigationClick(<SafeTokenSettingsPage />);
+                setCurrentItem('token');
+              }}
+              hasEdits={false}
+            />
+          )}
+          {isRevShareEnabled && (
+            <SettingsNavigationItem
+              title={t('daoSettingsRevenueSharing')}
+              leftIcon={<Percent fontSize="1.5rem" />}
+              item="revenueSharing"
+              currentItem={currentItem}
+              showDivider={false}
+              onClick={() => {
+                onSettingsNavigationClick(<SafeRevenueSharingSettingsPage />);
+                setCurrentItem('revenueSharing');
+              }}
+            />
+          )}
+          {isRevShareEnabled && (
+            <SettingsNavigationItem
+              title={t('daoSettingsStaking')}
+              leftIcon={<PiggyBank fontSize="1.5rem" />}
+              item="staking"
+              currentItem={currentItem}
+              showDivider={false}
+              onClick={() => {
+                onSettingsNavigationClick(<SafeStakingSettingsContent />);
+                setCurrentItem('staking');
+              }}
+            />
+          )}
         </>
       ) : (
         <>
@@ -316,6 +372,14 @@ export function SettingsNavigation({
             >
               <Text color="color-neutral-300">{azoriusGovernance.votingStrategy ? 1 : 0}</Text>
             </SettingsLink>
+          )}
+          {!governance.isAzorius && isTokenDeploymentEnabled && (
+            <SettingsLink
+              path={DAO_ROUTES.settingsToken.relative(addressPrefix, safe.address)}
+              leftIcon={<RocketLaunch fontSize="1.5rem" />}
+              title={t('tokenTitle')}
+              onClick={() => onSettingsNavigationClick(<SafeTokenSettingsPage />)}
+            />
           )}
         </>
       )}

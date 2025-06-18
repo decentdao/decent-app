@@ -1,37 +1,22 @@
-import { Box, Button, Flex, HStack, IconButton, Select, Text } from '@chakra-ui/react';
-import { CaretDown, MinusCircle, Plus } from '@phosphor-icons/react';
+import { Box, Button, Flex, HStack, IconButton, Text } from '@chakra-ui/react';
+import { MinusCircle, Plus } from '@phosphor-icons/react';
 import { Field, FieldAttributes, FieldProps, Form, Formik } from 'formik';
 import { useTranslation } from 'react-i18next';
-import { Address, getAddress, isAddress, parseUnits } from 'viem';
+import { getAddress, isAddress } from 'viem';
 import * as Yup from 'yup';
 import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
 import useNetworkPublicClient from '../../../../hooks/useNetworkPublicClient';
 import { useDAOStore } from '../../../../providers/App/AppProvider';
-import { BigIntValuePair, TokenBalance } from '../../../../types';
+import { AirdropData, AirdropFormValues, BigIntValuePair } from '../../../../types';
 import { formatCoinFromAsset } from '../../../../utils';
 import { validateENSName } from '../../../../utils/url';
+import { AirdropFormAssetSelector } from '../../../ProposalTemplates/AirdropFormAssetSelector';
 import NoDataCard from '../../containers/NoDataCard';
 import { BigIntInput } from '../../forms/BigIntInput';
 import { AddressInput } from '../../forms/EthAddressInput';
 import LabelWrapper from '../../forms/LabelWrapper';
 import Divider from '../../utils/Divider';
 import { DnDFileInput, parseRecipients } from './DnDFileInput';
-
-export interface AirdropFormValues {
-  selectedAsset: TokenBalance;
-  recipients: {
-    address: string;
-    amount: BigIntValuePair;
-  }[];
-}
-
-export interface AirdropData {
-  recipients: {
-    address: Address;
-    amount: bigint;
-  }[];
-  asset: TokenBalance;
-}
 
 export function AirdropModal({
   submitButtonText,
@@ -179,48 +164,10 @@ export function AirdropModal({
             <Form onSubmit={handleSubmit}>
               <Flex>
                 {/* ASSET SELECT */}
-                <Field name="selectedAsset">
-                  {({ field }: FieldAttributes<FieldProps<TokenBalance>>) => (
-                    <LabelWrapper label={t('selectLabel')}>
-                      <Select
-                        {...field}
-                        bgColor="color-black"
-                        borderColor="color-neutral-900"
-                        rounded="sm"
-                        cursor="pointer"
-                        iconSize="1.5rem"
-                        icon={<CaretDown />}
-                        onChange={e => {
-                          const newAsset = fungibleAssetsWithBalance[Number(e.target.value)];
-                          setFieldValue('selectedAsset', newAsset);
-                          const newDecimals = newAsset.decimals;
-                          setFieldValue(
-                            'recipients',
-                            values.recipients.map(r => {
-                              return {
-                                ...r,
-                                amount: {
-                                  value: r.amount.value,
-                                  bigintValue: parseUnits(r.amount.value, newDecimals),
-                                },
-                              };
-                            }),
-                          );
-                        }}
-                        value={selectedAssetIndex}
-                      >
-                        {fungibleAssetsWithBalance.map((asset, index) => (
-                          <option
-                            key={index}
-                            value={index}
-                          >
-                            {asset.symbol}
-                          </option>
-                        ))}
-                      </Select>
-                    </LabelWrapper>
-                  )}
-                </Field>
+                <AirdropFormAssetSelector
+                  assets={fungibleAssetsWithBalance}
+                  selectedAssetIndex={selectedAssetIndex}
+                />
               </Flex>
 
               {/* AVAILABLE BALANCE HINT */}

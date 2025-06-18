@@ -103,10 +103,15 @@ type PaymasterGasTankEditFormikErrors = {
   deposit?: { amount?: string };
 };
 
+type RevenueSharingEditFormikErrors = {
+  revenueSharing?: string; // @TODO placeholder
+};
+
 export type SafeSettingsFormikErrors = {
   multisig?: MultisigEditGovernanceFormikErrors;
   general?: GeneralEditFormikErrors;
   paymasterGasTank?: PaymasterGasTankEditFormikErrors;
+  revenueSharing?: RevenueSharingEditFormikErrors;
 };
 
 function FormStateSync({ formikContext }: { formikContext: FormikContextType<SafeSettingsEdits> }) {
@@ -1216,8 +1221,10 @@ export function SafeSettingsModal({
           <FormStateSync formikContext={formikContext} />
           <Flex
             flexDirection="column"
-            height="90vh"
+            height="100%"
             textColor="color-neutral-100"
+            pl="1"
+            overflowY="auto"
           >
             <Flex
               flex="1"

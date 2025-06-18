@@ -5,6 +5,7 @@ import {
   AzoriusProposal,
   DAOKey,
   DecentGovernance,
+  ERC20TokenData,
   ERC721ProposalVote,
   ERC721TokenData,
   FractalGovernance,
@@ -12,12 +13,14 @@ import {
   FractalProposal,
   FractalProposalState,
   FractalVotingStrategy,
+  GaslessVotingDaoData,
   GovernanceType,
   MultisigProposal,
   ProposalTemplate,
   ProposalVote,
   ProposalVotesSummary,
   SnapshotProposal,
+  StakingDaoData,
   VotesTokenData,
   VotingStrategy,
 } from '../../types';
@@ -86,14 +89,10 @@ export type GovernancesSlice = {
     daoKey: DAOKey,
     lockReleaseAccountData: { balance: bigint; delegatee: Address },
   ) => void;
-  setGaslessVotingData: (
-    daoKey: DAOKey,
-    gasslesVotingData: {
-      gaslessVotingEnabled: boolean;
-      paymasterAddress: Address | null;
-    },
-  ) => void;
+  setGaslessVotingData: (daoKey: DAOKey, gasslesVotingData: GaslessVotingDaoData) => void;
   setVotesTokenAddress: (daoKey: DAOKey, votesTokenAddress: Address) => void;
+  setERC20Token: (daoKey: DAOKey, erc20Token: ERC20TokenData | undefined) => void;
+  setStakingData: (daoKey: DAOKey, stakingData: StakingDaoData) => void;
 };
 
 export const EMPTY_GOVERNANCE: FractalGovernance & FractalGovernanceContracts = {
@@ -106,6 +105,8 @@ export const EMPTY_GOVERNANCE: FractalGovernance & FractalGovernanceContracts = 
   strategies: [],
   gaslessVotingEnabled: false,
   paymasterAddress: null,
+  erc20Token: undefined,
+  stakingAddress: null,
 };
 
 const filterPendingTxHashes = (
@@ -411,6 +412,38 @@ export const createGovernancesSlice: StateCreator<
       },
       false,
       'setGaslessVotingData',
+    );
+  },
+  setERC20Token: (daoKey, erc20Token) => {
+    set(
+      state => {
+        if (!state.governances[daoKey]) {
+          state.governances[daoKey] = {
+            ...EMPTY_GOVERNANCE,
+            erc20Token: erc20Token,
+          };
+        } else {
+          state.governances[daoKey].erc20Token = erc20Token;
+        }
+      },
+      false,
+      'setERC20Token',
+    );
+  },
+  setStakingData: (daoKey, stakingData) => {
+    set(
+      state => {
+        if (!state.governances[daoKey]) {
+          state.governances[daoKey] = {
+            ...EMPTY_GOVERNANCE,
+            stakingAddress: stakingData.stakingAddress,
+          };
+        } else {
+          state.governances[daoKey].stakingAddress = stakingData.stakingAddress;
+        }
+      },
+      false,
+      'setStakingData',
     );
   },
   getGovernance: daoKey => {

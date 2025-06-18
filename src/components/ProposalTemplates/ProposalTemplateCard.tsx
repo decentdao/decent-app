@@ -1,4 +1,4 @@
-import { Avatar, Flex, Icon, Text } from '@chakra-ui/react';
+import { Flex, Icon, Text } from '@chakra-ui/react';
 import { GearFine } from '@phosphor-icons/react';
 import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -15,6 +15,7 @@ import ContentBox from '../ui/containers/ContentBox';
 import { OptionMenu } from '../ui/menus/OptionMenu';
 import { ModalType } from '../ui/modals/ModalProvider';
 import { useDecentModal } from '../ui/modals/useDecentModal';
+import Avatar from '../ui/page/Header/Avatar';
 import Markdown from '../ui/proposal/Markdown';
 
 type ProposalTemplateCardProps = {
@@ -98,19 +99,21 @@ export default function ProposalTemplateCard({
 
   return (
     <ContentBox
-      containerBoxProps={{ flex: '0 0 calc(33.333333% - 0.6666666rem)', my: '0' }}
+      containerBoxProps={{
+        minW: '165px',
+        minHeight: '112px',
+        mx: '0',
+        p: '1rem',
+      }}
       onClick={canUserCreateProposal ? openProposalForm : undefined}
     >
-      <Flex justifyContent="space-between">
+      <Flex
+        justifyContent="space-between"
+        alignItems="center"
+      >
         <Avatar
-          size="lg"
-          w="50px"
-          h="50px"
-          name={title}
-          borderRadius={0}
-          getInitials={(_title: string) => _title.slice(0, 2)}
-          textStyle="text-3xl-regular"
-          color="color-white"
+          size="md"
+          address={`0x${title}`}
         />
         <OptionMenu
           trigger={
@@ -133,6 +136,7 @@ export default function ProposalTemplateCard({
       >
         {title}
       </Text>
+
       <Markdown content={description} />
     </ContentBox>
   );

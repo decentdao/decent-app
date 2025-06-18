@@ -34,6 +34,7 @@ import {
   AzoriusProposal,
   CreateProposalMetadata,
   DecentModule,
+  ERC20TokenData,
   ERC721TokenData,
   FractalProposal,
   FractalProposalState,
@@ -52,6 +53,7 @@ import {
 } from '../../utils/azorius';
 import { blocksToSeconds } from '../../utils/contract';
 import { getPaymasterAddress } from '../../utils/gaslessVoting';
+import { getStakingContractAddress } from '../../utils/stakingContractUtils';
 import { SetAzoriusGovernancePayload } from '../slices/governances';
 import { useGlobalStore } from '../store';
 
@@ -915,6 +917,96 @@ export function useGovernanceFetcher() {
     [publicClient, accountAbstraction, zodiacModuleProxyFactory, decentPaymasterV1MasterCopy],
   );
 
+  const fetchMultisigERC20Token = useCallback(
+    async ({ events }: { events: GetContractEventsReturnType<typeof abis.KeyValuePairs> }) => {
+      // get most recent event where `erc20Address` was set
+      const erc20AddressEvent = events
+        .filter(event => event.args.key && event.args.key === 'erc20Address')
+        .pop();
+      const erc20AddressInEvent = erc20AddressEvent?.args.value as Address | undefined;
+
+      if (!erc20AddressEvent || !erc20AddressInEvent) {
+        return undefined;
+      }
+
+      try {
+        const tokenContract = getContract({
+          abi: abis.VotesERC20,
+          address: erc20AddressInEvent,
+          client: publicClient,
+        });
+
+        // Prepare multicall requests
+        const multicallCalls = [
+          {
+            ...tokenContract,
+            functionName: 'name',
+          },
+          {
+            ...tokenContract,
+            functionName: 'symbol',
+          },
+          {
+            ...tokenContract,
+            functionName: 'decimals',
+          },
+
+          {
+            ...tokenContract,
+            functionName: 'totalSupply',
+          },
+        ];
+
+        // Execute multicall
+        const [name, symbol, decimals, totalSupply] = await publicClient.multicall({
+          contracts: multicallCalls,
+          allowFailure: false,
+        });
+
+        const tokenData: ERC20TokenData = {
+          name: name ? name.toString() : '',
+          symbol: symbol ? symbol.toString() : '',
+          decimals: decimals ? Number(decimals) : 18,
+          address: tokenContract.address,
+          totalSupply: totalSupply ? BigInt(totalSupply) : 0n,
+        };
+
+        return tokenData;
+      } catch (e) {
+        logError({
+          message: 'Error getting erc20Address data',
+          network: publicClient.chain!.id,
+          args: {
+            transactionHash: erc20AddressEvent.transactionHash,
+            logIndex: erc20AddressEvent.logIndex,
+          },
+        });
+
+        return;
+      }
+    },
+    [publicClient],
+  );
+
+  const fetchStakingDAOData = useCallback(
+    async (safeAddress: Address) => {
+      if (!publicClient.chain) {
+        return;
+      }
+
+      // @todo: `getStakingContractAddress` is WIP (https://linear.app/decent-labs/issue/ENG-1154/implement-getstakingcontractaddress)
+      const stakingAddress = getStakingContractAddress({
+        safeAddress,
+        zodiacModuleProxyFactory,
+        stakingContractMastercopy: '0x1234567890123456789012345678901234567890',
+        chainId: publicClient.chain.id,
+      });
+
+      return { stakingAddress };
+    },
+    [publicClient.chain, zodiacModuleProxyFactory],
+  );
+
   return {
     fetchDAOGovernance,
     fetchDAOProposalTemplates,
@@ -922,5 +1014,7 @@ export function useGovernanceFetcher() {
     fetchLockReleaseAccountData,
     fetchDAOSnapshotProposals,
     fetchGaslessVotingDAOData,
+    fetchMultisigERC20Token,
+    fetchStakingDAOData,
   };
 }

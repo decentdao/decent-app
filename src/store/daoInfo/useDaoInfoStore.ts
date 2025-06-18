@@ -1,16 +1,14 @@
-import { Address, getAddress } from 'viem';
+import { getAddress } from 'viem';
 import { create } from 'zustand';
-import { DAOSubgraph, DecentModule, IDAO, SafeWithNextNonce } from '../../types';
+import { DAOOwnedEntities, DAOSubgraph, DecentModule, IDAO, SafeWithNextNonce } from '../../types';
 
-export const initialDaoInfoStore: IDAO & {
-  gaslessVotingEnabled: boolean;
-  paymasterAddress: Address | null;
-} = {
+export const initialDaoInfoStore: IDAO & DAOOwnedEntities = {
   safe: null,
   subgraphInfo: null,
   modules: null,
   gaslessVotingEnabled: false,
   paymasterAddress: null,
+  stakingAddress: null,
 };
 
 export interface DaoInfoStore extends IDAO {

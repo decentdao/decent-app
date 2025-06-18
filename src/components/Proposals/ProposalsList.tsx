@@ -11,9 +11,15 @@ interface ProposalsListProps {
   proposals: FractalProposal[];
   currentPage: number;
   totalPages: number;
+  showNonce?: boolean;
 }
 
-export function ProposalsList({ proposals, currentPage, totalPages }: ProposalsListProps) {
+export function ProposalsList({
+  proposals,
+  currentPage,
+  totalPages,
+  showNonce,
+}: ProposalsListProps) {
   const { daoKey } = useCurrentDAOKey();
   const {
     governance: { type, loadingProposals, allProposalsLoaded },
@@ -37,6 +43,7 @@ export function ProposalsList({ proposals, currentPage, totalPages }: ProposalsL
             <ProposalCard
               key={proposal.proposalId}
               proposal={proposal}
+              showNonce={showNonce}
             />
           ))}
           {showLoadingMore && <InfoBoxLoader />}

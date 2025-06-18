@@ -80,6 +80,7 @@
   "titleProposers": "Whitelisted Proposers",
   "titleTokenParams": "Metadata",
   "titleTokenContract": "Contract",
+  "labelTokenContractAlreadyConfigured": "Your DAO is already configured with an ERC-20 token which will be used for DAO governance with this modification.",
   "titleAddress": "Address",
   "titleAmount": "Amount",
   "createSubDAOPendingToastMessage": "Creating your child DAO proposal",

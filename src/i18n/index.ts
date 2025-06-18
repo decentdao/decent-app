@@ -76,6 +76,8 @@ i18n
       'stake',
       'transaction',
       'treasury',
+      'revenueSharing',
+      'staking',
     ],
     interpolation: {
       escapeValue: false,

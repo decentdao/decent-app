@@ -1,11 +1,8 @@
-import { Icon, IconButton, useBreakpointValue } from '@chakra-ui/react';
+import { Icon, IconButton } from '@chakra-ui/react';
 import { abis } from '@fractal-framework/fractal-contracts';
 import { GearFine } from '@phosphor-icons/react';
-import { useCallback, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useMemo } from 'react';
 import { getContract } from 'viem';
-import { DAO_ROUTES } from '../../../../constants/routes';
-import useFeatureFlag from '../../../../helpers/environmentFeatureFlags';
 import {
   isWithinFreezePeriod,
   isWithinFreezeProposalPeriod,
@@ -15,10 +12,8 @@ import useClawBack from '../../../../hooks/DAO/useClawBack';
 import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
 import { useNetworkWalletClient } from '../../../../hooks/useNetworkWalletClient';
 import useBlockTimestamp from '../../../../hooks/utils/useBlockTimestamp';
-import { useCanUserCreateProposal } from '../../../../hooks/utils/useCanUserSubmitProposal';
 import { useDAOStore } from '../../../../providers/App/AppProvider';
-import { useNetworkConfigStore } from '../../../../providers/NetworkConfig/useNetworkConfigStore';
-import { FractalModuleType, FreezeVotingType, GovernanceType } from '../../../../types';
+import { FractalModuleType, FreezeVotingType } from '../../../../types';
 import { ModalType } from '../../modals/ModalProvider';
 import { useDecentModal } from '../../modals/useDecentModal';
 import { OptionMenu } from '../OptionMenu';
@@ -26,16 +21,15 @@ import { OptionMenu } from '../OptionMenu';
 export function ManageDAOMenu() {
   const { daoKey } = useCurrentDAOKey();
   const {
-    governance: { type },
     guard,
     guardAccountData,
     guardContracts,
     node: { safe, subgraphInfo, modules },
   } = useDAOStore({ daoKey });
+
   const currentTime = BigInt(useBlockTimestamp());
-  const navigate = useNavigate();
+
   const safeAddress = safe?.address;
-  const { canUserCreateProposal } = useCanUserCreateProposal();
   const { getUserERC721VotingTokens } = useUserERC721VotingTokens(safeAddress ?? null, null, false);
   const { handleClawBack } = useClawBack({
     parentAddress: subgraphInfo?.parentAddress ?? null,
@@ -45,24 +39,7 @@ export function ManageDAOMenu() {
     },
   });
 
-  const { addressPrefix } = useNetworkConfigStore();
-
   const { open: openSettingsModal } = useDecentModal(ModalType.SAFE_SETTINGS);
-
-  const settingsV1FeatureEnabled = useFeatureFlag('flag_settings_v1');
-  const isMobile = useBreakpointValue({ base: true, md: false });
-
-  const handleNavigateToSettings = useCallback(() => {
-    if (safeAddress) {
-      if (!isMobile && settingsV1FeatureEnabled) {
-        openSettingsModal();
-      } else {
-        navigate(DAO_ROUTES.settings.relative(addressPrefix, safeAddress));
-      }
-    }
-  }, [safeAddress, isMobile, settingsV1FeatureEnabled, navigate, addressPrefix, openSettingsModal]);
-
-  const { open: handleModifyGovernance } = useDecentModal(ModalType.CONFIRM_MODIFY_GOVERNANCE);
 
   const { data: walletClient } = useNetworkWalletClient();
 
@@ -135,15 +112,9 @@ export function ManageDAOMenu() {
       onClick: handleClawBack,
     };
 
-    // @todo: Remove after feature flag is removed (https://linear.app/decent-labs/issue/ENG-796/remove-modifygovernanceoption-completely)
-    const modifyGovernanceOption = {
-      optionKey: 'optionModifyGovernance',
-      onClick: handleModifyGovernance,
-    };
-
     const settingsOption = {
       optionKey: 'optionSettings',
-      onClick: handleNavigateToSettings,
+      onClick: openSettingsModal,
     };
 
     if (
@@ -158,11 +129,7 @@ export function ManageDAOMenu() {
       !isWithinFreezePeriod(guard.freezeProposalCreatedTime, guard.freezePeriod, currentTime) &&
       guardAccountData.userHasVotes
     ) {
-      if (!settingsV1FeatureEnabled && type === GovernanceType.MULTISIG) {
-        return [settingsOption, freezeOption, modifyGovernanceOption];
-      } else {
-        return [settingsOption, freezeOption];
-      }
+      return [settingsOption, freezeOption];
     } else if (
       guard.freezeProposalCreatedTime !== null &&
       guard.freezePeriod !== null &&
@@ -179,25 +146,19 @@ export function ManageDAOMenu() {
         return [settingsOption];
       }
     } else {
-      return [
-        settingsOption,
-        ...(!settingsV1FeatureEnabled && canUserCreateProposal && type === GovernanceType.MULTISIG
-          ? [modifyGovernanceOption]
-          : []),
-      ];
+      return [settingsOption];
     }
   }, [
-    guard,
-    guardAccountData,
-    currentTime,
-    type,
     handleClawBack,
-    settingsV1FeatureEnabled,
-    handleModifyGovernance,
-    handleNavigateToSettings,
+    openSettingsModal,
+    guard.freezeProposalCreatedTime,
+    guard.freezeProposalPeriod,
+    guard.freezePeriod,
+    guard.isFrozen,
+    currentTime,
+    guardAccountData.userHasVotes,
     freezeOption,
     modules,
-    canUserCreateProposal,
   ]);
 
   return options.length === 1 ? (

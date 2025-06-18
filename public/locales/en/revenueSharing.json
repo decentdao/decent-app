@@ -1,0 +1,14 @@
+{
+  "revenueSharingTitle": "Revenue Share",
+  "revShareDaoSafeWarning": "Funds sent to this address will not be split",
+  "revShareTotalError": "Total exceeds 100%",
+  "daoSafeWallet": "DAO Safe Wallet",
+  "revSplitWallet": "Revenue Split Wallet",
+  "counterparties": "Counterparties",
+  "revShareAddSplitWallet": "Add Wallet",
+  "currentDaoTreasureShareLabel": "Current DAO Treasury Share",
+  "parentDaoTreasureShareLabel": "Parent DAO",
+  "currentTokenHolderShareLabel": "Current Token Holder Staking",
+  "revSplitTotalLabel": "Total",
+  "addRevenueShare": "Add Revenue Share"
+}

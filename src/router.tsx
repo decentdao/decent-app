@@ -8,6 +8,7 @@ import LoadingProblem from './pages/LoadingProblem';
 import { SafeCreatePage } from './pages/create/SafeCreatePage';
 import { SafeController } from './pages/dao/SafeController';
 import { SafeDashboardPage } from './pages/dao/SafeDashboardPage';
+import { SafeDeployTokenPage } from './pages/dao/deploy-token/SafeDeployTokenPage';
 import { SafeEditGovernancePage } from './pages/dao/edit/governance/SafeEditGovernancePage';
 import { SafeHierarchyPage } from './pages/dao/hierarchy/SafeHierarchyPage';
 import { SafeSubDaoCreatePage } from './pages/dao/new/SafeSubDaoCreatePage';
@@ -28,6 +29,7 @@ import { SafeGovernanceSettingsPage } from './pages/dao/settings/governance/Safe
 import { SafeModulesSettingsPage } from './pages/dao/settings/modules-and-guard/SafeModulesSettingsPage';
 import { SafePermissionsCreateProposal } from './pages/dao/settings/permissions/SafePermissionsCreateProposal';
 import { SafePermissionsSettingsPage } from './pages/dao/settings/permissions/SafePermissionsSettingsPage';
+import { SafeTokenSettingsPage } from './pages/dao/settings/token/SafeTokenSettingsPage';
 import { SafeTreasuryPage } from './pages/dao/treasury/SafeTreasuryPage';
 import HomePage from './pages/home/HomePage';
 
@@ -76,6 +78,10 @@ export const router = (addressPrefix: string, daoAddress: string | undefined) =>
             {
               path: DAO_ROUTES.dao.path,
               element: <SafeDashboardPage />,
+            },
+            {
+              path: DAO_ROUTES.deployToken.path,
+              element: <SafeDeployTokenPage />,
             },
             {
               path: 'edit/governance/*',
@@ -211,6 +217,10 @@ export const router = (addressPrefix: string, daoAddress: string | undefined) =>
                       element: <SafePermissionsCreateProposal />,
                     },
                   ],
+                },
+                {
+                  path: DAO_ROUTES.settingsToken.path,
+                  element: <SafeTokenSettingsPage />,
                 },
               ],
             },

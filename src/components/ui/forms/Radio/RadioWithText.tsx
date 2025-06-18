@@ -21,7 +21,7 @@ export function RadioWithText({
   tooltip,
 }: IRadioWithText) {
   return (
-    <Box onClick={onClick}>
+    <Box onClick={!disabled ? onClick : undefined}>
       <Radio
         display="flex"
         data-testid={testId}
@@ -30,7 +30,7 @@ export function RadioWithText({
         bg="color-black"
         color="color-lilac-600"
         _disabled={{ bg: 'color-neutral-400', color: 'color-neutral-700' }}
-        _hover={{ bg: 'color-black', color: 'color-lilac-800' }}
+        _hover={!disabled ? { bg: 'color-black', color: 'color-lilac-800' } : undefined}
         _checked={{
           bg: 'color-black',
           color: 'color-lilac-600',

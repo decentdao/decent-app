@@ -50,8 +50,10 @@ export const useDAOStoreFetcher = ({
     setProposals,
     setGuard,
     setGaslessVotingData,
+    setERC20Token,
     setAllProposalsLoaded,
     setVotesTokenAddress,
+    setStakingData,
   } = useGlobalStore();
   const { chain, getConfigByChainId } = useNetworkConfigStore();
 
@@ -62,6 +64,8 @@ export const useDAOStoreFetcher = ({
     fetchDAOProposalTemplates,
     fetchDAOSnapshotProposals,
     fetchGaslessVotingDAOData,
+    fetchMultisigERC20Token,
+    fetchStakingDAOData,
   } = useGovernanceFetcher();
   const { fetchDAOGuard } = useGuardFetcher();
   const { fetchKeyValuePairsData } = useKeyValuePairsFetcher();
@@ -113,6 +117,11 @@ export const useDAOStoreFetcher = ({
           if (gaslessVotingData) {
             setGaslessVotingData(daoKey, gaslessVotingData);
           }
+
+          const erc20Token = await fetchMultisigERC20Token({ events: keyValuePairsData.events });
+          if (erc20Token) {
+            setERC20Token(daoKey, erc20Token);
+          }
         }
 
         const onMultisigGovernanceLoaded = () => setMultisigGovernance(daoKey);
@@ -149,6 +158,12 @@ export const useDAOStoreFetcher = ({
           onTokenClaimContractAddressLoaded,
           onVotesTokenAddressLoaded,
         });
+
+        const stakingData = await fetchStakingDAOData(safeAddress);
+
+        if (stakingData) {
+          setStakingData(daoKey, stakingData);
+        }
 
         fetchDAOGuard({
           guardAddress: getAddress(safe.guard),
@@ -203,6 +218,10 @@ export const useDAOStoreFetcher = ({
     setGaslessVotingData,
     fetchGaslessVotingDAOData,
     setHatKeyValuePairData,
+    fetchMultisigERC20Token,
+    setERC20Token,
+    fetchStakingDAOData,
+    setStakingData,
   ]);
 
   useEffect(() => {
