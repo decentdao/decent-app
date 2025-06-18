@@ -1,6 +1,7 @@
 import { Tree } from '@hatsprotocol/sdk-v1-subgraph';
 import { Client } from 'urql';
 import { Address, Hex, PublicClient } from 'viem';
+import { StoreSlice } from '../store/store';
 import { SendAssetsData } from '../utils/dao/prepareSendAssetsActionData';
 import { BigIntValuePair } from './common';
 import { CreateProposalMetadata } from './proposalBuilder';
@@ -126,11 +127,11 @@ export const BadgeStatus: Record<EditBadgeStatus, string> = {
   [EditBadgeStatus.Inactive]: 'Inactive',
 };
 export const BadgeStatusColor: Record<EditBadgeStatus, string> = {
-  [EditBadgeStatus.Updated]: 'lilac-0',
-  [EditBadgeStatus.New]: 'celery--2',
-  [EditBadgeStatus.Removed]: 'red-1',
-  [EditBadgeStatus.NewTermedRole]: 'celery--2',
-  [EditBadgeStatus.Inactive]: 'neutral-6',
+  [EditBadgeStatus.Updated]: 'color-lilac-100',
+  [EditBadgeStatus.New]: 'color-green-500',
+  [EditBadgeStatus.Removed]: 'color-error-400',
+  [EditBadgeStatus.NewTermedRole]: 'color-green-500',
+  [EditBadgeStatus.Inactive]: 'color-neutral-400',
 };
 
 export enum RoleFormTermStatus {
@@ -233,7 +234,7 @@ export interface RoleDetailsDrawerProps {
 }
 
 export interface RolesStoreData {
-  hatsTreeId: undefined | null | number;
+  hatsTreeId: undefined | null | StoreSlice<number>;
   decentHatsAddress: Address | null | undefined;
   hatsTree: undefined | null | DecentTree;
   streamsFetched: boolean;
@@ -244,6 +245,7 @@ export interface RolesStore extends RolesStoreData {
   getHat: (hatId: Hex) => DecentRoleHat | null;
   getPayment: (hatId: Hex, streamId: string) => SablierPayment | null;
   setHatKeyValuePairData: (args: {
+    daoKey: string;
     contextChainId: number | null;
     hatsTreeId?: number | null;
     streamIdsToHatIds: { hatId: BigInt; streamId: string }[];
@@ -261,5 +263,5 @@ export interface RolesStore extends RolesStoreData {
   }) => Promise<void>;
   refreshWithdrawableAmount: (hatId: Hex, streamId: string, publicClient: PublicClient) => void;
   updateCurrentTermStatus: (hatId: Hex, termStatus: 'active' | 'inactive') => void;
-  resetHatsStore: () => void;
+  resetRoles: () => void;
 }

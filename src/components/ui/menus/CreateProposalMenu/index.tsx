@@ -17,7 +17,7 @@ export function CreateProposalMenu({ safeAddress }: { safeAddress: Address }) {
 
   const { addressPrefix } = useNetworkConfigStore();
   const { resetActions } = useProposalActionsStore();
-  const openDappsBrowserModal = useDecentModal(ModalType.DAPPS_BROWSER);
+  const { open: openDappsBrowserModal } = useDecentModal(ModalType.DAPPS_BROWSER);
 
   const navigate = useNavigate();
   const iframeFeatureEnabled = useFeatureFlag('flag_iframe_template');
@@ -71,10 +71,10 @@ export function CreateProposalMenu({ safeAddress }: { safeAddress: Address }) {
         variant: 'tertiary',
         paddingX: '0.5rem',
         paddingY: '0.25rem',
-        _hover: { bg: 'neutral-2' },
+        _hover: { bg: 'color-neutral-950' },
         _active: {
-          color: 'lilac-0',
-          bg: 'neutral-2',
+          color: 'color-lilac-100',
+          bg: 'color-neutral-950',
         },
       }}
     />

@@ -1,14 +1,21 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Address, getAddress } from 'viem';
-import useFeatureFlag from '../helpers/environmentFeatureFlags';
+import { logError } from '../helpers/errorLogging';
 import { useDecentModules } from '../hooks/DAO/loaders/useDecentModules';
 import { useNetworkConfigStore } from '../providers/NetworkConfig/useNetworkConfigStore';
-import { AzoriusProposal, DAOKey, FractalModuleType, FractalProposal } from '../types';
+import {
+  AzoriusProposal,
+  DAOKey,
+  FractalModuleType,
+  FractalProposal,
+  ProposalTemplate,
+} from '../types';
 import { useGovernanceFetcher } from './fetchers/governance';
 import { useGuardFetcher } from './fetchers/guard';
+import { useKeyValuePairsFetcher } from './fetchers/keyValuePairs';
 import { useNodeFetcher } from './fetchers/node';
-import { useRolesFetcher } from './fetchers/roles';
 import { useTreasuryFetcher } from './fetchers/treasury';
+import { useRolesStore } from './roles/useRolesStore';
 import { SetAzoriusGovernancePayload } from './slices/governances';
 import { useGlobalStore } from './store';
 
@@ -27,6 +34,7 @@ export const useDAOStoreFetcher = ({
   invalidQuery: boolean;
   wrongNetwork: boolean;
 }) => {
+  const [errorLoading, setErrorLoading] = useState(false);
   const lookupModules = useDecentModules();
   const {
     setDaoNode,
@@ -37,16 +45,17 @@ export const useDAOStoreFetcher = ({
     setAzoriusGovernance,
     setProposalTemplates,
     setTokenClaimContractAddress,
-    setProposals,
     setSnapshotProposals,
     setProposal,
-    setLoadingFirstProposal,
+    setProposals,
     setGuard,
     setGaslessVotingData,
+    setERC20Token,
     setAllProposalsLoaded,
+    setVotesTokenAddress,
+    setStakingData,
   } = useGlobalStore();
   const { chain, getConfigByChainId } = useNetworkConfigStore();
-  const storeFeatureEnabled = useFeatureFlag('flag_store_v2');
 
   const { fetchDAONode } = useNodeFetcher();
   const { fetchDAOTreasury } = useTreasuryFetcher();
@@ -55,102 +64,128 @@ export const useDAOStoreFetcher = ({
     fetchDAOProposalTemplates,
     fetchDAOSnapshotProposals,
     fetchGaslessVotingDAOData,
+    fetchMultisigERC20Token,
+    fetchStakingDAOData,
   } = useGovernanceFetcher();
   const { fetchDAOGuard } = useGuardFetcher();
-  const { fetchRolesData } = useRolesFetcher();
+  const { fetchKeyValuePairsData } = useKeyValuePairsFetcher();
+  const { setHatKeyValuePairData } = useRolesStore();
 
   useEffect(() => {
     async function loadDAOData() {
-      if (!daoKey || !safeAddress || invalidQuery || wrongNetwork || !storeFeatureEnabled) return;
-      const { safe, daoInfo, modules } = await fetchDAONode({
-        safeAddress,
-        chainId: chain.id,
-      });
-
-      setDaoNode(daoKey, {
-        safe,
-        daoInfo,
-        modules,
-      });
-
-      if (daoInfo.proposalTemplatesHash) {
-        const proposalTemplates = await fetchDAOProposalTemplates({
-          proposalTemplatesHash: daoInfo.proposalTemplatesHash,
-        });
-        if (proposalTemplates) {
-          setProposalTemplates(daoKey, proposalTemplates);
-        }
-      }
-
-      const onLoadingFirstProposalStateChanged = (loading: boolean) =>
-        setLoadingFirstProposal(daoKey, loading);
-      const onMultisigGovernanceLoaded = () => setMultisigGovernance(daoKey);
-      const onAzoriusGovernanceLoaded = (governance: SetAzoriusGovernancePayload) =>
-        setAzoriusGovernance(daoKey, governance);
-      const onProposalsLoaded = (proposals: FractalProposal[]) => {
-        setProposals(daoKey, proposals);
-        setLoadingFirstProposal(daoKey, false);
-        setAllProposalsLoaded(daoKey, true);
-      };
-      const onProposalLoaded = (
-        proposal: AzoriusProposal,
-        index: number,
-        totalProposals: number,
-      ) => {
-        setProposal(daoKey, proposal);
-        if (index !== 0) {
-          setLoadingFirstProposal(daoKey, false);
-        }
-        if (index === totalProposals - 1) {
-          setAllProposalsLoaded(daoKey, true);
-        }
-      };
-      const onTokenClaimContractAddressLoaded = (tokenClaimContractAddress: Address) =>
-        setTokenClaimContractAddress(daoKey, tokenClaimContractAddress);
-
-      fetchDAOGovernance({
-        daoAddress: safeAddress,
-        daoModules: modules,
-        onLoadingFirstProposalStateChanged,
-        onMultisigGovernanceLoaded,
-        onAzoriusGovernanceLoaded,
-        onProposalsLoaded,
-        onProposalLoaded,
-        onTokenClaimContractAddressLoaded,
-      });
-
-      fetchDAOGuard({
-        guardAddress: getAddress(safe.guard),
-        _azoriusModule: modules.find(module => module.moduleType === FractalModuleType.AZORIUS),
-      }).then(guardData => {
-        if (guardData) {
-          setGuard(daoKey, guardData);
-        }
-      });
-
-      if (daoInfo.daoSnapshotENS) {
-        fetchDAOSnapshotProposals({ daoSnapshotENS: daoInfo.daoSnapshotENS }).then(
-          snapshotProposals => {
-            if (snapshotProposals) {
-              setSnapshotProposals(daoKey, snapshotProposals);
-            }
-          },
-        );
-      }
-
-      const rolesData = await fetchRolesData({
-        safeAddress,
-      });
-
-      if (rolesData) {
-        const gaslessVotingData = await fetchGaslessVotingDAOData({
+      if (!daoKey || !safeAddress || invalidQuery || wrongNetwork) return;
+      try {
+        setErrorLoading(false);
+        const { safe, daoInfo, modules } = await fetchDAONode({
           safeAddress,
-          events: rolesData.events,
+          chainId: chain.id,
         });
 
-        if (gaslessVotingData) {
-          setGaslessVotingData(daoKey, gaslessVotingData);
+        setDaoNode(daoKey, {
+          safe,
+          daoInfo,
+          modules,
+        });
+
+        let proposalTemplates: ProposalTemplate[] = [];
+        if (daoInfo.proposalTemplatesHash) {
+          const fetchedProposalTemplates = await fetchDAOProposalTemplates({
+            proposalTemplatesHash: daoInfo.proposalTemplatesHash,
+          });
+          if (fetchedProposalTemplates) {
+            proposalTemplates = fetchedProposalTemplates;
+          }
         }
+        setProposalTemplates(daoKey, proposalTemplates);
+        const keyValuePairsData = await fetchKeyValuePairsData({
+          safeAddress,
+        });
+
+        if (keyValuePairsData) {
+          setHatKeyValuePairData({
+            daoKey,
+            contextChainId: chain.id,
+            hatsTreeId: keyValuePairsData.hatsTreeId,
+            streamIdsToHatIds: keyValuePairsData.streamIdsToHatIds,
+          });
+
+          const gaslessVotingData = await fetchGaslessVotingDAOData({
+            safeAddress,
+            events: keyValuePairsData.events,
+          });
+
+          if (gaslessVotingData) {
+            setGaslessVotingData(daoKey, gaslessVotingData);
+          }
+
+          const erc20Token = await fetchMultisigERC20Token({ events: keyValuePairsData.events });
+          if (erc20Token) {
+            setERC20Token(daoKey, erc20Token);
+          }
+        }
+
+        const onMultisigGovernanceLoaded = () => setMultisigGovernance(daoKey);
+        const onAzoriusGovernanceLoaded = (governance: SetAzoriusGovernancePayload) =>
+          setAzoriusGovernance(daoKey, governance);
+        const onProposalsLoaded = (proposals: FractalProposal[]) => {
+          setAllProposalsLoaded(daoKey, true);
+          setProposals(daoKey, proposals);
+        };
+        const onProposalLoaded = (
+          proposal: AzoriusProposal,
+          index: number,
+          totalProposals: number,
+        ) => {
+          setProposal(daoKey, proposal);
+
+          if (index === totalProposals - 1) {
+            setAllProposalsLoaded(daoKey, true);
+          }
+        };
+        const onTokenClaimContractAddressLoaded = (tokenClaimContractAddress: Address) =>
+          setTokenClaimContractAddress(daoKey, tokenClaimContractAddress);
+
+        const onVotesTokenAddressLoaded = (votesTokenAddress: Address) =>
+          setVotesTokenAddress(daoKey, votesTokenAddress);
+
+        fetchDAOGovernance({
+          daoAddress: safeAddress,
+          daoModules: modules,
+          onMultisigGovernanceLoaded,
+          onAzoriusGovernanceLoaded,
+          onProposalsLoaded,
+          onProposalLoaded,
+          onTokenClaimContractAddressLoaded,
+          onVotesTokenAddressLoaded,
+        });
+
+        const stakingData = await fetchStakingDAOData(safeAddress);
+
+        if (stakingData) {
+          setStakingData(daoKey, stakingData);
+        }
+
+        fetchDAOGuard({
+          guardAddress: getAddress(safe.guard),
+          _azoriusModule: modules.find(module => module.moduleType === FractalModuleType.AZORIUS),
+        }).then(guardData => {
+          if (guardData) {
+            setGuard(daoKey, guardData);
+          }
+        });
+
+        if (daoInfo.daoSnapshotENS) {
+          fetchDAOSnapshotProposals({ daoSnapshotENS: daoInfo.daoSnapshotENS }).then(
+            snapshotProposals => {
+              if (snapshotProposals) {
+                setSnapshotProposals(daoKey, snapshotProposals);
+              }
+            },
+          );
+        }
+      } catch (e) {
+        logError(e);
+        setErrorLoading(true);
       }
     }
 
@@ -164,7 +199,6 @@ export const useDAOStoreFetcher = ({
     getConfigByChainId,
     invalidQuery,
     wrongNetwork,
-    storeFeatureEnabled,
     fetchDAOProposalTemplates,
     fetchDAOGovernance,
     fetchDAOGuard,
@@ -172,22 +206,27 @@ export const useDAOStoreFetcher = ({
     setProposalTemplates,
     setMultisigGovernance,
     setAzoriusGovernance,
-    setProposals,
     setProposal,
+    setProposals,
     setTokenClaimContractAddress,
-    setLoadingFirstProposal,
     setGuard,
     setAllProposalsLoaded,
     fetchDAOSnapshotProposals,
     setSnapshotProposals,
-    fetchRolesData,
+    setVotesTokenAddress,
+    fetchKeyValuePairsData,
     setGaslessVotingData,
     fetchGaslessVotingDAOData,
+    setHatKeyValuePairData,
+    fetchMultisigERC20Token,
+    setERC20Token,
+    fetchStakingDAOData,
+    setStakingData,
   ]);
 
   useEffect(() => {
     async function loadDAOTreasury() {
-      if (!daoKey || !safeAddress || invalidQuery || wrongNetwork || !storeFeatureEnabled) return;
+      if (!daoKey || !safeAddress || invalidQuery || wrongNetwork) return;
 
       fetchDAOTreasury({
         safeAddress,
@@ -203,10 +242,11 @@ export const useDAOStoreFetcher = ({
     safeAddress,
     invalidQuery,
     wrongNetwork,
-    storeFeatureEnabled,
     fetchDAOTreasury,
     setTreasury,
     setTransfers,
     setTransfer,
   ]);
+
+  return { errorLoading };
 };

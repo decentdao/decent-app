@@ -1,0 +1,8 @@
+{
+  "stakingTitle": "Ставлю кілки.",
+  "stakingNull": "Ваша DAO ще не має контракту зі стейкінгом. Ви можете укласти його зараз.",
+  "deployStaking": "Розгортання договору стейкінгу",
+  "stakingPeriod": "Період стейкінгу",
+  "includeStakingInVoting": "Включити стейкінг токенів у голосування за токени",
+  "includeStakingInVotingDesc": "-ще немає копії."
+}

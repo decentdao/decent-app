@@ -1,7 +1,6 @@
 import { Box, Flex, MenuItem, Checkbox, Text } from '@chakra-ui/react';
 import { ChangeEvent, MouseEvent } from 'react';
 import { useTranslation } from 'react-i18next';
-import Divider from '../../utils/Divider';
 import { IOption, IOptionsList } from './types';
 
 export function OptionsList({
@@ -24,8 +23,8 @@ export function OptionsList({
         <Text
           pt="0.5rem"
           px="0.5rem"
-          textStyle="labels-small"
-          color="neutral-7"
+          textStyle="text-xs-medium"
+          color="color-neutral-300"
         >
           {t(titleKey)}
         </Text>
@@ -36,7 +35,7 @@ export function OptionsList({
         return (
           <Box
             px="0.25rem"
-            key={option.optionKey}
+            key={option.optionKey + i}
           >
             {option.renderer ? (
               option.renderer()
@@ -46,7 +45,7 @@ export function OptionsList({
                 onClick={clickListener}
                 isDisabled={option.isDisabled}
                 cursor="pointer"
-                _hover={{ bg: 'neutral-3', textDecoration: 'none' }}
+                _hover={{ bg: 'color-neutral-900', textDecoration: 'none' }}
                 _disabled={{ cursor: 'not-allowed', opacity: 0.5 }}
                 p="0.5rem"
                 borderRadius="0.5rem"
@@ -74,8 +73,6 @@ export function OptionsList({
                 {showOptionCount && <Text as="span">{option.count}</Text>}
               </MenuItem>
             )}
-
-            {i !== options.length - 1 && <Divider my="0.25rem" />}
           </Box>
         );
       })}

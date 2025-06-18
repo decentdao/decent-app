@@ -26,6 +26,7 @@
   "move": "이동",
   "hours": "시간",
   "minutes": "분",
+  "minutesShort": "분",
   "quorum": "쿼럼",
   "deploy": "배포",
   "loading": "로드 중...",
@@ -34,7 +35,6 @@
   "learnMore": "자세히 알아보기",
   "home": "홈",
   "labelViewDAO": "안전 보기",
-  "labelDAOFound": "안전한 발견",
   "labelCurrentDAO": "현재 이 금고를 보고 계십니다.",
   "labelEtherscan": "이더스캔에서 보기",
   "errorInvalidENSAddress": "에 잘못된 ENS 이름 또는 주소가 {{chain}}에 있습니다.",
@@ -128,5 +128,10 @@
   "unsavedChanges": "저장되지 않은 변경 사항",
   "unsavedChangesDescription": "계속 진행하면 저장되지 않은 변경 내용이 손실됩니다. 변경 내용을 삭제하시겠습니까?",
   "discardChanges": "폐기",
-  "keepEditing": "계속 편집"
+  "keepEditing": "계속 편집",
+  "selectStatusLabel": "상태 선택",
+  "addressRequired": "주소 필수 입력",
+  "save": "저장",
+  "daoNameRequired": "DAO 이름은 필수입니다.",
+  "calendarPlaceholder": "YYYY-MM-DD"
 }

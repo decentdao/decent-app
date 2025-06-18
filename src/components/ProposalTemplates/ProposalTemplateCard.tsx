@@ -1,4 +1,4 @@
-import { Avatar, Flex, Icon, Text } from '@chakra-ui/react';
+import { Flex, Icon, Text } from '@chakra-ui/react';
 import { GearFine } from '@phosphor-icons/react';
 import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -15,6 +15,7 @@ import ContentBox from '../ui/containers/ContentBox';
 import { OptionMenu } from '../ui/menus/OptionMenu';
 import { ModalType } from '../ui/modals/ModalProvider';
 import { useDecentModal } from '../ui/modals/useDecentModal';
+import Avatar from '../ui/page/Header/Avatar';
 import Markdown from '../ui/proposal/Markdown';
 
 type ProposalTemplateCardProps = {
@@ -40,10 +41,10 @@ export default function ProposalTemplateCard({
   const { canUserCreateProposal } = useCanUserCreateProposal();
   const { title, description } = proposalTemplate;
 
-  const openProposalForm = useDecentModal(ModalType.CREATE_PROPOSAL_FROM_TEMPLATE, {
+  const { open: openProposalForm } = useDecentModal(ModalType.CREATE_PROPOSAL_FROM_TEMPLATE, {
     proposalTemplate,
   });
-  const openForkTemplateForm = useDecentModal(ModalType.COPY_PROPOSAL_TEMPLATE, {
+  const { open: openForkTemplateForm } = useDecentModal(ModalType.COPY_PROPOSAL_TEMPLATE, {
     proposalTemplate,
     templateIndex,
   });
@@ -98,25 +99,27 @@ export default function ProposalTemplateCard({
 
   return (
     <ContentBox
-      containerBoxProps={{ flex: '0 0 calc(33.333333% - 0.6666666rem)', my: '0' }}
+      containerBoxProps={{
+        minW: '165px',
+        minHeight: '112px',
+        mx: '0',
+        p: '1rem',
+      }}
       onClick={canUserCreateProposal ? openProposalForm : undefined}
     >
-      <Flex justifyContent="space-between">
+      <Flex
+        justifyContent="space-between"
+        alignItems="center"
+      >
         <Avatar
-          size="lg"
-          w="50px"
-          h="50px"
-          name={title}
-          borderRadius={0}
-          getInitials={(_title: string) => _title.slice(0, 2)}
-          textStyle="heading-large"
-          color="white-0"
+          size="md"
+          address={`0x${title}`}
         />
         <OptionMenu
           trigger={
             <Icon
               as={GearFine}
-              color="lilac-0"
+              color="color-lilac-100"
               width="1.25rem"
               height="1.25rem"
             />
@@ -127,12 +130,13 @@ export default function ProposalTemplateCard({
         />
       </Flex>
       <Text
-        textStyle="heading-small"
-        color="white-0"
+        textStyle="text-xl-regular"
+        color="color-white"
         my="0.5rem"
       >
         {title}
       </Text>
+
       <Markdown content={description} />
     </ContentBox>
   );

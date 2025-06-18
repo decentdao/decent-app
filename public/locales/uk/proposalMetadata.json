@@ -16,5 +16,15 @@
   "unstakeStEthTitle": "Зніміть ставку STETH",
   "unstakeStEthDescription": "Ця пропозиція зніме стейки stETH з Lido і створить NFT Lido Withdrawal, який можна буде використовувати для отримання вашого ETH.",
   "stakeWithLidoTitle": "Ставте ETH за допомогою Lido",
-  "stakeWithLidoDescription": "Ця пропозиція поставить ETH в Лідо, повернувши stETH до вашої скарбниці."
+  "stakeWithLidoDescription": "Ця пропозиція поставить ETH в Лідо, повернувши stETH до вашої скарбниці.",
+  "addSigners": "Додати підписантів",
+  "removeSigners": "Видалити підписантів",
+  "changeThreshold": "Update signer threshold",
+  "changeVotingPeriod": "Update voting period",
+  "changeTimelockPeriod": "Update timelock period",
+  "changeExecutionPeriod": "Update execution period",
+  "changeQuorumNumerator": "Update quorum percentage",
+  "changeQuorumThreshold": "Update quorum threshold",
+  "deployToken": "Розгорнути токен",
+  "updateERC20Address": "Оновити адресу ERC20"
 }

@@ -19,9 +19,11 @@ import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Address, erc20Abi, formatUnits, getContract, isAddress } from 'viem';
 import { useCurrentDAOKey } from '../../hooks/DAO/useCurrentDAOKey';
+import useLockedToken from '../../hooks/DAO/useLockedToken';
 import useNetworkPublicClient from '../../hooks/useNetworkPublicClient';
 import { useFilterSpamTokens } from '../../hooks/utils/useFilterSpamTokens';
 import { useDAOStore } from '../../providers/App/AppProvider';
+import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
 import { BigIntValuePair } from '../../types';
 import { Stream } from '../../types/proposalBuilder';
 import { formatCoin } from '../../utils';
@@ -57,6 +59,13 @@ export function ProposalStream({
   } = useDAOStore({ daoKey });
   const filterSpamTokens = useFilterSpamTokens();
   const { t } = useTranslation(['proposal', 'common']);
+  const {
+    contracts: { sablierV2Batch },
+  } = useNetworkConfigStore();
+  const { tokenState } = useLockedToken({
+    token: stream.tokenAddress as Address,
+    account: sablierV2Batch,
+  });
 
   const safeAddress = safe?.address;
   const fungibleNonNativeAssetsWithBalance = filterSpamTokens(assetsFungible);
@@ -120,17 +129,20 @@ export function ProposalStream({
               helper={t('streamedTokenAddressHelper', { balance: tokenBalanceFormatted })}
               isRequired
               disabled={pendingTransaction}
+              errorMessage={tokenState.canTransfer ? undefined : t('streamIsNotTransferable')}
               subLabel={
-                <DisplayAddress
-                  address={stream.tokenAddress as Address}
-                  truncate={false}
-                />
+                <Box marginX="-0.75rem">
+                  <DisplayAddress
+                    address={stream.tokenAddress as Address}
+                    truncate={false}
+                  />
+                </Box>
               }
             >
               <Select
                 {...field}
-                bgColor="neutral-1"
-                borderColor="neutral-3"
+                bgColor="color-black"
+                borderColor="color-neutral-900"
                 rounded="lg"
                 cursor="pointer"
                 iconSize="1.5rem"
@@ -167,7 +179,7 @@ export function ProposalStream({
           isRequired
           disabled={pendingTransaction}
           subLabel={
-            <HStack textStyle="labels-large">
+            <HStack textStyle="text-sm-medium">
               <Text>{t('example', { ns: 'common' })}:</Text>
               <ExampleLabel>0x4168592...</ExampleLabel>
             </HStack>
@@ -194,7 +206,7 @@ export function ProposalStream({
             />
             <Text>{t('cancelable')}</Text>
           </Flex>
-          <Text color="neutral-7">{t('streamCancelableHelper')}</Text>
+          <Text color="color-neutral-300">{t('streamCancelableHelper')}</Text>
         </Box>
         <Box>
           <Flex gap="0.5rem">
@@ -209,7 +221,7 @@ export function ProposalStream({
             />
             <Text>{t('transferable')}</Text>
           </Flex>
-          <Text color="neutral-7">{t('streamTransferableHelper')}</Text>
+          <Text color="color-neutral-300">{t('streamTransferableHelper')}</Text>
         </Box>
         <Divider
           variant="light"
@@ -227,7 +239,7 @@ export function ProposalStream({
                 borderBottom="none"
                 padding="1rem"
                 borderRadius={4}
-                bg="neutral-3"
+                bg="color-neutral-900"
                 px={0}
                 py="1.5rem"
               >
@@ -252,10 +264,10 @@ export function ProposalStream({
                             });
                           }}
                           p={0}
-                          textStyle="heading-small"
-                          color="lilac-0"
+                          textStyle="text-xl-regular"
+                          color="color-lilac-100"
                         >
-                          <Text textStyle="heading-small">
+                          <Text textStyle="text-xl-regular">
                             <Flex
                               alignItems="center"
                               gap={2}
@@ -281,7 +293,7 @@ export function ProposalStream({
                               })
                             }
                             minWidth="auto"
-                            color="lilac-0"
+                            color="color-lilac-100"
                             _disabled={{ opacity: 0.4, cursor: 'default' }}
                             sx={{ '&:disabled:hover': { color: 'inherit', opacity: 0.4 } }}
                             isDisabled={pendingTransaction}
@@ -306,7 +318,7 @@ export function ProposalStream({
                                   <HStack wordBreak="break-all">
                                     <Text>
                                       {t('example', { ns: 'common' })}:{' '}
-                                      <ExampleLabel bg="neutral-4">1000</ExampleLabel>
+                                      <ExampleLabel bg="color-neutral-800">1000</ExampleLabel>
                                     </Text>
                                   </HStack>
                                 }
@@ -349,7 +361,7 @@ export function ProposalStream({
                                     </Text>
                                     <Text>
                                       {t('example', { ns: 'common' })}:{' '}
-                                      <ExampleLabel bg="neutral-4">
+                                      <ExampleLabel bg="color-neutral-800">
                                         {SECONDS_IN_DAY * 30} (1 month)
                                       </ExampleLabel>
                                     </Text>

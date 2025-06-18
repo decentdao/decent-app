@@ -29,7 +29,7 @@ export function RoleFormTabs({
   const navigate = useNavigate();
   const { addressPrefix } = useNetworkConfigStore();
   const { editedRoleData, isRoleUpdated, existingRoleHat } = useRoleFormEditedRole({ hatsTree });
-  const { t } = useTranslation(['roles']);
+  const { t } = useTranslation(['roles', 'common']);
   const { values, setFieldValue, errors, setTouched } = useFormikContext<RoleFormValues>();
   const { safeAddress } = useCurrentDAOKey();
   useEffect(() => {
@@ -62,7 +62,7 @@ export function RoleFormTabs({
         <Button
           variant="tertiary"
           width="min-content"
-          color="lilac-0"
+          color="color-lilac-100"
           pr={2}
           leftIcon={<ArrowLeft />}
           onClick={() => navigate(DAO_ROUTES.rolesEdit.relative(addressPrefix, safeAddress))}
@@ -120,7 +120,7 @@ export function RoleFormTabs({
             }, 50);
           }}
         >
-          {t('save')}
+          {t('save', { ns: 'common' })}
         </Button>
       </Flex>
     </>

@@ -5,11 +5,11 @@ const { definePartsStyle } = createMultiStyleConfigHelpers(progressAnatomy.keys)
 
 const baseStyles = definePartsStyle({
   track: {
-    bg: 'neutral-2',
+    bg: 'color-neutral-950',
     borderRadius: '4px',
   },
   filledTrack: {
-    bg: 'lilac--3',
+    bg: 'color-lilac-600',
     borderRadius: '4px',
   },
   label: {},

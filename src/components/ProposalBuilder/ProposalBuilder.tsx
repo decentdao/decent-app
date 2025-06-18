@@ -1,7 +1,7 @@
 import { Box, Flex, Grid, GridItem } from '@chakra-ui/react';
 import { ArrowLeft } from '@phosphor-icons/react';
 import { Formik, FormikProps } from 'formik';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -88,20 +88,27 @@ export function ProposalBuilder({
   const { canUserCreateProposal } = useCanUserCreateProposal();
   const { createProposalValidation } = useCreateProposalSchema();
 
+  const pushNavigation = useRef(false);
+
   useUnsavedChangesBlocker({
     when:
-      initialValues.transactions.length > 0 ||
-      !!initialValues.proposalMetadata.title ||
-      !!initialValues.proposalMetadata.description,
+      !pushNavigation.current &&
+      (initialValues.transactions.length > 0 ||
+        !!initialValues.proposalMetadata.title ||
+        !!initialValues.proposalMetadata.description),
     onDiscardChanges: () => {
       resetActions();
-      navigate(DAO_ROUTES.dao.relative(addressPrefix, safeAddress!));
+      pushNavigation.current = false;
+
+      // Small delay to ensure that the proposal is created and actions are reset
+      setTimeout(() => navigate(DAO_ROUTES.dao.relative(addressPrefix, safeAddress!)), 0);
     },
   });
   const successCallback = () => {
     if (safeAddress) {
       resetActions();
       // Redirecting to home page so that user will see newly created Proposal
+      pushNavigation.current = true;
       // Small delay to ensure that the proposal is created and actions are reset
       setTimeout(() => navigate(DAO_ROUTES.dao.relative(addressPrefix, safeAddress)), 0);
     }
@@ -213,7 +220,7 @@ export function ProposalBuilder({
                     <Box
                       marginBottom="2rem"
                       rounded="lg"
-                      bg="neutral-2"
+                      bg="color-neutral-950"
                     >
                       {currentStep === CreateProposalSteps.METADATA ? (
                         <>

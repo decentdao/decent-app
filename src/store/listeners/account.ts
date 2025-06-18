@@ -1,8 +1,7 @@
 import { useEffect } from 'react';
 import { Address } from 'viem';
 import { useAccount } from 'wagmi';
-import useFeatureFlag from '../../helpers/environmentFeatureFlags';
-import { FreezeVotingType } from '../../types';
+import { FreezeVotingType, GuardAccountData } from '../../types';
 import { useGovernanceFetcher } from '../fetchers/governance';
 import { useGuardFetcher } from '../fetchers/guard';
 
@@ -37,18 +36,14 @@ export function useAccountListeners({
     balance: bigint;
     delegatee: Address;
   }) => void;
-  onGuardAccountDataLoaded: (accountData: {
-    userHasFreezeVoted: boolean;
-    userHasVotes: boolean;
-  }) => void;
+  onGuardAccountDataLoaded: (accountData: GuardAccountData) => void;
 }) {
-  const storeFeatureEnabled = useFeatureFlag('flag_store_v2');
   const { address: account } = useAccount();
   const { fetchVotingTokenAccountData, fetchLockReleaseAccountData } = useGovernanceFetcher();
   const { fetchGuardAccountData } = useGuardFetcher();
   useEffect(() => {
     async function loadAccountData() {
-      if (!account || !votesTokenAddress || !storeFeatureEnabled) {
+      if (!account || !votesTokenAddress) {
         return;
       }
 
@@ -75,19 +70,17 @@ export function useAccountListeners({
     fetchLockReleaseAccountData,
     onGovernanceAccountDataLoaded,
     onGovernanceLockReleaseAccountDataLoaded,
-    storeFeatureEnabled,
   ]);
 
   useEffect(() => {
     async function loadGuardAccountData() {
       if (
-        !account ||
-        !freezeVotingType ||
-        !freezeVotingAddress ||
-        typeof freezeProposalCreatedTime === 'undefined' ||
-        typeof freezeProposalPeriod === 'undefined' ||
-        typeof freezePeriod === 'undefined' ||
-        !storeFeatureEnabled
+        account === undefined ||
+        freezeVotingType === undefined ||
+        freezeVotingAddress === undefined ||
+        freezeProposalCreatedTime === undefined ||
+        freezeProposalPeriod === undefined ||
+        freezePeriod === undefined
       ) {
         return;
       }
@@ -122,6 +115,5 @@ export function useAccountListeners({
     freezeProposalCreatedTime,
     freezeProposalPeriod,
     freezePeriod,
-    storeFeatureEnabled,
   ]);
 }

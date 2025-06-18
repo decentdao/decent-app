@@ -12,8 +12,8 @@ function TransactionRow({ paramKey, value }: { paramKey: string; value: string }
   return (
     <Flex
       width="full"
-      textStyle="snippets-large"
-      color="white-0"
+      textStyle="text-sm-mono"
+      color="color-white"
       alignItems="center"
       justifyContent="space-between"
       maxH={{ base: '12.5rem', md: 'initial' }}
@@ -89,7 +89,7 @@ function TransactionBlock({ transaction }: { transaction: DecodedTransaction }) 
     <Flex
       width="full"
       borderRadius="4px"
-      bg="neutral-3"
+      bg="color-neutral-900"
       flexWrap="wrap"
       padding="1rem"
       rowGap="0.5rem"

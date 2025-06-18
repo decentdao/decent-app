@@ -1,6 +1,6 @@
 import { inputAnatomy } from '@chakra-ui/anatomy';
 import { createMultiStyleConfigHelpers } from '@chakra-ui/react';
-import baseStyle from './input.base';
+import baseStyle, { tableStyle } from './input.base';
 import sizes from './input.sizes';
 
 const { defineMultiStyleConfig } = createMultiStyleConfigHelpers(inputAnatomy.keys);
@@ -10,6 +10,9 @@ const Input = defineMultiStyleConfig({
   sizes,
   defaultProps: {
     size: 'base',
+  },
+  variants: {
+    tableStyle,
   },
 });
 

@@ -10,7 +10,7 @@ export function StyledBox({ children, to, ...rest }: StyledBoxProps) {
     <Box
       as={to ? Link : undefined}
       to={to}
-      bg="neutral-2"
+      bg="color-neutral-950"
       p={{ base: '0.75rem', md: '1.5rem' }}
       borderRadius="0.5rem"
       {...rest}

@@ -75,7 +75,7 @@ export default function ProposalTransaction({
         isRequired
         disabled={transactionPending}
         subLabel={
-          <HStack textStyle="labels-large">
+          <HStack textStyle="text-sm-medium">
             <Text>{t('example', { ns: 'common' })}:</Text>
             <ExampleLabel>yourdomain.eth</ExampleLabel>
             <Text>{t('or', { ns: 'common' })}</Text>
@@ -102,7 +102,7 @@ export default function ProposalTransaction({
       {/* FUNCTION SPECIFICATION */}
       <Box>
         <Text
-          textStyle="heading-small"
+          textStyle="text-xl-regular"
           mb="1.5rem"
         >
           {t('functionHeader')}
@@ -140,7 +140,7 @@ export default function ProposalTransaction({
               borderBottom="none"
               padding="1rem"
               borderRadius={4}
-              bg="neutral-3"
+              bg="color-neutral-900"
               px={0}
               py="1.5rem"
             >
@@ -165,10 +165,10 @@ export default function ProposalTransaction({
                           });
                         }}
                         p={0}
-                        textStyle="heading-small"
-                        color="lilac-0"
+                        textStyle="text-xl-regular"
+                        color="color-lilac-100"
                       >
-                        <Text textStyle="heading-small">
+                        <Text textStyle="text-xl-regular">
                           <Flex
                             alignItems="center"
                             gap={2}
@@ -195,7 +195,7 @@ export default function ProposalTransaction({
                             )
                           }
                           minWidth="auto"
-                          color="lilac-0"
+                          color="color-lilac-100"
                           _disabled={{ opacity: 0.4, cursor: 'default' }}
                           sx={{ '&:disabled:hover': { color: 'inherit', opacity: 0.4 } }}
                           isDisabled={transactionPending}
@@ -226,9 +226,9 @@ export default function ProposalTransaction({
                               <HStack>
                                 <Text>
                                   {t('example', { ns: 'common' })}:{' '}
-                                  <ExampleLabel bg="neutral-4">address to</ExampleLabel>{' '}
+                                  <ExampleLabel bg="color-neutral-800">address to</ExampleLabel>{' '}
                                   {t('or', { ns: 'common' })}{' '}
-                                  <ExampleLabel bg="neutral-4">uint amount</ExampleLabel>
+                                  <ExampleLabel bg="color-neutral-800">uint amount</ExampleLabel>
                                 </Text>
                               </HStack>
                             }
@@ -249,14 +249,17 @@ export default function ProposalTransaction({
                                       }}
                                       isChecked={!!parameter.label}
                                       isDisabled={!parameter.signature || !!parameter.value}
-                                      bg="black-0"
-                                      color="lilac--3"
+                                      bg="color-black"
+                                      color="color-lilac-600"
                                       size="md"
-                                      _disabled={{ bg: 'neutral-6', color: 'neutral-5' }}
-                                      _hover={{ bg: 'black-0', color: 'lilac--4' }}
+                                      _disabled={{
+                                        bg: 'color-neutral-400',
+                                        color: 'color-neutral-700',
+                                      }}
+                                      _hover={{ bg: 'color-black', color: 'color-lilac-800' }}
                                       _checked={{
-                                        bg: 'black-0',
-                                        color: 'lilac--3',
+                                        bg: 'color-black',
+                                        color: 'color-lilac-600',
                                         borderWidth: '6px',
                                       }}
                                     >
@@ -266,7 +269,7 @@ export default function ProposalTransaction({
                                             ns: 'proposalTemplate',
                                           })}
                                         </Text>
-                                        <Text color="neutral-7">
+                                        <Text color="color-neutral-300">
                                           {t('labelParameterLabelHelper', {
                                             ns: 'proposalTemplate',
                                           })}
@@ -307,14 +310,17 @@ export default function ProposalTransaction({
                                     }}
                                     isChecked={!!parameter.value}
                                     isDisabled={!parameter.signature || !!parameter.label}
-                                    bg="black-0"
-                                    color="lilac--3"
+                                    bg="color-black"
+                                    color="color-lilac-600"
                                     size="md"
-                                    _disabled={{ bg: 'neutral-6', color: 'neutral-5' }}
-                                    _hover={{ bg: 'black-0', color: 'lilac--4' }}
+                                    _disabled={{
+                                      bg: 'color-neutral-400',
+                                      color: 'color-neutral-700',
+                                    }}
+                                    _hover={{ bg: 'color-black', color: 'color-lilac-800' }}
                                     _checked={{
-                                      bg: 'black-0',
-                                      color: 'lilac--3',
+                                      bg: 'color-black',
+                                      color: 'color-lilac-600',
                                       borderWidth: '6px',
                                     }}
                                   >
@@ -324,7 +330,7 @@ export default function ProposalTransaction({
                                           ns: 'proposalTemplate',
                                         })}
                                       </Text>
-                                      <Text color="neutral-7">
+                                      <Text color="color-neutral-300">
                                         {t('labelParameterLabelHelper', {
                                           ns: 'proposalTemplate',
                                         })}
@@ -352,7 +358,7 @@ export default function ProposalTransaction({
                                 <HStack wordBreak="break-all">
                                   <Text>
                                     {t('example', { ns: 'common' })}:{' '}
-                                    <ExampleLabel bg="neutral-4">1.2</ExampleLabel>
+                                    <ExampleLabel bg="color-neutral-800">1.2</ExampleLabel>
                                   </Text>
                                 </HStack>
                               }

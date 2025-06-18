@@ -128,8 +128,8 @@ export function AssetSelector({
               />
               <Flex flexDir="column">
                 <Text
-                  textStyle="labels-large"
-                  color="white-0"
+                  textStyle="text-sm-medium"
+                  color="color-white"
                 >
                   {item.label}
                 </Text>
@@ -138,22 +138,22 @@ export function AssetSelector({
                   gap={2}
                 >
                   <Text
-                    textStyle="body-large"
-                    color="neutral-7"
+                    textStyle="text-lg-regular"
+                    color="color-neutral-300"
                   >
                     {balanceText}
                   </Text>
                   {usdValue && (
                     <>
                       <Text
-                        textStyle="body-large"
-                        color="neutral-7"
+                        textStyle="text-lg-regular"
+                        color="color-neutral-300"
                       >
                         {'•'}
                       </Text>
                       <Text
-                        textStyle="body-large"
-                        color="neutral-7"
+                        textStyle="text-lg-regular"
+                        color="color-neutral-300"
                       >
                         {formatUSD(usdValue)}
                       </Text>
@@ -166,7 +166,7 @@ export function AssetSelector({
               <Icon
                 as={CheckCircle}
                 boxSize="1.5rem"
-                color="lilac-0"
+                color="color-lilac-100"
               />
             )}
           </>

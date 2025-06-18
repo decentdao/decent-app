@@ -11,6 +11,7 @@
   "proposalTemplates": "Modelos de propostas",
   "proposalTemplate": "{{proposalTemplateTitle}}",
   "proposalTemplateNew": "Criar modelo de proposta",
+  "deployToken": "Implantar Token",
   "editDAO": "Editar DAO",
   "parentLink": "Pai DAO",
   "settings": "Definições"

@@ -1,13 +1,8 @@
 import { TokenInfoResponse, TransferResponse } from '@safe-global/api-kit';
 import { SafeMultisigTransactionResponse } from '@safe-global/safe-core-sdk-types';
-import { Dispatch } from 'react';
 import { Address } from 'viem';
-import { FractalGovernanceActions } from '../providers/App/governance/action';
-import { GovernanceContractActions } from '../providers/App/governanceContracts/action';
-import { FractalGuardActions } from '../providers/App/guard/action';
-import { GuardContractActions } from '../providers/App/guardContracts/action';
-import { TreasuryActions } from '../providers/App/treasury/action';
-import { ERC721TokenData, VotesTokenData } from './account';
+import { ERC20TokenData, ERC721TokenData, VotesTokenData } from './account';
+import { DAOOwnedEntities } from './daoGeneral';
 import { FreezeGuardType, FreezeVotingType } from './daoGovernance';
 import { AzoriusProposal, MultisigProposal, ProposalData } from './daoProposal';
 import { DefiBalance, NFTBalance, TokenBalance, TokenEventType, TransferType } from './daoTreasury';
@@ -180,24 +175,11 @@ export interface ITokenAccount {
   votingWeightString: string | undefined;
 }
 
-export interface FractalStore extends Fractal {
-  action: {
-    dispatch: Dispatch<FractalActions>;
-    resetSafeState: () => Promise<void>;
-  };
-}
-export enum StoreAction {
-  RESET = 'RESET',
-}
-export type FractalActions =
-  | { type: StoreAction.RESET }
-  | FractalGuardActions
-  | FractalGovernanceActions
-  | TreasuryActions
-  | GovernanceContractActions
-  | GuardContractActions;
+export interface FractalStore extends Fractal {}
+
 export interface Fractal {
   guard: FreezeGuard;
+  guardAccountData: GuardAccountData;
   governance: FractalGovernance;
   treasury: DecentTreasury;
   governanceContracts: FractalGovernanceContracts;
@@ -267,8 +249,11 @@ export interface FreezeGuard {
   freezeProposalVoteCount: bigint | null; // Number of accrued freeze votes
   freezeProposalPeriod: bigint | null; // Number of blocks a freeze proposal has to succeed
   freezePeriod: bigint | null; // Number of blocks a freeze lasts, from time of freeze proposal creation
-  userHasFreezeVoted: boolean;
   isFrozen: boolean;
+}
+
+export interface GuardAccountData {
+  userHasFreezeVoted: boolean;
   userHasVotes: boolean;
 }
 
@@ -292,9 +277,14 @@ export interface AzoriusGovernance extends Governance {
 export interface DecentGovernance extends AzoriusGovernance {
   lockedVotesToken?: VotesTokenData;
 }
-export interface SafeMultisigGovernance extends Governance {}
+export interface SafeMultisigGovernance extends Governance {
+  // This is here so that FractalGovernance can be used freely without
+  // having to cast `as AzoriusGovernance` in order to access `votesToken`.
+  // `SafeMultisigGovernance` doesn't have this, so `undefined` is its only possible value.
+  votesToken?: undefined;
+}
 
-export interface Governance {
+export type Governance = {
   type?: GovernanceType;
   loadingProposals: boolean;
   allProposalsLoaded: boolean;
@@ -303,10 +293,8 @@ export interface Governance {
   proposalTemplates?: ProposalTemplate[] | null;
   tokenClaimContractAddress?: Address;
   isAzorius: boolean;
-  gaslessVotingEnabled: boolean;
-  // null -- Paymaster contract has not been deployed at the address we expect it to be at
-  paymasterAddress: Address | null;
-}
+  erc20Token: ERC20TokenData | undefined;
+} & DAOOwnedEntities;
 
 export interface VotingStrategyAzorius extends VotingStrategy {
   strategyType?: VotingStrategyType;
@@ -322,6 +310,7 @@ export interface VotingStrategy<Type = BIFormattedPair> {
   quorumPercentage?: Type;
   quorumThreshold?: Type;
   timeLockPeriod?: Type;
+  executionPeriod?: Type;
   proposerThreshold?: Type;
 }
 

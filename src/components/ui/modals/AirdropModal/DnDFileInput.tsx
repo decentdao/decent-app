@@ -1,36 +1,13 @@
 import { Box, Flex, Text } from '@chakra-ui/react';
-import csv from 'csvtojson';
 import { useFormikContext } from 'formik';
 import { useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { useTranslation } from 'react-i18next';
 import { formatUnits, isAddress } from 'viem';
-import { AirdropFormValues } from './AirdropModal';
-
-function floatStringToBigInt(str: string, decimals: number): bigint {
-  // Step 1: Split integer and fraction
-  const [intPart, fracPart = ''] = str.split('.');
-
-  // Step 2: Normalize fractional part to desired decimals
-  const normalizedFrac = (fracPart + '0'.repeat(decimals)).slice(0, decimals);
-
-  // Step 3: Combine parts and convert to BigInt
-  const combined = intPart + normalizedFrac;
-
-  return BigInt(combined);
-}
+import { AirdropFormValues } from '../../../../types';
+import { floatStringToBigInt, parseCsvText } from '../../../../utils/csvformat';
 
 const zeroBigInt = BigInt(0);
-
-const parseCsvText = (text: string, tabDelimited: boolean) => {
-  const converter = csv({
-    delimiter: tabDelimited ? '\t' : 'auto',
-    noheader: true,
-    trim: true,
-    output: 'csv', // Output as array of arrays
-  });
-  return converter.fromString(text);
-};
 
 const parseRecipientLines = (text: string[][], decimals: number) => {
   return text
@@ -100,19 +77,19 @@ export function DnDFileInput() {
         {...getRootProps()}
         p="1rem"
         border="1px dashed"
-        borderColor={isDragActive ? 'lilac-0' : 'neutral-3'}
+        borderColor={isDragActive ? 'color-lilac-100' : 'color-neutral-900'}
         borderRadius="sm"
-        bg="neutral-1"
+        bg="color-black"
         cursor="pointer"
         textAlign="center"
         transition="border-color 0.2s ease-in-out"
-        _hover={{ borderColor: 'lilac-0' }}
+        _hover={{ borderColor: 'color-lilac-100' }}
       >
         <input {...getInputProps()} />
         <Text>{isDragActive ? t('dropCSVHere') : t('dragDropCSV')}</Text>
         <Text
           fontSize="sm"
-          color="neutral-7"
+          color="color-neutral-300"
           mt="0.5rem"
         >
           {t('csvFormat')}

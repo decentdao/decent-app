@@ -8,7 +8,7 @@ import {
 } from '../../../constants/common';
 import Divider from '../utils/Divider';
 
-export type ModalBaseSize = 'sm' | 'md' | 'lg' | 'xl' | '2xl' | 'max';
+export type ModalBaseSize = 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '6xl' | 'max';
 
 export type ModalContentStyle = {
   backgroundColor?: string;
@@ -70,7 +70,7 @@ export function ModalBase({
         </ModalContent>
       ) : (
         <ModalContent
-          bg={contentStyle?.backgroundColor ?? 'neutral-2'}
+          bg={contentStyle?.backgroundColor ?? 'color-neutral-950'}
           borderRadius="0.75rem"
           boxShadow="0px 0px 0px 1px #100414, 0px 0px 0px 1px rgba(248, 244, 252, 0.04) inset, 0px 1px 0px 0px rgba(248, 244, 252, 0.04) inset"
           padding={contentStyle?.padding ?? '1.5rem'}
@@ -86,14 +86,14 @@ export function ModalBase({
           {title && (
             <>
               <Flex
-                color="lilac-0"
+                color="color-lilac-100"
                 marginBottom="1rem"
               >
                 <HStack>
                   {warn && <Warning size="20" />}
                   <Text
-                    color="white-0"
-                    textStyle="heading-small"
+                    color="color-white"
+                    textStyle="text-xl-regular"
                   >
                     {title}
                   </Text>

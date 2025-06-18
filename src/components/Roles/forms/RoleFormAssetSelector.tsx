@@ -1,4 +1,4 @@
-import { Flex, FormControl, Icon, Image, Text } from '@chakra-ui/react';
+import { Box, Flex, FormControl, Icon, Image, Text } from '@chakra-ui/react';
 import { CheckCircle } from '@phosphor-icons/react';
 import {
   Field,
@@ -11,7 +11,9 @@ import {
 import { useTranslation } from 'react-i18next';
 import { getAddress } from 'viem';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
+import useLockedToken from '../../../hooks/DAO/useLockedToken';
 import { useDAOStore } from '../../../providers/App/AppProvider';
+import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
 import { BigIntValuePair } from '../../../types';
 import { RoleFormValues } from '../../../types/roles';
 import { formatCoin, formatUSD } from '../../../utils';
@@ -26,12 +28,31 @@ export function AssetSelector({ formIndex, disabled }: { formIndex: number; disa
   const {
     treasury: { assetsFungible },
   } = useDAOStore({ daoKey });
+  const {
+    contracts: { sablierV2Batch, sablierV2LockupTranched },
+  } = useNetworkConfigStore();
+  const selectedAsset = values.roleEditing?.payments?.[formIndex]?.asset;
+  const { tokenState: tokenStateOfBatch } = useLockedToken(
+    selectedAsset?.address
+      ? {
+          token: selectedAsset.address,
+          account: sablierV2Batch,
+        }
+      : undefined,
+  );
+  const { tokenState: tokenStateOfTranched } = useLockedToken(
+    selectedAsset?.address
+      ? {
+          token: selectedAsset.address,
+          account: sablierV2LockupTranched,
+        }
+      : undefined,
+  );
+  const tokenCanTransfer = tokenStateOfBatch.canTransfer && tokenStateOfTranched.canTransfer;
 
   const fungibleAssetsWithBalance = assetsFungible.filter(
     asset => parseFloat(asset.balance) > 0 && !asset.nativeToken,
   );
-
-  const selectedAsset = values.roleEditing?.payments?.[formIndex]?.asset;
 
   const dropdownItems = fungibleAssetsWithBalance.map(asset => ({
     value: asset.tokenAddress,
@@ -101,8 +122,8 @@ export function AssetSelector({ formIndex, disabled }: { formIndex: number; disa
                       />
                       <Flex flexDir="column">
                         <Text
-                          textStyle="labels-large"
-                          color="white-0"
+                          textStyle="text-sm-medium"
+                          color="color-white"
                         >
                           {item.label}
                         </Text>
@@ -111,22 +132,22 @@ export function AssetSelector({ formIndex, disabled }: { formIndex: number; disa
                           gap={2}
                         >
                           <Text
-                            textStyle="body-large"
-                            color="neutral-7"
+                            textStyle="text-lg-regular"
+                            color="color-neutral-300"
                           >
                             {balanceText}
                           </Text>
                           {usdValue && (
                             <>
                               <Text
-                                textStyle="body-large"
-                                color="neutral-7"
+                                textStyle="text-lg-regular"
+                                color="color-neutral-300"
                               >
                                 {'•'}
                               </Text>
                               <Text
-                                textStyle="body-large"
-                                color="neutral-7"
+                                textStyle="text-lg-regular"
+                                color="color-neutral-300"
                               >
                                 {formatUSD(usdValue)}
                               </Text>
@@ -139,7 +160,7 @@ export function AssetSelector({ formIndex, disabled }: { formIndex: number; disa
                       <Icon
                         as={CheckCircle}
                         boxSize="1.5rem"
-                        color="lilac-0"
+                        color="color-lilac-100"
                       />
                     )}
                   </>
@@ -148,6 +169,25 @@ export function AssetSelector({ formIndex, disabled }: { formIndex: number; disa
             />
           )}
         </Field>
+        {!tokenCanTransfer && (
+          <Box
+            textStyle="text-sm-medium"
+            color="color-neutral-300"
+            mt="2"
+            h="0.5rem"
+          >
+            <Flex gap="0.25rem">
+              <Image src="/images/input-error.svg" />
+              <Text
+                color="color-error-500"
+                mt="0.2rem"
+                mb="0.25rem"
+              >
+                {t('streamIsNotTransferable', { ns: 'proposal' })}
+              </Text>
+            </Flex>
+          </Box>
+        )}
       </FormControl>
       <FormControl
         my="1rem"
@@ -170,7 +210,7 @@ export function AssetSelector({ formIndex, disabled }: { formIndex: number; disa
             return (
               <LabelWrapper
                 label={t('totalAmount')}
-                labelColor="neutral-7"
+                labelColor="color-neutral-300"
                 errorMessage={
                   paymentAmountBigIntTouched && paymentAmountBigIntError?.bigintValue
                     ? paymentAmountBigIntError.bigintValue

@@ -7,6 +7,8 @@
   "titleGovernance": "Gouvernance",
   "titleType": "Type",
   "titleVotingPeriod": "Période de vote",
+  "titleExecutionPeriod": "Période d'exécution",
+  "titleTimelockPeriod": "Période de verrouillage",
   "titleQuorum": "Quorum",
   "titleProposals": "Propositions",
   "titleActive": "Actif",

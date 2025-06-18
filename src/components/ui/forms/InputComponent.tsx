@@ -75,24 +75,20 @@ export function LabelComponent(props: Omit<BaseProps, 'value'>) {
       {...gridContainerProps}
     >
       <GridItem
-        pb="0.5rem"
         alignSelf={alignLabel ?? 'center'}
         mt={alignLabel === 'flex-start' ? '0.75rem' : 0}
       >
         {isStringLabel ? (
-          <HStack
-            pb={1}
-            spacing={0}
-          >
+          <HStack spacing={0}>
             <Text>{label}</Text>
-            {isRequired && <Text color="lilac-0">*</Text>}
+            {isRequired && <Text color="color-lilac-100">*</Text>}
           </HStack>
         ) : (
           label
         )}
         {helperSlot === 'start' && (
           <Text
-            color="neutral-7"
+            color="color-neutral-400"
             wordBreak="break-word"
           >
             {helper}
@@ -111,7 +107,7 @@ export function LabelComponent(props: Omit<BaseProps, 'value'>) {
 
       {helperSlot === 'end' && (
         <GridItem>
-          <Text color="neutral-7">{helper}</Text>
+          <Text color="color-neutral-400">{helper}</Text>
         </GridItem>
       )}
     </Grid>

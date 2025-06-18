@@ -21,21 +21,21 @@ function LabelWrapper({
   tooltipContent,
   children,
   isRequired,
-  labelColor = 'white-0',
+  labelColor = 'color-white',
 }: LabelWrapperProps) {
   return (
     <Box position="relative">
       <FormLabel m="0px">
         <Flex
-          gap="2"
+          gap="0.5"
           alignItems="center"
           h="fit-content"
           color={labelColor}
           mb="2"
-          textStyle="labels-large"
+          textStyle="text-sm-medium"
         >
           <Text>{label}</Text>
-          {isRequired && <Text color="lilac-0">*</Text>}
+          {isRequired && <Text color="color-base-error">*</Text>}
           {!!tooltipContent && (
             <DecentTooltip
               hasArrow
@@ -48,8 +48,8 @@ function LabelWrapper({
         </Flex>
         {children}
         <Box
-          textStyle="labels-large"
-          color="neutral-7"
+          textStyle="text-sm-medium"
+          color="color-neutral-300"
           mt="2"
           h="0.5rem"
         >
@@ -57,7 +57,7 @@ function LabelWrapper({
             <Flex gap="0.25rem">
               <Image src="/images/input-error.svg" />
               <Text
-                color="red-0"
+                color="color-error-500"
                 mt="0.2rem"
                 mb="0.25rem"
               >

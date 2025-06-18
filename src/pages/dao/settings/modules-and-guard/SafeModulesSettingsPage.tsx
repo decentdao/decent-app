@@ -38,15 +38,15 @@ export function SafeModulesSettingsPage() {
           gap="1rem"
         >
           <Text
-            ml={6}
-            textStyle="body-large"
+            textStyle="text-lg-regular"
+            color="color-white"
           >
             {t('modulesTitle')}
           </Text>
 
           <Box
             border="1px solid"
-            borderColor="neutral-3"
+            borderColor="color-neutral-900"
             borderRadius="0.75rem"
             p={4}
           >
@@ -64,7 +64,7 @@ export function SafeModulesSettingsPage() {
                       key={moduleAddress}
                       flexDirection="column"
                     >
-                      {moduleHelper && <Text textStyle="body-small">{moduleHelper}</Text>}
+                      {moduleHelper && <Text textStyle="text-base-regular">{moduleHelper}</Text>}
                       <DisplayAddress
                         ml={-3.5}
                         address={moduleAddress}
@@ -77,7 +77,7 @@ export function SafeModulesSettingsPage() {
                   );
                 })
               ) : (
-                <Text color="neutral-5">{t('noModulesAttached')}</Text>
+                <Text color="color-neutral-700">{t('noModulesAttached')}</Text>
               )
             ) : (
               <BarLoader />
@@ -90,21 +90,21 @@ export function SafeModulesSettingsPage() {
           mt="2rem"
         >
           <Text
-            ml={6}
-            textStyle="body-large"
+            textStyle="text-lg-regular"
+            color="color-white"
           >
             {t('guardsTitle')}
           </Text>
 
           <Box
             border="1px solid"
-            borderColor="neutral-3"
+            borderColor="color-neutral-900"
             borderRadius="0.75rem"
             p={4}
           >
             {safe?.guard && safe?.guard !== zeroAddress ? (
               <Flex flexDirection="column">
-                <Text textStyle="body-small">
+                <Text textStyle="text-base-regular">
                   {!!freezeGuardContractAddress || !!freezeVotingContractAddress
                     ? 'Freeze Guard'
                     : 'Guard'}
@@ -118,7 +118,7 @@ export function SafeModulesSettingsPage() {
                 </DisplayAddress>
               </Flex>
             ) : (
-              <Text color="neutral-5">{t('noGuardAttached')}</Text>
+              <Text color="color-neutral-700">{t('noGuardAttached')}</Text>
             )}
           </Box>
         </Flex>

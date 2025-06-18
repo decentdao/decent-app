@@ -29,7 +29,9 @@ export function AzoriusTokenAllocations(props: ICreationStepProps) {
   const { values, errors, setFieldValue, isSubDAO } = props;
   const { t } = useTranslation('daoCreate');
   const { daoKey } = useCurrentDAOKey();
+
   const { governance } = useDAOStore({ daoKey });
+
   const azoriusGovernance = governance as AzoriusGovernance;
   const canReceiveParentAllocations = isSubDAO && azoriusGovernance.votesToken?.address;
 
@@ -84,8 +86,8 @@ export function AzoriusTokenAllocations(props: ICreationStepProps) {
             </Grid>
 
             <Text
-              color="neutral-7"
-              textStyle="labels-large"
+              color="color-neutral-300"
+              textStyle="text-sm-medium"
             >
               {t('helperAllocations')}
             </Text>
@@ -112,8 +114,8 @@ export function AzoriusTokenAllocations(props: ICreationStepProps) {
                       <>
                         <AccordionButton
                           p={0}
-                          textStyle="heading-small"
-                          color="lilac-0"
+                          textStyle="text-xl-regular"
+                          color="color-lilac-100"
                         >
                           {isExpanded ? <CaretDown /> : <CaretRight />}
                           {t('advanced', { ns: 'common' })}

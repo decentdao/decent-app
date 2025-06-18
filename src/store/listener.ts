@@ -4,13 +4,16 @@ import {
   AzoriusProposal,
   DAOKey,
   ERC721ProposalVote,
+  FractalProposalState,
+  GaslessVotingDaoData,
   GovernanceType,
   ProposalVote,
   ProposalVotesSummary,
 } from '../types';
 import { useAccountListeners } from './listeners/account';
 import { useGovernanceListeners } from './listeners/governance';
-import { useRolesListener } from './listeners/roles';
+import { useKeyValuePairsListener } from './listeners/keyValuePairs';
+import { useRolesStore } from './roles/useRolesStore';
 import { useGlobalStore } from './store';
 
 /**
@@ -26,14 +29,17 @@ export const useDAOStoreListener = ({ daoKey }: { daoKey: DAOKey | undefined }) 
     getGuard,
     setProposal,
     setProposalVote,
+    updateProposalState,
     setGuardAccountData,
     setGaslessVotingData,
   } = useGlobalStore();
 
+  const { setHatKeyValuePairData } = useRolesStore();
+
   const governance = daoKey ? getGovernance(daoKey) : undefined;
   const lockedVotesTokenAddress = governance?.lockReleaseAddress;
   const votesTokenAddress = governance?.votesTokenAddress;
-  const azoriusModuleAddress = governance?.moduleAzoriusAddress;
+  const moduleAzoriusAddress = governance?.moduleAzoriusAddress;
   const erc20StrategyAddress =
     governance?.linearVotingErc20Address ||
     governance?.linearVotingErc20WithHatsWhitelistingAddress;
@@ -65,6 +71,15 @@ export const useDAOStoreListener = ({ daoKey }: { daoKey: DAOKey | undefined }) 
       }
     },
     [daoKey, setProposal],
+  );
+
+  const onProposalExecuted = useCallback(
+    (proposalId: string) => {
+      if (daoKey) {
+        updateProposalState(daoKey, proposalId, FractalProposalState.EXECUTED);
+      }
+    },
+    [daoKey, updateProposalState],
   );
 
   const onGovernanceAccountDataUpdated = useCallback(
@@ -106,10 +121,11 @@ export const useDAOStoreListener = ({ daoKey }: { daoKey: DAOKey | undefined }) 
   useGovernanceListeners({
     lockedVotesTokenAddress,
     votesTokenAddress,
-    azoriusModuleAddress,
+    moduleAzoriusAddress,
     erc20StrategyAddress,
     erc721StrategyAddress,
     onProposalCreated,
+    onProposalExecuted,
     onGovernanceAccountDataUpdated,
     onLockReleaseAccountDataUpdated,
     onERC20VoteCreated,
@@ -147,11 +163,12 @@ export const useDAOStoreListener = ({ daoKey }: { daoKey: DAOKey | undefined }) 
     votesTokenAddress,
     azoriusGuardAddress,
     multisigGuardAddress,
-    freezeVotingType: freezeVotingType || undefined,
-    freezeVotingAddress: freezeVotingAddress || undefined,
-    freezeProposalCreatedTime: freezeProposalCreatedTime || undefined,
-    freezeProposalPeriod: freezeProposalPeriod || undefined,
-    freezePeriod: freezePeriod || undefined,
+    freezeVotingType: freezeVotingType !== null ? freezeVotingType : undefined,
+    freezeVotingAddress: freezeVotingAddress !== null ? freezeVotingAddress : undefined,
+    freezeProposalCreatedTime:
+      freezeProposalCreatedTime !== null ? freezeProposalCreatedTime : undefined,
+    freezeProposalPeriod: freezeProposalPeriod !== null ? freezeProposalPeriod : undefined,
+    freezePeriod: freezePeriod !== null ? freezePeriod : undefined,
     lockReleaseAddress: lockedVotesTokenAddress,
     parentSafeAddress: parentSafeAddress || undefined,
     onGuardAccountDataLoaded,
@@ -159,13 +176,31 @@ export const useDAOStoreListener = ({ daoKey }: { daoKey: DAOKey | undefined }) 
     onGovernanceLockReleaseAccountDataLoaded,
   });
 
-  const onRolesDataFetched = useCallback((rolesData: unknown) => {
-    console.log('Roles data fetched for global store', { rolesData });
-    // TODO: Implement this in scope of ENG-632
-  }, []);
+  const onRolesDataFetched = useCallback(
+    ({
+      contextChainId,
+      hatsTreeId,
+      streamIdsToHatIds,
+    }: {
+      contextChainId: number;
+      hatsTreeId: number | null | undefined;
+      streamIdsToHatIds: { hatId: bigint; streamId: string }[];
+    }) => {
+      // TODO: Implement setting to global store in scope of ENG-632
+      if (daoKey) {
+        setHatKeyValuePairData({
+          daoKey,
+          contextChainId,
+          hatsTreeId,
+          streamIdsToHatIds,
+        });
+      }
+    },
+    [setHatKeyValuePairData, daoKey],
+  );
 
   const onGaslessVotingDataFetched = useCallback(
-    (gasslesVotingData: { paymasterAddress: Address | null; gaslessVotingEnabled: boolean }) => {
+    (gasslesVotingData: GaslessVotingDaoData) => {
       if (daoKey) {
         setGaslessVotingData(daoKey, gasslesVotingData);
       }
@@ -173,7 +208,7 @@ export const useDAOStoreListener = ({ daoKey }: { daoKey: DAOKey | undefined }) 
     [daoKey, setGaslessVotingData],
   );
 
-  useRolesListener({
+  useKeyValuePairsListener({
     safeAddress: node?.safe?.address,
     onRolesDataFetched,
     onGaslessVotingDataFetched,

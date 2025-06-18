@@ -1,0 +1,8 @@
+{
+  "stakingTitle": "Jalonnement",
+  "stakingNull": "Votre DAO n'a pas encore de contrat de staking. Vous pouvez en déployer un maintenant.",
+  "deployStaking": "Déployer un contrat de jalonnement",
+  "stakingPeriod": "Période de jalonnement",
+  "includeStakingInVoting": "Inclure le jeton de jalonnement dans le vote par jeton",
+  "includeStakingInVotingDesc": "-pas encore de copie-"
+}

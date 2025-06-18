@@ -27,8 +27,8 @@ export function ProposalTitle({ activity }: { activity: FractalProposal }) {
   const titleText = proposalIdText + ' ' + proposaltitleText;
   return (
     <Box
-      textStyle="heading-small"
-      color="white-0"
+      textStyle="text-xl-regular"
+      color="color-white"
       pr="1.5rem"
     >
       <Flex
@@ -38,7 +38,7 @@ export function ProposalTitle({ activity }: { activity: FractalProposal }) {
       >
         <Text
           as="span"
-          textStyle="heading-medium"
+          textStyle="text-2xl-regular"
           maxW="100%"
         >
           {titleText}

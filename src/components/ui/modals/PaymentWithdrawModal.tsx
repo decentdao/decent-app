@@ -35,7 +35,7 @@ export function PaymentWithdrawModal({
     recipient: Address;
     withdrawableAmount: bigint;
   };
-  onSuccess: () => Promise<void>;
+  onSuccess: () => void;
   onClose: () => void;
 }) {
   const { data: walletClient } = useNetworkWalletClient();
@@ -89,8 +89,8 @@ export function PaymentWithdrawModal({
         failedMessage: t('withdrawRevertedMessage'),
         successMessage: t('withdrawSuccessMessage'),
         failedCallback: () => {},
-        successCallback: async () => {
-          await onSuccess();
+        successCallback: () => {
+          onSuccess();
           onClose();
         },
         completedCallback: () => {},
@@ -117,7 +117,7 @@ export function PaymentWithdrawModal({
       {/* AVAILABLE */}
       <Flex alignItems="center">
         <Text
-          color="neutral-7"
+          color="color-neutral-300"
           flex={3}
         >
           {t('available')}
@@ -152,7 +152,7 @@ export function PaymentWithdrawModal({
       {/* RECIPIENT */}
       <Flex mt="0.25rem">
         <Text
-          color="neutral-7"
+          color="color-neutral-300"
           flex={3}
           mt="-0.25rem"
         >
@@ -182,7 +182,7 @@ export function PaymentWithdrawModal({
       {/* NETWORK */}
       <Flex>
         <Text
-          color="neutral-7"
+          color="color-neutral-300"
           flex={3}
         >
           {t('network', { ns: 'common' })}

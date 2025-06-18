@@ -1,14 +1,14 @@
 import { abis } from '@fractal-framework/fractal-contracts';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { getContract } from 'viem';
-import useFeatureFlag from '../../../helpers/environmentFeatureFlags';
 import { logError } from '../../../helpers/errorLogging';
 import useSnapshotProposal from '../../../hooks/DAO/loaders/snapshot/useSnapshotProposal';
-import { useLoadDAOProposals } from '../../../hooks/DAO/loaders/useLoadDAOProposals';
-import useUpdateProposalState from '../../../hooks/DAO/proposal/useUpdateProposalState';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import useNetworkPublicClient from '../../../hooks/useNetworkPublicClient';
+import { useSafeTransactions } from '../../../hooks/utils/useSafeTransactions';
 import { useDAOStore } from '../../../providers/App/AppProvider';
+import { useSafeAPI } from '../../../providers/App/hooks/useSafeAPI';
+import { useGlobalStore } from '../../../store/store';
 import {
   AzoriusGovernance,
   AzoriusProposal,
@@ -16,36 +16,31 @@ import {
   FractalProposalState,
   FreezeGuardType,
 } from '../../../types';
+import { getAzoriusProposalState } from '../../../utils';
 import { blocksToSeconds } from '../../../utils/contract';
 import { getTxTimelockedTimestamp } from '../../../utils/guard';
 
 export function useProposalCountdown(proposal: FractalProposal) {
-  const { daoKey } = useCurrentDAOKey();
+  const { daoKey, safeAddress } = useCurrentDAOKey();
   const {
     governance,
+    governanceContracts: { moduleAzoriusAddress },
     guardContracts: { freezeGuardContractAddress, freezeGuardType },
-    governanceContracts,
-    action,
   } = useDAOStore({ daoKey });
+  const { updateProposalState, setProposals } = useGlobalStore();
+  const safeApi = useSafeAPI();
+  const { parseTransactions } = useSafeTransactions();
   const publicClient = useNetworkPublicClient();
 
   const [secondsLeft, setSecondsLeft] = useState<number>();
   const { snapshotProposal } = useSnapshotProposal(proposal);
-  const storeFeatureEnabled = useFeatureFlag('flag_store_v2');
   const azoriusGovernance = governance as AzoriusGovernance;
-
-  const loadDAOProposals = useLoadDAOProposals();
-  const updateProposalState = useUpdateProposalState({
-    governanceContracts,
-    governanceDispatch: action.dispatch,
-  });
 
   let updateStateInterval = useRef<ReturnType<typeof setInterval> | undefined>();
   let countdownInterval = useRef<ReturnType<typeof setInterval> | undefined>();
   useEffect(() => {
     // if it's not a state that requires a countdown, clear the interval and return
 
-    if (storeFeatureEnabled) return;
     if (
       !(
         proposal.state === FractalProposalState.ACTIVE ||
@@ -56,18 +51,34 @@ export function useProposalCountdown(proposal: FractalProposal) {
       clearInterval(updateStateInterval.current);
       return;
     }
-
     // if the timer has run out, update proposals on a ten second interval
     // until we need another one
-    if (secondsLeft !== undefined && secondsLeft < 0 && !updateStateInterval.current) {
+    if (
+      secondsLeft !== undefined &&
+      secondsLeft < 0 &&
+      !updateStateInterval.current &&
+      safeAddress &&
+      daoKey
+    ) {
       updateStateInterval.current = setInterval(() => {
         // Wrap the updateProposalState call in an async IIFE
         (async () => {
           try {
-            if (governance.isAzorius) {
-              await updateProposalState(Number(proposal.proposalId));
+            if (governance.isAzorius && moduleAzoriusAddress !== undefined) {
+              const azoriusContract = getContract({
+                abi: abis.Azorius,
+                address: moduleAzoriusAddress,
+                client: publicClient,
+              });
+              const state = await getAzoriusProposalState(
+                azoriusContract,
+                Number(proposal.proposalId),
+              );
+              updateProposalState(daoKey, proposal.proposalId, state);
             } else {
-              await loadDAOProposals();
+              const multisigTransactions = await safeApi.getMultisigTransactions(safeAddress);
+              const proposals = await parseTransactions(multisigTransactions);
+              setProposals(daoKey, proposals);
             }
           } catch (error) {
             logError('Error updating proposal state:', error);
@@ -88,11 +99,16 @@ export function useProposalCountdown(proposal: FractalProposal) {
     };
   }, [
     secondsLeft,
-    loadDAOProposals,
     proposal,
-    updateProposalState,
+    daoKey,
+    safeAddress,
     governance.isAzorius,
-    storeFeatureEnabled,
+    moduleAzoriusAddress,
+    publicClient,
+    safeApi,
+    parseTransactions,
+    setProposals,
+    updateProposalState,
   ]);
 
   const startCountdown = useCallback((initialTimeMs: number) => {

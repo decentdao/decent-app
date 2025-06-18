@@ -26,6 +26,7 @@
   "move": "Verschieben",
   "hours": "Stunden",
   "minutes": "Protokoll",
+  "minutesShort": "min",
   "quorum": "Quorum",
   "deploy": "Bereitstellung von",
   "loading": "Laden...",
@@ -34,7 +35,6 @@
   "learnMore": "Mehr erfahren",
   "home": "Startseite",
   "labelViewDAO": "Ansicht Safe",
-  "labelDAOFound": "Sicher gefunden",
   "labelCurrentDAO": "Sie sehen gerade diesen Safe.",
   "labelEtherscan": "Ansicht auf Etherscan",
   "errorInvalidENSAddress": "Ungültiger ENS-Name oder Adresse auf {{chain}}",
@@ -128,5 +128,10 @@
   "unsavedChanges": "Nicht gespeicherte Änderungen",
   "unsavedChangesDescription": "Sie haben ungespeicherte Änderungen, die verloren gehen, wenn Sie fortfahren. Möchten Sie Ihre Änderungen verwerfen?",
   "discardChanges": "Ablegen",
-  "keepEditing": "Weiter bearbeiten"
+  "keepEditing": "Weiter bearbeiten",
+  "selectStatusLabel": "Status auswählen",
+  "addressRequired": "Adresse ist erforderlich",
+  "save": "Speichern Sie",
+  "daoNameRequired": "DAO-Name ist erforderlich",
+  "calendarPlaceholder": "JJJJ-MM-TT"
 }

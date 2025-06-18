@@ -38,7 +38,7 @@ export default function QuorumBadge({ proposal }: { proposal: AzoriusProposal })
   const quorumDisplay = useMemo(() => {
     if (!votingStrategy) return null;
     return !!votingStrategy.quorumPercentage
-      ? votingStrategy.quorumPercentage.formatted
+      ? `${votingStrategy.quorumPercentage.formatted}%`
       : !!votingStrategy.quorumThreshold
         ? votingStrategy.quorumThreshold.formatted
         : null;
@@ -64,11 +64,12 @@ export default function QuorumBadge({ proposal }: { proposal: AzoriusProposal })
       reachedQuorum
     : reachedQuorum >= totalQuorum;
 
-  const displayColor = totalVotesCasted !== 0n && meetsQuorum ? 'celery--3' : 'neutral-7';
+  const displayColor =
+    totalVotesCasted !== 0n && meetsQuorum ? 'color-green-600' : 'color-neutral-300';
   return (
     <Box
       rounded="md"
-      textStyle="labels-large"
+      textStyle="text-sm-medium"
       borderColor={displayColor}
       textColor={displayColor}
       border="1px solid"

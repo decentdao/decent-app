@@ -157,7 +157,7 @@ export function InfoProposals() {
         mb="0.5rem"
       >
         <Scroll size="1.5rem" />
-        <Text textStyle="heading-small">{t('titleProposals')}</Text>
+        <Text textStyle="text-xl-regular">{t('titleProposals')}</Text>
       </Flex>
 
       <Flex
@@ -166,7 +166,7 @@ export function InfoProposals() {
         mb="0.25rem"
         gap="0.5rem"
       >
-        <Text color="neutral-7">{t('titleTotal')}</Text>
+        <Text color="color-neutral-300">{t('titleTotal')}</Text>
         <Text>{totalProposalsDisplay}</Text>
       </Flex>
       <Flex
@@ -175,7 +175,7 @@ export function InfoProposals() {
         mb="0.25rem"
         gap="0.5rem"
       >
-        <Text color="neutral-7">{t('titleActive')}</Text>
+        <Text color="color-neutral-300">{t('titleActive')}</Text>
         <Text>{activeProposalsDisplay}</Text>
       </Flex>
     </Box>

@@ -27,7 +27,7 @@ export default function useTreasuryLidoInteractions() {
     Object.keys(staking).length > 0 &&
     ethAsset &&
     BigInt(ethAsset.balance) > 0n;
-  const openStakingModal = useDecentModal(ModalType.STAKE);
+  const { open: openStakingModal } = useDecentModal(ModalType.STAKE);
 
   // --- Lido Unstake button setup ---
   const stETHAsset = assetsFungible.find(

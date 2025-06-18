@@ -1,5 +1,16 @@
-import { Box, Flex, Show, Text, useBreakpointValue } from '@chakra-ui/react';
-import { Bank, CaretRight, CheckSquare, GearFine, Stack } from '@phosphor-icons/react';
+import { Box, Flex, Icon, Show, Text, useBreakpointValue } from '@chakra-ui/react';
+import {
+  Bank,
+  CaretRight,
+  CheckSquare,
+  Dot,
+  GearFine,
+  Stack,
+  RocketLaunch,
+  Percent,
+  PiggyBank,
+} from '@phosphor-icons/react';
+import { useFormikContext } from 'formik';
 import { PropsWithChildren, ReactNode, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useLocation, useMatch } from 'react-router-dom';
@@ -10,10 +21,14 @@ import { SafeGeneralSettingsPage } from '../../pages/dao/settings/general/SafeGe
 import { SafeGovernanceSettingsPage } from '../../pages/dao/settings/governance/SafeGovernanceSettingsPage';
 import { SafeModulesSettingsPage } from '../../pages/dao/settings/modules-and-guard/SafeModulesSettingsPage';
 import { SafePermissionsSettingsContent } from '../../pages/dao/settings/permissions/SafePermissionsSettingsContent';
+import { SafeRevenueSharingSettingsPage } from '../../pages/dao/settings/revenue-sharing/SafeRevenueSharingSettingsContent';
+import { SafeStakingSettingsContent } from '../../pages/dao/settings/staking/SafeStakingSettingsContent';
+import { SafeTokenSettingsPage } from '../../pages/dao/settings/token/SafeTokenSettingsPage';
 import { useDAOStore } from '../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
 import { AzoriusGovernance } from '../../types';
 import { BarLoader } from '../ui/loaders/BarLoader';
+import { SafeSettingsEdits } from '../ui/modals/SafeSettingsModal';
 import Divider from '../ui/utils/Divider';
 
 function SettingsLink({
@@ -44,7 +59,7 @@ function SettingsLink({
       onClick={onClick}
       borderRadius={{ md: '0.5rem' }}
       transition="all ease-out 300ms"
-      _hover={{ bgColor: 'neutral-3' }}
+      _hover={{ bgColor: 'color-neutral-900' }}
       bg={
         isCurrentPath ||
         (!isMobile &&
@@ -62,15 +77,15 @@ function SettingsLink({
         <Flex
           gap={4}
           alignItems="center"
-          color="lilac-0"
+          color="color-lilac-100"
         >
           {leftIcon}
-          <Text color="white-0">{title}</Text>
+          <Text color="color-white">{title}</Text>
         </Flex>
         <Show below="md">
           <Flex
             alignItems="center"
-            color="neutral-6"
+            color="color-neutral-400"
             gap={2}
           >
             {children}
@@ -97,6 +112,9 @@ const settingsNavigationItems = [
   'governance',
   'modulesAndGuard',
   'permissions',
+  'token',
+  'revenueSharing',
+  'staking',
 ] as const;
 
 function SettingsNavigationItem({
@@ -107,6 +125,7 @@ function SettingsNavigationItem({
   currentItem = 'general',
   item = 'general',
   onClick,
+  hasEdits = false,
 }: PropsWithChildren<{
   title: string;
   leftIcon: ReactNode;
@@ -114,15 +133,17 @@ function SettingsNavigationItem({
   item: (typeof settingsNavigationItems)[number];
   currentItem: (typeof settingsNavigationItems)[number];
   onClick?: () => void;
+  hasEdits?: boolean;
 }>) {
   return (
     <Box
       onClick={onClick}
       borderRadius={{ md: '0.5rem' }}
       transition="all ease-out 300ms"
-      _hover={{ bgColor: 'neutral-3' }}
+      _hover={{ bgColor: 'color-neutral-900' }}
       bg={currentItem === item ? 'white-alpha-04' : 'transparent'}
       p={{ base: 0, md: '0.5rem' }}
+      cursor="pointer"
     >
       <Flex
         alignItems="center"
@@ -131,15 +152,22 @@ function SettingsNavigationItem({
         <Flex
           gap={4}
           alignItems="center"
-          color="lilac-0"
+          color="color-lilac-100"
+          justifyContent="space-between"
         >
           {leftIcon}
-          <Text color="white-0">{title}</Text>
+          <Text color="color-white">{title}</Text>
         </Flex>
+        {hasEdits && (
+          <Icon
+            as={Dot}
+            style={{ transform: 'scale(5)' }}
+          />
+        )}
         <Show below="md">
           <Flex
             alignItems="center"
-            color="neutral-6"
+            color="color-neutral-400"
             gap={2}
           >
             {children}
@@ -175,15 +203,18 @@ export function SettingsNavigation({
   } = useDAOStore({ daoKey });
   const azoriusGovernance = governance as AzoriusGovernance;
 
-  const isSettingsV1Enabled = useFeatureFlag('flag_settings_v1');
+  const isTokenDeploymentEnabled = useFeatureFlag('flag_token_deployment');
+  const isRevShareEnabled = useFeatureFlag('flag_revenue_sharing');
   const isMobile = useBreakpointValue({ base: true, md: false });
 
   const [currentItem, setCurrentItem] =
     useState<(typeof settingsNavigationItems)[number]>('general');
 
+  const { values } = useFormikContext<SafeSettingsEdits>();
+
   return (
     <Flex
-      backgroundColor={isSettingsV1Enabled ? 'transparent' : 'neutral-2'}
+      backgroundColor="transparent"
       p={{ base: '1rem', md: '0.25rem' }}
       gap="0.25rem"
       flexDirection="column"
@@ -192,9 +223,9 @@ export function SettingsNavigation({
       borderBottomRightRadius={{ base: '0.75rem', md: '0' }}
       borderRight={{
         base: 'none',
-        md: !isSettingsV1Enabled ? '1px solid var(--colors-neutral-3)' : 'none',
+        md: 'none',
       }}
-      borderColor="neutral-3"
+      borderColor="color-neutral-900"
       boxShadow="1px 0px 0px 0px #100414"
       minWidth="220px"
       width={{ base: '100%', md: 'auto' }}
@@ -208,7 +239,7 @@ export function SettingsNavigation({
         >
           <BarLoader />
         </Flex>
-      ) : isSettingsV1Enabled && !isMobile ? (
+      ) : !isMobile ? (
         <>
           <SettingsNavigationItem
             title={t('daoSettingsGeneral')}
@@ -219,6 +250,11 @@ export function SettingsNavigation({
               onSettingsNavigationClick(<SafeGeneralSettingsPage />);
               setCurrentItem('general');
             }}
+            hasEdits={
+              values.general !== undefined ||
+              (values.paymasterGasTank !== undefined &&
+                !values.paymasterGasTank.deposit?.isDirectDeposit)
+            }
           />
           <SettingsNavigationItem
             title={t('daoSettingsGovernance')}
@@ -229,8 +265,9 @@ export function SettingsNavigation({
               onSettingsNavigationClick(<SafeGovernanceSettingsPage />);
               setCurrentItem('governance');
             }}
+            hasEdits={values.azorius !== undefined || values.multisig !== undefined}
           >
-            <Text color="neutral-7">
+            <Text color="color-neutral-300">
               {t(azoriusGovernance.votingStrategy?.strategyType ?? 'labelMultisig')}
             </Text>
           </SettingsNavigationItem>
@@ -244,7 +281,7 @@ export function SettingsNavigation({
               setCurrentItem('modulesAndGuard');
             }}
           >
-            <Text color="neutral-7">{(modules ?? []).length + (safe?.guard ? 1 : 0)}</Text>
+            <Text color="color-neutral-300">{(modules ?? []).length + (safe?.guard ? 1 : 0)}</Text>
           </SettingsNavigationItem>
           {governance.isAzorius && (
             <SettingsNavigationItem
@@ -257,9 +294,49 @@ export function SettingsNavigation({
                 onSettingsNavigationClick(<SafePermissionsSettingsContent />);
                 setCurrentItem('permissions');
               }}
+              hasEdits={values.permissions !== undefined}
             >
-              <Text color="neutral-7">{azoriusGovernance.votingStrategy ? 1 : 0}</Text>
+              <Text color="color-neutral-300">{azoriusGovernance.votingStrategy ? 1 : 0}</Text>
             </SettingsNavigationItem>
+          )}
+          {!governance.isAzorius && isTokenDeploymentEnabled && (
+            <SettingsNavigationItem
+              title={t('tokenTitle')}
+              leftIcon={<RocketLaunch fontSize="1.5rem" />}
+              item="token"
+              currentItem={currentItem}
+              onClick={() => {
+                onSettingsNavigationClick(<SafeTokenSettingsPage />);
+                setCurrentItem('token');
+              }}
+              hasEdits={false}
+            />
+          )}
+          {isRevShareEnabled && (
+            <SettingsNavigationItem
+              title={t('daoSettingsRevenueSharing')}
+              leftIcon={<Percent fontSize="1.5rem" />}
+              item="revenueSharing"
+              currentItem={currentItem}
+              showDivider={false}
+              onClick={() => {
+                onSettingsNavigationClick(<SafeRevenueSharingSettingsPage />);
+                setCurrentItem('revenueSharing');
+              }}
+            />
+          )}
+          {isRevShareEnabled && (
+            <SettingsNavigationItem
+              title={t('daoSettingsStaking')}
+              leftIcon={<PiggyBank fontSize="1.5rem" />}
+              item="staking"
+              currentItem={currentItem}
+              showDivider={false}
+              onClick={() => {
+                onSettingsNavigationClick(<SafeStakingSettingsContent />);
+                setCurrentItem('staking');
+              }}
+            />
           )}
         </>
       ) : (
@@ -275,7 +352,7 @@ export function SettingsNavigation({
             leftIcon={<Bank fontSize="1.5rem" />}
             title={t('daoSettingsGovernance')}
           >
-            <Text color="neutral-7">
+            <Text color="color-neutral-300">
               {t(azoriusGovernance.votingStrategy?.strategyType ?? 'labelMultisig')}
             </Text>
           </SettingsLink>
@@ -284,7 +361,7 @@ export function SettingsNavigation({
             leftIcon={<Stack fontSize="1.5rem" />}
             title={t('modulesAndGuardsTitle')}
           >
-            <Text color="neutral-7">{(modules ?? []).length + (safe?.guard ? 1 : 0)}</Text>
+            <Text color="color-neutral-300">{(modules ?? []).length + (safe?.guard ? 1 : 0)}</Text>
           </SettingsLink>
           {governance.isAzorius && (
             <SettingsLink
@@ -293,8 +370,16 @@ export function SettingsNavigation({
               title={t('permissionsTitle')}
               showDivider={false}
             >
-              <Text color="neutral-7">{azoriusGovernance.votingStrategy ? 1 : 0}</Text>
+              <Text color="color-neutral-300">{azoriusGovernance.votingStrategy ? 1 : 0}</Text>
             </SettingsLink>
+          )}
+          {!governance.isAzorius && isTokenDeploymentEnabled && (
+            <SettingsLink
+              path={DAO_ROUTES.settingsToken.relative(addressPrefix, safe.address)}
+              leftIcon={<RocketLaunch fontSize="1.5rem" />}
+              title={t('tokenTitle')}
+              onClick={() => onSettingsNavigationClick(<SafeTokenSettingsPage />)}
+            />
           )}
         </>
       )}

@@ -8,7 +8,8 @@ export function FreezeButton() {
   const { t } = useTranslation(['dashboard']);
   const { daoKey } = useCurrentDAOKey();
   const {
-    guard: { isFrozen, userHasFreezeVoted, userHasVotes },
+    guard: { isFrozen },
+    guardAccountData: { userHasFreezeVoted, userHasVotes },
   } = useDAOStore({ daoKey });
 
   const { castFreezeVote, pending } = useCastFreezeVote();

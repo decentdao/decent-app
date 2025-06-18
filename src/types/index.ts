@@ -1,4 +1,5 @@
 export * from './account';
+export * from './airdrop';
 export * from './common';
 export * from './createDAO';
 export * from './daoGeneral';

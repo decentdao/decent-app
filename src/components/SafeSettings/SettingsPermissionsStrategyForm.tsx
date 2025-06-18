@@ -40,13 +40,13 @@ export function SettingsPermissionsStrategyForm({
           alignItems="center"
           ref={tooltipContainerRef}
         >
-          <Text textStyle="heading-small">{t('asset')}</Text>
-          <Text color="lilac-0">*</Text>
+          <Text textStyle="text-xl-regular">{t('asset')}</Text>
+          <Text color="color-lilac-100">*</Text>
           <ModalTooltip
             containerRef={tooltipContainerRef}
             label={t('assetTooltip')}
           >
-            <Box color="lilac-0">
+            <Box color="color-lilac-100">
               <Info />
             </Box>
           </ModalTooltip>
@@ -60,7 +60,7 @@ export function SettingsPermissionsStrategyForm({
             gap={3}
             alignItems="center"
             border="1px solid"
-            borderColor="neutral-3"
+            borderColor="color-neutral-900"
             borderRadius="9999px"
             w="fit-content"
             className="payment-menu-asset"
@@ -72,8 +72,8 @@ export function SettingsPermissionsStrategyForm({
               boxSize="2.25rem"
             />
             <Text
-              textStyle="body-small"
-              color="white-0"
+              textStyle="text-base-regular"
+              color="color-white"
             >
               {votesToken?.symbol || erc721Tokens?.map(token => token.symbol).join(', ')}
             </Text>
@@ -82,13 +82,12 @@ export function SettingsPermissionsStrategyForm({
       </Flex>
       <LabelWrapper
         label={t('permissionAmountLabel')}
-        labelColor="neutral-7"
+        labelColor="color-neutral-300"
       >
         <BigIntInput
           onChange={setProposerThreshold}
           decimalPlaces={votesToken ? votesToken.decimals : 0}
           value={proposerThreshold.bigintValue}
-          parentFormikValue={proposerThreshold}
         />
       </LabelWrapper>
     </Flex>

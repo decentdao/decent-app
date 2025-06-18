@@ -128,7 +128,7 @@ export function RoleFormCreateProposal({ close }: { close: () => void }) {
         flexDir="column"
         gap="1rem"
         p="1rem"
-        bg="neutral-2"
+        bg="color-neutral-950"
         boxShadow={CARD_SHADOW}
         borderRadius="0.5rem"
       >

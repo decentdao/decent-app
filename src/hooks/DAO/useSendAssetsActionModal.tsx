@@ -33,7 +33,7 @@ export default function useSendAssetsActionModal() {
     navigate(DAO_ROUTES.proposalWithActionsNew.relative(addressPrefix, safe.address));
   };
 
-  const openSendAssetsModal = useDecentModal(ModalType.SEND_ASSETS, {
+  const { open: openSendAssetsModal } = useDecentModal(ModalType.SEND_ASSETS, {
     onSubmit: sendAssetsAction,
     submitButtonText: t('submitProposal', { ns: 'modals' }),
   });

@@ -26,6 +26,7 @@
   "move": "移動",
   "hours": "時間",
   "minutes": "議事録",
+  "minutesShort": "分",
   "quorum": "定足数",
   "deploy": "デプロイ",
   "loading": "読み込み中...",
@@ -34,7 +35,6 @@
   "learnMore": "さらに詳しく",
   "home": "ホーム",
   "labelViewDAO": "ビューセーフ",
-  "labelDAOFound": "無事発見",
   "labelCurrentDAO": "あなたは現在、この金庫を閲覧しています。",
   "labelEtherscan": "Etherscanで見る",
   "errorInvalidENSAddress": "無効なENS名またはアドレス {{chain}}.",
@@ -128,5 +128,10 @@
   "unsavedChanges": "未保存の変更",
   "unsavedChangesDescription": "保存していない変更があり、このまま続けると失われます。変更を破棄しますか？",
   "discardChanges": "廃棄",
-  "keepEditing": "編集を続ける"
+  "keepEditing": "編集を続ける",
+  "selectStatusLabel": "ステータス選択",
+  "addressRequired": "住所が必要",
+  "save": "セーブ",
+  "daoNameRequired": "DAO名は必須",
+  "calendarPlaceholder": "YYYY-MM-DD"
 }

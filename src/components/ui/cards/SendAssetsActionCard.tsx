@@ -26,17 +26,17 @@ export function SendAssetsActionCard({
             as={ArrowsDownUp}
             w="1.5rem"
             h="1.5rem"
-            color="lilac-0"
+            color="color-lilac-100"
           />
           <Text>{t('transfer')}</Text>
-          <Text color="lilac-0">
+          <Text color="color-lilac-100">
             {formatUnits(action.transferAmount, action.asset.decimals)} {action.asset.symbol}
           </Text>
           <Text>{t('to').toLowerCase()}</Text>
-          <Text color="lilac-0">{displayName}</Text>
+          <Text color="color-lilac-100">{displayName}</Text>
         </Flex>
         <Button
-          color="red-0"
+          color="color-error-500"
           variant="tertiary"
           size="sm"
           onClick={onRemove}

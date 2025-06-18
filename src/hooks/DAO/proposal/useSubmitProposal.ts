@@ -19,17 +19,16 @@ import { ADDRESS_MULTISIG_METADATA } from '../../../constants/common';
 import { buildSafeAPIPost, encodeMultiSend } from '../../../helpers';
 import { logError } from '../../../helpers/errorLogging';
 import { useDAOStore } from '../../../providers/App/AppProvider';
-import { FractalGovernanceAction } from '../../../providers/App/governance/action';
 import useIPFSClient from '../../../providers/App/hooks/useIPFSClient';
 import { useSafeAPI } from '../../../providers/App/hooks/useSafeAPI';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
+import { useGlobalStore } from '../../../store/store';
 import { CreateProposalMetadata, MetaTransaction, ProposalExecuteData } from '../../../types';
 import { getAzoriusModuleFromModules } from '../../../utils';
 import useNetworkPublicClient from '../../useNetworkPublicClient';
 import { useNetworkWalletClient } from '../../useNetworkWalletClient';
 import useVotingStrategiesAddresses from '../../utils/useVotingStrategiesAddresses';
 import { useDecentModules } from '../loaders/useDecentModules';
-import { useLoadDAOProposals } from '../loaders/useLoadDAOProposals';
 import { useCurrentDAOKey } from '../useCurrentDAOKey';
 
 export type SubmitProposalFunction = ({
@@ -62,8 +61,8 @@ interface ISubmitAzoriusProposal extends ISubmitProposal {
 
 export default function useSubmitProposal() {
   const { t } = useTranslation(['proposal', 'transaction']);
+  const { setPendingProposalLoading } = useGlobalStore();
   const [pendingCreateTx, setPendingCreateTx] = useState(false);
-  const loadDAOProposals = useLoadDAOProposals();
   const { data: walletClient } = useNetworkWalletClient();
   const publicClient = useNetworkPublicClient();
 
@@ -78,7 +77,6 @@ export default function useSubmitProposal() {
       linearVotingErc721Address,
       linearVotingErc721WithHatsWhitelistingAddress,
     },
-    action,
     node: { safe, modules },
   } = useDAOStore({ daoKey });
   const safeAPI = useSafeAPI();
@@ -109,12 +107,12 @@ export default function useSubmitProposal() {
 
   const pendingProposalAdd = useCallback(
     (txHash: string) => {
-      action.dispatch({
-        type: FractalGovernanceAction.PENDING_PROPOSAL_ADD,
-        payload: txHash,
-      });
+      if (!daoKey) {
+        return;
+      }
+      setPendingProposalLoading(daoKey, [txHash]);
     },
-    [action],
+    [daoKey, setPendingProposalLoading],
   );
 
   const submitRejectionMultisigProposal = useCallback(
@@ -152,8 +150,6 @@ export default function useSubmitProposal() {
         const txHash = safeTransaction.safeTxHash;
         pendingProposalAdd(txHash);
 
-        await loadDAOProposals();
-
         if (successCallback) {
           successCallback(addressPrefix, safeAddress);
         }
@@ -184,7 +180,7 @@ export default function useSubmitProposal() {
         return;
       }
     },
-    [walletClient, chain.id, safeAPI, pendingProposalAdd, loadDAOProposals, addressPrefix, t],
+    [walletClient, chain.id, safeAPI, pendingProposalAdd, addressPrefix, t],
   );
 
   const submitMultisigProposal = useCallback(
@@ -271,8 +267,6 @@ export default function useSubmitProposal() {
         const txHash = safeTransaction.safeTxHash;
         pendingProposalAdd(txHash);
 
-        await loadDAOProposals();
-
         if (successCallback) {
           successCallback(addressPrefix, safeAddress);
         }
@@ -308,7 +302,6 @@ export default function useSubmitProposal() {
       chain.id,
       safeAPI,
       pendingProposalAdd,
-      loadDAOProposals,
       ipfsClient,
       multiSendCallOnly,
       addressPrefix,

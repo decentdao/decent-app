@@ -26,6 +26,7 @@
   "move": "Mover",
   "hours": "Horas",
   "minutes": "Actas",
+  "minutesShort": "min",
   "quorum": "Quórum",
   "deploy": "Despliegue",
   "loading": "Cargando...",
@@ -34,7 +35,6 @@
   "learnMore": "Más información",
   "home": "Inicio",
   "labelViewDAO": "Ver caja fuerte",
-  "labelDAOFound": "Seguro Encontrado",
   "labelCurrentDAO": "Está viendo esta caja fuerte.",
   "labelEtherscan": "Ver en Etherscan",
   "errorInvalidENSAddress": "Nombre o dirección de ENS no válidos en {{chain}}",
@@ -128,5 +128,10 @@
   "unsavedChanges": "Cambios no guardados",
   "unsavedChangesDescription": "Tienes cambios sin guardar que se perderán si continúas. ¿Desea descartar los cambios?",
   "discardChanges": "Descartar",
-  "keepEditing": "Seguir editando"
+  "keepEditing": "Seguir editando",
+  "selectStatusLabel": "Seleccionar estado",
+  "addressRequired": "Dirección obligatoria",
+  "save": "Guardar",
+  "daoNameRequired": "El nombre de la DAO es obligatorio",
+  "calendarPlaceholder": "AAAA-MM-DD"
 }

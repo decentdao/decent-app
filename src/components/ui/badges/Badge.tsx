@@ -12,97 +12,112 @@ type BadgeType = {
   textColor: string;
 };
 
-const BADGE_MAPPING: Record<
-  FractalProposalState | DAOState | 'ownerApproved' | 'ownerRejected',
-  BadgeType
-> = {
+type BadgeLabelKey =
+  | FractalProposalState
+  | DAOState
+  | 'ownerApproved'
+  | 'ownerRejected'
+  | 'revShareDaoSafeWarning'
+  | 'revShareTotalError';
+
+const BADGE_MAPPING: Record<BadgeLabelKey, BadgeType> = {
   [FractalProposalState.ACTIVE]: {
     tooltipKey: 'stateActiveTip',
-    bg: 'lilac-0',
-    textColor: 'cosmic-nebula-0',
-    _hover: { bg: 'lilac--1', textColor: 'cosmic-nebula-0' },
+    bg: 'color-lilac-100',
+    textColor: 'color-lilac-700',
+    _hover: { bg: 'color-lilac-200', textColor: 'color-lilac-700' },
   },
   [FractalProposalState.TIMELOCKED]: {
     tooltipKey: 'stateTimelockedTip',
-    bg: 'neutral-8',
-    textColor: 'neutral-4',
-    _hover: { bg: 'neutral-7', textColor: 'neutral-4' },
+    bg: 'color-neutral-100',
+    textColor: 'color-neutral-800',
+    _hover: { bg: 'color-neutral-300', textColor: 'color-neutral-800' },
   },
   [FractalProposalState.EXECUTED]: {
     tooltipKey: 'stateExecutedTip',
-    bg: 'celery--5',
-    textColor: 'white-0',
-    _hover: { bg: 'celery--6', textColor: 'white-0' },
+    bg: 'color-green-800',
+    textColor: 'color-white',
+    _hover: { bg: 'color-green-950', textColor: 'color-white' },
   },
   [FractalProposalState.EXECUTABLE]: {
     tooltipKey: 'stateExecutableTip',
-    bg: 'celery--2',
-    textColor: 'black-0',
-    _hover: { bg: 'celery--3', textColor: 'black-0' },
+    bg: 'color-green-500',
+    textColor: 'color-black',
+    _hover: { bg: 'color-green-600', textColor: 'color-black' },
   },
   [FractalProposalState.FAILED]: {
     tooltipKey: 'stateFailedTip',
-    bg: 'red-0',
-    textColor: 'red-4',
-    _hover: { bg: 'red--1', textColor: 'red-4' },
+    bg: 'color-error-500',
+    textColor: 'color-error-50',
+    _hover: { bg: 'color-error-800', textColor: 'color-error-50' },
   },
   [FractalProposalState.TIMELOCKABLE]: {
     tooltipKey: 'stateTimelockableTip',
-    bg: 'lilac-0',
-    textColor: 'cosmic-nebula-0',
-    _hover: { bg: 'lilac--1', textColor: 'cosmic-nebula-0' },
+    bg: 'color-lilac-100',
+    textColor: 'color-lilac-700',
+    _hover: { bg: 'color-lilac-200', textColor: 'color-lilac-700' },
   },
   [FractalProposalState.MODULE]: {
     tooltipKey: 'stateModuleTip',
-    bg: 'lilac-0',
-    textColor: 'cosmic-nebula-0',
-    _hover: { bg: 'lilac--1', textColor: 'cosmic-nebula-0' },
+    bg: 'color-lilac-100',
+    textColor: 'color-lilac-700',
+    _hover: { bg: 'color-lilac-200', textColor: 'color-lilac-700' },
   },
   [FractalProposalState.EXPIRED]: {
     tooltipKey: 'stateExpiredTip',
-    bg: 'neutral-4',
-    textColor: 'neutral-7',
-    _hover: { bg: 'neutral-2', textColor: 'neutral-7' },
+    bg: 'color-neutral-800',
+    textColor: 'color-neutral-300',
+    _hover: { bg: 'color-neutral-950', textColor: 'color-neutral-300' },
   },
   [FractalProposalState.REJECTED]: {
     tooltipKey: 'stateRejectedTip',
-    bg: 'red-0',
-    textColor: 'red-4',
-    _hover: { bg: 'red--1', textColor: 'red-4' },
+    bg: 'color-error-500',
+    textColor: 'color-error-50',
+    _hover: { bg: 'color-error-800', textColor: 'color-error-50' },
   },
   [FractalProposalState.PENDING]: {
     tooltipKey: 'statePendingTip',
-    bg: 'yellow-0',
-    textColor: 'black-0',
-    _hover: { bg: 'yellow-0', textColor: 'yellow--2' },
+    bg: 'color-yellow-200',
+    textColor: 'color-black',
+    _hover: { bg: 'color-yellow-200', textColor: 'color-yellow-950' },
   },
   [FractalProposalState.CLOSED]: {
     tooltipKey: 'stateClosedTip',
-    bg: 'neutral-8',
-    textColor: 'neutral-4',
-    _hover: { bg: 'neutral-7', textColor: 'neutral-4' },
+    bg: 'color-neutral-100',
+    textColor: 'color-neutral-800',
+    _hover: { bg: 'color-neutral-300', textColor: 'color-neutral-800' },
   },
   [DAOState.freezeInit]: {
     tooltipKey: 'stateFreezeInitTip',
-    bg: 'blue-2',
-    textColor: 'blue-0',
-    _hover: { bg: 'blue-1', textColor: 'blue-0' },
+    bg: 'color-blue-300',
+    textColor: 'color-blue-900',
+    _hover: { bg: 'color-blue-200', textColor: 'color-blue-900' },
   },
   [DAOState.frozen]: {
     tooltipKey: 'stateFrozenTip',
-    bg: 'blue-1',
-    textColor: 'blue--1',
-    _hover: { bg: 'blue-2', textColor: 'blue--1' },
+    bg: 'color-blue-300',
+    textColor: 'color-blue-900',
+    _hover: { bg: 'color-blue-200', textColor: 'color-blue-900' },
   },
   ownerApproved: {
-    bg: 'neutral-4',
-    textColor: 'neutral-7',
-    _hover: { bg: 'neutral-2', textColor: 'neutral-7' },
+    bg: 'color-neutral-800',
+    textColor: 'color-neutral-300',
+    _hover: { bg: 'color-neutral-950', textColor: 'color-neutral-300' },
   },
   ownerRejected: {
-    bg: 'red-0',
-    textColor: 'red-4',
-    _hover: { bg: 'red--1', textColor: 'red-4' },
+    bg: 'color-error-500',
+    textColor: 'color-error-50',
+    _hover: { bg: 'color-error-800', textColor: 'color-error-50' },
+  },
+  revShareDaoSafeWarning: {
+    bg: 'color-warning-900',
+    textColor: 'color-warning-200',
+    _hover: { bg: 'color-warning-900', textColor: 'color-warning-200' },
+  },
+  revShareTotalError: {
+    bg: 'color-error-400',
+    textColor: 'color-error-50',
+    _hover: { bg: 'color-error-400', textColor: 'color-error-50' },
   },
 };
 
@@ -117,9 +132,10 @@ interface IBadge {
   size: Size;
   labelKey: keyof typeof BADGE_MAPPING;
   children?: ReactNode;
+  leftIcon?: ReactNode;
 }
 
-export function Badge({ labelKey, children, size }: IBadge) {
+export function Badge({ labelKey, children, size, leftIcon }: IBadge) {
   const { tooltipKey, ...colors } = BADGE_MAPPING[labelKey];
   const sizes = BADGE_SIZES[size];
 
@@ -142,19 +158,43 @@ export function Badge({ labelKey, children, size }: IBadge) {
         {...sizes}
         {...colors}
       >
-        <Box
-          rounded="full"
-          bg={colors.textColor}
-          w="0.5rem"
-          h="0.5rem"
-        />
+        {leftIcon !== undefined ? (
+          leftIcon
+        ) : (
+          <Box
+            rounded="full"
+            bg={colors.textColor}
+            w="0.5rem"
+            h="0.5rem"
+          />
+        )}
         <Text
-          textStyle="labels-large"
+          textStyle="text-sm-medium"
           lineHeight="1"
         >
           {children || t(labelKey)}
         </Text>
       </Flex>
     </DecentTooltip>
+  );
+}
+
+export function ProposalStateBadge({
+  labelKey,
+  size,
+  rejectionProposalState,
+}: IBadge & { rejectionProposalState?: FractalProposalState | null }) {
+  let badgeLabelKey = labelKey;
+  if (
+    rejectionProposalState === FractalProposalState.TIMELOCKABLE ||
+    rejectionProposalState === FractalProposalState.TIMELOCKED
+  ) {
+    badgeLabelKey = rejectionProposalState;
+  }
+  return (
+    <Badge
+      labelKey={badgeLabelKey}
+      size={size}
+    />
   );
 }

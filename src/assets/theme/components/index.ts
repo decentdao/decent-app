@@ -1,3 +1,4 @@
+import Checkbox from './Checkbox';
 import Alert from './alert';
 import Button from './button';
 import IconButton from './iconButton';
@@ -18,4 +19,5 @@ export default {
   Progress,
   Switch,
   Tabs,
+  Checkbox,
 };

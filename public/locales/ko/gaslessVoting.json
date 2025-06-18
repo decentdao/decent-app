@@ -37,5 +37,8 @@
   "recipientAddressRequired": "수신자 주소는 필수입니다.",
   "withdrawGasAction": "인출 {{amount}} <x>{{symbol}</x>}를 페이 마스터에서 출금합니다.",
   "recipientAddress": "수신자 주소",
-  "enterRecipientAddress": "받는 사람 주소 입력"
+  "enterRecipientAddress": "받는 사람 주소 입력",
+  "amountExceedsAvailableBalance": "잔액 부족",
+  "withdrawingGas": "철수 {{amount}} {{symbol} 에서 {{recipient}}로}",
+  "depositingGas": "입금 {{amount}} {{symbol}}"
 }

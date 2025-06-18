@@ -12,3 +12,10 @@ export interface GaslessVotingDaoData {
   gaslessVotingEnabled: boolean;
   paymasterAddress: Address | null;
 }
+
+export interface StakingDaoData {
+  // null -- Staking contract has not been deployed at the address we expect it to be at
+  stakingAddress: Address | null;
+}
+
+export type DAOOwnedEntities = GaslessVotingDaoData & StakingDaoData;

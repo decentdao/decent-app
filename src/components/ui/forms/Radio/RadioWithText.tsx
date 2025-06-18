@@ -21,19 +21,19 @@ export function RadioWithText({
   tooltip,
 }: IRadioWithText) {
   return (
-    <Box onClick={onClick}>
+    <Box onClick={!disabled ? onClick : undefined}>
       <Radio
         display="flex"
         data-testid={testId}
         type="radio"
         isDisabled={disabled}
-        bg="black-0"
-        color="lilac--3"
-        _disabled={{ bg: 'neutral-6', color: 'neutral-5' }}
-        _hover={{ bg: 'black-0', color: 'lilac--4' }}
+        bg="color-black"
+        color="color-lilac-600"
+        _disabled={{ bg: 'color-neutral-400', color: 'color-neutral-700' }}
+        _hover={!disabled ? { bg: 'color-black', color: 'color-lilac-800' } : undefined}
         _checked={{
-          bg: 'black-0',
-          color: 'lilac--3',
+          bg: 'color-black',
+          color: 'color-lilac-600',
           borderWidth: '6px',
         }}
         size="lg"
@@ -44,17 +44,17 @@ export function RadioWithText({
           ml="0.25rem"
         >
           <HStack>
-            <Text color={disabled ? 'neutral-5' : 'white-0'}>{label}</Text>
+            <Text color={disabled ? 'color-neutral-700' : 'color-white'}>{label}</Text>
             {tooltip && (
               <SupportTooltip
                 label={tooltip}
                 closeDelay={1000}
                 pointerEvents="all"
-                color="lilac-0"
+                color="color-lilac-100"
               />
             )}
           </HStack>
-          <Text color={disabled ? 'neutral-5' : 'neutral-7'}>{description}</Text>
+          <Text color={disabled ? 'color-neutral-700' : 'color-neutral-300'}>{description}</Text>
         </Box>
       </Radio>
     </Box>

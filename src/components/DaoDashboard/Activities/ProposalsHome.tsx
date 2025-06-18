@@ -82,7 +82,7 @@ export function ProposalsHome() {
 
   const { addressPrefix } = useNetworkConfigStore();
   const azoriusGovernance = governance as AzoriusGovernance;
-  const delegate = useDecentModal(ModalType.DELEGATE);
+  const { open: delegate } = useDecentModal(ModalType.DELEGATE);
 
   const canDelegate = useMemo(() => {
     if (azoriusGovernance.type === GovernanceType.AZORIUS_ERC20) {
@@ -158,8 +158,6 @@ export function ProposalsHome() {
     }
     setAllFilterOptions(filterOptions);
     setFilters(filterOptions);
-    if (type === GovernanceType.MULTISIG) {
-    }
   }, [subgraphInfo?.daoSnapshotENS, guardContracts.freezeGuardContractAddress, type]);
 
   const toggleFilter = (filter: FractalProposalState) => {
@@ -397,7 +395,7 @@ export function ProposalsHome() {
               >
                 <Text
                   mb={2}
-                  textStyle="labels-large"
+                  textStyle="text-sm-medium"
                 >
                   {key === 'snapshot' ? t('snapshot') : `${t('nonce')}: ${key}`}
                 </Text>
@@ -405,6 +403,7 @@ export function ProposalsHome() {
                   proposals={group}
                   currentPage={1}
                   totalPages={1}
+                  showNonce={false}
                 />
               </Box>
             ))
@@ -413,6 +412,7 @@ export function ProposalsHome() {
             proposals={paginatedProposals}
             currentPage={currentPage}
             totalPages={totalPages}
+            showNonce={true}
           />
         )}
 

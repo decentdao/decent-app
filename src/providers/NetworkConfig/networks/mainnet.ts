@@ -9,7 +9,7 @@ import { getAddress } from 'viem';
 import { mainnet } from 'wagmi/chains';
 import { GovernanceType } from '../../../types';
 import { NetworkConfig } from '../../../types/network';
-import { getSafeContractDeploymentAddress } from './utils';
+import { getEtherscanAPIUrl, getSafeContractDeploymentAddress } from './utils';
 
 const SAFE_VERSION = '1.3.0';
 
@@ -22,7 +22,7 @@ export const mainnetConfig: NetworkConfig = {
   rpcEndpoint: `https://eth-mainnet.g.alchemy.com/v2/${import.meta.env?.VITE_APP_ALCHEMY_API_KEY}`,
   safeBaseURL: 'https://safe-transaction-mainnet.safe.global',
   etherscanBaseURL: 'https://etherscan.io',
-  etherscanAPIUrl: `https://api.etherscan.io/api?apikey=${import.meta.env?.VITE_APP_ETHERSCAN_MAINNET_API_KEY}`,
+  etherscanAPIUrl: getEtherscanAPIUrl(chain.id),
   addressPrefix: 'eth',
   nativeTokenIcon: '/images/coin-icon-eth.svg',
   isENSSupported: true,
@@ -139,6 +139,9 @@ export const mainnetConfig: NetworkConfig = {
     GovernanceType.AZORIUS_ERC721,
   ],
   bundlerMinimumStake: 100_000_000_000_000_000n, // 0.1 ETH
+  stablecoins: {
+    usdc: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
+  },
 };
 
 export default mainnetConfig;

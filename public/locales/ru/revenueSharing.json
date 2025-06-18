@@ -1,0 +1,14 @@
+{
+  "revenueSharingTitle": "Доля выручки",
+  "revShareDaoSafeWarning": "Средства, отправленные на этот адрес, не будут разделены",
+  "revShareTotalError": "Общая сумма превышает 100%",
+  "daoSafeWallet": "Безопасный кошелек DAO",
+  "revSplitWallet": "Кошелек для разделения доходов",
+  "counterparties": "Контрагенты",
+  "revShareAddSplitWallet": "Добавить кошелек",
+  "currentDaoTreasureShareLabel": "Текущая казначейская акция DAO",
+  "parentDaoTreasureShareLabel": "Родительский ДАО",
+  "currentTokenHolderShareLabel": "Ставка текущего держателя токена",
+  "revSplitTotalLabel": "Всего",
+  "addRevenueShare": "Добавить долю дохода"
+}

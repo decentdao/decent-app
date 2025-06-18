@@ -26,6 +26,7 @@
   "move": "Відійди.",
   "hours": "Години",
   "minutes": "Протокол",
+  "minutesShort": "хв",
   "quorum": "Кворум",
   "deploy": "Розгорнути",
   "loading": "Завантаження...",
@@ -34,7 +35,6 @@
   "learnMore": "Дізнатися більше",
   "home": "Головна",
   "labelViewDAO": "Переглянути безпечно",
-  "labelDAOFound": "Безпека знайдена",
   "labelCurrentDAO": "Ви зараз переглядаєте цей сейф.",
   "labelEtherscan": "Переглянути на Etherscan",
   "errorInvalidENSAddress": "Невірне ім'я або адреса ENS на {{chain}}.",
@@ -128,5 +128,10 @@
   "unsavedChanges": "Незбережені зміни",
   "unsavedChangesDescription": "У вас є незбережені зміни, які будуть втрачені, якщо ви продовжите. Ви хочете скасувати зміни?",
   "discardChanges": "Викинути",
-  "keepEditing": "Продовжуйте редагувати"
+  "keepEditing": "Продовжуйте редагувати",
+  "selectStatusLabel": "Виберіть Статус",
+  "addressRequired": "Адреса обов'язкова",
+  "save": "Зберегти",
+  "daoNameRequired": "Обов'язкова назва DAO",
+  "calendarPlaceholder": "YYYY-MM-DD"
 }

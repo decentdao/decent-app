@@ -13,7 +13,7 @@ import { AzoriusGovernance, FreezeGuardType } from '../../../types';
 import { blocksToSeconds } from '../../../utils/contract';
 import { BarLoader } from '../../ui/loaders/BarLoader';
 
-export function InfoGovernance({ showTitle = true }: { showTitle?: boolean }) {
+export function InfoGovernance() {
   const { t } = useTranslation(['dashboard', 'daoCreate', 'common']);
   const { daoKey } = useCurrentDAOKey();
   const {
@@ -94,16 +94,14 @@ export function InfoGovernance({ showTitle = true }: { showTitle?: boolean }) {
 
   return (
     <Box data-testid="dashboard-daoGovernance">
-      {showTitle && (
-        <Flex
-          alignItems="center"
-          gap="0.4rem"
-          mb="0.5rem"
-        >
-          <Bank size="1.5rem" />
-          <Text textStyle="heading-small">{t('titleGovernance')}</Text>
-        </Flex>
-      )}
+      <Flex
+        alignItems="center"
+        gap="0.4rem"
+        mb="0.5rem"
+      >
+        <Bank size="1.5rem" />
+        <Text textStyle="text-xl-regular">{t('titleGovernance')}</Text>
+      </Flex>
 
       <Flex
         alignItems="center"
@@ -111,7 +109,7 @@ export function InfoGovernance({ showTitle = true }: { showTitle?: boolean }) {
         mb="0.25rem"
         gap="0.5rem"
       >
-        <Text color="neutral-7">{t('titleType')}</Text>
+        <Text color="color-neutral-300">{t('titleType')}</Text>
         <Text textAlign="right">
           {governance.type
             ? t(governance.type.toString(), {
@@ -130,7 +128,7 @@ export function InfoGovernance({ showTitle = true }: { showTitle?: boolean }) {
           mb="0.25rem"
           gap="0.5rem"
         >
-          <Text color="neutral-7">{t('titleVotingPeriod')}</Text>
+          <Text color="color-neutral-300">{t('titleVotingPeriod')}</Text>
           <Text textAlign="right">{governanceAzorius.votingStrategy.votingPeriod.formatted}</Text>
         </Flex>
       )}
@@ -141,9 +139,9 @@ export function InfoGovernance({ showTitle = true }: { showTitle?: boolean }) {
           mb="0.25rem"
           gap="0.5rem"
         >
-          <Text color="neutral-7">{t('titleQuorum')}</Text>
+          <Text color="color-neutral-300">{t('titleQuorum')}</Text>
           <Text textAlign="right">
-            {governanceAzorius.votingStrategy.quorumPercentage.formatted}
+            {`${governanceAzorius.votingStrategy.quorumPercentage.formatted}%`}
           </Text>
         </Flex>
       )}
@@ -154,7 +152,7 @@ export function InfoGovernance({ showTitle = true }: { showTitle?: boolean }) {
           mb="0.25rem"
           gap="0.5rem"
         >
-          <Text color="neutral-7">{t('titleQuorum')}</Text>
+          <Text color="color-neutral-300">{t('titleQuorum')}</Text>
           <Text textAlign="right">
             {governanceAzorius.votingStrategy.quorumThreshold.formatted}
           </Text>
@@ -167,7 +165,7 @@ export function InfoGovernance({ showTitle = true }: { showTitle?: boolean }) {
           mb="0.25rem"
           gap="0.5rem"
         >
-          <Text color="neutral-7">{t('timelock', { ns: 'common' })}</Text>
+          <Text color="color-neutral-300">{t('timelock', { ns: 'common' })}</Text>
           <Text textAlign="right">{timelockPeriod}</Text>
         </Flex>
       )}
@@ -178,7 +176,7 @@ export function InfoGovernance({ showTitle = true }: { showTitle?: boolean }) {
           mb="0.25rem"
           gap="0.5rem"
         >
-          <Text color="neutral-7">{t('execution', { ns: 'common' })}</Text>
+          <Text color="color-neutral-300">{t('execution', { ns: 'common' })}</Text>
           <Text textAlign="right">{executionPeriod}</Text>
         </Flex>
       )}

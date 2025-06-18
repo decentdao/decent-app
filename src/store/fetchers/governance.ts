@@ -5,18 +5,20 @@ import {
   Address,
   erc721Abi,
   formatUnits,
+  getAddress,
   getContract,
   GetContractEventsReturnType,
   zeroAddress,
 } from 'viem';
+import { useAccount } from 'wagmi';
 import LockReleaseAbi from '../../assets/abi/LockRelease';
 import { SENTINEL_ADDRESS } from '../../constants/common';
 import { createSnapshotSubgraphClient } from '../../graphql';
 import { ProposalsQuery, ProposalsResponse } from '../../graphql/SnapshotQueries';
 import { logError } from '../../helpers/errorLogging';
+import { useCurrentDAOKey } from '../../hooks/DAO/useCurrentDAOKey';
 import useNetworkPublicClient from '../../hooks/useNetworkPublicClient';
-import { CacheExpiry, CacheKeys } from '../../hooks/utils/cache/cacheDefaults';
-import { getValue, setValue } from '../../hooks/utils/cache/useLocalStorage';
+
 import {
   ContractTypeWithVersion,
   useAddressContractType,
@@ -24,6 +26,7 @@ import {
 import { useSafeDecoder } from '../../hooks/utils/useSafeDecoder';
 import { useSafeTransactions } from '../../hooks/utils/useSafeTransactions';
 import { useTimeHelpers } from '../../hooks/utils/useTimeHelpers';
+import { useUpdateTimer } from '../../hooks/utils/useUpdateTimer';
 import useIPFSClient from '../../providers/App/hooks/useIPFSClient';
 import { useSafeAPI } from '../../providers/App/hooks/useSafeAPI';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
@@ -31,6 +34,7 @@ import {
   AzoriusProposal,
   CreateProposalMetadata,
   DecentModule,
+  ERC20TokenData,
   ERC721TokenData,
   FractalProposal,
   FractalProposalState,
@@ -49,7 +53,9 @@ import {
 } from '../../utils/azorius';
 import { blocksToSeconds } from '../../utils/contract';
 import { getPaymasterAddress } from '../../utils/gaslessVoting';
+import { getStakingContractAddress } from '../../utils/stakingContractUtils';
 import { SetAzoriusGovernancePayload } from '../slices/governances';
+import { useGlobalStore } from '../store';
 
 /**
  * `useGovernanceFetcher` is used as an abstraction layer over logic of fetching DAO governance data
@@ -65,7 +71,13 @@ export function useGovernanceFetcher() {
   const publicClient = useNetworkPublicClient();
   const safeApi = useSafeAPI();
   const { getAddressContractType } = useAddressContractType();
+  const user = useAccount();
   const snaphshotGraphQlClient = useMemo(() => createSnapshotSubgraphClient(), []);
+
+  const { daoKey } = useCurrentDAOKey();
+  const { getGovernance } = useGlobalStore();
+  const governance = daoKey ? getGovernance(daoKey) : undefined;
+  const cachedProposals = governance?.proposals;
 
   const {
     contracts: {
@@ -74,6 +86,9 @@ export function useGovernanceFetcher() {
       paymaster: { decentPaymasterV1MasterCopy },
     },
   } = useNetworkConfigStore();
+  const { safeAddress: currentUrlSafeAddress, wrongNetwork } = useCurrentDAOKey();
+
+  const { setMethodOnInterval, clearIntervals } = useUpdateTimer(currentUrlSafeAddress);
 
   const fetchDAOGovernance = useCallback(
     async ({
@@ -84,7 +99,7 @@ export function useGovernanceFetcher() {
       onProposalsLoaded,
       onProposalLoaded,
       onTokenClaimContractAddressLoaded,
-      onLoadingFirstProposalStateChanged,
+      onVotesTokenAddressLoaded,
     }: {
       daoAddress: Address;
       daoModules: DecentModule[];
@@ -93,16 +108,17 @@ export function useGovernanceFetcher() {
       onProposalsLoaded: (proposals: FractalProposal[]) => void;
       onProposalLoaded: (proposal: AzoriusProposal, index: number, totalProposals: number) => void;
       onTokenClaimContractAddressLoaded: (tokenClaimContractAddress: Address) => void;
-      onLoadingFirstProposalStateChanged: (loading: boolean) => void;
+      onVotesTokenAddressLoaded: (votesTokenAddress: Address) => void;
     }) => {
       const azoriusModule = getAzoriusModuleFromModules(daoModules);
-
-      console.log('Fetch DAO Governance');
+      clearIntervals();
       if (!azoriusModule) {
         onMultisigGovernanceLoaded();
-        const multisigTransactions = await safeApi.getMultisigTransactions(daoAddress);
-        const activities = await parseTransactions(multisigTransactions);
-        onProposalsLoaded(activities);
+        setMethodOnInterval(async () => {
+          const multisigTransactions = await safeApi.getMultisigTransactions(daoAddress);
+          const activities = await parseTransactions(multisigTransactions);
+          onProposalsLoaded(activities);
+        });
       } else {
         const azoriusContract = getContract({
           abi: abis.Azorius,
@@ -161,6 +177,8 @@ export function useGovernanceFetcher() {
               throw new Error('Unknown governance token type');
             }
           }
+
+          onVotesTokenAddressLoaded(votesTokenAddress);
         };
 
         let strategies: FractalVotingStrategy[] = [];
@@ -265,56 +283,126 @@ export function useGovernanceFetcher() {
               client: publicClient,
             });
 
-            // TODO: Transform to multiCall
-            const [name, symbol, decimals, totalSupply] = await Promise.all([
-              tokenContract.read.name(),
-              tokenContract.read.symbol(),
-              tokenContract.read.decimals(),
-              tokenContract.read.totalSupply(),
-            ]);
+            // Prepare multicall requests
+            const multicallCalls = [
+              {
+                ...tokenContract,
+                functionName: 'name',
+              },
+              {
+                ...tokenContract,
+                functionName: 'symbol',
+              },
+              {
+                ...tokenContract,
+                functionName: 'decimals',
+              },
+
+              {
+                ...tokenContract,
+                functionName: 'totalSupply',
+              },
+              {
+                ...tokenContract,
+                functionName: 'balanceOf',
+                args: [user.address],
+              },
+              {
+                ...tokenContract,
+                functionName: 'delegates',
+                args: [user.address],
+              },
+            ];
+
+            // Execute multicall
+            const [
+              nameData,
+              symbolData,
+              decimalsData,
+              totalSupplyData,
+              balanceData,
+              delegateeData,
+            ] = await publicClient.multicall({
+              contracts: multicallCalls,
+              allowFailure: true,
+            });
+
+            const [name, symbol, decimals, totalSupply, balance, delegatee] = [
+              nameData.result?.toString() ?? '',
+              symbolData.result?.toString() ?? '',
+              decimalsData.result !== undefined ? Number(decimalsData.result) : 18,
+              totalSupplyData.result !== undefined ? BigInt(totalSupplyData.result) : 0n,
+              balanceData.result !== undefined ? BigInt(balanceData.result) : 0n,
+              delegateeData.result !== undefined
+                ? getAddress(delegateeData.result.toString())
+                : zeroAddress,
+            ];
+
             const tokenData = {
               name,
               symbol,
               decimals,
-              address: tokenContract.address,
               totalSupply,
-              balance: 0n,
-              delegatee: zeroAddress as Address,
+              balance,
+              delegatee,
             };
 
-            let lockedVotesTokenData: VotesTokenData | undefined;
+            const votesToken = {
+              ...tokenData,
+              address: tokenContract.address,
+            };
+
+            let lockedVotesToken: VotesTokenData | undefined;
             if (lockReleaseAddress) {
-              lockedVotesTokenData = {
-                balance: 0n,
-                delegatee: zeroAddress,
-                name,
-                symbol,
-                decimals,
-                totalSupply,
+              lockedVotesToken = {
+                ...tokenData,
                 address: lockReleaseAddress,
               };
             }
 
-            // TODO: Transform to multiCall
-
+            // Prepare and execute multicall for governance parameters
             const [
               votingPeriodBlocks,
               quorumNumerator,
               quorumDenominator,
               timeLockPeriod,
+              executionPeriod,
               proposerThreshold,
-            ] = await Promise.all([
-              erc20VotingContract.read.votingPeriod(),
-              erc20VotingContract.read.quorumNumerator(),
-              erc20VotingContract.read.QUORUM_DENOMINATOR(),
-              azoriusContract.read.timelockPeriod(),
-              erc20VotingContract.read.requiredProposerWeight(),
-            ]);
+            ] = await publicClient.multicall({
+              contracts: [
+                {
+                  ...erc20VotingContract,
+                  functionName: 'votingPeriod',
+                },
+                {
+                  ...erc20VotingContract,
+                  functionName: 'quorumNumerator',
+                },
+                {
+                  ...erc20VotingContract,
+                  functionName: 'QUORUM_DENOMINATOR',
+                },
+                {
+                  ...azoriusContract,
+                  functionName: 'timelockPeriod',
+                },
+                {
+                  ...azoriusContract,
+                  functionName: 'executionPeriod',
+                },
+                {
+                  ...erc20VotingContract,
+                  functionName: 'requiredProposerWeight',
+                },
+              ],
+              allowFailure: false,
+            });
 
             const quorumPercentage = (quorumNumerator * 100n) / quorumDenominator;
             const votingPeriodValue = await blocksToSeconds(votingPeriodBlocks, publicClient);
             const timeLockPeriodValue = await blocksToSeconds(timeLockPeriod, publicClient);
-            const votingData = {
+            const executionPeriodValue = await blocksToSeconds(executionPeriod, publicClient);
+            const votingStrategy = {
               votingPeriod: {
                 value: BigInt(votingPeriodValue),
                 formatted: getTimeDuration(votingPeriodValue),
@@ -325,17 +413,22 @@ export function useGovernanceFetcher() {
               },
               quorumPercentage: {
                 value: quorumPercentage,
-                formatted: `${quorumPercentage}%`,
+                formatted: `${quorumPercentage}`,
               },
               timeLockPeriod: {
                 value: BigInt(timeLockPeriodValue),
                 formatted: getTimeDuration(timeLockPeriodValue),
               },
+              executionPeriod: {
+                value: BigInt(executionPeriodValue),
+                formatted: getTimeDuration(executionPeriodValue),
+              },
               strategyType: VotingStrategyType.LINEAR_ERC20,
             };
 
             onAzoriusGovernanceLoaded({
-              votesToken: tokenData,
+              moduleAzoriusAddress: azoriusContract.address,
+              votesToken,
               erc721Tokens: undefined,
               linearVotingErc20Address,
               linearVotingErc20WithHatsWhitelistingAddress,
@@ -343,9 +436,9 @@ export function useGovernanceFetcher() {
               linearVotingErc721WithHatsWhitelistingAddress,
               isLoaded: true,
               strategies,
-              votingStrategy: votingData,
+              votingStrategy,
               isAzorius: true,
-              lockedVotesToken: lockedVotesTokenData,
+              lockedVotesToken,
               type: GovernanceType.AZORIUS_ERC20,
             });
 
@@ -361,10 +454,6 @@ export function useGovernanceFetcher() {
               }
             }
 
-            // Now - fetch proposals
-
-            onLoadingFirstProposalStateChanged(true);
-
             const erc20VotedEvents = await erc20VotingContract.getEvents.Voted({ fromBlock: 0n });
             const executedEvents = await azoriusContract.getEvents.ProposalExecuted({
               fromBlock: 0n,
@@ -374,26 +463,29 @@ export function useGovernanceFetcher() {
             ).reverse();
 
             if (!proposalCreatedEvents.length) {
-              onLoadingFirstProposalStateChanged(false);
+              onProposalsLoaded([]);
               return;
             }
-
-            for (const [index, proposalCreatedEvent] of proposalCreatedEvents.entries()) {
+            const entries = proposalCreatedEvents.entries();
+            for (const [index, proposalCreatedEvent] of entries) {
               if (proposalCreatedEvent.args.proposalId === undefined) {
                 continue;
               }
 
-              const cachedProposal = getValue({
-                cacheName: CacheKeys.PROPOSAL_CACHE,
-                proposalId: proposalCreatedEvent.args.proposalId.toString(),
-                contractAddress: azoriusContract.address,
-              });
+              const cachedProposal = cachedProposals?.find(
+                p => p.proposalId === proposalCreatedEvent?.args?.proposalId?.toString(),
+              );
+              const isProposalFossilized =
+                cachedProposal?.state === FractalProposalState.CLOSED ||
+                cachedProposal?.state === FractalProposalState.EXECUTED ||
+                cachedProposal?.state === FractalProposalState.FAILED ||
+                cachedProposal?.state === FractalProposalState.EXPIRED ||
+                cachedProposal?.state === FractalProposalState.REJECTED;
 
-              if (cachedProposal) {
-                onProposalLoaded(cachedProposal, index, proposalCreatedEvents.length);
+              if (cachedProposal && isProposalFossilized) {
+                // @dev skip fossilized proposals, cached proposals already loaded
                 continue;
               }
-
               let proposalData;
 
               if (
@@ -457,25 +549,6 @@ export function useGovernanceFetcher() {
               );
 
               onProposalLoaded(proposal, index, proposalCreatedEvents.length);
-
-              const isProposalFossilized =
-                proposal.state === FractalProposalState.CLOSED ||
-                proposal.state === FractalProposalState.EXECUTED ||
-                proposal.state === FractalProposalState.FAILED ||
-                proposal.state === FractalProposalState.EXPIRED ||
-                proposal.state === FractalProposalState.REJECTED;
-
-              if (isProposalFossilized) {
-                setValue(
-                  {
-                    cacheName: CacheKeys.PROPOSAL_CACHE,
-                    proposalId: proposalCreatedEvent.args.proposalId.toString(),
-                    contractAddress: azoriusContract.address,
-                  },
-                  proposal,
-                  CacheExpiry.NEVER,
-                );
-              }
             }
           } else if (erc721VotingStrategyAddress) {
             const erc721LinearVotingContract = getContract({
@@ -508,17 +581,25 @@ export function useGovernanceFetcher() {
 
             // TODO: Transform to multiCall
 
-            const [votingPeriodBlocks, quorumThreshold, proposerThreshold, timeLockPeriod] =
-              await Promise.all([
-                erc721LinearVotingContract.read.votingPeriod(),
-                erc721LinearVotingContract.read.quorumThreshold(),
-                erc721LinearVotingContract.read.proposerThreshold(),
-                azoriusContract.read.timelockPeriod(),
-              ]);
+            const [
+              votingPeriodBlocks,
+              quorumThreshold,
+              proposerThreshold,
+              timeLockPeriod,
+              executionPeriod,
+            ] = await Promise.all([
+              erc721LinearVotingContract.read.votingPeriod(),
+              erc721LinearVotingContract.read.quorumThreshold(),
+              erc721LinearVotingContract.read.proposerThreshold(),
+              azoriusContract.read.timelockPeriod(),
+              azoriusContract.read.executionPeriod(),
+            ]);
 
             const votingPeriodValue = await blocksToSeconds(votingPeriodBlocks, publicClient);
             const timeLockPeriodValue = await blocksToSeconds(timeLockPeriod, publicClient);
-            const votingData = {
+            const executionPeriodValue = await blocksToSeconds(executionPeriod, publicClient);
+
+            const votingStrategy = {
               proposerThreshold: {
                 value: proposerThreshold,
                 formatted: proposerThreshold.toString(),
@@ -535,10 +616,15 @@ export function useGovernanceFetcher() {
                 value: BigInt(timeLockPeriodValue),
                 formatted: getTimeDuration(timeLockPeriodValue),
               },
+              executionPeriod: {
+                value: BigInt(executionPeriodValue),
+                formatted: getTimeDuration(executionPeriodValue),
+              },
               strategyType: VotingStrategyType.LINEAR_ERC721,
             };
 
             onAzoriusGovernanceLoaded({
+              moduleAzoriusAddress: azoriusContract.address,
               votesToken: undefined,
               erc721Tokens,
               linearVotingErc20Address,
@@ -547,14 +633,12 @@ export function useGovernanceFetcher() {
               linearVotingErc721WithHatsWhitelistingAddress,
               isLoaded: true,
               strategies,
-              votingStrategy: votingData,
+              votingStrategy,
               isAzorius: true,
               type: GovernanceType.AZORIUS_ERC721,
             });
 
             // Now - fetch proposals
-
-            onLoadingFirstProposalStateChanged(true);
 
             const erc721VotedEvents = await erc721LinearVotingContract.getEvents.Voted({
               fromBlock: 0n,
@@ -567,7 +651,6 @@ export function useGovernanceFetcher() {
             ).reverse();
 
             if (!proposalCreatedEvents.length) {
-              onLoadingFirstProposalStateChanged(false);
               return;
             }
 
@@ -576,14 +659,17 @@ export function useGovernanceFetcher() {
                 continue;
               }
 
-              const cachedProposal = getValue({
-                cacheName: CacheKeys.PROPOSAL_CACHE,
-                proposalId: proposalCreatedEvent.args.proposalId.toString(),
-                contractAddress: azoriusContract.address,
-              });
+              const cachedProposal = cachedProposals?.find(
+                p => p.proposalId === proposalCreatedEvent?.args?.proposalId?.toString(),
+              );
+              const isProposalFossilized =
+                cachedProposal?.state === FractalProposalState.CLOSED ||
+                cachedProposal?.state === FractalProposalState.EXECUTED ||
+                cachedProposal?.state === FractalProposalState.FAILED ||
+                cachedProposal?.state === FractalProposalState.EXPIRED ||
+                cachedProposal?.state === FractalProposalState.REJECTED;
 
-              if (cachedProposal) {
-                onProposalLoaded(cachedProposal, index, proposalCreatedEvents.length);
+              if (cachedProposal && isProposalFossilized) {
                 continue;
               }
 
@@ -650,31 +736,22 @@ export function useGovernanceFetcher() {
               );
 
               onProposalLoaded(proposal, index, proposalCreatedEvents.length);
-
-              const isProposalFossilized =
-                proposal.state === FractalProposalState.CLOSED ||
-                proposal.state === FractalProposalState.EXECUTED ||
-                proposal.state === FractalProposalState.FAILED ||
-                proposal.state === FractalProposalState.EXPIRED ||
-                proposal.state === FractalProposalState.REJECTED;
-
-              if (isProposalFossilized) {
-                setValue(
-                  {
-                    cacheName: CacheKeys.PROPOSAL_CACHE,
-                    proposalId: proposalCreatedEvent.args.proposalId.toString(),
-                    contractAddress: azoriusContract.address,
-                  },
-                  proposal,
-                  CacheExpiry.NEVER,
-                );
-              }
             }
           }
         }
       }
     },
-    [getAddressContractType, publicClient, getTimeDuration, parseTransactions, safeApi, t, decode],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [
+      setMethodOnInterval,
+      safeApi,
+      parseTransactions,
+      publicClient,
+      getAddressContractType,
+      t,
+      getTimeDuration,
+      decode,
+    ],
   );
 
   const fetchDAOProposalTemplates = useCallback(
@@ -703,19 +780,31 @@ export function useGovernanceFetcher() {
 
   const fetchVotingTokenAccountData = useCallback(
     async (votingTokenAddress: Address, account: Address) => {
-      const tokenContract = getContract({
-        abi: abis.VotesERC20,
-        address: votingTokenAddress,
-        client: publicClient,
+      if (wrongNetwork) {
+        return { balance: 0n, delegatee: zeroAddress };
+      }
+
+      const [balance, delegatee] = await publicClient.multicall({
+        contracts: [
+          {
+            abi: abis.VotesERC20,
+            address: votingTokenAddress,
+            functionName: 'balanceOf',
+            args: [account],
+          },
+          {
+            abi: abis.VotesERC20,
+            address: votingTokenAddress,
+            functionName: 'delegates',
+            args: [account],
+          },
+        ],
+        allowFailure: false,
       });
-      const [balance, delegatee] = await Promise.all([
-        tokenContract.read.balanceOf([account]),
-        tokenContract.read.delegates([account]),
-      ]);
 
       return { balance, delegatee };
     },
-    [publicClient],
+    [publicClient, wrongNetwork],
   );
 
   const fetchLockReleaseAccountData = useCallback(
@@ -828,6 +917,96 @@ export function useGovernanceFetcher() {
     [publicClient, accountAbstraction, zodiacModuleProxyFactory, decentPaymasterV1MasterCopy],
   );
 
+  const fetchMultisigERC20Token = useCallback(
+    async ({ events }: { events: GetContractEventsReturnType<typeof abis.KeyValuePairs> }) => {
+      // get most recent event where `erc20Address` was set
+      const erc20AddressEvent = events
+        .filter(event => event.args.key && event.args.key === 'erc20Address')
+        .pop();
+      const erc20AddressInEvent = erc20AddressEvent?.args.value as Address | undefined;
+
+      if (!erc20AddressEvent || !erc20AddressInEvent) {
+        return undefined;
+      }
+
+      try {
+        const tokenContract = getContract({
+          abi: abis.VotesERC20,
+          address: erc20AddressInEvent,
+          client: publicClient,
+        });
+
+        // Prepare multicall requests
+        const multicallCalls = [
+          {
+            ...tokenContract,
+            functionName: 'name',
+          },
+          {
+            ...tokenContract,
+            functionName: 'symbol',
+          },
+          {
+            ...tokenContract,
+            functionName: 'decimals',
+          },
+
+          {
+            ...tokenContract,
+            functionName: 'totalSupply',
+          },
+        ];
+
+        // Execute multicall
+        const [name, symbol, decimals, totalSupply] = await publicClient.multicall({
+          contracts: multicallCalls,
+          allowFailure: false,
+        });
+
+        const tokenData: ERC20TokenData = {
+          name: name ? name.toString() : '',
+          symbol: symbol ? symbol.toString() : '',
+          decimals: decimals ? Number(decimals) : 18,
+          address: tokenContract.address,
+          totalSupply: totalSupply ? BigInt(totalSupply) : 0n,
+        };
+
+        return tokenData;
+      } catch (e) {
+        logError({
+          message: 'Error getting erc20Address data',
+          network: publicClient.chain!.id,
+          args: {
+            transactionHash: erc20AddressEvent.transactionHash,
+            logIndex: erc20AddressEvent.logIndex,
+          },
+        });
+
+        return;
+      }
+    },
+    [publicClient],
+  );
+
+  const fetchStakingDAOData = useCallback(
+    async (safeAddress: Address) => {
+      if (!publicClient.chain) {
+        return;
+      }
+
+      // @todo: `getStakingContractAddress` is WIP (https://linear.app/decent-labs/issue/ENG-1154/implement-getstakingcontractaddress)
+      const stakingAddress = getStakingContractAddress({
+        safeAddress,
+        zodiacModuleProxyFactory,
+        stakingContractMastercopy: '0x1234567890123456789012345678901234567890',
+        chainId: publicClient.chain.id,
+      });
+
+      return { stakingAddress };
+    },
+    [publicClient.chain, zodiacModuleProxyFactory],
+  );
+
   return {
     fetchDAOGovernance,
     fetchDAOProposalTemplates,
@@ -835,5 +1014,7 @@ export function useGovernanceFetcher() {
     fetchLockReleaseAccountData,
     fetchDAOSnapshotProposals,
     fetchGaslessVotingDAOData,
+    fetchMultisigERC20Token,
+    fetchStakingDAOData,
   };
 }

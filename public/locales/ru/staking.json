@@ -1,0 +1,8 @@
+{
+  "stakingTitle": "Ставки",
+  "stakingNull": "У вашей DAO еще нет контракта на ставку. Вы можете развернуть его прямо сейчас.",
+  "deployStaking": "Развертывание контракта на ставку",
+  "stakingPeriod": "Период становления",
+  "includeStakingInVoting": "Включите токен для ставок в голосование по токенам",
+  "includeStakingInVotingDesc": "-Пока нет копии."
+}

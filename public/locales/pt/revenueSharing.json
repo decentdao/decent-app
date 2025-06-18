@@ -1,0 +1,14 @@
+{
+  "revenueSharingTitle": "Quota de receitas",
+  "revShareDaoSafeWarning": "Os fundos enviados para este endereço não serão fraccionados",
+  "revShareTotalError": "O total excede 100%",
+  "daoSafeWallet": "Carteira segura DAO",
+  "revSplitWallet": "Carteira de divisão de receitas",
+  "counterparties": "Contrapartes",
+  "revShareAddSplitWallet": "Adicionar carteira",
+  "currentDaoTreasureShareLabel": "Atual Ação de Tesouraria DAO",
+  "parentDaoTreasureShareLabel": "Pai DAO",
+  "currentTokenHolderShareLabel": "Participação do atual detentor do token",
+  "revSplitTotalLabel": "Total",
+  "addRevenueShare": "Adicionar participação nos lucros"
+}

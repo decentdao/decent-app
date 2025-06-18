@@ -1,0 +1,14 @@
+{
+  "revenueSharingTitle": "收入份额",
+  "revShareDaoSafeWarning": "寄往此地址的资金将不会被拆分",
+  "revShareTotalError": "总数超过 100",
+  "daoSafeWallet": "DAO 安全钱包",
+  "revSplitWallet": "收入分割钱包",
+  "counterparties": "交易对手",
+  "revShareAddSplitWallet": "添加钱包",
+  "currentDaoTreasureShareLabel": "当前 DAO 库房份额",
+  "parentDaoTreasureShareLabel": "母 DAO",
+  "currentTokenHolderShareLabel": "当前代币持有者注资",
+  "revSplitTotalLabel": "总计",
+  "addRevenueShare": "增加收入份额"
+}

@@ -61,6 +61,14 @@ export interface ICreationStepProps extends Omit<FormikProps<CreatorFormState>, 
   steps: CreatorSteps[];
 }
 
+export interface IERC20CreationStepProps
+  extends Omit<FormikProps<Pick<CreatorFormState, 'erc20Token'>>, 'handleSubmit'> {
+  transactionPending?: boolean;
+  isSubDAO?: boolean;
+  mode: DAOCreateMode;
+  steps: CreatorSteps[];
+}
+
 type DAOGovernorERC20Token<T = bigint> = {
   tokenCreationType: TokenCreationType;
   tokenImportAddress?: Address;

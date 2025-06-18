@@ -17,6 +17,11 @@ export const DAO_ROUTES = {
       `/home${getDaoQueryParam(addressPrefix, safeAddress)}`,
     path: 'home',
   },
+  deployToken: {
+    relative: (addressPrefix: string, safeAddress: string) =>
+      `/deployToken${getDaoQueryParam(addressPrefix, safeAddress)}`,
+    path: 'deployToken',
+  },
   newSubDao: {
     relative: (addressPrefix: string, safeAddress: string) =>
       `/new/essentials${getDaoQueryParam(addressPrefix, safeAddress)}`,
@@ -116,6 +121,11 @@ export const DAO_ROUTES = {
     relative: (addressPrefix: string, daoAddress: string, votingStrategyAddress?: string) =>
       `/settings/permissions/create-proposal${getDaoQueryParam(addressPrefix, daoAddress)}${votingStrategyAddress ? `&votingStrategy=${votingStrategyAddress}` : ''}`,
     path: 'create-proposal',
+  },
+  settingsToken: {
+    relative: (addressPrefix: string, daoAddress: string) =>
+      `/settings/token${getDaoQueryParam(addressPrefix, daoAddress)}`,
+    path: 'token',
   },
   proposalTemplates: {
     relative: (addressPrefix: string, safeAddress: string) =>

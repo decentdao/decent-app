@@ -16,6 +16,7 @@ import {
   SECONDS_IN_DAY,
   SECONDS_IN_HOUR,
   SECONDS_IN_MINUTE,
+  SECONDS_IN_YEAR,
 } from '../../ProposalBuilder/constants';
 
 interface DurationUnits {
@@ -27,10 +28,16 @@ export default function DurationUnitStepperInput({
   secondsValue,
   onSecondsValueChange,
   minSeconds = 0,
+  color = 'color-white',
+  hideSteppers = false,
+  placeholder = '0',
 }: {
-  secondsValue: number;
+  secondsValue: number | undefined;
   onSecondsValueChange: (val: number) => void;
   minSeconds?: number;
+  color?: string;
+  hideSteppers?: boolean;
+  placeholder?: string;
 }) {
   const { t } = useTranslation('common');
 
@@ -47,13 +54,17 @@ export default function DurationUnitStepperInput({
       unit: SECONDS_IN_MINUTE,
       label: t('minutes', { ns: 'common' }),
     },
+    {
+      unit: SECONDS_IN_YEAR,
+      label: t('years', { ns: 'common' }),
+    },
   ];
   const [selectedUnit, setSelectedUnit] = useState(units[0]);
 
   const stepperButton = (direction: 'inc' | 'dec') => (
     <Button
       variant="secondary"
-      borderColor="neutral-3"
+      borderColor="color-neutral-900"
       p="0.5rem"
       size="md"
     >
@@ -63,19 +74,28 @@ export default function DurationUnitStepperInput({
 
   return (
     <NumberInput
-      value={secondsValue / selectedUnit.unit}
+      value={secondsValue ? secondsValue / selectedUnit.unit : undefined}
       onChange={val => onSecondsValueChange(Number(val) * selectedUnit.unit)}
       min={minSeconds / selectedUnit.unit}
       focusInputOnChange
     >
       <HStack gap="0.25rem">
-        <NumberDecrementStepper>{stepperButton('dec')}</NumberDecrementStepper>
+        {!hideSteppers && <NumberDecrementStepper>{stepperButton('dec')}</NumberDecrementStepper>}
         <InputGroup>
-          <NumberInputField min={0} />
-          <InputRightElement minWidth="fit-content">
+          <NumberInputField
+            min={0}
+            color={color}
+            placeholder={placeholder}
+          />
+          <InputRightElement
+            color="color-neutral-700"
+            width="auto"
+            borderLeft="1px solid"
+            borderLeftColor="white-alpha-16"
+          >
             <Select
-              bgColor="neutral-1"
-              borderColor="neutral-3"
+              bgColor="color-black"
+              borderColor="color-neutral-900"
               rounded="lg"
               cursor="pointer"
               border="none"
@@ -89,7 +109,7 @@ export default function DurationUnitStepperInput({
                 if (unit) {
                   // Calculate ceiling value when changing to bigger unit
                   //   , to avoid long decimals.
-                  if (unit.unit > selectedUnit.unit) {
+                  if (secondsValue && unit.unit > selectedUnit.unit) {
                     const ceil = Math.ceil(secondsValue / unit.unit);
                     onSecondsValueChange(ceil * unit.unit);
                   }
@@ -109,7 +129,7 @@ export default function DurationUnitStepperInput({
             </Select>
           </InputRightElement>
         </InputGroup>
-        <NumberIncrementStepper>{stepperButton('inc')}</NumberIncrementStepper>
+        {!hideSteppers && <NumberIncrementStepper>{stepperButton('inc')}</NumberIncrementStepper>}
       </HStack>
     </NumberInput>
   );

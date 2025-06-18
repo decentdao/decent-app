@@ -9,7 +9,7 @@ import { getAddress } from 'viem';
 import { sepolia } from 'wagmi/chains';
 import { GovernanceType } from '../../../types';
 import { NetworkConfig } from '../../../types/network';
-import { getSafeContractDeploymentAddress } from './utils';
+import { getEtherscanAPIUrl, getSafeContractDeploymentAddress } from './utils';
 
 const SAFE_VERSION = '1.3.0';
 
@@ -22,7 +22,7 @@ export const sepoliaConfig: NetworkConfig = {
   rpcEndpoint: `https://eth-sepolia.g.alchemy.com/v2/${import.meta.env?.VITE_APP_ALCHEMY_API_KEY}`,
   safeBaseURL: 'https://safe-transaction-sepolia.safe.global',
   etherscanBaseURL: 'https://sepolia.etherscan.io',
-  etherscanAPIUrl: `https://api-sepolia.etherscan.io/api?apikey=${import.meta.env?.VITE_APP_ETHERSCAN_SEPOLIA_API_KEY}`,
+  etherscanAPIUrl: getEtherscanAPIUrl(chain.id),
   addressPrefix: 'sep',
   nativeTokenIcon: '/images/coin-icon-sep.svg',
   isENSSupported: true,
@@ -132,7 +132,10 @@ export const sepoliaConfig: NetworkConfig = {
     GovernanceType.AZORIUS_ERC20,
     GovernanceType.AZORIUS_ERC721,
   ],
-  bundlerMinimumStake: 10_000_000_000_000_000n, // 0.01 ETH
+  bundlerMinimumStake: 10_000_000_000_000_000n, // 0.01 ETH,
+  stablecoins: {
+    usdc: '0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238',
+  },
 };
 
 export default sepoliaConfig;

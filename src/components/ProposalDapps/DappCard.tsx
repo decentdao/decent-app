@@ -1,5 +1,6 @@
 import { Avatar, Box, Flex, Icon, Tag, TagLabel, Text } from '@chakra-ui/react';
 import { Dot } from '@phosphor-icons/react';
+import { SEXY_BOX_SHADOW_T_T } from '../../constants/common';
 import { ModalType } from '../ui/modals/ModalProvider';
 import { useDecentModal } from '../ui/modals/useDecentModal';
 import Divider from '../ui/utils/Divider';
@@ -21,7 +22,7 @@ export default function DappCard({
   categories,
   onClose,
 }: DappCardProps) {
-  const openDappBrowserModal = useDecentModal(ModalType.DAPP_BROWSER, {
+  const { open: openDappBrowserModal } = useDecentModal(ModalType.DAPP_BROWSER, {
     appUrl,
   });
 
@@ -30,13 +31,13 @@ export default function DappCard({
       flex="0 0 calc(25% - 1rem)"
       my="0"
       p="0"
-      bg="neutral-2"
+      bg="color-neutral-950"
       rounded="xl"
       cursor="pointer"
       _hover={{
-        bg: 'neutral-3',
+        bg: 'color-neutral-900',
       }}
-      boxShadow="0px 0px 0px var(--Spread-1, 1px) var(--black, #151217), 0px 0px 0px var(--Spread-1, 1px) var(--color-whitealpha-04, rgba(255, 255, 255, 0.04)) inset, 0px var(--Depth-1, 1px) 0px 0px var(--color-whitealpha-04, rgba(255, 255, 255, 0.04)) inset"
+      boxShadow={SEXY_BOX_SHADOW_T_T}
       onClick={() => {
         onClose();
         openDappBrowserModal();
@@ -52,13 +53,13 @@ export default function DappCard({
             height={10}
             src={iconUrl}
             name={title}
-            color="lilac-0"
+            color="color-lilac-100"
           />
         </Flex>
-        <Text textStyle="body-large">{title}</Text>
+        <Text textStyle="text-lg-regular">{title}</Text>
         <Text
-          textStyle="labels-large"
-          color="neutral-7"
+          textStyle="text-sm-medium"
+          color="color-neutral-300"
           noOfLines={2}
         >
           {description}
@@ -79,16 +80,16 @@ export default function DappCard({
                 rounded="full"
                 key={category}
                 variant="subtle"
-                bg="neutral-4"
+                bg="color-neutral-800"
               >
                 <Icon
-                  color="neutral-7"
+                  color="color-neutral-300"
                   as={Dot}
                   style={{ transform: 'scale(6)' }}
                 />
                 <TagLabel
                   ml="8px"
-                  color="neutral-7"
+                  color="color-neutral-300"
                 >
                   {category}
                 </TagLabel>

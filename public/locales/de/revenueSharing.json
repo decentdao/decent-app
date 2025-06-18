@@ -1,0 +1,14 @@
+{
+  "revenueSharingTitle": "Anteil an den Einnahmen",
+  "revShareDaoSafeWarning": "Gelder, die an diese Adresse geschickt werden, werden nicht aufgeteilt.",
+  "revShareTotalError": "Gesamtbetrag übersteigt 100%",
+  "daoSafeWallet": "DAO Safe Wallet",
+  "revSplitWallet": "Einnahmensplit-Wallet",
+  "counterparties": "Gegenparteien",
+  "revShareAddSplitWallet": "Brieftasche hinzufügen",
+  "currentDaoTreasureShareLabel": "Aktueller DAO-Treasury-Anteil",
+  "parentDaoTreasureShareLabel": "Übergeordnete DAO",
+  "currentTokenHolderShareLabel": "Aktueller Token-Inhaber-Einsatz",
+  "revSplitTotalLabel": "Insgesamt",
+  "addRevenueShare": "Umsatzanteil hinzufügen"
+}
