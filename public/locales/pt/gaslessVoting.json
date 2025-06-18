@@ -37,5 +37,8 @@
   "recipientAddressRequired": "O endereço do destinatário é obrigatório",
   "withdrawGasAction": "Levantar {{amount}} <x>{{symbol}</x>} do pagador",
   "recipientAddress": "Endereço do destinatário",
-  "enterRecipientAddress": "Introduzir o endereço do destinatário"
+  "enterRecipientAddress": "Introduzir o endereço do destinatário",
+  "amountExceedsAvailableBalance": "Saldo insuficiente",
+  "withdrawingGas": "Retirada de {{amount}} {{symbol}} para {{recipient}}",
+  "depositingGas": "Depositando {{amount}} {{symbol}}"
 }

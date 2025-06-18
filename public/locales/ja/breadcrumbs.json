@@ -11,6 +11,7 @@
   "proposalTemplates": "提案テンプレート",
   "proposalTemplate": "{{proposalTemplateTitle}}",
   "proposalTemplateNew": "提案テンプレートを作成します",
+  "deployToken": "トークンのデプロイ",
   "editDAO": "Edit DAO",
   "parentLink": "Parent DAO",
   "settings": "Settings"

@@ -80,6 +80,7 @@
   "titleProposers": "Antragsteller auf der Whitelist",
   "titleTokenParams": "Metadaten",
   "titleTokenContract": "Vertrag",
+  "labelTokenContractAlreadyConfigured": "Ihre DAO ist bereits mit einem ERC-20-Token konfiguriert, der mit dieser Änderung für die DAO-Governance verwendet wird.",
   "titleAddress": "Adresse",
   "titleAmount": "Betrag",
   "createSubDAOPendingToastMessage": "Erstellen eines DAO-Vorschlags für Ihr Kind",

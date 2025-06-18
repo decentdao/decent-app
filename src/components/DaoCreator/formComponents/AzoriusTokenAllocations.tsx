@@ -29,7 +29,9 @@ export function AzoriusTokenAllocations(props: ICreationStepProps) {
   const { values, errors, setFieldValue, isSubDAO } = props;
   const { t } = useTranslation('daoCreate');
   const { daoKey } = useCurrentDAOKey();
+
   const { governance } = useDAOStore({ daoKey });
+
   const azoriusGovernance = governance as AzoriusGovernance;
   const canReceiveParentAllocations = isSubDAO && azoriusGovernance.votesToken?.address;
 

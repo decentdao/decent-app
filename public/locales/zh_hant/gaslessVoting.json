@@ -37,5 +37,8 @@
   "recipientAddressRequired": "收件人地址為必填項目",
   "withdrawGasAction": "提款{{amount}}<x>{{symbol}</x>從收款人處",
   "recipientAddress": "收件人地址",
-  "enterRecipientAddress": "輸入收件人地址"
+  "enterRecipientAddress": "輸入收件人地址",
+  "amountExceedsAvailableBalance": "平衡不足",
+  "withdrawingGas": "撤回{{amount}}{{symbol}} 至{{recipient}}",
+  "depositingGas": "存入{{amount}}{{symbol}}"
 }

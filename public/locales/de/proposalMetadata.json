@@ -16,5 +16,15 @@
   "unstakeStEthTitle": "Unstake stETH",
   "unstakeStEthDescription": "Dieser Vorschlag wird stETH von Lido abheben und eine Lido Withdrawal NFT prägen, mit der Sie Ihre ETH einfordern können.",
   "stakeWithLidoTitle": "ETH-Einsatz mit Lido",
-  "stakeWithLidoDescription": "Dieser Vorschlag wird ETH in Lido einsetzen und stETH in Ihre Kasse zurückführen."
+  "stakeWithLidoDescription": "Dieser Vorschlag wird ETH in Lido einsetzen und stETH in Ihre Kasse zurückführen.",
+  "addSigners": "Unterzeichner hinzufügen",
+  "removeSigners": "Unterzeichner entfernen",
+  "changeThreshold": "Schwellenwert für Unterzeichner aktualisieren",
+  "changeVotingPeriod": "Aktualisierung des Abstimmungszeitraums",
+  "changeTimelockPeriod": "Zeitsperrfrist aktualisieren",
+  "changeExecutionPeriod": "Ausführungszeitraum der Aktualisierung",
+  "changeQuorumNumerator": "Prozentsatz des Quorums aktualisieren",
+  "changeQuorumThreshold": "Aktualisierung der Quorumschwelle",
+  "deployToken": "Token bereitstellen",
+  "updateERC20Address": "ERC20-Adresse aktualisieren"
 }

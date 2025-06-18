@@ -11,6 +11,7 @@
   "proposalTemplates": "Plantillas de propuestas",
   "proposalTemplate": "{{proposalTemplateTitle}}",
   "proposalTemplateNew": "Crear plantilla de propuesta",
+  "deployToken": "Desplegar token",
   "editDAO": "Editar DAO",
   "parentLink": "DAO matriz",
   "settings": "Ajustes"

@@ -163,6 +163,7 @@
   "streamTitle": "Flux {{index}} ({{type}})",
   "addStream": "Ajouter un flux",
   "removeStream": "Supprimer le cours d'eau",
+  "streamIsNotTransferable": "Le jeton est verrouillé, il ne peut pas être utilisé pour la diffusion en continu.",
   "streamStartNotice": "Le flux sera lancé au moment de l'exécution de la proposition. Pour\némuler\" un retard dans le démarrage du flux, le montant de la première tranche doit être fixé à 0, avec la durée de \"retard\" souhaitée.\n0 avec la durée de \"retard\" souhaitée.",
   "streamOnSablierNotice": "Cette proposition créera des flux de paiement à l'aide de Sablier. Après son exécution, les bénéficiaires devront utiliser Sablier pour gérer ces flux.",
   "streamedTokenAddress": "Adresse du jeton en continu",

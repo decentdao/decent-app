@@ -11,6 +11,7 @@
   "proposalTemplates": "提案範本",
   "proposalTemplate": "{{proposalTemplateTitle}}",
   "proposalTemplateNew": "建立提案範本",
+  "deployToken": "部署令牌",
   "editDAO": "編輯DAO",
   "parentLink": "父DAO",
   "settings": "設定"

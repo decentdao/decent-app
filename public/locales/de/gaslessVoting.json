@@ -37,5 +37,8 @@
   "recipientAddressRequired": "Adresse des Empfängers ist erforderlich",
   "withdrawGasAction": "Abheben {{amount}} <x>{{symbol}</x>} vom Zahlmeister",
   "recipientAddress": "Adresse des Empfängers",
-  "enterRecipientAddress": "Empfängeradresse eingeben"
+  "enterRecipientAddress": "Empfängeradresse eingeben",
+  "amountExceedsAvailableBalance": "Unzureichendes Gleichgewicht",
+  "withdrawingGas": "Rückzug {{amount}} {{symbol}} auf {{recipient}}",
+  "depositingGas": "Hinterlegung {{amount}} {{symbol}}"
 }

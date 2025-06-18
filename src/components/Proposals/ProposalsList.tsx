@@ -48,12 +48,16 @@ export function ProposalsList({
           ))}
           {showLoadingMore && <InfoBoxLoader />}
         </>
-      ) : (
+      ) : allProposalsLoaded && proposals.length === 0 ? (
         <NoDataCard
           emptyText="emptyProposals"
           emptyTextNotProposer="emptyProposalsNotProposer"
           translationNameSpace="proposal"
         />
+      ) : (
+        <Box mt={7}>
+          <InfoBoxLoader />
+        </Box>
       )}
     </Flex>
   );

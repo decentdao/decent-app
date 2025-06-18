@@ -1,0 +1,8 @@
+{
+  "stakingTitle": "Abstecken",
+  "stakingNull": "Ihre DAO hat noch keinen Einsatzvertrag. Sie können jetzt einen einsetzen.",
+  "deployStaking": "Einsatz des Absteckvertrags",
+  "stakingPeriod": "Absteckzeitraum",
+  "includeStakingInVoting": "Staking Token in Token-Abstimmung einbeziehen",
+  "includeStakingInVotingDesc": "-noch keine Kopie-"
+}

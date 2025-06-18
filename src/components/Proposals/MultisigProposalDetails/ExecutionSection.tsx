@@ -1,4 +1,4 @@
-import { Button, Text } from '@chakra-ui/react';
+import { Box, Button, Text } from '@chakra-ui/react';
 import { abis } from '@fractal-framework/fractal-contracts';
 import { SafeMultisigTransactionResponse } from '@safe-global/safe-core-sdk-types';
 import { useState } from 'react';
@@ -352,9 +352,9 @@ export function ExecutionSection({ proposal }: { proposal: MultisigProposal }) {
       <DecentTooltip
         placement="top-start"
         label={t('notActiveNonceTooltip')}
-        isDisabled={isActiveNonce}
+        isDisabled={false}
       >
-        <>
+        <Box>
           {!isRejectedProposalPassThreshold && (
             <Button
               mt="0.5rem"
@@ -374,12 +374,16 @@ export function ExecutionSection({ proposal }: { proposal: MultisigProposal }) {
               py="0.75rem"
               px="1rem"
               onClick={rejectionProposalAction.action}
-              isDisabled={!isRejectedProposalPassThreshold || rejectionProposalAction.actionPending}
+              isDisabled={
+                !isActiveNonce ||
+                !isRejectedProposalPassThreshold ||
+                rejectionProposalAction.actionPending
+              }
             >
               {t(rejectionProposalExecutionButtonLabel)}
             </Button>
           )}
-        </>
+        </Box>
       </DecentTooltip>
     </SectionContentBox>
   );

@@ -37,5 +37,8 @@
   "recipientAddressRequired": "Адрес получателя обязателен",
   "withdrawGasAction": "Вывести {{amount}} <x>{{symbol}</x>} из платежной системы",
   "recipientAddress": "Адрес получателя",
-  "enterRecipientAddress": "Введите адрес получателя"
+  "enterRecipientAddress": "Введите адрес получателя",
+  "amountExceedsAvailableBalance": "Недостаточный баланс",
+  "withdrawingGas": "Вывод {{amount}} {{symbol}} на {{recipient}}",
+  "depositingGas": "Депонирование {{amount}} {{symbol}}"
 }
