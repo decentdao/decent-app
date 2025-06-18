@@ -1,7 +1,7 @@
 import { Button, Flex, Text } from '@chakra-ui/react';
 import { abis } from '@fractal-framework/fractal-contracts';
-import { Formik, Form, useFormikContext } from 'formik';
-import { useState } from 'react';
+import { Formik, Form, useFormikContext, FormikContextType } from 'formik';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -35,9 +35,11 @@ import { SafeGeneralSettingsPage } from '../../../pages/dao/settings/general/Saf
 import { useDAOStore } from '../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
 import { useProposalActionsStore } from '../../../store/actions/useProposalActionsStore';
+import { useSettingsFormStore } from '../../../store/settings/useSettingsFormStore';
 import {
   AzoriusGovernance,
   BigIntValuePair,
+  CreateProposalAction,
   CreateProposalActionData,
   CreateProposalTransaction,
   FractalTokenType,
@@ -45,11 +47,14 @@ import {
 } from '../../../types';
 import { SENTINEL_MODULE } from '../../../utils/address';
 import { getEstimatedNumberOfBlocks } from '../../../utils/contract';
+import { prepareRefillPaymasterAction } from '../../../utils/dao/prepareRefillPaymasterActionData';
+import { prepareWithdrawPaymasterAction } from '../../../utils/dao/prepareWithdrawPaymasterActionData';
 import {
   getPaymasterSaltNonce,
   getPaymasterAddress,
   getVoteSelectorAndValidator,
 } from '../../../utils/gaslessVoting';
+import { formatCoin } from '../../../utils/numberFormats';
 import { validateENSName } from '../../../utils/url';
 import { SafePermissionsStrategyAction } from '../../SafeSettings/SafePermissionsStrategyAction';
 import { SettingsNavigation } from '../../SafeSettings/SettingsNavigation';
@@ -74,6 +79,10 @@ export type SafeSettingsEdits = {
     snapshot?: string;
     sponsoredVoting?: boolean;
   };
+  paymasterGasTank?: {
+    withdraw?: { recipientAddress?: Address; amount?: BigIntValuePair };
+    deposit?: { amount?: BigIntValuePair; isDirectDeposit?: boolean };
+  };
   permissions?: {
     proposerThreshold?: BigIntValuePair;
   };
@@ -89,6 +98,11 @@ type GeneralEditFormikErrors = {
   snapshot?: string;
 };
 
+type PaymasterGasTankEditFormikErrors = {
+  withdraw?: { amount?: string; recipientAddress?: string };
+  deposit?: { amount?: string };
+};
+
 type RevenueSharingEditFormikErrors = {
   revenueSharing?: string; // @TODO placeholder
 };
@@ -96,8 +110,23 @@ type RevenueSharingEditFormikErrors = {
 export type SafeSettingsFormikErrors = {
   multisig?: MultisigEditGovernanceFormikErrors;
   general?: GeneralEditFormikErrors;
+  paymasterGasTank?: PaymasterGasTankEditFormikErrors;
   revenueSharing?: RevenueSharingEditFormikErrors;
 };
+
+function FormStateSync({ formikContext }: { formikContext: FormikContextType<SafeSettingsEdits> }) {
+  const { setFormState, setFormErrors } = useSettingsFormStore();
+
+  useEffect(() => {
+    setFormState({ ...formikContext.values });
+  }, [formikContext.values, setFormState]);
+
+  useEffect(() => {
+    setFormErrors(formikContext.errors as unknown as SafeSettingsFormikErrors);
+  }, [formikContext.errors, setFormErrors]);
+
+  return null;
+}
 
 export function SafeSettingsModal({
   closeModal,
@@ -215,6 +244,92 @@ export function SafeSettingsModal({
   const ethValue = {
     bigintValue: 0n,
     value: '0',
+  };
+
+  const handleEditPaymaster = async (
+    updatedValues: SafeSettingsEdits,
+  ): Promise<CreateProposalAction[] | undefined> => {
+    const { paymasterAddress } = governance;
+    if (!paymasterAddress) {
+      throw new Error('Paymaster address is not set');
+    }
+
+    const actions: CreateProposalAction[] = [];
+    const nativeCurrency = publicClient.chain.nativeCurrency;
+    const { paymasterGasTank } = updatedValues;
+
+    if (paymasterGasTank?.withdraw?.amount?.bigintValue) {
+      if (!paymasterGasTank.withdraw.recipientAddress) {
+        throw new Error('Recipient address is not set');
+      }
+
+      const actionData = prepareWithdrawPaymasterAction({
+        withdrawData: {
+          withdrawAmount: paymasterGasTank.withdraw.amount.bigintValue,
+          recipientAddress: paymasterGasTank.withdraw.recipientAddress,
+        },
+        paymasterAddress,
+      });
+
+      const formattedWithdrawAmount = formatCoin(
+        paymasterGasTank.withdraw.amount.bigintValue,
+        true,
+        nativeCurrency.decimals,
+        nativeCurrency.symbol,
+        false,
+      );
+
+      actions.push({
+        ...actionData,
+        content: (
+          <Text>
+            {t('withdrawGasAction', {
+              amount: formattedWithdrawAmount,
+              symbol: nativeCurrency.symbol,
+              ns: 'gaslessVoting',
+            })}
+          </Text>
+        ),
+      });
+    }
+
+    if (paymasterGasTank?.deposit?.amount?.bigintValue) {
+      if (!accountAbstraction) {
+        throw new Error('Account Abstraction addresses are not set');
+      }
+
+      if (paymasterGasTank.deposit.isDirectDeposit) {
+        return;
+      }
+
+      const actionData = prepareRefillPaymasterAction({
+        refillAmount: paymasterGasTank.deposit.amount.bigintValue,
+        paymasterAddress,
+        nativeToken: nativeCurrency,
+        entryPointAddress: accountAbstraction.entryPointv07,
+      });
+      const formattedRefillAmount = formatCoin(
+        paymasterGasTank.deposit.amount.bigintValue,
+        true,
+        nativeCurrency.decimals,
+        nativeCurrency.symbol,
+        false,
+      );
+
+      actions.push({
+        ...actionData,
+        content: (
+          <Text>
+            {t('refillPaymasterAction', {
+              amount: formattedRefillAmount,
+              symbol: nativeCurrency.symbol,
+            })}
+          </Text>
+        ),
+      });
+    }
+
+    return actions;
   };
 
   const handleEditGeneral = async (updatedValues: SafeSettingsEdits) => {
@@ -933,7 +1048,7 @@ export function SafeSettingsModal({
     }
 
     resetActions();
-    const { general, multisig, azorius, permissions } = values;
+    const { general, multisig, azorius, permissions, paymasterGasTank } = values;
     if (general) {
       const { action, title } = await handleEditGeneral(values);
 
@@ -942,6 +1057,16 @@ export function SafeSettingsModal({
         transactions: action.transactions,
         content: <Text>{title}</Text>,
       });
+    }
+
+    if (paymasterGasTank) {
+      const actions = await handleEditPaymaster(values);
+
+      if (actions && actions.length > 0) {
+        actions.forEach(action => {
+          addAction(action);
+        });
+      }
     }
 
     if (multisig) {
@@ -1041,6 +1166,45 @@ export function SafeSettingsModal({
           errors.general = undefined;
         }
 
+        if (values.paymasterGasTank) {
+          const { withdraw } = values.paymasterGasTank;
+
+          if (withdraw) {
+            if (withdraw.amount?.bigintValue !== undefined && depositInfo?.balance !== undefined) {
+              if (withdraw.amount.bigintValue > depositInfo.balance) {
+                errors.paymasterGasTank = {
+                  ...errors.paymasterGasTank,
+                  withdraw: {
+                    ...errors.paymasterGasTank?.withdraw,
+                    amount: t('amountExceedsAvailableBalance', { ns: 'gaslessVoting' }),
+                  },
+                };
+              }
+            }
+
+            if (withdraw.recipientAddress !== undefined) {
+              const validation = await validateAddress({ address: withdraw.recipientAddress });
+              if (!validation.validation.isValidAddress) {
+                errors.paymasterGasTank = {
+                  ...errors.paymasterGasTank,
+                  withdraw: {
+                    ...errors.paymasterGasTank?.withdraw,
+                    recipientAddress: t('errorInvalidAddress', { ns: 'common' }),
+                  },
+                };
+              }
+            }
+          } else {
+            errors.paymasterGasTank = {
+              ...errors.paymasterGasTank,
+              withdraw: undefined,
+            };
+          }
+          // Deposit validation handled in RefillGasTankModal.
+        } else {
+          errors.paymasterGasTank = undefined;
+        }
+
         if (Object.values(errors).every(e => e === undefined)) {
           errors = {};
         }
@@ -1052,27 +1216,31 @@ export function SafeSettingsModal({
         submitAllSettingsEditsProposal(values);
       }}
     >
-      <Form>
-        <Flex
-          flexDirection="column"
-          height="90vh"
-          textColor="color-neutral-100"
-        >
+      {formikContext => (
+        <Form>
+          <FormStateSync formikContext={formikContext} />
           <Flex
-            flex="1"
+            flexDirection="column"
             height="100%"
+            textColor="color-neutral-100"
             pl="1"
             overflowY="auto"
           >
-            <SettingsNavigation onSettingsNavigationClick={handleSettingsNavigationClick} />
-            <Divider vertical />
-            {settingsContent}
-          </Flex>
+            <Flex
+              flex="1"
+              height="100%"
+              pl="1"
+            >
+              <SettingsNavigation onSettingsNavigationClick={handleSettingsNavigationClick} />
+              <Divider vertical />
+              {settingsContent}
+            </Flex>
 
-          <Divider />
-          <ActionButtons />
-        </Flex>
-      </Form>
+            <Divider />
+            <ActionButtons />
+          </Flex>
+        </Form>
+      )}
     </Formik>
   );
 }

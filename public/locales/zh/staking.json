@@ -1,0 +1,8 @@
+{
+  "stakingTitle": "定标",
+  "stakingNull": "您的 DAO 还没有定价合约。您现在就可以部署一个。",
+  "deployStaking": "Deploy Staking Contract",
+  "stakingPeriod": "Staking Period",
+  "includeStakingInVoting": "Include staking token in token voting",
+  "includeStakingInVotingDesc": "-no copy yet-"
+}

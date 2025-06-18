@@ -16,6 +16,7 @@ import { useCanUserCreateProposal } from '../../../hooks/utils/useCanUserSubmitP
 import { useDAOStore } from '../../../providers/App/AppProvider';
 import { useSafeAPI } from '../../../providers/App/hooks/useSafeAPI';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
+import { useGlobalStore } from '../../../store/store';
 import { FractalProposalState, MultisigProposal } from '../../../types';
 import { SectionContentBox } from '../../ui/containers/ContentBox';
 import { OptionMenu } from '../../ui/menus/OptionMenu';
@@ -30,7 +31,7 @@ const useSignTransaction = () => {
   const { chain } = useNetworkConfigStore();
   const { data: walletClient } = useNetworkWalletClient();
   const { t } = useTranslation(['proposal']);
-
+  const { updateProposalConfirmations } = useGlobalStore();
   const safeAPI = useSafeAPI();
   const [asyncRequest, asyncRequestPending] = useAsyncRequest();
 
@@ -38,7 +39,7 @@ const useSignTransaction = () => {
     proposalTx: SafeMultisigTransactionResponse,
     proposalId: string,
   ) => {
-    if (!walletClient || !safe?.address || !safeAPI) {
+    if (!walletClient || !safe?.address || !safeAPI || !daoKey) {
       return;
     }
     try {
@@ -78,7 +79,16 @@ const useSignTransaction = () => {
         pendingMessage: t('pendingSign'),
         successMessage: t('successSign'),
         successCallback: async (signature: string) => {
-          await safeAPI.confirmTransaction(proposalId, signature);
+          try {
+            await safeAPI.confirmTransaction(proposalId, signature);
+            updateProposalConfirmations(daoKey, proposalId, {
+              owner: walletClient.account.address,
+              submissionDate: new Date().toISOString(),
+              signature,
+            });
+          } catch (e) {
+            logError(e, 'Error occurred during transaction confirmation');
+          }
         },
       });
     } catch (e) {

@@ -93,6 +93,9 @@ type NetworkConfigBase = {
     };
   };
   createOptions: GovernanceType[];
+  stablecoins: {
+    usdc: Address;
+  };
 };
 
 // Type for networks *with* Account Abstraction

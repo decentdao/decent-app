@@ -80,6 +80,7 @@
   "titleProposers": "Білі списки учасників",
   "titleTokenParams": "Метадані",
   "titleTokenContract": "Контракт",
+  "labelTokenContractAlreadyConfigured": "Ваш DAO вже налаштований з токеном ERC-20, який буде використовуватися для управління DAO з цією модифікацією.",
   "titleAddress": "Адреса",
   "titleAmount": "Сума",
   "createSubDAOPendingToastMessage": "Створіть свою дитячу пропозицію DAO",

@@ -247,8 +247,22 @@ export function ProposalActionCard({
           alignItems="center"
         >
           <Icon
-            as={isAddAction ? CheckSquare : isEditAction ? PencilWithLineIcon : Trash}
-            color={isEditAction || isAddAction ? 'color-neutral-300' : 'color-error-400'}
+            as={
+              isAddAction
+                ? CheckSquare
+                : isEditAction
+                  ? PencilWithLineIcon
+                  : isDeleteAction
+                    ? Trash
+                    : CheckSquare
+            }
+            color={
+              isEditAction || isAddAction
+                ? 'color-neutral-300'
+                : isDeleteAction
+                  ? 'color-error-400'
+                  : 'color-neutral-300'
+            }
           />
           {action.content}
         </Flex>

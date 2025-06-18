@@ -1,0 +1,14 @@
+{
+  "revenueSharingTitle": "収益シェア",
+  "revShareDaoSafeWarning": "この住所に送られた資金は分割されません。",
+  "revShareTotalError": "合計が100％を超える",
+  "daoSafeWallet": "DAOセーフウォレット",
+  "revSplitWallet": "レベニュー・スプリット・ウォレット",
+  "counterparties": "カウンターパーティ",
+  "revShareAddSplitWallet": "財布を追加",
+  "currentDaoTreasureShareLabel": "現在のDAO自己株式",
+  "parentDaoTreasureShareLabel": "親DAO",
+  "currentTokenHolderShareLabel": "現在のトークン・ホルダー",
+  "revSplitTotalLabel": "合計",
+  "addRevenueShare": "収入シェア追加"
+}

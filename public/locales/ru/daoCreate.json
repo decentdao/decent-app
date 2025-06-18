@@ -80,6 +80,7 @@
   "titleProposers": "Предложения, включенные в белый список",
   "titleTokenParams": "Метаданные",
   "titleTokenContract": "Контракт",
+  "labelTokenContractAlreadyConfigured": "Ваш DAO уже настроен с токеном ERC-20, который будет использоваться для управления DAO с этой модификацией.",
   "titleAddress": "Адрес",
   "titleAmount": "Сумма",
   "createSubDAOPendingToastMessage": "Создание дочернего предложения DAO",

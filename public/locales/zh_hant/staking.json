@@ -1,0 +1,8 @@
+{
+  "stakingTitle": "Staking",
+  "stakingNull": "Your DAO doesn't have a staking contract yet. You can deploy one now.",
+  "deployStaking": "Deploy Staking Contract",
+  "stakingPeriod": "Staking Period",
+  "includeStakingInVoting": "Include staking token in token voting",
+  "includeStakingInVotingDesc": "-no copy yet-"
+}

@@ -5,6 +5,7 @@ import {
   Address,
   erc721Abi,
   formatUnits,
+  getAddress,
   getContract,
   GetContractEventsReturnType,
   zeroAddress,
@@ -17,8 +18,7 @@ import { ProposalsQuery, ProposalsResponse } from '../../graphql/SnapshotQueries
 import { logError } from '../../helpers/errorLogging';
 import { useCurrentDAOKey } from '../../hooks/DAO/useCurrentDAOKey';
 import useNetworkPublicClient from '../../hooks/useNetworkPublicClient';
-import { CacheExpiry, CacheKeys } from '../../hooks/utils/cache/cacheDefaults';
-import { getValue, setValue } from '../../hooks/utils/cache/useLocalStorage';
+
 import {
   ContractTypeWithVersion,
   useAddressContractType,
@@ -55,6 +55,7 @@ import { blocksToSeconds } from '../../utils/contract';
 import { getPaymasterAddress } from '../../utils/gaslessVoting';
 import { getStakingContractAddress } from '../../utils/stakingContractUtils';
 import { SetAzoriusGovernancePayload } from '../slices/governances';
+import { useGlobalStore } from '../store';
 
 /**
  * `useGovernanceFetcher` is used as an abstraction layer over logic of fetching DAO governance data
@@ -73,6 +74,11 @@ export function useGovernanceFetcher() {
   const user = useAccount();
   const snaphshotGraphQlClient = useMemo(() => createSnapshotSubgraphClient(), []);
 
+  const { daoKey } = useCurrentDAOKey();
+  const { getGovernance } = useGlobalStore();
+  const governance = daoKey ? getGovernance(daoKey) : undefined;
+  const cachedProposals = governance?.proposals;
+
   const {
     contracts: {
       zodiacModuleProxyFactory,
@@ -80,7 +86,7 @@ export function useGovernanceFetcher() {
       paymaster: { decentPaymasterV1MasterCopy },
     },
   } = useNetworkConfigStore();
-  const { safeAddress: currentUrlSafeAddress } = useCurrentDAOKey();
+  const { safeAddress: currentUrlSafeAddress, wrongNetwork } = useCurrentDAOKey();
 
   const { setMethodOnInterval, clearIntervals } = useUpdateTimer(currentUrlSafeAddress);
 
@@ -93,7 +99,7 @@ export function useGovernanceFetcher() {
       onProposalsLoaded,
       onProposalLoaded,
       onTokenClaimContractAddressLoaded,
-      onLoadingFirstProposalStateChanged,
+      onVotesTokenAddressLoaded,
     }: {
       daoAddress: Address;
       daoModules: DecentModule[];
@@ -102,7 +108,7 @@ export function useGovernanceFetcher() {
       onProposalsLoaded: (proposals: FractalProposal[]) => void;
       onProposalLoaded: (proposal: AzoriusProposal, index: number, totalProposals: number) => void;
       onTokenClaimContractAddressLoaded: (tokenClaimContractAddress: Address) => void;
-      onLoadingFirstProposalStateChanged: (loading: boolean) => void;
+      onVotesTokenAddressLoaded: (votesTokenAddress: Address) => void;
     }) => {
       const azoriusModule = getAzoriusModuleFromModules(daoModules);
       clearIntervals();
@@ -171,6 +177,8 @@ export function useGovernanceFetcher() {
               throw new Error('Unknown governance token type');
             }
           }
+
+          onVotesTokenAddressLoaded(votesTokenAddress);
         };
 
         let strategies: FractalVotingStrategy[] = [];
@@ -294,37 +302,60 @@ export function useGovernanceFetcher() {
                 ...tokenContract,
                 functionName: 'totalSupply',
               },
+              {
+                ...tokenContract,
+                functionName: 'balanceOf',
+                args: [user.address],
+              },
+              {
+                ...tokenContract,
+                functionName: 'delegates',
+                args: [user.address],
+              },
             ];
 
             // Execute multicall
-            const [name, symbol, decimals, totalSupply] = await publicClient.multicall({
+            const [
+              nameData,
+              symbolData,
+              decimalsData,
+              totalSupplyData,
+              balanceData,
+              delegateeData,
+            ] = await publicClient.multicall({
               contracts: multicallCalls,
-              allowFailure: false,
+              allowFailure: true,
             });
-            let balance: bigint = 0n;
-            if (user.address) {
-              balance = await tokenContract.read.balanceOf([user.address]);
-            }
+
+            const [name, symbol, decimals, totalSupply, balance, delegatee] = [
+              nameData.result?.toString() ?? '',
+              symbolData.result?.toString() ?? '',
+              decimalsData.result !== undefined ? Number(decimalsData.result) : 18,
+              totalSupplyData.result !== undefined ? BigInt(totalSupplyData.result) : 0n,
+              balanceData.result !== undefined ? BigInt(balanceData.result) : 0n,
+              delegateeData.result !== undefined
+                ? getAddress(delegateeData.result.toString())
+                : zeroAddress,
+            ];
 
             const tokenData = {
-              name: name ? name.toString() : '',
-              symbol: symbol ? symbol.toString() : '',
-              decimals: decimals ? Number(decimals) : 18,
-              address: tokenContract.address,
-              totalSupply: totalSupply ? BigInt(totalSupply) : 0n,
+              name,
+              symbol,
+              decimals,
+              totalSupply,
               balance,
-              delegatee: zeroAddress as Address,
+              delegatee,
             };
 
-            let lockedVotesTokenData: VotesTokenData | undefined;
+            const votesToken = {
+              ...tokenData,
+              address: tokenContract.address,
+            };
+
+            let lockedVotesToken: VotesTokenData | undefined;
             if (lockReleaseAddress) {
-              lockedVotesTokenData = {
-                balance,
-                delegatee: zeroAddress,
-                name: tokenData.name,
-                symbol: tokenData.symbol,
-                decimals: tokenData.decimals,
-                totalSupply: tokenData.totalSupply,
+              lockedVotesToken = {
+                ...tokenData,
                 address: lockReleaseAddress,
               };
             }
@@ -397,7 +428,7 @@ export function useGovernanceFetcher() {
 
             onAzoriusGovernanceLoaded({
               moduleAzoriusAddress: azoriusContract.address,
-              votesToken: tokenData,
+              votesToken,
               erc721Tokens: undefined,
               linearVotingErc20Address,
               linearVotingErc20WithHatsWhitelistingAddress,
@@ -407,7 +438,7 @@ export function useGovernanceFetcher() {
               strategies,
               votingStrategy,
               isAzorius: true,
-              lockedVotesToken: lockedVotesTokenData,
+              lockedVotesToken,
               type: GovernanceType.AZORIUS_ERC20,
             });
 
@@ -423,10 +454,6 @@ export function useGovernanceFetcher() {
               }
             }
 
-            // Now - fetch proposals
-
-            onLoadingFirstProposalStateChanged(true);
-
             const erc20VotedEvents = await erc20VotingContract.getEvents.Voted({ fromBlock: 0n });
             const executedEvents = await azoriusContract.getEvents.ProposalExecuted({
               fromBlock: 0n,
@@ -436,26 +463,29 @@ export function useGovernanceFetcher() {
             ).reverse();
 
             if (!proposalCreatedEvents.length) {
-              onLoadingFirstProposalStateChanged(false);
+              onProposalsLoaded([]);
               return;
             }
-
-            for (const [index, proposalCreatedEvent] of proposalCreatedEvents.entries()) {
+            const entries = proposalCreatedEvents.entries();
+            for (const [index, proposalCreatedEvent] of entries) {
               if (proposalCreatedEvent.args.proposalId === undefined) {
                 continue;
               }
 
-              const cachedProposal = getValue({
-                cacheName: CacheKeys.PROPOSAL_CACHE,
-                proposalId: proposalCreatedEvent.args.proposalId.toString(),
-                contractAddress: azoriusContract.address,
-              });
+              const cachedProposal = cachedProposals?.find(
+                p => p.proposalId === proposalCreatedEvent?.args?.proposalId?.toString(),
+              );
+              const isProposalFossilized =
+                cachedProposal?.state === FractalProposalState.CLOSED ||
+                cachedProposal?.state === FractalProposalState.EXECUTED ||
+                cachedProposal?.state === FractalProposalState.FAILED ||
+                cachedProposal?.state === FractalProposalState.EXPIRED ||
+                cachedProposal?.state === FractalProposalState.REJECTED;
 
-              if (cachedProposal) {
-                onProposalLoaded(cachedProposal, index, proposalCreatedEvents.length);
+              if (cachedProposal && isProposalFossilized) {
+                // @dev skip fossilized proposals, cached proposals already loaded
                 continue;
               }
-
               let proposalData;
 
               if (
@@ -519,25 +549,6 @@ export function useGovernanceFetcher() {
               );
 
               onProposalLoaded(proposal, index, proposalCreatedEvents.length);
-
-              const isProposalFossilized =
-                proposal.state === FractalProposalState.CLOSED ||
-                proposal.state === FractalProposalState.EXECUTED ||
-                proposal.state === FractalProposalState.FAILED ||
-                proposal.state === FractalProposalState.EXPIRED ||
-                proposal.state === FractalProposalState.REJECTED;
-
-              if (isProposalFossilized) {
-                setValue(
-                  {
-                    cacheName: CacheKeys.PROPOSAL_CACHE,
-                    proposalId: proposalCreatedEvent.args.proposalId.toString(),
-                    contractAddress: azoriusContract.address,
-                  },
-                  proposal,
-                  CacheExpiry.NEVER,
-                );
-              }
             }
           } else if (erc721VotingStrategyAddress) {
             const erc721LinearVotingContract = getContract({
@@ -629,8 +640,6 @@ export function useGovernanceFetcher() {
 
             // Now - fetch proposals
 
-            onLoadingFirstProposalStateChanged(true);
-
             const erc721VotedEvents = await erc721LinearVotingContract.getEvents.Voted({
               fromBlock: 0n,
             });
@@ -642,7 +651,6 @@ export function useGovernanceFetcher() {
             ).reverse();
 
             if (!proposalCreatedEvents.length) {
-              onLoadingFirstProposalStateChanged(false);
               return;
             }
 
@@ -651,14 +659,17 @@ export function useGovernanceFetcher() {
                 continue;
               }
 
-              const cachedProposal = getValue({
-                cacheName: CacheKeys.PROPOSAL_CACHE,
-                proposalId: proposalCreatedEvent.args.proposalId.toString(),
-                contractAddress: azoriusContract.address,
-              });
+              const cachedProposal = cachedProposals?.find(
+                p => p.proposalId === proposalCreatedEvent?.args?.proposalId?.toString(),
+              );
+              const isProposalFossilized =
+                cachedProposal?.state === FractalProposalState.CLOSED ||
+                cachedProposal?.state === FractalProposalState.EXECUTED ||
+                cachedProposal?.state === FractalProposalState.FAILED ||
+                cachedProposal?.state === FractalProposalState.EXPIRED ||
+                cachedProposal?.state === FractalProposalState.REJECTED;
 
-              if (cachedProposal) {
-                onProposalLoaded(cachedProposal, index, proposalCreatedEvents.length);
+              if (cachedProposal && isProposalFossilized) {
                 continue;
               }
 
@@ -725,25 +736,6 @@ export function useGovernanceFetcher() {
               );
 
               onProposalLoaded(proposal, index, proposalCreatedEvents.length);
-
-              const isProposalFossilized =
-                proposal.state === FractalProposalState.CLOSED ||
-                proposal.state === FractalProposalState.EXECUTED ||
-                proposal.state === FractalProposalState.FAILED ||
-                proposal.state === FractalProposalState.EXPIRED ||
-                proposal.state === FractalProposalState.REJECTED;
-
-              if (isProposalFossilized) {
-                setValue(
-                  {
-                    cacheName: CacheKeys.PROPOSAL_CACHE,
-                    proposalId: proposalCreatedEvent.args.proposalId.toString(),
-                    contractAddress: azoriusContract.address,
-                  },
-                  proposal,
-                  CacheExpiry.NEVER,
-                );
-              }
             }
           }
         }
@@ -788,19 +780,31 @@ export function useGovernanceFetcher() {
 
   const fetchVotingTokenAccountData = useCallback(
     async (votingTokenAddress: Address, account: Address) => {
-      const tokenContract = getContract({
-        abi: abis.VotesERC20,
-        address: votingTokenAddress,
-        client: publicClient,
+      if (wrongNetwork) {
+        return { balance: 0n, delegatee: zeroAddress };
+      }
+
+      const [balance, delegatee] = await publicClient.multicall({
+        contracts: [
+          {
+            abi: abis.VotesERC20,
+            address: votingTokenAddress,
+            functionName: 'balanceOf',
+            args: [account],
+          },
+          {
+            abi: abis.VotesERC20,
+            address: votingTokenAddress,
+            functionName: 'delegates',
+            args: [account],
+          },
+        ],
+        allowFailure: false,
       });
-      const [balance, delegatee] = await Promise.all([
-        tokenContract.read.balanceOf([account]),
-        tokenContract.read.delegates([account]),
-      ]);
 
       return { balance, delegatee };
     },
-    [publicClient],
+    [publicClient, wrongNetwork],
   );
 
   const fetchLockReleaseAccountData = useCallback(

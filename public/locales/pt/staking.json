@@ -1,0 +1,8 @@
+{
+  "stakingTitle": "Cravação de estacas",
+  "stakingNull": "O seu DAO ainda não tem um contrato de staking. Pode implementar um agora.",
+  "deployStaking": "Implementar contrato de piquetagem",
+  "stakingPeriod": "Período de piquetagem",
+  "includeStakingInVoting": "Incluir o token de aposta na votação do token",
+  "includeStakingInVotingDesc": "-ainda não há cópia-"
+}

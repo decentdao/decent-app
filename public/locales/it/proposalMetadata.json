@@ -16,5 +16,15 @@
   "unstakeStEthTitle": "Disimpegnare le stecche",
   "unstakeStEthDescription": "Questa proposta disimpegnerà stETH dal Lido e farà apparire un Lido Withdrawal NFT che potrà essere utilizzato per richiedere il vostro ETH.",
   "stakeWithLidoTitle": "Puntate su ETH con Lido",
-  "stakeWithLidoDescription": "Questa proposta prevede l'assegnazione di ETH a Lido, restituendo stETH alla vostra tesoreria."
+  "stakeWithLidoDescription": "Questa proposta prevede l'assegnazione di ETH a Lido, restituendo stETH alla vostra tesoreria.",
+  "addSigners": "Aggiungere i firmatari",
+  "removeSigners": "Rimuovere i firmatari",
+  "changeThreshold": "Aggiornamento della soglia dei firmatari",
+  "changeVotingPeriod": "Aggiornamento del periodo di voto",
+  "changeTimelockPeriod": "Aggiornamento del periodo di blocco temporale",
+  "changeExecutionPeriod": "Periodo di esecuzione dell'aggiornamento",
+  "changeQuorumNumerator": "Aggiornamento della percentuale di quorum",
+  "changeQuorumThreshold": "Aggiornamento della soglia di quorum",
+  "deployToken": "Distribuire il token",
+  "updateERC20Address": "Aggiornamento dell'indirizzo ERC20"
 }

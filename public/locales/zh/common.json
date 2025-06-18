@@ -35,7 +35,6 @@
   "learnMore": "了解更多",
   "home": "首页",
   "labelViewDAO": "查看保险箱",
-  "labelDAOFound": "安全找到",
   "labelCurrentDAO": "您正在查看的是该保险箱。",
   "labelEtherscan": "在 Etherscan 上查看",
   "errorInvalidENSAddress": "{{chain}}上的ENS名称或地址无效",
@@ -130,5 +129,9 @@
   "unsavedChangesDescription": "如果继续，您未保存的更改将丢失。您想放弃更改吗？",
   "discardChanges": "丢弃",
   "keepEditing": "继续编辑",
-  "selectStatusLabel": "选择状态"
+  "selectStatusLabel": "选择状态",
+  "addressRequired": "需要地址",
+  "save": "节省",
+  "daoNameRequired": "DAO 名称为必填项",
+  "calendarPlaceholder": "年月日"
 }

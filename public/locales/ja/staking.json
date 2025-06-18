@@ -1,0 +1,8 @@
+{
+  "stakingTitle": "ステーキング",
+  "stakingNull": "あなたのDAOはまだステーキング契約を持っていません。今すぐデプロイできます。",
+  "deployStaking": "杭打ち契約の展開",
+  "stakingPeriod": "杭打ち期間",
+  "includeStakingInVoting": "トークン投票にステークトークンを含める",
+  "includeStakingInVotingDesc": "-コピーはまだない"
+}

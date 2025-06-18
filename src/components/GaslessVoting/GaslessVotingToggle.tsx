@@ -1,30 +1,111 @@
-import { Box, Button, Flex, HStack, Image, Switch, Text } from '@chakra-ui/react';
+import { Box, Button, Flex, HStack, IconButton, Image, Switch, Text } from '@chakra-ui/react';
+import { TrashSimple } from '@phosphor-icons/react';
+import { useFormikContext } from 'formik';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
-import { getContract } from 'viem';
-import { EntryPoint07Abi } from '../../assets/abi/EntryPoint07Abi';
-import { DAO_ROUTES } from '../../constants/routes';
+import { isAddress } from 'viem';
 import useFeatureFlag from '../../helpers/environmentFeatureFlags';
 import { usePaymasterDepositInfo } from '../../hooks/DAO/accountAbstraction/usePaymasterDepositInfo';
 import { useCurrentDAOKey } from '../../hooks/DAO/useCurrentDAOKey';
 import useNetworkPublicClient from '../../hooks/useNetworkPublicClient';
-import { useNetworkWalletClient } from '../../hooks/useNetworkWalletClient';
 import { useCanUserCreateProposal } from '../../hooks/utils/useCanUserSubmitProposal';
+import { createAccountSubstring } from '../../hooks/utils/useGetAccountName';
 import { useDAOStore } from '../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
-import { useProposalActionsStore } from '../../store/actions/useProposalActionsStore';
+import { useSettingsFormStore } from '../../store/settings/useSettingsFormStore';
 import { formatCoin } from '../../utils';
-import { prepareRefillPaymasterAction } from '../../utils/dao/prepareRefillPaymasterActionData';
-import { prepareWithdrawPaymasterAction } from '../../utils/dao/prepareWithdrawPaymasterActionData';
-import { RefillGasData } from '../ui/modals/GaslessVoting/RefillGasTankModal';
-import { WithdrawGasData } from '../ui/modals/GaslessVoting/WithdrawGasTankModal';
 import { ModalType } from '../ui/modals/ModalProvider';
+import { SafeSettingsEdits } from '../ui/modals/SafeSettingsModal';
 import { useDecentModal } from '../ui/modals/useDecentModal';
 import Divider from '../ui/utils/Divider';
 
 interface GaslessVotingToggleProps {
   isEnabled: boolean;
   onToggle: () => void;
+}
+
+function WithdrawingGasComponent() {
+  const { t } = useTranslation('gaslessVoting');
+  const { values, setFieldValue } = useFormikContext<SafeSettingsEdits>();
+  const { formErrors } = useSettingsFormStore();
+  const paymasterGasTankWithdrawError = formErrors?.paymasterGasTank?.withdraw;
+
+  const withdrawingGasAmount = values?.paymasterGasTank?.withdraw?.amount?.value;
+  const nativeCurrency = useNetworkPublicClient().chain.nativeCurrency;
+
+  if (!withdrawingGasAmount || paymasterGasTankWithdrawError !== undefined) return null;
+
+  const recipientInput = values?.paymasterGasTank?.withdraw?.recipientAddress;
+  const recipient =
+    recipientInput !== undefined && isAddress(recipientInput)
+      ? createAccountSubstring(recipientInput)
+      : recipientInput;
+
+  return (
+    <Flex
+      gap="0.5rem"
+      alignItems="center"
+    >
+      <Text>
+        {t('withdrawingGas', {
+          amount: withdrawingGasAmount,
+          symbol: nativeCurrency.symbol,
+          recipient,
+        })}
+      </Text>
+      <IconButton
+        aria-label="Remove gas withdrawal action"
+        icon={<TrashSimple />}
+        variant="unstyled"
+        minWidth="auto"
+        color="color-error-500"
+        sx={{ '&:disabled:hover': { color: 'inherit', opacity: 0.4 } }}
+        type="button"
+        onClick={() => setFieldValue('paymasterGasTank.withdraw', undefined)}
+      />
+    </Flex>
+  );
+}
+
+function DepositingGasComponent() {
+  const { t } = useTranslation('gaslessVoting');
+  const { values, setFieldValue } = useFormikContext<SafeSettingsEdits>();
+
+  const { formErrors } = useSettingsFormStore();
+  const paymasterGasTankDepositError = formErrors?.paymasterGasTank?.deposit?.amount;
+
+  const depositingGasAmount = values?.paymasterGasTank?.deposit?.amount?.value;
+  const nativeCurrency = useNetworkPublicClient().chain.nativeCurrency;
+
+  if (
+    values?.paymasterGasTank?.deposit?.isDirectDeposit ||
+    !depositingGasAmount ||
+    paymasterGasTankDepositError !== undefined
+  )
+    return null;
+
+  return (
+    <Flex
+      gap="0.75rem"
+      alignItems="center"
+    >
+      <Text>
+        {t('depositingGas', {
+          amount: depositingGasAmount,
+          symbol: nativeCurrency.symbol,
+        })}
+      </Text>
+      <IconButton
+        aria-label="Remove gas deposit action"
+        icon={<TrashSimple />}
+        variant="unstyled"
+        minWidth="auto"
+        color="color-red-500"
+        sx={{ '&:disabled:hover': { color: 'inherit', opacity: 0.4 } }}
+        type="button"
+        onClick={() => setFieldValue('paymasterGasTank.deposit', undefined)}
+      />
+    </Flex>
+  );
 }
 
 function GaslessVotingToggleContent({
@@ -100,121 +181,30 @@ function GaslessVotingToggleContent({
 
 export function GaslessVotingToggleDAOSettings(props: GaslessVotingToggleProps) {
   const { t } = useTranslation('gaslessVoting');
-  const {
-    addressPrefix,
-    contracts: { accountAbstraction },
-    bundlerMinimumStake,
-    nativeTokenIcon,
-  } = useNetworkConfigStore();
+  const { bundlerMinimumStake, nativeTokenIcon } = useNetworkConfigStore();
+  const settingsModalFormikContext = useFormikContext<SafeSettingsEdits>();
 
-  const navigate = useNavigate();
   const publicClient = useNetworkPublicClient();
   const nativeCurrency = publicClient.chain.nativeCurrency;
 
   const { daoKey } = useCurrentDAOKey();
   const {
-    node: { safe },
-    governance: { gaslessVotingEnabled, paymasterAddress },
+    governance: { gaslessVotingEnabled },
   } = useDAOStore({ daoKey });
   const { depositInfo } = usePaymasterDepositInfo();
 
-  const { addAction, resetActions } = useProposalActionsStore();
-  const { data: walletClient } = useNetworkWalletClient();
-
-  const { open: withdrawGas } = useDecentModal(ModalType.WITHDRAW_GAS, {
-    onWithdraw: async (withdrawGasData: WithdrawGasData) => {
-      if (!safe?.address || !paymasterAddress) {
-        return;
-      }
-
-      const action = prepareWithdrawPaymasterAction({
-        withdrawData: withdrawGasData,
-        paymasterAddress,
-      });
-      const formattedWithdrawAmount = formatCoin(
-        withdrawGasData.withdrawAmount,
-        true,
-        nativeCurrency.decimals,
-        nativeCurrency.symbol,
-        false,
-      );
-
-      resetActions();
-      addAction({
-        ...action,
-        content: (
-          <Box>
-            <Text>
-              {t('withdrawGasAction', {
-                amount: formattedWithdrawAmount,
-                symbol: nativeCurrency.symbol,
-              })}
-            </Text>
-          </Box>
-        ),
-      });
-
-      navigate(DAO_ROUTES.proposalWithActionsNew.relative(addressPrefix, safe.address));
-    },
+  const { open: openWithdrawGasModal } = useDecentModal(ModalType.WITHDRAW_GAS, {
+    setFieldValue: settingsModalFormikContext.setFieldValue,
   });
-
-  const { open: refillGas } = useDecentModal(ModalType.REFILL_GAS, {
-    onSubmit: async (refillGasData: RefillGasData) => {
-      if (!safe?.address || !paymasterAddress || !accountAbstraction) {
-        return;
-      }
-
-      if (refillGasData.isDirectDeposit) {
-        if (!walletClient) {
-          throw new Error('Wallet client not found');
-        }
-
-        const entryPoint = getContract({
-          address: accountAbstraction.entryPointv07,
-          abi: EntryPoint07Abi,
-          client: walletClient,
-        });
-
-        entryPoint.write.depositTo([paymasterAddress], {
-          value: refillGasData.transferAmount,
-        });
-        return;
-      }
-
-      const action = prepareRefillPaymasterAction({
-        refillAmount: refillGasData.transferAmount,
-        paymasterAddress,
-        nativeToken: nativeCurrency,
-        entryPointAddress: accountAbstraction.entryPointv07,
-      });
-      const formattedRefillAmount = formatCoin(
-        refillGasData.transferAmount,
-        true,
-        nativeCurrency.decimals,
-        nativeCurrency.symbol,
-        false,
-      );
-      resetActions();
-      addAction({
-        ...action,
-        content: (
-          <Box>
-            <Text>
-              {t('refillPaymasterAction', {
-                amount: formattedRefillAmount,
-                symbol: nativeCurrency.symbol,
-              })}
-            </Text>
-          </Box>
-        ),
-      });
-
-      navigate(DAO_ROUTES.proposalWithActionsNew.relative(addressPrefix, safe.address));
-    },
+  const { open: openRefillGasModal } = useDecentModal(ModalType.REFILL_GAS, {
+    setFieldValue: settingsModalFormikContext.setFieldValue,
   });
 
   const gaslessFeatureEnabled = useFeatureFlag('flag_gasless_voting');
   const gaslessStakingEnabled = gaslessFeatureEnabled && bundlerMinimumStake !== undefined;
+
+  const { values } = settingsModalFormikContext;
+
   if (!gaslessFeatureEnabled) return null;
 
   const paymasterBalance = depositInfo?.balance || 0n;
@@ -234,6 +224,12 @@ export function GaslessVotingToggleDAOSettings(props: GaslessVotingToggleProps) 
     nativeCurrency.symbol,
     false,
   );
+
+  const paymasterGasTankEdits = values?.paymasterGasTank;
+
+  const showWithdrawAndDepositButtons =
+    paymasterGasTankEdits?.deposit?.isDirectDeposit ||
+    (paymasterGasTankEdits?.withdraw === undefined && paymasterGasTankEdits?.deposit === undefined);
 
   return (
     <Flex
@@ -289,20 +285,26 @@ export function GaslessVotingToggleDAOSettings(props: GaslessVotingToggleProps) 
             </Flex>
 
             <Flex gap="0.5rem">
-              <Button
-                variant="secondary"
-                size="sm"
-                onClick={withdrawGas}
-              >
-                {t('withdrawGas')}
-              </Button>
-              <Button
-                variant="secondary"
-                size="sm"
-                onClick={refillGas}
-              >
-                {t('addGas')}
-              </Button>
+              <WithdrawingGasComponent />
+              <DepositingGasComponent />
+              {showWithdrawAndDepositButtons && (
+                <>
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    onClick={openWithdrawGasModal}
+                  >
+                    {t('withdrawGas')}
+                  </Button>
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    onClick={openRefillGasModal}
+                  >
+                    {t('addGas')}
+                  </Button>
+                </>
+              )}
             </Flex>
           </Flex>
         </>

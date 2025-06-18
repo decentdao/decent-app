@@ -179,6 +179,7 @@ export interface FractalStore extends Fractal {}
 
 export interface Fractal {
   guard: FreezeGuard;
+  guardAccountData: GuardAccountData;
   governance: FractalGovernance;
   treasury: DecentTreasury;
   governanceContracts: FractalGovernanceContracts;
@@ -248,8 +249,11 @@ export interface FreezeGuard {
   freezeProposalVoteCount: bigint | null; // Number of accrued freeze votes
   freezeProposalPeriod: bigint | null; // Number of blocks a freeze proposal has to succeed
   freezePeriod: bigint | null; // Number of blocks a freeze lasts, from time of freeze proposal creation
-  userHasFreezeVoted: boolean;
   isFrozen: boolean;
+}
+
+export interface GuardAccountData {
+  userHasFreezeVoted: boolean;
   userHasVotes: boolean;
 }
 
@@ -273,7 +277,12 @@ export interface AzoriusGovernance extends Governance {
 export interface DecentGovernance extends AzoriusGovernance {
   lockedVotesToken?: VotesTokenData;
 }
-export interface SafeMultisigGovernance extends Governance {}
+export interface SafeMultisigGovernance extends Governance {
+  // This is here so that FractalGovernance can be used freely without
+  // having to cast `as AzoriusGovernance` in order to access `votesToken`.
+  // `SafeMultisigGovernance` doesn't have this, so `undefined` is its only possible value.
+  votesToken?: undefined;
+}
 
 export type Governance = {
   type?: GovernanceType;

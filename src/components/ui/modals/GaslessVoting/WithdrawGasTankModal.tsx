@@ -1,230 +1,172 @@
 import { Box, Button, CloseButton, Flex, Text } from '@chakra-ui/react';
-import { Field, FieldAttributes, FieldProps, Form, Formik } from 'formik';
-import { useState } from 'react';
+import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Address, getAddress } from 'viem';
-import * as Yup from 'yup';
 import { usePaymasterDepositInfo } from '../../../../hooks/DAO/accountAbstraction/usePaymasterDepositInfo';
 import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
-import { useValidationAddress } from '../../../../hooks/schemas/common/useValidationAddress';
 import { useDAOStore } from '../../../../providers/App/AppProvider';
-import { BigIntValuePair } from '../../../../types';
+import { useSettingsFormStore } from '../../../../store/settings/useSettingsFormStore';
 import { formatCoinUnits } from '../../../../utils/numberFormats';
 import { BigIntInput } from '../../forms/BigIntInput';
 import { AddressInput } from '../../forms/EthAddressInput';
 import LabelWrapper from '../../forms/LabelWrapper';
 import { AssetSelector } from '../../utils/AssetSelector';
 
-interface WithdrawGasFormValues {
-  inputAmount?: BigIntValuePair;
-  recipientAddress?: Address;
-}
-
-export interface WithdrawGasData {
-  withdrawAmount: bigint;
-  recipientAddress: Address;
-}
-
 export function WithdrawGasTankModal({
   close,
-  withdrawGasData,
+  setFieldValue,
 }: {
   close: () => void;
-  withdrawGasData: (withdrawGasData: WithdrawGasData) => void;
+  setFieldValue: (field: string, value: any) => void;
 }) {
   const { depositInfo } = usePaymasterDepositInfo();
-
   const { t } = useTranslation('gaslessVoting');
-
-  const { isValidating, validateAddress } = useValidationAddress();
-  const [recipientAddress, setRecipientAddress] = useState<Address | undefined>(undefined);
-
   const { daoKey } = useCurrentDAOKey();
   const {
     node: { safe },
   } = useDAOStore({ daoKey });
 
-  const withdrawGasValidationSchema = Yup.object().shape({
-    inputAmount: Yup.object()
-      .shape({
-        value: Yup.string().required(),
-      })
-      .required(),
-    recipientAddress: Yup.string()
-      .required(t('recipientAddressRequired'))
-      .test(
-        'is-valid-address',
-        t('errorInvalidAddress', { ns: 'common' }),
-        async (address: string | undefined) => {
-          if (!address) return false;
+  const { formState, formErrors } = useSettingsFormStore();
+  const withdrawValues = formState?.paymasterGasTank?.withdraw ?? {};
+  const paymasterGasTankErrors = formErrors?.paymasterGasTank ?? {};
 
-          try {
-            const { validation } = await validateAddress({ address });
-            setRecipientAddress(getAddress(validation.address));
-            return validation.isValidAddress;
-          } catch (error) {
-            return false;
-          }
-        },
-      ),
-  });
-
-  const handleWithdrawGasSubmit = async (values: WithdrawGasFormValues) => {
-    if (!recipientAddress) {
-      return;
+  // Clean up withdraw object if both fields are empty
+  useEffect(() => {
+    if (withdrawValues.amount === undefined && withdrawValues.recipientAddress === undefined) {
+      setFieldValue('paymasterGasTank.withdraw', undefined);
     }
+  }, [withdrawValues.amount, withdrawValues.recipientAddress, setFieldValue]);
 
-    withdrawGasData({
-      withdrawAmount: values.inputAmount?.bigintValue || 0n,
-      recipientAddress,
-    });
-
-    close();
-  };
+  const isSubmitDisabled =
+    !withdrawValues.amount ||
+    withdrawValues.amount.bigintValue === undefined ||
+    withdrawValues.amount.bigintValue === 0n ||
+    paymasterGasTankErrors.withdraw?.amount !== undefined ||
+    withdrawValues.recipientAddress === undefined ||
+    paymasterGasTankErrors.withdraw?.recipientAddress !== undefined;
 
   return (
     <Box>
-      <Formik<WithdrawGasFormValues>
-        initialValues={{ inputAmount: undefined, recipientAddress: undefined }}
-        onSubmit={handleWithdrawGasSubmit}
-        validationSchema={withdrawGasValidationSchema}
+      <Flex
+        justify="space-between"
+        align="center"
       >
-        {({ errors, values, setFieldValue, handleSubmit }) => {
-          const overDraft =
-            Number(values.inputAmount?.value || '0') > formatCoinUnits(depositInfo?.balance ?? 0n);
+        <Text textStyle="text-xl-regular">{t('withdrawGas')}</Text>
+        <CloseButton onClick={close} />
+      </Flex>
 
-          const inputBigint = values.inputAmount?.bigintValue;
-          const inputBigintIsZero = inputBigint !== undefined ? inputBigint === 0n : undefined;
-          const isSubmitDisabled = !values.inputAmount || inputBigintIsZero || overDraft;
+      <Flex
+        flexDirection="column"
+        justify="space-between"
+        border="1px solid"
+        borderColor="color-neutral-900"
+        borderRadius="0.75rem"
+        mt={4}
+        px={4}
+        py={3}
+        gap={2}
+      >
+        <Text
+          textStyle="text-sm-medium"
+          color="color-neutral-300"
+        >
+          {t('withdrawAmount')}
+        </Text>
 
-          return (
-            <Form onSubmit={handleSubmit}>
-              <Flex
-                justify="space-between"
-                align="center"
-              >
-                <Text textStyle="text-xl-regular">{t('withdrawGas')}</Text>
-                <CloseButton onClick={close} />
-              </Flex>
+        <Flex
+          justify="space-between"
+          align="flex-start"
+        >
+          <LabelWrapper errorMessage={paymasterGasTankErrors.withdraw?.amount}>
+            <BigIntInput
+              onChange={inputValue => {
+                setFieldValue('paymasterGasTank.withdraw.amount', inputValue);
+              }}
+              parentFormikValue={withdrawValues.amount}
+              placeholder="0"
+              isInvalid={paymasterGasTankErrors.withdraw?.amount !== undefined}
+              errorBorderColor="color-error-500"
+            />
+          </LabelWrapper>
 
-              <Flex
-                flexDirection="column"
-                justify="space-between"
-                border="1px solid"
-                borderColor="color-neutral-900"
-                borderRadius="0.75rem"
-                mt={4}
-                px={4}
-                py={3}
-                gap={2}
-              >
-                <Text
-                  textStyle="text-sm-medium"
-                  color="color-neutral-300"
-                >
-                  {t('withdrawAmount')}
-                </Text>
+          <Flex
+            flexDirection="column"
+            alignItems="flex-end"
+            gap="0.5rem"
+            mt="0.25rem"
+          >
+            <AssetSelector
+              onlyNativeToken
+              disabled
+            />
+            <Text
+              color={
+                paymasterGasTankErrors.withdraw?.amount !== undefined
+                  ? 'color-error-500'
+                  : 'color-neutral-300'
+              }
+              textStyle="text-xs-medium"
+              px="0.25rem"
+            >
+              {`${t('availableBalance', {
+                balance: formatCoinUnits(depositInfo?.balance ?? 0n),
+              })} `}
+              Available
+            </Text>
+          </Flex>
+        </Flex>
 
-                <Flex
-                  justify="space-between"
-                  align="flex-start"
-                >
-                  <Field name="inputAmount">
-                    {({ field }: FieldAttributes<FieldProps<BigIntValuePair | undefined>>) => (
-                      <LabelWrapper>
-                        <BigIntInput
-                          {...field}
-                          value={field.value?.bigintValue}
-                          onChange={value => {
-                            setFieldValue('inputAmount', value);
-                          }}
-                          parentFormikValue={values.inputAmount}
-                          placeholder="0"
-                          isInvalid={overDraft}
-                          errorBorderColor="color-error-500"
-                        />
-                      </LabelWrapper>
-                    )}
-                  </Field>
+        <Text
+          textStyle="text-sm-medium"
+          color="color-neutral-300"
+        >
+          {t('recipientAddress')}
+        </Text>
+        <LabelWrapper errorMessage={paymasterGasTankErrors.withdraw?.recipientAddress}>
+          <AddressInput
+            value={withdrawValues.recipientAddress}
+            onChange={e => {
+              setFieldValue('paymasterGasTank.withdraw.recipientAddress', e.target.value);
+            }}
+            isInvalid={paymasterGasTankErrors.withdraw?.recipientAddress !== undefined}
+          />
+        </LabelWrapper>
+        <Button
+          variant="tertiary"
+          size="sm"
+          alignSelf="flex-end"
+          onClick={() => {
+            setFieldValue('paymasterGasTank.withdraw.recipientAddress', safe?.address);
+          }}
+        >
+          {t('toDaoTreasury')}
+        </Button>
+      </Flex>
 
-                  <Flex
-                    flexDirection="column"
-                    alignItems="flex-end"
-                    gap="0.5rem"
-                    mt="0.25rem"
-                  >
-                    <AssetSelector
-                      onlyNativeToken
-                      disabled
-                    />
-                    <Text
-                      color={overDraft ? 'color-error-500' : 'color-neutral-300'}
-                      textStyle="text-xs-medium"
-                      px="0.25rem"
-                    >
-                      {`${t('availableBalance', {
-                        balance: formatCoinUnits(depositInfo?.balance ?? 0n),
-                      })} `}
-                      Available
-                    </Text>
-                  </Flex>
-                </Flex>
-
-                <Text
-                  textStyle="text-sm-medium"
-                  color="color-neutral-300"
-                >
-                  {t('withdrawAmount')}
-                </Text>
-                <Field name="recipientAddress">
-                  {({ field }: FieldAttributes<FieldProps<string | undefined>>) => (
-                    <LabelWrapper errorMessage={errors.recipientAddress}>
-                      <AddressInput
-                        {...field}
-                        isInvalid={!!errors.recipientAddress}
-                      />
-                    </LabelWrapper>
-                  )}
-                </Field>
-                <Button
-                  variant="tertiary"
-                  size="sm"
-                  alignSelf="flex-end"
-                  onClick={() => {
-                    setFieldValue('recipientAddress', safe?.address);
-                  }}
-                >
-                  {t('toDaoTreasury')}
-                </Button>
-              </Flex>
-
-              <Flex
-                marginTop="2rem"
-                justifyContent="flex-end"
-                gap={2}
-              >
-                <Button
-                  variant="secondary"
-                  onClick={close}
-                >
-                  {t('cancel', { ns: 'common' })}
-                </Button>
-                <Button
-                  type="submit"
-                  isDisabled={
-                    isValidating ||
-                    !!errors.inputAmount ||
-                    !!errors.recipientAddress ||
-                    isSubmitDisabled
-                  }
-                >
-                  {t('submitWithdrawAmount')}
-                </Button>
-              </Flex>
-            </Form>
-          );
-        }}
-      </Formik>
+      <Flex
+        marginTop="2rem"
+        justifyContent="flex-end"
+        gap={2}
+      >
+        <Button
+          variant="secondary"
+          onClick={() => {
+            setFieldValue('paymasterGasTank.withdraw', undefined);
+            close();
+          }}
+        >
+          {t('cancel', { ns: 'common' })}
+        </Button>
+        <Button
+          onClick={close}
+          isDisabled={
+            paymasterGasTankErrors.withdraw?.amount !== undefined ||
+            paymasterGasTankErrors.withdraw?.recipientAddress !== undefined ||
+            isSubmitDisabled
+          }
+        >
+          {t('submitWithdrawAmount')}
+        </Button>
+      </Flex>
     </Box>
   );
 }

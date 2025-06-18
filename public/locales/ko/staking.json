@@ -1,0 +1,8 @@
+{
+  "stakingTitle": "스테이킹",
+  "stakingNull": "DAO에 아직 스테이킹 컨트랙트가 없습니다. 지금 스테이킹 컨트랙트를 배포할 수 있습니다.",
+  "deployStaking": "스테이킹 컨트랙트 배포",
+  "stakingPeriod": "스테이킹 기간",
+  "includeStakingInVoting": "토큰 투표에 스테이킹 토큰 포함하기",
+  "includeStakingInVotingDesc": "-아직 복사본 없음-"
+}

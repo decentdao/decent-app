@@ -1,0 +1,14 @@
+{
+  "revenueSharingTitle": "Part des recettes",
+  "revShareDaoSafeWarning": "Les fonds envoyés à cette adresse ne seront pas fractionnés",
+  "revShareTotalError": "Le total est supérieur à 100 %.",
+  "daoSafeWallet": "Portefeuille sécurisé DAO",
+  "revSplitWallet": "Répartition des recettes Portefeuille",
+  "counterparties": "Contreparties",
+  "revShareAddSplitWallet": "Ajouter un portefeuille",
+  "currentDaoTreasureShareLabel": "Part de trésorerie actuelle de l'OFA",
+  "parentDaoTreasureShareLabel": "DAO mère",
+  "currentTokenHolderShareLabel": "Détenteur actuel de jetons",
+  "revSplitTotalLabel": "Total",
+  "addRevenueShare": "Ajouter la part des recettes"
+}

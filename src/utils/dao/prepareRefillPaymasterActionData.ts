@@ -2,7 +2,7 @@ import { Address } from 'viem';
 import { CreateProposalActionData, ProposalActionType } from '../../types';
 import { formatCoin } from '../numberFormats';
 
-export interface RefillPaymasterData {
+interface RefillPaymasterData {
   entryPointAddress: Address;
   paymasterAddress: Address;
   refillAmount: bigint;

@@ -80,6 +80,7 @@
   "titleProposers": "화이트리스트 제안자",
   "titleTokenParams": "메타데이터",
   "titleTokenContract": "계약",
+  "labelTokenContractAlreadyConfigured": "DAO는 이미 ERC-20 토큰으로 구성되어 있으며, 이 수정으로 DAO 거버넌스에 사용될 것입니다.",
   "titleAddress": "주소",
   "titleAmount": "금액",
   "createSubDAOPendingToastMessage": "자녀 DAO 제안서 만들기",

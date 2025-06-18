@@ -37,5 +37,8 @@
   "recipientAddressRequired": "Адреса одержувача є обов'язковою",
   "withdrawGasAction": "Зняти {{amount}} <x>{{symbol}</x>} від платника",
   "recipientAddress": "Адреса одержувача",
-  "enterRecipientAddress": "Введіть адресу одержувача"
+  "enterRecipientAddress": "Введіть адресу одержувача",
+  "amountExceedsAvailableBalance": "Недостатній баланс",
+  "withdrawingGas": "Відкликання {{amount}} {{symbol}} на {{recipient}}",
+  "depositingGas": "Поповнення рахунку {{amount}} {{symbol}}"
 }
