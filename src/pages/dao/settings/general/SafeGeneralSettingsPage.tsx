@@ -23,9 +23,8 @@ import { GovernanceType } from '../../../../types';
 
 export function SafeGeneralSettingsPage() {
   const { t } = useTranslation('settings');
-  const { setFieldValue, values: formValues } = useFormikContext<SafeSettingsEdits>();
-  const { errors } = useFormikContext<SafeSettingsFormikErrors>();
-  const generalEditFormikErrors = (errors as SafeSettingsFormikErrors).general;
+  const { setFieldValue, values: formValues, errors } = useFormikContext<SafeSettingsEdits>();
+  const generalEditFormikErrors = (errors as SafeSettingsFormikErrors | undefined)?.general;
 
   const [existingDaoName, setExistingDaoName] = useState('');
   const [existingSnapshotENS, setExistingSnapshotENS] = useState('');

@@ -20,8 +20,11 @@ export function WithdrawGasTankModal({ close }: { close: () => void }) {
     node: { safe },
   } = useDAOStore({ daoKey });
 
-  const { values: formState, setFieldValue } = useFormikContext<SafeSettingsEdits>();
-  const { errors: formErrors } = useFormikContext<SafeSettingsFormikErrors>();
+  const {
+    values: formState,
+    setFieldValue,
+    errors: formErrors,
+  } = useFormikContext<SafeSettingsEdits>();
 
   const withdrawValues = formState?.paymasterGasTank?.withdraw ?? {};
   const paymasterGasTankErrors = (formErrors as SafeSettingsFormikErrors)?.paymasterGasTank ?? {};

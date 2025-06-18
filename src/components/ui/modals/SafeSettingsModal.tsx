@@ -179,6 +179,21 @@ export function SafeSettingsModal({
           (errors.multisig as MultisigEditGovernanceFormikErrors)[
             key as keyof MultisigEditGovernanceFormikErrors
           ],
+      ) ||
+      Object.keys(errors.paymasterGasTank ?? {}).some(
+        key =>
+          (errors.paymasterGasTank as PaymasterGasTankEditFormikErrors)[
+            key as keyof PaymasterGasTankEditFormikErrors
+          ] ||
+          (errors.paymasterGasTank as PaymasterGasTankEditFormikErrors)[
+            key as keyof PaymasterGasTankEditFormikErrors
+          ],
+      ) ||
+      Object.keys(errors.revenueSharing ?? {}).some(
+        key =>
+          (errors.revenueSharing as RevenueSharingEditFormikErrors)[
+            key as keyof RevenueSharingEditFormikErrors
+          ],
       );
 
     return (

@@ -41,8 +41,12 @@ export function RefillGasTankModal({
 
   const { canUserCreateProposal } = useCanUserCreateProposal();
 
-  const { values: formState, setFieldValue } = useFormikContext<SafeSettingsEdits>();
-  const { errors: formErrors } = useFormikContext<SafeSettingsFormikErrors>();
+  const {
+    values: formState,
+    setFieldValue,
+    errors: formErrors,
+  } = useFormikContext<SafeSettingsEdits>();
+
   const values = formState?.paymasterGasTank?.deposit ?? {};
   const paymasterGasTankErrors = (formErrors as SafeSettingsFormikErrors)?.paymasterGasTank ?? {};
 

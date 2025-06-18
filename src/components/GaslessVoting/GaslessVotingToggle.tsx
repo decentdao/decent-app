@@ -24,8 +24,7 @@ interface GaslessVotingToggleProps {
 
 function WithdrawingGasComponent() {
   const { t } = useTranslation('gaslessVoting');
-  const { values, setFieldValue } = useFormikContext<SafeSettingsEdits>();
-  const { errors: formErrors } = useFormikContext<SafeSettingsFormikErrors>();
+  const { values, setFieldValue, errors: formErrors } = useFormikContext<SafeSettingsEdits>();
   const paymasterGasTankWithdrawError = (formErrors as SafeSettingsFormikErrors)?.paymasterGasTank
     ?.withdraw;
 
@@ -68,9 +67,8 @@ function WithdrawingGasComponent() {
 
 function DepositingGasComponent() {
   const { t } = useTranslation('gaslessVoting');
-  const { values, setFieldValue } = useFormikContext<SafeSettingsEdits>();
+  const { values, setFieldValue, errors: formErrors } = useFormikContext<SafeSettingsEdits>();
 
-  const { errors: formErrors } = useFormikContext<SafeSettingsFormikErrors>();
   const paymasterGasTankDepositError = (formErrors as SafeSettingsFormikErrors)?.paymasterGasTank
     ?.deposit?.amount;
 
