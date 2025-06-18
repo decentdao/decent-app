@@ -62,6 +62,7 @@ function PageHeader({
   return (
     <Box
       marginTop="2rem"
+      marginBottom="0.5rem"
       maxW={CONTENT_MAXW}
     >
       <Flex
