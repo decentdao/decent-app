@@ -373,8 +373,8 @@ export function ProposalStream({
                                   secondsValue={Number(tranche.duration.bigintValue || 0n)}
                                   onSecondsValueChange={value => {
                                     const duration: BigIntValuePair = {
-                                      bigintValue: BigInt(value),
-                                      value: value.toString(),
+                                      bigintValue: value !== undefined ? BigInt(value) : undefined,
+                                      value: value !== undefined ? value.toString() : '',
                                     };
                                     handleUpdateStream(index, {
                                       tranches: stream.tranches.map((item, updatedTrancheIndex) =>
