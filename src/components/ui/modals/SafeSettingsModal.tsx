@@ -1221,7 +1221,7 @@ export function SafeSettingsModal({
           <FormStateSync formikContext={formikContext} />
           <Flex
             flexDirection="column"
-            height="100%"
+            height="90vh"
             textColor="color-neutral-100"
             pl="1"
             overflowY="auto"
