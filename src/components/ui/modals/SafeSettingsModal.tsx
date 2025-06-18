@@ -1,7 +1,7 @@
 import { Button, Flex, Text } from '@chakra-ui/react';
 import { abis } from '@fractal-framework/fractal-contracts';
-import { Formik, Form, useFormikContext, FormikContextType } from 'formik';
-import { useEffect, useState } from 'react';
+import { Formik, Form, useFormikContext } from 'formik';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -14,6 +14,7 @@ import {
   keccak256,
   parseAbiParameters,
 } from 'viem';
+import { useAccount, useBalance } from 'wagmi';
 import {
   linearERC20VotingWithWhitelistSetupParams,
   linearERC721VotingWithWhitelistSetupParams,
@@ -35,7 +36,6 @@ import { SafeGeneralSettingsPage } from '../../../pages/dao/settings/general/Saf
 import { useDAOStore } from '../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
 import { useProposalActionsStore } from '../../../store/actions/useProposalActionsStore';
-import { useSettingsFormStore } from '../../../store/settings/useSettingsFormStore';
 import {
   AzoriusGovernance,
   BigIntValuePair,
@@ -114,20 +114,6 @@ export type SafeSettingsFormikErrors = {
   paymasterGasTank?: PaymasterGasTankEditFormikErrors;
   revenueSharing?: RevenueSharingEditFormikErrors;
 };
-
-function FormStateSync({ formikContext }: { formikContext: FormikContextType<SafeSettingsEdits> }) {
-  const { setFormState, setFormErrors } = useSettingsFormStore();
-
-  useEffect(() => {
-    setFormState({ ...formikContext.values });
-  }, [formikContext.values, setFormState]);
-
-  useEffect(() => {
-    setFormErrors(formikContext.errors as unknown as SafeSettingsFormikErrors);
-  }, [formikContext.errors, setFormErrors]);
-
-  return null;
-}
 
 export function SafeSettingsModal({
   closeModal,
@@ -233,7 +219,16 @@ export function SafeSettingsModal({
   const { addressPrefix } = useNetworkConfigStore();
 
   const { buildInstallVersionedVotingStrategies } = useInstallVersionedVotingStrategy();
-  const { depositInfo } = usePaymasterDepositInfo();
+  const { depositInfo: paymasterDepositInfo } = usePaymasterDepositInfo();
+  const { address } = useAccount();
+  const { data: userBalance } = useBalance({
+    address,
+    chainId,
+  });
+  const { data: safeBalance } = useBalance({
+    address: safe?.address,
+    chainId,
+  });
   const navigate = useNavigate();
 
   const { getEnsAddress } = useNetworkEnsAddressAsync();
@@ -446,7 +441,7 @@ export function SafeSettingsModal({
 
       // Add stake for Paymaster if not enough
       if (stakingRequired) {
-        const stakedAmount = depositInfo?.stake || 0n;
+        const stakedAmount = paymasterDepositInfo?.stake || 0n;
 
         if (paymasterAddress === null || stakedAmount < bundlerMinimumStake) {
           const delta = bundlerMinimumStake - stakedAmount;
@@ -1168,11 +1163,14 @@ export function SafeSettingsModal({
         }
 
         if (values.paymasterGasTank) {
-          const { withdraw } = values.paymasterGasTank;
+          const { withdraw, deposit } = values.paymasterGasTank;
 
           if (withdraw) {
-            if (withdraw.amount?.bigintValue !== undefined && depositInfo?.balance !== undefined) {
-              if (withdraw.amount.bigintValue > depositInfo.balance) {
+            if (
+              withdraw.amount?.bigintValue !== undefined &&
+              paymasterDepositInfo?.balance !== undefined
+            ) {
+              if (withdraw.amount.bigintValue > paymasterDepositInfo.balance) {
                 errors.paymasterGasTank = {
                   ...errors.paymasterGasTank,
                   withdraw: {
@@ -1201,7 +1199,35 @@ export function SafeSettingsModal({
               withdraw: undefined,
             };
           }
-          // Deposit validation handled in RefillGasTankModal.
+
+          if (deposit) {
+            const balanceToDepositFrom = deposit.isDirectDeposit ? userBalance : safeBalance;
+
+            const overDraft =
+              deposit.amount?.bigintValue !== undefined &&
+              balanceToDepositFrom !== undefined &&
+              deposit.amount.bigintValue > balanceToDepositFrom.value;
+
+            if (overDraft && errors.paymasterGasTank?.deposit?.amount === undefined) {
+              errors.paymasterGasTank = {
+                ...errors.paymasterGasTank,
+                deposit: {
+                  ...errors.paymasterGasTank?.deposit,
+                  amount: t('amountExceedsAvailableBalance', { ns: 'gaslessVoting' }),
+                },
+              };
+            } else if (!overDraft && errors.paymasterGasTank?.deposit?.amount !== undefined) {
+              errors.paymasterGasTank = {
+                ...errors.paymasterGasTank,
+                deposit: undefined,
+              };
+            }
+          } else {
+            errors.paymasterGasTank = {
+              ...errors.paymasterGasTank,
+              deposit: undefined,
+            };
+          }
         } else {
           errors.paymasterGasTank = undefined;
         }
@@ -1217,33 +1243,30 @@ export function SafeSettingsModal({
         submitAllSettingsEditsProposal(values);
       }}
     >
-      {formikContext => (
-        <Form>
-          <ModalProvider>
-            <FormStateSync formikContext={formikContext} />
+      <Form>
+        <ModalProvider>
+          <Flex
+            flexDirection="column"
+            height="90vh"
+            textColor="color-neutral-100"
+            pl="1"
+            overflowY="auto"
+          >
             <Flex
-              flexDirection="column"
-              height="90vh"
-              textColor="color-neutral-100"
+              flex="1"
+              height="100%"
               pl="1"
-              overflowY="auto"
             >
-              <Flex
-                flex="1"
-                height="100%"
-                pl="1"
-              >
-                <SettingsNavigation onSettingsNavigationClick={handleSettingsNavigationClick} />
-                <Divider vertical />
-                {settingsContent}
-              </Flex>
-
-              <Divider />
-              <ActionButtons />
+              <SettingsNavigation onSettingsNavigationClick={handleSettingsNavigationClick} />
+              <Divider vertical />
+              {settingsContent}
             </Flex>
-          </ModalProvider>
-        </Form>
-      )}
+
+            <Divider />
+            <ActionButtons />
+          </Flex>
+        </ModalProvider>
+      </Form>
     </Formik>
   );
 }
