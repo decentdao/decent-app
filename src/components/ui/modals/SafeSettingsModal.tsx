@@ -60,6 +60,7 @@ import { SafePermissionsStrategyAction } from '../../SafeSettings/SafePermission
 import { SettingsNavigation } from '../../SafeSettings/SettingsNavigation';
 import { NewSignerItem } from '../../SafeSettings/Signers/SignersContainer';
 import Divider from '../utils/Divider';
+import { ModalProvider } from './ModalProvider';
 
 export type SafeSettingsEdits = {
   multisig?: {
@@ -1218,27 +1219,29 @@ export function SafeSettingsModal({
     >
       {formikContext => (
         <Form>
-          <FormStateSync formikContext={formikContext} />
-          <Flex
-            flexDirection="column"
-            height="100%"
-            textColor="color-neutral-100"
-            pl="1"
-            overflowY="auto"
-          >
+          <ModalProvider>
+            <FormStateSync formikContext={formikContext} />
             <Flex
-              flex="1"
-              height="100%"
+              flexDirection="column"
+              height="90vh"
+              textColor="color-neutral-100"
               pl="1"
+              overflowY="auto"
             >
-              <SettingsNavigation onSettingsNavigationClick={handleSettingsNavigationClick} />
-              <Divider vertical />
-              {settingsContent}
-            </Flex>
+              <Flex
+                flex="1"
+                height="100%"
+                pl="1"
+              >
+                <SettingsNavigation onSettingsNavigationClick={handleSettingsNavigationClick} />
+                <Divider vertical />
+                {settingsContent}
+              </Flex>
 
-            <Divider />
-            <ActionButtons />
-          </Flex>
+              <Divider />
+              <ActionButtons />
+            </Flex>
+          </ModalProvider>
         </Form>
       )}
     </Formik>

@@ -121,9 +121,7 @@ export type ModalPropsTypes = {
   [ModalType.REFILL_GAS]: {
     setFieldValue: (field: string, value: any) => void;
   };
-  [ModalType.WITHDRAW_GAS]: {
-    setFieldValue: (field: string, value: any) => void;
-  };
+  [ModalType.WITHDRAW_GAS]: {};
   [ModalType.GASLESS_VOTE_LOADING]: {};
   [ModalType.GASLESS_VOTE_SUCCESS]: {};
   [ModalType.GASLESS_VOTE_FAILED]: {
@@ -364,20 +362,10 @@ const getModalData = (args: {
       );
       break;
     case ModalType.REFILL_GAS:
-      modalContent = (
-        <RefillGasTankModal
-          close={popModal}
-          setFieldValue={current.props.setFieldValue}
-        />
-      );
+      modalContent = <RefillGasTankModal close={popModal} />;
       break;
     case ModalType.WITHDRAW_GAS:
-      modalContent = (
-        <WithdrawGasTankModal
-          close={popModal}
-          setFieldValue={current.props.setFieldValue}
-        />
-      );
+      modalContent = <WithdrawGasTankModal close={popModal} />;
       break;
     case ModalType.GASLESS_VOTE_SUCCESS:
       modalContent = <GaslessVoteSuccessModal close={popModal} />;
