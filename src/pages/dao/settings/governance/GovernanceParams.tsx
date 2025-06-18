@@ -144,7 +144,11 @@ export function GovernanceParams() {
             >
               <InputGroup>
                 <BigIntInput
-                  value={values.azorius?.quorumPercentage ?? existingQuorumPercentage}
+                  value={
+                    values.azorius?.quorumPercentage !== undefined
+                      ? values.azorius?.quorumPercentage
+                      : existingQuorumPercentage
+                  }
                   color={
                     values.azorius?.quorumPercentage === undefined
                       ? 'color-neutral-300'
@@ -189,7 +193,11 @@ export function GovernanceParams() {
               gridContainerProps={inputGridContainerProps}
             >
               <BigIntInput
-                value={values.azorius?.quorumThreshold ?? existingQuorumThreshold}
+                value={
+                  values.azorius?.quorumThreshold !== undefined
+                    ? values.azorius?.quorumThreshold
+                    : existingQuorumThreshold
+                }
                 minWidth="100%"
                 decimalPlaces={0}
                 color={
@@ -231,7 +239,11 @@ export function GovernanceParams() {
               gridContainerProps={inputGridContainerProps}
             >
               <DurationUnitStepperInput
-                secondsValue={Number(values.azorius?.votingPeriod ?? existingVotingPeriod)}
+                secondsValue={Number(
+                  values.azorius?.votingPeriod !== undefined
+                    ? values.azorius?.votingPeriod
+                    : existingVotingPeriod,
+                )}
                 color={
                   values.azorius?.votingPeriod === undefined ? 'color-neutral-300' : 'color-white'
                 }
@@ -239,7 +251,7 @@ export function GovernanceParams() {
                 onSecondsValueChange={valInSeconds => {
                   handleInputChange(
                     'azorius.votingPeriod',
-                    BigInt(valInSeconds),
+                    valInSeconds !== undefined ? BigInt(valInSeconds) : undefined,
                     existingVotingPeriod,
                     [
                       values.azorius?.quorumPercentage,
@@ -270,7 +282,11 @@ export function GovernanceParams() {
               gridContainerProps={inputGridContainerProps}
             >
               <DurationUnitStepperInput
-                secondsValue={Number(values.azorius?.timelockPeriod ?? existingTimelockPeriod)}
+                secondsValue={Number(
+                  values.azorius?.timelockPeriod !== undefined
+                    ? values.azorius?.timelockPeriod
+                    : existingTimelockPeriod,
+                )}
                 color={
                   values.azorius?.timelockPeriod === undefined ? 'color-neutral-300' : 'color-white'
                 }
@@ -278,7 +294,7 @@ export function GovernanceParams() {
                 onSecondsValueChange={valInSeconds => {
                   handleInputChange(
                     'azorius.timelockPeriod',
-                    BigInt(valInSeconds),
+                    valInSeconds !== undefined ? BigInt(valInSeconds) : undefined,
                     existingTimelockPeriod,
                     [
                       values.azorius?.quorumPercentage,
@@ -309,7 +325,11 @@ export function GovernanceParams() {
               gridContainerProps={inputGridContainerProps}
             >
               <DurationUnitStepperInput
-                secondsValue={Number(values.azorius?.executionPeriod ?? existingExecutionPeriod)}
+                secondsValue={Number(
+                  values.azorius?.executionPeriod !== undefined
+                    ? values.azorius?.executionPeriod
+                    : existingExecutionPeriod,
+                )}
                 color={
                   values.azorius?.executionPeriod === undefined
                     ? 'color-neutral-300'
@@ -319,7 +339,7 @@ export function GovernanceParams() {
                 onSecondsValueChange={valInSeconds =>
                   handleInputChange(
                     'azorius.executionPeriod',
-                    BigInt(valInSeconds),
+                    valInSeconds !== undefined ? BigInt(valInSeconds) : undefined,
                     existingExecutionPeriod,
                     [
                       values.azorius?.quorumPercentage,
