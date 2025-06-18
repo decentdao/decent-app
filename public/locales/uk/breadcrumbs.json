@@ -11,6 +11,7 @@
   "proposalTemplates": "Шаблони заявок",
   "proposalTemplate": "{{proposalTemplateTitle}}.",
   "proposalTemplateNew": "Створіть шаблон пропозиції",
+  "deployToken": "Розгорнути токен",
   "editDAO": "Редагувати DAO",
   "parentLink": "Батьківський DAO",
   "settings": "Налаштування"

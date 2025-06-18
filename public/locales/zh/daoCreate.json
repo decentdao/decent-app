@@ -80,6 +80,7 @@
   "titleProposers": "白名单投标人",
   "titleTokenParams": "元数据",
   "titleTokenContract": "合同",
+  "labelTokenContractAlreadyConfigured": "您的 DAO 已经配置了一个 ERC-20 令牌，经此修改后，该令牌将用于 DAO 治理。",
   "titleAddress": "地址",
   "titleAmount": "金额",
   "createSubDAOPendingToastMessage": "创建子DAO提案",

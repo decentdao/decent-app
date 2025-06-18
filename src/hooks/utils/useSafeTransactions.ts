@@ -21,7 +21,10 @@ type FreezeGuardData = {
 
 export const useSafeTransactions = () => {
   const { daoKey } = useCurrentDAOKey();
-  const { guardContracts } = useDAOStore({ daoKey });
+  const {
+    node: { safe },
+    guardContracts,
+  } = useDAOStore({ daoKey });
   const decode = useSafeDecoder();
   const publicClient = useNetworkPublicClient();
   const safeAPI = useSafeAPI();
@@ -98,7 +101,10 @@ export const useSafeTransactions = () => {
             state = FractalProposalState.EXECUTED;
           } else if (isRejected(activityArr, activity.transaction)) {
             state = FractalProposalState.REJECTED;
-          } else if (isApproved(activity.transaction)) {
+          } else if (
+            isApproved(activity.transaction) &&
+            activity.transaction.nonce === safe?.nonce
+          ) {
             state = FractalProposalState.EXECUTABLE;
           } else {
             state = FractalProposalState.ACTIVE;
@@ -107,7 +113,7 @@ export const useSafeTransactions = () => {
         });
       }
     },
-    [publicClient],
+    [publicClient, safe?.nonce],
   );
 
   const parseTransactions = useCallback(

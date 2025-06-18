@@ -20,9 +20,11 @@ import {
 } from 'viem';
 import GnosisSafeL2Abi from '../../../assets/abi/GnosisSafeL2';
 import { SENTINEL_ADDRESS } from '../../../constants/common';
+import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import { SafeWithNextNonce } from '../../../types';
 import { NetworkConfig } from '../../../types/network';
-import { useNetworkConfigStore } from '../../NetworkConfig/useNetworkConfigStore';
+import { getChainIdFromPrefix } from '../../../utils/url';
+import { getNetworkConfig, useNetworkConfigStore } from '../../NetworkConfig/useNetworkConfigStore';
 
 /*
 Interface to map the response from Safe Client's transactions/history
@@ -435,10 +437,13 @@ class EnhancedSafeApiKit {
 
 export function useSafeAPI() {
   const networkConfig = useNetworkConfigStore();
-
+  const { addressPrefix: urlAddressPrefix } = useCurrentDAOKey();
   const safeAPI = useMemo(() => {
+    if (urlAddressPrefix && urlAddressPrefix !== networkConfig.addressPrefix) {
+      return new EnhancedSafeApiKit(getNetworkConfig(getChainIdFromPrefix(urlAddressPrefix)));
+    }
     return new EnhancedSafeApiKit(networkConfig);
-  }, [networkConfig]);
+  }, [networkConfig, urlAddressPrefix]);
 
   return safeAPI;
 }

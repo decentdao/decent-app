@@ -123,6 +123,9 @@ export const polygonConfig: NetworkConfig = {
     GovernanceType.AZORIUS_ERC20,
     GovernanceType.AZORIUS_ERC721,
   ],
+  stablecoins: {
+    usdc: '0x3c499c542cEF5E3811e1192ce70d8cC03d5c3359',
+  },
 };
 
 export default polygonConfig;

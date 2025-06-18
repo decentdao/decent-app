@@ -16,5 +16,15 @@
   "unstakeStEthTitle": "解鎖stETH",
   "unstakeStEthDescription": "此建議將從Lido解鎖StETH，並鑄造一個Lido提款NFT，可用於認領您的ETH。",
   "stakeWithLidoTitle": "用Lido賭ETH",
-  "stakeWithLidoDescription": "此提案將ETH賭在Lido，將stETH歸還您的金庫。"
+  "stakeWithLidoDescription": "此提案將ETH賭在Lido，將stETH歸還您的金庫。",
+  "addSigners": "Add signers",
+  "removeSigners": "Remove signers",
+  "changeThreshold": "Update signer threshold",
+  "changeVotingPeriod": "Update voting period",
+  "changeTimelockPeriod": "Update timelock period",
+  "changeExecutionPeriod": "Update execution period",
+  "changeQuorumNumerator": "Update quorum percentage",
+  "changeQuorumThreshold": "Update quorum threshold",
+  "deployToken": "部署令牌",
+  "updateERC20Address": "更新 ERC20 位址"
 }

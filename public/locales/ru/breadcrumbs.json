@@ -11,6 +11,7 @@
   "proposalTemplates": "Шаблоны предложений",
   "proposalTemplate": "{{proposalTemplateTitle}}",
   "proposalTemplateNew": "Создать шаблон предложения",
+  "deployToken": "Развернуть токен",
   "editDAO": "Редактировать DAO",
   "parentLink": "Родительский ДАО",
   "settings": "Настройки"

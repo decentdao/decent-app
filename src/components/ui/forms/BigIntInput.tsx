@@ -36,6 +36,7 @@ export interface BigIntInputProps
  */
 export function BigIntInput({
   // @todo `value` can most likely either be removed, or be used for what `parentFormikValue` is currently being used for. Currently it works as nothing more than an initial value.
+  // https://linear.app/decent-labs/issue/ENG-1158/remove-bigintinputvalue-not-being-used
   value,
   onChange,
   decimalPlaces = 18,

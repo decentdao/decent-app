@@ -4,6 +4,7 @@ import {
   AzoriusProposal,
   DAOKey,
   ERC721ProposalVote,
+  FractalProposalState,
   GaslessVotingDaoData,
   GovernanceType,
   ProposalVote,
@@ -11,7 +12,7 @@ import {
 } from '../types';
 import { useAccountListeners } from './listeners/account';
 import { useGovernanceListeners } from './listeners/governance';
-import { useRolesListener } from './listeners/roles';
+import { useKeyValuePairsListener } from './listeners/keyValuePairs';
 import { useRolesStore } from './roles/useRolesStore';
 import { useGlobalStore } from './store';
 
@@ -28,6 +29,7 @@ export const useDAOStoreListener = ({ daoKey }: { daoKey: DAOKey | undefined }) 
     getGuard,
     setProposal,
     setProposalVote,
+    updateProposalState,
     setGuardAccountData,
     setGaslessVotingData,
   } = useGlobalStore();
@@ -69,6 +71,15 @@ export const useDAOStoreListener = ({ daoKey }: { daoKey: DAOKey | undefined }) 
       }
     },
     [daoKey, setProposal],
+  );
+
+  const onProposalExecuted = useCallback(
+    (proposalId: string) => {
+      if (daoKey) {
+        updateProposalState(daoKey, proposalId, FractalProposalState.EXECUTED);
+      }
+    },
+    [daoKey, updateProposalState],
   );
 
   const onGovernanceAccountDataUpdated = useCallback(
@@ -114,6 +125,7 @@ export const useDAOStoreListener = ({ daoKey }: { daoKey: DAOKey | undefined }) 
     erc20StrategyAddress,
     erc721StrategyAddress,
     onProposalCreated,
+    onProposalExecuted,
     onGovernanceAccountDataUpdated,
     onLockReleaseAccountDataUpdated,
     onERC20VoteCreated,
@@ -151,11 +163,12 @@ export const useDAOStoreListener = ({ daoKey }: { daoKey: DAOKey | undefined }) 
     votesTokenAddress,
     azoriusGuardAddress,
     multisigGuardAddress,
-    freezeVotingType: freezeVotingType || undefined,
-    freezeVotingAddress: freezeVotingAddress || undefined,
-    freezeProposalCreatedTime: freezeProposalCreatedTime || undefined,
-    freezeProposalPeriod: freezeProposalPeriod || undefined,
-    freezePeriod: freezePeriod || undefined,
+    freezeVotingType: freezeVotingType !== null ? freezeVotingType : undefined,
+    freezeVotingAddress: freezeVotingAddress !== null ? freezeVotingAddress : undefined,
+    freezeProposalCreatedTime:
+      freezeProposalCreatedTime !== null ? freezeProposalCreatedTime : undefined,
+    freezeProposalPeriod: freezeProposalPeriod !== null ? freezeProposalPeriod : undefined,
+    freezePeriod: freezePeriod !== null ? freezePeriod : undefined,
     lockReleaseAddress: lockedVotesTokenAddress,
     parentSafeAddress: parentSafeAddress || undefined,
     onGuardAccountDataLoaded,
@@ -174,13 +187,16 @@ export const useDAOStoreListener = ({ daoKey }: { daoKey: DAOKey | undefined }) 
       streamIdsToHatIds: { hatId: bigint; streamId: string }[];
     }) => {
       // TODO: Implement setting to global store in scope of ENG-632
-      setHatKeyValuePairData({
-        contextChainId,
-        hatsTreeId,
-        streamIdsToHatIds,
-      });
+      if (daoKey) {
+        setHatKeyValuePairData({
+          daoKey,
+          contextChainId,
+          hatsTreeId,
+          streamIdsToHatIds,
+        });
+      }
     },
-    [setHatKeyValuePairData],
+    [setHatKeyValuePairData, daoKey],
   );
 
   const onGaslessVotingDataFetched = useCallback(
@@ -192,7 +208,7 @@ export const useDAOStoreListener = ({ daoKey }: { daoKey: DAOKey | undefined }) 
     [daoKey, setGaslessVotingData],
   );
 
-  useRolesListener({
+  useKeyValuePairsListener({
     safeAddress: node?.safe?.address,
     onRolesDataFetched,
     onGaslessVotingDataFetched,

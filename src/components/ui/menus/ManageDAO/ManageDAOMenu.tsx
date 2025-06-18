@@ -22,6 +22,7 @@ export function ManageDAOMenu() {
   const { daoKey } = useCurrentDAOKey();
   const {
     guard,
+    guardAccountData,
     guardContracts,
     node: { safe, subgraphInfo, modules },
   } = useDAOStore({ daoKey });
@@ -126,7 +127,7 @@ export function ManageDAOMenu() {
         currentTime,
       ) &&
       !isWithinFreezePeriod(guard.freezeProposalCreatedTime, guard.freezePeriod, currentTime) &&
-      guard.userHasVotes
+      guardAccountData.userHasVotes
     ) {
       return [settingsOption, freezeOption];
     } else if (
@@ -134,7 +135,7 @@ export function ManageDAOMenu() {
       guard.freezePeriod !== null &&
       isWithinFreezePeriod(guard.freezeProposalCreatedTime, guard.freezePeriod, currentTime) &&
       guard.isFrozen &&
-      guard.userHasVotes
+      guardAccountData.userHasVotes
     ) {
       const fractalModule = (modules ?? []).find(
         module => module.moduleType === FractalModuleType.FRACTAL,
@@ -147,7 +148,18 @@ export function ManageDAOMenu() {
     } else {
       return [settingsOption];
     }
-  }, [guard, currentTime, handleClawBack, openSettingsModal, freezeOption, modules]);
+  }, [
+    handleClawBack,
+    openSettingsModal,
+    guard.freezeProposalCreatedTime,
+    guard.freezeProposalPeriod,
+    guard.freezePeriod,
+    guard.isFrozen,
+    currentTime,
+    guardAccountData.userHasVotes,
+    freezeOption,
+    modules,
+  ]);
 
   return options.length === 1 ? (
     <IconButton

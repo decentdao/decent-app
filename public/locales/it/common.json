@@ -35,7 +35,6 @@
   "learnMore": "Per saperne di più",
   "home": "Casa",
   "labelViewDAO": "Vedi Cassaforte",
-  "labelDAOFound": "Trovato sicuro",
   "labelCurrentDAO": "Stai visualizzando questa cassaforte.",
   "labelEtherscan": "Vista su Etherscan",
   "errorInvalidENSAddress": "Nome o indirizzo ENS non valido su {{chain}}",
@@ -130,5 +129,9 @@
   "unsavedChangesDescription": "Le modifiche non salvate andranno perse se si continua. Volete eliminare le modifiche?",
   "discardChanges": "Scartare",
   "keepEditing": "Continuare a modificare",
-  "selectStatusLabel": "Selezionare lo stato"
+  "selectStatusLabel": "Selezionare lo stato",
+  "addressRequired": "L'indirizzo è richiesto",
+  "save": "Risparmiare",
+  "daoNameRequired": "Il nome del DAO è obbligatorio",
+  "calendarPlaceholder": "AAAA-MM-GG"
 }

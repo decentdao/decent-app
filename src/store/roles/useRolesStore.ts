@@ -48,17 +48,22 @@ const useRolesStore = create<RolesStore>()((set, get) => ({
     return matches[0];
   },
   setHatKeyValuePairData: args => {
-    const { hatsTreeId, contextChainId, streamIdsToHatIds } = args;
+    const { hatsTreeId, contextChainId, streamIdsToHatIds, daoKey } = args;
     for (const { hatId, streamId } of streamIdsToHatIds) {
       streamIdToHatIdMap.set(streamId, hatId);
     }
-    set(() => {
-      // if `hatsTreeId` is null or undefined,
-      // set `hatsTree` to that same value
-      if (typeof hatsTreeId !== 'number') {
-        return { hatsTreeId, hatsTree: hatsTreeId, streamsFetched: false, contextChainId: null };
+    set(state => {
+      if (hatsTreeId === null || hatsTreeId === undefined) {
+        return {
+          ...initialHatsStore,
+        };
       }
-      return { hatsTreeId, streamsFetched: false, contextChainId };
+      return {
+        ...state,
+        hatsTreeId: { [daoKey]: hatsTreeId },
+        contextChainId,
+        streamsFetched: false,
+      };
     });
   },
 
@@ -151,8 +156,12 @@ const useRolesStore = create<RolesStore>()((set, get) => ({
       },
     }));
   },
-
-  resetHatsStore: () => set(() => initialHatsStore),
+  resetRoles: () =>
+    set(state => ({
+      ...initialHatsStore,
+      hatsTreeId: state.hatsTreeId,
+      contextChainId: state.contextChainId,
+    })),
 }));
 
 export { useRolesStore };

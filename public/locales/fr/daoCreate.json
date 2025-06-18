@@ -80,6 +80,7 @@
   "titleProposers": "Proposants figurant sur la liste blanche",
   "titleTokenParams": "Métadonnées",
   "titleTokenContract": "Contrat",
+  "labelTokenContractAlreadyConfigured": "Votre DAO est déjà configurée avec un jeton ERC-20 qui sera utilisé pour la gouvernance de la DAO avec cette modification.",
   "titleAddress": "Adresse",
   "titleAmount": "Montant",
   "createSubDAOPendingToastMessage": "Création d'une proposition de DAO enfant",

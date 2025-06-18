@@ -16,5 +16,15 @@
   "unstakeStEthTitle": "스테이킹 해제",
   "unstakeStEthDescription": "이 제안은 리도에서 스테이크된 이더를 언스테이킹하고 이더를 인출하는 데 사용할 수 있는 리도 인출 NFT를 발행하는 것입니다.",
   "stakeWithLidoTitle": "리도로 이더리움 스테이킹",
-  "stakeWithLidoDescription": "이 제안은 이더리움을 리도에 스테이킹하여 stETH를 여러분의 자산으로 돌려주는 것입니다."
+  "stakeWithLidoDescription": "이 제안은 이더리움을 리도에 스테이킹하여 stETH를 여러분의 자산으로 돌려주는 것입니다.",
+  "addSigners": "서명자 추가",
+  "removeSigners": "서명자 제거",
+  "changeThreshold": "서명자 임계값 업데이트",
+  "changeVotingPeriod": "투표 기간 업데이트",
+  "changeTimelockPeriod": "타임락 기간 업데이트",
+  "changeExecutionPeriod": "업데이트 실행 기간",
+  "changeQuorumNumerator": "정족수 비율 업데이트",
+  "changeQuorumThreshold": "쿼럼 임계값 업데이트",
+  "deployToken": "토큰 배포",
+  "updateERC20Address": "ERC20 주소 업데이트"
 }
