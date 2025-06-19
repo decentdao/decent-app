@@ -117,9 +117,7 @@ export type ModalPropsTypes = {
     onSubmit: (airdropData: AirdropData) => void;
     submitButtonText: string;
   };
-  [ModalType.REFILL_GAS]: {
-    setFieldValue: (field: string, value: any) => void;
-  };
+  [ModalType.REFILL_GAS]: {};
   [ModalType.WITHDRAW_GAS]: {};
   [ModalType.GASLESS_VOTE_LOADING]: {};
   [ModalType.GASLESS_VOTE_SUCCESS]: {};

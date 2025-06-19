@@ -192,12 +192,8 @@ export function GaslessVotingToggleDAOSettings(props: GaslessVotingToggleProps) 
   } = useDAOStore({ daoKey });
   const { depositInfo } = usePaymasterDepositInfo();
 
-  const { open: openWithdrawGasModal } = useDecentModal(ModalType.WITHDRAW_GAS, {
-    setFieldValue: settingsModalFormikContext.setFieldValue,
-  });
-  const { open: openRefillGasModal } = useDecentModal(ModalType.REFILL_GAS, {
-    setFieldValue: settingsModalFormikContext.setFieldValue,
-  });
+  const { open: openWithdrawGasModal } = useDecentModal(ModalType.WITHDRAW_GAS);
+  const { open: openRefillGasModal } = useDecentModal(ModalType.REFILL_GAS);
 
   const gaslessFeatureEnabled = useFeatureFlag('flag_gasless_voting');
   const gaslessStakingEnabled = gaslessFeatureEnabled && bundlerMinimumStake !== undefined;
