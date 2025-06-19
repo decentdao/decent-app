@@ -1,6 +1,6 @@
 import { Button, Flex, IconButton, Show, Text } from '@chakra-ui/react';
 import { ArrowLeft, Trash, X } from '@phosphor-icons/react';
-import { FormikContextType } from 'formik';
+import { useFormikContext } from 'formik';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Address, zeroAddress } from 'viem';
@@ -21,11 +21,9 @@ import { AzoriusGovernance, BigIntValuePair } from '../../../../types';
 // https://linear.app/decent-labs/issue/ENG-842/fix-permissions-settings-ux-flows
 export function AddCreateProposalPermissionModal({
   closeModal,
-  formikContext,
   votingStrategyAddress,
 }: {
   closeModal: () => void;
-  formikContext: FormikContextType<SafeSettingsEdits>;
   votingStrategyAddress: Address | null;
 }) {
   const { t } = useTranslation(['settings', 'common', 'modals']);
@@ -42,7 +40,7 @@ export function AddCreateProposalPermissionModal({
     ModalType.CONFIRM_DELETE_STRATEGY,
   );
 
-  const { values, setFieldValue } = formikContext;
+  const { values, setFieldValue } = useFormikContext<SafeSettingsEdits>();
   const { permissions: permissionsEdits } = values;
 
   const proposerThresholdFromGovernanceObject = (governanceObject: AzoriusGovernance) => {

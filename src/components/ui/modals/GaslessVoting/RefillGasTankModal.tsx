@@ -1,4 +1,5 @@
 import { Box, Button, Checkbox, CloseButton, Flex, Text } from '@chakra-ui/react';
+import { useFormikContext } from 'formik';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { getContract } from 'viem';
@@ -9,20 +10,18 @@ import { useNetworkWalletClient } from '../../../../hooks/useNetworkWalletClient
 import { useCanUserCreateProposal } from '../../../../hooks/utils/useCanUserSubmitProposal';
 import { useDAOStore } from '../../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../../providers/NetworkConfig/useNetworkConfigStore';
-import { useSettingsFormStore } from '../../../../store/settings/useSettingsFormStore';
 import { formatCoinUnits } from '../../../../utils/numberFormats';
 import { BigIntInput } from '../../forms/BigIntInput';
 import { CustomNonceInput } from '../../forms/CustomNonceInput';
 import LabelWrapper from '../../forms/LabelWrapper';
 import { AssetSelector } from '../../utils/AssetSelector';
+import { SafeSettingsEdits, SafeSettingsFormikErrors } from '../SafeSettingsModal';
 
 export function RefillGasTankModal({
   close,
-  setFieldValue,
   showNonceInput = false,
 }: {
   close: () => void;
-  setFieldValue: (field: string, value: any) => void;
   showNonceInput?: boolean;
 }) {
   const { t } = useTranslation('gaslessVoting');
@@ -42,9 +41,14 @@ export function RefillGasTankModal({
 
   const { canUserCreateProposal } = useCanUserCreateProposal();
 
-  const { formState, formErrors, setFormErrors } = useSettingsFormStore();
+  const {
+    values: formState,
+    setFieldValue,
+    errors: formErrors,
+  } = useFormikContext<SafeSettingsEdits>();
+
   const values = formState?.paymasterGasTank?.deposit ?? {};
-  const paymasterGasTankErrors = formErrors?.paymasterGasTank ?? {};
+  const paymasterGasTankErrors = (formErrors as SafeSettingsFormikErrors)?.paymasterGasTank ?? {};
 
   const isDirectDeposit = values.isDirectDeposit;
 
@@ -68,28 +72,6 @@ export function RefillGasTankModal({
     !values.amount ||
     inputBigintIsZero ||
     overDraft;
-
-  useEffect(() => {
-    if (overDraft && formErrors?.paymasterGasTank?.deposit?.amount === undefined) {
-      setFormErrors({
-        ...formErrors,
-        paymasterGasTank: {
-          ...formErrors?.paymasterGasTank,
-          deposit: {
-            amount: t('amountExceedsAvailableBalance', { ns: 'gaslessVoting' }),
-          },
-        },
-      });
-    } else if (!overDraft && formErrors?.paymasterGasTank?.deposit?.amount !== undefined) {
-      setFormErrors({
-        ...formErrors,
-        paymasterGasTank: {
-          ...formErrors?.paymasterGasTank,
-          deposit: undefined,
-        },
-      });
-    }
-  }, [formErrors, overDraft, setFormErrors, t]);
 
   // Clean up deposit object if amount field is empty
   useEffect(() => {

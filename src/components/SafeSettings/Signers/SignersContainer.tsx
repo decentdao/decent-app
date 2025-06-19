@@ -45,10 +45,9 @@ function Signer({
   }
 
   const inputRef = useRef<HTMLInputElement>(null);
-  const { values, setFieldValue } = useFormikContext<SafeSettingsEdits>();
-  const { errors } = useFormikContext<SafeSettingsFormikErrors>();
+  const { values, setFieldValue, errors } = useFormikContext<SafeSettingsEdits>();
 
-  const multisigEditFormikErrors = (errors as SafeSettingsFormikErrors).multisig;
+  const multisigEditFormikErrors = (errors as SafeSettingsFormikErrors | undefined)?.multisig;
 
   const newSigner = signer.isAdding ? (signer as NewSignerItem) : null;
   const isInvalid =
@@ -149,10 +148,9 @@ export function SignersContainer() {
 
   const { t } = useTranslation(['common', 'breadcrumbs', 'daoEdit']);
 
-  const { setFieldValue, values } = useFormikContext<SafeSettingsEdits>();
-  const { errors } = useFormikContext<SafeSettingsFormikErrors>();
+  const { setFieldValue, values, errors } = useFormikContext<SafeSettingsEdits>();
 
-  const multisigEditFormikErrors = (errors as SafeSettingsFormikErrors).multisig;
+  const multisigEditFormikErrors = (errors as SafeSettingsFormikErrors | undefined)?.multisig;
 
   useEffect(() => {
     if (
