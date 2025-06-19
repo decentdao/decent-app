@@ -1259,7 +1259,7 @@ export function SafeSettingsModal({
       }}
     >
       <Form>
-        <ModalProvider>
+        <ModalProvider baseZIndex={2000}>
           <Flex
             flexDirection="column"
             height="90vh"

@@ -488,11 +488,13 @@ function ModalDisplay({
   isOpen,
   openModal,
   index,
+  baseZIndex,
 }: {
   modalData: ModalData;
   isOpen: boolean;
   openModal: () => void;
   index: number;
+  baseZIndex: number;
 }) {
   const {
     content,
@@ -516,7 +518,7 @@ function ModalDisplay({
       isSearchInputModal={isSearchInputModal}
       size={size}
       contentStyle={contentStyle}
-      zIndex={1400 + index}
+      zIndex={baseZIndex + index}
     >
       {content}
     </ModalBase>
@@ -552,7 +554,7 @@ function ModalDisplay({
             isOpen={isOpen}
             onClose={onSetClosed}
             isSearchInputModal={isSearchInputModal}
-            zIndex={1401 + index} // @dev - Modal zIndex is 1400, but since these modals are might be shown alongside drawer - we need to make it larger
+            zIndex={baseZIndex + index + 1}
             size={size}
           >
             {content}
@@ -574,7 +576,13 @@ function ModalDisplay({
  *  3. Handle assigning your new modal component for that ModalType here in the provider switch case.
  *  4. Utilize the useDecentModal hook to get a click listener to open your new modal.
  */
-export function ModalProvider({ children }: { children: ReactNode }) {
+export function ModalProvider({
+  children,
+  baseZIndex = 1400,
+}: {
+  children: ReactNode;
+  baseZIndex?: number;
+}) {
   const [openModals, setOpenModals] = useState<ModalTypeWithProps[]>([]);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { t } = useTranslation('modals');
@@ -614,6 +622,7 @@ export function ModalProvider({ children }: { children: ReactNode }) {
         isOpen={isOpen}
         openModal={onOpen}
         index={i}
+        baseZIndex={baseZIndex}
       />
     );
   });
