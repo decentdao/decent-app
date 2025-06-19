@@ -470,7 +470,7 @@ export function SafeSettingsModal({
             functionName: 'addStake',
             parameters: [
               {
-                signature: 'uint256',
+                signature: 'uint32',
                 // one day in seconds, defined on https://github.com/alchemyplatform/rundler/blob/c17fd3dbc24d2af93fd68310031d445d5440794f/crates/sim/src/simulation/mod.rs#L170
                 value: 86400n.toString(),
               },
