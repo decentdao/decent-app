@@ -1,5 +1,5 @@
 import { Portal, Show, useDisclosure } from '@chakra-ui/react';
-import { FormikProps, FormikContextType } from 'formik';
+import { FormikProps } from 'formik';
 import { createContext, ReactNode, useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Address } from 'viem';
@@ -30,7 +30,7 @@ import { PaymentWithdrawModal } from './PaymentWithdrawModal';
 import ProposalTemplateModal from './ProposalTemplateModal';
 import { SafeProposalDappDetailModal } from './SafeDapp/SafeProposalDappDetailModal';
 import { SafeProposalDappsModal } from './SafeDapp/SafeProposalDappsModal';
-import { SafeSettingsEdits, SafeSettingsModal } from './SafeSettingsModal';
+import { SafeSettingsModal } from './SafeSettingsModal';
 import { SendAssetsModal } from './SendAssetsModal';
 import StakeModal from './Stake';
 import { UnsavedChangesWarningContent } from './UnsavedChangesWarningContent';
@@ -73,7 +73,6 @@ export type ModalPropsTypes = {
     openAddCreateProposalPermissionModal: () => void;
   };
   [ModalType.ADD_CREATE_PROPOSAL_PERMISSION]: {
-    formikContext: FormikContextType<SafeSettingsEdits>;
     votingStrategyAddress: Address | null;
   };
   [ModalType.CONFIRM_DELETE_STRATEGY]: {};
@@ -335,7 +334,6 @@ const getModalData = (args: {
       modalContent = (
         <AddCreateProposalPermissionModal
           closeModal={popModal}
-          formikContext={current.props.formikContext}
           votingStrategyAddress={current.props.votingStrategyAddress}
         />
       );
