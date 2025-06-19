@@ -11,10 +11,9 @@ import { useCanUserCreateProposal } from '../../hooks/utils/useCanUserSubmitProp
 import { createAccountSubstring } from '../../hooks/utils/useGetAccountName';
 import { useDAOStore } from '../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
-import { useSettingsFormStore } from '../../store/settings/useSettingsFormStore';
 import { formatCoin } from '../../utils';
 import { ModalType } from '../ui/modals/ModalProvider';
-import { SafeSettingsEdits } from '../ui/modals/SafeSettingsModal';
+import { SafeSettingsEdits, SafeSettingsFormikErrors } from '../ui/modals/SafeSettingsModal';
 import { useDecentModal } from '../ui/modals/useDecentModal';
 import Divider from '../ui/utils/Divider';
 
@@ -25,9 +24,9 @@ interface GaslessVotingToggleProps {
 
 function WithdrawingGasComponent() {
   const { t } = useTranslation('gaslessVoting');
-  const { values, setFieldValue } = useFormikContext<SafeSettingsEdits>();
-  const { formErrors } = useSettingsFormStore();
-  const paymasterGasTankWithdrawError = formErrors?.paymasterGasTank?.withdraw;
+  const { values, setFieldValue, errors: formErrors } = useFormikContext<SafeSettingsEdits>();
+  const paymasterGasTankWithdrawError = (formErrors as SafeSettingsFormikErrors)?.paymasterGasTank
+    ?.withdraw;
 
   const withdrawingGasAmount = values?.paymasterGasTank?.withdraw?.amount?.value;
   const nativeCurrency = useNetworkPublicClient().chain.nativeCurrency;
@@ -68,10 +67,10 @@ function WithdrawingGasComponent() {
 
 function DepositingGasComponent() {
   const { t } = useTranslation('gaslessVoting');
-  const { values, setFieldValue } = useFormikContext<SafeSettingsEdits>();
+  const { values, setFieldValue, errors: formErrors } = useFormikContext<SafeSettingsEdits>();
 
-  const { formErrors } = useSettingsFormStore();
-  const paymasterGasTankDepositError = formErrors?.paymasterGasTank?.deposit?.amount;
+  const paymasterGasTankDepositError = (formErrors as SafeSettingsFormikErrors)?.paymasterGasTank
+    ?.deposit?.amount;
 
   const depositingGasAmount = values?.paymasterGasTank?.deposit?.amount?.value;
   const nativeCurrency = useNetworkPublicClient().chain.nativeCurrency;
@@ -193,12 +192,8 @@ export function GaslessVotingToggleDAOSettings(props: GaslessVotingToggleProps) 
   } = useDAOStore({ daoKey });
   const { depositInfo } = usePaymasterDepositInfo();
 
-  const { open: openWithdrawGasModal } = useDecentModal(ModalType.WITHDRAW_GAS, {
-    setFieldValue: settingsModalFormikContext.setFieldValue,
-  });
-  const { open: openRefillGasModal } = useDecentModal(ModalType.REFILL_GAS, {
-    setFieldValue: settingsModalFormikContext.setFieldValue,
-  });
+  const { open: openWithdrawGasModal } = useDecentModal(ModalType.WITHDRAW_GAS);
+  const { open: openRefillGasModal } = useDecentModal(ModalType.REFILL_GAS);
 
   const gaslessFeatureEnabled = useFeatureFlag('flag_gasless_voting');
   const gaslessStakingEnabled = gaslessFeatureEnabled && bundlerMinimumStake !== undefined;

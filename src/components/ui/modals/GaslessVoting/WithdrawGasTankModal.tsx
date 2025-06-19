@@ -1,23 +1,18 @@
 import { Box, Button, CloseButton, Flex, Text } from '@chakra-ui/react';
+import { useFormikContext } from 'formik';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { usePaymasterDepositInfo } from '../../../../hooks/DAO/accountAbstraction/usePaymasterDepositInfo';
 import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
 import { useDAOStore } from '../../../../providers/App/AppProvider';
-import { useSettingsFormStore } from '../../../../store/settings/useSettingsFormStore';
 import { formatCoinUnits } from '../../../../utils/numberFormats';
 import { BigIntInput } from '../../forms/BigIntInput';
 import { AddressInput } from '../../forms/EthAddressInput';
 import LabelWrapper from '../../forms/LabelWrapper';
 import { AssetSelector } from '../../utils/AssetSelector';
+import { SafeSettingsEdits, SafeSettingsFormikErrors } from '../SafeSettingsModal';
 
-export function WithdrawGasTankModal({
-  close,
-  setFieldValue,
-}: {
-  close: () => void;
-  setFieldValue: (field: string, value: any) => void;
-}) {
+export function WithdrawGasTankModal({ close }: { close: () => void }) {
   const { depositInfo } = usePaymasterDepositInfo();
   const { t } = useTranslation('gaslessVoting');
   const { daoKey } = useCurrentDAOKey();
@@ -25,9 +20,14 @@ export function WithdrawGasTankModal({
     node: { safe },
   } = useDAOStore({ daoKey });
 
-  const { formState, formErrors } = useSettingsFormStore();
+  const {
+    values: formState,
+    setFieldValue,
+    errors: formErrors,
+  } = useFormikContext<SafeSettingsEdits>();
+
   const withdrawValues = formState?.paymasterGasTank?.withdraw ?? {};
-  const paymasterGasTankErrors = formErrors?.paymasterGasTank ?? {};
+  const paymasterGasTankErrors = (formErrors as SafeSettingsFormikErrors)?.paymasterGasTank ?? {};
 
   // Clean up withdraw object if both fields are empty
   useEffect(() => {
