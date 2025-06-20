@@ -334,6 +334,7 @@ export function SafeSettingsModal({
             {t('refillPaymasterAction', {
               amount: formattedRefillAmount,
               symbol: nativeCurrency.symbol,
+              ns: 'gaslessVoting',
             })}
           </Text>
         ),
@@ -1243,6 +1244,14 @@ export function SafeSettingsModal({
               deposit: undefined,
             };
           }
+
+          // if both deposit and withdraw errors are undefined, set paymasterGasTank to undefined
+          if (
+            errors.paymasterGasTank?.deposit === undefined &&
+            errors.paymasterGasTank?.withdraw === undefined
+          ) {
+            errors.paymasterGasTank = undefined;
+          }
         } else {
           errors.paymasterGasTank = undefined;
         }
@@ -1254,8 +1263,8 @@ export function SafeSettingsModal({
         return errors;
       }}
       onSubmit={values => {
-        closeAllModals();
         submitAllSettingsEditsProposal(values);
+        closeAllModals();
       }}
     >
       <Form>

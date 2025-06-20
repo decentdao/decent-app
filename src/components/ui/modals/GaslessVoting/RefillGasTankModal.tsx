@@ -1,6 +1,5 @@
 import { Box, Button, Checkbox, CloseButton, Flex, Text } from '@chakra-ui/react';
 import { useFormikContext } from 'formik';
-import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { getContract } from 'viem';
 import { useAccount, useBalance } from 'wagmi';
@@ -72,13 +71,6 @@ export function RefillGasTankModal({
     !values.amount ||
     inputBigintIsZero ||
     overDraft;
-
-  // Clean up deposit object if amount field is empty
-  useEffect(() => {
-    if (values.amount === undefined) {
-      setFieldValue('paymasterGasTank.deposit.amount', undefined);
-    }
-  }, [values.amount, setFieldValue]);
 
   return (
     <Box>
