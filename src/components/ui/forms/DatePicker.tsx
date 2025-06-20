@@ -6,7 +6,6 @@ import {
   MenuButton,
   MenuItem,
   MenuList,
-  Show,
   useBreakpointValue,
   useDisclosure,
 } from '@chakra-ui/react';
@@ -15,7 +14,6 @@ import { Calendar } from 'react-calendar';
 import '../../../assets/css/Calendar.css';
 import { SEXY_BOX_SHADOW_T_T } from '../../../constants/common';
 import { DatePickerTrigger } from '../../Roles/DatePickerTrigger';
-import DraggableDrawer from '../containers/DraggableDrawer';
 
 type DateOrNull = Date | null;
 type OnDateChangeValue = DateOrNull | [DateOrNull, DateOrNull];
@@ -90,66 +88,6 @@ function CalendarContainer({
   );
 }
 
-/** Mobile implementation – uses DraggableDrawer */
-function MobilePicker({
-  isOpen,
-  boxShadow,
-  maxBoxW,
-  minDate,
-  maxDate,
-  handleDateChange,
-  disabled,
-  onOpen,
-  onClose,
-  selectedDate,
-}: {
-  isOpen: boolean;
-  boxShadow: string | undefined;
-  maxBoxW: string | undefined;
-  minDate?: Date;
-  maxDate?: Date;
-  handleDateChange: (date: DateOrNull | [DateOrNull, DateOrNull]) => void;
-  disabled: boolean;
-  onOpen: () => void;
-  onClose: () => void;
-  selectedDate?: Date;
-}) {
-  return (
-    <Show below="md">
-      <Button
-        onClick={onOpen}
-        variant="unstyled"
-        p={0}
-        flex={1}
-        w="full"
-        isDisabled={disabled}
-        cursor={disabled ? 'not-allowed' : 'pointer'}
-      >
-        <DatePickerTrigger
-          selectedDate={selectedDate}
-          disabled={disabled}
-        />
-      </Button>
-
-      <DraggableDrawer
-        isOpen={isOpen}
-        headerContent={undefined}
-        onOpen={onOpen}
-        onClose={onClose}
-      >
-        <CalendarContainer
-          isOpen={isOpen}
-          boxShadow={boxShadow}
-          maxBoxW={maxBoxW}
-          minDate={minDate}
-          maxDate={maxDate}
-          handleDateChange={handleDateChange}
-        />
-      </DraggableDrawer>
-    </Show>
-  );
-}
-
 function DesktopPicker({
   isOpen,
   boxShadow,
@@ -174,42 +112,40 @@ function DesktopPicker({
   selectedDate?: Date;
 }) {
   return (
-    <Show above="md">
-      <Menu
-        closeOnSelect={false}
-        isOpen={isOpen}
-        onClose={onClose}
+    <Menu
+      closeOnSelect={false}
+      isOpen={isOpen}
+      onClose={onClose}
+    >
+      <MenuButton
+        as={Button}
+        variant="unstyled"
+        p={0}
+        w="full"
+        h="40px"
+        borderRadius="0.5rem"
+        isDisabled={disabled}
+        cursor={disabled ? 'not-allowed' : 'pointer'}
+        onClick={onOpen}
       >
-        <MenuButton
-          as={Button}
-          variant="unstyled"
-          p={0}
-          w="full"
-          h="40px"
-          borderRadius="0.5rem"
-          isDisabled={disabled}
-          cursor={disabled ? 'not-allowed' : 'pointer'}
-          onClick={onOpen}
-        >
-          <DatePickerTrigger
-            selectedDate={selectedDate}
-            disabled={disabled}
+        <DatePickerTrigger
+          selectedDate={selectedDate}
+          disabled={disabled}
+        />
+      </MenuButton>
+      <MenuList zIndex={2}>
+        <MenuItem>
+          <CalendarContainer
+            isOpen={isOpen}
+            boxShadow={boxShadow}
+            maxBoxW={maxBoxW}
+            minDate={minDate}
+            maxDate={maxDate}
+            handleDateChange={handleDateChange}
           />
-        </MenuButton>
-        <MenuList zIndex={2}>
-          <MenuItem>
-            <CalendarContainer
-              isOpen={isOpen}
-              boxShadow={boxShadow}
-              maxBoxW={maxBoxW}
-              minDate={minDate}
-              maxDate={maxDate}
-              handleDateChange={handleDateChange}
-            />
-          </MenuItem>
-        </MenuList>
-      </Menu>
-    </Show>
+        </MenuItem>
+      </MenuList>
+    </Menu>
   );
 }
 
@@ -233,18 +169,6 @@ export function DatePicker({
 
   return (
     <>
-      <MobilePicker
-        isOpen={isOpen}
-        boxShadow={boxShadow}
-        maxBoxW={maxBoxW}
-        minDate={minDate}
-        maxDate={maxDate}
-        handleDateChange={handleDateChange}
-        disabled={disabled}
-        onOpen={onOpen}
-        onClose={onClose}
-        selectedDate={selectedDate}
-      />
       <DesktopPicker
         isOpen={isOpen}
         boxShadow={boxShadow}
