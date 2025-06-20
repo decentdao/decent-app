@@ -102,6 +102,8 @@
   display: flex;
   justify-content: space-between;
   cursor: default;
+  border-bottom-left-radius: 14px;
+  border-bottom-right-radius: 14px;
 }
 
 /* changes calendar day of week area text */
