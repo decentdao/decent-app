@@ -176,6 +176,7 @@
 .react-calendar__month-view__days__day {
   width: 32px;
   height: auto;
+  cursor: pointer;
 }
 
 /* changes calendar day tiles that are not in the current month */
