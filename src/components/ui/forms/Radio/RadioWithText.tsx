@@ -1,4 +1,4 @@
-import { Box, HStack, Radio, Text } from '@chakra-ui/react';
+import { Box, Flex, Radio, Text } from '@chakra-ui/react';
 import SupportTooltip from '../../badges/SupportTooltip';
 
 interface IRadioWithText {
@@ -21,9 +21,11 @@ export function RadioWithText({
   tooltip,
 }: IRadioWithText) {
   return (
-    <Box onClick={!disabled ? onClick : undefined}>
+    <Flex
+      alignItems="start"
+      onClick={!disabled ? onClick : undefined}
+    >
       <Radio
-        display="flex"
         data-testid={testId}
         type="radio"
         isDisabled={disabled}
@@ -36,27 +38,26 @@ export function RadioWithText({
           color: 'color-lilac-600',
           borderWidth: '6px',
         }}
+        alignItems="start"
         size="lg"
         value={value}
       >
         <Box
-          p="0.5rem 0"
           ml="0.25rem"
+          mt="-0.25rem"
         >
-          <HStack>
-            <Text color={disabled ? 'color-neutral-700' : 'color-white'}>{label}</Text>
-            {tooltip && (
-              <SupportTooltip
-                label={tooltip}
-                closeDelay={1000}
-                pointerEvents="all"
-                color="color-lilac-100"
-              />
-            )}
-          </HStack>
+          <Text color={disabled ? 'color-neutral-700' : 'color-white'}>{label}</Text>
+          {tooltip && (
+            <SupportTooltip
+              label={tooltip}
+              closeDelay={1000}
+              pointerEvents="all"
+              color="color-lilac-100"
+            />
+          )}
           <Text color={disabled ? 'color-neutral-700' : 'color-neutral-300'}>{description}</Text>
         </Box>
       </Radio>
-    </Box>
+    </Flex>
   );
 }
