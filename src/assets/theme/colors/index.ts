@@ -252,4 +252,8 @@ export const semanticColors = {
   'color-content-error-muted': 'color-error-900',
   'color-content-popover': '#221d25ad',
   'color-content-popover-foreground': 'color-neutral-50',
+
+  // TODO Need token for proper primitives
+  'color-base-default-500': '#90829A',
+  'color-base-default-foreground': '#F8F4FC',
 } as const;

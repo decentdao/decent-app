@@ -31,6 +31,7 @@ export function DatePickerTrigger({ selectedDate, disabled }: DatePickerTriggerP
         color="color-neutral-700"
       />
       <Text
+        textStyle="text-base-regular"
         color={
           disabled ? 'color-neutral-300' : selectedDateStr ? 'color-white' : 'color-neutral-700'
         }
