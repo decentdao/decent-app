@@ -252,8 +252,10 @@ export function SettingsNavigation({
             }}
             hasEdits={
               values.general !== undefined ||
-              (values.paymasterGasTank !== undefined &&
-                !values.paymasterGasTank.deposit?.isDirectDeposit)
+              (values.paymasterGasTank?.deposit?.amount !== undefined &&
+                !values.paymasterGasTank.deposit?.isDirectDeposit) ||
+              (values.paymasterGasTank?.withdraw?.amount !== undefined &&
+                values.paymasterGasTank.withdraw.recipientAddress !== undefined)
             }
           />
           <SettingsNavigationItem
