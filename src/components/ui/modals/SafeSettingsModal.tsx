@@ -1243,6 +1243,11 @@ export function SafeSettingsModal({
               deposit: undefined,
             };
           }
+
+          // if both deposit and withdraw are undefined, set paymasterGasTank to undefined
+          if (deposit === undefined && withdraw === undefined) {
+            errors.paymasterGasTank = undefined;
+          }
         } else {
           errors.paymasterGasTank = undefined;
         }
