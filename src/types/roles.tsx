@@ -235,7 +235,6 @@ export interface RoleDetailsDrawerProps {
 
 export interface RolesStoreData {
   hatsTreeId: undefined | null | StoreSlice<number>;
-  decentHatsAddress: Address | null | undefined;
   hatsTree: undefined | null | DecentTree;
   streamsFetched: boolean;
   contextChainId: number | null;
