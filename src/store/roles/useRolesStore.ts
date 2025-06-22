@@ -53,9 +53,15 @@ const useRolesStore = create<RolesStore>()((set, get) => ({
       streamIdToHatIdMap.set(streamId, hatId);
     }
     set(state => {
-      if (hatsTreeId === null || hatsTreeId === undefined) {
+      if (hatsTreeId === undefined) {
         return {
           ...initialHatsStore,
+        };
+      }
+      if (hatsTreeId === null) {
+        return {
+          ...initialHatsStore,
+          hatsTree: null,
         };
       }
       return {
