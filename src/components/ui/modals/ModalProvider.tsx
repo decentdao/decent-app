@@ -1,5 +1,5 @@
 import { Portal, Show, useDisclosure } from '@chakra-ui/react';
-import { FormikProps, FormikContextType } from 'formik';
+import { FormikProps } from 'formik';
 import { createContext, ReactNode, useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Address } from 'viem';
@@ -30,7 +30,7 @@ import { PaymentWithdrawModal } from './PaymentWithdrawModal';
 import ProposalTemplateModal from './ProposalTemplateModal';
 import { SafeProposalDappDetailModal } from './SafeDapp/SafeProposalDappDetailModal';
 import { SafeProposalDappsModal } from './SafeDapp/SafeProposalDappsModal';
-import { SafeSettingsEdits, SafeSettingsModal } from './SafeSettingsModal';
+import { SafeSettingsModal } from './SafeSettingsModal';
 import { SendAssetsModal } from './SendAssetsModal';
 import StakeModal from './Stake';
 import { UnsavedChangesWarningContent } from './UnsavedChangesWarningContent';
@@ -73,7 +73,6 @@ export type ModalPropsTypes = {
     openAddCreateProposalPermissionModal: () => void;
   };
   [ModalType.ADD_CREATE_PROPOSAL_PERMISSION]: {
-    formikContext: FormikContextType<SafeSettingsEdits>;
     votingStrategyAddress: Address | null;
   };
   [ModalType.CONFIRM_DELETE_STRATEGY]: {};
@@ -118,12 +117,8 @@ export type ModalPropsTypes = {
     onSubmit: (airdropData: AirdropData) => void;
     submitButtonText: string;
   };
-  [ModalType.REFILL_GAS]: {
-    setFieldValue: (field: string, value: any) => void;
-  };
-  [ModalType.WITHDRAW_GAS]: {
-    setFieldValue: (field: string, value: any) => void;
-  };
+  [ModalType.REFILL_GAS]: {};
+  [ModalType.WITHDRAW_GAS]: {};
   [ModalType.GASLESS_VOTE_LOADING]: {};
   [ModalType.GASLESS_VOTE_SUCCESS]: {};
   [ModalType.GASLESS_VOTE_FAILED]: {
@@ -337,7 +332,6 @@ const getModalData = (args: {
       modalContent = (
         <AddCreateProposalPermissionModal
           closeModal={popModal}
-          formikContext={current.props.formikContext}
           votingStrategyAddress={current.props.votingStrategyAddress}
         />
       );
@@ -364,20 +358,10 @@ const getModalData = (args: {
       );
       break;
     case ModalType.REFILL_GAS:
-      modalContent = (
-        <RefillGasTankModal
-          close={popModal}
-          setFieldValue={current.props.setFieldValue}
-        />
-      );
+      modalContent = <RefillGasTankModal close={popModal} />;
       break;
     case ModalType.WITHDRAW_GAS:
-      modalContent = (
-        <WithdrawGasTankModal
-          close={popModal}
-          setFieldValue={current.props.setFieldValue}
-        />
-      );
+      modalContent = <WithdrawGasTankModal close={popModal} />;
       break;
     case ModalType.GASLESS_VOTE_SUCCESS:
       modalContent = <GaslessVoteSuccessModal close={popModal} />;
@@ -502,11 +486,13 @@ function ModalDisplay({
   isOpen,
   openModal,
   index,
+  baseZIndex,
 }: {
   modalData: ModalData;
   isOpen: boolean;
   openModal: () => void;
   index: number;
+  baseZIndex: number;
 }) {
   const {
     content,
@@ -530,7 +516,7 @@ function ModalDisplay({
       isSearchInputModal={isSearchInputModal}
       size={size}
       contentStyle={contentStyle}
-      zIndex={1400 + index}
+      zIndex={baseZIndex + index}
     >
       {content}
     </ModalBase>
@@ -566,7 +552,7 @@ function ModalDisplay({
             isOpen={isOpen}
             onClose={onSetClosed}
             isSearchInputModal={isSearchInputModal}
-            zIndex={1401 + index} // @dev - Modal zIndex is 1400, but since these modals are might be shown alongside drawer - we need to make it larger
+            zIndex={baseZIndex + index + 1}
             size={size}
           >
             {content}
@@ -588,7 +574,13 @@ function ModalDisplay({
  *  3. Handle assigning your new modal component for that ModalType here in the provider switch case.
  *  4. Utilize the useDecentModal hook to get a click listener to open your new modal.
  */
-export function ModalProvider({ children }: { children: ReactNode }) {
+export function ModalProvider({
+  children,
+  baseZIndex = 1400,
+}: {
+  children: ReactNode;
+  baseZIndex?: number;
+}) {
   const [openModals, setOpenModals] = useState<ModalTypeWithProps[]>([]);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { t } = useTranslation('modals');
@@ -628,6 +620,7 @@ export function ModalProvider({ children }: { children: ReactNode }) {
         isOpen={isOpen}
         openModal={onOpen}
         index={i}
+        baseZIndex={baseZIndex}
       />
     );
   });

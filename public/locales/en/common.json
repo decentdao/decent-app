@@ -133,5 +133,6 @@
   "addressRequired": "Address is required",
   "save": "Save",
   "daoNameRequired": "DAO name is required",
-  "calendarPlaceholder": "YYYY-MM-DD"
+  "calendarPlaceholder": "YYYY-MM-DD",
+  "years": "Years"
 }
