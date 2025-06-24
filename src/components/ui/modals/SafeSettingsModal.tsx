@@ -1245,10 +1245,10 @@ export function SafeSettingsModal({
             };
           }
 
-          // if both deposit and withdraw errors are undefined, set paymasterGasTank to undefined
+          // dynamically check if all fields in paymasterGasTank are undefined before clearing the object
           if (
-            errors.paymasterGasTank?.deposit === undefined &&
-            errors.paymasterGasTank?.withdraw === undefined
+            errors.paymasterGasTank &&
+            Object.values(errors.paymasterGasTank).every(field => field === undefined)
           ) {
             errors.paymasterGasTank = undefined;
           }
