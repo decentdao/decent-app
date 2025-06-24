@@ -152,9 +152,11 @@ export const createGovernancesSlice: StateCreator<
           state.governances[daoKey] = {
             ...EMPTY_GOVERNANCE,
             type: GovernanceType.MULTISIG,
+            isLoaded: true,
           };
         } else {
           state.governances[daoKey].type = GovernanceType.MULTISIG;
+          state.governances[daoKey].isLoaded = true;
         }
       },
       false,

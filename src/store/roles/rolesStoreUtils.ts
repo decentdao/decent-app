@@ -100,7 +100,6 @@ const getHatMetadata = (hat: Hat) => {
 export const initialHatsStore: RolesStoreData = {
   hatsTreeId: undefined,
   hatsTree: undefined,
-  decentHatsAddress: undefined,
   streamsFetched: false,
   contextChainId: null,
 };
