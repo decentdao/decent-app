@@ -1263,8 +1263,8 @@ export function SafeSettingsModal({
         return errors;
       }}
       onSubmit={values => {
-        submitAllSettingsEditsProposal(values);
         closeAllModals();
+        submitAllSettingsEditsProposal(values);
       }}
     >
       <Form>
