@@ -212,6 +212,17 @@ export function SettingsNavigation({
 
   const { values } = useFormikContext<SafeSettingsEdits>();
 
+  const generalHasEdits = values.general !== undefined;
+
+  const paymasterDepositHasEdits =
+    values.paymasterGasTank?.deposit?.amount !== undefined &&
+    !values.paymasterGasTank.deposit?.isDirectDeposit;
+  const paymasterWithdrawHasEdits =
+    values.paymasterGasTank?.withdraw?.amount !== undefined &&
+    values.paymasterGasTank.withdraw.recipientAddress !== undefined;
+
+  const paymasterHasEdits = paymasterDepositHasEdits || paymasterWithdrawHasEdits;
+
   return (
     <Flex
       backgroundColor="transparent"
@@ -250,13 +261,7 @@ export function SettingsNavigation({
               onSettingsNavigationClick(<SafeGeneralSettingsPage />);
               setCurrentItem('general');
             }}
-            hasEdits={
-              values.general !== undefined ||
-              (values.paymasterGasTank?.deposit?.amount !== undefined &&
-                !values.paymasterGasTank.deposit?.isDirectDeposit) ||
-              (values.paymasterGasTank?.withdraw?.amount !== undefined &&
-                values.paymasterGasTank.withdraw.recipientAddress !== undefined)
-            }
+            hasEdits={generalHasEdits || paymasterHasEdits}
           />
           <SettingsNavigationItem
             title={t('daoSettingsGovernance')}
