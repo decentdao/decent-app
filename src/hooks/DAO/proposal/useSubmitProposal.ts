@@ -59,7 +59,9 @@ interface ISubmitAzoriusProposal extends ISubmitProposal {
   votingStrategyAddress: Address;
 }
 
-export default function useSubmitProposal() {
+export default function useSubmitProposal({
+  isParentProposal,
+}: { isParentProposal?: boolean } = {}) {
   const { t } = useTranslation(['proposal', 'transaction']);
   const { setPendingProposalLoading } = useGlobalStore();
   const [pendingCreateTx, setPendingCreateTx] = useState(false);
@@ -136,7 +138,9 @@ export default function useSubmitProposal() {
         duration: Infinity,
       });
 
-      setPendingCreateTx(true);
+      if (!isParentProposal) {
+        setPendingCreateTx(true);
+      }
       try {
         const safeTransaction = await buildSafeAPIPost(safeAddress, walletClient, chain.id, {
           to: safeAddress,
@@ -180,7 +184,7 @@ export default function useSubmitProposal() {
         return;
       }
     },
-    [walletClient, chain.id, safeAPI, pendingProposalAdd, addressPrefix, t],
+    [walletClient, chain.id, safeAPI, pendingProposalAdd, isParentProposal, addressPrefix, t],
   );
 
   const submitMultisigProposal = useCallback(
@@ -204,8 +208,9 @@ export default function useSubmitProposal() {
       const toastId = toast.loading(pendingToastMessage, {
         duration: Infinity,
       });
-
-      setPendingCreateTx(true);
+      if (!isParentProposal) {
+        setPendingCreateTx(true);
+      }
       try {
         if (
           proposalData.metaData.title ||
@@ -304,6 +309,7 @@ export default function useSubmitProposal() {
       pendingProposalAdd,
       ipfsClient,
       multiSendCallOnly,
+      isParentProposal,
       addressPrefix,
       t,
     ],
@@ -327,7 +333,9 @@ export default function useSubmitProposal() {
         duration: Infinity,
       });
 
-      setPendingCreateTx(true);
+      if (!isParentProposal) {
+        setPendingCreateTx(true);
+      }
       try {
         const transactions = proposalData.targets.map((target, index) => ({
           to: target,
@@ -378,7 +386,7 @@ export default function useSubmitProposal() {
         setPendingCreateTx(false);
       }
     },
-    [addressPrefix, pendingProposalAdd, publicClient, t, walletClient],
+    [addressPrefix, pendingProposalAdd, isParentProposal, publicClient, t, walletClient],
   );
 
   const submitProposal: SubmitProposalFunction = useCallback(
