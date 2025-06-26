@@ -27,6 +27,7 @@ import { useSafeDecoder } from '../../hooks/utils/useSafeDecoder';
 import { useSafeTransactions } from '../../hooks/utils/useSafeTransactions';
 import { useTimeHelpers } from '../../hooks/utils/useTimeHelpers';
 import { useUpdateTimer } from '../../hooks/utils/useUpdateTimer';
+import { getDaoData } from '../../providers/App/decentAPI';
 import useIPFSClient from '../../providers/App/hooks/useIPFSClient';
 import { useSafeAPI } from '../../providers/App/hooks/useSafeAPI';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
@@ -43,6 +44,7 @@ import {
   GovernanceType,
   ProposalTemplate,
   SnapshotProposal,
+  StakingDaoData,
   VotesTokenData,
   VotingStrategyType,
 } from '../../types';
@@ -53,7 +55,6 @@ import {
 } from '../../utils/azorius';
 import { blocksToSeconds } from '../../utils/contract';
 import { getPaymasterAddress } from '../../utils/gaslessVoting';
-import { getStakingContractAddress } from '../../utils/stakingContractUtils';
 import { SetAzoriusGovernancePayload } from '../slices/governances';
 import { useGlobalStore } from '../store';
 
@@ -989,22 +990,30 @@ export function useGovernanceFetcher() {
   );
 
   const fetchStakingDAOData = useCallback(
-    async (safeAddress: Address) => {
-      if (!publicClient.chain) {
-        return;
+    async (safeAddress: Address): Promise<StakingDaoData | undefined> => {
+      if (!publicClient.chain) return;
+
+      try {
+        const res = await getDaoData(publicClient.chain.id, safeAddress);
+        if (res !== null) {
+          if (res.stakedToken) {
+            return { stakingAddress: res.stakedToken.address };
+          }
+        }
+      } catch (_) {
+        // Fallback: deterministic address + on-chain code check
+        return { stakingAddress: null };
+        // const predictedStakeTokenAddress = getStakingContractAddress({
+        //   safeAddress,
+        //   zodiacModuleProxyFactory,
+        //   stakingContractMastercopy: '0x1234567890123456789012345678901234567890',
+        //   chainId: publicClient.chain.id,
+        // });
+        // const code = await publicClient.getCode({ address: predictedStakeTokenAddress });
+        // return { stakingAddress: code && code !== '0x' ? predictedStakeTokenAddress : null };
       }
-
-      // @todo: `getStakingContractAddress` is WIP (https://linear.app/decent-labs/issue/ENG-1154/implement-getstakingcontractaddress)
-      const stakingAddress = getStakingContractAddress({
-        safeAddress,
-        zodiacModuleProxyFactory,
-        stakingContractMastercopy: '0x1234567890123456789012345678901234567890',
-        chainId: publicClient.chain.id,
-      });
-
-      return { stakingAddress };
     },
-    [publicClient.chain, zodiacModuleProxyFactory],
+    [publicClient],
   );
 
   return {
