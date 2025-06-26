@@ -28,7 +28,7 @@ interface IUseClawBack {
 export default function useClawBack({ childSafeInfo, parentAddress }: IUseClawBack) {
   const { t } = useTranslation(['proposal', 'proposalMetadata']);
   const safeAPI = useSafeAPI();
-  const { submitProposal } = useSubmitProposal();
+  const { submitProposal } = useSubmitProposal({ isParentProposal: true });
   const { getCanUserCreateProposal } = useCanUserCreateProposal();
   const { getTokenBalances } = useBalancesAPI();
 
@@ -59,7 +59,7 @@ export default function useClawBack({ childSafeInfo, parentAddress }: IUseClawBa
             const transactions = childSafeTokenBalance.data
               .filter(tokenBalance => !tokenBalance.possibleSpam)
               .map(asset => {
-                if (!asset.nativeToken) {
+                if (asset.nativeToken) {
                   // We're operating with native coin e.g. ETH
                   const fractalModuleCalldata = encodeFunctionData({
                     abi: abis.FractalModule,
