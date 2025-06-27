@@ -334,6 +334,7 @@ export function SafeSettingsModal({
             {t('refillPaymasterAction', {
               amount: formattedRefillAmount,
               symbol: nativeCurrency.symbol,
+              ns: 'gaslessVoting',
             })}
           </Text>
         ),
@@ -1242,6 +1243,14 @@ export function SafeSettingsModal({
               ...errors.paymasterGasTank,
               deposit: undefined,
             };
+          }
+
+          // dynamically check if all fields in paymasterGasTank are undefined before clearing the object
+          if (
+            errors.paymasterGasTank &&
+            Object.values(errors.paymasterGasTank).every(field => field === undefined)
+          ) {
+            errors.paymasterGasTank = undefined;
           }
         } else {
           errors.paymasterGasTank = undefined;
