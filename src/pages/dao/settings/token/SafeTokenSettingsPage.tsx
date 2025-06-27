@@ -1,4 +1,4 @@
-import { Box, Button, Flex, Show, Text } from '@chakra-ui/react';
+import { Box, Button, Flex, Show, Switch, Text } from '@chakra-ui/react';
 import { useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
@@ -38,7 +38,11 @@ export function SafeTokenSettingsPage() {
         />
       </Show>
       <SettingsContentBox>
-        <Box width="100%">
+        <Flex
+          gap={6}
+          direction="column"
+          width="100%"
+        >
           <Text
             color="color-white"
             textStyle="text-lg-regular"
@@ -49,7 +53,6 @@ export function SafeTokenSettingsPage() {
             <Flex
               justifyContent="space-between"
               flexWrap={{ base: 'wrap', md: 'nowrap' }}
-              mt={4}
               borderWidth="0.06rem"
               borderColor="color-neutral-900"
               borderRadius="0.75rem"
@@ -144,7 +147,43 @@ export function SafeTokenSettingsPage() {
               </Button>
             </Flex>
           )}
-        </Box>
+
+          <Flex
+            gap={4}
+            direction="column"
+          >
+            <Text
+              color="color-white"
+              textStyle="text-lg-regular"
+            >
+              {t('governanceTokenManagementTitle')}
+            </Text>
+
+            <Flex
+              gap={2}
+              align="center"
+            >
+              <Switch
+                variant="secondary"
+                size="md"
+              />
+              <Flex direction="column">
+                <Text
+                  color="color-layout-foreground"
+                  textStyle="text-sm-medium"
+                >
+                  {t('governanceTokenTransferableLabel')}
+                </Text>
+                <Text
+                  color="color-secondary-300"
+                  textStyle="text-sm-regular"
+                >
+                  {t('governanceTokenTransferableOffSubLabel')}
+                </Text>
+              </Flex>
+            </Flex>
+          </Flex>
+        </Flex>
       </SettingsContentBox>
     </>
   );
