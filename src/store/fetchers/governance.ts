@@ -27,7 +27,7 @@ import { useSafeDecoder } from '../../hooks/utils/useSafeDecoder';
 import { useSafeTransactions } from '../../hooks/utils/useSafeTransactions';
 import { useTimeHelpers } from '../../hooks/utils/useTimeHelpers';
 import { useUpdateTimer } from '../../hooks/utils/useUpdateTimer';
-import { getDaoData } from '../../providers/App/decentAPI';
+import { getDaoData, getDaoRevenueSharingData } from '../../providers/App/decentAPI';
 import useIPFSClient from '../../providers/App/hooks/useIPFSClient';
 import { useSafeAPI } from '../../providers/App/hooks/useSafeAPI';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
@@ -43,6 +43,7 @@ import {
   FractalVotingStrategy,
   GovernanceType,
   ProposalTemplate,
+  RevenueSharingDaoData,
   SnapshotProposal,
   StakingDaoData,
   VotesTokenData,
@@ -1016,6 +1017,23 @@ export function useGovernanceFetcher() {
     [publicClient],
   );
 
+  const fetchDAORevSplits = useCallback(
+    async (safeAddress: Address): Promise<RevenueSharingDaoData | undefined> => {
+      if (!publicClient.chain) return;
+
+      try {
+        const res = await getDaoRevenueSharingData(publicClient.chain.id, safeAddress);
+
+        if (res !== null) {
+          return { revShareWallets: res.revShareWallets };
+        }
+      } catch (_) {
+        return;
+      }
+    },
+    [publicClient],
+  );
+
   return {
     fetchDAOGovernance,
     fetchDAOProposalTemplates,
@@ -1025,5 +1043,6 @@ export function useGovernanceFetcher() {
     fetchGaslessVotingDAOData,
     fetchMultisigERC20Token,
     fetchStakingDAOData,
+    fetchDAORevSplits,
   };
 }

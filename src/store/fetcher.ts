@@ -54,6 +54,7 @@ export const useDAOStoreFetcher = ({
     setAllProposalsLoaded,
     setVotesTokenAddress,
     setStakingData,
+    setRevenueSharingData,
   } = useGlobalStore();
   const { chain, getConfigByChainId } = useNetworkConfigStore();
 
@@ -66,6 +67,7 @@ export const useDAOStoreFetcher = ({
     fetchGaslessVotingDAOData,
     fetchMultisigERC20Token,
     fetchStakingDAOData,
+    fetchDAORevSplits,
   } = useGovernanceFetcher();
   const { fetchDAOGuard } = useGuardFetcher();
   const { fetchKeyValuePairsData } = useKeyValuePairsFetcher();
@@ -165,6 +167,11 @@ export const useDAOStoreFetcher = ({
           setStakingData(daoKey, stakingData);
         }
 
+        const revenueSharingData = await fetchDAORevSplits(safeAddress);
+        if (revenueSharingData) {
+          setRevenueSharingData(daoKey, revenueSharingData);
+        }
+
         fetchDAOGuard({
           guardAddress: getAddress(safe.guard),
           _azoriusModule: modules.find(module => module.moduleType === FractalModuleType.AZORIUS),
@@ -222,6 +229,8 @@ export const useDAOStoreFetcher = ({
     setERC20Token,
     fetchStakingDAOData,
     setStakingData,
+    fetchDAORevSplits,
+    setRevenueSharingData,
   ]);
 
   useEffect(() => {

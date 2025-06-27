@@ -19,6 +19,7 @@ import {
   ProposalTemplate,
   ProposalVote,
   ProposalVotesSummary,
+  RevenueSharingDaoData,
   SnapshotProposal,
   StakingDaoData,
   VotesTokenData,
@@ -93,6 +94,7 @@ export type GovernancesSlice = {
   setVotesTokenAddress: (daoKey: DAOKey, votesTokenAddress: Address) => void;
   setERC20Token: (daoKey: DAOKey, erc20Token: ERC20TokenData | undefined) => void;
   setStakingData: (daoKey: DAOKey, stakingData: StakingDaoData) => void;
+  setRevenueSharingData: (daoKey: DAOKey, revenueSharingData: RevenueSharingDaoData) => void;
 };
 
 export const EMPTY_GOVERNANCE: FractalGovernance & FractalGovernanceContracts = {
@@ -107,6 +109,7 @@ export const EMPTY_GOVERNANCE: FractalGovernance & FractalGovernanceContracts = 
   paymasterAddress: null,
   erc20Token: undefined,
   stakingAddress: null,
+  revShareWallets: [],
 };
 
 const filterPendingTxHashes = (
@@ -446,6 +449,22 @@ export const createGovernancesSlice: StateCreator<
       },
       false,
       'setStakingData',
+    );
+  },
+  setRevenueSharingData: (daoKey, revenueSharingData) => {
+    set(
+      state => {
+        if (!state.governances[daoKey]) {
+          state.governances[daoKey] = {
+            ...EMPTY_GOVERNANCE,
+            revShareWallets: revenueSharingData.revShareWallets,
+          };
+        } else {
+          state.governances[daoKey].revShareWallets = revenueSharingData.revShareWallets;
+        }
+      },
+      false,
+      'setRevenueSharingData',
     );
   },
   getGovernance: daoKey => {

@@ -18,4 +18,17 @@ export interface StakingDaoData {
   stakingAddress: Address | null;
 }
 
-export type DAOOwnedEntities = GaslessVotingDaoData & StakingDaoData;
+export interface RevSplitWallet {
+  address: Address;
+  name?: string;
+  splits: {
+    address: Address;
+    percentage: number;
+  }[];
+}
+
+export interface RevenueSharingDaoData {
+  revShareWallets: RevSplitWallet[];
+}
+
+export type DAOOwnedEntities = GaslessVotingDaoData & StakingDaoData & RevenueSharingDaoData;
