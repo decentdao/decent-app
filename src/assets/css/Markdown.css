@@ -166,26 +166,32 @@
 
 .toastui-editor-contents h1 {
   font-size: 1.5em;
+  border-bottom: none !important;
 }
 
 .toastui-editor-contents h2 {
   font-size: 1.25em;
+  border-bottom: none !important;
 }
 
 .toastui-editor-contents h3 {
   font-size: 1em;
+  border-bottom: none !important;
 }
 
 .toastui-editor-contents h4 {
   font-size: 0.875em;
+  border-bottom: none !important;
 }
 
 .toastui-editor-contents h5 {
   font-size: 0.85em;
+  border-bottom: none !important;
 }
 
 .toastui-editor-contents h6 {
   font-size: 0.8em;
+  border-bottom: none !important;
 }
 
 .toastui-editor-contents ul,
