@@ -89,6 +89,8 @@ export type SafeSettingsEdits = {
   };
   token?: {
     transferable?: boolean;
+    addressesToUnwhitelist?: string[];
+    addressesToWhitelist?: string[];
   };
 };
 

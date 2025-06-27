@@ -1,10 +1,22 @@
-import { Button, Flex, Show, Switch, Text } from '@chakra-ui/react';
+import {
+  Box,
+  Button,
+  Flex,
+  Grid,
+  GridItem,
+  IconButton,
+  Show,
+  Switch,
+  Text,
+} from '@chakra-ui/react';
+import { TrashSimple } from '@phosphor-icons/react';
 import { useFormikContext } from 'formik';
 import { useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { zeroAddress } from 'viem';
 import { SettingsContentBox } from '../../../../components/SafeSettings/SettingsContentBox';
+import { AddressInput } from '../../../../components/ui/forms/EthAddressInput';
 import { DisplayAddress } from '../../../../components/ui/links/DisplayAddress';
 import { ModalContext } from '../../../../components/ui/modals/ModalProvider';
 import { SafeSettingsEdits } from '../../../../components/ui/modals/SafeSettingsModal';
@@ -16,6 +28,50 @@ import useLockedToken from '../../../../hooks/DAO/useLockedToken';
 import { useDAOStore } from '../../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../../providers/NetworkConfig/useNetworkConfigStore';
 import { formatCoin } from '../../../../utils';
+
+function WhitelistedAddress({ address }: { address: string }) {
+  const { values, setFieldValue } = useFormikContext<SafeSettingsEdits>();
+
+  const addressesToUnwhitelist = values.token?.addressesToUnwhitelist || [];
+  const willBeRemoved = addressesToUnwhitelist.includes(address);
+
+  return (
+    <Grid
+      templateColumns="repeat(2, 1fr)"
+      gap={4}
+    >
+      <GridItem p={3}>
+        <AddressInput
+          value={address}
+          isDisabled={true}
+          textDecoration={willBeRemoved ? 'line-through' : 'none'}
+          marginTop="-0.25rem"
+        />
+      </GridItem>
+      <GridItem
+        justifyItems="flex-end"
+        p={3}
+      >
+        <IconButton
+          aria-label="delete"
+          icon={
+            <TrashSimple
+              width={16}
+              height={16}
+            />
+          }
+          disabled={willBeRemoved}
+          variant="ghost"
+          size="sm"
+          color="color-base-error"
+          onClick={() => {
+            setFieldValue('token.addressesToUnwhitelist', [...addressesToUnwhitelist, address]);
+          }}
+        />
+      </GridItem>
+    </Grid>
+  );
+}
 
 export function SafeTokenSettingsPage() {
   const navigate = useNavigate();
@@ -38,6 +94,9 @@ export function SafeTokenSettingsPage() {
   const isTransferableInValues = values.token?.transferable;
   const isTransferable =
     isTransferableInValues === undefined ? !tokenState.locked : isTransferableInValues;
+
+  // @fixme for test only
+  const whitelistedAddresses = ['0xd04AeC4Cb9B931630313E0C45cb2949A18A777F7'];
 
   return (
     <>
@@ -206,6 +265,40 @@ export function SafeTokenSettingsPage() {
                 </Text>
               </Flex>
             </Flex>
+          </Flex>
+
+          <Flex
+            gap={2}
+            direction="column"
+          >
+            <Flex justify="space-between">
+              <Text
+                color="color-content-popover-foreground"
+                textStyle="text-sm-regular"
+              >
+                Allow List
+              </Text>
+
+              <Flex>
+                <Button
+                  variant="secondary"
+                  size="md"
+                  px={4}
+                  onClick={() => {}}
+                >
+                  Add Wallets
+                </Button>
+              </Flex>
+            </Flex>
+
+            <Box>
+              {whitelistedAddresses.map(address => (
+                <WhitelistedAddress
+                  key={address}
+                  address={address}
+                />
+              ))}
+            </Box>
           </Flex>
         </Flex>
       </SettingsContentBox>
