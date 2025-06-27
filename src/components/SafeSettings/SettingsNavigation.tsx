@@ -316,7 +316,7 @@ export function SettingsNavigation({
                 onSettingsNavigationClick(<SafeTokenSettingsPage />);
                 setCurrentItem('token');
               }}
-              hasEdits={false}
+              hasEdits={values.token !== undefined}
             />
           )}
           {isRevShareEnabled && (

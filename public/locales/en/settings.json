@@ -11,7 +11,7 @@
   "governanceTokenManagementTitle": "Token Management",
   "governanceTokenTransferableLabel": "Transferable",
   "governanceTokenTransferableOnSubLabel": "Token transfers are ON.",
-  "governanceTokenTransferableOffSubLabel": "Token transfers are Off.",
+  "governanceTokenTransferableOffSubLabel": "Token transfers are OFF.",
   "noModulesAttached": "No modules attached",
   "noGuardAttached": "No guard attached",
   "modulesTitle": "Modules",

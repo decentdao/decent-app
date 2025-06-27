@@ -1,4 +1,5 @@
-import { Box, Button, Flex, Show, Switch, Text } from '@chakra-ui/react';
+import { Button, Flex, Show, Switch, Text } from '@chakra-ui/react';
+import { useFormikContext } from 'formik';
 import { useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
@@ -6,10 +7,12 @@ import { zeroAddress } from 'viem';
 import { SettingsContentBox } from '../../../../components/SafeSettings/SettingsContentBox';
 import { DisplayAddress } from '../../../../components/ui/links/DisplayAddress';
 import { ModalContext } from '../../../../components/ui/modals/ModalProvider';
+import { SafeSettingsEdits } from '../../../../components/ui/modals/SafeSettingsModal';
 import NestedPageHeader from '../../../../components/ui/page/Header/NestedPageHeader';
 import Divider from '../../../../components/ui/utils/Divider';
 import { DAO_ROUTES } from '../../../../constants/routes';
 import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
+import useLockedToken from '../../../../hooks/DAO/useLockedToken';
 import { useDAOStore } from '../../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../../providers/NetworkConfig/useNetworkConfigStore';
 import { formatCoin } from '../../../../utils';
@@ -23,8 +26,18 @@ export function SafeTokenSettingsPage() {
     node: { safe },
     governance: { erc20Token },
   } = useDAOStore({ daoKey });
+  const { tokenState } = useLockedToken(
+    erc20Token?.address !== undefined && safe?.address !== undefined
+      ? { token: erc20Token?.address, account: safe?.address }
+      : undefined,
+  );
 
   const { popModal } = useContext(ModalContext);
+  const { values, setFieldValue } = useFormikContext<SafeSettingsEdits>();
+
+  const isTransferableInValues = values.token?.transferable;
+  const isTransferable =
+    isTransferableInValues === undefined ? !tokenState.locked : isTransferableInValues;
 
   return (
     <>
@@ -166,6 +179,15 @@ export function SafeTokenSettingsPage() {
               <Switch
                 variant="secondary"
                 size="md"
+                isChecked={isTransferable}
+                onChange={e => {
+                  const newCheckedState = e.target.checked;
+                  if (newCheckedState === tokenState.locked) {
+                    setFieldValue('token.transferable', newCheckedState);
+                  } else {
+                    setFieldValue('token', undefined);
+                  }
+                }}
               />
               <Flex direction="column">
                 <Text
@@ -178,7 +200,9 @@ export function SafeTokenSettingsPage() {
                   color="color-secondary-300"
                   textStyle="text-sm-regular"
                 >
-                  {t('governanceTokenTransferableOffSubLabel')}
+                  {isTransferable
+                    ? t('governanceTokenTransferableOnSubLabel')
+                    : t('governanceTokenTransferableOffSubLabel')}
                 </Text>
               </Flex>
             </Flex>
