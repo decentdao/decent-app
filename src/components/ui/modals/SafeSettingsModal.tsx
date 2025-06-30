@@ -87,6 +87,9 @@ export type SafeSettingsEdits = {
   permissions?: {
     proposerThreshold?: BigIntValuePair;
   };
+  token?: {
+    transferable?: boolean;
+  };
 };
 
 type MultisigEditGovernanceFormikErrors = {
@@ -1054,13 +1057,56 @@ export function SafeSettingsModal({
     };
   };
 
+  const handleEditToken = async (updatedValues: SafeSettingsEdits) => {
+    if (!safe?.address) {
+      throw new Error('Safe address is not set');
+    }
+
+    if (!updatedValues.token) {
+      throw new Error('Token are not set');
+    }
+
+    if (!governance.erc20Token) {
+      throw new Error('ERC20Token are not set');
+    }
+
+    const changeTitles = [];
+
+    const transactions: CreateProposalTransaction[] = [];
+
+    if (updatedValues.token.transferable) {
+      changeTitles.push(t('updateTokenTransferable', { ns: 'proposalMetadata' }));
+    }
+
+    const title = changeTitles.join(`; `);
+
+    transactions.push({
+      targetAddress: governance.erc20Token.address,
+      ethValue,
+      functionName: 'lock',
+      parameters: [
+        {
+          signature: 'bool',
+          value: (!updatedValues.token.transferable).toString(),
+        },
+      ],
+    });
+
+    const action: CreateProposalActionData = {
+      actionType: ProposalActionType.EDIT,
+      transactions,
+    };
+
+    return { action, title };
+  };
+
   const submitAllSettingsEditsProposal = async (values: SafeSettingsEdits) => {
     if (!safe?.address) {
       throw new Error('Safe address is not set');
     }
 
     resetActions();
-    const { general, multisig, azorius, permissions, paymasterGasTank } = values;
+    const { general, multisig, azorius, permissions, paymasterGasTank, token } = values;
     if (general) {
       const { action, title } = await handleEditGeneral(values);
 
@@ -1105,6 +1151,16 @@ export function SafeSettingsModal({
       const action = await handleEditPermissions(values);
 
       addAction(action);
+    }
+
+    if (token) {
+      const { action, title } = await handleEditToken(values);
+
+      addAction({
+        actionType: action.actionType,
+        transactions: action.transactions,
+        content: <Text>{title}</Text>,
+      });
     }
 
     navigate(DAO_ROUTES.proposalWithActionsNew.relative(addressPrefix, safe.address));
