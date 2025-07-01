@@ -133,7 +133,7 @@ function DesktopPicker({
           disabled={disabled}
         />
       </MenuButton>
-      <MenuList zIndex={2}>
+      <MenuList zIndex={3}>
         <MenuItem>
           <CalendarContainer
             isOpen={isOpen}
