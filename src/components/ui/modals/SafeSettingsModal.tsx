@@ -1075,35 +1075,81 @@ export function SafeSettingsModal({
       throw new Error('Safe address is not set');
     }
 
-    if (!updatedValues.token) {
+    if (!isNonEmpty(updatedValues.token)) {
       throw new Error('Token are not set');
     }
+    const tokenValues = updatedValues.token!;
 
     if (!governance.erc20Token) {
       throw new Error('ERC20Token are not set');
     }
+    const token = governance.erc20Token;
 
     const changeTitles = [];
-
     const transactions: CreateProposalTransaction[] = [];
 
-    if (updatedValues.token.transferable) {
+    if (tokenValues.transferable !== undefined) {
       changeTitles.push(t('updateTokenTransferable', { ns: 'proposalMetadata' }));
+      transactions.push({
+        targetAddress: token.address,
+        ethValue,
+        functionName: 'lock',
+        parameters: [
+          {
+            signature: 'bool',
+            value: (!tokenValues.transferable).toString(),
+          },
+        ],
+      });
+    }
+    if (
+      tokenValues.addressesToWhitelist !== undefined &&
+      tokenValues.addressesToWhitelist.length > 0
+    ) {
+      tokenValues.addressesToWhitelist.map(addr => {
+        transactions.push({
+          targetAddress: token.address,
+          ethValue,
+          functionName: 'whitelist',
+          parameters: [
+            {
+              signature: 'address',
+              value: addr,
+            },
+            {
+              signature: 'bool',
+              value: true.toString(),
+            },
+          ],
+        });
+      });
+      changeTitles.push(t('addTokenWhitelist', { ns: 'proposalMetadata' }));
+    }
+    if (
+      tokenValues.addressesToUnwhitelist !== undefined &&
+      tokenValues.addressesToUnwhitelist.length > 0
+    ) {
+      tokenValues.addressesToUnwhitelist.map(addr => {
+        transactions.push({
+          targetAddress: token.address,
+          ethValue,
+          functionName: 'whitelist',
+          parameters: [
+            {
+              signature: 'address',
+              value: addr,
+            },
+            {
+              signature: 'bool',
+              value: false.toString(),
+            },
+          ],
+        });
+      });
+      changeTitles.push(t('removeTokenWhitelist', { ns: 'proposalMetadata' }));
     }
 
     const title = changeTitles.join(`; `);
-
-    transactions.push({
-      targetAddress: governance.erc20Token.address,
-      ethValue,
-      functionName: 'lock',
-      parameters: [
-        {
-          signature: 'bool',
-          value: (!updatedValues.token.transferable).toString(),
-        },
-      ],
-    });
 
     const action: CreateProposalActionData = {
       actionType: ProposalActionType.EDIT,

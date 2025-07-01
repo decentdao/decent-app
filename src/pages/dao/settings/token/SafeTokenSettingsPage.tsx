@@ -167,11 +167,7 @@ export function SafeTokenSettingsPage() {
   const isTransferable =
     isTransferableInValues === undefined ? !tokenState.locked : isTransferableInValues;
 
-  // @fixme for test only
-  const whitelistedAddresses = [
-    '0xd04AeC4Cb9B931630313E0C45cb2949A18A777F7',
-    '0x46CaB93C310e2dE52182fb35207d5E31d2D391f5',
-  ];
+  const whitelistedAddresses = erc20Token?.whitelistedAddresses || [];
 
   return (
     <>
