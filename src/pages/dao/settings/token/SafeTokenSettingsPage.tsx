@@ -9,8 +9,8 @@ import {
   Switch,
   Text,
 } from '@chakra-ui/react';
-import { TrashSimple } from '@phosphor-icons/react';
-import { useFormikContext } from 'formik';
+import { ClockClockwise, TrashSimple } from '@phosphor-icons/react';
+import { Field, FieldArray, FieldAttributes, useFormikContext } from 'formik';
 import { useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
@@ -19,7 +19,10 @@ import { SettingsContentBox } from '../../../../components/SafeSettings/Settings
 import { AddressInput } from '../../../../components/ui/forms/EthAddressInput';
 import { DisplayAddress } from '../../../../components/ui/links/DisplayAddress';
 import { ModalContext } from '../../../../components/ui/modals/ModalProvider';
-import { SafeSettingsEdits } from '../../../../components/ui/modals/SafeSettingsModal';
+import {
+  SafeSettingsEdits,
+  SafeSettingsFormikErrors,
+} from '../../../../components/ui/modals/SafeSettingsModal';
 import NestedPageHeader from '../../../../components/ui/page/Header/NestedPageHeader';
 import Divider from '../../../../components/ui/utils/Divider';
 import { DAO_ROUTES } from '../../../../constants/routes';
@@ -52,6 +55,78 @@ function WhitelistedAddress({ address }: { address: string }) {
         justifyItems="flex-end"
         p={3}
       >
+        {willBeRemoved ? (
+          <IconButton
+            aria-label="addBack"
+            icon={
+              <ClockClockwise
+                width={16}
+                height={16}
+              />
+            }
+            variant="ghost"
+            size="sm"
+            color="color-base-success"
+            onClick={() => {
+              const updatedAddresses = [...addressesToUnwhitelist];
+              updatedAddresses.splice(updatedAddresses.indexOf(address), 1);
+              if (updatedAddresses.length === 0) {
+                setFieldValue('token.addressesToUnwhitelist', undefined);
+              } else {
+                setFieldValue('token.addressesToUnwhitelist', updatedAddresses);
+              }
+            }}
+          />
+        ) : (
+          <IconButton
+            aria-label="delete"
+            icon={
+              <TrashSimple
+                width={16}
+                height={16}
+              />
+            }
+            variant="ghost"
+            size="sm"
+            color="color-base-error"
+            onClick={() => {
+              setFieldValue('token.addressesToUnwhitelist', [...addressesToUnwhitelist, address]);
+            }}
+          />
+        )}
+      </GridItem>
+    </Grid>
+  );
+}
+
+function NewWhitelistAddress({ name, onRemove }: { name: string; onRemove: () => void }) {
+  const { errors } = useFormikContext<SafeSettingsEdits>();
+  const tokenErrors = (errors as SafeSettingsFormikErrors | undefined)?.token;
+
+  return (
+    <Grid
+      templateColumns="repeat(2, 1fr)"
+      gap={4}
+    >
+      <GridItem p={3}>
+        <Field name={name}>
+          {({ field }: FieldAttributes<any>) => (
+            <AddressInput
+              {...field}
+              isInvalid={
+                !!field.value &&
+                tokenErrors?.addressesToWhitelist !== undefined &&
+                tokenErrors?.addressesToWhitelist.findIndex(a => `token.${a.key}` === name) !== -1
+              }
+              marginTop="-0.25rem"
+            />
+          )}
+        </Field>
+      </GridItem>
+      <GridItem
+        justifyItems="flex-end"
+        p={3}
+      >
         <IconButton
           aria-label="delete"
           icon={
@@ -60,13 +135,10 @@ function WhitelistedAddress({ address }: { address: string }) {
               height={16}
             />
           }
-          disabled={willBeRemoved}
           variant="ghost"
           size="sm"
           color="color-base-error"
-          onClick={() => {
-            setFieldValue('token.addressesToUnwhitelist', [...addressesToUnwhitelist, address]);
-          }}
+          onClick={() => onRemove()}
         />
       </GridItem>
     </Grid>
@@ -96,7 +168,10 @@ export function SafeTokenSettingsPage() {
     isTransferableInValues === undefined ? !tokenState.locked : isTransferableInValues;
 
   // @fixme for test only
-  const whitelistedAddresses = ['0xd04AeC4Cb9B931630313E0C45cb2949A18A777F7'];
+  const whitelistedAddresses = [
+    '0xd04AeC4Cb9B931630313E0C45cb2949A18A777F7',
+    '0x46CaB93C310e2dE52182fb35207d5E31d2D391f5',
+  ];
 
   return (
     <>
@@ -241,10 +316,10 @@ export function SafeTokenSettingsPage() {
                 isChecked={isTransferable}
                 onChange={e => {
                   const newCheckedState = e.target.checked;
-                  if (newCheckedState === tokenState.locked) {
-                    setFieldValue('token.transferable', newCheckedState);
+                  if (newCheckedState !== tokenState.locked) {
+                    setFieldValue('token.transferable', undefined);
                   } else {
-                    setFieldValue('token', undefined);
+                    setFieldValue('token.transferable', newCheckedState);
                   }
                 }}
               />
@@ -267,39 +342,59 @@ export function SafeTokenSettingsPage() {
             </Flex>
           </Flex>
 
-          <Flex
-            gap={2}
-            direction="column"
-          >
-            <Flex justify="space-between">
-              <Text
-                color="color-content-popover-foreground"
-                textStyle="text-sm-regular"
-              >
-                Allow List
-              </Text>
-
-              <Flex>
-                <Button
-                  variant="secondary"
-                  size="md"
-                  px={4}
-                  onClick={() => {}}
+          <FieldArray name="token.addressesToWhitelist">
+            {({ remove, push }) => {
+              return (
+                <Flex
+                  gap={2}
+                  direction="column"
                 >
-                  Add Wallets
-                </Button>
-              </Flex>
-            </Flex>
+                  <Flex justify="space-between">
+                    <Text
+                      color="color-content-popover-foreground"
+                      textStyle="text-sm-regular"
+                    >
+                      Allow List
+                    </Text>
 
-            <Box>
-              {whitelistedAddresses.map(address => (
-                <WhitelistedAddress
-                  key={address}
-                  address={address}
-                />
-              ))}
-            </Box>
-          </Flex>
+                    <Flex>
+                      <Button
+                        variant="secondary"
+                        size="md"
+                        px={4}
+                        onClick={() => push('')}
+                      >
+                        Add Wallets
+                      </Button>
+                    </Flex>
+                  </Flex>
+
+                  <Box>
+                    {whitelistedAddresses.map(address => (
+                      <WhitelistedAddress
+                        key={address}
+                        address={address}
+                      />
+                    ))}
+
+                    {values.token?.addressesToWhitelist?.map((address, index) => (
+                      <NewWhitelistAddress
+                        key={`token.addressesToWhitelist.${index}`}
+                        name={`token.addressesToWhitelist.${index}`}
+                        onRemove={() => {
+                          if (values.token?.addressesToWhitelist?.length === 1) {
+                            setFieldValue('token.addressesToWhitelist', undefined);
+                          } else {
+                            remove(index);
+                          }
+                        }}
+                      />
+                    ))}
+                  </Box>
+                </Flex>
+              );
+            }}
+          </FieldArray>
         </Flex>
       </SettingsContentBox>
     </>

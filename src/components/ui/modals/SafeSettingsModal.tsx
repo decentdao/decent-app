@@ -56,6 +56,7 @@ import {
 } from '../../../utils/gaslessVoting';
 import { formatCoin } from '../../../utils/numberFormats';
 import { validateENSName } from '../../../utils/url';
+import { isNonEmpty } from '../../../utils/valueCheck';
 import { SafePermissionsStrategyAction } from '../../SafeSettings/SafePermissionsStrategyAction';
 import { SettingsNavigation } from '../../SafeSettings/SettingsNavigation';
 import { NewSignerItem } from '../../SafeSettings/Signers/SignersContainer';
@@ -113,11 +114,16 @@ type RevenueSharingEditFormikErrors = {
   revenueSharing?: string; // @TODO placeholder
 };
 
+type TokenEditFormikErrors = {
+  addressesToWhitelist?: { key: string; error: string }[];
+};
+
 export type SafeSettingsFormikErrors = {
   multisig?: MultisigEditGovernanceFormikErrors;
   general?: GeneralEditFormikErrors;
   paymasterGasTank?: PaymasterGasTankEditFormikErrors;
   revenueSharing?: RevenueSharingEditFormikErrors;
+  token?: TokenEditFormikErrors;
 };
 
 export function SafeSettingsModal({
@@ -174,7 +180,9 @@ export function SafeSettingsModal({
     const { values } = useFormikContext<SafeSettingsEdits>();
     const { errors } = useFormikContext<SafeSettingsFormikErrors>();
 
-    const hasEdits = Object.keys(values).some(key => values[key as keyof SafeSettingsEdits]);
+    const hasEdits = Object.keys(values).some(key =>
+      isNonEmpty(values[key as keyof SafeSettingsEdits]),
+    );
     const hasErrors =
       Object.keys(errors.general ?? {}).some(
         key => (errors.general as GeneralEditFormikErrors)[key as keyof GeneralEditFormikErrors],
@@ -199,6 +207,9 @@ export function SafeSettingsModal({
           (errors.revenueSharing as RevenueSharingEditFormikErrors)[
             key as keyof RevenueSharingEditFormikErrors
           ],
+      ) ||
+      Object.keys(errors.token ?? {}).some(
+        key => (errors.token as TokenEditFormikErrors)[key as keyof TokenEditFormikErrors],
       );
 
     return (
@@ -1217,6 +1228,40 @@ export function SafeSettingsModal({
           }
         } else {
           errors.multisig = undefined;
+        }
+
+        if (values.token) {
+          const { addressesToWhitelist } = values.token;
+          const errorsToken = errors.token ?? {};
+
+          if (addressesToWhitelist && addressesToWhitelist.length > 0) {
+            const whitelistErrors = await Promise.all(
+              addressesToWhitelist.map(async (addressToWhitelist, index) => {
+                if (!addressToWhitelist) {
+                  return {
+                    key: `addressesToWhitelist.${index}`,
+                    error: t('addressRequired', { ns: 'common' }),
+                  };
+                }
+
+                const validation = await validateAddress({ address: addressToWhitelist });
+                if (!validation.validation.isValidAddress) {
+                  return {
+                    key: `addressesToWhitelist.${index}`,
+                    error: t('errorInvalidAddress', { ns: 'common' }),
+                  };
+                }
+                return null;
+              }),
+            );
+
+            if (whitelistErrors.some(error => error !== null)) {
+              errorsToken.addressesToWhitelist = whitelistErrors.filter(error => error !== null);
+              errors.token = errorsToken;
+            }
+          }
+        } else {
+          errors.token = undefined;
         }
 
         if (values.general) {
