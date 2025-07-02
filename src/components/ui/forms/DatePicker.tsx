@@ -29,10 +29,12 @@ interface DatePickerProps {
 function CalendarView({
   minDate,
   maxDate,
+  selectedDate,
   handleDateChange,
 }: {
   minDate?: Date;
   maxDate?: Date;
+  selectedDate?: Date;
   handleDateChange: (date: DateOrNull | [DateOrNull, DateOrNull]) => void;
 }) {
   return (
@@ -42,6 +44,8 @@ function CalendarView({
       formatShortWeekday={(_, date) => date.toString().slice(0, 2)}
       prevLabel={<Icon as={CaretLeft} />}
       nextLabel={<Icon as={CaretRight} />}
+      activeStartDate={minDate}
+      value={selectedDate}
       // remove double-skip buttons for cleaner UI
       next2Label={null}
       prev2Label={null}
@@ -57,12 +61,14 @@ function CalendarContainer({
   maxBoxW,
   minDate,
   maxDate,
+  selectedDate,
   handleDateChange,
 }: {
   isOpen: boolean;
   maxBoxW: string | undefined;
   minDate?: Date;
   maxDate?: Date;
+  selectedDate?: Date;
   handleDateChange: (date: DateOrNull | [DateOrNull, DateOrNull]) => void;
 }) {
   return (
@@ -77,6 +83,7 @@ function CalendarContainer({
         <CalendarView
           minDate={minDate}
           maxDate={maxDate}
+          selectedDate={selectedDate}
           handleDateChange={handleDateChange}
         />
       )}
@@ -134,6 +141,7 @@ function DesktopPicker({
             maxBoxW={maxBoxW}
             minDate={minDate}
             maxDate={maxDate}
+            selectedDate={selectedDate}
             handleDateChange={handleDateChange}
           />
         </MenuItem>
