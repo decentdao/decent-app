@@ -1,0 +1,67 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [develop]
+
+jobs:
+  deploy:
+    name: Deploy to Cloudflare Pages
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Add your build steps here if needed, e.g. npm ci, npm run build, etc.
+
+      # TODO: Gotta actually fill these in...
+      - name: Deploy to Cloudflare Pages
+        id: deploy
+        uses: cloudflare/pages-action@v1
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          projectName: ${{ secrets.CLOUDFLARE_PROJECT_NAME }}
+          directory: ./dist
+          # ...other options as needed...
+
+    outputs:
+      preview_url: ${{ steps.deploy.outputs.url }}
+
+  e2e-automation:
+    name: E2E Selenium Automation
+    needs: deploy
+    runs-on: ubuntu-latest
+    if: ${{ needs.deploy.outputs.preview_url != '' }}
+    continue-on-error: true
+    steps:
+      - name: Checkout decent-app
+        uses: actions/checkout@v4
+
+      - name: Checkout automation repo
+        uses: actions/checkout@v4
+        with:
+          repository: cbajandas/decent-ui-automation
+          path: decent-ui-automation
+
+      - name: Install dependencies
+        run: |
+          cd decent-ui-automation
+          npm ci
+
+      - name: Run Selenium tests
+        run: |
+          cd decent-ui-automation
+          BASE_URL=${{ needs.deploy.outputs.preview_url }} npm test
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        with:
+          name: selenium-test-results
+          path: decent-ui-automation/test-results/
+
+      - name: Comment results on PR
+        if: github.event_name == 'pull_request'
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          path: decent-ui-automation/test-results/test-results-summary.html
