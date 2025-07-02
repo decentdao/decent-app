@@ -291,106 +291,110 @@ export function SafeTokenSettingsPage() {
             </Flex>
           )}
 
-          <Flex
-            gap={4}
-            direction="column"
-          >
-            <Text
-              color="color-white"
-              textStyle="text-lg-regular"
-            >
-              {t('governanceTokenManagementTitle')}
-            </Text>
-
-            <Flex
-              gap={2}
-              align="center"
-            >
-              <Switch
-                variant="secondary"
-                size="md"
-                isChecked={isTransferable}
-                onChange={e => {
-                  const newCheckedState = e.target.checked;
-                  if (newCheckedState !== tokenState.locked) {
-                    setFieldValue('token.transferable', undefined);
-                  } else {
-                    setFieldValue('token.transferable', newCheckedState);
-                  }
-                }}
-              />
-              <Flex direction="column">
+          {erc20Token && (
+            <>
+              <Flex
+                gap={4}
+                direction="column"
+              >
                 <Text
-                  color="color-layout-foreground"
-                  textStyle="text-sm-medium"
+                  color="color-white"
+                  textStyle="text-lg-regular"
                 >
-                  {t('governanceTokenTransferableLabel')}
+                  {t('governanceTokenManagementTitle')}
                 </Text>
-                <Text
-                  color="color-secondary-300"
-                  textStyle="text-sm-regular"
-                >
-                  {isTransferable
-                    ? t('governanceTokenTransferableOnSubLabel')
-                    : t('governanceTokenTransferableOffSubLabel')}
-                </Text>
-              </Flex>
-            </Flex>
-          </Flex>
 
-          <FieldArray name="token.addressesToWhitelist">
-            {({ remove, push }) => {
-              return (
                 <Flex
                   gap={2}
-                  direction="column"
+                  align="center"
                 >
-                  <Flex justify="space-between">
+                  <Switch
+                    variant="secondary"
+                    size="md"
+                    isChecked={isTransferable}
+                    onChange={e => {
+                      const newCheckedState = e.target.checked;
+                      if (newCheckedState !== tokenState.locked) {
+                        setFieldValue('token.transferable', undefined);
+                      } else {
+                        setFieldValue('token.transferable', newCheckedState);
+                      }
+                    }}
+                  />
+                  <Flex direction="column">
                     <Text
-                      color="color-content-popover-foreground"
+                      color="color-layout-foreground"
+                      textStyle="text-sm-medium"
+                    >
+                      {t('governanceTokenTransferableLabel')}
+                    </Text>
+                    <Text
+                      color="color-secondary-300"
                       textStyle="text-sm-regular"
                     >
-                      Allow List
+                      {isTransferable
+                        ? t('governanceTokenTransferableOnSubLabel')
+                        : t('governanceTokenTransferableOffSubLabel')}
                     </Text>
-
-                    <Flex>
-                      <Button
-                        variant="secondary"
-                        size="md"
-                        px={4}
-                        onClick={() => push('')}
-                      >
-                        Add Wallets
-                      </Button>
-                    </Flex>
                   </Flex>
-
-                  <Box>
-                    {whitelistedAddresses.map(address => (
-                      <WhitelistedAddress
-                        key={address}
-                        address={address}
-                      />
-                    ))}
-
-                    {values.token?.addressesToWhitelist?.map((address, index) => (
-                      <NewWhitelistAddress
-                        key={`token.addressesToWhitelist.${index}`}
-                        name={`token.addressesToWhitelist.${index}`}
-                        onRemove={() => {
-                          if (values.token?.addressesToWhitelist?.length === 1) {
-                            setFieldValue('token.addressesToWhitelist', undefined);
-                          } else {
-                            remove(index);
-                          }
-                        }}
-                      />
-                    ))}
-                  </Box>
                 </Flex>
-              );
-            }}
-          </FieldArray>
+              </Flex>
+
+              <FieldArray name="token.addressesToWhitelist">
+                {({ remove, push }) => {
+                  return (
+                    <Flex
+                      gap={2}
+                      direction="column"
+                    >
+                      <Flex justify="space-between">
+                        <Text
+                          color="color-content-popover-foreground"
+                          textStyle="text-sm-regular"
+                        >
+                          Allow List
+                        </Text>
+
+                        <Flex>
+                          <Button
+                            variant="secondary"
+                            size="md"
+                            px={4}
+                            onClick={() => push('')}
+                          >
+                            Add Wallets
+                          </Button>
+                        </Flex>
+                      </Flex>
+
+                      <Box>
+                        {whitelistedAddresses.map(address => (
+                          <WhitelistedAddress
+                            key={address}
+                            address={address}
+                          />
+                        ))}
+
+                        {values.token?.addressesToWhitelist?.map((address, index) => (
+                          <NewWhitelistAddress
+                            key={`token.addressesToWhitelist.${index}`}
+                            name={`token.addressesToWhitelist.${index}`}
+                            onRemove={() => {
+                              if (values.token?.addressesToWhitelist?.length === 1) {
+                                setFieldValue('token.addressesToWhitelist', undefined);
+                              } else {
+                                remove(index);
+                              }
+                            }}
+                          />
+                        ))}
+                      </Box>
+                    </Flex>
+                  );
+                }}
+              </FieldArray>
+            </>
+          )}
         </Flex>
       </SettingsContentBox>
     </>
