@@ -9,6 +9,7 @@ export const initialDaoInfoStore: IDAO & DAOOwnedEntities = {
   gaslessVotingEnabled: false,
   paymasterAddress: null,
   stakingAddress: null,
+  revShareWallets: [],
 };
 
 export interface DaoInfoStore extends IDAO {
