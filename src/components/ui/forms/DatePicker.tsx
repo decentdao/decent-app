@@ -12,7 +12,6 @@ import {
 import { CaretLeft, CaretRight } from '@phosphor-icons/react';
 import { Calendar } from 'react-calendar';
 import '../../../assets/css/Calendar.css';
-import { SEXY_BOX_SHADOW_T_T } from '../../../constants/common';
 import { DatePickerTrigger } from '../../Roles/DatePickerTrigger';
 
 type DateOrNull = Date | null;
@@ -55,14 +54,12 @@ function CalendarView({
 /** Wrapper giving the calendar consistent styling */
 function CalendarContainer({
   isOpen,
-  boxShadow,
   maxBoxW,
   minDate,
   maxDate,
   handleDateChange,
 }: {
   isOpen: boolean;
-  boxShadow: string | undefined;
   maxBoxW: string | undefined;
   minDate?: Date;
   maxDate?: Date;
@@ -73,7 +70,6 @@ function CalendarContainer({
       flexDir="column"
       justifySelf="center"
       borderRadius="0.5rem"
-      boxShadow={boxShadow}
       maxW={maxBoxW}
       pt={{ base: '1.5rem', md: 0 }}
     >
@@ -90,7 +86,6 @@ function CalendarContainer({
 
 function DesktopPicker({
   isOpen,
-  boxShadow,
   maxBoxW,
   minDate,
   maxDate,
@@ -101,7 +96,6 @@ function DesktopPicker({
   selectedDate,
 }: {
   isOpen: boolean;
-  boxShadow: string | undefined;
   maxBoxW: string | undefined;
   minDate?: Date;
   maxDate?: Date;
@@ -137,7 +131,6 @@ function DesktopPicker({
         <MenuItem>
           <CalendarContainer
             isOpen={isOpen}
-            boxShadow={boxShadow}
             maxBoxW={maxBoxW}
             minDate={minDate}
             maxDate={maxDate}
@@ -157,7 +150,6 @@ export function DatePicker({
   disabled = false,
 }: DatePickerProps) {
   const { isOpen, onClose, onOpen } = useDisclosure();
-  const boxShadow = useBreakpointValue({ base: 'none', md: SEXY_BOX_SHADOW_T_T });
   const maxBoxW = useBreakpointValue({ base: '100%', md: '26.875rem' });
 
   const handleDateChange = (value: OnDateChangeValue) => {
@@ -171,7 +163,6 @@ export function DatePicker({
     <>
       <DesktopPicker
         isOpen={isOpen}
-        boxShadow={boxShadow}
         maxBoxW={maxBoxW}
         minDate={minDate}
         maxDate={maxDate}
