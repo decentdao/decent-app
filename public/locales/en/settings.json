@@ -12,6 +12,8 @@
   "governanceTokenTransferableLabel": "Transferable",
   "governanceTokenTransferableOnSubLabel": "Token transfers are ON.",
   "governanceTokenTransferableOffSubLabel": "Token transfers are OFF.",
+  "governanceTokenMaximumTotalSupplyTitle": "Maximum Total Supply",
+  "governanceTokenMaximumTotalSupplySubTitle": "The mint ceiling, or maximum number of tokens that can ever be minted.",
   "noModulesAttached": "No modules attached",
   "noGuardAttached": "No guard attached",
   "modulesTitle": "Modules",
