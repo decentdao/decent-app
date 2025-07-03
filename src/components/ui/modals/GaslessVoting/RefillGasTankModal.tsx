@@ -199,8 +199,13 @@ export function RefillGasTankModal({
                 client: walletClient,
               });
 
+              const value = values.amount.bigintValue;
+              // As this is a direct deposit which the user will immediately sign, and since the modal is closed,
+              // we should reset paymasterGasTank form values so there's no pending edits.
+              setFieldValue('paymasterGasTank.deposit', undefined);
+
               entryPoint.write.depositTo([paymasterAddress], {
-                value: values.amount.bigintValue,
+                value,
               });
             }
 

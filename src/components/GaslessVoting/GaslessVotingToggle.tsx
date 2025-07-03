@@ -1,6 +1,7 @@
 import { Box, Button, Flex, HStack, IconButton, Image, Switch, Text } from '@chakra-ui/react';
 import { TrashSimple } from '@phosphor-icons/react';
 import { useFormikContext } from 'formik';
+import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { isAddress } from 'viem';
 import useFeatureFlag from '../../helpers/environmentFeatureFlags';
@@ -198,7 +199,17 @@ export function GaslessVotingToggleDAOSettings(props: GaslessVotingToggleProps) 
   const gaslessFeatureEnabled = useFeatureFlag('flag_gasless_voting');
   const gaslessStakingEnabled = gaslessFeatureEnabled && bundlerMinimumStake !== undefined;
 
-  const { values } = settingsModalFormikContext;
+  const { values, setFieldValue } = settingsModalFormikContext;
+
+  const paymasterGasTankEdits = values?.paymasterGasTank;
+  useEffect(() => {
+    if (
+      paymasterGasTankEdits?.withdraw === undefined &&
+      paymasterGasTankEdits?.deposit === undefined
+    ) {
+      setFieldValue('paymasterGasTank', undefined);
+    }
+  }, [paymasterGasTankEdits, setFieldValue]);
 
   if (!gaslessFeatureEnabled) return null;
 
@@ -219,8 +230,6 @@ export function GaslessVotingToggleDAOSettings(props: GaslessVotingToggleProps) 
     nativeCurrency.symbol,
     false,
   );
-
-  const paymasterGasTankEdits = values?.paymasterGasTank;
 
   const showWithdrawAndDepositButtons =
     paymasterGasTankEdits?.deposit?.isDirectDeposit ||
