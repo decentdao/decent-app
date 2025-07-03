@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useBetween } from 'use-between';
-import { Address } from 'viem';
+import { Address, getAddress } from 'viem';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
 import { CacheKeys, CacheExpiry, FavoritesCacheValue } from '../../utils/cache/cacheDefaults';
 import { getValue, setValue } from '../../utils/cache/useLocalStorage';
@@ -19,7 +19,8 @@ export const useAccountFavorites = () => {
   const { favoritesList, setFavoritesList } = useBetween(useSharedAccountFavorites);
   const { addressPrefix } = useNetworkConfigStore();
 
-  const toggleFavorite = (address: Address, name: string) => {
+  const toggleFavorite = (_address: Address, name: string) => {
+    const address = getAddress(_address);
     const favorites = getValue({ cacheName: CacheKeys.FAVORITES }) || [];
     let updatedFavorites: FavoritesCacheValue[] = [];
 
@@ -29,7 +30,8 @@ export const useAccountFavorites = () => {
 
     if (favoriteExists) {
       updatedFavorites = favorites.filter(
-        favorite => !(favorite.address === address && favorite.networkPrefix === addressPrefix),
+        favorite =>
+          !(getAddress(favorite.address) === address && favorite.networkPrefix === addressPrefix),
       );
     } else {
       updatedFavorites = favorites.concat([{ networkPrefix: addressPrefix, address, name }]);
@@ -39,9 +41,11 @@ export const useAccountFavorites = () => {
     setFavoritesList(updatedFavorites);
   };
 
-  const isFavorite = (address: Address) => {
+  const isFavorite = (_address: Address) => {
+    const address = getAddress(_address);
     return favoritesList.some(
-      favorite => favorite.address === address && favorite.networkPrefix === addressPrefix,
+      favorite =>
+        getAddress(favorite.address) === address && favorite.networkPrefix === addressPrefix,
     );
   };
 

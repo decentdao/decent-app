@@ -12,7 +12,6 @@ import {
 import { CaretLeft, CaretRight } from '@phosphor-icons/react';
 import { Calendar } from 'react-calendar';
 import '../../../assets/css/Calendar.css';
-import { SEXY_BOX_SHADOW_T_T } from '../../../constants/common';
 import { DatePickerTrigger } from '../../Roles/DatePickerTrigger';
 
 type DateOrNull = Date | null;
@@ -30,10 +29,12 @@ interface DatePickerProps {
 function CalendarView({
   minDate,
   maxDate,
+  selectedDate,
   handleDateChange,
 }: {
   minDate?: Date;
   maxDate?: Date;
+  selectedDate?: Date;
   handleDateChange: (date: DateOrNull | [DateOrNull, DateOrNull]) => void;
 }) {
   return (
@@ -43,6 +44,8 @@ function CalendarView({
       formatShortWeekday={(_, date) => date.toString().slice(0, 2)}
       prevLabel={<Icon as={CaretLeft} />}
       nextLabel={<Icon as={CaretRight} />}
+      activeStartDate={minDate}
+      value={selectedDate}
       // remove double-skip buttons for cleaner UI
       next2Label={null}
       prev2Label={null}
@@ -55,17 +58,17 @@ function CalendarView({
 /** Wrapper giving the calendar consistent styling */
 function CalendarContainer({
   isOpen,
-  boxShadow,
   maxBoxW,
   minDate,
   maxDate,
+  selectedDate,
   handleDateChange,
 }: {
   isOpen: boolean;
-  boxShadow: string | undefined;
   maxBoxW: string | undefined;
   minDate?: Date;
   maxDate?: Date;
+  selectedDate?: Date;
   handleDateChange: (date: DateOrNull | [DateOrNull, DateOrNull]) => void;
 }) {
   return (
@@ -73,7 +76,6 @@ function CalendarContainer({
       flexDir="column"
       justifySelf="center"
       borderRadius="0.5rem"
-      boxShadow={boxShadow}
       maxW={maxBoxW}
       pt={{ base: '1.5rem', md: 0 }}
     >
@@ -81,6 +83,7 @@ function CalendarContainer({
         <CalendarView
           minDate={minDate}
           maxDate={maxDate}
+          selectedDate={selectedDate}
           handleDateChange={handleDateChange}
         />
       )}
@@ -90,7 +93,6 @@ function CalendarContainer({
 
 function DesktopPicker({
   isOpen,
-  boxShadow,
   maxBoxW,
   minDate,
   maxDate,
@@ -101,7 +103,6 @@ function DesktopPicker({
   selectedDate,
 }: {
   isOpen: boolean;
-  boxShadow: string | undefined;
   maxBoxW: string | undefined;
   minDate?: Date;
   maxDate?: Date;
@@ -137,10 +138,10 @@ function DesktopPicker({
         <MenuItem>
           <CalendarContainer
             isOpen={isOpen}
-            boxShadow={boxShadow}
             maxBoxW={maxBoxW}
             minDate={minDate}
             maxDate={maxDate}
+            selectedDate={selectedDate}
             handleDateChange={handleDateChange}
           />
         </MenuItem>
@@ -157,7 +158,6 @@ export function DatePicker({
   disabled = false,
 }: DatePickerProps) {
   const { isOpen, onClose, onOpen } = useDisclosure();
-  const boxShadow = useBreakpointValue({ base: 'none', md: SEXY_BOX_SHADOW_T_T });
   const maxBoxW = useBreakpointValue({ base: '100%', md: '26.875rem' });
 
   const handleDateChange = (value: OnDateChangeValue) => {
@@ -171,7 +171,6 @@ export function DatePicker({
     <>
       <DesktopPicker
         isOpen={isOpen}
-        boxShadow={boxShadow}
         maxBoxW={maxBoxW}
         minDate={minDate}
         maxDate={maxDate}
