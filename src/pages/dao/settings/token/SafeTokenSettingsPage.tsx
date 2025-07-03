@@ -5,6 +5,7 @@ import {
   Grid,
   GridItem,
   IconButton,
+  Input,
   Show,
   Switch,
   Text,
@@ -298,7 +299,7 @@ export function SafeTokenSettingsPage() {
                 direction="column"
               >
                 <Text
-                  color="color-white"
+                  color="color-content-popover-foreground"
                   textStyle="text-lg-regular"
                 >
                   {t('governanceTokenManagementTitle')}
@@ -325,7 +326,7 @@ export function SafeTokenSettingsPage() {
                   <Flex direction="column">
                     <Text
                       color="color-layout-foreground"
-                      textStyle="text-sm-medium"
+                      textStyle="text-sm-leading-none-medium"
                     >
                       {t('governanceTokenTransferableLabel')}
                     </Text>
@@ -396,6 +397,35 @@ export function SafeTokenSettingsPage() {
                   }}
                 </FieldArray>
               )}
+
+              <Flex
+                gap={2}
+                direction="column"
+              >
+                <Text
+                  color="color-content-popover-foreground"
+                  textStyle="text-lg-regular"
+                >
+                  {t('governanceTokenMaximumTotalSupplyTitle')}
+                </Text>
+
+                <Text
+                  color="color-content-popover-foreground0"
+                  textStyle="text-sm-regular"
+                >
+                  {t('governanceTokenMaximumTotalSupplySubTitle')}
+                </Text>
+
+                <Flex
+                  padding={3}
+                  paddingLeft={0}
+                  width={300}
+                >
+                  <Field name="token.maximumTotalSupply">
+                    {({ field }: FieldAttributes<any>) => <Input {...field} />}
+                  </Field>
+                </Flex>
+              </Flex>
             </>
           )}
         </Flex>

@@ -92,6 +92,7 @@ export type SafeSettingsEdits = {
     transferable?: boolean;
     addressesToUnwhitelist?: string[];
     addressesToWhitelist?: string[];
+    maximumTotalSupply?: BigIntValuePair;
   };
 };
 
@@ -116,6 +117,7 @@ type RevenueSharingEditFormikErrors = {
 
 type TokenEditFormikErrors = {
   addressesToWhitelist?: { key: string; error: string }[];
+  maximumTotalSupply?: string;
 };
 
 export type SafeSettingsFormikErrors = {
