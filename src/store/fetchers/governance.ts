@@ -34,7 +34,7 @@ import {
   AzoriusProposal,
   CreateProposalMetadata,
   DecentModule,
-  ERC20TokenData,
+  ERC20LockedTokenData,
   ERC721TokenData,
   FractalProposal,
   FractalProposalState,
@@ -929,6 +929,32 @@ export function useGovernanceFetcher() {
         return undefined;
       }
 
+      let whitelistedAddresses: Address[] = [];
+      try {
+        // Gather whitelisted addresses from event Whitelisted(address indexed account, bool isWhitelisted)
+        const lockedTokenContract = getContract({
+          abi: abis.VotesERC20LockableV1,
+          address: erc20AddressInEvent,
+          client: publicClient,
+        });
+
+        const whitelistEvents = await lockedTokenContract.getEvents.Whitelisted(undefined, {
+          fromBlock: 0n,
+        });
+        const whitelistMap: { [address: Address]: boolean } = {};
+        whitelistEvents.forEach(event => {
+          const { account, isWhitelisted } = event.args;
+          if (account !== undefined && isWhitelisted !== undefined) {
+            whitelistMap[account] = isWhitelisted;
+          }
+        });
+        Object.entries(whitelistMap).forEach(([address, isWhitelisted]) => {
+          if (isWhitelisted) {
+            whitelistedAddresses.push(address as Address);
+          }
+        });
+      } catch (error) {}
+
       try {
         const tokenContract = getContract({
           abi: abis.VotesERC20,
@@ -963,12 +989,13 @@ export function useGovernanceFetcher() {
           allowFailure: false,
         });
 
-        const tokenData: ERC20TokenData = {
+        const tokenData: ERC20LockedTokenData = {
           name: name ? name.toString() : '',
           symbol: symbol ? symbol.toString() : '',
           decimals: decimals ? Number(decimals) : 18,
           address: tokenContract.address,
           totalSupply: totalSupply ? BigInt(totalSupply) : 0n,
+          whitelistedAddresses,
         };
 
         return tokenData;

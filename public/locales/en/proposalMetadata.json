@@ -27,5 +27,7 @@
   "changeQuorumThreshold": "Update quorum threshold",
   "deployToken": "Deploy token",
   "updateERC20Address": "Update ERC20 Address",
-  "updateTokenTransferable": "Update Token Transferable"
+  "updateTokenTransferable": "Update Token Transferable",
+  "addTokenWhitelist": "Add Token Whitelist",
+  "removeTokenWhitelist": "Remove Token Whitelist"
 }

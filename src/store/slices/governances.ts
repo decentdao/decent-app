@@ -5,7 +5,7 @@ import {
   AzoriusProposal,
   DAOKey,
   DecentGovernance,
-  ERC20TokenData,
+  ERC20LockedTokenData,
   ERC721ProposalVote,
   ERC721TokenData,
   FractalGovernance,
@@ -91,7 +91,7 @@ export type GovernancesSlice = {
   ) => void;
   setGaslessVotingData: (daoKey: DAOKey, gasslesVotingData: GaslessVotingDaoData) => void;
   setVotesTokenAddress: (daoKey: DAOKey, votesTokenAddress: Address) => void;
-  setERC20Token: (daoKey: DAOKey, erc20Token: ERC20TokenData | undefined) => void;
+  setERC20Token: (daoKey: DAOKey, erc20Token: ERC20LockedTokenData | undefined) => void;
   setStakingData: (daoKey: DAOKey, stakingData: StakingDaoData) => void;
 };
 

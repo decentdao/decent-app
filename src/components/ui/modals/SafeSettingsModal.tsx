@@ -56,6 +56,7 @@ import {
 } from '../../../utils/gaslessVoting';
 import { formatCoin } from '../../../utils/numberFormats';
 import { validateENSName } from '../../../utils/url';
+import { isNonEmpty } from '../../../utils/valueCheck';
 import { SafePermissionsStrategyAction } from '../../SafeSettings/SafePermissionsStrategyAction';
 import { SettingsNavigation } from '../../SafeSettings/SettingsNavigation';
 import { NewSignerItem } from '../../SafeSettings/Signers/SignersContainer';
@@ -89,6 +90,8 @@ export type SafeSettingsEdits = {
   };
   token?: {
     transferable?: boolean;
+    addressesToUnwhitelist?: string[];
+    addressesToWhitelist?: string[];
   };
 };
 
@@ -111,11 +114,16 @@ type RevenueSharingEditFormikErrors = {
   revenueSharing?: string; // @TODO placeholder
 };
 
+type TokenEditFormikErrors = {
+  addressesToWhitelist?: { key: string; error: string }[];
+};
+
 export type SafeSettingsFormikErrors = {
   multisig?: MultisigEditGovernanceFormikErrors;
   general?: GeneralEditFormikErrors;
   paymasterGasTank?: PaymasterGasTankEditFormikErrors;
   revenueSharing?: RevenueSharingEditFormikErrors;
+  token?: TokenEditFormikErrors;
 };
 
 export function SafeSettingsModal({
@@ -172,7 +180,9 @@ export function SafeSettingsModal({
     const { values } = useFormikContext<SafeSettingsEdits>();
     const { errors } = useFormikContext<SafeSettingsFormikErrors>();
 
-    const hasEdits = Object.keys(values).some(key => values[key as keyof SafeSettingsEdits]);
+    const hasEdits = Object.keys(values).some(key =>
+      isNonEmpty(values[key as keyof SafeSettingsEdits]),
+    );
     const hasErrors =
       Object.keys(errors.general ?? {}).some(
         key => (errors.general as GeneralEditFormikErrors)[key as keyof GeneralEditFormikErrors],
@@ -197,6 +207,9 @@ export function SafeSettingsModal({
           (errors.revenueSharing as RevenueSharingEditFormikErrors)[
             key as keyof RevenueSharingEditFormikErrors
           ],
+      ) ||
+      Object.keys(errors.token ?? {}).some(
+        key => (errors.token as TokenEditFormikErrors)[key as keyof TokenEditFormikErrors],
       );
 
     return (
@@ -1062,35 +1075,81 @@ export function SafeSettingsModal({
       throw new Error('Safe address is not set');
     }
 
-    if (!updatedValues.token) {
+    if (!isNonEmpty(updatedValues.token)) {
       throw new Error('Token are not set');
     }
+    const tokenValues = updatedValues.token!;
 
     if (!governance.erc20Token) {
       throw new Error('ERC20Token are not set');
     }
+    const token = governance.erc20Token;
 
     const changeTitles = [];
-
     const transactions: CreateProposalTransaction[] = [];
 
-    if (updatedValues.token.transferable) {
+    if (tokenValues.transferable !== undefined) {
       changeTitles.push(t('updateTokenTransferable', { ns: 'proposalMetadata' }));
+      transactions.push({
+        targetAddress: token.address,
+        ethValue,
+        functionName: 'lock',
+        parameters: [
+          {
+            signature: 'bool',
+            value: (!tokenValues.transferable).toString(),
+          },
+        ],
+      });
+    }
+    if (
+      tokenValues.addressesToWhitelist !== undefined &&
+      tokenValues.addressesToWhitelist.length > 0
+    ) {
+      tokenValues.addressesToWhitelist.map(addr => {
+        transactions.push({
+          targetAddress: token.address,
+          ethValue,
+          functionName: 'whitelist',
+          parameters: [
+            {
+              signature: 'address',
+              value: addr,
+            },
+            {
+              signature: 'bool',
+              value: true.toString(),
+            },
+          ],
+        });
+      });
+      changeTitles.push(t('addTokenWhitelist', { ns: 'proposalMetadata' }));
+    }
+    if (
+      tokenValues.addressesToUnwhitelist !== undefined &&
+      tokenValues.addressesToUnwhitelist.length > 0
+    ) {
+      tokenValues.addressesToUnwhitelist.map(addr => {
+        transactions.push({
+          targetAddress: token.address,
+          ethValue,
+          functionName: 'whitelist',
+          parameters: [
+            {
+              signature: 'address',
+              value: addr,
+            },
+            {
+              signature: 'bool',
+              value: false.toString(),
+            },
+          ],
+        });
+      });
+      changeTitles.push(t('removeTokenWhitelist', { ns: 'proposalMetadata' }));
     }
 
     const title = changeTitles.join(`; `);
-
-    transactions.push({
-      targetAddress: governance.erc20Token.address,
-      ethValue,
-      functionName: 'lock',
-      parameters: [
-        {
-          signature: 'bool',
-          value: (!updatedValues.token.transferable).toString(),
-        },
-      ],
-    });
 
     const action: CreateProposalActionData = {
       actionType: ProposalActionType.EDIT,
@@ -1215,6 +1274,40 @@ export function SafeSettingsModal({
           }
         } else {
           errors.multisig = undefined;
+        }
+
+        if (values.token) {
+          const { addressesToWhitelist } = values.token;
+          const errorsToken = errors.token ?? {};
+
+          if (addressesToWhitelist && addressesToWhitelist.length > 0) {
+            const whitelistErrors = await Promise.all(
+              addressesToWhitelist.map(async (addressToWhitelist, index) => {
+                if (!addressToWhitelist) {
+                  return {
+                    key: `addressesToWhitelist.${index}`,
+                    error: t('addressRequired', { ns: 'common' }),
+                  };
+                }
+
+                const validation = await validateAddress({ address: addressToWhitelist });
+                if (!validation.validation.isValidAddress) {
+                  return {
+                    key: `addressesToWhitelist.${index}`,
+                    error: t('errorInvalidAddress', { ns: 'common' }),
+                  };
+                }
+                return null;
+              }),
+            );
+
+            if (whitelistErrors.some(error => error !== null)) {
+              errorsToken.addressesToWhitelist = whitelistErrors.filter(error => error !== null);
+              errors.token = errorsToken;
+            }
+          }
+        } else {
+          errors.token = undefined;
         }
 
         if (values.general) {
