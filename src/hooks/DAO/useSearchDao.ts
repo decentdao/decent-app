@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Address, isAddress } from 'viem';
-import { queryDaosByName } from '../../providers/App/hooks/useDecentAPI';
+import { queryDaosByName } from '../../providers/App/decentAPI';
 import {
   supportedEnsNetworks,
   supportedNetworks,
