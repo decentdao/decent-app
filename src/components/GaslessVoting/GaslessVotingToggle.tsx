@@ -204,8 +204,9 @@ export function GaslessVotingToggleDAOSettings(props: GaslessVotingToggleProps) 
   const paymasterGasTankEdits = values?.paymasterGasTank;
   useEffect(() => {
     if (
-      paymasterGasTankEdits?.withdraw === undefined &&
-      paymasterGasTankEdits?.deposit === undefined
+      paymasterGasTankEdits !== undefined &&
+      paymasterGasTankEdits.withdraw === undefined &&
+      paymasterGasTankEdits.deposit === undefined
     ) {
       setFieldValue('paymasterGasTank', undefined);
     }
