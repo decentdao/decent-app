@@ -32,7 +32,7 @@ jobs:
       - name: Run Selenium tests
         run: |
           cd decent-ui-automation
-          npm run test:single tests/multisig/app-homepage/content-loads.test.ts
+          npm test
 
       - name: Upload test results
         uses: actions/upload-artifact@v4
@@ -40,11 +40,7 @@ jobs:
           name: selenium-test-results
           path: decent-ui-automation/test-results/
 
-      - name: List test results files
-        run: ls -l decent-ui-automation/test-results/ || true
-
       - name: Comment results on PR
-        if: github.event_name == 'pull_request' && hashFiles('decent-ui-automation/test-results/test-results-summary.html') != ''
-        uses: marocchino/sticky-pull-request-comment@v2
+        if: github.event_name == 'pull_request'
         with:
           path: decent-ui-automation/test-results/test-results-summary.html
