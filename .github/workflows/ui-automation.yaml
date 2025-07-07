@@ -1,4 +1,4 @@
-name: CI
+name: ui-automation
 
 on:
   pull_request:
@@ -6,34 +6,10 @@ on:
       - develop
 
 jobs:
-  deploy:
-    name: Deploy to Cloudflare Pages
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      # Add your build steps here if needed, e.g. npm ci, npm run build, etc.
-
-      # TODO: Makes sure these references are correct.
-      - name: Deploy to Cloudflare Pages
-        id: deploy
-        uses: cloudflare/pages-action@v1
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          projectName: ${{ secrets.CLOUDFLARE_PROJECT_NAME }}
-          directory: ./dist
-          # ...other options as needed...
-
-    outputs:
-      preview_url: ${{ steps.deploy.outputs.url }}
 
   e2e-automation:
     name: E2E Selenium Automation
-    needs: deploy
     runs-on: ubuntu-latest
-    if: ${{ needs.deploy.outputs.preview_url != '' }}
     continue-on-error: true
     steps:
       - name: Checkout decent-app
@@ -53,7 +29,7 @@ jobs:
       - name: Run Selenium tests
         run: |
           cd decent-ui-automation
-          BASE_URL=${{ needs.deploy.outputs.preview_url }} npm test
+          npm test
 
       - name: Upload test results
         uses: actions/upload-artifact@v4
