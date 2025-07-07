@@ -1,12 +1,10 @@
-name: ui-automation
-
+name: UI Automation
 on:
   pull_request:
     branches:
       - develop
 
 jobs:
-
   e2e-automation:
     name: E2E Selenium Automation
     runs-on: ubuntu-latest
