@@ -30,7 +30,7 @@ jobs:
       - name: Run Selenium tests
         run: |
           cd decent-ui-automation
-          npm run test:debug
+          npm test
         continue-on-error: true
 
       - name: Upload test results
