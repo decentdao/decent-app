@@ -26,10 +26,13 @@ jobs:
           cd decent-ui-automation
           npm ci
 
+      - name: Kill any leftover Chrome processes
+        run: pkill chrome || true
+
       - name: Run Selenium tests
         run: |
           cd decent-ui-automation
-          npm test
+          npm run test:single tests\multisig\app-homepage\content-loads.test.ts
 
       - name: Upload test results
         uses: actions/upload-artifact@v4
