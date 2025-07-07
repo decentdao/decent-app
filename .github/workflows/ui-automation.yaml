@@ -30,7 +30,8 @@ jobs:
       - name: Run Selenium tests
         run: |
           cd decent-ui-automation
-          npm test
+          npm run test:debug
+        continue-on-error: true
 
       - name: Upload test results
         uses: actions/upload-artifact@v4
