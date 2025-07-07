@@ -32,7 +32,7 @@ jobs:
       - name: Run Selenium tests
         run: |
           cd decent-ui-automation
-          npm run test:single tests\multisig\app-homepage\content-loads.test.ts
+          npm run test:single tests/multisig/app-homepage/content-loads.test.ts
 
       - name: Upload test results
         uses: actions/upload-artifact@v4
