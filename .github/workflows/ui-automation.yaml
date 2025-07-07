@@ -40,8 +40,11 @@ jobs:
           name: selenium-test-results
           path: decent-ui-automation/test-results/
 
+      - name: List test results files
+        run: ls -l decent-ui-automation/test-results/ || true
+
       - name: Comment results on PR
-        if: github.event_name == 'pull_request'
+        if: github.event_name == 'pull_request' && hashFiles('decent-ui-automation/test-results/test-results-summary.html') != ''
         uses: marocchino/sticky-pull-request-comment@v2
         with:
           path: decent-ui-automation/test-results/test-results-summary.html
