@@ -25,6 +25,31 @@ export async function queryDaosByName(name: string) {
   return response.data.data;
 }
 
+export interface DAOSplitWallet {
+  address: string;
+  name: string;
+  splits: {
+    address: string;
+    percentages: number;
+  }[];
+}
+
+interface DAOSplitsQueryResponse {
+  success: boolean;
+  data: DAOSplitWallet[];
+}
+
+export async function getDaoSplits(
+  chainId: number,
+  daoAddress: Address,
+): Promise<DAOSplitWallet[]> {
+  const response: AxiosResponse<DAOSplitsQueryResponse> = await axiosClient.get(
+    `/d/${chainId}/${daoAddress}/splits`,
+  );
+
+  return response.data.data;
+}
+
 interface TokenStakingDataResponse {
   success: boolean;
   data: StakingTokenData;

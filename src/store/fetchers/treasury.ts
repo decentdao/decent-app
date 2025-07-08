@@ -6,6 +6,7 @@ import { CacheExpiry, CacheKeys } from '../../hooks/utils/cache/cacheDefaults';
 import { setValue } from '../../hooks/utils/cache/useLocalStorage';
 import { useFilterSpamTokens } from '../../hooks/utils/useFilterSpamTokens';
 import useBalancesAPI from '../../providers/App/hooks/useBalancesAPI';
+import { getDaoSplits } from '../../providers/App/hooks/useDecentAPI';
 import { useSafeAPI } from '../../providers/App/hooks/useSafeAPI';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
 import {
@@ -223,5 +224,13 @@ export function useTreasuryFetcher() {
     ],
   );
 
-  return { fetchDAOTreasury };
+  const fetchDaoSplits = useCallback(
+    async (daoAddress: Address) => {
+      const splits = await getDaoSplits(chain.id, daoAddress);
+      return splits;
+    },
+    [chain.id],
+  );
+
+  return { fetchDAOTreasury, fetchDaoSplits };
 }
