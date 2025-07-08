@@ -1,13 +1,28 @@
-import { Button, Flex, Show, Switch, Text } from '@chakra-ui/react';
-import { useFormikContext } from 'formik';
+import {
+  Box,
+  Button,
+  Flex,
+  Grid,
+  GridItem,
+  IconButton,
+  Show,
+  Switch,
+  Text,
+} from '@chakra-ui/react';
+import { ClockClockwise, TrashSimple } from '@phosphor-icons/react';
+import { Field, FieldArray, FieldAttributes, useFormikContext } from 'formik';
 import { useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { zeroAddress } from 'viem';
 import { SettingsContentBox } from '../../../../components/SafeSettings/SettingsContentBox';
+import { AddressInput } from '../../../../components/ui/forms/EthAddressInput';
 import { DisplayAddress } from '../../../../components/ui/links/DisplayAddress';
 import { ModalContext } from '../../../../components/ui/modals/ModalProvider';
-import { SafeSettingsEdits } from '../../../../components/ui/modals/SafeSettingsModal';
+import {
+  SafeSettingsEdits,
+  SafeSettingsFormikErrors,
+} from '../../../../components/ui/modals/SafeSettingsModal';
 import NestedPageHeader from '../../../../components/ui/page/Header/NestedPageHeader';
 import Divider from '../../../../components/ui/utils/Divider';
 import { DAO_ROUTES } from '../../../../constants/routes';
@@ -16,6 +31,119 @@ import useLockedToken from '../../../../hooks/DAO/useLockedToken';
 import { useDAOStore } from '../../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../../providers/NetworkConfig/useNetworkConfigStore';
 import { formatCoin } from '../../../../utils';
+
+function WhitelistedAddress({ address }: { address: string }) {
+  const { values, setFieldValue } = useFormikContext<SafeSettingsEdits>();
+
+  const addressesToUnwhitelist = values.token?.addressesToUnwhitelist || [];
+  const willBeRemoved = addressesToUnwhitelist.includes(address);
+
+  return (
+    <Grid
+      templateColumns="repeat(2, 1fr)"
+      gap={4}
+    >
+      <GridItem p={3}>
+        <AddressInput
+          value={address}
+          isDisabled={true}
+          textDecoration={willBeRemoved ? 'line-through' : 'none'}
+          marginTop="-0.25rem"
+        />
+      </GridItem>
+      <GridItem
+        justifyItems="flex-end"
+        p={3}
+      >
+        {willBeRemoved ? (
+          <IconButton
+            aria-label="addBack"
+            icon={
+              <ClockClockwise
+                width={16}
+                height={16}
+              />
+            }
+            variant="ghost"
+            size="sm"
+            color="color-base-success"
+            onClick={() => {
+              const updatedAddresses = [...addressesToUnwhitelist];
+              updatedAddresses.splice(updatedAddresses.indexOf(address), 1);
+              if (updatedAddresses.length === 0) {
+                setFieldValue('token.addressesToUnwhitelist', undefined);
+              } else {
+                setFieldValue('token.addressesToUnwhitelist', updatedAddresses);
+              }
+            }}
+          />
+        ) : (
+          <IconButton
+            aria-label="delete"
+            icon={
+              <TrashSimple
+                width={16}
+                height={16}
+              />
+            }
+            variant="ghost"
+            size="sm"
+            color="color-base-error"
+            onClick={() => {
+              setFieldValue('token.addressesToUnwhitelist', [...addressesToUnwhitelist, address]);
+            }}
+          />
+        )}
+      </GridItem>
+    </Grid>
+  );
+}
+
+function NewWhitelistAddress({ name, onRemove }: { name: string; onRemove: () => void }) {
+  const { errors } = useFormikContext<SafeSettingsEdits>();
+  const tokenErrors = (errors as SafeSettingsFormikErrors | undefined)?.token;
+
+  return (
+    <Grid
+      templateColumns="repeat(2, 1fr)"
+      gap={4}
+    >
+      <GridItem p={3}>
+        <Field name={name}>
+          {({ field }: FieldAttributes<any>) => (
+            <AddressInput
+              {...field}
+              isInvalid={
+                !!field.value &&
+                tokenErrors?.addressesToWhitelist !== undefined &&
+                tokenErrors?.addressesToWhitelist.findIndex(a => `token.${a.key}` === name) !== -1
+              }
+              marginTop="-0.25rem"
+            />
+          )}
+        </Field>
+      </GridItem>
+      <GridItem
+        justifyItems="flex-end"
+        p={3}
+      >
+        <IconButton
+          aria-label="delete"
+          icon={
+            <TrashSimple
+              width={16}
+              height={16}
+            />
+          }
+          variant="ghost"
+          size="sm"
+          color="color-base-error"
+          onClick={() => onRemove()}
+        />
+      </GridItem>
+    </Grid>
+  );
+}
 
 export function SafeTokenSettingsPage() {
   const navigate = useNavigate();
@@ -38,6 +166,8 @@ export function SafeTokenSettingsPage() {
   const isTransferableInValues = values.token?.transferable;
   const isTransferable =
     isTransferableInValues === undefined ? !tokenState.locked : isTransferableInValues;
+
+  const whitelistedAddresses = erc20Token?.whitelistedAddresses || [];
 
   return (
     <>
@@ -161,52 +291,110 @@ export function SafeTokenSettingsPage() {
             </Flex>
           )}
 
-          <Flex
-            gap={4}
-            direction="column"
-          >
-            <Text
-              color="color-white"
-              textStyle="text-lg-regular"
-            >
-              {t('governanceTokenManagementTitle')}
-            </Text>
+          {erc20Token && (
+            <>
+              <Flex
+                gap={4}
+                direction="column"
+              >
+                <Text
+                  color="color-white"
+                  textStyle="text-lg-regular"
+                >
+                  {t('governanceTokenManagementTitle')}
+                </Text>
 
-            <Flex
-              gap={2}
-              align="center"
-            >
-              <Switch
-                variant="secondary"
-                size="md"
-                isChecked={isTransferable}
-                onChange={e => {
-                  const newCheckedState = e.target.checked;
-                  if (newCheckedState === tokenState.locked) {
-                    setFieldValue('token.transferable', newCheckedState);
-                  } else {
-                    setFieldValue('token', undefined);
-                  }
-                }}
-              />
-              <Flex direction="column">
-                <Text
-                  color="color-layout-foreground"
-                  textStyle="text-sm-medium"
+                <Flex
+                  gap={2}
+                  align="center"
                 >
-                  {t('governanceTokenTransferableLabel')}
-                </Text>
-                <Text
-                  color="color-secondary-300"
-                  textStyle="text-sm-regular"
-                >
-                  {isTransferable
-                    ? t('governanceTokenTransferableOnSubLabel')
-                    : t('governanceTokenTransferableOffSubLabel')}
-                </Text>
+                  <Switch
+                    variant="secondary"
+                    size="md"
+                    isChecked={isTransferable}
+                    onChange={e => {
+                      const newCheckedState = e.target.checked;
+                      if (newCheckedState !== tokenState.locked) {
+                        setFieldValue('token.transferable', undefined);
+                      } else {
+                        setFieldValue('token.transferable', newCheckedState);
+                      }
+                    }}
+                  />
+                  <Flex direction="column">
+                    <Text
+                      color="color-layout-foreground"
+                      textStyle="text-sm-medium"
+                    >
+                      {t('governanceTokenTransferableLabel')}
+                    </Text>
+                    <Text
+                      color="color-secondary-300"
+                      textStyle="text-sm-regular"
+                    >
+                      {isTransferable
+                        ? t('governanceTokenTransferableOnSubLabel')
+                        : t('governanceTokenTransferableOffSubLabel')}
+                    </Text>
+                  </Flex>
+                </Flex>
               </Flex>
-            </Flex>
-          </Flex>
+
+              <FieldArray name="token.addressesToWhitelist">
+                {({ remove, push }) => {
+                  return (
+                    <Flex
+                      gap={2}
+                      direction="column"
+                    >
+                      <Flex justify="space-between">
+                        <Text
+                          color="color-content-popover-foreground"
+                          textStyle="text-sm-regular"
+                        >
+                          {t('governanceTokenWhitelistTitle')}
+                        </Text>
+
+                        <Flex>
+                          <Button
+                            variant="secondary"
+                            size="md"
+                            px={4}
+                            onClick={() => push('')}
+                          >
+                            {t('governanceTokenWhitelistAddWallet')}
+                          </Button>
+                        </Flex>
+                      </Flex>
+
+                      <Box>
+                        {whitelistedAddresses.map(address => (
+                          <WhitelistedAddress
+                            key={address}
+                            address={address}
+                          />
+                        ))}
+
+                        {values.token?.addressesToWhitelist?.map((address, index) => (
+                          <NewWhitelistAddress
+                            key={`token.addressesToWhitelist.${index}`}
+                            name={`token.addressesToWhitelist.${index}`}
+                            onRemove={() => {
+                              if (values.token?.addressesToWhitelist?.length === 1) {
+                                setFieldValue('token.addressesToWhitelist', undefined);
+                              } else {
+                                remove(index);
+                              }
+                            }}
+                          />
+                        ))}
+                      </Box>
+                    </Flex>
+                  );
+                }}
+              </FieldArray>
+            </>
+          )}
         </Flex>
       </SettingsContentBox>
     </>

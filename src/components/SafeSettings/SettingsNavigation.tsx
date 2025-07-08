@@ -27,6 +27,7 @@ import { SafeTokenSettingsPage } from '../../pages/dao/settings/token/SafeTokenS
 import { useDAOStore } from '../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
 import { AzoriusGovernance } from '../../types';
+import { isNonEmpty } from '../../utils/valueCheck';
 import { BarLoader } from '../ui/loaders/BarLoader';
 import { SafeSettingsEdits } from '../ui/modals/SafeSettingsModal';
 import Divider from '../ui/utils/Divider';
@@ -316,7 +317,7 @@ export function SettingsNavigation({
                 onSettingsNavigationClick(<SafeTokenSettingsPage />);
                 setCurrentItem('token');
               }}
-              hasEdits={values.token !== undefined}
+              hasEdits={isNonEmpty(values.token)}
             />
           )}
           {isRevShareEnabled && (
