@@ -352,7 +352,7 @@ export function SafeTokenSettingsPage() {
                           color="color-content-popover-foreground"
                           textStyle="text-sm-regular"
                         >
-                          Allow List
+                          {t('governanceTokenWhitelistTitle')}
                         </Text>
 
                         <Flex>
@@ -362,7 +362,7 @@ export function SafeTokenSettingsPage() {
                             px={4}
                             onClick={() => push('')}
                           >
-                            Add Wallets
+                            {t('governanceTokenWhitelistAddWallet')}
                           </Button>
                         </Flex>
                       </Flex>

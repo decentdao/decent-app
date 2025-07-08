@@ -12,6 +12,8 @@
   "governanceTokenTransferableLabel": "Transferable",
   "governanceTokenTransferableOnSubLabel": "Token transfers are ON.",
   "governanceTokenTransferableOffSubLabel": "Token transfers are OFF.",
+  "governanceTokenWhitelistTitle": "Allow List",
+  "governanceTokenWhitelistAddWallet": "Add Wallets",
   "noModulesAttached": "No modules attached",
   "noGuardAttached": "No guard attached",
   "modulesTitle": "Modules",
