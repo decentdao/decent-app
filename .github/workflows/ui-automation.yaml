@@ -16,7 +16,7 @@ jobs:
       - name: Checkout automation repo
         uses: actions/checkout@v4
         with:
-          repository: cbajandas/decent-ui-automation
+          repository: decentdao/decent-ui-automation
           path: decent-ui-automation
 
       - name: Install dependencies
