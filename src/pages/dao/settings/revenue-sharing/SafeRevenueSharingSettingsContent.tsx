@@ -1,7 +1,7 @@
 import { Flex, Text, Icon, Button, Input, Grid, GridItem } from '@chakra-ui/react';
 import { PencilSimple, Plus, TrashSimple, WarningCircle } from '@phosphor-icons/react';
 import { useTranslation } from 'react-i18next';
-import { Address } from 'viem';
+import { Address, zeroAddress } from 'viem';
 import { SettingsContentBox } from '../../../../components/SafeSettings/SettingsContentBox';
 import { Badge } from '../../../../components/ui/badges/Badge';
 import { AccordionDropdown } from '../../../../components/ui/containers/AccordionDropdown';
@@ -11,15 +11,16 @@ import Divider from '../../../../components/ui/utils/Divider';
 import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
 import { createAccountSubstring } from '../../../../hooks/utils/useGetAccountName';
 import { useDAOStore } from '../../../../providers/App/AppProvider';
+import { DAOSplitWallet } from '../../../../providers/App/hooks/useDecentAPI';
 
 interface RevenueShare {
   address: Address;
-  revenueShare: number;
+  percentage: number;
 }
 
 interface RevSplitWallet {
   address: Address;
-  displayName?: string;
+  name?: string;
   daoShare: number;
   parentDaoShare: number;
   tokenHolderShare: number;
@@ -113,11 +114,7 @@ function DefaultShareRowGrid({ label, share }: { label: string; share: number })
   );
 }
 
-function WalletShareRow({
-  address,
-  revenueShare,
-  isLastRow,
-}: RevenueShare & { isLastRow: boolean }) {
+function WalletShareRow({ address, percentage, isLastRow }: RevenueShare & { isLastRow: boolean }) {
   return (
     <>
       <TableRowItem
@@ -142,7 +139,7 @@ function WalletShareRow({
             pl={3}
             color="color-neutral-400"
           >
-            % {revenueShare}
+            % {percentage}
           </Text>
         }
         rightDivider
@@ -224,7 +221,7 @@ function RevSplitWalletAccordion({ wallet }: { wallet: RevSplitWallet }) {
   const { t } = useTranslation('revenueSharing');
 
   const revSplitTotal =
-    wallet.splits.reduce((acc, split) => acc + split.revenueShare, 0) +
+    wallet.splits.reduce((acc, split) => acc + split.percentage, 0) +
     wallet.daoShare +
     wallet.parentDaoShare +
     wallet.tokenHolderShare;
@@ -245,7 +242,7 @@ function RevSplitWalletAccordion({ wallet }: { wallet: RevSplitWallet }) {
             alignItems="center"
             gap={1}
           >
-            <Text color="color-white">{wallet.displayName || t('revSplitWallet')}</Text>
+            <Text color="color-white">{wallet.name || t('revSplitWallet')}</Text>
             <Button
               variant="tertiary"
               h="auto"
@@ -318,7 +315,7 @@ function RevSplitWalletAccordion({ wallet }: { wallet: RevSplitWallet }) {
                 <WalletShareRow
                   key={split.address}
                   address={split.address}
-                  revenueShare={split.revenueShare}
+                  percentage={split.percentage}
                   isLastRow={i === wallet.splits.length - 1}
                 />
               ))}
@@ -381,41 +378,60 @@ export function SafeRevenueSharingSettingsPage() {
 
   const { daoKey } = useCurrentDAOKey();
   const {
-    node: { safe },
+    node: { safe, subgraphInfo },
+    // treasury: { daoSplits },
   } = useDAOStore({ daoKey });
 
-  const revSplitWallets: RevSplitWallet[] = [
+  const parentSafeAddress = subgraphInfo?.parentAddress;
+
+  const daoSplitsDummyData: DAOSplitWallet[] = [
     {
       address: '0x1234567890123456789012345678901234567890',
-      displayName: 'Test 1',
-      daoShare: 50,
-      parentDaoShare: 30,
-      tokenHolderShare: 10,
+      name: 'Test 1',
       splits: [
         {
+          address: safe?.address || zeroAddress,
+          percentage: 50,
+        },
+        {
           address: '0x123456789012345678901234567890123456789b',
-          revenueShare: 6,
+          percentage: 25,
         },
         {
           address: '0x123456789012345678901234567890123456789c',
-          revenueShare: 4,
+          percentage: 25,
         },
       ],
     },
     {
       address: '0x123456789012345678901234567890123456789a',
-      displayName: 'Test 2',
-      daoShare: 10,
-      parentDaoShare: 20,
-      tokenHolderShare: 50,
+      name: 'Test 2',
       splits: [
         {
+          address: safe?.address || zeroAddress,
+          percentage: 10,
+        },
+        {
           address: '0x123456789012345678901234567890123456789d',
-          revenueShare: 22,
+          percentage: 90,
         },
       ],
     },
   ];
+
+  const revSplitWallets: RevSplitWallet[] = daoSplitsDummyData.map(s => ({
+    address: s.address,
+    name: s.name,
+    daoShare: s.splits.find(split => split.address === safe?.address)?.percentage || 0,
+    parentDaoShare:
+      (parentSafeAddress &&
+        s.splits.find(split => split.address === parentSafeAddress)?.percentage) ||
+      0,
+    tokenHolderShare: 0, // @todo: filter by staking token address
+    splits: s.splits.filter(
+      split => split.address !== safe?.address && split.address !== parentSafeAddress,
+    ),
+  }));
 
   return (
     <>

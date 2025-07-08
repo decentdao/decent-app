@@ -26,11 +26,11 @@ export async function queryDaosByName(name: string) {
 }
 
 export interface DAOSplitWallet {
-  address: string;
+  address: Address;
   name: string;
   splits: {
-    address: string;
-    percentages: number;
+    address: Address;
+    percentage: number;
   }[];
 }
 
@@ -46,6 +46,10 @@ export async function getDaoSplits(
   const response: AxiosResponse<DAOSplitsQueryResponse> = await axiosClient.get(
     `/d/${chainId}/${daoAddress}/splits`,
   );
+
+  if (!response.data.success) {
+    throw new Error('Failed to fetch DAO splits');
+  }
 
   return response.data.data;
 }

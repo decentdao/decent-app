@@ -1,16 +1,13 @@
 import { StateCreator } from 'zustand';
-import { DAOSplitWallet } from '../../providers/App/hooks/useDecentAPI';
 import { DAOKey, DecentTreasury, TransferDisplayData } from '../../types';
 import { GlobalStore, StoreMiddleware, StoreSlice } from '../store';
 
 export type TreasuriesSlice = {
   treasuries: StoreSlice<DecentTreasury>;
-  daoSplits: StoreSlice<DAOSplitWallet[]>;
   setTreasury: (daoKey: DAOKey, treasury: DecentTreasury) => void;
   getTreasury: (daoKey: DAOKey) => DecentTreasury;
   setTransfers: (daoKey: DAOKey, transfers: TransferDisplayData[]) => void;
   setTransfer: (daoKey: DAOKey, transfer: TransferDisplayData) => void;
-  setDaoSplits: (daoKey: DAOKey, splits: DAOSplitWallet[]) => void;
 };
 
 const EMPTY_TREASURY: DecentTreasury = {
@@ -19,6 +16,7 @@ const EMPTY_TREASURY: DecentTreasury = {
   assetsNonFungible: [],
   assetsDeFi: [],
   transfers: [],
+  daoSplits: [],
 };
 
 export const createTreasuriesSlice: StateCreator<
@@ -72,11 +70,5 @@ export const createTreasuriesSlice: StateCreator<
       return EMPTY_TREASURY;
     }
     return treasury;
-  },
-  daoSplits: {},
-  setDaoSplits: (daoKey, splits) => {
-    set(state => {
-      state.daoSplits[daoKey] = splits;
-    });
   },
 });

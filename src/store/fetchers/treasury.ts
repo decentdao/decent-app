@@ -94,11 +94,13 @@ export function useTreasuryFetcher() {
         { data: tokenBalances, error: tokenBalancesError },
         { data: nftBalances, error: nftBalancesError },
         { data: defiBalances, error: defiBalancesError },
+        daoSplits,
       ] = await Promise.all([
         safeApi.getTransfers(safeAddress),
         getTokenBalances(safeAddress),
         getNFTBalances(safeAddress),
         getDeFiBalances(safeAddress),
+        getDaoSplits(chain.id, safeAddress),
       ]);
 
       if (tokenBalancesError) {
@@ -130,6 +132,7 @@ export function useTreasuryFetcher() {
         assetsDeFi,
         assetsNonFungible,
         totalUsdValue,
+        daoSplits,
         transfers: null, // transfers not yet loaded. these are setup below
       };
 
@@ -224,13 +227,5 @@ export function useTreasuryFetcher() {
     ],
   );
 
-  const fetchDaoSplits = useCallback(
-    async (daoAddress: Address) => {
-      const splits = await getDaoSplits(chain.id, daoAddress);
-      return splits;
-    },
-    [chain.id],
-  );
-
-  return { fetchDAOTreasury, fetchDaoSplits };
+  return { fetchDAOTreasury };
 }

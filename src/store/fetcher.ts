@@ -54,12 +54,11 @@ export const useDAOStoreFetcher = ({
     setAllProposalsLoaded,
     setVotesTokenAddress,
     setStakingData,
-    setDaoSplits,
   } = useGlobalStore();
   const { chain, getConfigByChainId } = useNetworkConfigStore();
 
   const { fetchDAONode } = useNodeFetcher();
-  const { fetchDAOTreasury, fetchDaoSplits } = useTreasuryFetcher();
+  const { fetchDAOTreasury } = useTreasuryFetcher();
   const {
     fetchDAOGovernance,
     fetchDAOProposalTemplates,
@@ -248,16 +247,6 @@ export const useDAOStoreFetcher = ({
     setTransfers,
     setTransfer,
   ]);
-
-  useEffect(() => {
-    async function loadDaoSplits() {
-      if (!daoKey || !safeAddress || invalidQuery || wrongNetwork) return;
-      const splits = await fetchDaoSplits(safeAddress);
-      setDaoSplits(daoKey, splits);
-    }
-
-    loadDaoSplits();
-  }, [daoKey, safeAddress, invalidQuery, wrongNetwork, fetchDaoSplits, setDaoSplits]);
 
   return { errorLoading };
 };
