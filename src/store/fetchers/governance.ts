@@ -1,4 +1,4 @@
-import { abis } from '@fractal-framework/fractal-contracts';
+import { legacy } from '@decentdao/decent-contracts';
 import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -121,7 +121,7 @@ export function useGovernanceFetcher() {
         });
       } else {
         const azoriusContract = getContract({
-          abi: abis.Azorius,
+          abi: legacy.abis.Azorius,
           address: azoriusModule.moduleAddress,
           client: publicClient,
         });
@@ -148,7 +148,7 @@ export function useGovernanceFetcher() {
             return;
           }
           const ozLinearVotingContract = getContract({
-            abi: abis.LinearERC20Voting,
+            abi: legacy.abis.LinearERC20Voting,
             address: erc20VotingStrategyAddress,
             client: publicClient,
           });
@@ -272,13 +272,13 @@ export function useGovernanceFetcher() {
 
           if (votesTokenAddress && erc20VotingStrategyAddress) {
             const erc20VotingContract = getContract({
-              abi: abis.LinearERC20Voting,
+              abi: legacy.abis.LinearERC20Voting,
               address: erc20VotingStrategyAddress,
               client: publicClient,
             });
 
             const tokenContract = getContract({
-              abi: abis.VotesERC20,
+              abi: legacy.abis.VotesERC20,
               address: votesTokenAddress,
               client: publicClient,
             });
@@ -552,7 +552,7 @@ export function useGovernanceFetcher() {
             }
           } else if (erc721VotingStrategyAddress) {
             const erc721LinearVotingContract = getContract({
-              abi: abis.LinearERC721Voting,
+              abi: legacy.abis.LinearERC721Voting,
               address: erc721VotingStrategyAddress,
               client: publicClient,
             });
@@ -787,13 +787,13 @@ export function useGovernanceFetcher() {
       const [balance, delegatee] = await publicClient.multicall({
         contracts: [
           {
-            abi: abis.VotesERC20,
+            abi: legacy.abis.VotesERC20,
             address: votingTokenAddress,
             functionName: 'balanceOf',
             args: [account],
           },
           {
-            abi: abis.VotesERC20,
+            abi: legacy.abis.VotesERC20,
             address: votingTokenAddress,
             functionName: 'delegates',
             args: [account],
@@ -868,7 +868,7 @@ export function useGovernanceFetcher() {
       events,
       safeAddress,
     }: {
-      events: GetContractEventsReturnType<typeof abis.KeyValuePairs>;
+      events: GetContractEventsReturnType<typeof legacy.abis.KeyValuePairs>;
       safeAddress: Address;
     }) => {
       // get most recent event where `gaslessVotingEnabled` was set
@@ -918,7 +918,11 @@ export function useGovernanceFetcher() {
   );
 
   const fetchMultisigERC20Token = useCallback(
-    async ({ events }: { events: GetContractEventsReturnType<typeof abis.KeyValuePairs> }) => {
+    async ({
+      events,
+    }: {
+      events: GetContractEventsReturnType<typeof legacy.abis.KeyValuePairs>;
+    }) => {
       // get most recent event where `erc20Address` was set
       const erc20AddressEvent = events
         .filter(event => event.args.key && event.args.key === 'erc20Address')
@@ -933,7 +937,7 @@ export function useGovernanceFetcher() {
       try {
         // Gather whitelisted addresses from event Whitelisted(address indexed account, bool isWhitelisted)
         const lockedTokenContract = getContract({
-          abi: abis.VotesERC20LockableV1,
+          abi: legacy.abis.VotesERC20LockableV1,
           address: erc20AddressInEvent,
           client: publicClient,
         });
@@ -957,7 +961,7 @@ export function useGovernanceFetcher() {
 
       try {
         const tokenContract = getContract({
-          abi: abis.VotesERC20,
+          abi: legacy.abis.VotesERC20,
           address: erc20AddressInEvent,
           client: publicClient,
         });

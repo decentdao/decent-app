@@ -1,4 +1,4 @@
-import { abis } from '@fractal-framework/fractal-contracts';
+import { legacy } from '@decentdao/decent-contracts';
 import { toLightSmartAccount } from 'permissionless/accounts';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -59,7 +59,7 @@ const useCastVote = (proposalId: string, strategy: Address) => {
       ];
 
       let voteArgs: Erc20VoteArgs | Erc721VoteArgs;
-      let abi: typeof abis.LinearERC20Voting | typeof abis.LinearERC721Voting;
+      let abi: typeof legacy.abis.LinearERC20Voting | typeof legacy.abis.LinearERC721Voting;
 
       const isErc20 =
         strategy === linearVotingErc20Address ||
@@ -69,10 +69,10 @@ const useCastVote = (proposalId: string, strategy: Address) => {
         strategy === linearVotingErc721WithHatsWhitelistingAddress;
 
       if (isErc20) {
-        abi = abis.LinearERC20Voting;
+        abi = legacy.abis.LinearERC20Voting;
         voteArgs = [Number(proposalId), vote];
       } else if (isErc721) {
-        abi = abis.LinearERC721Voting;
+        abi = legacy.abis.LinearERC721Voting;
         voteArgs = [
           Number(proposalId),
           vote,
@@ -113,7 +113,7 @@ const useCastVote = (proposalId: string, strategy: Address) => {
         strategy === linearVotingErc20WithHatsWhitelistingAddress
       ) {
         const ozLinearVotingContract = getContract({
-          abi: abis.LinearERC20Voting,
+          abi: legacy.abis.LinearERC20Voting,
           address: strategy,
           client: walletClient,
         });
@@ -128,7 +128,7 @@ const useCastVote = (proposalId: string, strategy: Address) => {
         strategy === linearVotingErc721WithHatsWhitelistingAddress
       ) {
         const erc721LinearVotingContract = getContract({
-          abi: abis.LinearERC721Voting,
+          abi: legacy.abis.LinearERC721Voting,
           address: strategy,
           client: walletClient,
         });

@@ -1,4 +1,4 @@
-import { abis } from '@fractal-framework/fractal-contracts';
+import { legacy } from '@decentdao/decent-contracts';
 import { useCallback, useEffect, useState } from 'react';
 import { Address, erc721Abi, getContract } from 'viem';
 import { useAccount } from 'wagmi';
@@ -56,8 +56,8 @@ export default function useUserERC721VotingTokens(
       return getContract({
         abi:
           _voting === 'erc721'
-            ? abis.LinearERC721Voting
-            : abis.LinearERC721VotingWithHatsProposalCreation,
+            ? legacy.abis.LinearERC721Voting
+            : legacy.abis.LinearERC721VotingWithHatsProposalCreation,
         address: _address,
         client: publicClient,
       });

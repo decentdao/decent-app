@@ -1,4 +1,4 @@
-import { abis } from '@fractal-framework/fractal-contracts';
+import { legacy } from '@decentdao/decent-contracts';
 import { SafeMultisigTransactionListResponse } from '@safe-global/api-kit';
 import { useCallback } from 'react';
 import { Address, getAddress, getContract, isAddress } from 'viem';
@@ -198,7 +198,7 @@ export const useSafeTransactions = () => {
         const averageBlockTime = BigInt(Math.round(await getAverageBlockTime(publicClient)));
         const freezeGuard = getContract({
           address: guardContracts.freezeGuardContractAddress,
-          abi: abis.MultisigFreezeGuard,
+          abi: legacy.abis.MultisigFreezeGuard,
           client: publicClient,
         });
 

@@ -1,4 +1,4 @@
-import { abis } from '@fractal-framework/fractal-contracts';
+import { legacy } from '@decentdao/decent-contracts';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { getContract } from 'viem';
 import { logError } from '../../../helpers/errorLogging';
@@ -66,7 +66,7 @@ export function useProposalCountdown(proposal: FractalProposal) {
           try {
             if (governance.isAzorius && moduleAzoriusAddress !== undefined) {
               const azoriusContract = getContract({
-                abi: abis.Azorius,
+                abi: legacy.abis.Azorius,
                 address: moduleAzoriusAddress,
                 client: publicClient,
               });
@@ -121,7 +121,7 @@ export function useProposalCountdown(proposal: FractalProposal) {
     const freezeGuard =
       freezeGuardContractAddress !== undefined && freezeGuardType === FreezeGuardType.MULTISIG
         ? getContract({
-            abi: abis.MultisigFreezeGuard,
+            abi: legacy.abis.MultisigFreezeGuard,
             address: freezeGuardContractAddress,
             client: publicClient,
           })
