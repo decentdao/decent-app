@@ -1,13 +1,11 @@
+import { abis } from '@decentdao/decent-contracts';
 import { useCallback, useEffect, useState } from 'react';
-import { Address, getContract, zeroAddress } from 'viem';
-import { VotesERC20LockableV1Abi } from '../../assets/abi/VotesERC20LockableV1';
+import { Address, getContract, keccak256, toHex } from 'viem';
 import useNetworkPublicClient from '../useNetworkPublicClient';
-import { useCurrentDAOKey } from './useCurrentDAOKey';
 
 interface LockedTokenState {
   locked: boolean;
   whitelisted: boolean;
-  owner: Address;
   canTransfer: boolean;
   needWhitelist: boolean;
 }
@@ -15,7 +13,6 @@ interface LockedTokenState {
 const DEFAULT_STATE = {
   locked: false,
   whitelisted: false,
-  owner: zeroAddress,
   canTransfer: true,
   needWhitelist: false,
 };
@@ -24,36 +21,35 @@ export default function useLockedToken(
   params: { token: Address; account: Address } | undefined = undefined,
 ) {
   const publicClient = useNetworkPublicClient();
-  const { safeAddress } = useCurrentDAOKey();
   const [tokenState, setTokenState] = useState<LockedTokenState>(DEFAULT_STATE);
 
   const loadTokenState = useCallback(
     async (token: Address, account: Address): Promise<LockedTokenState> => {
       const contract = getContract({
-        abi: VotesERC20LockableV1Abi,
+        abi: abis.deployables.VotesERC20V1,
         address: token,
         client: publicClient,
       });
+      const transferFromRole = keccak256(toHex('TRANSFER_FROM_ROLE'));
 
       try {
-        const [locked, whitelisted, owner] = await Promise.all([
+        const [locked, whitelisted] = await Promise.all([
           contract.read.locked(),
-          contract.read.whitelisted([account]),
-          contract.read.owner(),
+          contract.read.hasRole([transferFromRole, account]),
         ]);
 
         return {
           locked,
           whitelisted,
-          owner,
-          canTransfer: !locked || whitelisted || owner === account || owner === safeAddress,
-          needWhitelist: locked && !whitelisted && owner !== account,
+          canTransfer: !locked || whitelisted,
+          needWhitelist: locked && !whitelisted,
         };
-      } catch {
+      } catch (e) {
+        console.warn('Failed to read locked token state', e);
         return DEFAULT_STATE;
       }
     },
-    [publicClient, safeAddress],
+    [publicClient],
   );
 
   useEffect(() => {
