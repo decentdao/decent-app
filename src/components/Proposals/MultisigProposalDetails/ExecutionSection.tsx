@@ -352,7 +352,7 @@ export function ExecutionSection({ proposal }: { proposal: MultisigProposal }) {
       <DecentTooltip
         placement="top-start"
         label={t('notActiveNonceTooltip')}
-        isDisabled={false}
+        isDisabled={isActiveNonce}
       >
         <Box>
           {!isRejectedProposalPassThreshold && (
