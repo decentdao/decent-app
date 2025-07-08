@@ -379,7 +379,7 @@ export function SafeRevenueSharingSettingsPage() {
   const { daoKey } = useCurrentDAOKey();
   const {
     node: { safe, subgraphInfo },
-    // treasury: { daoSplits },
+    treasury: { daoSplits },
   } = useDAOStore({ daoKey });
 
   const parentSafeAddress = subgraphInfo?.parentAddress;
@@ -412,12 +412,18 @@ export function SafeRevenueSharingSettingsPage() {
           percentage: 10,
         },
         {
+          address: parentSafeAddress || zeroAddress,
+          percentage: 50,
+        },
+        {
           address: '0x123456789012345678901234567890123456789d',
-          percentage: 90,
+          percentage: 40,
         },
       ],
     },
   ];
+
+  console.log({ daoSplits });
 
   const revSplitWallets: RevSplitWallet[] = daoSplitsDummyData.map(s => ({
     address: s.address,
