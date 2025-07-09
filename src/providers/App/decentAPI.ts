@@ -48,7 +48,7 @@ export interface DAOSplitWallet {
   }[];
 }
 
-interface DAOSplitsQueryResponse {
+interface DAOSplitsResponse {
   success: boolean;
   data: DAOSplitWallet[];
 }
@@ -58,7 +58,7 @@ export async function getDaoSplits(
   daoAddress: Address,
 ): Promise<DAOSplitWallet[]> {
   try {
-    const response: AxiosResponse<DAOSplitsQueryResponse> = await axiosClient.get(
+    const response: AxiosResponse<DAOSplitsResponse> = await axiosClient.get(
       `/d/${chainId}/${daoAddress}/splits`,
     );
     if (!response.data.success) {
