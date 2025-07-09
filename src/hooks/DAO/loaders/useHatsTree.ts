@@ -14,7 +14,6 @@ import { CacheExpiry, CacheKeys } from '../../utils/cache/cacheDefaults';
 import { getValue, setValue } from '../../utils/cache/useLocalStorage';
 import { useCurrentDAOKey } from '../useCurrentDAOKey';
 
-
 const useHatsTree = () => {
   const { t } = useTranslation('roles');
   const { daoKey } = useCurrentDAOKey();

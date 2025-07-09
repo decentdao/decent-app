@@ -1,7 +1,7 @@
-import { HatsSubgraphClient } from "@hatsprotocol/sdk-v1-subgraph";
+import { HatsSubgraphClient } from '@hatsprotocol/sdk-v1-subgraph';
 
 const theGraphAPIKey = import.meta.env.VITE_APP_THEGRAPH_API_KEY;
-const hatsSubgraphId = "D1kbQSGSt165189Vh1CoQWjk33mSYyi5aLc3Dvb92gX7";
+const hatsSubgraphId = 'D1kbQSGSt165189Vh1CoQWjk33mSYyi5aLc3Dvb92gX7';
 export const hatsSubgraphClient = new HatsSubgraphClient({
   config: {
     // mainnet
@@ -25,5 +25,5 @@ export const hatsSubgraphClient = new HatsSubgraphClient({
       authToken: theGraphAPIKey,
     },
     // sepolia is handled normally.
-  }
+  },
 });
