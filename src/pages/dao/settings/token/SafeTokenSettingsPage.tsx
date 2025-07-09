@@ -312,6 +312,7 @@ export function SafeTokenSettingsPage() {
                     variant="secondary"
                     size="md"
                     isChecked={isTransferable}
+                    disabled={!tokenState.locked}
                     onChange={e => {
                       const newCheckedState = e.target.checked;
                       if (newCheckedState !== tokenState.locked) {
