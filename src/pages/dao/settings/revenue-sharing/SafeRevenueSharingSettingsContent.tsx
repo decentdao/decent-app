@@ -5,6 +5,7 @@ import { Address, zeroAddress } from 'viem';
 import { SettingsContentBox } from '../../../../components/SafeSettings/SettingsContentBox';
 import { Badge } from '../../../../components/ui/badges/Badge';
 import { AccordionDropdown } from '../../../../components/ui/containers/AccordionDropdown';
+import AddressCopier from '../../../../components/ui/links/AddressCopier';
 import { DisplayAddress } from '../../../../components/ui/links/DisplayAddress';
 import { BarLoader } from '../../../../components/ui/loaders/BarLoader';
 import Divider from '../../../../components/ui/utils/Divider';
@@ -347,18 +348,18 @@ function DaoSafeWalletCard({ displayedAddress }: { displayedAddress: Address }) 
       <Flex
         direction="row"
         alignItems="center"
-        gap={1}
+        gap={'1.5rem'}
       >
         <Text color="color-white">{t('daoSafeWallet')}</Text>
 
         {displayedAddress && (
-          <DisplayAddress
+          <AddressCopier
             address={displayedAddress}
             color="color-white"
             textStyle="text-sm-underlined"
           >
             {createAccountSubstring(displayedAddress)}
-          </DisplayAddress>
+          </AddressCopier>
         )}
       </Flex>
 
@@ -367,7 +368,7 @@ function DaoSafeWalletCard({ displayedAddress }: { displayedAddress: Address }) 
         size="base"
         leftIcon={<Icon as={WarningCircle} />}
       >
-        <Text>{t('revShareDaoSafeWarning')}</Text>
+        <Text pt={0.5}>{t('revShareDaoSafeWarning')}</Text>
       </Badge>
     </Flex>
   );
@@ -409,16 +410,20 @@ export function SafeRevenueSharingSettingsPage() {
       splits: [
         {
           address: safe?.address || zeroAddress,
-          percentage: 10,
-        },
-        {
-          address: parentSafeAddress || zeroAddress,
           percentage: 50,
         },
         {
           address: '0x123456789012345678901234567890123456789d',
-          percentage: 40,
+          percentage: parentSafeAddress ? 30 : 50,
         },
+        ...(parentSafeAddress
+          ? [
+              {
+                address: parentSafeAddress,
+                percentage: 20,
+              },
+            ]
+          : []),
       ],
     },
   ];
