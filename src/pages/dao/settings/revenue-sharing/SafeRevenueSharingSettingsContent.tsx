@@ -27,86 +27,100 @@ interface RevSplitWallet {
   splits: RevenueShare[];
 }
 
-function TableRowItem({
+// function RevenueSharingTableHeaderRowItem({
+//   label,
+//   isFirstColumn,
+// }: {
+//   label?: string;
+//   isFirstColumn?: boolean;
+// }) {
+//   return (
+//     <GridItem
+//       px="0.75rem"
+//       py="0.625rem"
+//       h="2.25rem"
+//       borderBottom="1px solid"
+//       borderLeft={isFirstColumn ? '1px solid' : undefined}
+//       textStyle="text-sm-medium"
+//       borderColor="color-layout-border"
+//       color="color-content-content2-foreground"
+//       bg="color-content-content2"
+//       textAlign="left"
+//     >
+//       {label}
+//     </GridItem>
+//   );
+// }
+
+function RevenueSharingTableRowItem({
   colSpan,
-  cellContent,
+  rowContent,
   isEdgeItem,
   rightDivider,
-  hasPadding,
   isFirstColumn,
-  roundedBottomLeftEdge,
-  roundedBottomRightEdge,
-  topMargin,
+  hasBottomRadius,
+  removeBottomBorder,
 }: {
   colSpan?: number;
   rightDivider?: boolean;
-  cellContent?: React.ReactNode;
+  rowContent?: React.ReactNode;
   isEdgeItem?: boolean;
-  hasPadding?: boolean;
   isFirstColumn?: boolean;
-  roundedBottomLeftEdge?: boolean;
-  roundedBottomRightEdge?: boolean;
-  topMargin?: boolean;
+  hasBottomRadius?: 'left' | 'right' | 'full';
+  removeBottomBorder?: boolean;
 }) {
-  const border = isEdgeItem ? { borderTop: '1px solid', borderBottom: '1px solid' } : {};
+  const topDividerBorder = isEdgeItem ? { borderTop: '1px solid' } : {};
   const rightDividerBorder = rightDivider ? { borderRight: '1px solid' } : {};
+  const borderBottomRadius = hasBottomRadius === 'full' ? { borderBottomRadius: '0.75rem' } : {};
+  const borderBottomLeftRadius =
+    hasBottomRadius === 'left' ? { borderBottomLeftRadius: '0.75rem' } : {};
+  const borderBottomRightRadius =
+    hasBottomRadius === 'right' ? { borderBottomRightRadius: '0.75rem' } : {};
   return (
     <GridItem
       display="flex"
       alignItems="center"
-      p={hasPadding ? 4 : '2px'}
-      {...border}
+      position="relative"
+      _focus={{
+        outline: 'none',
+      }}
+      overflow="hidden"
+      h="3rem"
+      px="1rem"
+      py="0.75rem"
+      borderBottom={removeBottomBorder ? undefined : '1px solid'}
+      {...borderBottomLeftRadius}
+      {...borderBottomRightRadius}
+      {...borderBottomRadius}
+      {...topDividerBorder}
       {...rightDividerBorder}
       colSpan={colSpan}
       borderLeft={isFirstColumn ? '1px solid' : undefined}
       borderColor="color-layout-border"
-      borderBottomLeftRadius={roundedBottomLeftEdge ? '0.75rem' : undefined}
-      borderBottomRightRadius={roundedBottomRightEdge ? '0.75rem' : undefined}
       textStyle="text-sm-medium"
       color="color-layout-foreground"
-      mt={topMargin ? 2 : undefined}
     >
-      {cellContent}
+      {rowContent}
     </GridItem>
   );
 }
 
-function DefaultShareRowGrid({ label, share }: { label: string; share: number }) {
+function DefaultShareRow({ label, share }: { label: string; share: number }) {
   return (
     <>
-      <TableRowItem
-        colSpan={1}
-        cellContent={
-          <Text
-            color="color-neutral-400"
-            flex={4}
-          >
-            {label}
-          </Text>
-        }
-        hasPadding
+      <RevenueSharingTableRowItem
+        rowContent={<Text color="color-neutral-400">{label}</Text>}
         isFirstColumn
         rightDivider
         isEdgeItem
       />
-      <TableRowItem
-        colSpan={1}
-        cellContent={
-          <Text
-            pl={3}
-            color="color-neutral-400"
-          >
-            % {share}
-          </Text>
-        }
-        hasPadding={false}
+      <RevenueSharingTableRowItem
+        rowContent={<Text color="color-neutral-400">{share} %</Text>}
         rightDivider
         isEdgeItem
       />
-      <TableRowItem
-        colSpan={1}
-        cellContent={null}
-        hasPadding={false}
+      <RevenueSharingTableRowItem
+        rowContent={null}
         rightDivider
         isEdgeItem
       />
@@ -117,58 +131,59 @@ function DefaultShareRowGrid({ label, share }: { label: string; share: number })
 function WalletShareRow({ address, percentage, isLastRow }: RevenueShare & { isLastRow: boolean }) {
   return (
     <>
-      <TableRowItem
-        colSpan={1}
-        cellContent={
+      <RevenueSharingTableRowItem
+        hasBottomRadius={isLastRow ? 'left' : undefined}
+        rowContent={
           <Input
             variant="tableStyle"
             color="color-white"
             value={createAccountSubstring(address)}
-            borderBottomLeftRadius={isLastRow ? '0.75rem' : undefined}
+            position="absolute"
+            top="0"
+            left="0"
+            right="0"
+            bottom="0"
+            w="100%"
+            h="100%"
+            px="1rem"
+            py="0.75rem"
+            m="0"
           />
         }
         isFirstColumn
         rightDivider
         isEdgeItem
-        roundedBottomLeftEdge={isLastRow}
       />
-      <TableRowItem
-        colSpan={1}
-        cellContent={
-          <Text
-            pl={3}
-            color="color-neutral-400"
-          >
-            % {percentage}
-          </Text>
-        }
+      <RevenueSharingTableRowItem
+        rowContent={<Text color="color-neutral-400">{percentage} %</Text>}
         rightDivider
         isEdgeItem
       />
-      <TableRowItem
-        colSpan={1}
-        hasPadding
-        cellContent={
-          <Button
-            variant="unstyled"
-            h={1}
-            w={1}
-            mt="15%"
-            mr="30%"
-            color="color-error-400"
-            _hover={{
-              backgroundColor: 'color-layout-focus-destructive',
-            }}
+      <RevenueSharingTableRowItem
+        hasBottomRadius={isLastRow ? 'right' : undefined}
+        rowContent={
+          <Flex
+            alignItems="center"
+            justifyContent="flex-end"
+            w="full"
           >
-            <Icon
-              boxSize="1rem"
-              as={TrashSimple}
-            />
-          </Button>
+            <Button
+              variant="unstyled"
+              size="sm"
+              color="color-error-400"
+              _hover={{
+                backgroundColor: 'color-layout-focus-destructive',
+              }}
+            >
+              <Icon
+                boxSize="1rem"
+                as={TrashSimple}
+              />
+            </Button>
+          </Flex>
         }
         rightDivider
         isEdgeItem
-        roundedBottomRightEdge={isLastRow}
       />
     </>
   );
@@ -206,7 +221,7 @@ function TotalAndErrorBadgeRow({ wallet }: { wallet: RevSplitWallet }) {
 function RevSplitWalletAccordion({ wallet }: { wallet: RevSplitWallet }) {
   const { t } = useTranslation('revenueSharing');
 
-  const gridTemplateColumns = '1fr 1fr auto';
+  const gridTemplateColumns = '1fr 0.5fr 0.2fr';
   return (
     <Flex
       flexDir="column"
@@ -263,26 +278,28 @@ function RevSplitWalletAccordion({ wallet }: { wallet: RevSplitWallet }) {
 
             <Grid
               templateColumns={gridTemplateColumns}
-              borderTop="1px solid"
-              borderColor="color-layout-border"
               borderTopRadius="0.75rem"
               whiteSpace="nowrap"
+              borderTop="1px solid"
+              borderColor="color-layout-border"
               className="scroll-dark"
               overflow={{ base: 'auto', md: 'hidden' }}
             >
-              <DefaultShareRowGrid
+              {/* Default Share Rows */}
+              <DefaultShareRow
                 label={t('currentDaoTreasureShareLabel')}
                 share={wallet.daoShare}
               />
-              <DefaultShareRowGrid
+              <DefaultShareRow
                 label={t('parentDaoTreasureShareLabel')}
                 share={wallet.parentDaoShare}
               />
-              <DefaultShareRowGrid
+              <DefaultShareRow
                 label={t('currentTokenHolderShareLabel')}
                 share={wallet.tokenHolderShare}
               />
 
+              {/* Wallet Share Rows */}
               {wallet.splits.map((split, i) => (
                 <WalletShareRow
                   key={split.address}
