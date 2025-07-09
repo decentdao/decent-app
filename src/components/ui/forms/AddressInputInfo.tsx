@@ -2,6 +2,7 @@ import { Text, InputProps, Flex, Icon } from '@chakra-ui/react';
 import { SealWarning } from '@phosphor-icons/react';
 import { useEffect, useState } from 'react';
 import { Address, isAddress } from 'viem';
+import { createAccountSubstring } from '../../../hooks/utils/useGetAccountName';
 import { useResolveENSName } from '../../../hooks/utils/useResolveENSName';
 import { validateENSName } from '../../../utils/url';
 import { DecentTooltip } from '../DecentTooltip';
@@ -12,26 +13,33 @@ export function AddressInputInfo(props: InputProps) {
   const [resolvedAddress, setResolvedAddress] = useState<Address>();
   const { resolveENSName } = useResolveENSName();
 
+  const propValue = props.value;
+
+  const isPropValueAddress =
+    propValue !== '' && !!propValue && typeof propValue === 'string' && isAddress(propValue);
+
   useEffect(() => {
-    if (props.value === '' || !props.value || typeof props.value !== 'string') {
+    if (!isPropValueAddress) {
       setResolvedAddress(undefined);
       return;
     }
-    if (isAddress(props.value)) {
+    if (isAddress(propValue)) {
       setResolvedAddress(undefined);
       return;
     }
     // check if there
-    if (validateENSName(props.value)) {
-      resolveENSName(props.value).then(ra => {
+    if (validateENSName(propValue)) {
+      resolveENSName(propValue).then(ra => {
         setResolvedAddress(ra.resolvedAddress);
       });
       return;
     }
     setResolvedAddress(undefined);
-  }, [props.value, resolveENSName]);
+  }, [isPropValueAddress, propValue, resolveENSName]);
 
-  if (!showInput && props.value) {
+  if (!showInput && propValue) {
+    const displayedValue = isPropValueAddress ? createAccountSubstring(propValue) : propValue;
+
     return (
       <Flex
         alignItems="center"
@@ -60,7 +68,7 @@ export function AddressInputInfo(props: InputProps) {
           textOverflow="ellipsis"
           whiteSpace="nowrap"
         >
-          {props.value}
+          {displayedValue}
         </Text>
         {resolvedAddress && (
           <DecentTooltip

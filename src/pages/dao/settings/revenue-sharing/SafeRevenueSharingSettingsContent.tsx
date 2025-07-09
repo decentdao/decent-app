@@ -5,6 +5,7 @@ import { Address, zeroAddress } from 'viem';
 import { SettingsContentBox } from '../../../../components/SafeSettings/SettingsContentBox';
 import { Badge } from '../../../../components/ui/badges/Badge';
 import { AccordionDropdown } from '../../../../components/ui/containers/AccordionDropdown';
+import { AddressInputInfo } from '../../../../components/ui/forms/AddressInputInfo';
 import AddressCopier from '../../../../components/ui/links/AddressCopier';
 import { BarLoader } from '../../../../components/ui/loaders/BarLoader';
 import Divider from '../../../../components/ui/utils/Divider';
@@ -142,23 +143,10 @@ function WalletShareRow({
         hasBottomRadius={isLastRow ? 'left' : undefined}
         rowContent={
           <>
-            <Input
+            <AddressInputInfo
+              value={address}
               variant="tableStyle"
-              color="color-white"
-              value={createAccountSubstring(address)}
-              position="absolute"
-              top="0"
-              left="0"
-              right="0"
-              bottom="0"
-              w="100%"
-              h="100%"
-              px="1rem"
-              py="0.75rem"
-              m="0"
-              isInvalid={isDuplicateAddress}
-              border={isDuplicateAddress ? "2px solid" : "none"}
-              borderColor={isDuplicateAddress ? "color-error-400" : "transparent"}
+              // {...field}
             />
             {isDuplicateAddress && (
               <Text
@@ -420,21 +408,21 @@ export function SafeRevenueSharingSettingsPage() {
           percentage: 500,
         },
         {
-          address: '0x123456789012345678901234567890123456789b',
+          address: '0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789',
           percentage: 25,
         },
         {
-          address: '0x123456789012345678901234567890123456789c',
+          address: '0xd21934eD8eAf27a67f0A70042Af50A1D6d195E81',
           percentage: 20,
         },
         {
-          address: '0x123456789012345678901234567890123456789c',
+          address: '0xd21934eD8eAf27a67f0A70042Af50A1D6d195E81',
           percentage: 5,
         },
       ],
     },
     {
-      address: '0x123456789012345678901234567890123456789a',
+      address: '0x9d05eA2a735a1AE0d964285F36c3cCAAA4Cc2612',
       name: 'Test 2',
       splits: [
         {
@@ -442,7 +430,7 @@ export function SafeRevenueSharingSettingsPage() {
           percentage: 50,
         },
         {
-          address: '0x123456789012345678901234567890123456789d',
+          address: '0x88072DACc5ad5DE87214F0dba0760f66C0C1B53d',
           percentage: parentSafeAddress ? 30 : 50,
         },
         ...(parentSafeAddress
