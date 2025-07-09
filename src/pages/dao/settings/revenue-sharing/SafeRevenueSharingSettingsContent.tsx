@@ -1,5 +1,5 @@
 import { Flex, Text, Icon, Button, Input, Grid, GridItem } from '@chakra-ui/react';
-import { PencilSimple, Plus, TrashSimple, WarningCircle } from '@phosphor-icons/react';
+import { CheckCircle, PencilSimple, Plus, TrashSimple, WarningCircle } from '@phosphor-icons/react';
 import { useTranslation } from 'react-i18next';
 import { Address, zeroAddress } from 'viem';
 import { SettingsContentBox } from '../../../../components/SafeSettings/SettingsContentBox';
@@ -174,50 +174,7 @@ function WalletShareRow({ address, percentage, isLastRow }: RevenueShare & { isL
   );
 }
 
-function TotalAndErrorBadgeRow({ total, isTotalError }: { total: number; isTotalError: boolean }) {
-  const { t } = useTranslation('revenueSharing');
-
-  return (
-    <>
-      <TableRowItem
-        colSpan={1}
-        cellContent={
-          <>
-            <Text
-              mr={1}
-              color="color-charcoal-500"
-            >
-              {t('revSplitTotalLabel')}:
-            </Text>
-            <Text color="color-white">{total} wallets</Text>
-          </>
-        }
-      />
-      <TableRowItem
-        colSpan={1}
-        cellContent={
-          isTotalError && (
-            <Badge
-              labelKey="revShareTotalError"
-              size="base"
-              leftIcon={<Icon as={WarningCircle} />}
-            >
-              <Text>{t('revShareTotalError')}</Text>
-            </Badge>
-          )
-        }
-      />
-      <TableRowItem
-        colSpan={1}
-        cellContent={null}
-        hasPadding
-        topMargin
-      />
-    </>
-  );
-}
-
-function RevSplitWalletAccordion({ wallet }: { wallet: RevSplitWallet }) {
+function TotalAndErrorBadgeRow({ wallet }: { wallet: RevSplitWallet }) {
   const { t } = useTranslation('revenueSharing');
 
   const revSplitTotal =
@@ -227,6 +184,27 @@ function RevSplitWalletAccordion({ wallet }: { wallet: RevSplitWallet }) {
     wallet.tokenHolderShare;
 
   const isTotalError = revSplitTotal > 100;
+
+  return (
+    <Flex
+      my={2}
+      px="1rem"
+      alignItems="center"
+    >
+      <Icon
+        mr={1}
+        boxSize="1rem"
+        as={CheckCircle}
+        color={isTotalError ? 'color-error-400' : 'color-success-400'}
+      />
+      <Text>{revSplitTotal}%</Text>
+      {isTotalError && <Text ml="1rem">{t('revShareTotalError')}</Text>}
+    </Flex>
+  );
+}
+
+function RevSplitWalletAccordion({ wallet }: { wallet: RevSplitWallet }) {
+  const { t } = useTranslation('revenueSharing');
 
   const gridTemplateColumns = '1fr 1fr auto';
   return (
@@ -263,31 +241,25 @@ function RevSplitWalletAccordion({ wallet }: { wallet: RevSplitWallet }) {
               color="color-white"
               textStyle="text-sm-underlined"
               variant="secondary"
+              ml="1rem"
             >
               {createAccountSubstring(wallet.address)}
             </AddressCopier>
           </Flex>
         }
         content={
-          <Flex direction="column">
+          <Flex
+            mx={'-1rem'}
+            direction="column"
+          >
             <Divider my={4} />
 
-            <Flex
-              flexDir="row"
-              alignItems="center"
-              justifyContent="space-between"
-              gap={2}
+            <Text
               mb={4}
+              color="color-neutral-50"
             >
-              <Text color="color-neutral-50">{t('counterparties')}</Text>
-              <Button
-                variant="secondary"
-                size="sm"
-                leftIcon={<Icon as={Plus} />}
-              >
-                {t('revShareAddSplitWallet')}
-              </Button>
-            </Flex>
+              {t('counterparties')}
+            </Text>
 
             <Grid
               templateColumns={gridTemplateColumns}
@@ -319,12 +291,17 @@ function RevSplitWalletAccordion({ wallet }: { wallet: RevSplitWallet }) {
                   isLastRow={i === wallet.splits.length - 1}
                 />
               ))}
-
-              <TotalAndErrorBadgeRow
-                total={wallet.splits.length + 3}
-                isTotalError={isTotalError}
-              />
             </Grid>
+
+            <TotalAndErrorBadgeRow wallet={wallet} />
+
+            <Button
+              variant="secondaryV1"
+              ml="auto"
+              leftIcon={<Icon as={Plus} />}
+            >
+              {t('revShareAddSplitWallet')}
+            </Button>
           </Flex>
         }
       />
@@ -392,7 +369,7 @@ export function SafeRevenueSharingSettingsPage() {
       splits: [
         {
           address: safe?.address || zeroAddress,
-          percentage: 50,
+          percentage: 500,
         },
         {
           address: '0x123456789012345678901234567890123456789b',
