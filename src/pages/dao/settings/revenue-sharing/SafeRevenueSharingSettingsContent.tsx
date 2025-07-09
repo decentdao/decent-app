@@ -1,5 +1,13 @@
 import { Flex, Text, Icon, Button, Input, Grid, GridItem } from '@chakra-ui/react';
-import { CheckCircle, PencilSimple, Plus, TrashSimple, WarningCircle } from '@phosphor-icons/react';
+import {
+  CheckCircle,
+  PencilSimple,
+  Plus,
+  TrashSimple,
+  WarningCircle,
+  Check,
+} from '@phosphor-icons/react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Address, zeroAddress } from 'viem';
 import { SettingsContentBox } from '../../../../components/SafeSettings/SettingsContentBox';
@@ -27,31 +35,6 @@ interface RevSplitWallet {
   tokenHolderShare: number;
   splits: RevenueShare[];
 }
-
-// function RevenueSharingTableHeaderRowItem({
-//   label,
-//   isFirstColumn,
-// }: {
-//   label?: string;
-//   isFirstColumn?: boolean;
-// }) {
-//   return (
-//     <GridItem
-//       px="0.75rem"
-//       py="0.625rem"
-//       h="2.25rem"
-//       borderBottom="1px solid"
-//       borderLeft={isFirstColumn ? '1px solid' : undefined}
-//       textStyle="text-sm-medium"
-//       borderColor="color-layout-border"
-//       color="color-content-content2-foreground"
-//       bg="color-content-content2"
-//       textAlign="left"
-//     >
-//       {label}
-//     </GridItem>
-//   );
-// }
 
 function RevenueSharingTableRowItem({
   colSpan,
@@ -87,8 +70,6 @@ function RevenueSharingTableRowItem({
       }}
       overflow="hidden"
       h="3rem"
-      px="1rem"
-      py="0.75rem"
       borderBottom={removeBottomBorder ? undefined : '1px solid'}
       {...borderBottomLeftRadius}
       {...borderBottomRightRadius}
@@ -146,6 +127,7 @@ function WalletShareRow({
             <AddressInputInfo
               value={address}
               variant="tableStyle"
+              isInvalid={isDuplicateAddress}
               // {...field}
             />
             {isDuplicateAddress && (
@@ -238,6 +220,18 @@ function TotalAndErrorBadgeRow({ wallet }: { wallet: RevSplitWallet }) {
 
 function RevSplitWalletAccordion({ wallet }: { wallet: RevSplitWallet }) {
   const { t } = useTranslation('revenueSharing');
+  const [isEditingName, setIsEditingName] = useState(false);
+  const [editedName, setEditedName] = useState(wallet.name || t('revSplitWallet'));
+
+  const handleNameSave = () => {
+    // TODO: Implement save logic here
+    setIsEditingName(false);
+  };
+
+  const handleNameCancel = () => {
+    setEditedName(wallet.name || t('revSplitWallet'));
+    setIsEditingName(false);
+  };
 
   const gridTemplateColumns = '1fr 0.5fr 0.2fr';
   return (
@@ -253,22 +247,63 @@ function RevSplitWalletAccordion({ wallet }: { wallet: RevSplitWallet }) {
             alignItems="center"
             gap={1}
           >
-            <Text color="color-white">{wallet.name || t('revSplitWallet')}</Text>
-            <Button
-              variant="tertiary"
-              h="auto"
-              minW="auto"
-              color="color-lilac-100"
-              p={1}
-              onClick={e => {
-                e.stopPropagation();
-              }}
-            >
-              <Icon
-                boxSize="1rem"
-                as={PencilSimple}
-              />
-            </Button>
+            {isEditingName ? (
+              <Flex
+                alignItems="center"
+                gap={2}
+              >
+                <Input
+                  value={editedName}
+                  onChange={e => setEditedName(e.target.value)}
+                  size="sm"
+                  px="0.75rem"
+                  py="0.5rem"
+                  onKeyDown={e => {
+                    if (e.key === 'Enter') {
+                      handleNameSave();
+                    } else if (e.key === 'Escape') {
+                      handleNameCancel();
+                    }
+                  }}
+                  autoFocus
+                />
+                <Button
+                  variant="tertiary"
+                  h="auto"
+                  minW="auto"
+                  p={1}
+                  onClick={e => {
+                    e.stopPropagation();
+                    handleNameSave();
+                  }}
+                >
+                  <Icon
+                    boxSize="1rem"
+                    as={Check}
+                  />
+                </Button>
+              </Flex>
+            ) : (
+              <>
+                <Text color="color-white">{wallet.name || t('revSplitWallet')}</Text>
+                <Button
+                  variant="tertiary"
+                  h="auto"
+                  minW="auto"
+                  color="color-lilac-100"
+                  p={1}
+                  onClick={e => {
+                    e.stopPropagation();
+                    setIsEditingName(true);
+                  }}
+                >
+                  <Icon
+                    boxSize="1rem"
+                    as={PencilSimple}
+                  />
+                </Button>
+              </>
+            )}
             <AddressCopier
               address={wallet.address}
               color="color-white"
