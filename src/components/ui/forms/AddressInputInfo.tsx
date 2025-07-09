@@ -54,16 +54,18 @@ export function AddressInputInfo(props: InputProps) {
           setShowInput(false);
         }}
         _hover={{
-          bg: 'color-alpha-white-950',
+          bg: props.isInvalid ? 'color-error-950' : 'color-alpha-white-950',
         }}
+        bg={props.isInvalid ? 'color-error-950' : 'transparent'}
+        boxShadow={props.isInvalid ? '0px 0px 0px 2px #AF3A48, 0px 1px 0px 0px rgba(242, 161, 171, 0.30), 0px 0px 0px 1px rgba(0, 0, 0, 0.80)' : 'none'}
       >
         <Text
           cursor="pointer"
           _hover={{
-            bg: 'color-alpha-white-950',
+            bg: props.isInvalid ? 'color-error-950' : 'color-alpha-white-950',
           }}
           textStyle="text-sm-regular"
-          color="color-layout-foreground"
+          color={props.isInvalid ? 'color-error-400' : 'color-layout-foreground'}
           overflow="hidden"
           textOverflow="ellipsis"
           whiteSpace="nowrap"
