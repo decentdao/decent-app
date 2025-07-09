@@ -128,27 +128,57 @@ function DefaultShareRow({ label, share }: { label: string; share: number }) {
   );
 }
 
-function WalletShareRow({ address, percentage, isLastRow }: RevenueShare & { isLastRow: boolean }) {
+function WalletShareRow({
+  address,
+  percentage,
+  isLastRow,
+  allSplits,
+}: RevenueShare & { isLastRow: boolean; allSplits: RevenueShare[] }) {
+  const { t } = useTranslation('revenueSharing');
+  const isDuplicateAddress = allSplits.filter(split => split.address === address).length > 1;
   return (
     <>
       <RevenueSharingTableRowItem
         hasBottomRadius={isLastRow ? 'left' : undefined}
         rowContent={
-          <Input
-            variant="tableStyle"
-            color="color-white"
-            value={createAccountSubstring(address)}
-            position="absolute"
-            top="0"
-            left="0"
-            right="0"
-            bottom="0"
-            w="100%"
-            h="100%"
-            px="1rem"
-            py="0.75rem"
-            m="0"
-          />
+          <>
+            <Input
+              variant="tableStyle"
+              color="color-white"
+              value={createAccountSubstring(address)}
+              position="absolute"
+              top="0"
+              left="0"
+              right="0"
+              bottom="0"
+              w="100%"
+              h="100%"
+              px="1rem"
+              py="0.75rem"
+              m="0"
+              isInvalid={isDuplicateAddress}
+              border={isDuplicateAddress ? "2px solid" : "none"}
+              borderColor={isDuplicateAddress ? "color-error-400" : "transparent"}
+            />
+            {isDuplicateAddress && (
+              <Text
+                position="absolute"
+                right="1rem"
+                top="50%"
+                transform="translateY(-50%)"
+                fontSize="xs"
+                color="color-error-400"
+                px="0.5rem"
+                py="0.25rem"
+                borderRadius="0.25rem"
+                zIndex={1}
+                pointerEvents="none"
+                whiteSpace="nowrap"
+              >
+                {t('addressAlreadyInUse')}
+              </Text>
+            )}
+          </>
         }
         isFirstColumn
         rightDivider
@@ -302,10 +332,11 @@ function RevSplitWalletAccordion({ wallet }: { wallet: RevSplitWallet }) {
               {/* Wallet Share Rows */}
               {wallet.splits.map((split, i) => (
                 <WalletShareRow
-                  key={split.address}
+                  key={`${split.address}-${i}`}
                   address={split.address}
                   percentage={split.percentage}
                   isLastRow={i === wallet.splits.length - 1}
+                  allSplits={wallet.splits}
                 />
               ))}
             </Grid>
@@ -394,7 +425,11 @@ export function SafeRevenueSharingSettingsPage() {
         },
         {
           address: '0x123456789012345678901234567890123456789c',
-          percentage: 25,
+          percentage: 20,
+        },
+        {
+          address: '0x123456789012345678901234567890123456789c',
+          percentage: 5,
         },
       ],
     },

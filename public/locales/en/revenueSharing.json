@@ -9,5 +9,6 @@
   "currentDaoTreasureShareLabel": "Current DAO Treasury Share",
   "parentDaoTreasureShareLabel": "Parent DAO",
   "currentTokenHolderShareLabel": "Current Token Holder Staking",
-  "addRevenueShare": "Add Revenue Share"
+  "addRevenueShare": "Add Revenue Share",
+  "addressAlreadyInUse": "Address already in use"
 }
