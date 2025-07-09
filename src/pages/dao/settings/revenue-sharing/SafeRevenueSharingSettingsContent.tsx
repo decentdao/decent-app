@@ -6,7 +6,6 @@ import { SettingsContentBox } from '../../../../components/SafeSettings/Settings
 import { Badge } from '../../../../components/ui/badges/Badge';
 import { AccordionDropdown } from '../../../../components/ui/containers/AccordionDropdown';
 import AddressCopier from '../../../../components/ui/links/AddressCopier';
-import { DisplayAddress } from '../../../../components/ui/links/DisplayAddress';
 import { BarLoader } from '../../../../components/ui/loaders/BarLoader';
 import Divider from '../../../../components/ui/utils/Divider';
 import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
@@ -259,14 +258,14 @@ function RevSplitWalletAccordion({ wallet }: { wallet: RevSplitWallet }) {
                 as={PencilSimple}
               />
             </Button>
-            <DisplayAddress
+            <AddressCopier
               address={wallet.address}
               color="color-white"
               textStyle="text-sm-underlined"
-              onClick={e => e.stopPropagation()}
+              variant="secondary"
             >
               {createAccountSubstring(wallet.address)}
-            </DisplayAddress>
+            </AddressCopier>
           </Flex>
         }
         content={
@@ -357,6 +356,7 @@ function DaoSafeWalletCard({ displayedAddress }: { displayedAddress: Address }) 
             address={displayedAddress}
             color="color-white"
             textStyle="text-sm-underlined"
+            variant="secondary"
           >
             {createAccountSubstring(displayedAddress)}
           </AddressCopier>
@@ -468,21 +468,11 @@ export function SafeRevenueSharingSettingsPage() {
               </Text>
 
               <Button
-                variant="ghost"
-                h="auto"
-                minW="auto"
-                color="color-lilac-100"
-                p={1}
+                variant="secondaryV1"
                 ml="auto"
-                _hover={{
-                  bg: 'color-neutral-900',
-                  opacity: 0.8,
-                }}
+                leftIcon={<Icon as={Plus} />}
               >
-                <Icon
-                  boxSize="1.5rem"
-                  as={Plus}
-                />
+                <Text>{t('addRevenueShare')}</Text>
               </Button>
             </Flex>
 
