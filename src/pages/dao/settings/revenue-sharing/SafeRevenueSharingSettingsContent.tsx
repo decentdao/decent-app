@@ -11,7 +11,7 @@ import Divider from '../../../../components/ui/utils/Divider';
 import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
 import { createAccountSubstring } from '../../../../hooks/utils/useGetAccountName';
 import { useDAOStore } from '../../../../providers/App/AppProvider';
-import { DAOSplitWallet } from '../../../../providers/App/hooks/useDecentAPI';
+import { DAOSplitWallet } from '../../../../providers/App/decentAPI';
 
 interface RevenueShare {
   address: Address;

@@ -1,6 +1,6 @@
 import axios, { AxiosResponse } from 'axios';
 import { Address } from 'viem';
-import { StakingTokenData } from '../../../types/revenueSharing';
+import { StakingTokenData } from '../../types/revenueSharing';
 
 const DECENT_API_BASE_URL = 'https://api.decent.build';
 

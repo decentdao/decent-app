@@ -5,8 +5,8 @@ import { Address, getAddress, zeroAddress } from 'viem';
 import { CacheExpiry, CacheKeys } from '../../hooks/utils/cache/cacheDefaults';
 import { setValue } from '../../hooks/utils/cache/useLocalStorage';
 import { useFilterSpamTokens } from '../../hooks/utils/useFilterSpamTokens';
+import { getDaoSplits } from '../../providers/App/decentAPI';
 import useBalancesAPI from '../../providers/App/hooks/useBalancesAPI';
-import { getDaoSplits } from '../../providers/App/hooks/useDecentAPI';
 import { useSafeAPI } from '../../providers/App/hooks/useSafeAPI';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
 import {
