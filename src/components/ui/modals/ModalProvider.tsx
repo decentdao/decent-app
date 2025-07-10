@@ -1,6 +1,6 @@
 import { Portal, Show, useDisclosure } from '@chakra-ui/react';
 import { FormikProps } from 'formik';
-import { createContext, ReactNode, useCallback, useEffect, useState } from 'react';
+import { createContext, ReactNode, useCallback, useEffect, useState, useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Address } from 'viem';
 import { NEUTRAL_2_50_TRANSPARENT } from '../../../constants/common';
@@ -582,6 +582,11 @@ export function ModalProvider({
   baseZIndex?: number;
 }) {
   const [openModals, setOpenModals] = useState<ModalTypeWithProps[]>([]);
+  // Capture any parent ModalContext so that we can delegate certain actions
+  // upward when this provider is nested. Because the value for `ModalContext`
+  // below has **not** been provided yet, this will reference the closest
+  // ancestor provider (or the default noop context at the app root).
+  const parentModalContext = useContext(ModalContext);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { t } = useTranslation('modals');
 
@@ -589,14 +594,37 @@ export function ModalProvider({
     setOpenModals(prev => [...prev, modal]);
   }, []);
 
+  /**
+   * Pops the top-most modal in the **current** provider. If this provider has
+   * no modals open, delegate the pop to the parent provider (if one exists).
+   *
+   * This allows consumers inside nested providers (e.g. SafeSettingsModal)
+   * to still close the modal that created the nested provider without needing
+   * a separate reference to the parent context.
+   */
   const popModal = useCallback(() => {
-    setOpenModals(prev => prev.slice(0, -1));
-  }, []);
+    if (openModals.length > 0) {
+      // Close the top-most modal managed by this provider.
+      setOpenModals(prev => prev.slice(0, -1));
+    } else if (parentModalContext) {
+      // Nothing left to close locally – delegate to the parent provider.
+      parentModalContext.popModal();
+    }
+    // If there is no parent provider (root context) and nothing to pop, do nothing.
+  }, [openModals.length, parentModalContext]);
 
   const closeAllModals = useCallback(() => {
+    // Clear any locally managed modals first.
     setOpenModals([]);
+
+    // If this provider is nested, ask the parent to also close (useful when
+    // the desire is to close an entire modal flow that originated higher up).
+    if (parentModalContext) {
+      parentModalContext.popModal();
+    }
+
     onClose();
-  }, [onClose]);
+  }, [parentModalContext, onClose]);
 
   useEffect(() => {
     if (openModals.length > 0) {
