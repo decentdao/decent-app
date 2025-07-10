@@ -16,10 +16,10 @@ async function findPR() {
   const url = `https://api.github.com/repos/${owner}/${repoName}/commits/${sha}/pulls`;
   const res = await fetch(url, {
     headers: {
-      'Accept': 'application/vnd.github.groot-preview+json',
-      'Authorization': `Bearer ${token}`,
-      'User-Agent': 'find-pr-by-sha-script'
-    }
+      Accept: 'application/vnd.github.groot-preview+json',
+      Authorization: `Bearer ${token}`,
+      'User-Agent': 'find-pr-by-sha-script',
+    },
   });
   if (!res.ok) {
     console.error(`GitHub API error: ${res.status} ${res.statusText}`);
