@@ -1,8 +1,9 @@
-import { HatsSubgraphClient, Tree } from '@hatsprotocol/sdk-v1-subgraph';
+import { Tree } from '@hatsprotocol/sdk-v1-subgraph';
 import { useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { createSablierSubgraphClient } from '../../../graphql';
+import { hatsSubgraphClient } from '../../../graphql/hats';
 import { useDAOStore } from '../../../providers/App/AppProvider';
 import useIPFSClient from '../../../providers/App/hooks/useIPFSClient';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
@@ -12,8 +13,6 @@ import useNetworkPublicClient from '../../useNetworkPublicClient';
 import { CacheExpiry, CacheKeys } from '../../utils/cache/cacheDefaults';
 import { getValue, setValue } from '../../utils/cache/useLocalStorage';
 import { useCurrentDAOKey } from '../useCurrentDAOKey';
-
-const hatsSubgraphClient = new HatsSubgraphClient({});
 
 const useHatsTree = () => {
   const { t } = useTranslation('roles');
