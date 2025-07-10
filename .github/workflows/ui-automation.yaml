@@ -9,6 +9,8 @@ jobs:
     name: E2E Selenium Automation
     runs-on: ubuntu-latest
     continue-on-error: true
+    permissions:
+      pull-requests: write
     steps:
       - name: Checkout decent-app
         uses: actions/checkout@v4
@@ -39,20 +41,19 @@ jobs:
           name: selenium-test-results
           path: decent-ui-automation/test-results/
 
-      - name: Find merged pull request
-        id: find_pr
-        uses: peter-evans/find-pull-request@v3
+      - name: Find Pull Request
+        id: find-pull-request
+        uses: juliangruber/find-pull-request-action@v1
         with:
-          commit: ${{ github.sha }}
-          state: merged
+          branch: ${{ github.event.ref_name }}
 
       - name: Prepend artifact link to summary
         run: |
           echo "[⬇️ Download Selenium Test Artifacts](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})\n" | cat - decent-ui-automation/test-results/test-results-summary.md > decent-ui-automation/test-results/test-results-summary.with-link.md
 
       - name: Comment results on PR
-        if: steps.find_pr.outputs.pull_request_number != ''
+        if: steps.find-pull-request.outputs.number != ''
         uses: marocchino/sticky-pull-request-comment@v2
         with:
-          number: ${{ steps.find_pr.outputs.pull_request_number }}
+          number: ${{ steps.find-pull-request.outputs.number }}
           path: decent-ui-automation/test-results/test-results-summary.with-link.md
