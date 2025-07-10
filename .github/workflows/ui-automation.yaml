@@ -1,0 +1,46 @@
+name: UI Automation
+on:
+  push:
+    branches:
+      - develop
+
+jobs:
+  e2e-automation:
+    name: E2E Selenium Automation
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - name: Checkout decent-app
+        uses: actions/checkout@v4
+
+      - name: Checkout automation repo
+        uses: actions/checkout@v4
+        with:
+          repository: decentdao/decent-ui-automation
+          path: decent-ui-automation
+
+      - name: Install dependencies
+        run: |
+          cd decent-ui-automation
+          npm ci
+
+      - name: Kill any leftover Chrome processes
+        run: pkill chrome || true
+
+      - name: Run Selenium tests
+        run: |
+          cd decent-ui-automation
+          npm test
+        continue-on-error: true
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        with:
+          name: selenium-test-results
+          path: decent-ui-automation/test-results/
+
+      - name: Comment results on PR
+        if: github.event_name == 'pull_request'
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          path: decent-ui-automation/test-results/test-results-summary.md
