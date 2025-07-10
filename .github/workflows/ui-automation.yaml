@@ -39,8 +39,16 @@ jobs:
           name: selenium-test-results
           path: decent-ui-automation/test-results/
 
+      - name: Find merged pull request
+        id: find_pr
+        uses: peter-evans/find-pull-request@v5
+        with:
+          commit: ${{ github.sha }}
+          state: merged
+
       - name: Comment results on PR
-        if: github.event_name == 'pull_request'
+        if: steps.find_pr.outputs.pull_request_number != ''
         uses: marocchino/sticky-pull-request-comment@v2
         with:
+          number: ${{ steps.find_pr.outputs.pull_request_number }}
           path: decent-ui-automation/test-results/test-results-summary.md
