@@ -1,4 +1,4 @@
-import { abis } from '@fractal-framework/fractal-contracts';
+import { legacy } from '@decentdao/decent-contracts';
 import { useCallback } from 'react';
 import { Abi, Address, getContract } from 'viem';
 import useNetworkPublicClient from '../useNetworkPublicClient';
@@ -58,7 +58,7 @@ function combineAbis(...abisToCombine: Abi[]): Abi {
 
 const contractTests: ContractFunctionTest[] = [
   {
-    abi: abis.ERC20Claim,
+    abi: legacy.abis.ERC20Claim,
     functionNames: [
       'childERC20',
       'parentERC20',
@@ -71,13 +71,13 @@ const contractTests: ContractFunctionTest[] = [
     resultKey: 'isClaimErc20',
   },
   {
-    abi: combineAbis(abis.AzoriusFreezeGuard, abis.MultisigFreezeGuard),
+    abi: combineAbis(legacy.abis.AzoriusFreezeGuard, legacy.abis.MultisigFreezeGuard),
     functionNames: ['freezeVoting', 'owner'],
     revertFunctionNames: ['childGnosisSafe', 'timelockPeriod', 'executionPeriod'],
     resultKey: 'isFreezeGuardAzorius',
   },
   {
-    abi: abis.MultisigFreezeGuard,
+    abi: legacy.abis.MultisigFreezeGuard,
     functionNames: [
       'childGnosisSafe',
       'executionPeriod',
@@ -88,7 +88,7 @@ const contractTests: ContractFunctionTest[] = [
     resultKey: 'isFreezeGuardMultisig',
   },
   {
-    abi: abis.ERC20FreezeVoting,
+    abi: legacy.abis.ERC20FreezeVoting,
     functionNames: [
       'votesERC20',
       'freezePeriod',
@@ -101,7 +101,7 @@ const contractTests: ContractFunctionTest[] = [
     resultKey: 'isFreezeVotingErc20',
   },
   {
-    abi: abis.ERC721FreezeVoting,
+    abi: legacy.abis.ERC721FreezeVoting,
     functionNames: [
       'strategy',
       'owner',
@@ -114,7 +114,7 @@ const contractTests: ContractFunctionTest[] = [
     resultKey: 'isFreezeVotingErc721',
   },
   {
-    abi: abis.MultisigFreezeVoting,
+    abi: legacy.abis.MultisigFreezeVoting,
     functionNames: [
       'parentGnosisSafe',
       'freezePeriod',
@@ -126,7 +126,10 @@ const contractTests: ContractFunctionTest[] = [
     resultKey: 'isFreezeVotingMultisig',
   },
   {
-    abi: combineAbis(abis.LinearERC20Voting, abis.LinearERC20VotingWithHatsProposalCreation),
+    abi: combineAbis(
+      legacy.abis.LinearERC20Voting,
+      legacy.abis.LinearERC20VotingWithHatsProposalCreation,
+    ),
     revertFunctionNames: ['getWhitelistedHatIds'],
     functionNames: [
       'BASIS_DENOMINATOR',
@@ -142,7 +145,7 @@ const contractTests: ContractFunctionTest[] = [
     resultKey: 'isLinearVotingErc20',
   },
   {
-    abi: abis.LinearERC20VotingWithHatsProposalCreation,
+    abi: legacy.abis.LinearERC20VotingWithHatsProposalCreation,
     functionNames: [
       'BASIS_DENOMINATOR',
       'QUORUM_DENOMINATOR',
@@ -158,7 +161,10 @@ const contractTests: ContractFunctionTest[] = [
     resultKey: 'isLinearVotingErc20WithHatsProposalCreation',
   },
   {
-    abi: combineAbis(abis.LinearERC721Voting, abis.LinearERC721VotingWithHatsProposalCreation),
+    abi: combineAbis(
+      legacy.abis.LinearERC721Voting,
+      legacy.abis.LinearERC721VotingWithHatsProposalCreation,
+    ),
     revertFunctionNames: ['getWhitelistedHatIds'],
     functionNames: [
       'BASIS_DENOMINATOR',
@@ -173,7 +179,7 @@ const contractTests: ContractFunctionTest[] = [
     resultKey: 'isLinearVotingErc721',
   },
   {
-    abi: abis.LinearERC721VotingWithHatsProposalCreation,
+    abi: legacy.abis.LinearERC721VotingWithHatsProposalCreation,
     functionNames: [
       'BASIS_DENOMINATOR',
       'azoriusModule',
@@ -188,7 +194,7 @@ const contractTests: ContractFunctionTest[] = [
     resultKey: 'isLinearVotingErc721WithHatsProposalCreation',
   },
   {
-    abi: abis.Azorius,
+    abi: legacy.abis.Azorius,
     functionNames: [
       'avatar',
       'target',
@@ -204,7 +210,7 @@ const contractTests: ContractFunctionTest[] = [
     resultKey: 'isModuleAzorius',
   },
   {
-    abi: combineAbis(abis.FractalModule, abis.Azorius),
+    abi: combineAbis(legacy.abis.FractalModule, legacy.abis.Azorius),
     functionNames: ['avatar', 'target', 'getGuard', 'guard', 'owner'],
     revertFunctionNames: [
       'timelockPeriod',
@@ -216,7 +222,7 @@ const contractTests: ContractFunctionTest[] = [
     resultKey: 'isModuleFractal',
   },
   {
-    abi: combineAbis(abis.VotesERC20, abis.VotesERC20Wrapper),
+    abi: combineAbis(legacy.abis.VotesERC20, legacy.abis.VotesERC20Wrapper),
     functionNames: ['decimals', 'name', 'owner', 'symbol', 'totalSupply'],
     revertFunctionNames: ['underlying'],
     resultKey: 'isVotesErc20',

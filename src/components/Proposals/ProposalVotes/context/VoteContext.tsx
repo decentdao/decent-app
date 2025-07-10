@@ -1,4 +1,4 @@
-import { abis } from '@fractal-framework/fractal-contracts';
+import { legacy } from '@decentdao/decent-contracts';
 import {
   createContext,
   ReactNode,
@@ -129,7 +129,7 @@ export function VoteContextProvider({
         } else if (governance.type === GovernanceType.AZORIUS_ERC20) {
           const azoriusProposal = proposal as AzoriusProposal;
           const ozLinearVotingContract = getContract({
-            abi: abis.LinearERC20Voting,
+            abi: legacy.abis.LinearERC20Voting,
             address: azoriusProposal.votingStrategy,
             client: publicClient,
           });

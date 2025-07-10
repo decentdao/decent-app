@@ -1,4 +1,4 @@
-import { abis } from '@fractal-framework/fractal-contracts';
+import { legacy } from '@decentdao/decent-contracts';
 import {
   AbiItem,
   Address,
@@ -47,7 +47,7 @@ export const getPaymasterAddress = (args: {
   );
 
   const encodedPaymasterInitializationData = encodeFunctionData({
-    abi: abis.DecentPaymasterV1,
+    abi: legacy.abis.DecentPaymasterV1,
     functionName: 'initialize',
     args: [encodedPaymasterInitializationParams],
   });
@@ -86,7 +86,7 @@ export const getVoteSelectorAndValidator = (
   if (strategyType === FractalTokenType.erc20 || strategyType === GovernanceType.AZORIUS_ERC20) {
     voteAbiItem = getAbiItem({
       name: 'vote',
-      abi: abis.LinearERC20VotingV1,
+      abi: legacy.abis.LinearERC20VotingV1,
     });
     voteValidator = paymaster.linearERC20VotingV1ValidatorV1;
   } else if (
@@ -95,7 +95,7 @@ export const getVoteSelectorAndValidator = (
   ) {
     voteAbiItem = getAbiItem({
       name: 'vote',
-      abi: abis.LinearERC721VotingV1,
+      abi: legacy.abis.LinearERC721VotingV1,
     });
     voteValidator = paymaster.linearERC721VotingV1ValidatorV1;
   } else {

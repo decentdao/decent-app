@@ -1,5 +1,5 @@
 import { Box, Flex, Icon, Text } from '@chakra-ui/react';
-import { abis } from '@fractal-framework/fractal-contracts';
+import { legacy } from '@decentdao/decent-contracts';
 import { Question } from '@phosphor-icons/react';
 import { format } from 'date-fns';
 import { formatInTimeZone } from 'date-fns-tz';
@@ -240,7 +240,7 @@ export function AzoriusProposalSummary({ proposal }: { proposal: AzoriusProposal
       if (address) {
         if (isERC20) {
           const strategyContract = getContract({
-            abi: abis.LinearERC20Voting,
+            abi: legacy.abis.LinearERC20Voting,
             address: proposal.votingStrategy,
             client: publicClient,
           });

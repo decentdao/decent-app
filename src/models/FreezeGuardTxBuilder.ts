@@ -1,4 +1,4 @@
-import { abis } from '@fractal-framework/fractal-contracts';
+import { legacy } from '@decentdao/decent-contracts';
 import {
   Address,
   encodeAbiParameters,
@@ -153,7 +153,7 @@ export class FreezeGuardTxBuilder extends BaseTxBuilder {
         encodedFunctionData: encodeFunctionData({
           functionName: 'setUp',
           args: [encodedSetupFunctionArgs],
-          abi: abis.ERC20FreezeVoting,
+          abi: legacy.abis.ERC20FreezeVoting,
         }),
       });
     } else if (this.freezeVotingType === 'erc721') {
@@ -162,7 +162,7 @@ export class FreezeGuardTxBuilder extends BaseTxBuilder {
         encodedFunctionData: encodeFunctionData({
           functionName: 'setUp',
           args: [encodedSetupFunctionArgs],
-          abi: abis.ERC721FreezeVoting,
+          abi: legacy.abis.ERC721FreezeVoting,
         }),
       });
     } else if (this.freezeVotingType === 'multisig') {
@@ -171,7 +171,7 @@ export class FreezeGuardTxBuilder extends BaseTxBuilder {
         encodedFunctionData: encodeFunctionData({
           functionName: 'setUp',
           args: [encodedSetupFunctionArgs],
-          abi: abis.MultisigFreezeVoting,
+          abi: legacy.abis.MultisigFreezeVoting,
         }),
       });
     } else {
@@ -189,7 +189,7 @@ export class FreezeGuardTxBuilder extends BaseTxBuilder {
       encodedFunctionData: encodeFunctionData({
         functionName: 'setGuard',
         args: [this.freezeGuardAddress],
-        abi: abis.Azorius,
+        abi: legacy.abis.Azorius,
       }),
     });
   }
@@ -237,7 +237,7 @@ export class FreezeGuardTxBuilder extends BaseTxBuilder {
       ) {
         this.freezeVotingType = 'erc20';
         this.freezeVotingCallData = encodeFunctionData({
-          abi: abis.ERC20FreezeVoting,
+          abi: legacy.abis.ERC20FreezeVoting,
           functionName: 'owner',
         });
       } else if (
@@ -246,14 +246,14 @@ export class FreezeGuardTxBuilder extends BaseTxBuilder {
       ) {
         this.freezeVotingType = 'erc721';
         this.freezeVotingCallData = encodeFunctionData({
-          abi: abis.ERC721FreezeVoting,
+          abi: legacy.abis.ERC721FreezeVoting,
           functionName: 'owner',
         });
       }
     } else {
       this.freezeVotingType = 'multisig';
       this.freezeVotingCallData = encodeFunctionData({
-        abi: abis.MultisigFreezeVoting,
+        abi: legacy.abis.MultisigFreezeVoting,
         functionName: 'owner',
       });
     }
@@ -323,7 +323,7 @@ export class FreezeGuardTxBuilder extends BaseTxBuilder {
     }
 
     const freezeGuardCallData = encodeFunctionData({
-      abi: abis.MultisigFreezeGuard,
+      abi: legacy.abis.MultisigFreezeGuard,
       functionName: 'setUp',
       args: [
         encodeAbiParameters(parseAbiParameters('uint32, uint32, address, address, address'), [
@@ -352,7 +352,7 @@ export class FreezeGuardTxBuilder extends BaseTxBuilder {
     }
 
     const freezeGuardCallData = encodeFunctionData({
-      abi: abis.AzoriusFreezeGuard,
+      abi: legacy.abis.AzoriusFreezeGuard,
       functionName: 'setUp',
       args: [
         encodeAbiParameters(parseAbiParameters('address, address'), [

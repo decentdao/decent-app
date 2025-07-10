@@ -33,7 +33,7 @@ export const getStakingContractAddress = (args: {
   );
 
   const encodedStakingContractInitializationData = encodeFunctionData({
-    abi: 'abis.DecentStakingContractV1' as any, // @todo: Use abi from contracts
+    abi: 'legacy.abis.DecentStakingContractV1' as any, // @todo: Use abi from contracts
     functionName: 'initialize',
     args: [encodedStakingContractInitializationParams],
   });
