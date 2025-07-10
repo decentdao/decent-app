@@ -41,7 +41,7 @@ jobs:
 
       - name: Find merged pull request
         id: find_pr
-        uses: peter-evans/find-pull-request@v5
+        uses: peter-evans/find-pull-request@v3
         with:
           commit: ${{ github.sha }}
           state: merged
