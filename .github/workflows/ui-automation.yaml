@@ -55,7 +55,7 @@ jobs:
 
       - name: Prepend artifact link to summary
         run: |
-          echo "[⬇️ Download Selenium Test Artifacts](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})\n" | cat - decent-ui-automation/test-results/test-results-summary.md > decent-ui-automation/test-results/test-results-summary.with-link.md
+          echo "[⬇️ Download Selenium Test Artifacts](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})" | cat - decent-ui-automation/test-results/test-results-summary.md > decent-ui-automation/test-results/test-results-summary.with-link.md
 
       - name: Comment results on PR
         if: steps.find_pr.outputs.number != ''
