@@ -26,5 +26,8 @@
   "changeQuorumNumerator": "Обновить процент кворума",
   "changeQuorumThreshold": "Обновление порога кворума",
   "deployToken": "Развернуть маркер",
-  "updateERC20Address": "Обновление адреса ERC20"
+  "updateERC20Address": "Обновление адреса ERC20",
+  "updateTokenTransferable": "Передаваемый токен обновления",
+  "addTokenWhitelist": "Добавить белый список токенов",
+  "removeTokenWhitelist": "Удалить белый список токенов"
 }

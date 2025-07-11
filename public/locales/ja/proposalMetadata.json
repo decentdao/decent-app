@@ -26,5 +26,8 @@
   "changeQuorumNumerator": "定足数の割合を更新",
   "changeQuorumThreshold": "定足数のしきい値を更新",
   "deployToken": "トークンの配備",
-  "updateERC20Address": "ERC20アドレスの更新"
+  "updateERC20Address": "ERC20アドレスの更新",
+  "updateTokenTransferable": "更新トークン譲渡可能",
+  "addTokenWhitelist": "トークン・ホワイトリストの追加",
+  "removeTokenWhitelist": "トークンのホワイトリストを削除する"
 }

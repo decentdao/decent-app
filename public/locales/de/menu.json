@@ -1,6 +1,7 @@
 {
   "connect": "Verbinden Sie",
   "connectWallet": "Brieftasche verbinden",
+  "tokenManager": "Token-Manager",
   "disconnect": "Trennen Sie die Verbindung",
   "wallet": "Brieftasche",
   "titleManageProposalTemplate": "Vorlage verwalten",
