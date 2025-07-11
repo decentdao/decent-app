@@ -133,5 +133,6 @@
   "addressRequired": "주소 필수 입력",
   "save": "저장",
   "daoNameRequired": "DAO 이름은 필수입니다.",
-  "calendarPlaceholder": "YYYY-MM-DD"
+  "calendarPlaceholder": "YYYY-MM-DD",
+  "years": "년"
 }

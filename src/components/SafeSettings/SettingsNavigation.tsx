@@ -27,6 +27,7 @@ import { SafeTokenSettingsPage } from '../../pages/dao/settings/token/SafeTokenS
 import { useDAOStore } from '../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
 import { AzoriusGovernance } from '../../types';
+import { isNonEmpty } from '../../utils/valueCheck';
 import { BarLoader } from '../ui/loaders/BarLoader';
 import { SafeSettingsEdits } from '../ui/modals/SafeSettingsModal';
 import Divider from '../ui/utils/Divider';
@@ -212,6 +213,17 @@ export function SettingsNavigation({
 
   const { values } = useFormikContext<SafeSettingsEdits>();
 
+  const generalHasEdits = values.general !== undefined;
+
+  const paymasterDepositHasEdits =
+    values.paymasterGasTank?.deposit?.amount !== undefined &&
+    !values.paymasterGasTank.deposit?.isDirectDeposit;
+  const paymasterWithdrawHasEdits =
+    values.paymasterGasTank?.withdraw?.amount !== undefined &&
+    values.paymasterGasTank.withdraw.recipientAddress !== undefined;
+
+  const paymasterHasEdits = paymasterDepositHasEdits || paymasterWithdrawHasEdits;
+
   return (
     <Flex
       backgroundColor="transparent"
@@ -250,11 +262,7 @@ export function SettingsNavigation({
               onSettingsNavigationClick(<SafeGeneralSettingsPage />);
               setCurrentItem('general');
             }}
-            hasEdits={
-              values.general !== undefined ||
-              (values.paymasterGasTank !== undefined &&
-                !values.paymasterGasTank.deposit?.isDirectDeposit)
-            }
+            hasEdits={generalHasEdits || paymasterHasEdits}
           />
           <SettingsNavigationItem
             title={t('daoSettingsGovernance')}
@@ -309,7 +317,7 @@ export function SettingsNavigation({
                 onSettingsNavigationClick(<SafeTokenSettingsPage />);
                 setCurrentItem('token');
               }}
-              hasEdits={false}
+              hasEdits={isNonEmpty(values.token)}
             />
           )}
           {isRevShareEnabled && (

@@ -1,7 +1,7 @@
 import { Button, Flex, Text } from '@chakra-ui/react';
 import { abis } from '@fractal-framework/fractal-contracts';
-import { Formik, Form, useFormikContext, FormikContextType } from 'formik';
-import { useEffect, useState } from 'react';
+import { Formik, Form, useFormikContext } from 'formik';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -14,6 +14,7 @@ import {
   keccak256,
   parseAbiParameters,
 } from 'viem';
+import { useAccount, useBalance } from 'wagmi';
 import {
   linearERC20VotingWithWhitelistSetupParams,
   linearERC721VotingWithWhitelistSetupParams,
@@ -35,7 +36,6 @@ import { SafeGeneralSettingsPage } from '../../../pages/dao/settings/general/Saf
 import { useDAOStore } from '../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
 import { useProposalActionsStore } from '../../../store/actions/useProposalActionsStore';
-import { useSettingsFormStore } from '../../../store/settings/useSettingsFormStore';
 import {
   AzoriusGovernance,
   BigIntValuePair,
@@ -56,10 +56,12 @@ import {
 } from '../../../utils/gaslessVoting';
 import { formatCoin } from '../../../utils/numberFormats';
 import { validateENSName } from '../../../utils/url';
+import { isNonEmpty } from '../../../utils/valueCheck';
 import { SafePermissionsStrategyAction } from '../../SafeSettings/SafePermissionsStrategyAction';
 import { SettingsNavigation } from '../../SafeSettings/SettingsNavigation';
 import { NewSignerItem } from '../../SafeSettings/Signers/SignersContainer';
 import Divider from '../utils/Divider';
+import { ModalProvider } from './ModalProvider';
 
 export type SafeSettingsEdits = {
   multisig?: {
@@ -86,6 +88,11 @@ export type SafeSettingsEdits = {
   permissions?: {
     proposerThreshold?: BigIntValuePair;
   };
+  token?: {
+    transferable?: boolean;
+    addressesToUnwhitelist?: string[];
+    addressesToWhitelist?: string[];
+  };
 };
 
 type MultisigEditGovernanceFormikErrors = {
@@ -107,26 +114,17 @@ type RevenueSharingEditFormikErrors = {
   revenueSharing?: string; // @TODO placeholder
 };
 
+type TokenEditFormikErrors = {
+  addressesToWhitelist?: { key: string; error: string }[];
+};
+
 export type SafeSettingsFormikErrors = {
   multisig?: MultisigEditGovernanceFormikErrors;
   general?: GeneralEditFormikErrors;
   paymasterGasTank?: PaymasterGasTankEditFormikErrors;
   revenueSharing?: RevenueSharingEditFormikErrors;
+  token?: TokenEditFormikErrors;
 };
-
-function FormStateSync({ formikContext }: { formikContext: FormikContextType<SafeSettingsEdits> }) {
-  const { setFormState, setFormErrors } = useSettingsFormStore();
-
-  useEffect(() => {
-    setFormState({ ...formikContext.values });
-  }, [formikContext.values, setFormState]);
-
-  useEffect(() => {
-    setFormErrors(formikContext.errors as unknown as SafeSettingsFormikErrors);
-  }, [formikContext.errors, setFormErrors]);
-
-  return null;
-}
 
 export function SafeSettingsModal({
   closeModal,
@@ -182,7 +180,9 @@ export function SafeSettingsModal({
     const { values } = useFormikContext<SafeSettingsEdits>();
     const { errors } = useFormikContext<SafeSettingsFormikErrors>();
 
-    const hasEdits = Object.keys(values).some(key => values[key as keyof SafeSettingsEdits]);
+    const hasEdits = Object.keys(values).some(key =>
+      isNonEmpty(values[key as keyof SafeSettingsEdits]),
+    );
     const hasErrors =
       Object.keys(errors.general ?? {}).some(
         key => (errors.general as GeneralEditFormikErrors)[key as keyof GeneralEditFormikErrors],
@@ -192,6 +192,24 @@ export function SafeSettingsModal({
           (errors.multisig as MultisigEditGovernanceFormikErrors)[
             key as keyof MultisigEditGovernanceFormikErrors
           ],
+      ) ||
+      Object.keys(errors.paymasterGasTank ?? {}).some(
+        key =>
+          (errors.paymasterGasTank as PaymasterGasTankEditFormikErrors)[
+            key as keyof PaymasterGasTankEditFormikErrors
+          ] ||
+          (errors.paymasterGasTank as PaymasterGasTankEditFormikErrors)[
+            key as keyof PaymasterGasTankEditFormikErrors
+          ],
+      ) ||
+      Object.keys(errors.revenueSharing ?? {}).some(
+        key =>
+          (errors.revenueSharing as RevenueSharingEditFormikErrors)[
+            key as keyof RevenueSharingEditFormikErrors
+          ],
+      ) ||
+      Object.keys(errors.token ?? {}).some(
+        key => (errors.token as TokenEditFormikErrors)[key as keyof TokenEditFormikErrors],
       );
 
     return (
@@ -232,7 +250,16 @@ export function SafeSettingsModal({
   const { addressPrefix } = useNetworkConfigStore();
 
   const { buildInstallVersionedVotingStrategies } = useInstallVersionedVotingStrategy();
-  const { depositInfo } = usePaymasterDepositInfo();
+  const { depositInfo: paymasterDepositInfo } = usePaymasterDepositInfo();
+  const { address } = useAccount();
+  const { data: userBalance } = useBalance({
+    address,
+    chainId,
+  });
+  const { data: safeBalance } = useBalance({
+    address: safe?.address,
+    chainId,
+  });
   const navigate = useNavigate();
 
   const { getEnsAddress } = useNetworkEnsAddressAsync();
@@ -323,6 +350,7 @@ export function SafeSettingsModal({
             {t('refillPaymasterAction', {
               amount: formattedRefillAmount,
               symbol: nativeCurrency.symbol,
+              ns: 'gaslessVoting',
             })}
           </Text>
         ),
@@ -445,7 +473,7 @@ export function SafeSettingsModal({
 
       // Add stake for Paymaster if not enough
       if (stakingRequired) {
-        const stakedAmount = depositInfo?.stake || 0n;
+        const stakedAmount = paymasterDepositInfo?.stake || 0n;
 
         if (paymasterAddress === null || stakedAmount < bundlerMinimumStake) {
           const delta = bundlerMinimumStake - stakedAmount;
@@ -459,7 +487,7 @@ export function SafeSettingsModal({
             functionName: 'addStake',
             parameters: [
               {
-                signature: 'uint256',
+                signature: 'uint32',
                 // one day in seconds, defined on https://github.com/alchemyplatform/rundler/blob/c17fd3dbc24d2af93fd68310031d445d5440794f/crates/sim/src/simulation/mod.rs#L170
                 value: 86400n.toString(),
               },
@@ -1042,13 +1070,102 @@ export function SafeSettingsModal({
     };
   };
 
+  const handleEditToken = async (updatedValues: SafeSettingsEdits) => {
+    if (!safe?.address) {
+      throw new Error('Safe address is not set');
+    }
+
+    if (!isNonEmpty(updatedValues.token)) {
+      throw new Error('Token are not set');
+    }
+    const tokenValues = updatedValues.token!;
+
+    if (!governance.erc20Token) {
+      throw new Error('ERC20Token are not set');
+    }
+    const token = governance.erc20Token;
+
+    const changeTitles = [];
+    const transactions: CreateProposalTransaction[] = [];
+
+    if (tokenValues.transferable !== undefined) {
+      changeTitles.push(t('updateTokenTransferable', { ns: 'proposalMetadata' }));
+      transactions.push({
+        targetAddress: token.address,
+        ethValue,
+        functionName: 'lock',
+        parameters: [
+          {
+            signature: 'bool',
+            value: (!tokenValues.transferable).toString(),
+          },
+        ],
+      });
+    }
+    if (
+      tokenValues.addressesToWhitelist !== undefined &&
+      tokenValues.addressesToWhitelist.length > 0
+    ) {
+      tokenValues.addressesToWhitelist.map(addr => {
+        transactions.push({
+          targetAddress: token.address,
+          ethValue,
+          functionName: 'whitelist',
+          parameters: [
+            {
+              signature: 'address',
+              value: addr,
+            },
+            {
+              signature: 'bool',
+              value: true.toString(),
+            },
+          ],
+        });
+      });
+      changeTitles.push(t('addTokenWhitelist', { ns: 'proposalMetadata' }));
+    }
+    if (
+      tokenValues.addressesToUnwhitelist !== undefined &&
+      tokenValues.addressesToUnwhitelist.length > 0
+    ) {
+      tokenValues.addressesToUnwhitelist.map(addr => {
+        transactions.push({
+          targetAddress: token.address,
+          ethValue,
+          functionName: 'whitelist',
+          parameters: [
+            {
+              signature: 'address',
+              value: addr,
+            },
+            {
+              signature: 'bool',
+              value: false.toString(),
+            },
+          ],
+        });
+      });
+      changeTitles.push(t('removeTokenWhitelist', { ns: 'proposalMetadata' }));
+    }
+
+    const title = changeTitles.join(`; `);
+
+    const action: CreateProposalActionData = {
+      actionType: ProposalActionType.EDIT,
+      transactions,
+    };
+
+    return { action, title };
+  };
+
   const submitAllSettingsEditsProposal = async (values: SafeSettingsEdits) => {
     if (!safe?.address) {
       throw new Error('Safe address is not set');
     }
 
     resetActions();
-    const { general, multisig, azorius, permissions, paymasterGasTank } = values;
+    const { general, multisig, azorius, permissions, paymasterGasTank, token } = values;
     if (general) {
       const { action, title } = await handleEditGeneral(values);
 
@@ -1093,6 +1210,16 @@ export function SafeSettingsModal({
       const action = await handleEditPermissions(values);
 
       addAction(action);
+    }
+
+    if (token) {
+      const { action, title } = await handleEditToken(values);
+
+      addAction({
+        actionType: action.actionType,
+        transactions: action.transactions,
+        content: <Text>{title}</Text>,
+      });
     }
 
     navigate(DAO_ROUTES.proposalWithActionsNew.relative(addressPrefix, safe.address));
@@ -1149,6 +1276,40 @@ export function SafeSettingsModal({
           errors.multisig = undefined;
         }
 
+        if (values.token) {
+          const { addressesToWhitelist } = values.token;
+          const errorsToken = errors.token ?? {};
+
+          if (addressesToWhitelist && addressesToWhitelist.length > 0) {
+            const whitelistErrors = await Promise.all(
+              addressesToWhitelist.map(async (addressToWhitelist, index) => {
+                if (!addressToWhitelist) {
+                  return {
+                    key: `addressesToWhitelist.${index}`,
+                    error: t('addressRequired', { ns: 'common' }),
+                  };
+                }
+
+                const validation = await validateAddress({ address: addressToWhitelist });
+                if (!validation.validation.isValidAddress) {
+                  return {
+                    key: `addressesToWhitelist.${index}`,
+                    error: t('errorInvalidAddress', { ns: 'common' }),
+                  };
+                }
+                return null;
+              }),
+            );
+
+            if (whitelistErrors.some(error => error !== null)) {
+              errorsToken.addressesToWhitelist = whitelistErrors.filter(error => error !== null);
+              errors.token = errorsToken;
+            }
+          }
+        } else {
+          errors.token = undefined;
+        }
+
         if (values.general) {
           const { name, snapshot } = values.general;
           const errorsGeneral = errors.general ?? {};
@@ -1167,11 +1328,14 @@ export function SafeSettingsModal({
         }
 
         if (values.paymasterGasTank) {
-          const { withdraw } = values.paymasterGasTank;
+          const { withdraw, deposit } = values.paymasterGasTank;
 
           if (withdraw) {
-            if (withdraw.amount?.bigintValue !== undefined && depositInfo?.balance !== undefined) {
-              if (withdraw.amount.bigintValue > depositInfo.balance) {
+            if (
+              withdraw.amount?.bigintValue !== undefined &&
+              paymasterDepositInfo?.balance !== undefined
+            ) {
+              if (withdraw.amount.bigintValue > paymasterDepositInfo.balance) {
                 errors.paymasterGasTank = {
                   ...errors.paymasterGasTank,
                   withdraw: {
@@ -1200,7 +1364,43 @@ export function SafeSettingsModal({
               withdraw: undefined,
             };
           }
-          // Deposit validation handled in RefillGasTankModal.
+
+          if (deposit) {
+            const balanceToDepositFrom = deposit.isDirectDeposit ? userBalance : safeBalance;
+
+            const overDraft =
+              deposit.amount?.bigintValue !== undefined &&
+              balanceToDepositFrom !== undefined &&
+              deposit.amount.bigintValue > balanceToDepositFrom.value;
+
+            if (overDraft && errors.paymasterGasTank?.deposit?.amount === undefined) {
+              errors.paymasterGasTank = {
+                ...errors.paymasterGasTank,
+                deposit: {
+                  ...errors.paymasterGasTank?.deposit,
+                  amount: t('amountExceedsAvailableBalance', { ns: 'gaslessVoting' }),
+                },
+              };
+            } else if (!overDraft && errors.paymasterGasTank?.deposit?.amount !== undefined) {
+              errors.paymasterGasTank = {
+                ...errors.paymasterGasTank,
+                deposit: undefined,
+              };
+            }
+          } else {
+            errors.paymasterGasTank = {
+              ...errors.paymasterGasTank,
+              deposit: undefined,
+            };
+          }
+
+          // dynamically check if all fields in paymasterGasTank are undefined before clearing the object
+          if (
+            errors.paymasterGasTank &&
+            Object.values(errors.paymasterGasTank).every(field => field === undefined)
+          ) {
+            errors.paymasterGasTank = undefined;
+          }
         } else {
           errors.paymasterGasTank = undefined;
         }
@@ -1216,9 +1416,8 @@ export function SafeSettingsModal({
         submitAllSettingsEditsProposal(values);
       }}
     >
-      {formikContext => (
-        <Form>
-          <FormStateSync formikContext={formikContext} />
+      <Form>
+        <ModalProvider baseZIndex={2000}>
           <Flex
             flexDirection="column"
             height="90vh"
@@ -1239,8 +1438,8 @@ export function SafeSettingsModal({
             <Divider />
             <ActionButtons />
           </Flex>
-        </Form>
-      )}
+        </ModalProvider>
+      </Form>
     </Formik>
   );
 }

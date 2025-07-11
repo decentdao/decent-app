@@ -29,12 +29,11 @@ export function SafePermissionsSettingsContent() {
   const azoriusGovernance = governance as AzoriusGovernance;
   const { votesToken, erc721Tokens } = azoriusGovernance;
 
-  const formikContext = useFormikContext<SafeSettingsEdits>();
+  const { values } = useFormikContext<SafeSettingsEdits>();
 
   const { open: openAddCreateProposalPermissionModal } = useDecentModal(
     ModalType.ADD_CREATE_PROPOSAL_PERMISSION,
     {
-      formikContext,
       votingStrategyAddress: null,
     },
   );
@@ -46,7 +45,6 @@ export function SafePermissionsSettingsContent() {
   const { open: openCreateProposalPermissionModal } = useDecentModal(
     ModalType.ADD_CREATE_PROPOSAL_PERMISSION,
     {
-      formikContext,
       votingStrategyAddress: linearVotingErc20Address || null,
     },
   );
@@ -55,8 +53,7 @@ export function SafePermissionsSettingsContent() {
     return null;
   }
 
-  const editedProposerThreshold =
-    formikContext.values.permissions?.proposerThreshold?.value?.toString();
+  const editedProposerThreshold = values.permissions?.proposerThreshold?.value?.toString();
 
   const proposerThresholdValue =
     editedProposerThreshold || azoriusGovernance.votingStrategy?.proposerThreshold?.formatted;

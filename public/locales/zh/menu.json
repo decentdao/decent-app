@@ -1,6 +1,7 @@
 {
   "connect": "连接",
   "connectWallet": "连接钱包",
+  "tokenManager": "代币管理器",
   "disconnect": "断开",
   "wallet": "钱包",
   "titleManageProposalTemplate": "管理模板",

@@ -1,6 +1,7 @@
 {
   "connect": "Connect",
   "connectWallet": "Connect Wallet",
+  "tokenManager": "Token manager",
   "disconnect": "Disconnect",
   "wallet": "Wallet",
   "titleManageProposalTemplate": "Manage Template",

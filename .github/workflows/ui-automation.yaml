@@ -1,0 +1,58 @@
+name: UI Automation
+on:
+  push:
+    branches:
+      - develop
+
+jobs:
+  e2e-automation:
+    name: E2E Selenium Automation
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - name: Checkout decent-app
+        uses: actions/checkout@v4
+
+      - name: Checkout automation repo
+        uses: actions/checkout@v4
+        with:
+          repository: decentdao/decent-ui-automation
+          path: decent-ui-automation
+
+      - name: Install dependencies
+        run: |
+          cd decent-ui-automation
+          npm ci
+
+      - name: Kill any leftover Chrome processes
+        run: pkill chrome || true
+
+      - name: Run Selenium tests
+        run: |
+          cd decent-ui-automation
+          npm test
+        continue-on-error: true
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        with:
+          name: selenium-test-results
+          path: decent-ui-automation/test-results/
+
+      - name: Find merged pull request
+        id: find_pr
+        uses: peter-evans/find-pull-request@v3
+        with:
+          commit: ${{ github.sha }}
+          state: merged
+
+      - name: Prepend artifact link to summary
+        run: |
+          echo "[⬇️ Download Selenium Test Artifacts](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})\n" | cat - decent-ui-automation/test-results/test-results-summary.md > decent-ui-automation/test-results/test-results-summary.with-link.md
+
+      - name: Comment results on PR
+        if: steps.find_pr.outputs.pull_request_number != ''
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          number: ${{ steps.find_pr.outputs.pull_request_number }}
+          path: decent-ui-automation/test-results/test-results-summary.with-link.md

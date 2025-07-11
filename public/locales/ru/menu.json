@@ -1,6 +1,7 @@
 {
   "connect": "Подключайтесь",
   "connectWallet": "Подключить кошелек",
+  "tokenManager": "Менеджер токенов",
   "disconnect": "Отключить",
   "wallet": "Кошелек",
   "titleManageProposalTemplate": "Управление шаблоном",

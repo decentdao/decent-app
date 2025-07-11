@@ -1,6 +1,7 @@
 {
   "connect": "Connecter",
   "connectWallet": "Connecter le portefeuille",
+  "tokenManager": "Gestionnaire de jetons",
   "disconnect": "Déconnexion",
   "wallet": "Portefeuille",
   "titleManageProposalTemplate": "Gérer le modèle",

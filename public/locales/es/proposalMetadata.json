@@ -26,5 +26,8 @@
   "changeQuorumNumerator": "Actualizar el porcentaje de quórum",
   "changeQuorumThreshold": "Actualizar el umbral de quórum",
   "deployToken": "Desplegar token",
-  "updateERC20Address": "Actualizar dirección ERC20"
+  "updateERC20Address": "Actualizar dirección ERC20",
+  "updateTokenTransferable": "Token de actualización transferible",
+  "addTokenWhitelist": "Añadir lista blanca de tokens",
+  "removeTokenWhitelist": "Eliminar la lista blanca de tokens"
 }

@@ -33,7 +33,7 @@ export default function DurationUnitStepperInput({
   placeholder = '0',
 }: {
   secondsValue: number | undefined;
-  onSecondsValueChange: (val: number) => void;
+  onSecondsValueChange: (val: number | undefined) => void;
   minSeconds?: number;
   color?: string;
   hideSteppers?: boolean;
@@ -74,7 +74,7 @@ export default function DurationUnitStepperInput({
 
   return (
     <NumberInput
-      value={secondsValue ? secondsValue / selectedUnit.unit : undefined}
+      value={secondsValue !== undefined ? secondsValue / selectedUnit.unit : undefined}
       onChange={val => onSecondsValueChange(Number(val) * selectedUnit.unit)}
       min={minSeconds / selectedUnit.unit}
       focusInputOnChange
