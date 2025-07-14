@@ -1,6 +1,7 @@
 {
   "connect": "Collegare",
   "connectWallet": "Portafoglio Connect",
+  "tokenManager": "Gestore di gettoni",
   "disconnect": "Disconnessione",
   "wallet": "Portafoglio",
   "titleManageProposalTemplate": "Gestire il modello",

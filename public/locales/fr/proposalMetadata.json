@@ -26,5 +26,8 @@
   "changeQuorumNumerator": "Mise à jour du pourcentage de quorum",
   "changeQuorumThreshold": "Mise à jour du seuil de quorum",
   "deployToken": "Déployer le jeton",
-  "updateERC20Address": "Mise à jour de l'adresse ERC20"
+  "updateERC20Address": "Mise à jour de l'adresse ERC20",
+  "updateTokenTransferable": "Jeton de mise à jour transférable",
+  "addTokenWhitelist": "Ajouter une liste blanche de jetons",
+  "removeTokenWhitelist": "Supprimer la liste blanche de jetons"
 }

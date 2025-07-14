@@ -1,4 +1,4 @@
-import { abis } from '@fractal-framework/fractal-contracts';
+import { legacy } from '@decentdao/decent-contracts';
 import { useCallback } from 'react';
 import {
   Address,
@@ -71,7 +71,7 @@ export const useInstallVersionedVotingStrategy = () => {
       }
 
       const existingAbiAndAddress = {
-        abi: abis.LinearERC20Voting,
+        abi: legacy.abis.LinearERC20Voting,
         address: strategyToRemove.address,
       };
 
@@ -117,7 +117,7 @@ export const useInstallVersionedVotingStrategy = () => {
       );
 
       return encodeFunctionData({
-        abi: abis.LinearERC20VotingV1,
+        abi: legacy.abis.LinearERC20VotingV1,
         functionName: 'setUp',
         args: [encodedStrategyInitParams],
       });
@@ -140,7 +140,7 @@ export const useInstallVersionedVotingStrategy = () => {
       }
 
       const existingAbiAndAddress = {
-        abi: abis.LinearERC20VotingWithHatsProposalCreation,
+        abi: legacy.abis.LinearERC20VotingWithHatsProposalCreation,
         address: strategyToRemove.address,
       };
 
@@ -187,7 +187,7 @@ export const useInstallVersionedVotingStrategy = () => {
       );
 
       return encodeFunctionData({
-        abi: abis.LinearERC20VotingWithHatsProposalCreationV1,
+        abi: legacy.abis.LinearERC20VotingWithHatsProposalCreationV1,
         functionName: 'setUp',
         args: [encodedStrategyInitParams],
       });
@@ -206,7 +206,7 @@ export const useInstallVersionedVotingStrategy = () => {
       }
 
       const existingAbiAndAddress = {
-        abi: abis.LinearERC721Voting,
+        abi: legacy.abis.LinearERC721Voting,
         address: strategyToRemove.address,
       };
 
@@ -253,7 +253,7 @@ export const useInstallVersionedVotingStrategy = () => {
       );
 
       return encodeFunctionData({
-        abi: abis.LinearERC721VotingV1,
+        abi: legacy.abis.LinearERC721VotingV1,
         functionName: 'setUp',
         args: [encodedStrategyInitParams],
       });
@@ -272,7 +272,7 @@ export const useInstallVersionedVotingStrategy = () => {
       }
 
       const existingAbiAndAddress = {
-        abi: abis.LinearERC721VotingWithHatsProposalCreation,
+        abi: legacy.abis.LinearERC721VotingWithHatsProposalCreation,
         address: strategyToRemove.address,
       };
 
@@ -320,7 +320,7 @@ export const useInstallVersionedVotingStrategy = () => {
       );
 
       return encodeFunctionData({
-        abi: abis.LinearERC721VotingWithHatsProposalCreationV1,
+        abi: legacy.abis.LinearERC721VotingWithHatsProposalCreationV1,
         functionName: 'setUp',
         args: [encodedStrategyInitParams],
       });

@@ -1,6 +1,7 @@
 {
   "connect": "接続",
   "connectWallet": "コネクトウォレット",
+  "tokenManager": "トークン・マネージャー",
   "disconnect": "切断",
   "wallet": "財布",
   "titleManageProposalTemplate": "テンプレートの管理",

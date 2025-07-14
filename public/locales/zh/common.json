@@ -133,5 +133,6 @@
   "addressRequired": "需要地址",
   "save": "节省",
   "daoNameRequired": "DAO 名称为必填项",
-  "calendarPlaceholder": "年月日"
+  "calendarPlaceholder": "年月日",
+  "years": "年数"
 }
