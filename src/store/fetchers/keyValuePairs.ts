@@ -1,4 +1,4 @@
-import { abis } from '@fractal-framework/fractal-contracts';
+import { legacy } from '@decentdao/decent-contracts';
 import { hatIdToTreeId } from '@hatsprotocol/sdk-v1-core';
 import { useCallback } from 'react';
 import { Address, GetContractEventsReturnType, getContract } from 'viem';
@@ -16,7 +16,7 @@ export function useKeyValuePairsFetcher() {
       events,
       chainId,
     }: {
-      events: GetContractEventsReturnType<typeof abis.KeyValuePairs> | undefined;
+      events: GetContractEventsReturnType<typeof legacy.abis.KeyValuePairs> | undefined;
       chainId: number;
     }) => {
       if (!events) {
@@ -68,7 +68,7 @@ export function useKeyValuePairsFetcher() {
       events,
       chainId,
     }: {
-      events: GetContractEventsReturnType<typeof abis.KeyValuePairs> | undefined;
+      events: GetContractEventsReturnType<typeof legacy.abis.KeyValuePairs> | undefined;
       chainId: number;
     }) => {
       if (!events) {
@@ -111,7 +111,7 @@ export function useKeyValuePairsFetcher() {
       }
 
       const keyValuePairsContract = getContract({
-        abi: abis.KeyValuePairs,
+        abi: legacy.abis.KeyValuePairs,
         address: keyValuePairs,
         client: publicClient,
       });

@@ -1,5 +1,5 @@
 import { Center, Flex, Icon, Link, Text } from '@chakra-ui/react';
-import { abis } from '@fractal-framework/fractal-contracts';
+import { legacy } from '@decentdao/decent-contracts';
 import { ArrowElbowDownRight } from '@phosphor-icons/react';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -57,7 +57,7 @@ export function DaoHierarchyNode({
   const getVotingStrategies = useCallback(
     async (azoriusModule: DecentModule) => {
       const azoriusContract = getContract({
-        abi: abis.Azorius,
+        abi: legacy.abis.Azorius,
         address: azoriusModule.moduleAddress,
         client: publicClient,
       });

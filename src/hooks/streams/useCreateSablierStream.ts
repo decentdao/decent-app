@@ -1,4 +1,4 @@
-import { abis } from '@fractal-framework/fractal-contracts';
+import { legacy } from '@decentdao/decent-contracts';
 import groupBy from 'lodash.groupby';
 import { useCallback } from 'react';
 import { Address, Hex, encodeFunctionData, erc20Abi, getAddress, zeroAddress } from 'viem';
@@ -110,7 +110,7 @@ export default function useCreateSablierStream() {
       });
 
       const withdrawMaxFromStreamData = encodeFunctionData({
-        abi: abis.DecentSablierStreamManagementModule,
+        abi: legacy.abis.DecentSablierStreamManagementModule,
         functionName: 'withdrawMaxFromStream',
         args: [sablierV2LockupLinear, smartAccount, convertStreamIdToBigInt(streamId), to],
       });
@@ -152,7 +152,7 @@ export default function useCreateSablierStream() {
       });
 
       const cancelStreamData = encodeFunctionData({
-        abi: abis.DecentSablierStreamManagementModule,
+        abi: legacy.abis.DecentSablierStreamManagementModule,
         functionName: 'cancelStream',
         args: [sablierV2LockupLinear, convertStreamIdToBigInt(streamId)],
       });

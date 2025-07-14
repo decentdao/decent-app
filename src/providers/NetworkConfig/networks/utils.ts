@@ -1,5 +1,12 @@
 import { SingletonDeployment } from '@safe-global/safe-deployments';
-import { getAddress } from 'viem';
+import { Address, getAddress } from 'viem';
+
+export const getAddressFromContractDeploymentInfo = (contractDeploymentInfo: {
+  address: Address;
+  deploymentBlock: number;
+}) => {
+  return getAddress(contractDeploymentInfo.address);
+};
 
 export const getSafeContractDeploymentAddress = (
   fn: ({ version }: { version: string }) => SingletonDeployment | undefined,
