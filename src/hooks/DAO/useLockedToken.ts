@@ -1,8 +1,9 @@
 import { abis } from '@decentdao/decent-contracts';
 import { useCallback, useEffect, useState } from 'react';
-import { Address, getContract } from 'viem';
+import { Address, getContract, zeroAddress } from 'viem';
 import { ROLES } from '../../constants/accessControlRoles';
 import useNetworkPublicClient from '../useNetworkPublicClient';
+import { useCurrentDAOKey } from './useCurrentDAOKey';
 
 interface LockedTokenState {
   locked: boolean;
@@ -22,6 +23,7 @@ export default function useLockedToken(
   params: { token: Address; account: Address } | undefined = undefined,
 ) {
   const publicClient = useNetworkPublicClient();
+  const { safeAddress } = useCurrentDAOKey();
   const [tokenState, setTokenState] = useState<LockedTokenState>(DEFAULT_STATE);
 
   const loadTokenState = useCallback(
@@ -33,15 +35,16 @@ export default function useLockedToken(
       });
 
       try {
-        const [locked, whitelisted] = await Promise.all([
+        const [locked, whitelisted, canGrantRole] = await Promise.all([
           contract.read.locked(),
           contract.read.hasRole([ROLES.TRANSFER_FROM_ROLE, account]),
+          contract.read.hasRole([ROLES.DEFAULT_ADMIN_ROLE, safeAddress || zeroAddress]),
         ]);
 
         return {
           locked,
           whitelisted,
-          canTransfer: !locked || whitelisted,
+          canTransfer: !locked || whitelisted || canGrantRole,
           needWhitelist: locked && !whitelisted,
         };
       } catch (e) {
@@ -49,7 +52,7 @@ export default function useLockedToken(
         return DEFAULT_STATE;
       }
     },
-    [publicClient],
+    [publicClient, safeAddress],
   );
 
   useEffect(() => {
