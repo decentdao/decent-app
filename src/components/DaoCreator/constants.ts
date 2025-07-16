@@ -1,3 +1,4 @@
+import { parseEther } from 'viem';
 import {
   CreatorFormState,
   GovernanceType,
@@ -35,6 +36,13 @@ export const initialState: CreatorFormState = {
     tokenImportAddress: undefined,
     parentAllocationAmount: {
       value: '',
+    },
+    maxTotalSupply: {
+      // FIXME This should be passed by the user
+      //   or set a default value which does not limit the supply
+      // WARN Current default value assume decimal to be 18.
+      bigintValue: parseEther('1000000000000000000'),
+      value: '1000000000000000000',
     },
   },
   erc721Token: {
