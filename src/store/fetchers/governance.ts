@@ -1007,38 +1007,35 @@ export function useGovernanceFetcher() {
 
       try {
         const tokenContract = getContract({
-          abi: legacy.abis.VotesERC20,
+          abi: abis.deployables.VotesERC20V1,
           address: erc20AddressInEvent,
           client: publicClient,
         });
 
-        // Prepare multicall requests
-        const multicallCalls = [
-          {
-            ...tokenContract,
-            functionName: 'name',
-          },
-          {
-            ...tokenContract,
-            functionName: 'symbol',
-          },
-          {
-            ...tokenContract,
-            functionName: 'decimals',
-          },
-          {
-            ...tokenContract,
-            functionName: 'totalSupply',
-          },
-          {
-            ...tokenContract,
-            functionName: 'maxTotalSupply',
-          },
-        ];
-
         // Execute multicall
         const [name, symbol, decimals, totalSupply, maxTotalSupply] = await publicClient.multicall({
-          contracts: multicallCalls,
+          contracts: [
+            {
+              ...tokenContract,
+              functionName: 'name',
+            },
+            {
+              ...tokenContract,
+              functionName: 'symbol',
+            },
+            {
+              ...tokenContract,
+              functionName: 'decimals',
+            },
+            {
+              ...tokenContract,
+              functionName: 'totalSupply',
+            },
+            {
+              ...tokenContract,
+              functionName: 'maxTotalSupply',
+            },
+          ],
           allowFailure: false,
         });
 
