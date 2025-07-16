@@ -160,7 +160,7 @@ export function SafeTokenSettingsPage() {
       : undefined,
   );
 
-  const { popModal } = useContext(ModalContext);
+  const { closeAllModals } = useContext(ModalContext);
   const { values, setFieldValue } = useFormikContext<SafeSettingsEdits>();
 
   const isTransferableInValues = values.token?.transferable;
@@ -282,7 +282,7 @@ export function SafeTokenSettingsPage() {
               <Button
                 onClick={() => {
                   if (!safe) return;
-                  popModal();
+                  closeAllModals();
                   navigate(DAO_ROUTES.deployToken.relative(addressPrefix, safe.address));
                 }}
               >
