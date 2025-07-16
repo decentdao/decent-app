@@ -15,6 +15,7 @@ import {
   parseAbiParameters,
 } from 'viem';
 import { useAccount, useBalance } from 'wagmi';
+import { ROLES } from '../../../constants/accessControlRoles';
 import {
   linearERC20VotingWithWhitelistSetupParams,
   linearERC721VotingWithWhitelistSetupParams,
@@ -1112,15 +1113,15 @@ export function SafeSettingsModal({
         transactions.push({
           targetAddress: token.address,
           ethValue,
-          functionName: 'whitelist',
+          functionName: 'grantRole',
           parameters: [
+            {
+              signature: 'bytes32',
+              value: ROLES.TRANSFER_FROM_ROLE,
+            },
             {
               signature: 'address',
               value: addr,
-            },
-            {
-              signature: 'bool',
-              value: true.toString(),
             },
           ],
         });
@@ -1135,15 +1136,15 @@ export function SafeSettingsModal({
         transactions.push({
           targetAddress: token.address,
           ethValue,
-          functionName: 'whitelist',
+          functionName: 'revokeRole',
           parameters: [
+            {
+              signature: 'bytes32',
+              value: ROLES.TRANSFER_FROM_ROLE,
+            },
             {
               signature: 'address',
               value: addr,
-            },
-            {
-              signature: 'bool',
-              value: false.toString(),
             },
           ],
         });
