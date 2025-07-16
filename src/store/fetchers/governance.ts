@@ -1,4 +1,4 @@
-import { legacy } from '@decentdao/decent-contracts';
+import { legacy, abis } from '@decentdao/decent-contracts';
 import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -8,6 +8,8 @@ import {
   getAddress,
   getContract,
   GetContractEventsReturnType,
+  keccak256,
+  toHex,
   zeroAddress,
 } from 'viem';
 import { useAccount } from 'wagmi';
@@ -937,18 +939,62 @@ export function useGovernanceFetcher() {
       try {
         // Gather whitelisted addresses from event Whitelisted(address indexed account, bool isWhitelisted)
         const lockedTokenContract = getContract({
-          abi: legacy.abis.VotesERC20LockableV1,
+          abi: abis.deployables.VotesERC20V1,
           address: erc20AddressInEvent,
           client: publicClient,
         });
 
-        const whitelistEvents = await lockedTokenContract.getEvents.Whitelisted(undefined, {
-          fromBlock: 0n,
+        const transferFromRole = keccak256(toHex('TRANSFER_FROM_ROLE'));
+        const grantEvents = (
+          await lockedTokenContract.getEvents.RoleGranted(
+            { role: transferFromRole },
+            {
+              fromBlock: 0n,
+            },
+          )
+        ).map(e => ({
+          args: {
+            account: e.args.account,
+            role: e.args.role,
+            sender: e.args.sender,
+            isWhitelisted: true,
+          },
+          blockNumber: e.blockNumber,
+          logIndex: e.logIndex,
+        }));
+        const revokeEvents = (
+          await lockedTokenContract.getEvents.RoleRevoked(
+            { role: transferFromRole },
+            {
+              fromBlock: 0n,
+            },
+          )
+        ).map(e => ({
+          args: {
+            account: e.args.account,
+            role: e.args.role,
+            sender: e.args.sender,
+            isWhitelisted: false,
+          },
+          blockNumber: e.blockNumber,
+          logIndex: e.logIndex,
+        }));
+
+        // Order events by block number and log index
+        const orderedEvents = [...grantEvents, ...revokeEvents].sort((a, b) => {
+          if (a.blockNumber > b.blockNumber) {
+            return 1;
+          } else if (a.blockNumber < b.blockNumber) {
+            return -1;
+          } else {
+            return a.logIndex - b.logIndex;
+          }
         });
+
         const whitelistMap: { [address: Address]: boolean } = {};
-        whitelistEvents.forEach(event => {
+        orderedEvents.forEach(event => {
           const { account, isWhitelisted } = event.args;
-          if (account !== undefined && isWhitelisted !== undefined) {
+          if (account !== undefined) {
             whitelistMap[account] = isWhitelisted;
           }
         });
@@ -980,15 +1026,18 @@ export function useGovernanceFetcher() {
             ...tokenContract,
             functionName: 'decimals',
           },
-
           {
             ...tokenContract,
             functionName: 'totalSupply',
           },
+          {
+            ...tokenContract,
+            functionName: 'maxTotalSupply',
+          },
         ];
 
         // Execute multicall
-        const [name, symbol, decimals, totalSupply] = await publicClient.multicall({
+        const [name, symbol, decimals, totalSupply, maxTotalSupply] = await publicClient.multicall({
           contracts: multicallCalls,
           allowFailure: false,
         });
@@ -999,6 +1048,7 @@ export function useGovernanceFetcher() {
           decimals: decimals ? Number(decimals) : 18,
           address: tokenContract.address,
           totalSupply: totalSupply ? BigInt(totalSupply) : 0n,
+          maxTotalSupply: maxTotalSupply ? BigInt(maxTotalSupply) : 0n,
           whitelistedAddresses,
         };
 
