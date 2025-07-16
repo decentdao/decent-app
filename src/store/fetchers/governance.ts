@@ -8,12 +8,11 @@ import {
   getAddress,
   getContract,
   GetContractEventsReturnType,
-  keccak256,
-  toHex,
   zeroAddress,
 } from 'viem';
 import { useAccount } from 'wagmi';
 import LockReleaseAbi from '../../assets/abi/LockRelease';
+import { ROLES } from '../../constants/accessControlRoles';
 import { SENTINEL_ADDRESS } from '../../constants/common';
 import { createSnapshotSubgraphClient } from '../../graphql';
 import { ProposalsQuery, ProposalsResponse } from '../../graphql/SnapshotQueries';
@@ -944,10 +943,9 @@ export function useGovernanceFetcher() {
           client: publicClient,
         });
 
-        const transferFromRole = keccak256(toHex('TRANSFER_FROM_ROLE'));
         const grantEvents = (
           await lockedTokenContract.getEvents.RoleGranted(
-            { role: transferFromRole },
+            { role: ROLES.TRANSFER_FROM_ROLE },
             {
               fromBlock: 0n,
             },
@@ -964,7 +962,7 @@ export function useGovernanceFetcher() {
         }));
         const revokeEvents = (
           await lockedTokenContract.getEvents.RoleRevoked(
-            { role: transferFromRole },
+            { role: ROLES.TRANSFER_FROM_ROLE },
             {
               fromBlock: 0n,
             },

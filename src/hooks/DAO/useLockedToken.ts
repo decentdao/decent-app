@@ -1,6 +1,7 @@
 import { abis } from '@decentdao/decent-contracts';
 import { useCallback, useEffect, useState } from 'react';
-import { Address, getContract, keccak256, toHex } from 'viem';
+import { Address, getContract } from 'viem';
+import { ROLES } from '../../constants/accessControlRoles';
 import useNetworkPublicClient from '../useNetworkPublicClient';
 
 interface LockedTokenState {
@@ -30,12 +31,11 @@ export default function useLockedToken(
         address: token,
         client: publicClient,
       });
-      const transferFromRole = keccak256(toHex('TRANSFER_FROM_ROLE'));
 
       try {
         const [locked, whitelisted] = await Promise.all([
           contract.read.locked(),
-          contract.read.hasRole([transferFromRole, account]),
+          contract.read.hasRole([ROLES.TRANSFER_FROM_ROLE, account]),
         ]);
 
         return {
