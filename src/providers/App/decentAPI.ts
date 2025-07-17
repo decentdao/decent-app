@@ -39,39 +39,6 @@ export async function queryDaosByName(name: string) {
   return response.data.data;
 }
 
-export interface DAOSplitWallet {
-  address: Address;
-  name: string;
-  splits: {
-    address: Address;
-    percentage: number;
-  }[];
-}
-
-interface DAOSplitsResponse {
-  success: boolean;
-  data: DAOSplitWallet[];
-}
-
-export async function getDaoSplits(
-  chainId: number,
-  daoAddress: Address,
-): Promise<DAOSplitWallet[]> {
-  try {
-    const response: AxiosResponse<DAOSplitsResponse> = await axiosClient.get(
-      `/d/${chainId}/${daoAddress}/splits`,
-    );
-    if (!response.data.success) {
-      throw new Error('Failed to fetch DAO splits');
-    }
-
-    return response.data.data;
-  } catch (error) {
-    console.error(error);
-    return [];
-  }
-}
-
 interface TokenStakingDataResponse {
   success: boolean;
   data: StakingTokenData;

@@ -31,7 +31,6 @@ export const useDAOStore = ({ daoKey }: { daoKey: DAOKey | undefined }): Fractal
         assetsNonFungible: [],
         totalUsdValue: 0,
         transfers: [],
-        daoSplits: [],
       },
       governance: EMPTY_GOVERNANCE,
       guard: {

@@ -1,7 +1,6 @@
 import { TokenInfoResponse, TransferResponse } from '@safe-global/api-kit';
 import { SafeMultisigTransactionResponse } from '@safe-global/safe-core-sdk-types';
 import { Address } from 'viem';
-import { DAOSplitWallet } from '../providers/App/decentAPI';
 import { ERC20LockedTokenData, ERC721TokenData, VotesTokenData } from './account';
 import { DAOOwnedEntities } from './daoGeneral';
 import { FreezeGuardType, FreezeVotingType } from './daoGovernance';
@@ -264,7 +263,6 @@ export interface DecentTreasury {
   assetsFungible: TokenBalance[];
   assetsNonFungible: NFTBalance[];
   assetsDeFi: DefiBalance[];
-  daoSplits: DAOSplitWallet[];
   transfers: TransferDisplayData[] | null;
 }
 

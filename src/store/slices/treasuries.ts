@@ -16,7 +16,6 @@ const EMPTY_TREASURY: DecentTreasury = {
   assetsNonFungible: [],
   assetsDeFi: [],
   transfers: [],
-  daoSplits: [],
 };
 
 export const createTreasuriesSlice: StateCreator<
