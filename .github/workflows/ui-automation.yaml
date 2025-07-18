@@ -68,10 +68,14 @@ jobs:
       pull-requests: write
 
     steps:
-      - name: Checkout code
+      - name: Checkout UI automation repository
         uses: actions/checkout@v4
+        with:
+          repository: decentdao/decent-ui-automation
+          path: ui-automation
 
-      - name: Install dependencies
+      - name: Install dependencies in automation repo
+        working-directory: ui-automation
         run: |
           npm ci
 
@@ -79,6 +83,7 @@ jobs:
         run: pkill chrome || true
 
       - name: Run Selenium tests
+        working-directory: ui-automation
         env:
           BASE_URL: ${{ needs.detect-preview-deployment.outputs.preview_url }}
         run: |
@@ -89,14 +94,14 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: selenium-test-results
-          path: test-results/
+          path: ui-automation/test-results/
 
       - name: Prepend artifact link to summary
         run: |
-          echo "[⬇️ Download Selenium Test Artifacts](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})" | cat - test-results/test-results-summary.md > test-results/test-results-summary.with-link.md
+          echo "[⬇️ Download Selenium Test Artifacts](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})" | cat - ui-automation/test-results/test-results-summary.md > ui-automation/test-results/test-results-summary.with-link.md
 
       - name: Comment results on PR
         uses: marocchino/sticky-pull-request-comment@v2
         with:
           number: ${{ needs.detect-preview-deployment.outputs.pr_number }}
-          path: test-results/test-results-summary.with-link.md
+          path: ui-automation/test-results/test-results-summary.with-link.md

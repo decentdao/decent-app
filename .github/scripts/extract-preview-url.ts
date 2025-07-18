@@ -61,8 +61,23 @@ async function extractPreviewUrl() {
     const outputText = cloudflareCheck.output.summary || cloudflareCheck.output.text || '';
     const urlMatches = outputText.match(/https:\/\/[^\s<>"']+\.pages\.dev/g);
     if (urlMatches && urlMatches.length > 0) {
-      // Use the second URL if available (branch-specific), otherwise use the first
-      const selectedUrl = urlMatches.length > 1 ? urlMatches[1] : urlMatches[0];
+      console.log(`Found ${urlMatches.length} preview URLs:`, urlMatches);
+
+      // Look for branch-specific URL (contains letters/hyphens, not just random hash)
+      // Branch URLs typically have format: https://branch-name.domain.pages.dev
+      const branchUrl = urlMatches.find(url => {
+        const subdomain = url.split('.')[0].split('//')[1];
+        // Branch subdomains contain letters/hyphens, not just random hex characters
+        return (
+          subdomain &&
+          subdomain.length > 8 &&
+          /[a-zA-Z-]/.test(subdomain) &&
+          !/^[a-f0-9]+$/.test(subdomain)
+        );
+      });
+
+      // Use branch URL if found, otherwise fall back to the last URL (often the most specific)
+      const selectedUrl = branchUrl || urlMatches[urlMatches.length - 1];
       let extractedUrl = selectedUrl;
       // Clean up any HTML entities or trailing characters
       extractedUrl = extractedUrl
@@ -72,7 +87,7 @@ async function extractPreviewUrl() {
         .replace(/&amp;/g, '&');
       previewUrl = extractedUrl;
 
-      console.log(`Found ${urlMatches.length} preview URLs, using: ${previewUrl}`);
+      console.log(`Using URL: ${previewUrl}${branchUrl ? ' (branch-specific)' : ' (fallback)'}`);
     }
   }
 
