@@ -5,11 +5,13 @@ import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { zeroAddress } from 'viem';
 import { createAccountSubstring } from '../../../hooks/utils/useGetAccountName';
+import { RevenueSharingWalletFormValues } from '../../../types/revShare';
 import { AccordionDropdown } from '../../ui/containers/AccordionDropdown';
 import { AddressInputInfo } from '../../ui/forms/AddressInputInfo';
 import { EditableInput } from '../../ui/forms/EditableInput';
 import { NumberInputPercentage } from '../../ui/forms/NumberInputPercentage';
 import AddressCopier from '../../ui/links/AddressCopier';
+import { SafeSettingsEdits } from '../../ui/modals/SafeSettingsModal';
 import Divider from '../../ui/utils/Divider';
 import { SplitPercentageDisplay } from './SplitPercentageDisplay';
 
@@ -64,7 +66,7 @@ function RevenueSharingTableRowItem({
   );
 }
 
-function SplitName({ index, wallet }: { index: number; wallet: any }) {
+function SplitName({ index, wallet }: { index: number; wallet: RevenueSharingWalletFormValues }) {
   return (
     <Grid
       templateColumns="auto 1fr"
@@ -106,12 +108,21 @@ function SplitName({ index, wallet }: { index: number; wallet: any }) {
   );
 }
 
-export function RevSplitTable({ wallet, index }: { wallet: any; index: number }) {
-  const { values, setFieldValue } = useFormikContext<any>();
+export function RevSplitTable({
+  wallet,
+  index,
+}: {
+  wallet: RevenueSharingWalletFormValues & {
+    isCurrentDAOAddress: boolean;
+    isParentDAOAddress: boolean;
+  };
+  index: number;
+}) {
+  const { values, setFieldValue } = useFormikContext<SafeSettingsEdits>();
   const { t } = useTranslation('revenueSharing');
 
   const totalPercentage = useMemo(() => {
-    return wallet.splits.reduce((acc: number, split: any) => acc + Number(split.percentage), 0);
+    return wallet.splits?.reduce((acc: number, split: any) => acc + Number(split.percentage), 0);
   }, [wallet.splits]);
   return (
     <Flex
@@ -137,7 +148,7 @@ export function RevSplitTable({ wallet, index }: { wallet: any; index: number })
         overflow={{ base: 'auto', md: 'hidden' }}
       >
         {/* Wallet Share Rows */}
-        {wallet.splits.map((_: any, i: number, arr: any[]) => {
+        {wallet.splits?.map((_: any, i: number, arr: any[]) => {
           const isLastRow = i === arr.length - 1;
 
           return (
@@ -146,13 +157,13 @@ export function RevSplitTable({ wallet, index }: { wallet: any; index: number })
                 rowContent={
                   <Field name={`revenueSharing.wallets.${index}.splits.${i}.address`}>
                     {({ field, form }: FieldProps<string, any>) => {
-                      const fieldValue = field.value ?? wallet.splits[i].address;
+                      const fieldValue = field.value ?? wallet.splits?.[i].address;
                       return (
                         <AddressInputInfo
                           variant="tableStyle"
                           value={fieldValue}
                           onChange={value => {
-                            if (value === wallet.splits[i].percentage) {
+                            if (value.target.value === wallet.splits?.[i].address) {
                               form.setFieldValue(field.name, undefined);
                             } else {
                               form.setFieldValue(field.name, value.target.value);
@@ -172,14 +183,14 @@ export function RevSplitTable({ wallet, index }: { wallet: any; index: number })
                 rowContent={
                   <Field name={`revenueSharing.wallets.${index}.splits.${i}.percentage`}>
                     {({ field, form }: FieldProps<string, any>) => {
-                      const fieldValue = field.value ?? wallet.splits[i].percentage;
+                      const fieldValue = field.value ?? wallet.splits?.[i].percentage;
                       return (
                         <NumberInputPercentage
                           variant="tableStyle"
                           value={fieldValue}
                           min={0}
                           onChange={value => {
-                            if (value === wallet.splits[i].percentage) {
+                            if (value === wallet.splits?.[i].percentage) {
                               form.setFieldValue(field.name, undefined);
                             } else {
                               form.setFieldValue(field.name, value);
@@ -256,13 +267,13 @@ export function RevSplitTable({ wallet, index }: { wallet: any; index: number })
         onClick={() => {
           const formWalletSplits = [...(values.revenueSharing?.wallets?.[index]?.splits || [])];
           const formWalletSplitsLength = formWalletSplits.length;
-          const walletsLength = wallet.splits.length;
+          const walletsLength = wallet.splits?.length || 0;
           const newWalletIndex =
             formWalletSplitsLength >= walletsLength ? formWalletSplitsLength : walletsLength;
 
           formWalletSplits[newWalletIndex] = {
             address: zeroAddress,
-            percentage: 0,
+            percentage: '0',
           };
           setFieldValue(`revenueSharing.wallets.${index}.splits`, formWalletSplits);
         }}
@@ -273,7 +284,16 @@ export function RevSplitTable({ wallet, index }: { wallet: any; index: number })
   );
 }
 
-export function RevSplitWalletAccordion({ wallet, index }: { wallet: any; index: number }) {
+export function RevSplitWalletAccordion({
+  wallet,
+  index,
+}: {
+  wallet: RevenueSharingWalletFormValues & {
+    isCurrentDAOAddress: boolean;
+    isParentDAOAddress: boolean;
+  };
+  index: number;
+}) {
   return (
     <AccordionDropdown
       defaultExpandedIndices={index === 0 ? [0] : []}
@@ -290,22 +310,5 @@ export function RevSplitWalletAccordion({ wallet, index }: { wallet: any; index:
         />
       }
     />
-  );
-}
-
-export function RevenueSplitWallets({ wallets }: { wallets: any[] }) {
-  return (
-    <Flex
-      direction="column"
-      gap="0.5rem"
-    >
-      {wallets.map((wallet, index) => (
-        <RevSplitWalletAccordion
-          key={index}
-          wallet={wallet}
-          index={index}
-        />
-      ))}
-    </Flex>
   );
 }

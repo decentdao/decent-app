@@ -45,6 +45,7 @@ import {
   FractalTokenType,
   ProposalActionType,
 } from '../../../types';
+import { RevenueSharingWalletFormValues } from '../../../types/revShare';
 import { SENTINEL_MODULE } from '../../../utils/address';
 import { getEstimatedNumberOfBlocks } from '../../../utils/contract';
 import { prepareRefillPaymasterAction } from '../../../utils/dao/prepareRefillPaymasterActionData';
@@ -93,21 +94,7 @@ export type SafeSettingsEdits = {
     addressesToUnwhitelist?: string[];
     addressesToWhitelist?: string[];
   };
-  revenueSharing?: {
-    wallets: {
-      name: string;
-      address: string;
-      // this is used to support the name edit and confirm flow
-      lastEdit: {
-        name?: string;
-        address?: string;
-      };
-      splits: {
-        address: string;
-        percentage: number;
-      }[];
-    }[];
-  };
+  revenueSharing?: { wallets?: RevenueSharingWalletFormValues[] };
 };
 
 type MultisigEditGovernanceFormikErrors = {

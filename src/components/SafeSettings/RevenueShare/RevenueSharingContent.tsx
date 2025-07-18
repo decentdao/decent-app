@@ -3,18 +3,24 @@ import { Plus, WarningCircle } from '@phosphor-icons/react';
 import { useFormikContext } from 'formik';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Address, zeroAddress } from 'viem';
+import { Address } from 'viem';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import { createAccountSubstring } from '../../../hooks/utils/useGetAccountName';
 import { useDAOStore } from '../../../providers/App/AppProvider';
+import {
+  RevenueSharingWallet,
+  RevenueSharingWalletFormValues,
+  RevenueSharingWalletSplit,
+} from '../../../types/revShare';
 import { Badge } from '../../ui/badges/Badge';
 import AddressCopier from '../../ui/links/AddressCopier';
 import { BarLoader } from '../../ui/loaders/BarLoader';
+import { SafeSettingsEdits } from '../../ui/modals/SafeSettingsModal';
 import { SettingsContentBox } from '../SettingsContentBox';
-import { RevenueSplitWallets } from './RevenueSplitWallets';
+import { RevSplitWalletAccordion } from './RevenueSplitWallets';
 
-function RevenueShareHeader({ wallets }: { wallets: any[] }) {
-  const { values, setFieldValue } = useFormikContext<any>();
+function RevenueShareHeader({ numberOfDeployedWallets }: { numberOfDeployedWallets: number }) {
+  const { values, setFieldValue } = useFormikContext<SafeSettingsEdits>();
   const { t } = useTranslation('revenueSharing');
 
   return (
@@ -39,14 +45,13 @@ function RevenueShareHeader({ wallets }: { wallets: any[] }) {
         onClick={() => {
           const formWallets = [...(values.revenueSharing?.wallets || [])];
           const formWalletsLength = formWallets.length;
-          const walletsLength = wallets.length;
+          const walletsLength = numberOfDeployedWallets;
           const newWalletIndex =
             formWalletsLength >= walletsLength ? formWalletsLength : walletsLength;
 
           formWallets[newWalletIndex] = {
-            address: zeroAddress,
             name: t('defaultSplitName'),
-            splits: [{}],
+            splits: [{} as Partial<RevenueSharingWalletSplit<string, string>>],
           };
           setFieldValue('revenueSharing.wallets', formWallets);
         }}
@@ -107,7 +112,7 @@ export function RevenueSharingSettingsContent() {
     node: { safe, subgraphInfo },
   } = useDAOStore({ daoKey });
 
-  const { values } = useFormikContext<any>();
+  const { values } = useFormikContext<SafeSettingsEdits>();
 
   const isCurrentDAOAddress = (address: Address | string) => {
     return address === safe?.address;
@@ -174,8 +179,11 @@ export function RevenueSharingSettingsContent() {
   ];
 
   // function to combine foo and values, where form values take precedence
-  const combineFooAndValues = (existingWallets: any[], formWallets: any) => {
-    const formWalletsLength = formWallets?.length;
+  const combineFooAndValues = (
+    existingWallets: RevenueSharingWallet[],
+    formWallets: RevenueSharingWalletFormValues[] | undefined,
+  ) => {
+    const formWalletsLength = formWallets?.length ?? 0;
     const existingWalletsLength = existingWallets?.length;
     const newWalletsArrayLength =
       formWalletsLength >= existingWalletsLength ? formWalletsLength : existingWalletsLength;
@@ -199,10 +207,8 @@ export function RevenueSharingSettingsContent() {
           }
           return {
             ...existingSplit,
-            percentage: formSplit?.percentage || existingSplit?.percentage,
+            percentage: formSplit?.percentage || existingSplit?.percentage?.toString(),
             address: formSplit?.address || existingSplit?.address,
-            name: formSplit?.name || existingSplit?.name,
-            lastEdit: formSplit?.lastEdit || existingSplit?.lastEdit,
           };
         }),
       };
@@ -215,7 +221,6 @@ export function RevenueSharingSettingsContent() {
         ...wallet,
         isCurrentDAOAddress: isCurrentDAOAddress(wallet.address),
         isParentDAOAddress: isParentDAOAddress(wallet.address),
-        splits: wallet.splits,
       };
     })
     .sort((a, b) => {
@@ -232,9 +237,20 @@ export function RevenueSharingSettingsContent() {
         px={12}
         py={6}
       >
-        <RevenueShareHeader wallets={wallets} />
+        <RevenueShareHeader numberOfDeployedWallets={wallets.length} />
         <DaoSafeWalletCard displayedAddress={safe.address} />
-        <RevenueSplitWallets wallets={wallets} />
+        <Flex
+          direction="column"
+          gap="0.5rem"
+        >
+          {wallets.map((wallet, index) => (
+            <RevSplitWalletAccordion
+              key={index}
+              wallet={wallet}
+              index={index}
+            />
+          ))}
+        </Flex>
       </SettingsContentBox>
     </>
   );
