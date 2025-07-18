@@ -10,17 +10,19 @@ const sha = process.env.COMMIT_SHA || process.env.GITHUB_SHA;
 const repo = process.env.GITHUB_REPOSITORY;
 
 if (!token || !sha || !repo) {
-  console.error('Missing required environment variables: GITHUB_TOKEN, COMMIT_SHA/GITHUB_SHA, GITHUB_REPOSITORY');
+  console.error(
+    'Missing required environment variables: GITHUB_TOKEN, COMMIT_SHA/GITHUB_SHA, GITHUB_REPOSITORY',
+  );
   process.exit(1);
 }
 
 async function fetchCheckRuns() {
   const response = await fetch(`https://api.github.com/repos/${repo}/commits/${sha}/check-runs`, {
     headers: {
-      'Authorization': `Bearer ${token}`,
-      'Accept': 'application/vnd.github+json',
-      'User-Agent': 'ui-automation-script'
-    }
+      Authorization: `Bearer ${token}`,
+      Accept: 'application/vnd.github+json',
+      'User-Agent': 'ui-automation-script',
+    },
   });
 
   if (!response.ok) {
@@ -33,10 +35,10 @@ async function fetchCheckRuns() {
 
 async function extractPreviewUrl() {
   console.log('Fetching check runs for commit:', sha);
-  
+
   const checkRunsData = await fetchCheckRuns();
-  const cloudflareCheck = checkRunsData.check_runs?.find((run: any) => 
-    run.name.includes('Cloudflare Pages') && run.conclusion === 'success'
+  const cloudflareCheck = checkRunsData.check_runs?.find(
+    (run: any) => run.name.includes('Cloudflare Pages') && run.conclusion === 'success',
   );
 
   if (!cloudflareCheck) {
@@ -57,15 +59,26 @@ async function extractPreviewUrl() {
   // If not found, check the output summary or text
   if (!previewUrl && cloudflareCheck.output) {
     const outputText = cloudflareCheck.output.summary || cloudflareCheck.output.text || '';
-    const urlMatch = outputText.match(/https:\/\/[^\s]+\.pages\.dev[^\s]*/);
-    if (urlMatch) {
-      previewUrl = urlMatch[0];
+    const urlMatches = outputText.match(/https:\/\/[^\s<>"']+\.pages\.dev/g);
+    if (urlMatches && urlMatches.length > 0) {
+      // Use the second URL if available (branch-specific), otherwise use the first
+      const selectedUrl = urlMatches.length > 1 ? urlMatches[1] : urlMatches[0];
+      let extractedUrl = selectedUrl;
+      // Clean up any HTML entities or trailing characters
+      extractedUrl = extractedUrl
+        .replace(/['">]+$/, '')
+        .replace(/&gt;/g, '>')
+        .replace(/&lt;/g, '<')
+        .replace(/&amp;/g, '&');
+      previewUrl = extractedUrl;
+
+      console.log(`Found ${urlMatches.length} preview URLs, using: ${previewUrl}`);
     }
   }
 
   // Get PR number from the event data
   const eventData = JSON.parse(
-    process.env.GITHUB_EVENT_PATH ? fs.readFileSync(process.env.GITHUB_EVENT_PATH, 'utf8') : '{}'
+    process.env.GITHUB_EVENT_PATH ? fs.readFileSync(process.env.GITHUB_EVENT_PATH, 'utf8') : '{}',
   );
   const prNumber = eventData.pull_request?.number || null;
 
