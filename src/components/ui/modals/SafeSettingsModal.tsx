@@ -9,6 +9,7 @@ import {
   encodeAbiParameters,
   encodeFunctionData,
   encodePacked,
+  formatUnits,
   getContract,
   getCreate2Address,
   keccak256,
@@ -274,6 +275,12 @@ export function SafeSettingsModal({
   const ethValue = {
     bigintValue: 0n,
     value: '0',
+  };
+
+  const erc20Token = governance.erc20Token;
+  const currentMaxTotalSupply: BigIntValuePair = {
+    bigintValue: erc20Token?.maxTotalSupply,
+    value: formatUnits(erc20Token?.maxTotalSupply || 0n, erc20Token?.decimals || 0),
   };
 
   const handleEditPaymaster = async (
@@ -1230,7 +1237,7 @@ export function SafeSettingsModal({
 
   return (
     <Formik<SafeSettingsEdits>
-      initialValues={{}}
+      initialValues={erc20Token ? { token: { maximumTotalSupply: currentMaxTotalSupply } } : {}}
       validate={async values => {
         let errors: SafeSettingsFormikErrors = {};
 
@@ -1280,7 +1287,7 @@ export function SafeSettingsModal({
         }
 
         if (values.token) {
-          const { addressesToWhitelist } = values.token;
+          const { addressesToWhitelist, maximumTotalSupply } = values.token;
           const errorsToken = errors.token ?? {};
 
           if (addressesToWhitelist && addressesToWhitelist.length > 0) {
@@ -1306,6 +1313,19 @@ export function SafeSettingsModal({
 
             if (whitelistErrors.some(error => error !== null)) {
               errorsToken.addressesToWhitelist = whitelistErrors.filter(error => error !== null);
+              errors.token = errorsToken;
+            }
+          }
+
+          if (maximumTotalSupply?.bigintValue && currentMaxTotalSupply.bigintValue) {
+            const lessThanCurrent =
+              maximumTotalSupply.bigintValue < currentMaxTotalSupply.bigintValue;
+
+            if (lessThanCurrent) {
+              errorsToken.maximumTotalSupply = t('errorMinimumValue', {
+                ns: 'common',
+                minValue: currentMaxTotalSupply.value,
+              });
               errors.token = errorsToken;
             }
           }
