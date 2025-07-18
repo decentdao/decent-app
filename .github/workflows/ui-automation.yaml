@@ -1,35 +1,59 @@
-name: UI Automation
+name: PR Preview UI Automation
+
 on:
-  push:
-    branches:
-      - develop
+  check_run:
+    types: [completed]
 
 jobs:
-  e2e-automation:
-    name: E2E Selenium Automation
+  detect-preview-deployment:
+    name: Detect Preview Deployment
     runs-on: ubuntu-latest
-    continue-on-error: true
+    if: |
+      github.event.check_run.conclusion == 'success' &&
+      contains(github.event.check_run.name, 'Cloudflare Pages')
+    outputs:
+      preview_url: ${{ steps.get_preview_info.outputs.url }}
+      pr_number: ${{ steps.get_preview_info.outputs.pr_number }}
+      should_run: ${{ steps.get_preview_info.outputs.should_run }}
+
     steps:
-      - name: Checkout decent-app
+      - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Checkout automation repo
+      - name: Install node-fetch for preview URL extraction
+        run: npm install node-fetch@2
+
+      - name: Extract Preview URL
+        id: get_preview_info
+        run: |
+          npx ts-node .github/scripts/extract-preview-url.ts
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  e2e-automation:
+    name: E2E Selenium Automation
+    needs: detect-preview-deployment
+    runs-on: ubuntu-latest
+    if: needs.detect-preview-deployment.outputs.should_run == 'true'
+    continue-on-error: true
+    permissions:
+      pull-requests: write
+
+    steps:
+      - name: Checkout code
         uses: actions/checkout@v4
-        with:
-          repository: decentdao/decent-ui-automation
-          path: decent-ui-automation
 
       - name: Install dependencies
         run: |
-          cd decent-ui-automation
           npm ci
 
       - name: Kill any leftover Chrome processes
         run: pkill chrome || true
 
       - name: Run Selenium tests
+        env:
+          BASE_URL: ${{ needs.detect-preview-deployment.outputs.preview_url }}
         run: |
-          cd decent-ui-automation
           npm test
         continue-on-error: true
 
@@ -37,22 +61,14 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: selenium-test-results
-          path: decent-ui-automation/test-results/
-
-      - name: Find merged pull request
-        id: find_pr
-        uses: peter-evans/find-pull-request@v3
-        with:
-          commit: ${{ github.sha }}
-          state: merged
+          path: test-results/
 
       - name: Prepend artifact link to summary
         run: |
-          echo "[⬇️ Download Selenium Test Artifacts](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})\n" | cat - decent-ui-automation/test-results/test-results-summary.md > decent-ui-automation/test-results/test-results-summary.with-link.md
+          echo "[⬇️ Download Selenium Test Artifacts](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})" | cat - test-results/test-results-summary.md > test-results/test-results-summary.with-link.md
 
       - name: Comment results on PR
-        if: steps.find_pr.outputs.pull_request_number != ''
         uses: marocchino/sticky-pull-request-comment@v2
         with:
-          number: ${{ steps.find_pr.outputs.pull_request_number }}
-          path: decent-ui-automation/test-results/test-results-summary.with-link.md
+          number: ${{ needs.detect-preview-deployment.outputs.pr_number }}
+          path: test-results/test-results-summary.with-link.md
