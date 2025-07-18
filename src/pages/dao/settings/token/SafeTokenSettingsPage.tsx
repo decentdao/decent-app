@@ -5,10 +5,10 @@ import {
   Grid,
   GridItem,
   IconButton,
-  Input,
   Show,
   Switch,
   Text,
+  Image,
 } from '@chakra-ui/react';
 import { ClockClockwise, TrashSimple } from '@phosphor-icons/react';
 import { Field, FieldArray, FieldAttributes, useFormikContext } from 'formik';
@@ -17,6 +17,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { zeroAddress } from 'viem';
 import { SettingsContentBox } from '../../../../components/SafeSettings/SettingsContentBox';
+import { BigIntInput } from '../../../../components/ui/forms/BigIntInput';
 import { AddressInput } from '../../../../components/ui/forms/EthAddressInput';
 import { DisplayAddress } from '../../../../components/ui/links/DisplayAddress';
 import { ModalContext } from '../../../../components/ui/modals/ModalProvider';
@@ -29,6 +30,7 @@ import Divider from '../../../../components/ui/utils/Divider';
 import { DAO_ROUTES } from '../../../../constants/routes';
 import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
 import useLockedToken from '../../../../hooks/DAO/useLockedToken';
+import { useFormHelpers } from '../../../../hooks/utils/useFormHelpers';
 import { useDAOStore } from '../../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../../providers/NetworkConfig/useNetworkConfigStore';
 import { formatCoin } from '../../../../utils';
@@ -150,6 +152,7 @@ export function SafeTokenSettingsPage() {
   const navigate = useNavigate();
   const { t } = useTranslation('settings');
   const { addressPrefix } = useNetworkConfigStore();
+  const { restrictChars } = useFormHelpers();
   const { daoKey } = useCurrentDAOKey();
   const {
     node: { safe },
@@ -162,7 +165,8 @@ export function SafeTokenSettingsPage() {
   );
 
   const { closeAllModals } = useContext(ModalContext);
-  const { values, setFieldValue } = useFormikContext<SafeSettingsEdits>();
+  const { values, setFieldValue, errors } = useFormikContext<SafeSettingsEdits>();
+  const formErrors = errors as SafeSettingsFormikErrors;
 
   const isTransferableInValues = values.token?.transferable;
   const isTransferable =
@@ -420,10 +424,27 @@ export function SafeTokenSettingsPage() {
                   padding={3}
                   paddingLeft={0}
                   width={300}
+                  direction="column"
                 >
-                  <Field name="token.maximumTotalSupply">
-                    {({ field }: FieldAttributes<any>) => <Input {...field} />}
-                  </Field>
+                  <BigIntInput
+                    value={values.token?.maximumTotalSupply?.bigintValue || 0n}
+                    parentFormikValue={values.token?.maximumTotalSupply}
+                    onChange={valuePair => setFieldValue('token.maximumTotalSupply', valuePair)}
+                    decimalPlaces={erc20Token.decimals}
+                    onKeyDown={restrictChars}
+                  />
+                  {formErrors.token?.maximumTotalSupply && (
+                    <Flex gap="0.25rem">
+                      <Image src="/images/input-error.svg" />
+                      <Text
+                        color="color-error-500"
+                        mt="0.2rem"
+                        mb="0.25rem"
+                      >
+                        {formErrors.token.maximumTotalSupply}
+                      </Text>
+                    </Flex>
+                  )}
                 </Flex>
               </Flex>
             </>
