@@ -2,6 +2,7 @@ import { Button, Flex, Grid, GridItem, Icon, IconButton, Text } from '@chakra-ui
 import { Plus, Trash } from '@phosphor-icons/react';
 import { Field, FieldProps, useFormikContext } from 'formik';
 import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { zeroAddress } from 'viem';
 import { createAccountSubstring } from '../../../hooks/utils/useGetAccountName';
 import { AccordionDropdown } from '../../ui/containers/AccordionDropdown';
@@ -107,6 +108,7 @@ function SplitName({ index, wallet }: { index: number; wallet: any }) {
 
 export function RevSplitTable({ wallet, index }: { wallet: any; index: number }) {
   const { values, setFieldValue } = useFormikContext<any>();
+  const { t } = useTranslation('revenueSharing');
 
   const totalPercentage = useMemo(() => {
     return wallet.splits.reduce((acc: number, split: any) => acc + Number(split.percentage), 0);
@@ -122,8 +124,7 @@ export function RevSplitTable({ wallet, index }: { wallet: any; index: number })
         mb={4}
         color="color-neutral-50"
       >
-        {/* todo: move to translations */}
-        Recipients
+        {t('recipients')}
       </Text>
 
       <Grid
@@ -207,7 +208,7 @@ export function RevSplitTable({ wallet, index }: { wallet: any; index: number })
                           w="full"
                         >
                           <IconButton
-                            aria-label="Remove Split"
+                            aria-label={t('removeSplitButtonLabel')}
                             hidden={hideRemoveButton}
                             icon={<Trash />}
                             color="color-error-400"
@@ -266,8 +267,7 @@ export function RevSplitTable({ wallet, index }: { wallet: any; index: number })
           setFieldValue(`revenueSharing.wallets.${index}.splits`, formWalletSplits);
         }}
       >
-        {/* todo: move to translations */}
-        Add Recipient
+        {t('addRecipientButton')}
       </Button>
     </Flex>
   );

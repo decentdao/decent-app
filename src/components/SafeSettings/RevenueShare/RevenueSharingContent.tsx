@@ -2,6 +2,7 @@ import { Flex, Button, Icon, Text } from '@chakra-ui/react';
 import { Plus, WarningCircle } from '@phosphor-icons/react';
 import { useFormikContext } from 'formik';
 import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Address, zeroAddress } from 'viem';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import { createAccountSubstring } from '../../../hooks/utils/useGetAccountName';
@@ -14,6 +15,7 @@ import { RevenueSplitWallets } from './RevenueSplitWallets';
 
 function RevenueShareHeader({ wallets }: { wallets: any[] }) {
   const { values, setFieldValue } = useFormikContext<any>();
+  const { t } = useTranslation('revenueSharing');
 
   return (
     <Flex
@@ -26,8 +28,7 @@ function RevenueShareHeader({ wallets }: { wallets: any[] }) {
         textStyle="text-lg-regular"
         color="color-content-content1-foreground"
       >
-        {/* todo: move to translations */}
-        Revenue Share
+        {t('title')}
       </Text>
 
       <Button
@@ -44,21 +45,20 @@ function RevenueShareHeader({ wallets }: { wallets: any[] }) {
 
           formWallets[newWalletIndex] = {
             address: zeroAddress,
-            // todo: move to translations
-            name: 'Revenue Split',
+            name: t('defaultSplitName'),
             splits: [{}],
           };
           setFieldValue('revenueSharing.wallets', formWallets);
         }}
       >
-        {/* todo: move to translations */}
-        Add Revenue Split
+        {t('addSplitButton')}
       </Button>
     </Flex>
   );
 }
 
 function DaoSafeWalletCard({ displayedAddress }: { displayedAddress: Address }) {
+  const { t } = useTranslation('revenueSharing');
   return (
     <Flex
       flexDir="column"
@@ -76,8 +76,7 @@ function DaoSafeWalletCard({ displayedAddress }: { displayedAddress: Address }) 
           textStyle="text-base-regular"
           color="color-content-content1-foreground"
         >
-          {/* todo: move to translations */}
-          DAO Safe Wallet
+          {t('daoSafeWallet')}
         </Text>
 
         <AddressCopier
@@ -92,8 +91,6 @@ function DaoSafeWalletCard({ displayedAddress }: { displayedAddress: Address }) 
       </Flex>
 
       <Badge
-        // todo: move to translations
-        // "Funds sent to this address will not be split"
         namespace="revenueSharing"
         labelKey="revShareDaoSafeWarning"
         size="base"
