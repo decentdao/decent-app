@@ -1,10 +1,7 @@
 #!/usr/bin/env node
 
 import * as fs from 'fs';
-// For Node.js < 18, you might need: import fetch from 'node-fetch';
-// But Node 18+ has fetch built-in
 
-// For PR context, we'll fetch the check run data via GitHub API
 const token = process.env.GITHUB_TOKEN;
 const sha = process.env.COMMIT_SHA || process.env.GITHUB_SHA;
 const repo = process.env.GITHUB_REPOSITORY;
@@ -48,26 +45,20 @@ async function extractPreviewUrl() {
 
   console.log('Found Cloudflare Pages check run:', cloudflareCheck.name);
 
-  // Extract preview URL from check run details
   let previewUrl = null;
 
-  // Check the details_url first (this often contains the preview URL)
   if (cloudflareCheck.details_url && cloudflareCheck.details_url.includes('.pages.dev')) {
     previewUrl = cloudflareCheck.details_url;
   }
 
-  // If not found, check the output summary or text
   if (!previewUrl && cloudflareCheck.output) {
     const outputText = cloudflareCheck.output.summary || cloudflareCheck.output.text || '';
     const urlMatches = outputText.match(/https:\/\/[^\s<>"']+\.pages\.dev/g);
     if (urlMatches && urlMatches.length > 0) {
       console.log(`Found ${urlMatches.length} preview URLs:`, urlMatches);
 
-      // Look for branch-specific URL (contains letters/hyphens, not just random hash)
-      // Branch URLs typically have format: https://branch-name.domain.pages.dev
       const branchUrl = urlMatches.find((url: string) => {
         const subdomain = url.split('.')[0].split('//')[1];
-        // Branch subdomains contain letters/hyphens, not just random hex characters
         return (
           subdomain &&
           subdomain.length > 8 &&
@@ -76,10 +67,8 @@ async function extractPreviewUrl() {
         );
       });
 
-      // Use branch URL if found, otherwise fall back to the last URL (often the most specific)
       const selectedUrl = branchUrl || urlMatches[urlMatches.length - 1];
       let extractedUrl = selectedUrl;
-      // Clean up any HTML entities or trailing characters
       extractedUrl = extractedUrl
         .replace(/['">]+$/, '')
         .replace(/&gt;/g, '>')
@@ -91,7 +80,6 @@ async function extractPreviewUrl() {
     }
   }
 
-  // Get PR number from the event data
   const eventData = JSON.parse(
     process.env.GITHUB_EVENT_PATH ? fs.readFileSync(process.env.GITHUB_EVENT_PATH, 'utf8') : '{}',
   );
@@ -102,7 +90,6 @@ async function extractPreviewUrl() {
 
   const shouldRun = previewUrl && prNumber ? 'true' : 'false';
 
-  // Set outputs for GitHub Actions
   if (process.env.GITHUB_OUTPUT) {
     fs.appendFileSync(process.env.GITHUB_OUTPUT, `url=${previewUrl || ''}\n`);
     fs.appendFileSync(process.env.GITHUB_OUTPUT, `pr_number=${prNumber || ''}\n`);

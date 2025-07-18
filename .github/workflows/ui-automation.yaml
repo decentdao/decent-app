@@ -25,7 +25,7 @@ jobs:
           checkName: 'Cloudflare Pages'
           ref: ${{ github.event.pull_request.head.sha }}
           timeoutSeconds: 600
-          intervalSeconds: 10
+          intervalSeconds: 15
 
       - name: Install dependencies
         run: npm ci
