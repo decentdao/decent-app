@@ -48,7 +48,7 @@ jobs:
       - name: Extract Preview URL
         id: get_preview_info
         run: |
-          npx ts-node --esm --experimental-specifier-resolution=node .github/scripts/extract-preview-url.ts
+          npx ts-node --compiler-options='{"module":"commonjs","target":"es2020","esModuleInterop":true}' .github/scripts/extract-preview-url.ts
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
