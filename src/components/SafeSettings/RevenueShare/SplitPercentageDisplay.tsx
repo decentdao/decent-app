@@ -14,7 +14,7 @@ export function SplitPercentageDisplay({ percentage }: { percentage: number }) {
   return (
     <Flex
       alignItems="center"
-      gap="0.5rem"
+      gap="0.25rem"
     >
       <Icon
         as={icon}

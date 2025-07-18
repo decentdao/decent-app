@@ -93,6 +93,21 @@ export type SafeSettingsEdits = {
     addressesToUnwhitelist?: string[];
     addressesToWhitelist?: string[];
   };
+  revenueSharing?: {
+    wallets: {
+      name: string;
+      address: string;
+      // this is used to support the name edit and confirm flow
+      lastEdit: {
+        name?: string;
+        address?: string;
+      };
+      splits: {
+        address: string;
+        percentage: number;
+      }[];
+    }[];
+  };
 };
 
 type MultisigEditGovernanceFormikErrors = {
@@ -1221,6 +1236,13 @@ export function SafeSettingsModal({
         content: <Text>{title}</Text>,
       });
     }
+
+    // TODO: Add revenue share
+    // if (revenueShare) {
+    //   const action = await handleEditRevenueShare(values);
+
+    //   addAction(action);
+    // }
 
     navigate(DAO_ROUTES.proposalWithActionsNew.relative(addressPrefix, safe.address));
   };
