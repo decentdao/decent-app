@@ -1,4 +1,3 @@
-import { parseEther } from 'viem';
 import {
   CreatorFormState,
   GovernanceType,
