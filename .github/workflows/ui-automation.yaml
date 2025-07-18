@@ -3,39 +3,20 @@ name: PR Preview UI Automation
 on:
   check_run:
     types: [completed]
-  pull_request:
-    types: [opened, synchronize]
-  workflow_dispatch:
 
 jobs:
   detect-preview-deployment:
     name: Detect Preview Deployment
     runs-on: ubuntu-latest
     if: |
-      (github.event_name == 'check_run' && 
-       github.event.check_run.conclusion == 'success' &&
-       contains(github.event.check_run.name, 'Cloudflare Pages')) ||
-      github.event_name == 'pull_request' ||
-      github.event_name == 'workflow_dispatch'
+      github.event.check_run.conclusion == 'success' &&
+      contains(github.event.check_run.name, 'Cloudflare Pages')
     outputs:
       preview_url: ${{ steps.get_preview_info.outputs.url }}
       pr_number: ${{ steps.get_preview_info.outputs.pr_number }}
       should_run: ${{ steps.get_preview_info.outputs.should_run }}
 
     steps:
-      - name: Debug Event Info
-        run: |
-          echo "Event name: ${{ github.event_name }}"
-          echo "Event action: ${{ github.event.action }}"
-          echo "Repository: ${{ github.repository }}"
-          echo "Ref: ${{ github.ref }}"
-          echo "SHA: ${{ github.sha }}"
-          if [[ "${{ github.event_name }}" == "check_run" ]]; then
-            echo "Check run name: ${{ github.event.check_run.name }}"
-            echo "Check run conclusion: ${{ github.event.check_run.conclusion }}"
-            echo "Check run status: ${{ github.event.check_run.status }}"
-          fi
-
       - name: Checkout code
         uses: actions/checkout@v4
 
