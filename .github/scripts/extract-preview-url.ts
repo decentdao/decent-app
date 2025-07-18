@@ -1,41 +1,73 @@
 #!/usr/bin/env node
 
 import * as fs from 'fs';
+// For Node.js < 18, you might need: import fetch from 'node-fetch';
+// But Node 18+ has fetch built-in
 
-const checkRun = JSON.parse(
-  process.env.GITHUB_EVENT_PATH ? fs.readFileSync(process.env.GITHUB_EVENT_PATH, 'utf8') : '{}',
-).check_run;
+// For PR context, we'll fetch the check run data via GitHub API
+const token = process.env.GITHUB_TOKEN;
+const sha = process.env.COMMIT_SHA || process.env.GITHUB_SHA;
+const repo = process.env.GITHUB_REPOSITORY;
 
-if (!checkRun) {
-  console.error('No check run data found.');
+if (!token || !sha || !repo) {
+  console.error('Missing required environment variables: GITHUB_TOKEN, COMMIT_SHA/GITHUB_SHA, GITHUB_REPOSITORY');
   process.exit(1);
 }
 
+async function fetchCheckRuns() {
+  const response = await fetch(`https://api.github.com/repos/${repo}/commits/${sha}/check-runs`, {
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Accept': 'application/vnd.github+json',
+      'User-Agent': 'ui-automation-script'
+    }
+  });
+
+  if (!response.ok) {
+    console.error(`GitHub API error: ${response.status} ${response.statusText}`);
+    process.exit(1);
+  }
+
+  return await response.json();
+}
+
 async function extractPreviewUrl() {
-  console.log('Check run details:', JSON.stringify(checkRun, null, 2));
+  console.log('Fetching check runs for commit:', sha);
+  
+  const checkRunsData = await fetchCheckRuns();
+  const cloudflareCheck = checkRunsData.check_runs?.find((run: any) => 
+    run.name.includes('Cloudflare Pages') && run.conclusion === 'success'
+  );
+
+  if (!cloudflareCheck) {
+    console.error('No successful Cloudflare Pages check run found');
+    process.exit(1);
+  }
+
+  console.log('Found Cloudflare Pages check run:', cloudflareCheck.name);
 
   // Extract preview URL from check run details
   let previewUrl = null;
 
   // Check the details_url first (this often contains the preview URL)
-  if (checkRun.details_url && checkRun.details_url.includes('.pages.dev')) {
-    previewUrl = checkRun.details_url;
+  if (cloudflareCheck.details_url && cloudflareCheck.details_url.includes('.pages.dev')) {
+    previewUrl = cloudflareCheck.details_url;
   }
 
   // If not found, check the output summary or text
-  if (!previewUrl && checkRun.output) {
-    const outputText = checkRun.output.summary || checkRun.output.text || '';
+  if (!previewUrl && cloudflareCheck.output) {
+    const outputText = cloudflareCheck.output.summary || cloudflareCheck.output.text || '';
     const urlMatch = outputText.match(/https:\/\/[^\s]+\.pages\.dev[^\s]*/);
     if (urlMatch) {
       previewUrl = urlMatch[0];
     }
   }
 
-  // Find associated PR
-  let prNumber = null;
-  if (checkRun.pull_requests && checkRun.pull_requests.length > 0) {
-    prNumber = checkRun.pull_requests[0].number;
-  }
+  // Get PR number from the event data
+  const eventData = JSON.parse(
+    process.env.GITHUB_EVENT_PATH ? fs.readFileSync(process.env.GITHUB_EVENT_PATH, 'utf8') : '{}'
+  );
+  const prNumber = eventData.pull_request?.number || null;
 
   console.log('Extracted preview URL:', previewUrl);
   console.log('PR number:', prNumber);

@@ -1,24 +1,31 @@
-name: PR Preview UI Automation
+name: UI Automation
 
 on:
-  check_run:
-    types: [completed]
+  pull_request:
+    types: [opened, synchronize, reopened]
+  workflow_dispatch:
 
 jobs:
-  detect-preview-deployment:
-    name: Detect Preview Deployment
+  wait-for-cloudflare-deployment:
+    name: Wait for Cloudflare Pages Deployment
     runs-on: ubuntu-latest
-    if: |
-      github.event.check_run.conclusion == 'success' &&
-      contains(github.event.check_run.name, 'Cloudflare Pages')
     outputs:
       preview_url: ${{ steps.get_preview_info.outputs.url }}
-      pr_number: ${{ steps.get_preview_info.outputs.pr_number }}
-      should_run: ${{ steps.get_preview_info.outputs.should_run }}
+      deployment_ready: ${{ steps.wait_for_deployment.outputs.ready }}
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
+      - name: Wait for Cloudflare Pages deployment
+        id: wait_for_deployment
+        uses: fountainhead/action-wait-for-check@v1.2.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          checkName: "Cloudflare Pages"
+          ref: ${{ github.event.pull_request.head.sha }}
+          timeoutSeconds: 600
+          intervalSeconds: 10
 
       - name: Install dependencies
         run: npm ci
@@ -28,10 +35,28 @@ jobs:
 
       - name: Extract Preview URL
         id: get_preview_info
+        if: steps.wait_for_deployment.outputs.conclusion == 'success'
         run: |
           npx ts-node --compiler-options='{"module":"commonjs","target":"es2020","esModuleInterop":true}' .github/scripts/extract-preview-url.ts
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
+
+  detect-preview-deployment:
+    name: Detect Preview Deployment
+    runs-on: ubuntu-latest
+    needs: wait-for-cloudflare-deployment
+    if: needs.wait-for-cloudflare-deployment.outputs.deployment_ready == 'true'
+    outputs:
+      preview_url: ${{ needs.wait-for-cloudflare-deployment.outputs.preview_url }}
+      pr_number: ${{ github.event.pull_request.number }}
+      should_run: ${{ needs.wait-for-cloudflare-deployment.outputs.preview_url != '' && 'true' || 'false' }}
+
+    steps:
+      - name: Output deployment info
+        run: |
+          echo "Preview URL: ${{ needs.wait-for-cloudflare-deployment.outputs.preview_url }}"
+          echo "PR Number: ${{ github.event.pull_request.number }}"
 
   e2e-automation:
     name: E2E Selenium Automation
