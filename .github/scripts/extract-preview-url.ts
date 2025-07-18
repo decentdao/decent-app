@@ -1,15 +1,6 @@
 #!/usr/bin/env node
 
-// Type declarations for Node.js environment
-declare const process: {
-  env: Record<string, string | undefined>;
-  exit: (code?: number) => never;
-};
-
-declare const require: (module: string) => any;
-
-// Use require instead of import for Node.js script
-const fs = require('fs');
+import * as fs from 'fs';
 
 const checkRun = JSON.parse(
   process.env.GITHUB_EVENT_PATH ? fs.readFileSync(process.env.GITHUB_EVENT_PATH, 'utf8') : '{}',
