@@ -15,7 +15,7 @@ import { Field, FieldArray, FieldAttributes, useFormikContext } from 'formik';
 import { useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { zeroAddress } from 'viem';
+import { formatUnits, zeroAddress } from 'viem';
 import { SettingsContentBox } from '../../../../components/SafeSettings/SettingsContentBox';
 import { BigIntInput } from '../../../../components/ui/forms/BigIntInput';
 import { AddressInput } from '../../../../components/ui/forms/EthAddressInput';
@@ -33,6 +33,7 @@ import useLockedToken from '../../../../hooks/DAO/useLockedToken';
 import { useFormHelpers } from '../../../../hooks/utils/useFormHelpers';
 import { useDAOStore } from '../../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../../providers/NetworkConfig/useNetworkConfigStore';
+import { BigIntValuePair } from '../../../../types';
 import { formatCoin } from '../../../../utils';
 
 function WhitelistedAddress({ address }: { address: string }) {
@@ -173,6 +174,11 @@ export function SafeTokenSettingsPage() {
     isTransferableInValues === undefined ? !tokenState.locked : isTransferableInValues;
 
   const whitelistedAddresses = erc20Token?.whitelistedAddresses || [];
+
+  const currentMaxTotalSupply: BigIntValuePair = {
+    bigintValue: erc20Token?.maxTotalSupply,
+    value: formatUnits(erc20Token?.maxTotalSupply || 0n, erc20Token?.decimals || 0),
+  };
 
   return (
     <>
@@ -427,9 +433,14 @@ export function SafeTokenSettingsPage() {
                   direction="column"
                 >
                   <BigIntInput
-                    value={values.token?.maximumTotalSupply?.bigintValue || 0n}
-                    parentFormikValue={values.token?.maximumTotalSupply}
-                    onChange={valuePair => setFieldValue('token.maximumTotalSupply', valuePair)}
+                    parentFormikValue={values.token?.maximumTotalSupply || currentMaxTotalSupply}
+                    onChange={valuePair => {
+                      if (valuePair.bigintValue !== currentMaxTotalSupply.bigintValue) {
+                        setFieldValue('token.maximumTotalSupply', valuePair);
+                      } else {
+                        setFieldValue('token.maximumTotalSupply', undefined);
+                      }
+                    }}
                     decimalPlaces={erc20Token.decimals}
                     onKeyDown={restrictChars}
                   />

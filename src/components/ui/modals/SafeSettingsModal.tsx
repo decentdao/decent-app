@@ -277,12 +277,6 @@ export function SafeSettingsModal({
     value: '0',
   };
 
-  const erc20Token = governance.erc20Token;
-  const currentMaxTotalSupply: BigIntValuePair = {
-    bigintValue: erc20Token?.maxTotalSupply,
-    value: formatUnits(erc20Token?.maxTotalSupply || 0n, erc20Token?.decimals || 0),
-  };
-
   const handleEditPaymaster = async (
     updatedValues: SafeSettingsEdits,
   ): Promise<CreateProposalAction[] | undefined> => {
@@ -1237,7 +1231,7 @@ export function SafeSettingsModal({
 
   return (
     <Formik<SafeSettingsEdits>
-      initialValues={erc20Token ? { token: { maximumTotalSupply: currentMaxTotalSupply } } : {}}
+      initialValues={{}}
       validate={async values => {
         let errors: SafeSettingsFormikErrors = {};
 
@@ -1317,6 +1311,11 @@ export function SafeSettingsModal({
             }
           }
 
+          const erc20Token = governance.erc20Token;
+          const currentMaxTotalSupply: BigIntValuePair = {
+            bigintValue: erc20Token?.maxTotalSupply,
+            value: formatUnits(erc20Token?.maxTotalSupply || 0n, erc20Token?.decimals || 0),
+          };
           if (maximumTotalSupply?.bigintValue && currentMaxTotalSupply.bigintValue) {
             const lessThanCurrent =
               maximumTotalSupply.bigintValue < currentMaxTotalSupply.bigintValue;
