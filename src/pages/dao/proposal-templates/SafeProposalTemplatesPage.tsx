@@ -14,6 +14,7 @@ import { ModalType } from '../../../components/ui/modals/ModalProvider';
 import { useDecentModal } from '../../../components/ui/modals/useDecentModal';
 import PageHeader from '../../../components/ui/page/Header/PageHeader';
 import Divider from '../../../components/ui/utils/Divider';
+import { ROLES } from '../../../constants/accessControlRoles';
 import { DAO_ROUTES } from '../../../constants/routes';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import useLockedToken from '../../../hooks/DAO/useLockedToken';
@@ -106,10 +107,10 @@ export function SafeProposalTemplatesPage() {
               bigintValue: 0n,
               value: '0',
             },
-            functionName: 'whitelist',
+            functionName: 'grantRole',
             parameters: [
+              { signature: 'bytes32', value: ROLES.TRANSFER_FROM_ROLE },
               { signature: 'address', value: disperse },
-              { signature: 'bool', value: 'true' },
             ],
           },
           ...transactions,

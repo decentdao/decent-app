@@ -78,6 +78,7 @@ type DAOGovernorERC20Token<T = bigint> = {
   tokenSupply: T;
   tokenAllocations: { amount: T; address: string }[];
   parentAllocationAmount: T;
+  maxTotalSupply: T;
 };
 
 export interface CreatorFormState<T = BigIntValuePair> {

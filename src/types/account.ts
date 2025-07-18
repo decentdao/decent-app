@@ -17,6 +17,7 @@ export interface ERC20TokenData extends BaseTokenData {
 }
 export interface ERC20LockedTokenData extends ERC20TokenData {
   whitelistedAddresses: Address[];
+  maxTotalSupply: bigint;
 }
 
 export interface ERC721TokenData extends BaseTokenData {

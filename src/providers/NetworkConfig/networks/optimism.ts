@@ -1,4 +1,4 @@
-import { legacy } from '@decentdao/decent-contracts';
+import { legacy, addresses } from '@decentdao/decent-contracts';
 import {
   getCompatibilityFallbackHandlerDeployment,
   getMultiSendCallOnlyDeployment,
@@ -89,7 +89,7 @@ export const optimismConfig: NetworkConfig = {
     freezeVotingMultisigMasterCopy: getAddressFromContractDeploymentInfo(a.MultisigFreezeVoting),
 
     votesErc20MasterCopy: getAddressFromContractDeploymentInfo(a.VotesERC20),
-    votesErc20LockableMasterCopy: getAddressFromContractDeploymentInfo(a.VotesERC20LockableV1),
+    votesErc20LockableMasterCopy: addresses.deployables.VotesERC20V1,
 
     claimErc20MasterCopy: getAddressFromContractDeploymentInfo(a.ERC20Claim),
 

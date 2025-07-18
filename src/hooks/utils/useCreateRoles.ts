@@ -1,4 +1,4 @@
-import { legacy } from '@decentdao/decent-contracts';
+import { abis, legacy } from '@decentdao/decent-contracts';
 import {
   checkAndEncodeArgs,
   HATS_MODULES_FACTORY_ABI,
@@ -28,6 +28,7 @@ import { HatsAbi } from '../../assets/abi/HatsAbi';
 import HatsAccount1ofNAbi from '../../assets/abi/HatsAccount1ofN';
 import { HatsElectionsEligibilityAbi } from '../../assets/abi/HatsElectionsEligibilityAbi';
 import { ZodiacModuleProxyFactoryAbi } from '../../assets/abi/ZodiacModuleProxyFactoryAbi';
+import { ROLES } from '../../constants/accessControlRoles';
 import { ERC6551_REGISTRY_SALT } from '../../constants/common';
 import {
   linearERC20VotingWithWhitelistSetupParams,
@@ -554,9 +555,9 @@ export default function useCreateRoles() {
           return {
             targetAddress: asset,
             calldata: encodeFunctionData({
-              abi: legacy.abis.VotesERC20LockableV1,
-              functionName: 'whitelist',
-              args: [sablierV2LockupLinear, true],
+              abi: abis.deployables.VotesERC20V1,
+              functionName: 'grantRole',
+              args: [ROLES.TRANSFER_FROM_ROLE, sablierV2LockupLinear],
             }),
           };
         });

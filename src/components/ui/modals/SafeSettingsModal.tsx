@@ -9,12 +9,14 @@ import {
   encodeAbiParameters,
   encodeFunctionData,
   encodePacked,
+  formatUnits,
   getContract,
   getCreate2Address,
   keccak256,
   parseAbiParameters,
 } from 'viem';
 import { useAccount, useBalance } from 'wagmi';
+import { ROLES } from '../../../constants/accessControlRoles';
 import {
   linearERC20VotingWithWhitelistSetupParams,
   linearERC721VotingWithWhitelistSetupParams,
@@ -92,6 +94,7 @@ export type SafeSettingsEdits = {
     transferable?: boolean;
     addressesToUnwhitelist?: string[];
     addressesToWhitelist?: string[];
+    maximumTotalSupply?: BigIntValuePair;
   };
 };
 
@@ -116,6 +119,7 @@ type RevenueSharingEditFormikErrors = {
 
 type TokenEditFormikErrors = {
   addressesToWhitelist?: { key: string; error: string }[];
+  maximumTotalSupply?: string;
 };
 
 export type SafeSettingsFormikErrors = {
@@ -1110,15 +1114,15 @@ export function SafeSettingsModal({
         transactions.push({
           targetAddress: token.address,
           ethValue,
-          functionName: 'whitelist',
+          functionName: 'grantRole',
           parameters: [
+            {
+              signature: 'bytes32',
+              value: ROLES.TRANSFER_FROM_ROLE,
+            },
             {
               signature: 'address',
               value: addr,
-            },
-            {
-              signature: 'bool',
-              value: true.toString(),
             },
           ],
         });
@@ -1133,20 +1137,34 @@ export function SafeSettingsModal({
         transactions.push({
           targetAddress: token.address,
           ethValue,
-          functionName: 'whitelist',
+          functionName: 'revokeRole',
           parameters: [
+            {
+              signature: 'bytes32',
+              value: ROLES.TRANSFER_FROM_ROLE,
+            },
             {
               signature: 'address',
               value: addr,
-            },
-            {
-              signature: 'bool',
-              value: false.toString(),
             },
           ],
         });
       });
       changeTitles.push(t('removeTokenWhitelist', { ns: 'proposalMetadata' }));
+    }
+    if (tokenValues.maximumTotalSupply?.bigintValue !== undefined) {
+      changeTitles.push(t('updateTokenMaxTotalSupply', { ns: 'proposalMetadata' }));
+      transactions.push({
+        targetAddress: token.address,
+        ethValue,
+        functionName: 'setMaxTotalSupply',
+        parameters: [
+          {
+            signature: 'uint256',
+            value: tokenValues.maximumTotalSupply.bigintValue.toString(),
+          },
+        ],
+      });
     }
 
     const title = changeTitles.join(`; `);
@@ -1277,7 +1295,7 @@ export function SafeSettingsModal({
         }
 
         if (values.token) {
-          const { addressesToWhitelist } = values.token;
+          const { addressesToWhitelist, maximumTotalSupply } = values.token;
           const errorsToken = errors.token ?? {};
 
           if (addressesToWhitelist && addressesToWhitelist.length > 0) {
@@ -1303,6 +1321,24 @@ export function SafeSettingsModal({
 
             if (whitelistErrors.some(error => error !== null)) {
               errorsToken.addressesToWhitelist = whitelistErrors.filter(error => error !== null);
+              errors.token = errorsToken;
+            }
+          }
+
+          const erc20Token = governance.erc20Token;
+          const currentMaxTotalSupply: BigIntValuePair = {
+            bigintValue: erc20Token?.maxTotalSupply,
+            value: formatUnits(erc20Token?.maxTotalSupply || 0n, erc20Token?.decimals || 0),
+          };
+          if (maximumTotalSupply?.bigintValue && currentMaxTotalSupply.bigintValue) {
+            const lessThanCurrent =
+              maximumTotalSupply.bigintValue < currentMaxTotalSupply.bigintValue;
+
+            if (lessThanCurrent) {
+              errorsToken.maximumTotalSupply = t('errorMinimumValue', {
+                ns: 'common',
+                minValue: currentMaxTotalSupply.value,
+              });
               errors.token = errorsToken;
             }
           }

@@ -1,12 +1,12 @@
 import * as amplitude from '@amplitude/analytics-browser';
 import { Center } from '@chakra-ui/react';
+import { abis } from '@decentdao/decent-contracts';
 import groupBy from 'lodash.groupby';
 import { useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { Address, encodeFunctionData, erc20Abi, getAddress, Hash, zeroAddress } from 'viem';
 import SablierV2BatchAbi from '../../../../../assets/abi/SablierV2Batch';
-import { VotesERC20LockableV1Abi } from '../../../../../assets/abi/VotesERC20LockableV1';
 import { ProposalBuilder } from '../../../../../components/ProposalBuilder/ProposalBuilder';
 import { StreamsDetails } from '../../../../../components/ProposalBuilder/ProposalDetails';
 import { DEFAULT_PROPOSAL_METADATA_TYPE_PROPS } from '../../../../../components/ProposalBuilder/ProposalMetadata';
@@ -15,6 +15,7 @@ import { GoToTransactionsStepButton } from '../../../../../components/ProposalBu
 import { DEFAULT_SABLIER_PROPOSAL } from '../../../../../components/ProposalBuilder/constants';
 import NoDataCard from '../../../../../components/ui/containers/NoDataCard';
 import { BarLoader } from '../../../../../components/ui/loaders/BarLoader';
+import { ROLES } from '../../../../../constants/accessControlRoles';
 import { useHeaderHeight } from '../../../../../constants/common';
 import { DAO_ROUTES } from '../../../../../constants/routes';
 import { useCurrentDAOKey } from '../../../../../hooks/DAO/useCurrentDAOKey';
@@ -94,9 +95,9 @@ export function SafeSablierProposalCreatePage() {
           isBatchWhitelistedOfStreams[index].value.needWhitelist
         ) {
           const whitelistCalldata = encodeFunctionData({
-            abi: VotesERC20LockableV1Abi,
-            functionName: 'whitelist',
-            args: [sablierV2Batch, true],
+            abi: abis.deployables.VotesERC20V1,
+            functionName: 'grantRole',
+            args: [ROLES.TRANSFER_FROM_ROLE, sablierV2Batch],
           });
           targets.push(tokenAddress);
           txValues.push(0n);
@@ -108,9 +109,9 @@ export function SafeSablierProposalCreatePage() {
           isLockupWhitelistedOfStreams[index].value.needWhitelist
         ) {
           const whitelistCalldata = encodeFunctionData({
-            abi: VotesERC20LockableV1Abi,
-            functionName: 'whitelist',
-            args: [sablierV2LockupTranched, true],
+            abi: abis.deployables.VotesERC20V1,
+            functionName: 'grantRole',
+            args: [ROLES.TRANSFER_FROM_ROLE, sablierV2LockupTranched],
           });
           targets.push(tokenAddress);
           txValues.push(0n);
