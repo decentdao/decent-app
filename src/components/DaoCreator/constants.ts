@@ -38,11 +38,7 @@ export const initialState: CreatorFormState = {
       value: '',
     },
     maxTotalSupply: {
-      // FIXME This should be passed by the user
-      //   or set a default value which does not limit the supply
-      // WARN Current default value assume decimal to be 18.
-      bigintValue: parseEther('1000000000000000000'),
-      value: '1000000000000000000',
+      value: '',
     },
   },
   erc721Token: {
