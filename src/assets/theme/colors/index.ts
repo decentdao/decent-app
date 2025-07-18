@@ -248,7 +248,7 @@ export const semanticColors = {
   'color-content-information-muted': 'color-information-900',
   'color-content-success-muted': 'color-success-900',
   'color-content-primary-muted': 'color-primary-900',
-  'color-content-warning-muted': 'color-warning-900',
+  'color-content-warning-muted': '#454016',
   'color-content-error-muted': 'color-error-900',
   'color-content-popover': '#221d25ad',
   'color-content-popover-foreground': 'color-neutral-50',

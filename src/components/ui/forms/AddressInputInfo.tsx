@@ -2,6 +2,7 @@ import { Text, InputProps, Flex, Icon } from '@chakra-ui/react';
 import { SealWarning } from '@phosphor-icons/react';
 import { useEffect, useState } from 'react';
 import { Address, isAddress } from 'viem';
+import { createAccountSubstring } from '../../../hooks/utils/useGetAccountName';
 import { useResolveENSName } from '../../../hooks/utils/useResolveENSName';
 import { validateENSName } from '../../../utils/url';
 import { DecentTooltip } from '../DecentTooltip';
@@ -12,26 +13,33 @@ export function AddressInputInfo(props: InputProps) {
   const [resolvedAddress, setResolvedAddress] = useState<Address>();
   const { resolveENSName } = useResolveENSName();
 
+  const propValue = props.value;
+
+  const isPropValueAddress =
+    propValue !== '' && !!propValue && typeof propValue === 'string' && isAddress(propValue);
+
   useEffect(() => {
-    if (props.value === '' || !props.value || typeof props.value !== 'string') {
+    if (!isPropValueAddress) {
       setResolvedAddress(undefined);
       return;
     }
-    if (isAddress(props.value)) {
+    if (isAddress(propValue)) {
       setResolvedAddress(undefined);
       return;
     }
     // check if there
-    if (validateENSName(props.value)) {
-      resolveENSName(props.value).then(ra => {
+    if (validateENSName(propValue)) {
+      resolveENSName(propValue).then(ra => {
         setResolvedAddress(ra.resolvedAddress);
       });
       return;
     }
     setResolvedAddress(undefined);
-  }, [props.value, resolveENSName]);
+  }, [isPropValueAddress, propValue, resolveENSName]);
 
-  if (!showInput && props.value) {
+  if (!showInput && propValue) {
+    const displayedValue = isPropValueAddress ? createAccountSubstring(propValue) : propValue;
+
     return (
       <Flex
         alignItems="center"
@@ -46,21 +54,24 @@ export function AddressInputInfo(props: InputProps) {
           setShowInput(false);
         }}
         _hover={{
-          bg: 'color-alpha-white-950',
+          bg: props.isInvalid ? 'color-error-950' : 'color-alpha-white-950',
         }}
+        bg={props.isInvalid ? 'color-error-950' : 'transparent'}
+        boxShadow={
+          props.isInvalid
+            ? '0px 0px 0px 2px #AF3A48, 0px 1px 0px 0px rgba(242, 161, 171, 0.30), 0px 0px 0px 1px rgba(0, 0, 0, 0.80)'
+            : 'none'
+        }
       >
         <Text
           cursor="pointer"
-          _hover={{
-            bg: 'color-alpha-white-950',
-          }}
           textStyle="text-sm-regular"
-          color="color-layout-foreground"
+          color={props.isInvalid ? 'color-error-400' : 'color-layout-foreground'}
           overflow="hidden"
           textOverflow="ellipsis"
           whiteSpace="nowrap"
         >
-          {props.value}
+          {displayedValue}
         </Text>
         {resolvedAddress && (
           <DecentTooltip
@@ -80,7 +91,10 @@ export function AddressInputInfo(props: InputProps) {
     <AddressInput
       {...props}
       onBlur={() => {
-        setShowInput(false);
+        // delay to allow the input's debounce to finish
+        setTimeout(() => {
+          setShowInput(false);
+        }, 200);
       }}
       autoFocus
     />

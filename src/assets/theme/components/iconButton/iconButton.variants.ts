@@ -74,10 +74,31 @@ const tertiary = defineStyle({
   _focus: {},
 });
 
+const ghostDisabled = {
+  opacity: 0.5,
+};
+
+const ghostV1 = defineStyle({
+  bg: 'transparent',
+  color: 'color-content-content1-foreground',
+  _hover: {
+    bg: 'color-alpha-white-950',
+    _disabled: {
+      ...ghostDisabled,
+    },
+  },
+  _disabled: {
+    ...ghostDisabled,
+  },
+  _active: {},
+  _focus: {},
+});
+
 const iconButtonVariants = {
   primary,
   secondary,
   tertiary,
+  ghostV1,
 };
 
 export default iconButtonVariants;

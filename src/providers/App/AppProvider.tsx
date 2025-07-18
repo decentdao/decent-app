@@ -72,6 +72,7 @@ export const useDAOStore = ({ daoKey }: { daoKey: DAOKey | undefined }): Fractal
   const governance = getGovernance(daoKey);
   const guard = getGuard(daoKey);
   const guardAccountData = getGuardAccountData(daoKey);
+
   return {
     node: {
       // TODO: Will be cleaned up in scope of https://linear.app/decent-labs/issue/ENG-630/cleanup-types-from-old-store-structure
