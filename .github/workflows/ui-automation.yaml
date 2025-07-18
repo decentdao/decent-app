@@ -42,27 +42,11 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
 
-  detect-preview-deployment:
-    name: Detect Preview Deployment
-    runs-on: ubuntu-latest
-    needs: wait-for-cloudflare-deployment
-    if: needs.wait-for-cloudflare-deployment.outputs.deployment_success == 'true'
-    outputs:
-      preview_url: ${{ needs.wait-for-cloudflare-deployment.outputs.preview_url }}
-      pr_number: ${{ github.event.pull_request.number }}
-      should_run: ${{ needs.wait-for-cloudflare-deployment.outputs.preview_url != '' && 'true' || 'false' }}
-
-    steps:
-      - name: Output deployment info
-        run: |
-          echo "Preview URL: ${{ needs.wait-for-cloudflare-deployment.outputs.preview_url }}"
-          echo "PR Number: ${{ github.event.pull_request.number }}"
-
   e2e-automation:
     name: E2E Selenium Automation
-    needs: detect-preview-deployment
+    needs: wait-for-cloudflare-deployment
     runs-on: ubuntu-latest
-    if: needs.detect-preview-deployment.outputs.should_run == 'true'
+    if: needs.wait-for-cloudflare-deployment.outputs.deployment_success == 'true' && needs.wait-for-cloudflare-deployment.outputs.preview_url != ''
     continue-on-error: true
     permissions:
       pull-requests: write
@@ -85,7 +69,7 @@ jobs:
       - name: Run Selenium tests
         working-directory: ui-automation
         env:
-          BASE_URL: ${{ needs.detect-preview-deployment.outputs.preview_url }}
+          BASE_URL: ${{ needs.wait-for-cloudflare-deployment.outputs.preview_url }}
         run: |
           npm test
         continue-on-error: true
@@ -103,5 +87,5 @@ jobs:
       - name: Comment results on PR
         uses: marocchino/sticky-pull-request-comment@v2
         with:
-          number: ${{ needs.detect-preview-deployment.outputs.pr_number }}
+          number: ${{ github.event.pull_request.number }}
           path: ui-automation/test-results/test-results-summary.with-link.md
