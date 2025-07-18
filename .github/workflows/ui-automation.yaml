@@ -39,13 +39,15 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Install node-fetch for preview URL extraction
-        run: npm install node-fetch@2
+      - name: Install dependencies
+        run: npm ci
 
       - name: Extract Preview URL
         id: get_preview_info
         run: |
-          npx ts-node .github/scripts/extract-preview-url.ts
+          # Compile and run the TypeScript file
+          npx tsc .github/scripts/extract-preview-url.ts --target es2020 --module commonjs --esModuleInterop --outDir /tmp
+          node /tmp/.github/scripts/extract-preview-url.js
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
