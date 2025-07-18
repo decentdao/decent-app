@@ -1152,6 +1152,20 @@ export function SafeSettingsModal({
       });
       changeTitles.push(t('removeTokenWhitelist', { ns: 'proposalMetadata' }));
     }
+    if (tokenValues.maximumTotalSupply?.bigintValue !== undefined) {
+      changeTitles.push(t('updateTokenMaxTotalSupply', { ns: 'proposalMetadata' }));
+      transactions.push({
+        targetAddress: token.address,
+        ethValue,
+        functionName: 'setMaxTotalSupply',
+        parameters: [
+          {
+            signature: 'uint256',
+            value: tokenValues.maximumTotalSupply.bigintValue.toString(),
+          },
+        ],
+      });
+    }
 
     const title = changeTitles.join(`; `);
 
