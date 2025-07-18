@@ -65,7 +65,7 @@ async function extractPreviewUrl() {
 
       // Look for branch-specific URL (contains letters/hyphens, not just random hash)
       // Branch URLs typically have format: https://branch-name.domain.pages.dev
-      const branchUrl = urlMatches.find(url => {
+      const branchUrl = urlMatches.find((url: string) => {
         const subdomain = url.split('.')[0].split('//')[1];
         // Branch subdomains contain letters/hyphens, not just random hex characters
         return (
