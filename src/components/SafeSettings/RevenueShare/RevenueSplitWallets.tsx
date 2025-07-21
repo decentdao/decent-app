@@ -1,7 +1,7 @@
 import { Button, Flex, Grid, GridItem, Icon, IconButton, Text } from '@chakra-ui/react';
 import { Plus, Trash } from '@phosphor-icons/react';
 import { Field, FieldProps, useFormikContext } from 'formik';
-import { useMemo } from 'react';
+import { Fragment, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { zeroAddress } from 'viem';
 import { createAccountSubstring } from '../../../hooks/utils/useGetAccountName';
@@ -152,7 +152,7 @@ export function RevSplitTable({
           const isLastRow = i === arr.length - 1;
 
           return (
-            <>
+            <Fragment key={i}>
               <RevenueSharingTableRowItem
                 rowContent={
                   <Field name={`revenueSharing.wallets.${index}.splits.${i}.address`}>
@@ -248,7 +248,7 @@ export function RevSplitTable({
                 isEdgeItem
                 hasBottomRadius={isLastRow ? 'right' : undefined}
               />
-            </>
+            </Fragment>
           );
         })}
       </Grid>
