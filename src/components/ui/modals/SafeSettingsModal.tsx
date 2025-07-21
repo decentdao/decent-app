@@ -112,9 +112,7 @@ type PaymasterGasTankEditFormikErrors = {
   deposit?: { amount?: string };
 };
 
-type RevenueSharingEditFormikErrors = {
-  revenueSharing?: string; // @TODO placeholder
-};
+type RevenueSharingEditFormikErrors = { wallets?: RevenueSharingWalletFormValues[] };
 
 type TokenEditFormikErrors = {
   addressesToWhitelist?: { key: string; error: string }[];
@@ -1414,6 +1412,83 @@ export function SafeSettingsModal({
           errors.paymasterGasTank = undefined;
         }
 
+        if (values.revenueSharing) {
+          const formWallets = values.revenueSharing.wallets;
+          const walletErrorsArray = {} as Record<
+            number,
+            {
+              address?: string;
+              name?: string;
+              splits: Record<number, { address?: string; percentage?: string }>;
+            }
+          >;
+
+          if (formWallets && formWallets.length > 0) {
+            for (let walletIndex = 0; walletIndex < formWallets.length; walletIndex++) {
+              const formWallet = formWallets[walletIndex];
+              walletErrorsArray[walletIndex] = {
+                address: undefined,
+                name: undefined,
+                splits: {},
+              };
+
+              if (formWallet?.name) {
+                // no validation needed
+              } else {
+                walletErrorsArray[walletIndex].name = 'Name is required';
+              }
+
+              if (formWallet?.splits && formWallet.splits.length > 0) {
+                const totalSplitPercentage = formWallet.splits.reduce(
+                  (total, s) => total + Number(s?.percentage || 0),
+                  0,
+                );
+                for (let splitIndex = 0; splitIndex < formWallet.splits.length; splitIndex++) {
+                  walletErrorsArray[walletIndex].splits[splitIndex] = {
+                    address: undefined,
+                    percentage: undefined,
+                  };
+                  const split = formWallet.splits[splitIndex];
+                  if (split?.address) {
+                    const validation = await validateAddress({ address: split.address });
+                    if (!validation.validation.isValidAddress) {
+                      walletErrorsArray[walletIndex].splits[splitIndex].address =
+                        'Invalid split address';
+                    }
+                  } else {
+                    walletErrorsArray[walletIndex].splits[splitIndex].address =
+                      'Split Address is required';
+                  }
+
+                  if (split?.percentage) {
+                    const percentage = Number(split.percentage);
+                    if (percentage < 0 || percentage > 100) {
+                      walletErrorsArray[walletIndex].splits[splitIndex].percentage =
+                        'Split Percentage must be between 0 and 100';
+                    }
+                    if (totalSplitPercentage > 100) {
+                      walletErrorsArray[walletIndex].splits[splitIndex].percentage =
+                        'Total percentage must be 100%';
+                    }
+                  } else {
+                    walletErrorsArray[walletIndex].splits[splitIndex].percentage =
+                      'Split Percentage is required';
+                  }
+                }
+              } else if (formWallet.splits && formWallet.splits.length === 0) {
+                // validation handled by splits array
+              }
+            }
+          }
+
+          if (Object.values(walletErrorsArray).every(e => e === undefined)) {
+            errors.revenueSharing = walletErrorsArray as RevenueSharingEditFormikErrors;
+          } else {
+            errors.revenueSharing = undefined;
+          }
+        } else {
+          errors.revenueSharing = undefined;
+        }
         if (Object.values(errors).every(e => e === undefined)) {
           errors = {};
         }
