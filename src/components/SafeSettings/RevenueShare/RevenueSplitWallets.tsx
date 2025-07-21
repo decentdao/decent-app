@@ -108,6 +108,122 @@ function SplitName({ index, wallet }: { index: number; wallet: RevenueSharingWal
   );
 }
 
+export function RevSplitRow({
+  wallet,
+  walletIndex,
+  splitIndex,
+  isLastRow,
+}: {
+  wallet: RevenueSharingWalletFormValues & {
+    isCurrentDAOAddress: boolean;
+    isParentDAOAddress: boolean;
+  };
+  walletIndex: number;
+  splitIndex: number;
+  isLastRow?: boolean;
+}) {
+  const { t } = useTranslation('revenueSharing');
+  return (
+    <Fragment key={splitIndex}>
+      <RevenueSharingTableRowItem
+        rowContent={
+          <Field name={`revenueSharing.wallets.${walletIndex}.splits.${splitIndex}.address`}>
+            {({ field, form }: FieldProps<string, any>) => {
+              const fieldValue = field.value ?? wallet.splits?.[splitIndex].address;
+              return (
+                <AddressInputInfo
+                  variant="tableStyle"
+                  value={fieldValue}
+                  onChange={value => {
+                    if (value.target.value === wallet.splits?.[splitIndex].address) {
+                      form.setFieldValue(field.name, undefined);
+                    } else {
+                      form.setFieldValue(field.name, value.target.value);
+                    }
+                  }}
+                />
+              );
+            }}
+          </Field>
+        }
+        isFirstColumn
+        rightDivider
+        isEdgeItem
+        hasBottomRadius={isLastRow ? 'left' : undefined}
+      />
+      <RevenueSharingTableRowItem
+        rowContent={
+          <Field name={`revenueSharing.wallets.${walletIndex}.splits.${splitIndex}.percentage`}>
+            {({ field, form }: FieldProps<string, any>) => {
+              const fieldValue = field.value ?? wallet.splits?.[splitIndex].percentage;
+              return (
+                <NumberInputPercentage
+                  variant="tableStyle"
+                  value={fieldValue}
+                  min={0}
+                  onChange={value => {
+                    if (value === wallet.splits?.[splitIndex].percentage) {
+                      form.setFieldValue(field.name, undefined);
+                    } else {
+                      form.setFieldValue(field.name, value);
+                    }
+                  }}
+                />
+              );
+            }}
+          </Field>
+        }
+        rightDivider
+      />
+      <RevenueSharingTableRowItem
+        rowContent={
+          <Field>
+            {({ form }: FieldProps<string, any>) => {
+              const isDAOAddress = wallet.isCurrentDAOAddress;
+              const isParentDAOAddress = wallet.isParentDAOAddress;
+
+              const hideRemoveButton = isDAOAddress || isParentDAOAddress;
+              return (
+                <Flex
+                  alignItems="center"
+                  justifyContent="flex-end"
+                  px="1rem"
+                  w="full"
+                >
+                  <IconButton
+                    aria-label={t('removeSplitButtonLabel')}
+                    hidden={hideRemoveButton}
+                    icon={<Trash />}
+                    color="color-error-400"
+                    borderColor="color-error-400"
+                    _hover={{
+                      color: 'color-error-500',
+                      borderColor: 'color-error-500',
+                    }}
+                    variant="ghost"
+                    onClick={() => {
+                      // remove new wallets and/or any edits
+                      form.setFieldValue(
+                        `revenueSharing.wallets.${walletIndex}.splits`,
+                        form.values?.revenueSharing?.wallets?.[walletIndex]?.splits?.filter(
+                          (__: any, j: any) => j !== splitIndex,
+                        ),
+                      );
+                    }}
+                  />
+                </Flex>
+              );
+            }}
+          </Field>
+        }
+        rightDivider
+        isEdgeItem
+        hasBottomRadius={isLastRow ? 'right' : undefined}
+      />
+    </Fragment>
+  );
+}
+
 export function RevSplitTable({
   wallet,
   index,
@@ -150,105 +266,14 @@ export function RevSplitTable({
         {/* Wallet Share Rows */}
         {wallet.splits?.map((_: any, i: number, arr: any[]) => {
           const isLastRow = i === arr.length - 1;
-
           return (
-            <Fragment key={i}>
-              <RevenueSharingTableRowItem
-                rowContent={
-                  <Field name={`revenueSharing.wallets.${index}.splits.${i}.address`}>
-                    {({ field, form }: FieldProps<string, any>) => {
-                      const fieldValue = field.value ?? wallet.splits?.[i].address;
-                      return (
-                        <AddressInputInfo
-                          variant="tableStyle"
-                          value={fieldValue}
-                          onChange={value => {
-                            if (value.target.value === wallet.splits?.[i].address) {
-                              form.setFieldValue(field.name, undefined);
-                            } else {
-                              form.setFieldValue(field.name, value.target.value);
-                            }
-                          }}
-                        />
-                      );
-                    }}
-                  </Field>
-                }
-                isFirstColumn
-                rightDivider
-                isEdgeItem
-                hasBottomRadius={isLastRow ? 'left' : undefined}
-              />
-              <RevenueSharingTableRowItem
-                rowContent={
-                  <Field name={`revenueSharing.wallets.${index}.splits.${i}.percentage`}>
-                    {({ field, form }: FieldProps<string, any>) => {
-                      const fieldValue = field.value ?? wallet.splits?.[i].percentage;
-                      return (
-                        <NumberInputPercentage
-                          variant="tableStyle"
-                          value={fieldValue}
-                          min={0}
-                          onChange={value => {
-                            if (value === wallet.splits?.[i].percentage) {
-                              form.setFieldValue(field.name, undefined);
-                            } else {
-                              form.setFieldValue(field.name, value);
-                            }
-                          }}
-                        />
-                      );
-                    }}
-                  </Field>
-                }
-                rightDivider
-              />
-              <RevenueSharingTableRowItem
-                rowContent={
-                  <Field>
-                    {({ form }: FieldProps<string, any>) => {
-                      const isDAOAddress = wallet.isCurrentDAOAddress;
-                      const isParentDAOAddress = wallet.isParentDAOAddress;
-
-                      const hideRemoveButton = isDAOAddress || isParentDAOAddress;
-                      return (
-                        <Flex
-                          alignItems="center"
-                          justifyContent="flex-end"
-                          px="1rem"
-                          w="full"
-                        >
-                          <IconButton
-                            aria-label={t('removeSplitButtonLabel')}
-                            hidden={hideRemoveButton}
-                            icon={<Trash />}
-                            color="color-error-400"
-                            borderColor="color-error-400"
-                            _hover={{
-                              color: 'color-error-500',
-                              borderColor: 'color-error-500',
-                            }}
-                            variant="ghost"
-                            onClick={() => {
-                              // remove new wallets and/or any edits
-                              form.setFieldValue(
-                                `revenueSharing.wallets.${index}.splits`,
-                                form.values?.revenueSharing?.wallets?.[index]?.splits?.filter(
-                                  (__: any, j: any) => j !== i,
-                                ),
-                              );
-                            }}
-                          />
-                        </Flex>
-                      );
-                    }}
-                  </Field>
-                }
-                rightDivider
-                isEdgeItem
-                hasBottomRadius={isLastRow ? 'right' : undefined}
-              />
-            </Fragment>
+            <RevSplitRow
+              key={i}
+              wallet={wallet}
+              walletIndex={index}
+              splitIndex={i}
+              isLastRow={isLastRow}
+            />
           );
         })}
       </Grid>
