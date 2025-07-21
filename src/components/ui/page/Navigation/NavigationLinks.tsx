@@ -1,5 +1,13 @@
 import { Box, Flex, Hide } from '@chakra-ui/react';
-import { BookOpen, Coins, GitFork, House, Question, UsersThree } from '@phosphor-icons/react';
+import {
+  BookOpen,
+  Coins,
+  GitFork,
+  HandCoins,
+  House,
+  Question,
+  UsersThree,
+} from '@phosphor-icons/react';
 import { DAO_ROUTES } from '../../../../constants/routes';
 import { URL_DOCS, URL_FAQ } from '../../../../constants/url';
 import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
@@ -98,6 +106,14 @@ function InternalLinks({ closeDrawer }: { closeDrawer?: () => void }) {
           labelKey="nodes"
           testId="navigation-hierarchyLink"
           NavigationIcon={GitFork}
+          scope="internal"
+          closeDrawer={closeDrawer}
+        />
+        <NavigationLink
+          href={DAO_ROUTES.staking.relative(addressPrefix, safeAddress)}
+          labelKey="staking"
+          testId="navigation-stakingLink"
+          NavigationIcon={HandCoins}
           scope="internal"
           closeDrawer={closeDrawer}
         />
