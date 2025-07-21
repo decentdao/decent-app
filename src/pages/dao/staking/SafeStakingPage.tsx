@@ -1,7 +1,8 @@
 import * as amplitude from '@amplitude/analytics-browser';
-import { Box, Text } from '@chakra-ui/react';
+import { Box } from '@chakra-ui/react';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import NoStakingDeployed from '../../../components/DaoStaking/NoStakingDeployed';
 import PageHeader from '../../../components/ui/page/Header/PageHeader';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import { analyticsEvents } from '../../../insights/analyticsEvents';
@@ -32,7 +33,7 @@ export function SafeStakingPage() {
           },
         ]}
       />
-      <Text>WIP Staking page</Text>
+      <NoStakingDeployed />
     </Box>
   );
 }
