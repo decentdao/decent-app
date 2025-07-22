@@ -29,7 +29,32 @@ const twoToneVariant = definePartsStyle({
   },
 });
 
+const solidVariant = definePartsStyle({
+  tablist: {
+    padding: '0.25rem',
+    alignItems: 'flex-start',
+    gap: '0.5rem',
+    borderRadius: '0.75rem',
+    borderTop: '1px solid var(--colors-color-alpha-white-900)',
+    background: 'color-secondary-950',
+    boxShadow: '0px 0px 0px 1px var(--colors-color-alpha-white-950)',
+  },
+  tab: {
+    padding: '0.25rem 0.75rem',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: '0.5rem',
+    boxShadow: '0px 1px 2px 0px rgba(0, 0, 0, 0.05)',
+    textColor: 'color-content-muted',
+    _selected: {
+      background: 'color-content-content3',
+      textColor: 'color-layout-foreground',
+    },
+  },
+});
+
 const variants = {
+  solid: solidVariant,
   twoTone: twoToneVariant,
 };
 
