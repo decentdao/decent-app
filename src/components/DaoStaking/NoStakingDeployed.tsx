@@ -1,7 +1,7 @@
 import { Button, Flex, Text } from '@chakra-ui/react';
 import { FileDashed } from '@phosphor-icons/react';
 
-export default function NoStakingDeployed() {
+export default function NoStakingDeployed({ deploy }: { deploy: () => void }) {
   return (
     <Flex
       padding={6}
@@ -59,7 +59,7 @@ export default function NoStakingDeployed() {
           height={9}
           justifyContent="center"
           alignItems="center"
-          onClick={() => {}}
+          onClick={deploy}
         >
           Deploy Contract
         </Button>

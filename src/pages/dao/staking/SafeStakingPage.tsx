@@ -1,8 +1,9 @@
 import * as amplitude from '@amplitude/analytics-browser';
 import { Box } from '@chakra-ui/react';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import NoStakingDeployed from '../../../components/DaoStaking/NoStakingDeployed';
+import StakeCard from '../../../components/DaoStaking/StakeCard';
 import PageHeader from '../../../components/ui/page/Header/PageHeader';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import { analyticsEvents } from '../../../insights/analyticsEvents';
@@ -12,6 +13,9 @@ export function SafeStakingPage() {
   useEffect(() => {
     amplitude.track(analyticsEvents.StakingPageOpened);
   }, []);
+
+  const [deployed, setDeployed] = useState(false);
+
   const { daoKey } = useCurrentDAOKey();
   const {
     treasury: {},
@@ -33,7 +37,8 @@ export function SafeStakingPage() {
           },
         ]}
       />
-      <NoStakingDeployed />
+
+      {deployed ? <StakeCard /> : <NoStakingDeployed deploy={() => setDeployed(true)} />}
     </Box>
   );
 }
