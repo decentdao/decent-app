@@ -1,5 +1,5 @@
 import * as amplitude from '@amplitude/analytics-browser';
-import { Box } from '@chakra-ui/react';
+import { Box, Flex } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import NoStakingDeployed from '../../../components/DaoStaking/NoStakingDeployed';
@@ -14,7 +14,7 @@ export function SafeStakingPage() {
     amplitude.track(analyticsEvents.StakingPageOpened);
   }, []);
 
-  const [deployed, setDeployed] = useState(false);
+  const [deployed, setDeployed] = useState(true);
 
   const { daoKey } = useCurrentDAOKey();
   const {
@@ -38,7 +38,37 @@ export function SafeStakingPage() {
         ]}
       />
 
-      {deployed ? <StakeCard /> : <NoStakingDeployed deploy={() => setDeployed(true)} />}
+      {deployed ? (
+        <Flex
+          padding="24px"
+          direction="column"
+          alignItems="flex-start"
+          gap="16px"
+          alignSelf="stretch"
+          borderRadius="12px"
+          borderTop="1px solid rgba(255, 255, 255, 0.10)"
+          background="color-content-content1"
+          boxShadow="0px 0px 0px 1px var(--colors-color-alpha-white-950)"
+        >
+          <Flex
+            height="436px"
+            direction="column"
+            alignItems="flex-start"
+            gap="8px"
+            alignSelf="stretch"
+          >
+            <Flex
+              alignItems="flex-start"
+              gap="8px"
+              alignSelf="stretch"
+            >
+              <StakeCard />
+            </Flex>
+          </Flex>
+        </Flex>
+      ) : (
+        <NoStakingDeployed deploy={() => setDeployed(true)} />
+      )}
     </Box>
   );
 }

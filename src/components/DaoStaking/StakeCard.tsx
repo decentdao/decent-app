@@ -1,4 +1,4 @@
-import { Box, Button, Flex, Tab, TabList, TabPanel, TabPanels, Tabs, Text } from '@chakra-ui/react';
+import { Flex, Tab, TabList, Tabs, Text } from '@chakra-ui/react';
 import { Info } from '@phosphor-icons/react';
 import { AssetSelector } from '../ui/utils/AssetSelector';
 
@@ -165,28 +165,35 @@ function BottomActions() {
 export default function StakeCard() {
   return (
     <Flex
-      paddingTop={2}
+      width="427px"
+      height="386px"
       direction="column"
       alignItems="flex-start"
-      gap={4}
-      alignSelf="stretch"
+      gap="16px"
     >
       <Flex
+        width="427px"
+        direction="column"
         alignItems="flex-start"
-        gap={3}
-        alignSelf="stretch"
+        gap="16px"
       >
-        <Tabs
-          variant="solid"
-          size="md"
+        <Flex
+          alignItems="flex-start"
+          gap={3}
+          alignSelf="stretch"
         >
-          <TabList>
-            <Tab>Stake</Tab>
-            <Tab>Unstake</Tab>
-          </TabList>
-        </Tabs>
+          <Tabs
+            variant="solid"
+            size="md"
+          >
+            <TabList>
+              <Tab>Stake</Tab>
+              <Tab>Unstake</Tab>
+            </TabList>
+          </Tabs>
+        </Flex>
+        <BottomActions />
       </Flex>
-      <BottomActions />
     </Flex>
   );
 }
