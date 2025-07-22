@@ -8,6 +8,7 @@ import PageHeader from '../../../components/ui/page/Header/PageHeader';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import { analyticsEvents } from '../../../insights/analyticsEvents';
 import { useDAOStore } from '../../../providers/App/AppProvider';
+import BalanceCard from '../../../components/DaoStaking/BalanceCard';
 
 export function SafeStakingPage() {
   useEffect(() => {
@@ -63,6 +64,15 @@ export function SafeStakingPage() {
               alignSelf="stretch"
             >
               <StakeCard />
+              <Flex
+                height="386px"
+                direction="column"
+                alignItems="flex-start"
+                gap="8px"
+                flex="1 0 0"
+              >
+                <BalanceCard />
+              </Flex>
             </Flex>
           </Flex>
         </Flex>
