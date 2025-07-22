@@ -155,12 +155,14 @@ export interface IModalContext {
   openModals: ModalTypeWithProps[];
   pushModal: (modal: ModalTypeWithProps) => void;
   popModal: () => void;
+  closeAllModals: () => void;
 }
 
 export const ModalContext = createContext<IModalContext>({
   openModals: [],
   pushModal: () => {},
   popModal: () => {},
+  closeAllModals: () => {},
 });
 
 interface ModalData {
@@ -577,9 +579,11 @@ function ModalDisplay({
 export function ModalProvider({
   children,
   baseZIndex = 1400,
+  closeBaseModal,
 }: {
   children: ReactNode;
   baseZIndex?: number;
+  closeBaseModal?: () => void;
 }) {
   const [openModals, setOpenModals] = useState<ModalTypeWithProps[]>([]);
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -595,8 +599,11 @@ export function ModalProvider({
 
   const closeAllModals = useCallback(() => {
     setOpenModals([]);
+    if (closeBaseModal) {
+      closeBaseModal();
+    }
     onClose();
-  }, [onClose]);
+  }, [onClose, closeBaseModal]);
 
   useEffect(() => {
     if (openModals.length > 0) {
@@ -626,7 +633,7 @@ export function ModalProvider({
   });
 
   return (
-    <ModalContext.Provider value={{ openModals, pushModal, popModal }}>
+    <ModalContext.Provider value={{ openModals, pushModal, popModal, closeAllModals }}>
       {children}
       <Portal>{modalDisplays}</Portal>
     </ModalContext.Provider>
