@@ -101,7 +101,7 @@ function BottomActions() {
           flex="1 0 0"
           borderRadius="8px"
           borderTop="1px solid var(--colors-color-layout-border-primary)"
-          background="color-primary-200"
+          background="color-base-primary"
         >
           <Text
             color="color-base-primary-foreground"
