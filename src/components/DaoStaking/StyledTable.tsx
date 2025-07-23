@@ -46,7 +46,10 @@ export default function StyledTable({ data }: { data: StyledTableData }) {
           >
             <Tr>
               {data.head.map((header, index) => (
-                <Th key={index}>
+                <Th
+                  key={index}
+                  textTransform="none"
+                >
                   <Text textStyle="text-sm-medium">{header}</Text>
                 </Th>
               ))}
