@@ -1,37 +1,6 @@
-import {
-  Flex,
-  Tab,
-  Table,
-  TableContainer,
-  TabList,
-  Tabs,
-  Tbody,
-  Td,
-  Text,
-  Th,
-  Thead,
-  Tr,
-} from '@chakra-ui/react';
-import { PropsWithChildren } from 'react';
-
-function StyledTd({ children, onlyText }: PropsWithChildren<{ onlyText?: string }>) {
-  return (
-    <Td borderRight="1px solid var(--colors-color-layout-border)">
-      {onlyText ? (
-        <Text
-          overflow="hidden"
-          textOverflow="ellipsis"
-          color="color-content-content1-foreground"
-          textStyle="text-sm-medium"
-        >
-          {onlyText}
-        </Text>
-      ) : (
-        children
-      )}
-    </Td>
-  );
-}
+import { Flex, Tab, TabList, Tabs, Text } from '@chakra-ui/react';
+import { PropsWithChildren, useState } from 'react';
+import StyledTable, { StyledTableData } from './StyledTable';
 
 function BadgeText({ children }: PropsWithChildren) {
   return (
@@ -68,41 +37,35 @@ function BadgeText({ children }: PropsWithChildren) {
   );
 }
 
-interface TransactionEntry {
-  date: string;
-  action: string;
-  amount: string;
-  txHash: string;
-}
+const transactionsData: StyledTableData = {
+  head: ['Date', 'Action', 'Amount', 'Tx Hash / Link'],
+  body: [
+    ['10/07/2025 13:33', <BadgeText key={1}>Staked</BadgeText>, '1,500 DRVN', '0x1234...abcd'],
+    [
+      '08/07/2025 09:23',
+      <BadgeText key={2}>Claimed</BadgeText>,
+      'Multiple Tokens',
+      '0x2234...abcd',
+    ],
+    ['07/07/2025 10:03', <BadgeText key={3}>Claimed</BadgeText>, '85.50 USDC', '0x3234...abcd'],
+    ['06/07/2025 11:33', <BadgeText key={4}>Unstaked</BadgeText>, '5,000 DRVN', '0x4234...abcd'],
+  ],
+};
 
-const exampleTransactions: TransactionEntry[] = [
-  {
-    date: '09/07/2025 13:33',
-    action: 'Staked',
-    amount: '1,500 DRVN',
-    txHash: '0x1234...abcd',
-  },
-  {
-    date: '08/07/2025 09:23',
-    action: 'Claimed',
-    amount: 'Multiple Tokens',
-    txHash: '0x2234...abcd',
-  },
-  {
-    date: '07/07/2025 10:03',
-    action: 'Claimed',
-    amount: '85.50 USDC',
-    txHash: '0x3234...abcd',
-  },
-  {
-    date: '06/07/2025 11:33',
-    action: 'Unstaked',
-    amount: '5,000 DRVN',
-    txHash: '0x4234...abcd',
-  },
-];
+const revenueShareHistoryData: StyledTableData = {
+  head: ['Date', 'Revenue Source', 'Your Share', 'Tx Hash'],
+  body: [
+    ['10/07/2025 13:33', 'Protocol Fees', '1,500 DRVN', '0x1234...abcd'],
+    ['08/07/2025 09:23', 'Treasury Yield', 'Multiple Tokens', '0x2234...abcd'],
+    ['07/07/2025 10:03', 'Partnership Royalties', '85.50 USDC', '0x3234...abcd'],
+  ],
+};
 
 export default function HistoryCard() {
+  const [selectedTab, setSelectedTab] = useState<'Transactions' | 'Revenue Share History'>(
+    'Transactions',
+  );
+
   return (
     <>
       <Tabs
@@ -110,58 +73,16 @@ export default function HistoryCard() {
         size="md"
       >
         <TabList>
-          <Tab>Transactions</Tab>
-          <Tab>Revenue Share History</Tab>
+          <Tab onClick={() => setSelectedTab('Transactions')}>Transactions</Tab>
+          <Tab onClick={() => setSelectedTab('Revenue Share History')}>Revenue Share History</Tab>
         </TabList>
       </Tabs>
 
-      <Flex
-        direction="column"
-        alignItems="flex-start"
-        alignSelf="stretch"
-        borderRadius="12px"
-        border="1px solid rgba(255, 255, 255, 0.10)"
-      >
-        <TableContainer width="full">
-          <Table variant="unstyled">
-            <Thead
-              borderBottom="1px solid var(--colors-color-layout-border)"
-              background="color-content-content2"
-              textColor="color-content-content2-foreground"
-            >
-              <Tr>
-                <Th>
-                  <Text textStyle="text-sm-medium">Date</Text>
-                </Th>
-                <Th>
-                  <Text textStyle="text-sm-medium">Action</Text>
-                </Th>
-                <Th>
-                  <Text textStyle="text-sm-medium">Amount</Text>
-                </Th>
-                <Th>
-                  <Text textStyle="text-sm-medium">Tx Hash / Link</Text>
-                </Th>
-              </Tr>
-            </Thead>
-            <Tbody textColor="color-content-content1-foreground">
-              {exampleTransactions.map(tx => (
-                <Tr
-                  key={tx.txHash}
-                  borderBottom="1px solid var(--colors-color-layout-border)"
-                >
-                  <StyledTd onlyText={tx.date} />
-                  <StyledTd>
-                    <BadgeText>{tx.action}</BadgeText>
-                  </StyledTd>
-                  <StyledTd onlyText={tx.amount} />
-                  <StyledTd onlyText={tx.txHash} />
-                </Tr>
-              ))}
-            </Tbody>
-          </Table>
-        </TableContainer>
-      </Flex>
+      {selectedTab === 'Transactions' ? (
+        <StyledTable data={transactionsData} />
+      ) : (
+        <StyledTable data={revenueShareHistoryData} />
+      )}
     </>
   );
 }
