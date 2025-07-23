@@ -53,9 +53,29 @@ const solidVariant = definePartsStyle({
   },
 });
 
+const underlinedVariant = definePartsStyle({
+  tablist: {
+    padding: '0.25rem',
+    alignItems: 'flex-start',
+    gap: '0.5rem',
+  },
+  tab: {
+    padding: '0.25rem 0.75rem',
+    justifyContent: 'center',
+    alignItems: 'center',
+    boxShadow: '0px 1px 2px 0px rgba(0, 0, 0, 0.05)',
+    textColor: 'color-content-muted',
+    _selected: {
+      borderBottom: '2px solid var(--colors-color-base-neutral-foreground)',
+      textColor: 'color-base-neutral-foreground',
+    },
+  },
+});
+
 const variants = {
   solid: solidVariant,
   twoTone: twoToneVariant,
+  underlined: underlinedVariant,
 };
 
 const tabsTheme = defineMultiStyleConfig({ variants });

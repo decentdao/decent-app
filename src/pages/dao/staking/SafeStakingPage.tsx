@@ -1,8 +1,9 @@
 import * as amplitude from '@amplitude/analytics-browser';
-import { Box, Flex } from '@chakra-ui/react';
+import { Box, Divider, Flex } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import BalanceCard from '../../../components/DaoStaking/BalanceCard';
+import HistoryCard from '../../../components/DaoStaking/HistoryCard';
 import NoStakingDeployed from '../../../components/DaoStaking/NoStakingDeployed';
 import RewardsCard from '../../../components/DaoStaking/RewardsCard';
 import StakeCard from '../../../components/DaoStaking/StakeCard';
@@ -77,6 +78,8 @@ export function SafeStakingPage() {
               </Flex>
             </Flex>
           </Flex>
+          <Divider color="color-layout-divider" />
+          <HistoryCard />
         </Flex>
       ) : (
         <NoStakingDeployed deploy={() => setDeployed(true)} />
