@@ -1,5 +1,5 @@
 import { Button, Flex, Text } from '@chakra-ui/react';
-import { FileDashed } from '@phosphor-icons/react';
+import CheckDocumentIcon from './CheckDocumentIcon';
 
 export default function NoStakingDeployed({ deploy }: { deploy: () => void }) {
   return (
@@ -21,7 +21,13 @@ export default function NoStakingDeployed({ deploy }: { deploy: () => void }) {
         justifyContent="center"
         alignItems="center"
       >
-        <FileDashed size={64} />
+        <Flex
+          width="64px"
+          height="76px"
+          flexShrink={0}
+        >
+          <CheckDocumentIcon />
+        </Flex>
       </Flex>
 
       <Flex
@@ -52,17 +58,30 @@ export default function NoStakingDeployed({ deploy }: { deploy: () => void }) {
           </Text>
         </Flex>
 
-        <Button
-          variant="primary"
-          size="md"
-          paddingX={4}
-          height={9}
-          justifyContent="center"
+        <Flex
+          direction="column"
           alignItems="center"
-          onClick={deploy}
+          gap="12px"
         >
-          Deploy Contract
-        </Button>
+          <Text
+            color="color-content-muted"
+            textAlign="center"
+            textStyle="text-xs-medium"
+          >
+            Go to your DAO settings to configure and deploy the staking contract.
+          </Text>
+          <Button
+            variant="primary"
+            size="md"
+            paddingX={4}
+            height={9}
+            justifyContent="center"
+            alignItems="center"
+            onClick={deploy}
+          >
+            Go to Settings (dev:enable)
+          </Button>
+        </Flex>
       </Flex>
     </Flex>
   );

@@ -2,20 +2,20 @@ import * as amplitude from '@amplitude/analytics-browser';
 import { Box, Flex } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import BalanceCard from '../../../components/DaoStaking/BalanceCard';
 import NoStakingDeployed from '../../../components/DaoStaking/NoStakingDeployed';
 import StakeCard from '../../../components/DaoStaking/StakeCard';
 import PageHeader from '../../../components/ui/page/Header/PageHeader';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import { analyticsEvents } from '../../../insights/analyticsEvents';
 import { useDAOStore } from '../../../providers/App/AppProvider';
-import BalanceCard from '../../../components/DaoStaking/BalanceCard';
 
 export function SafeStakingPage() {
   useEffect(() => {
     amplitude.track(analyticsEvents.StakingPageOpened);
   }, []);
 
-  const [deployed, setDeployed] = useState(true);
+  const [deployed, setDeployed] = useState(false);
 
   const { daoKey } = useCurrentDAOKey();
   const {
