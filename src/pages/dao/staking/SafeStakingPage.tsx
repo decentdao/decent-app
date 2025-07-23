@@ -4,12 +4,12 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import BalanceCard from '../../../components/DaoStaking/BalanceCard';
 import NoStakingDeployed from '../../../components/DaoStaking/NoStakingDeployed';
+import RewardsCard from '../../../components/DaoStaking/RewardsCard';
 import StakeCard from '../../../components/DaoStaking/StakeCard';
 import PageHeader from '../../../components/ui/page/Header/PageHeader';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import { analyticsEvents } from '../../../insights/analyticsEvents';
 import { useDAOStore } from '../../../providers/App/AppProvider';
-import RewardsCard from '../../../components/DaoStaking/RewardsCard';
 
 export function SafeStakingPage() {
   useEffect(() => {
