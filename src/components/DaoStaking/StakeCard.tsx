@@ -165,14 +165,11 @@ function BottomActions() {
 export default function StakeCard() {
   return (
     <Flex
-      width="427px"
-      height="386px"
       direction="column"
       alignItems="flex-start"
       gap="16px"
     >
       <Flex
-        width="427px"
         direction="column"
         alignItems="flex-start"
         gap="16px"

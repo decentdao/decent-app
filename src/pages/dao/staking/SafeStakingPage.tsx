@@ -54,7 +54,6 @@ export function SafeStakingPage() {
           boxShadow="0px 0px 0px 1px var(--colors-color-alpha-white-950)"
         >
           <Flex
-            height="436px"
             direction="column"
             alignItems="flex-start"
             gap="8px"
@@ -67,7 +66,6 @@ export function SafeStakingPage() {
             >
               <StakeCard />
               <Flex
-                height="386px"
                 direction="column"
                 alignItems="flex-start"
                 gap="8px"
