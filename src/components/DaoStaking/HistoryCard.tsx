@@ -14,8 +14,58 @@ import {
 } from '@chakra-ui/react';
 import { PropsWithChildren } from 'react';
 
-function TableBodyRowCell({ children }: PropsWithChildren) {
-  return <Td borderRight="1px solid var(--colors-color-layout-border)">{children}</Td>;
+function StyledTd({ children, onlyText }: PropsWithChildren<{ onlyText?: string }>) {
+  return (
+    <Td borderRight="1px solid var(--colors-color-layout-border)">
+      {onlyText ? (
+        <Text
+          overflow="hidden"
+          textOverflow="ellipsis"
+          color="color-content-content1-foreground"
+          textStyle="text-sm-medium"
+        >
+          {onlyText}
+        </Text>
+      ) : (
+        children
+      )}
+    </Td>
+  );
+}
+
+function BadgeText({ children }: PropsWithChildren) {
+  return (
+    <Flex
+      padding="2px 4px"
+      justifyContent="center"
+      alignItems="center"
+      gap="1px"
+      borderRadius="9999px"
+      background="color-content-content2"
+    >
+      <Flex
+        padding="0px 2px"
+        alignItems="center"
+        gap="4px"
+      >
+        <Flex
+          padding="0px 4px"
+          justifyContent="center"
+          alignItems="center"
+          flexShrink={0}
+          aspectRatio="1/1"
+          borderRadius="9999px"
+          background="color-content-content1-foreground"
+        ></Flex>
+        <Text
+          color="color-content-content1-foreground"
+          textStyle="text-xs-medium"
+        >
+          {children}
+        </Text>
+      </Flex>
+    </Flex>
+  );
 }
 
 interface TransactionEntry {
@@ -100,10 +150,12 @@ export default function HistoryCard() {
                   key={tx.txHash}
                   borderBottom="1px solid var(--colors-color-layout-border)"
                 >
-                  <TableBodyRowCell>{tx.date}</TableBodyRowCell>
-                  <TableBodyRowCell>{tx.action}</TableBodyRowCell>
-                  <TableBodyRowCell>{tx.amount}</TableBodyRowCell>
-                  <TableBodyRowCell>{tx.txHash}</TableBodyRowCell>
+                  <StyledTd onlyText={tx.date} />
+                  <StyledTd>
+                    <BadgeText>{tx.action}</BadgeText>
+                  </StyledTd>
+                  <StyledTd onlyText={tx.amount} />
+                  <StyledTd onlyText={tx.txHash} />
                 </Tr>
               ))}
             </Tbody>
