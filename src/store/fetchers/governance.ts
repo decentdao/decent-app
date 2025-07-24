@@ -85,6 +85,7 @@ export function useGovernanceFetcher() {
       zodiacModuleProxyFactory,
       accountAbstraction,
       paymaster: { decentPaymasterV1MasterCopy },
+      votesERC20StakedV1MasterCopy,
     },
   } = useNetworkConfigStore();
   const { safeAddress: currentUrlSafeAddress, wrongNetwork } = useCurrentDAOKey();
@@ -1066,21 +1067,32 @@ export function useGovernanceFetcher() {
 
   const fetchStakingDAOData = useCallback(
     async (safeAddress: Address) => {
-      if (!publicClient.chain) {
+      if (!publicClient.chain || !votesERC20StakedV1MasterCopy || !governance) {
         return;
       }
 
-      // @todo: `getStakingContractAddress` is WIP (https://linear.app/decent-labs/issue/ENG-1154/implement-getstakingcontractaddress)
+      const daoErc20Token = governance.votesToken;
+      if (!daoErc20Token || governance.type !== GovernanceType.AZORIUS_ERC20) {
+        return;
+      }
+
       const stakingAddress = getStakingContractAddress({
         safeAddress,
+        stakedTokenAddress: daoErc20Token.address,
         zodiacModuleProxyFactory,
-        stakingContractMastercopy: '0x1234567890123456789012345678901234567890',
+        stakingContractMastercopy: votesERC20StakedV1MasterCopy,
         chainId: publicClient.chain.id,
       });
 
-      return { stakingAddress };
+      const stakingCode = await publicClient.getCode({
+        address: stakingAddress,
+      });
+
+      const stakingExists = !!stakingCode && stakingCode !== '0x';
+
+      return { stakingAddress: stakingExists ? stakingAddress : null };
     },
-    [publicClient.chain, zodiacModuleProxyFactory],
+    [governance, publicClient, votesERC20StakedV1MasterCopy, zodiacModuleProxyFactory],
   );
 
   return {
