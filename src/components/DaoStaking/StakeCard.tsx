@@ -1,6 +1,5 @@
-import { Flex, Tab, TabList, Tabs, Text } from '@chakra-ui/react';
+import { Flex, Tab, TabList, Tabs, Text, Image } from '@chakra-ui/react';
 import { Info } from '@phosphor-icons/react';
-import { AssetSelector } from '../ui/utils/AssetSelector';
 
 function BottomActions() {
   return (
@@ -42,7 +41,29 @@ function BottomActions() {
           >
             325,000.00
           </Text>
-          <AssetSelector />
+          <Flex
+            padding="8px"
+            alignItems="center"
+            gap="1px"
+          >
+            <Image
+              src=""
+              fallbackSrc="/images/coin-icon-default.svg"
+              boxSize="2rem"
+            />
+            <Flex
+              padding="0px 4px"
+              alignItems="center"
+              gap="4px"
+            >
+              <Text
+                color="color-content-content1-foreground"
+                textStyle="text-sm-medium"
+              >
+                DRVN
+              </Text>
+            </Flex>
+          </Flex>
         </Flex>
 
         <Flex
