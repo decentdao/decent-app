@@ -36,6 +36,9 @@ export const initialState: CreatorFormState = {
     parentAllocationAmount: {
       value: '',
     },
+    maxTotalSupply: {
+      value: '',
+    },
   },
   erc721Token: {
     nfts: [

@@ -1,4 +1,4 @@
-import { legacy } from '@decentdao/decent-contracts';
+import { legacy, abis } from '@decentdao/decent-contracts';
 import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -12,6 +12,7 @@ import {
 } from 'viem';
 import { useAccount } from 'wagmi';
 import LockReleaseAbi from '../../assets/abi/LockRelease';
+import { ROLES } from '../../constants/accessControlRoles';
 import { SENTINEL_ADDRESS } from '../../constants/common';
 import { createSnapshotSubgraphClient } from '../../graphql';
 import { ProposalsQuery, ProposalsResponse } from '../../graphql/SnapshotQueries';
@@ -937,18 +938,61 @@ export function useGovernanceFetcher() {
       try {
         // Gather whitelisted addresses from event Whitelisted(address indexed account, bool isWhitelisted)
         const lockedTokenContract = getContract({
-          abi: legacy.abis.VotesERC20LockableV1,
+          abi: abis.deployables.VotesERC20V1,
           address: erc20AddressInEvent,
           client: publicClient,
         });
 
-        const whitelistEvents = await lockedTokenContract.getEvents.Whitelisted(undefined, {
-          fromBlock: 0n,
+        const grantEvents = (
+          await lockedTokenContract.getEvents.RoleGranted(
+            { role: ROLES.TRANSFER_FROM_ROLE },
+            {
+              fromBlock: 0n,
+            },
+          )
+        ).map(e => ({
+          args: {
+            account: e.args.account,
+            role: e.args.role,
+            sender: e.args.sender,
+            isWhitelisted: true,
+          },
+          blockNumber: e.blockNumber,
+          logIndex: e.logIndex,
+        }));
+        const revokeEvents = (
+          await lockedTokenContract.getEvents.RoleRevoked(
+            { role: ROLES.TRANSFER_FROM_ROLE },
+            {
+              fromBlock: 0n,
+            },
+          )
+        ).map(e => ({
+          args: {
+            account: e.args.account,
+            role: e.args.role,
+            sender: e.args.sender,
+            isWhitelisted: false,
+          },
+          blockNumber: e.blockNumber,
+          logIndex: e.logIndex,
+        }));
+
+        // Order events by block number and log index
+        const orderedEvents = [...grantEvents, ...revokeEvents].sort((a, b) => {
+          if (a.blockNumber > b.blockNumber) {
+            return 1;
+          } else if (a.blockNumber < b.blockNumber) {
+            return -1;
+          } else {
+            return a.logIndex - b.logIndex;
+          }
         });
+
         const whitelistMap: { [address: Address]: boolean } = {};
-        whitelistEvents.forEach(event => {
+        orderedEvents.forEach(event => {
           const { account, isWhitelisted } = event.args;
-          if (account !== undefined && isWhitelisted !== undefined) {
+          if (account !== undefined) {
             whitelistMap[account] = isWhitelisted;
           }
         });
@@ -961,35 +1005,35 @@ export function useGovernanceFetcher() {
 
       try {
         const tokenContract = getContract({
-          abi: legacy.abis.VotesERC20,
+          abi: abis.deployables.VotesERC20V1,
           address: erc20AddressInEvent,
           client: publicClient,
         });
 
-        // Prepare multicall requests
-        const multicallCalls = [
-          {
-            ...tokenContract,
-            functionName: 'name',
-          },
-          {
-            ...tokenContract,
-            functionName: 'symbol',
-          },
-          {
-            ...tokenContract,
-            functionName: 'decimals',
-          },
-
-          {
-            ...tokenContract,
-            functionName: 'totalSupply',
-          },
-        ];
-
         // Execute multicall
-        const [name, symbol, decimals, totalSupply] = await publicClient.multicall({
-          contracts: multicallCalls,
+        const [name, symbol, decimals, totalSupply, maxTotalSupply] = await publicClient.multicall({
+          contracts: [
+            {
+              ...tokenContract,
+              functionName: 'name',
+            },
+            {
+              ...tokenContract,
+              functionName: 'symbol',
+            },
+            {
+              ...tokenContract,
+              functionName: 'decimals',
+            },
+            {
+              ...tokenContract,
+              functionName: 'totalSupply',
+            },
+            {
+              ...tokenContract,
+              functionName: 'maxTotalSupply',
+            },
+          ],
           allowFailure: false,
         });
 
@@ -999,6 +1043,7 @@ export function useGovernanceFetcher() {
           decimals: decimals ? Number(decimals) : 18,
           address: tokenContract.address,
           totalSupply: totalSupply ? BigInt(totalSupply) : 0n,
+          maxTotalSupply: maxTotalSupply ? BigInt(maxTotalSupply) : 0n,
           whitelistedAddresses,
         };
 
