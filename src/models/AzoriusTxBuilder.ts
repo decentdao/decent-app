@@ -1,4 +1,4 @@
-import { legacy } from '@decentdao/decent-contracts';
+import { legacy, abis } from '@decentdao/decent-contracts';
 import {
   Address,
   Hex,
@@ -433,22 +433,28 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
       this.calculateTokenAllocations(azoriusGovernanceDaoData);
 
     if (azoriusGovernanceDaoData.locked === TokenLockType.LOCKED) {
-      const encodedInitTokenData = encodeAbiParameters(
-        parseAbiParameters('address, bool, string, string, address[], uint256[]'),
-        [
-          this.safeContractAddress,
-          true,
-          azoriusGovernanceDaoData.tokenName,
-          azoriusGovernanceDaoData.tokenSymbol,
-          tokenAllocationsOwners,
-          tokenAllocationsValues,
-        ],
-      );
+      const allocations: { to: Address; amount: bigint }[] = tokenAllocationsOwners.map((o, i) => ({
+        to: o,
+        amount: tokenAllocationsValues[i],
+      }));
 
       this.encodedSetupTokenData = encodeFunctionData({
-        abi: legacy.abis.VotesERC20LockableV1,
+        abi: abis.deployables.VotesERC20V1,
         functionName: 'initialize',
-        args: [encodedInitTokenData],
+        args: [
+          // metadata_
+          {
+            name: azoriusGovernanceDaoData.tokenName,
+            symbol: azoriusGovernanceDaoData.tokenSymbol,
+          },
+          allocations,
+          // owner_
+          this.safeContractAddress,
+          // locked_
+          true,
+          // maxTotalSupply_
+          azoriusGovernanceDaoData.maxTotalSupply,
+        ],
       });
     } else {
       const encodedInitTokenData = encodeAbiParameters(

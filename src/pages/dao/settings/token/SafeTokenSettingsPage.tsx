@@ -8,14 +8,16 @@ import {
   Show,
   Switch,
   Text,
+  Image,
 } from '@chakra-ui/react';
 import { ClockClockwise, TrashSimple } from '@phosphor-icons/react';
 import { Field, FieldArray, FieldAttributes, useFormikContext } from 'formik';
 import { useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { zeroAddress } from 'viem';
+import { formatUnits, zeroAddress } from 'viem';
 import { SettingsContentBox } from '../../../../components/SafeSettings/SettingsContentBox';
+import { BigIntInput } from '../../../../components/ui/forms/BigIntInput';
 import { AddressInput } from '../../../../components/ui/forms/EthAddressInput';
 import { DisplayAddress } from '../../../../components/ui/links/DisplayAddress';
 import { ModalContext } from '../../../../components/ui/modals/ModalProvider';
@@ -28,8 +30,10 @@ import Divider from '../../../../components/ui/utils/Divider';
 import { DAO_ROUTES } from '../../../../constants/routes';
 import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
 import useLockedToken from '../../../../hooks/DAO/useLockedToken';
+import { useFormHelpers } from '../../../../hooks/utils/useFormHelpers';
 import { useDAOStore } from '../../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../../providers/NetworkConfig/useNetworkConfigStore';
+import { BigIntValuePair } from '../../../../types';
 import { formatCoin } from '../../../../utils';
 
 function WhitelistedAddress({ address }: { address: string }) {
@@ -149,6 +153,7 @@ export function SafeTokenSettingsPage() {
   const navigate = useNavigate();
   const { t } = useTranslation('settings');
   const { addressPrefix } = useNetworkConfigStore();
+  const { restrictChars } = useFormHelpers();
   const { daoKey } = useCurrentDAOKey();
   const {
     node: { safe },
@@ -161,13 +166,19 @@ export function SafeTokenSettingsPage() {
   );
 
   const { closeAllModals } = useContext(ModalContext);
-  const { values, setFieldValue } = useFormikContext<SafeSettingsEdits>();
+  const { values, setFieldValue, errors } = useFormikContext<SafeSettingsEdits>();
+  const formErrors = errors as SafeSettingsFormikErrors;
 
   const isTransferableInValues = values.token?.transferable;
   const isTransferable =
     isTransferableInValues === undefined ? !tokenState.locked : isTransferableInValues;
 
   const whitelistedAddresses = erc20Token?.whitelistedAddresses || [];
+
+  const currentMaxTotalSupply: BigIntValuePair = {
+    bigintValue: erc20Token?.maxTotalSupply,
+    value: formatUnits(erc20Token?.maxTotalSupply || 0n, erc20Token?.decimals || 0),
+  };
 
   return (
     <>
@@ -298,7 +309,7 @@ export function SafeTokenSettingsPage() {
                 direction="column"
               >
                 <Text
-                  color="color-white"
+                  color="color-content-popover-foreground"
                   textStyle="text-lg-regular"
                 >
                   {t('governanceTokenManagementTitle')}
@@ -325,7 +336,7 @@ export function SafeTokenSettingsPage() {
                   <Flex direction="column">
                     <Text
                       color="color-layout-foreground"
-                      textStyle="text-sm-medium"
+                      textStyle="text-sm-leading-none-medium"
                     >
                       {t('governanceTokenTransferableLabel')}
                     </Text>
@@ -396,6 +407,57 @@ export function SafeTokenSettingsPage() {
                   }}
                 </FieldArray>
               )}
+
+              <Flex
+                gap={2}
+                direction="column"
+              >
+                <Text
+                  color="color-content-popover-foreground"
+                  textStyle="text-lg-regular"
+                >
+                  {t('governanceTokenMaximumTotalSupplyTitle')}
+                </Text>
+
+                <Text
+                  color="color-content-popover-foreground0"
+                  textStyle="text-sm-regular"
+                >
+                  {t('governanceTokenMaximumTotalSupplySubTitle')}
+                </Text>
+
+                <Flex
+                  padding={3}
+                  paddingLeft={0}
+                  width={300}
+                  direction="column"
+                >
+                  <BigIntInput
+                    parentFormikValue={values.token?.maximumTotalSupply || currentMaxTotalSupply}
+                    onChange={valuePair => {
+                      if (valuePair.bigintValue !== currentMaxTotalSupply.bigintValue) {
+                        setFieldValue('token.maximumTotalSupply', valuePair);
+                      } else {
+                        setFieldValue('token.maximumTotalSupply', undefined);
+                      }
+                    }}
+                    decimalPlaces={erc20Token.decimals}
+                    onKeyDown={restrictChars}
+                  />
+                  {formErrors.token?.maximumTotalSupply && (
+                    <Flex gap="0.25rem">
+                      <Image src="/images/input-error.svg" />
+                      <Text
+                        color="color-error-500"
+                        mt="0.2rem"
+                        mb="0.25rem"
+                      >
+                        {formErrors.token.maximumTotalSupply}
+                      </Text>
+                    </Flex>
+                  )}
+                </Flex>
+              </Flex>
             </>
           )}
         </Flex>

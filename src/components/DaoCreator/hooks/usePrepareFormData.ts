@@ -118,6 +118,7 @@ export function usePrepareFormData() {
       tokenImportAddress,
       tokenCreationType,
       locked,
+      maxTotalSupply,
       ...rest
     }: AzoriusERC20DAO<BigIntValuePair> & FreezeGuardConfigParam): Promise<
       AzoriusERC20DAO | undefined
@@ -162,6 +163,7 @@ export function usePrepareFormData() {
         isTokenImported,
         isVotesToken,
         locked,
+        maxTotalSupply: maxTotalSupply.bigintValue!,
         ...freezeGuardData,
         ...rest,
       };

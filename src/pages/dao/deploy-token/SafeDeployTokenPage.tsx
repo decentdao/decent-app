@@ -61,10 +61,16 @@ export function SafeDeployTokenPage() {
       }}
       validationSchema={erc20TokenValidation}
       onSubmit={async values => {
+        // set maxTotalSupply to be same as tokenSupply
+        //   this can be modified by the user later on settings
+        const modifiedValues = {
+          ...values.erc20Token,
+          maxTotalSupply: values.erc20Token.tokenSupply,
+        };
         const daoData = await prepareAzoriusERC20FormData({
           ...initialState.essentials,
           ...initialState.azorius,
-          ...values.erc20Token,
+          ...modifiedValues,
           freezeGuard: undefined,
         });
 
