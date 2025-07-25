@@ -3,15 +3,22 @@ import { SealWarning } from '@phosphor-icons/react';
 import { useEffect, useState } from 'react';
 import { Address, isAddress } from 'viem';
 import { createAccountSubstring } from '../../../hooks/utils/useGetAccountName';
+import { useGetSafeName } from '../../../hooks/utils/useGetSafeName';
 import { useResolveENSName } from '../../../hooks/utils/useResolveENSName';
+import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
 import { validateENSName } from '../../../utils/url';
 import { DecentTooltip } from '../DecentTooltip';
 import { AddressInput } from './EthAddressInput';
 
 export function AddressInputInfo(props: InputProps) {
-  const [showInput, setShowInput] = useState(false);
-  const [resolvedAddress, setResolvedAddress] = useState<Address>();
   const { resolveENSName } = useResolveENSName();
+
+  const [resolvedAddress, setResolvedAddress] = useState<Address>();
+  const { chain } = useNetworkConfigStore();
+  const { getSafeName } = useGetSafeName(chain.id);
+  const [resolvedDisplayName, setResolvedDisplayName] = useState<string | undefined>();
+
+  const [showInput, setShowInput] = useState(false);
 
   const propValue = props.value;
 
@@ -19,11 +26,21 @@ export function AddressInputInfo(props: InputProps) {
     propValue !== '' && !!propValue && typeof propValue === 'string' && isAddress(propValue);
 
   useEffect(() => {
+    if (!showInput) {
+      return;
+    }
+    if (!propValue) {
+      setResolvedAddress(undefined);
+      setResolvedDisplayName(undefined);
+      return;
+    }
     if (!isPropValueAddress) {
       setResolvedAddress(undefined);
+      setResolvedDisplayName(undefined);
       return;
     }
     if (isAddress(propValue)) {
+      getSafeName(propValue as Address).then(setResolvedDisplayName);
       setResolvedAddress(undefined);
       return;
     }
@@ -34,11 +51,16 @@ export function AddressInputInfo(props: InputProps) {
       });
       return;
     }
-    setResolvedAddress(undefined);
-  }, [isPropValueAddress, propValue, resolveENSName]);
 
-  if (!showInput && propValue) {
-    const displayedValue = isPropValueAddress ? createAccountSubstring(propValue) : propValue;
+    setResolvedAddress(undefined);
+  }, [isPropValueAddress, propValue, resolveENSName, getSafeName, showInput]);
+
+  if ((!showInput && propValue) || props.isReadOnly) {
+    const displayedValue = resolvedDisplayName
+      ? resolvedDisplayName
+      : isPropValueAddress
+        ? createAccountSubstring(propValue)
+        : propValue;
 
     return (
       <Flex
@@ -54,9 +76,13 @@ export function AddressInputInfo(props: InputProps) {
           setShowInput(false);
         }}
         _hover={{
-          bg: props.isInvalid ? 'color-error-950' : 'color-alpha-white-950',
+          bg: props.isReadOnly
+            ? 'transparent'
+            : props.isInvalid
+              ? 'color-error-950'
+              : 'color-alpha-white-950',
         }}
-        bg={props.isInvalid ? 'color-error-950' : 'transparent'}
+        bg={props.isReadOnly ? 'transparent' : props.isInvalid ? 'color-error-950' : 'transparent'}
         boxShadow={
           props.isInvalid
             ? '0px 0px 0px 2px #AF3A48, 0px 1px 0px 0px rgba(242, 161, 171, 0.30), 0px 0px 0px 1px rgba(0, 0, 0, 0.80)'
@@ -73,9 +99,9 @@ export function AddressInputInfo(props: InputProps) {
         >
           {displayedValue}
         </Text>
-        {resolvedAddress && (
+        {(resolvedAddress || resolvedDisplayName) && (
           <DecentTooltip
-            label="While ENS is displayed, the full wallet 
+            label="While DAO Name or ENS is displayed, the full wallet 
           address will appear in the agreement."
           >
             <Icon
