@@ -1,13 +1,12 @@
 import { Flex, Button, Icon, Text } from '@chakra-ui/react';
 import { Plus, WarningCircle } from '@phosphor-icons/react';
 import { useFormikContext } from 'formik';
-import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Address, getCreateAddress } from 'viem';
+import { Address } from 'viem';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import { createAccountSubstring } from '../../../hooks/utils/useGetAccountName';
 import { useDAOStore } from '../../../providers/App/AppProvider';
-import { RevenueSharingWalletSplit } from '../../../types/revShare';
+import { RevenueSharingWalletFormValues, RevenueSharingWalletSplit } from '../../../types/revShare';
 import { Badge } from '../../ui/badges/Badge';
 import AddressCopier from '../../ui/links/AddressCopier';
 import { BarLoader } from '../../ui/loaders/BarLoader';
@@ -102,27 +101,10 @@ export function RevenueSharingSettingsContent() {
   const { daoKey } = useCurrentDAOKey();
   const {
     node: { safe },
+    revShareWallets,
   } = useDAOStore({ daoKey });
 
   const { values } = useFormikContext<SafeSettingsEdits>();
-
-  // TEST DATA; WILL COME FROM GLOBAL STORE
-  const dummyAddress = useMemo(
-    () => getCreateAddress({ from: '0x0000000000000000000000000000000000000000', nonce: 0n }),
-    [],
-  );
-  const dummyAddress02 = useMemo(
-    () => getCreateAddress({ from: '0x0000000000000000000000000000000000000000', nonce: 1n }),
-    [],
-  );
-  const dummyAddress03 = useMemo(
-    () => getCreateAddress({ from: '0x0000000000000000000000000000000000000000', nonce: 2n }),
-    [],
-  );
-  const dummyAddress04 = useMemo(
-    () => getCreateAddress({ from: '0x0000000000000000000000000000000000000000', nonce: 3n }),
-    [],
-  );
 
   if (!safe) {
     return (
@@ -137,58 +119,35 @@ export function RevenueSharingSettingsContent() {
     );
   }
 
-  const revenueShareWallets: any[] = [
-    {
-      address: dummyAddress,
-      name: 'Test 1',
-      splits: [
-        {
-          address: dummyAddress,
-          percentage: 40,
-        },
-        {
-          address: dummyAddress02,
-          percentage: 25,
-        },
-        {
-          address: dummyAddress03,
-          percentage: 20,
-        },
-        {
-          address: dummyAddress04,
-          percentage: 5,
-        },
-      ],
-    },
-  ];
-
   const existingFormWalletsLength = values?.revenueSharing?.existing?.length || 0;
-  const existingWalletsLength = revenueShareWallets?.length || 0;
+  const existingWalletsLength = revShareWallets?.length || 0;
   const maxLength = Math.max(existingFormWalletsLength, existingWalletsLength);
 
-  const existingFormWallets = Array.from({ length: maxLength }, (_, walletIndex) => {
-    const existingWalletData = revenueShareWallets[walletIndex];
-    const existingWalletFormData = values?.revenueSharing?.existing?.[walletIndex];
+  const existingFormWallets: RevenueSharingWalletFormValues[] = Array.from(
+    { length: maxLength },
+    (_, walletIndex) => {
+      const existingWalletData = revShareWallets?.[walletIndex];
+      const existingWalletFormData = values?.revenueSharing?.existing?.[walletIndex];
 
-    const splitsLength = existingWalletData?.splits?.length || 0;
-    const newSplitsLength = existingWalletFormData?.splits?.length || 0;
-    const maxSplitsLength = Math.max(splitsLength, newSplitsLength);
+      const splitsLength = existingWalletData?.splits?.length || 0;
+      const newSplitsLength = existingWalletFormData?.splits?.length || 0;
+      const maxSplitsLength = Math.max(splitsLength, newSplitsLength);
 
-    const splits = Array.from({ length: maxSplitsLength }, (__, splitIndex) => {
-      const existingSplitData = existingWalletData?.splits?.[splitIndex];
-      const existingSplitFormData = existingWalletFormData?.splits?.[splitIndex];
       return {
-        address: existingSplitFormData?.address || existingSplitData?.address,
-        percentage: existingSplitFormData?.percentage || existingSplitData?.percentage,
+        name: existingWalletFormData?.name || existingWalletData?.name,
+        address: existingWalletFormData?.address || existingWalletData?.address,
+        splits: Array.from({ length: maxSplitsLength }, (__, splitIndex) => {
+          const existingSplitData = existingWalletData?.splits?.[splitIndex];
+          const existingSplitFormData = existingWalletFormData?.splits?.[splitIndex];
+          return {
+            address: existingSplitFormData?.address || existingSplitData?.address,
+            percentage:
+              existingSplitFormData?.percentage || existingSplitData?.percentage.toString(),
+          };
+        }),
       };
-    });
-
-    return {
-      name: existingWalletFormData?.name || existingWalletData?.name,
-      address: existingWalletFormData?.address || existingWalletData?.address,
-      splits: splits,
-    };
-  });
+    },
+  );
 
   return (
     <>
