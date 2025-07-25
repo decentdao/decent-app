@@ -3,7 +3,7 @@ import { Plus, Trash } from '@phosphor-icons/react';
 import { Field, FieldProps, useFormikContext } from 'formik';
 import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Address, zeroAddress } from 'viem';
+import { Address, isAddress } from 'viem';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import { createAccountSubstring } from '../../../hooks/utils/useGetAccountName';
 import { useDAOStore } from '../../../providers/App/AppProvider';
@@ -115,15 +115,17 @@ function WalletName({
           />
         )}
       </Field>
-      <AddressCopier
-        address={zeroAddress}
-        color="color-content-content1-foreground"
-        textStyle="text-sm-underlined-regular"
-        textDecor="underline"
-        variant="secondary"
-      >
-        {createAccountSubstring(zeroAddress)}
-      </AddressCopier>
+      {wallet.address && isAddress(wallet.address) && (
+        <AddressCopier
+          address={wallet.address}
+          color="color-content-content1-foreground"
+          textStyle="text-sm-underlined-regular"
+          textDecor="underline"
+          variant="secondary"
+        >
+          {createAccountSubstring(wallet.address)}
+        </AddressCopier>
+      )}
     </Grid>
   );
 }
@@ -298,7 +300,7 @@ export function RevSplitTable({
 
   const totalPercentage = useMemo(() => {
     let total = 0;
-    const formWallet = values.revenueSharing?.[walletFormType][walletIndex];
+    const formWallet = values.revenueSharing?.[walletFormType]?.[walletIndex];
 
     // DAO (always shown)
     const daoFormPercentage = formWallet?.specialSplits?.dao?.percentage;
@@ -433,15 +435,19 @@ export function RevSplitTable({
               existingWalletSplitAddress={split.address}
               existingWalletSplitPercentage={split.percentage}
               isLastRow={isLastRow}
-              onRemoveSplit={() => {
-                // remove new wallets and/or any edits
-                setFieldValue(
-                  `revenueSharing.${walletFormType}.${walletIndex}.splits`,
-                  values?.revenueSharing?.[walletFormType][walletIndex]?.splits?.filter(
-                    (__: any, j: any) => j !== originalIndex,
-                  ),
-                );
-              }}
+              onRemoveSplit={
+                !wallet.address
+                  ? () => {
+                      // remove new wallets and/or any edits
+                      setFieldValue(
+                        `revenueSharing.${walletFormType}.${walletIndex}.splits`,
+                        values?.revenueSharing?.[walletFormType][walletIndex]?.splits?.filter(
+                          (__: any, j: any) => j !== originalIndex,
+                        ),
+                      );
+                    }
+                  : undefined
+              }
             />
           );
         })}
@@ -459,17 +465,16 @@ export function RevSplitTable({
         ml="auto"
         leftIcon={<Icon as={Plus} />}
         onClick={() => {
-          const formWalletSplits = [
-            ...(values.revenueSharing?.[walletFormType][walletIndex]?.splits || []),
-          ];
+          const formWalletSplits = [...(wallet.splits || [])];
+
           const formWalletSplitsLength = formWalletSplits.length;
           const walletsLength = wallet.splits?.length || 0;
           const newWalletIndex =
             formWalletSplitsLength >= walletsLength ? formWalletSplitsLength : walletsLength;
 
           formWalletSplits[newWalletIndex] = {
-            address: zeroAddress,
-            percentage: '0',
+            address: undefined,
+            percentage: undefined,
           };
           setFieldValue(`revenueSharing.${walletFormType}.${walletIndex}.splits`, formWalletSplits);
         }}

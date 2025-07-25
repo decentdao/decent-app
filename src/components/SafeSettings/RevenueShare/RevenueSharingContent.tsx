@@ -3,7 +3,7 @@ import { Plus, WarningCircle } from '@phosphor-icons/react';
 import { useFormikContext } from 'formik';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Address } from 'viem';
+import { Address, getCreateAddress } from 'viem';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import { createAccountSubstring } from '../../../hooks/utils/useGetAccountName';
 import { useDAOStore } from '../../../providers/App/AppProvider';
@@ -45,7 +45,7 @@ function RevenueShareHeader() {
             name: t('defaultSplitName'),
             splits: [{} as Partial<RevenueSharingWalletSplit<string, string>>],
           };
-          setFieldValue('revenueSharing.new.wallets', formWallets);
+          setFieldValue('revenueSharing.new', formWallets);
         }}
       >
         {t('addSplitButton')}
@@ -108,19 +108,19 @@ export function RevenueSharingSettingsContent() {
 
   // TEST DATA; WILL COME FROM GLOBAL STORE
   const dummyAddress = useMemo(
-    () => '0x' + Math.floor(Math.random() * 10000000000000000000000000000000000000000).toString(16),
+    () => getCreateAddress({ from: '0x0000000000000000000000000000000000000000', nonce: 0n }),
     [],
   );
   const dummyAddress02 = useMemo(
-    () => '0x' + Math.floor(Math.random() * 10000000000000000000000000000000000000000).toString(16),
+    () => getCreateAddress({ from: '0x0000000000000000000000000000000000000000', nonce: 1n }),
     [],
   );
   const dummyAddress03 = useMemo(
-    () => '0x' + Math.floor(Math.random() * 10000000000000000000000000000000000000000).toString(16),
+    () => getCreateAddress({ from: '0x0000000000000000000000000000000000000000', nonce: 2n }),
     [],
   );
   const dummyAddress04 = useMemo(
-    () => '0x' + Math.floor(Math.random() * 10000000000000000000000000000000000000000).toString(16),
+    () => getCreateAddress({ from: '0x0000000000000000000000000000000000000000', nonce: 3n }),
     [],
   );
 
@@ -162,6 +162,34 @@ export function RevenueSharingSettingsContent() {
     },
   ];
 
+  const existingFormWalletsLength = values?.revenueSharing?.existing?.length || 0;
+  const existingWalletsLength = revenueShareWallets?.length || 0;
+  const maxLength = Math.max(existingFormWalletsLength, existingWalletsLength);
+
+  const existingFormWallets = Array.from({ length: maxLength }, (_, walletIndex) => {
+    const existingWalletData = revenueShareWallets[walletIndex];
+    const existingWalletFormData = values?.revenueSharing?.existing?.[walletIndex];
+
+    const splitsLength = existingWalletData?.splits?.length || 0;
+    const newSplitsLength = existingWalletFormData?.splits?.length || 0;
+    const maxSplitsLength = Math.max(splitsLength, newSplitsLength);
+
+    const splits = Array.from({ length: maxSplitsLength }, (__, splitIndex) => {
+      const existingSplitData = existingWalletData?.splits?.[splitIndex];
+      const existingSplitFormData = existingWalletFormData?.splits?.[splitIndex];
+      return {
+        address: existingSplitFormData?.address || existingSplitData?.address,
+        percentage: existingSplitFormData?.percentage || existingSplitData?.percentage,
+      };
+    });
+
+    return {
+      name: existingWalletFormData?.name || existingWalletData?.name,
+      address: existingWalletFormData?.address || existingWalletData?.address,
+      splits: splits,
+    };
+  });
+
   return (
     <>
       <SettingsContentBox
@@ -175,21 +203,21 @@ export function RevenueSharingSettingsContent() {
           gap="0.5rem"
         >
           {/* form for existing wallets */}
-          {revenueShareWallets.map((wallet, index) => (
+          {existingFormWallets.map((wallet, walletIndex) => (
             <RevSplitWalletAccordion
               walletFormType="existing"
-              key={index}
+              key={walletIndex}
               wallet={wallet}
-              index={index}
+              index={walletIndex}
             />
           ))}
           {/* form for new wallets */}
-          {values?.revenueSharing?.new?.map((wallet, index) => (
+          {values?.revenueSharing?.new?.map((wallet, walletIndex) => (
             <RevSplitWalletAccordion
               walletFormType="new"
-              key={index}
+              key={walletIndex}
               wallet={wallet}
-              index={index}
+              index={walletIndex}
             />
           ))}
         </Flex>
