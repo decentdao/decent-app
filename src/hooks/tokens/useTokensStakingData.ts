@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Address } from 'viem';
-import { getTokenStakingData } from '../../providers/App/hooks/useDecentAPI';
+import { getTokenStakingData } from '../../providers/App/decentAPI';
 import { StakingTokenData } from '../../types/revenueSharing';
 
 export function useTokensStakingData({

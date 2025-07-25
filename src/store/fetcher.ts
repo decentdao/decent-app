@@ -14,6 +14,7 @@ import { useGovernanceFetcher } from './fetchers/governance';
 import { useGuardFetcher } from './fetchers/guard';
 import { useKeyValuePairsFetcher } from './fetchers/keyValuePairs';
 import { useNodeFetcher } from './fetchers/node';
+import { useRevShareWalletFetcher } from './fetchers/revShareWallet';
 import { useTreasuryFetcher } from './fetchers/treasury';
 import { useRolesStore } from './roles/useRolesStore';
 import { SetAzoriusGovernancePayload } from './slices/governances';
@@ -54,6 +55,7 @@ export const useDAOStoreFetcher = ({
     setAllProposalsLoaded,
     setVotesTokenAddress,
     setStakingData,
+    setRevShareWallets,
   } = useGlobalStore();
   const { chain, getConfigByChainId } = useNetworkConfigStore();
 
@@ -69,6 +71,7 @@ export const useDAOStoreFetcher = ({
   } = useGovernanceFetcher();
   const { fetchDAOGuard } = useGuardFetcher();
   const { fetchKeyValuePairsData } = useKeyValuePairsFetcher();
+  const { fetchRevenueSharingWallets } = useRevShareWalletFetcher();
   const { setHatKeyValuePairData } = useRolesStore();
 
   useEffect(() => {
@@ -121,6 +124,14 @@ export const useDAOStoreFetcher = ({
           const erc20Token = await fetchMultisigERC20Token({ events: keyValuePairsData.events });
           if (erc20Token) {
             setERC20Token(daoKey, erc20Token);
+          }
+
+          const revShareWallets = await fetchRevenueSharingWallets({
+            events: keyValuePairsData.events,
+          });
+
+          if (revShareWallets) {
+            setRevShareWallets(daoKey, revShareWallets);
           }
         }
 
@@ -222,6 +233,8 @@ export const useDAOStoreFetcher = ({
     setERC20Token,
     fetchStakingDAOData,
     setStakingData,
+    fetchRevenueSharingWallets,
+    setRevShareWallets,
   ]);
 
   useEffect(() => {

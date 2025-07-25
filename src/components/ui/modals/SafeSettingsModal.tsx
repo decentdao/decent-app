@@ -47,6 +47,12 @@ import {
   FractalTokenType,
   ProposalActionType,
 } from '../../../types';
+import {
+  RevenueSharingWalletForm,
+  RevenueSharingWalletFormError,
+  RevenueSharingWalletFormErrors,
+  RevenueSharingWalletFormValues,
+} from '../../../types/revShare';
 import { SENTINEL_MODULE } from '../../../utils/address';
 import { getEstimatedNumberOfBlocks } from '../../../utils/contract';
 import { prepareRefillPaymasterAction } from '../../../utils/dao/prepareRefillPaymasterActionData';
@@ -59,6 +65,7 @@ import {
 import { formatCoin } from '../../../utils/numberFormats';
 import { validateENSName } from '../../../utils/url';
 import { isNonEmpty } from '../../../utils/valueCheck';
+import { useCreateSplitsClient } from '../../SafeSettings/RevenueShare/revenueShareFormHandlers';
 import { SafePermissionsStrategyAction } from '../../SafeSettings/SafePermissionsStrategyAction';
 import { SettingsNavigation } from '../../SafeSettings/SettingsNavigation';
 import { NewSignerItem } from '../../SafeSettings/Signers/SignersContainer';
@@ -96,6 +103,7 @@ export type SafeSettingsEdits = {
     addressesToWhitelist?: string[];
     maximumTotalSupply?: BigIntValuePair;
   };
+  revenueSharing?: RevenueSharingWalletForm;
 };
 
 type MultisigEditGovernanceFormikErrors = {
@@ -113,10 +121,6 @@ type PaymasterGasTankEditFormikErrors = {
   deposit?: { amount?: string };
 };
 
-type RevenueSharingEditFormikErrors = {
-  revenueSharing?: string; // @TODO placeholder
-};
-
 type TokenEditFormikErrors = {
   addressesToWhitelist?: { key: string; error: string }[];
   maximumTotalSupply?: string;
@@ -126,7 +130,10 @@ export type SafeSettingsFormikErrors = {
   multisig?: MultisigEditGovernanceFormikErrors;
   general?: GeneralEditFormikErrors;
   paymasterGasTank?: PaymasterGasTankEditFormikErrors;
-  revenueSharing?: RevenueSharingEditFormikErrors;
+  revenueSharing?: {
+    existing: RevenueSharingWalletFormErrors;
+    new: RevenueSharingWalletFormErrors;
+  };
   token?: TokenEditFormikErrors;
 };
 
@@ -150,6 +157,7 @@ export function SafeSettingsModal({
       linearVotingErc20WithHatsWhitelistingAddress,
       linearVotingErc721WithHatsWhitelistingAddress,
     },
+    revShareWallets,
   } = useDAOStore({ daoKey });
 
   const [settingsContent, setSettingsContent] = useState(<SafeGeneralSettingsPage />);
@@ -159,6 +167,8 @@ export function SafeSettingsModal({
   };
 
   const { canUserCreateProposal } = useCanUserCreateProposal();
+
+  const splitsClient = useCreateSplitsClient();
 
   const { t } = useTranslation(['modals', 'common', 'proposalMetadata']);
 
@@ -208,8 +218,8 @@ export function SafeSettingsModal({
       ) ||
       Object.keys(errors.revenueSharing ?? {}).some(
         key =>
-          (errors.revenueSharing as RevenueSharingEditFormikErrors)[
-            key as keyof RevenueSharingEditFormikErrors
+          (errors.revenueSharing as RevenueSharingWalletFormErrors)[
+            Number(key) as keyof RevenueSharingWalletFormErrors
           ],
       ) ||
       Object.keys(errors.token ?? {}).some(
@@ -1183,7 +1193,8 @@ export function SafeSettingsModal({
     }
 
     resetActions();
-    const { general, multisig, azorius, permissions, paymasterGasTank, token } = values;
+    const { general, multisig, azorius, permissions, paymasterGasTank, token, revenueSharing } =
+      values;
     if (general) {
       const { action, title } = await handleEditGeneral(values);
 
@@ -1238,6 +1249,12 @@ export function SafeSettingsModal({
         transactions: action.transactions,
         content: <Text>{title}</Text>,
       });
+    }
+
+    // TODO: Add revenue share
+    if (revenueSharing) {
+      // const actions = await handleEditRevenueShare(values.revenueSharing, revShareWallets ?? [], splitsClient);
+      // addAction(action);
     }
 
     navigate(DAO_ROUTES.proposalWithActionsNew.relative(addressPrefix, safe.address));
@@ -1440,6 +1457,101 @@ export function SafeSettingsModal({
         } else {
           errors.paymasterGasTank = undefined;
         }
+
+        // if (values.revenueSharing) {
+        //   const existingWallets = [...(revShareWallets ?? [])];
+        //   const formUpdateToWallets = values.revenueSharing?.existing;
+        //   const formNewWallets = values.revenueSharing?.new;
+        //   const walletErrors = {} as {
+        //     new: RevenueSharingWalletFormError[];
+        //     existing: RevenueSharingWalletFormError[];
+        //   };
+
+        //   const updateRevenueSharingErrors = async (
+        //     _formWallet: RevenueSharingWalletFormValues,
+        //     _walletIndex: number,
+        //     _formType: 'new' | 'existing',
+        //   ) => {
+        //     const existingWallet = existingWallets[_walletIndex]; // possibly undefined
+
+        //     const formWallet = formUpdateToWallets[_walletIndex];
+        //     const walletError = walletErrors[_formType][_walletIndex];
+
+        //     // handle wallet name
+        //     if (formWallet?.name && !existingWallet) {
+        //       // no validation needed
+        //     } else if (!!existingWallet && !formWallet?.name) {
+        //       walletError.name = 'Name is required';
+        //     } else {
+        //       // do nothing
+        //     }
+
+        //     // handle splits
+        //     if (formWallet?.splits && formWallet.splits.length > 0) {
+        //       const totalSplitPercentage = formWallet.splits.reduce(
+        //         (total, s) => total + Number(s?.percentage || 0),
+        //         0,
+        //       );
+        //       for (let splitIndex = 0; splitIndex < formWallet.splits.length; splitIndex++) {
+        //         walletError.splits![splitIndex] = {
+        //           address: undefined,
+        //           percentage: undefined,
+        //         };
+        //         const split = formWallet.splits[splitIndex];
+        //         if (split?.address) {
+        //           const validation = await validateAddress({ address: split.address });
+        //           if (!validation.validation.isValidAddress) {
+        //             walletError.splits![splitIndex].address = 'Invalid split address';
+        //           }
+        //         } else {
+        //           walletError.splits![splitIndex].address = 'Split Address is required';
+        //         }
+
+        //         if (split?.percentage) {
+        //           const percentage = Number(split.percentage);
+        //           if (percentage < 0 || percentage > 100) {
+        //             walletError.splits![splitIndex].percentage =
+        //               'Split Percentage must be between 0 and 100';
+        //           }
+        //           if (totalSplitPercentage > 100) {
+        //             walletError.splits![splitIndex].percentage = 'Total percentage must be 100%';
+        //           }
+        //         } else {
+        //           walletError.splits![splitIndex].percentage = 'Split Percentage is required';
+        //         }
+        //       }
+        //     } else if (formWallet.splits && formWallet.splits.length === 0) {
+        //       // validation handled by splits array
+        //     }
+        //     return walletErrors;
+        //   };
+
+        //   if (formNewWallets && formNewWallets.length > 0) {
+        //     for (let walletIndex = 0; walletIndex < formNewWallets.length; walletIndex++) {
+        //       updateRevenueSharingErrors(formNewWallets[walletIndex], walletIndex, 'new');
+        //     }
+        //   }
+
+        //   if (formUpdateToWallets && formUpdateToWallets.length > 0) {
+        //     for (let walletIndex = 0; walletIndex < formUpdateToWallets.length; walletIndex++) {
+        //       updateRevenueSharingErrors(formUpdateToWallets[walletIndex], walletIndex, 'existing');
+        //     }
+        //   }
+
+        //   if (
+        //     (walletErrors.new &&
+        //       walletErrors.existing &&
+        //       Object.values(walletErrors.new).length > 0) ||
+        //     Object.values(walletErrors.existing).length > 0
+        //   ) {
+        //     errors.revenueSharing = {
+        //       existing: walletErrors.existing,
+        //       new: walletErrors.new,
+        //     };
+        //   } else {
+        //     errors.revenueSharing = undefined;
+        //   }
+        // }
 
         if (Object.values(errors).every(e => e === undefined)) {
           errors = {};

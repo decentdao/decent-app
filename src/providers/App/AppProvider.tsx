@@ -3,16 +3,25 @@ import { DaoInfoStore } from '../../store/daoInfo/useDaoInfoStore';
 import { EMPTY_GOVERNANCE } from '../../store/slices/governances';
 import { useGlobalStore } from '../../store/store';
 import { DAOKey, DAOSubgraph, DecentModule, FractalStore, SafeWithNextNonce } from '../../types';
+import { RevenueSharingWallet } from '../../types/revShare';
 
 export const FractalContext = createContext<FractalStore | null>(null);
 
 type FractalStoreWithNode = FractalStore & {
   node: DaoInfoStore;
+  revShareWallets: RevenueSharingWallet[] | undefined;
 };
 
 export const useDAOStore = ({ daoKey }: { daoKey: DAOKey | undefined }): FractalStoreWithNode => {
-  const { getDaoNode, setDaoNode, getTreasury, getGovernance, getGuard, getGuardAccountData } =
-    useGlobalStore();
+  const {
+    getDaoNode,
+    setDaoNode,
+    getTreasury,
+    getGovernance,
+    getGuard,
+    getGuardAccountData,
+    getRevShareWallets,
+  } = useGlobalStore();
 
   if (!daoKey) {
     return {
@@ -62,6 +71,7 @@ export const useDAOStore = ({ daoKey }: { daoKey: DAOKey | undefined }): Fractal
         votesTokenAddress: undefined,
         lockReleaseAddress: undefined,
       },
+      revShareWallets: undefined,
     };
   }
 
@@ -72,6 +82,8 @@ export const useDAOStore = ({ daoKey }: { daoKey: DAOKey | undefined }): Fractal
   const governance = getGovernance(daoKey);
   const guard = getGuard(daoKey);
   const guardAccountData = getGuardAccountData(daoKey);
+  const revShareWallets = getRevShareWallets(daoKey);
+
   return {
     node: {
       // TODO: Will be cleaned up in scope of https://linear.app/decent-labs/issue/ENG-630/cleanup-types-from-old-store-structure
@@ -99,6 +111,7 @@ export const useDAOStore = ({ daoKey }: { daoKey: DAOKey | undefined }): Fractal
     },
     treasury,
     governance,
+    revShareWallets,
     governanceContracts: {
       isLoaded: governance.isLoaded,
       strategies: governance.strategies,
