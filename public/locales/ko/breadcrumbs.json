@@ -5,6 +5,7 @@
   "proposals": "모든 제안서",
   "proposalNew": "제안서 만들기",
   "nodes": "조직",
+  "staking": "스테이킹",
   "roles": "역할",
   "treasury": "재무부",
   "proposal": "#{{proposalId}} {{proposalTitle}}",

@@ -4,6 +4,7 @@
   "nodes": "조직",
   "roles": "역할",
   "treasury": "재무부",
+  "staking": "스테이킹",
   "proposalTemplates": "템플릿",
   "faq": "자주 묻는 질문",
   "chat": "워프캐스트",

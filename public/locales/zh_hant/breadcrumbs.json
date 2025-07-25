@@ -5,6 +5,7 @@
   "proposals": "所有提案",
   "proposalNew": "建立提案",
   "nodes": "組織架構",
+  "staking": "鎖定",
   "roles": "角色",
   "treasury": "庫務署",
   "proposal": "#{{proposalId}} {{proposalTitle}}",

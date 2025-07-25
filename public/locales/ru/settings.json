@@ -14,6 +14,8 @@
   "governanceTokenTransferableOffSubLabel": "Token transfers are OFF.",
   "governanceTokenWhitelistTitle": "Allow List",
   "governanceTokenWhitelistAddWallet": "Add Wallets",
+  "governanceTokenMaximumTotalSupplyTitle": "Максимальная общая подача",
+  "governanceTokenMaximumTotalSupplySubTitle": "Потолок монетного двора, или максимальное количество жетонов, которое когда-либо может быть отчеканено.",
   "noModulesAttached": "Модули не прилагаются",
   "noGuardAttached": "Охранник не прикреплен",
   "modulesTitle": "Модули",

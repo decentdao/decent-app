@@ -14,6 +14,8 @@
   "governanceTokenTransferableOffSubLabel": "Token transfers are OFF.",
   "governanceTokenWhitelistTitle": "Allow List",
   "governanceTokenWhitelistAddWallet": "Add Wallets",
+  "governanceTokenMaximumTotalSupplyTitle": "최대 총 공급량",
+  "governanceTokenMaximumTotalSupplySubTitle": "발행 한도 또는 발행할 수 있는 최대 토큰 수입니다.",
   "noModulesAttached": "연결된 모듈 없음",
   "noGuardAttached": "가드 미부착",
   "modulesTitle": "모듈",

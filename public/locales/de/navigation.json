@@ -4,6 +4,7 @@
   "nodes": "Organisation",
   "roles": "Rollen",
   "treasury": "Schatzamt",
+  "staking": "Abstecken",
   "proposalTemplates": "Schablonen",
   "faq": "FAQ",
   "chat": "Warpcast",
