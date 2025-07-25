@@ -7,6 +7,7 @@ import { FreezeGuardType, FreezeVotingType } from './daoGovernance';
 import { AzoriusProposal, MultisigProposal, ProposalData } from './daoProposal';
 import { DefiBalance, NFTBalance, TokenBalance, TokenEventType, TransferType } from './daoTreasury';
 import { ProposalTemplate } from './proposalBuilder';
+import { RevenueSharingWallet } from './revShare';
 import { SafeInfoResponseWithGuard } from './safeGlobal';
 import { SnapshotProposal } from './snapshot';
 
@@ -148,6 +149,7 @@ export interface IDAO {
   safe: GnosisSafe | null;
   subgraphInfo: DAOSubgraph | null;
   modules: DecentModule[] | null;
+  revShareWallets?: RevenueSharingWallet[];
 }
 
 export interface GovernanceActivity extends ActivityBase {
