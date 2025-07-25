@@ -5,6 +5,7 @@
   "proposals": "Всі пропозиції",
   "proposalNew": "Створити пропозицію",
   "nodes": "Організація",
+  "staking": "Ставлю кілки.",
   "roles": "Ролі",
   "treasury": "Казначейство",
   "proposal": "#{{proposalId}} {{proposalTitle}}",

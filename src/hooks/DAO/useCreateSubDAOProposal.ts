@@ -1,4 +1,4 @@
-import { abis } from '@fractal-framework/fractal-contracts';
+import { legacy } from '@decentdao/decent-contracts';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { encodeFunctionData, isHex } from 'viem';
@@ -73,7 +73,7 @@ export const useCreateSubDAOProposal = () => {
         }
 
         const encodedDeclareSubDAO = encodeFunctionData({
-          abi: abis.KeyValuePairs,
+          abi: legacy.abis.KeyValuePairs,
           functionName: 'updateValues',
           args: [['childDao'], [predictedSafeAddress]],
         });

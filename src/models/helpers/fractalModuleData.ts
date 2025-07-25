@@ -1,4 +1,4 @@
-import { abis } from '@fractal-framework/fractal-contracts';
+import { legacy } from '@decentdao/decent-contracts';
 import {
   Address,
   encodeAbiParameters,
@@ -28,7 +28,7 @@ export const fractalModuleData = (
   parentAddress?: Address | null,
 ): DecentModule => {
   const fractalModuleCalldata = encodeFunctionData({
-    abi: abis.FractalModule,
+    abi: legacy.abis.FractalModule,
     functionName: 'setUp',
     args: [
       encodeAbiParameters(parseAbiParameters(['address, address, address, address[]']), [

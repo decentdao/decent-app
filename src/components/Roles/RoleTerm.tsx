@@ -1,5 +1,5 @@
 import { Box, Button, Flex, Icon, Text } from '@chakra-ui/react';
-import { abis } from '@fractal-framework/fractal-contracts';
+import { legacy } from '@decentdao/decent-contracts';
 import { ArrowRight, Calendar, ClockCountdown, Copy } from '@phosphor-icons/react';
 import { format } from 'date-fns';
 import { useCallback, useMemo } from 'react';
@@ -325,7 +325,7 @@ export default function RoleTerm({
     contractCall({
       contractFn: () => {
         const decentAutonomousAdminContract = getContract({
-          abi: abis.DecentAutonomousAdminV1,
+          abi: legacy.abis.DecentAutonomousAdminV1,
           address: adminHatWearer,
           client: walletClient,
         });

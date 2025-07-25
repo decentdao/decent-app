@@ -1,4 +1,4 @@
-import { abis } from '@fractal-framework/fractal-contracts';
+import { legacy, abis } from '@decentdao/decent-contracts';
 import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -12,6 +12,7 @@ import {
 } from 'viem';
 import { useAccount } from 'wagmi';
 import LockReleaseAbi from '../../assets/abi/LockRelease';
+import { ROLES } from '../../constants/accessControlRoles';
 import { SENTINEL_ADDRESS } from '../../constants/common';
 import { createSnapshotSubgraphClient } from '../../graphql';
 import { ProposalsQuery, ProposalsResponse } from '../../graphql/SnapshotQueries';
@@ -84,6 +85,7 @@ export function useGovernanceFetcher() {
       zodiacModuleProxyFactory,
       accountAbstraction,
       paymaster: { decentPaymasterV1MasterCopy },
+      votesERC20StakedV1MasterCopy,
     },
   } = useNetworkConfigStore();
   const { safeAddress: currentUrlSafeAddress, wrongNetwork } = useCurrentDAOKey();
@@ -121,7 +123,7 @@ export function useGovernanceFetcher() {
         });
       } else {
         const azoriusContract = getContract({
-          abi: abis.Azorius,
+          abi: legacy.abis.Azorius,
           address: azoriusModule.moduleAddress,
           client: publicClient,
         });
@@ -148,7 +150,7 @@ export function useGovernanceFetcher() {
             return;
           }
           const ozLinearVotingContract = getContract({
-            abi: abis.LinearERC20Voting,
+            abi: legacy.abis.LinearERC20Voting,
             address: erc20VotingStrategyAddress,
             client: publicClient,
           });
@@ -272,13 +274,13 @@ export function useGovernanceFetcher() {
 
           if (votesTokenAddress && erc20VotingStrategyAddress) {
             const erc20VotingContract = getContract({
-              abi: abis.LinearERC20Voting,
+              abi: legacy.abis.LinearERC20Voting,
               address: erc20VotingStrategyAddress,
               client: publicClient,
             });
 
             const tokenContract = getContract({
-              abi: abis.VotesERC20,
+              abi: legacy.abis.VotesERC20,
               address: votesTokenAddress,
               client: publicClient,
             });
@@ -552,7 +554,7 @@ export function useGovernanceFetcher() {
             }
           } else if (erc721VotingStrategyAddress) {
             const erc721LinearVotingContract = getContract({
-              abi: abis.LinearERC721Voting,
+              abi: legacy.abis.LinearERC721Voting,
               address: erc721VotingStrategyAddress,
               client: publicClient,
             });
@@ -787,13 +789,13 @@ export function useGovernanceFetcher() {
       const [balance, delegatee] = await publicClient.multicall({
         contracts: [
           {
-            abi: abis.VotesERC20,
+            abi: legacy.abis.VotesERC20,
             address: votingTokenAddress,
             functionName: 'balanceOf',
             args: [account],
           },
           {
-            abi: abis.VotesERC20,
+            abi: legacy.abis.VotesERC20,
             address: votingTokenAddress,
             functionName: 'delegates',
             args: [account],
@@ -868,7 +870,7 @@ export function useGovernanceFetcher() {
       events,
       safeAddress,
     }: {
-      events: GetContractEventsReturnType<typeof abis.KeyValuePairs>;
+      events: GetContractEventsReturnType<typeof legacy.abis.KeyValuePairs>;
       safeAddress: Address;
     }) => {
       // get most recent event where `gaslessVotingEnabled` was set
@@ -918,7 +920,11 @@ export function useGovernanceFetcher() {
   );
 
   const fetchMultisigERC20Token = useCallback(
-    async ({ events }: { events: GetContractEventsReturnType<typeof abis.KeyValuePairs> }) => {
+    async ({
+      events,
+    }: {
+      events: GetContractEventsReturnType<typeof legacy.abis.KeyValuePairs>;
+    }) => {
       // get most recent event where `erc20Address` was set
       const erc20AddressEvent = events
         .filter(event => event.args.key && event.args.key === 'erc20Address')
@@ -933,18 +939,61 @@ export function useGovernanceFetcher() {
       try {
         // Gather whitelisted addresses from event Whitelisted(address indexed account, bool isWhitelisted)
         const lockedTokenContract = getContract({
-          abi: abis.VotesERC20LockableV1,
+          abi: abis.deployables.VotesERC20V1,
           address: erc20AddressInEvent,
           client: publicClient,
         });
 
-        const whitelistEvents = await lockedTokenContract.getEvents.Whitelisted(undefined, {
-          fromBlock: 0n,
+        const grantEvents = (
+          await lockedTokenContract.getEvents.RoleGranted(
+            { role: ROLES.TRANSFER_FROM_ROLE },
+            {
+              fromBlock: 0n,
+            },
+          )
+        ).map(e => ({
+          args: {
+            account: e.args.account,
+            role: e.args.role,
+            sender: e.args.sender,
+            isWhitelisted: true,
+          },
+          blockNumber: e.blockNumber,
+          logIndex: e.logIndex,
+        }));
+        const revokeEvents = (
+          await lockedTokenContract.getEvents.RoleRevoked(
+            { role: ROLES.TRANSFER_FROM_ROLE },
+            {
+              fromBlock: 0n,
+            },
+          )
+        ).map(e => ({
+          args: {
+            account: e.args.account,
+            role: e.args.role,
+            sender: e.args.sender,
+            isWhitelisted: false,
+          },
+          blockNumber: e.blockNumber,
+          logIndex: e.logIndex,
+        }));
+
+        // Order events by block number and log index
+        const orderedEvents = [...grantEvents, ...revokeEvents].sort((a, b) => {
+          if (a.blockNumber > b.blockNumber) {
+            return 1;
+          } else if (a.blockNumber < b.blockNumber) {
+            return -1;
+          } else {
+            return a.logIndex - b.logIndex;
+          }
         });
+
         const whitelistMap: { [address: Address]: boolean } = {};
-        whitelistEvents.forEach(event => {
+        orderedEvents.forEach(event => {
           const { account, isWhitelisted } = event.args;
-          if (account !== undefined && isWhitelisted !== undefined) {
+          if (account !== undefined) {
             whitelistMap[account] = isWhitelisted;
           }
         });
@@ -957,35 +1006,35 @@ export function useGovernanceFetcher() {
 
       try {
         const tokenContract = getContract({
-          abi: abis.VotesERC20,
+          abi: abis.deployables.VotesERC20V1,
           address: erc20AddressInEvent,
           client: publicClient,
         });
 
-        // Prepare multicall requests
-        const multicallCalls = [
-          {
-            ...tokenContract,
-            functionName: 'name',
-          },
-          {
-            ...tokenContract,
-            functionName: 'symbol',
-          },
-          {
-            ...tokenContract,
-            functionName: 'decimals',
-          },
-
-          {
-            ...tokenContract,
-            functionName: 'totalSupply',
-          },
-        ];
-
         // Execute multicall
-        const [name, symbol, decimals, totalSupply] = await publicClient.multicall({
-          contracts: multicallCalls,
+        const [name, symbol, decimals, totalSupply, maxTotalSupply] = await publicClient.multicall({
+          contracts: [
+            {
+              ...tokenContract,
+              functionName: 'name',
+            },
+            {
+              ...tokenContract,
+              functionName: 'symbol',
+            },
+            {
+              ...tokenContract,
+              functionName: 'decimals',
+            },
+            {
+              ...tokenContract,
+              functionName: 'totalSupply',
+            },
+            {
+              ...tokenContract,
+              functionName: 'maxTotalSupply',
+            },
+          ],
           allowFailure: false,
         });
 
@@ -995,6 +1044,7 @@ export function useGovernanceFetcher() {
           decimals: decimals ? Number(decimals) : 18,
           address: tokenContract.address,
           totalSupply: totalSupply ? BigInt(totalSupply) : 0n,
+          maxTotalSupply: maxTotalSupply ? BigInt(maxTotalSupply) : 0n,
           whitelistedAddresses,
         };
 
@@ -1017,21 +1067,32 @@ export function useGovernanceFetcher() {
 
   const fetchStakingDAOData = useCallback(
     async (safeAddress: Address) => {
-      if (!publicClient.chain) {
+      if (!publicClient.chain || !votesERC20StakedV1MasterCopy || !governance) {
         return;
       }
 
-      // @todo: `getStakingContractAddress` is WIP (https://linear.app/decent-labs/issue/ENG-1154/implement-getstakingcontractaddress)
+      const daoErc20Token = governance.votesToken;
+      if (!daoErc20Token || governance.type !== GovernanceType.AZORIUS_ERC20) {
+        return;
+      }
+
       const stakingAddress = getStakingContractAddress({
         safeAddress,
+        stakedTokenAddress: daoErc20Token.address,
         zodiacModuleProxyFactory,
-        stakingContractMastercopy: '0x1234567890123456789012345678901234567890',
+        stakingContractMastercopy: votesERC20StakedV1MasterCopy,
         chainId: publicClient.chain.id,
       });
 
-      return { stakingAddress };
+      const stakingCode = await publicClient.getCode({
+        address: stakingAddress,
+      });
+
+      const stakingExists = !!stakingCode && stakingCode !== '0x';
+
+      return { stakingAddress: stakingExists ? stakingAddress : null };
     },
-    [publicClient.chain, zodiacModuleProxyFactory],
+    [governance, publicClient, votesERC20StakedV1MasterCopy, zodiacModuleProxyFactory],
   );
 
   return {

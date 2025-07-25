@@ -28,6 +28,7 @@
   "deployToken": "Déployer le jeton",
   "updateERC20Address": "Mise à jour de l'adresse ERC20",
   "updateTokenTransferable": "Jeton de mise à jour transférable",
+  "updateTokenMaxTotalSupply": "Mise à jour de l'offre maximale de jetons",
   "addTokenWhitelist": "Ajouter une liste blanche de jetons",
   "removeTokenWhitelist": "Supprimer la liste blanche de jetons"
 }

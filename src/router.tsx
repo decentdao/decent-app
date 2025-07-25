@@ -30,9 +30,9 @@ import { SafeModulesSettingsPage } from './pages/dao/settings/modules-and-guard/
 import { SafePermissionsCreateProposal } from './pages/dao/settings/permissions/SafePermissionsCreateProposal';
 import { SafePermissionsSettingsPage } from './pages/dao/settings/permissions/SafePermissionsSettingsPage';
 import { SafeTokenSettingsPage } from './pages/dao/settings/token/SafeTokenSettingsPage';
+import { SafeStakingPage } from './pages/dao/staking/SafeStakingPage';
 import { SafeTreasuryPage } from './pages/dao/treasury/SafeTreasuryPage';
 import HomePage from './pages/home/HomePage';
-import { UserTokenManagerPage } from './pages/token-manager/UserTokenManager';
 
 interface LoaderFunctionArgs {
   request: Request;
@@ -61,10 +61,6 @@ export const router = (addressPrefix: string, daoAddress: string | undefined) =>
         {
           path: 'create',
           loader: () => redirect(BASE_ROUTES.create),
-        },
-        {
-          path: BASE_ROUTES.tokenManager,
-          element: <UserTokenManagerPage />,
         },
         {
           path: '/',
@@ -104,6 +100,10 @@ export const router = (addressPrefix: string, daoAddress: string | undefined) =>
             {
               path: DAO_ROUTES.hierarchy.path,
               element: <SafeHierarchyPage />,
+            },
+            {
+              path: DAO_ROUTES.staking.path,
+              element: <SafeStakingPage />,
             },
             {
               path: DAO_ROUTES.roles.path,

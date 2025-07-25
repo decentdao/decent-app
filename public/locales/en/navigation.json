@@ -4,6 +4,7 @@
   "nodes": "Organization",
   "roles": "Roles",
   "treasury": "Treasury",
+  "staking": "Staking",
   "proposalTemplates": "Templates",
   "faq": "FAQ",
   "chat": "Warpcast",

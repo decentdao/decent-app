@@ -14,6 +14,8 @@
   "governanceTokenTransferableOffSubLabel": "Token transfers are OFF.",
   "governanceTokenWhitelistTitle": "Allow List",
   "governanceTokenWhitelistAddWallet": "Add Wallets",
+  "governanceTokenMaximumTotalSupplyTitle": "最大总供应量",
+  "governanceTokenMaximumTotalSupplySubTitle": "铸币上限，或可铸造代币的最大数量。",
   "noModulesAttached": "未连接模块",
   "noGuardAttached": "无护罩",
   "modulesTitle": "模块",

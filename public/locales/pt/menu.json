@@ -1,7 +1,6 @@
 {
   "connect": "Ligar",
   "connectWallet": "Conectar a carteira",
-  "tokenManager": "Gestor de tokens",
   "disconnect": "Desligar",
   "wallet": "Carteira",
   "titleManageProposalTemplate": "Gerir modelo",

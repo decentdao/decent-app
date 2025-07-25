@@ -5,6 +5,7 @@
   "proposals": "Todas as propostas",
   "proposalNew": "Criar proposta",
   "nodes": "Organização",
+  "staking": "Cravação de estacas",
   "roles": "Funções",
   "treasury": "Tesouro",
   "proposal": "#{{proposalId}} {{proposalTitle}}",

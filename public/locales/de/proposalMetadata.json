@@ -28,6 +28,7 @@
   "deployToken": "Token bereitstellen",
   "updateERC20Address": "ERC20-Adresse aktualisieren",
   "updateTokenTransferable": "Update Token Übertragbar",
+  "updateTokenMaxTotalSupply": "Token aktualisieren Max Gesamtangebot",
   "addTokenWhitelist": "Token-Whitelist hinzufügen",
   "removeTokenWhitelist": "Token-Whitelist entfernen"
 }

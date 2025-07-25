@@ -1,5 +1,5 @@
 import { Button, Flex, IconButton, Show, Text } from '@chakra-ui/react';
-import { abis } from '@fractal-framework/fractal-contracts';
+import { legacy } from '@decentdao/decent-contracts';
 import { ArrowLeft, Trash, X } from '@phosphor-icons/react';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -159,7 +159,7 @@ export function SafePermissionsCreateProposal() {
         actionType = ProposalActionType.ADD;
         const strategyNonce = getRandomBytes();
         const linearERC20VotingMasterCopyContract = getContract({
-          abi: abis.LinearERC20Voting,
+          abi: legacy.abis.LinearERC20Voting,
           address: linearVotingErc20MasterCopy,
           client: publicClient,
         });
@@ -199,8 +199,8 @@ export function SafePermissionsCreateProposal() {
 
         const encodedStrategySetupData = encodeFunctionData({
           abi: gaslessVotingFeatureEnabled
-            ? abis.LinearERC20VotingWithHatsProposalCreationV1
-            : abis.LinearERC20VotingWithHatsProposalCreation,
+            ? legacy.abis.LinearERC20VotingWithHatsProposalCreationV1
+            : legacy.abis.LinearERC20VotingWithHatsProposalCreation,
           functionName: 'setUp',
           args: [encodedStrategyInitParams],
         });
@@ -286,8 +286,8 @@ export function SafePermissionsCreateProposal() {
 
         const encodedStrategySetupData = encodeFunctionData({
           abi: gaslessVotingFeatureEnabled
-            ? abis.LinearERC20VotingWithHatsProposalCreationV1
-            : abis.LinearERC20VotingWithHatsProposalCreation,
+            ? legacy.abis.LinearERC20VotingWithHatsProposalCreationV1
+            : legacy.abis.LinearERC20VotingWithHatsProposalCreation,
           functionName: 'setUp',
           args: [encodedStrategyInitParams],
         });

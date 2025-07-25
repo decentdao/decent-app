@@ -14,6 +14,8 @@
   "governanceTokenTransferableOffSubLabel": "Las transferencias de fichas están desactivadas.",
   "governanceTokenWhitelistTitle": "Permitir lista",
   "governanceTokenWhitelistAddWallet": "Añadir carteras",
+  "governanceTokenMaximumTotalSupplyTitle": "Suministro total máximo",
+  "governanceTokenMaximumTotalSupplySubTitle": "El techo de acuñación, o número máximo de fichas que se pueden acuñar.",
   "noModulesAttached": "Sin módulos",
   "noGuardAttached": "Sin protector",
   "modulesTitle": "Módulos",

@@ -14,6 +14,8 @@
   "governanceTokenTransferableOffSubLabel": "Token transfers are OFF.",
   "governanceTokenWhitelistTitle": "Allow List",
   "governanceTokenWhitelistAddWallet": "Add Wallets",
+  "governanceTokenMaximumTotalSupplyTitle": "最大総供給量",
+  "governanceTokenMaximumTotalSupplySubTitle": "造幣局の上限、つまり、これまでに鋳造できるトークンの最大数。",
   "noModulesAttached": "モジュールなし",
   "noGuardAttached": "ガードなし",
   "modulesTitle": "モジュール",

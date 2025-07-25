@@ -1,4 +1,4 @@
-import { abis } from '@fractal-framework/fractal-contracts';
+import { legacy } from '@decentdao/decent-contracts';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Address, Hex, getContract } from 'viem';
@@ -29,7 +29,7 @@ export default function useExecuteProposal() {
       }
 
       const azoriusContract = getContract({
-        abi: abis.Azorius,
+        abi: legacy.abis.Azorius,
         address: moduleAzoriusAddress,
         client: walletClient,
       });

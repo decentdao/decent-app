@@ -1,4 +1,4 @@
-import { abis } from '@fractal-framework/fractal-contracts';
+import { legacy } from '@decentdao/decent-contracts';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
@@ -116,7 +116,7 @@ const useDeployAzorius = () => {
           );
           if (parentAzoriusModule) {
             const azoriusContract = getContract({
-              abi: abis.Azorius,
+              abi: legacy.abis.Azorius,
               address: parentAzoriusModule.moduleAddress,
               client: publicClient,
             });

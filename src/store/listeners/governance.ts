@@ -1,4 +1,4 @@
-import { abis } from '@fractal-framework/fractal-contracts';
+import { legacy } from '@decentdao/decent-contracts';
 import { useCallback, useEffect } from 'react';
 import { Address, getContract } from 'viem';
 import { useAccount } from 'wagmi';
@@ -133,7 +133,7 @@ export function useGovernanceListeners({
     }
 
     const tokenContract = getContract({
-      abi: abis.VotesERC20,
+      abi: legacy.abis.VotesERC20,
       address: votesTokenAddress,
       client: publicClient,
     });
@@ -167,7 +167,7 @@ export function useGovernanceListeners({
     }
 
     const azoriusContract = getContract({
-      abi: abis.Azorius,
+      abi: legacy.abis.Azorius,
       client: publicClient,
       address: moduleAzoriusAddress,
     });
@@ -279,7 +279,7 @@ export function useGovernanceListeners({
     }
 
     const erc20StrategyContract = getContract({
-      abi: abis.LinearERC20Voting,
+      abi: legacy.abis.LinearERC20Voting,
       address: erc20StrategyAddress,
       client: publicClient,
     });
@@ -318,7 +318,7 @@ export function useGovernanceListeners({
     }
 
     const erc721StrategyContract = getContract({
-      abi: abis.LinearERC721Voting,
+      abi: legacy.abis.LinearERC721Voting,
       address: erc721StrategyAddress,
       client: publicClient,
     });

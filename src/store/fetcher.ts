@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Address, getAddress } from 'viem';
 import { logError } from '../helpers/errorLogging';
-import { useDecentModules } from '../hooks/DAO/loaders/useDecentModules';
 import { useNetworkConfigStore } from '../providers/NetworkConfig/useNetworkConfigStore';
 import {
   AzoriusProposal,
@@ -35,7 +34,6 @@ export const useDAOStoreFetcher = ({
   wrongNetwork: boolean;
 }) => {
   const [errorLoading, setErrorLoading] = useState(false);
-  const lookupModules = useDecentModules();
   const {
     setDaoNode,
     setTransfers,
@@ -55,7 +53,7 @@ export const useDAOStoreFetcher = ({
     setVotesTokenAddress,
     setStakingData,
   } = useGlobalStore();
-  const { chain, getConfigByChainId } = useNetworkConfigStore();
+  const { chain } = useNetworkConfigStore();
 
   const { fetchDAONode } = useNodeFetcher();
   const { fetchDAOTreasury } = useTreasuryFetcher();
@@ -190,53 +188,40 @@ export const useDAOStoreFetcher = ({
     }
 
     loadDAOData();
-  }, [
-    safeAddress,
-    daoKey,
-    lookupModules,
-    chain,
-    setDaoNode,
-    getConfigByChainId,
-    invalidQuery,
-    wrongNetwork,
-    fetchDAOProposalTemplates,
-    fetchDAOGovernance,
-    fetchDAOGuard,
-    fetchDAONode,
-    setProposalTemplates,
-    setMultisigGovernance,
-    setAzoriusGovernance,
-    setProposal,
-    setProposals,
-    setTokenClaimContractAddress,
-    setGuard,
-    setAllProposalsLoaded,
-    fetchDAOSnapshotProposals,
-    setSnapshotProposals,
-    setVotesTokenAddress,
-    fetchKeyValuePairsData,
-    setGaslessVotingData,
-    fetchGaslessVotingDAOData,
-    setHatKeyValuePairData,
-    fetchMultisigERC20Token,
-    setERC20Token,
-    fetchStakingDAOData,
-    setStakingData,
-  ]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [safeAddress, daoKey, chain, invalidQuery, wrongNetwork]);
 
   useEffect(() => {
+    let aborted = false;
+
     async function loadDAOTreasury() {
       if (!daoKey || !safeAddress || invalidQuery || wrongNetwork) return;
 
       fetchDAOTreasury({
         safeAddress,
-        onTreasuryLoaded: treasuryData => setTreasury(daoKey, treasuryData),
-        onTransfersLoaded: transfers => setTransfers(daoKey, transfers),
-        onTransferLoaded: transfer => setTransfer(daoKey, transfer),
+        onTreasuryLoaded: treasuryData => {
+          if (!aborted) {
+            setTreasury(daoKey, treasuryData);
+          }
+        },
+        onTransfersLoaded: transfers => {
+          if (!aborted) {
+            setTransfers(daoKey, transfers);
+          }
+        },
+        onTransferLoaded: transfer => {
+          if (!aborted) {
+            setTransfer(daoKey, transfer);
+          }
+        },
       });
     }
 
     loadDAOTreasury();
+
+    return () => {
+      aborted = true;
+    };
   }, [
     daoKey,
     safeAddress,
