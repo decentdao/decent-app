@@ -1,17 +1,23 @@
 import { Button, Flex, Grid, GridItem, Icon, IconButton, Text } from '@chakra-ui/react';
 import { Plus, Trash } from '@phosphor-icons/react';
 import { Field, FieldProps, useFormikContext } from 'formik';
-import { Fragment, useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { zeroAddress } from 'viem';
+import { Address, zeroAddress } from 'viem';
+import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import { createAccountSubstring } from '../../../hooks/utils/useGetAccountName';
-import { RevenueSharingWalletFormValues } from '../../../types/revShare';
+import { useDAOStore } from '../../../providers/App/AppProvider';
+import {
+  RevenueSharingSplitFormError,
+  RevenueSharingWalletFormType,
+  RevenueSharingWalletFormValues,
+} from '../../../types/revShare';
 import { AccordionDropdown } from '../../ui/containers/AccordionDropdown';
 import { AddressInputInfo } from '../../ui/forms/AddressInputInfo';
 import { EditableInput } from '../../ui/forms/EditableInput';
 import { NumberInputPercentage } from '../../ui/forms/NumberInputPercentage';
 import AddressCopier from '../../ui/links/AddressCopier';
-import { SafeSettingsEdits } from '../../ui/modals/SafeSettingsModal';
+import { SafeSettingsEdits, SafeSettingsFormikErrors } from '../../ui/modals/SafeSettingsModal';
 import Divider from '../../ui/utils/Divider';
 import { SplitPercentageDisplay } from './SplitPercentageDisplay';
 
@@ -66,7 +72,15 @@ function RevenueSharingTableRowItem({
   );
 }
 
-function SplitName({ index, wallet }: { index: number; wallet: RevenueSharingWalletFormValues }) {
+function WalletName({
+  index,
+  wallet,
+  walletFormType,
+}: {
+  index: number;
+  wallet: RevenueSharingWalletFormValues;
+  walletFormType: RevenueSharingWalletFormType;
+}) {
   return (
     <Grid
       templateColumns="auto 1fr"
@@ -74,23 +88,29 @@ function SplitName({ index, wallet }: { index: number; wallet: RevenueSharingWal
       w="full"
       gap="0.5rem"
     >
-      <Field name={`revenueSharing.wallets.${index}.name`}>
+      <Field name={`revenueSharing.${walletFormType}.${index}.name`}>
         {({ field, form }: FieldProps<string, any>) => (
           <EditableInput
             value={field.value || wallet.name}
+            onClick={e => {
+              e.stopPropagation();
+            }}
             onChange={value => {
               form.setFieldValue(field.name, value.target.value);
             }}
             onEditCancel={() => {
               const lastEditName =
-                form.values.revenueSharing.wallets[index].lastEdit?.name || wallet.name;
+                form.values.revenueSharing[walletFormType][index].lastEdit?.name || wallet.name;
               form.setFieldValue(field.name, lastEditName);
             }}
             onEditSave={() => {
-              const lastValue = form.values.revenueSharing.wallets[index].lastEdit?.name;
-              const currentName =
-                form.values.revenueSharing.wallets[index]?.name || lastValue || wallet.name;
-              form.setFieldValue(`revenueSharing.wallets.${index}.lastEdit.name`, currentName);
+              const lastValue = form.values.revenueSharing[walletFormType][index].lastEdit?.name;
+              const currentName = field.value || lastValue || wallet.name;
+              form.setFieldValue(
+                `revenueSharing.${walletFormType}.${index}.lastEdit.name`,
+                currentName,
+              );
+              form.setFieldValue(field.name, currentName);
             }}
           />
         )}
@@ -109,33 +129,40 @@ function SplitName({ index, wallet }: { index: number; wallet: RevenueSharingWal
 }
 
 export function RevSplitRow({
-  wallet,
-  walletIndex,
-  splitIndex,
+  existingWalletSplitAddress,
+  existingWalletSplitPercentage,
+  formPath,
+  splitFormError,
   isLastRow,
+  isReadOnlyAddress,
+  onRemoveSplit,
 }: {
-  wallet: RevenueSharingWalletFormValues & {
-    isCurrentDAOAddress: boolean;
-    isParentDAOAddress: boolean;
-  };
-  walletIndex: number;
-  splitIndex: number;
+  existingWalletSplitAddress: string | undefined;
+  existingWalletSplitPercentage: string | undefined;
+  formPath: string;
+  splitFormError: RevenueSharingSplitFormError | undefined;
   isLastRow?: boolean;
+  isReadOnlyAddress?: boolean;
+  onRemoveSplit?: () => void;
 }) {
   const { t } = useTranslation('revenueSharing');
+
   return (
-    <Fragment key={splitIndex}>
+    <>
       <RevenueSharingTableRowItem
         rowContent={
-          <Field name={`revenueSharing.wallets.${walletIndex}.splits.${splitIndex}.address`}>
+          <Field name={`${formPath}.address`}>
             {({ field, form }: FieldProps<string, any>) => {
-              const fieldValue = field.value ?? wallet.splits?.[splitIndex].address;
+              const fieldValue = field.value ?? existingWalletSplitAddress;
               return (
                 <AddressInputInfo
+                  isInvalid={!!splitFormError?.address}
+                  isReadOnly={isReadOnlyAddress}
                   variant="tableStyle"
                   value={fieldValue}
                   onChange={value => {
-                    if (value.target.value === wallet.splits?.[splitIndex].address) {
+                    if (value.target.value === existingWalletSplitAddress) {
+                      console.log('🚀 ~ field.name:', field.name);
                       form.setFieldValue(field.name, undefined);
                     } else {
                       form.setFieldValue(field.name, value.target.value);
@@ -153,16 +180,18 @@ export function RevSplitRow({
       />
       <RevenueSharingTableRowItem
         rowContent={
-          <Field name={`revenueSharing.wallets.${walletIndex}.splits.${splitIndex}.percentage`}>
+          <Field name={`${formPath}.percentage`}>
             {({ field, form }: FieldProps<string, any>) => {
-              const fieldValue = field.value ?? wallet.splits?.[splitIndex].percentage;
+              const fieldValue = field.value ?? existingWalletSplitPercentage;
+
               return (
                 <NumberInputPercentage
                   variant="tableStyle"
+                  isInvalid={!!splitFormError?.percentage}
                   value={fieldValue}
                   min={0}
                   onChange={value => {
-                    if (value === wallet.splits?.[splitIndex].percentage) {
+                    if (value === existingWalletSplitPercentage) {
                       form.setFieldValue(field.name, undefined);
                     } else {
                       form.setFieldValue(field.name, value);
@@ -177,69 +206,193 @@ export function RevSplitRow({
       />
       <RevenueSharingTableRowItem
         rowContent={
-          <Field>
-            {({ form }: FieldProps<string, any>) => {
-              const isDAOAddress = wallet.isCurrentDAOAddress;
-              const isParentDAOAddress = wallet.isParentDAOAddress;
-
-              const hideRemoveButton = isDAOAddress || isParentDAOAddress;
-              return (
-                <Flex
-                  alignItems="center"
-                  justifyContent="flex-end"
-                  px="1rem"
-                  w="full"
-                >
-                  <IconButton
-                    aria-label={t('removeSplitButtonLabel')}
-                    hidden={hideRemoveButton}
-                    icon={<Trash />}
-                    color="color-error-400"
-                    borderColor="color-error-400"
-                    _hover={{
-                      color: 'color-error-500',
-                      borderColor: 'color-error-500',
-                    }}
-                    variant="ghost"
-                    onClick={() => {
-                      // remove new wallets and/or any edits
-                      form.setFieldValue(
-                        `revenueSharing.wallets.${walletIndex}.splits`,
-                        form.values?.revenueSharing?.wallets?.[walletIndex]?.splits?.filter(
-                          (__: any, j: any) => j !== splitIndex,
-                        ),
-                      );
-                    }}
-                  />
-                </Flex>
-              );
-            }}
-          </Field>
+          <Flex
+            alignItems="center"
+            justifyContent="flex-end"
+            px="1rem"
+            w="full"
+          >
+            <IconButton
+              aria-label={t('removeSplitButtonLabel')}
+              hidden={!onRemoveSplit}
+              icon={<Trash />}
+              color="color-error-400"
+              borderColor="color-error-400"
+              _hover={{
+                color: 'color-error-500',
+                borderColor: 'color-error-500',
+              }}
+              variant="ghost"
+              onClick={onRemoveSplit}
+            />
+          </Flex>
         }
         rightDivider
         isEdgeItem
         hasBottomRadius={isLastRow ? 'right' : undefined}
       />
-    </Fragment>
+    </>
   );
 }
 
 export function RevSplitTable({
   wallet,
-  index,
+  walletIndex,
+  walletFormType,
 }: {
-  wallet: RevenueSharingWalletFormValues & {
-    isCurrentDAOAddress: boolean;
-    isParentDAOAddress: boolean;
-  };
-  index: number;
+  wallet: RevenueSharingWalletFormValues;
+  walletIndex: number;
+  walletFormType: RevenueSharingWalletFormType;
 }) {
   const { values, setFieldValue } = useFormikContext<SafeSettingsEdits>();
   const { t } = useTranslation('revenueSharing');
+  const { daoKey } = useCurrentDAOKey();
+  const {
+    node: { safe, subgraphInfo },
+  } = useDAOStore({ daoKey });
+
+  const stakingContractAddress = undefined;
+
+  const isCurrentDAOAddress = useCallback(
+    (address: Address | string | undefined) => {
+      if (!safe?.address) return false;
+      if (!address) return false;
+      return address === safe?.address;
+    },
+    [safe],
+  );
+
+  const isParentDAOAddress = useCallback(
+    (address: Address | string | undefined) => {
+      if (!subgraphInfo?.parentAddress) return false;
+      if (!address) return false;
+      return address === subgraphInfo?.parentAddress;
+    },
+    [subgraphInfo],
+  );
+
+  const isStakingContractAddress = useCallback(
+    (address: Address | string | undefined) => {
+      if (!stakingContractAddress) return false;
+      if (!address) return false;
+      return address === stakingContractAddress;
+    },
+    [stakingContractAddress],
+  );
+
+  const daoSplitInfo = wallet.splits?.find(({ address }) => isCurrentDAOAddress(address));
+  const parentDAOSplitInfo = wallet.splits?.find(({ address }) => isParentDAOAddress(address));
+
+  const stakingContractSplitInfo = wallet.splits?.find(({ address }) =>
+    isStakingContractAddress(address),
+  );
+
+  const customSplitsWithIndices = wallet.splits
+    ?.map((split, originalIndex) => ({ split, originalIndex }))
+    .filter(
+      ({ split }) =>
+        !isCurrentDAOAddress(split.address) &&
+        !isParentDAOAddress(split.address) &&
+        !isStakingContractAddress(split.address),
+    );
 
   const totalPercentage = useMemo(() => {
-    return wallet.splits?.reduce((acc: number, split: any) => acc + Number(split.percentage), 0);
-  }, [wallet.splits]);
+    let total = 0;
+    const formWallet = values.revenueSharing?.[walletFormType][walletIndex];
+
+    // DAO (always shown)
+    const daoFormPercentage = formWallet?.specialSplits?.dao?.percentage;
+    const daoOriginalPercentage = daoSplitInfo?.percentage;
+    total += Number(daoFormPercentage ?? daoOriginalPercentage ?? '0');
+
+    // Parent DAO (conditional)
+    if (subgraphInfo?.parentAddress) {
+      const parentFormPercentage = formWallet?.specialSplits?.parentDao?.percentage;
+      const parentOriginalPercentage = parentDAOSplitInfo?.percentage;
+      total += Number(parentFormPercentage ?? parentOriginalPercentage ?? '0');
+    }
+
+    // Staking (conditional)
+    const stakingFormPercentage = formWallet?.specialSplits?.stakingContract?.percentage;
+    const stakingOriginalPercentage = stakingContractSplitInfo?.percentage;
+    total += Number(stakingFormPercentage ?? stakingOriginalPercentage ?? '0');
+
+    customSplitsWithIndices?.forEach(({ split, originalIndex }) => {
+      const formPercentage = formWallet?.splits?.[originalIndex]?.percentage;
+      total += Number(formPercentage ?? split.percentage ?? '0');
+    });
+
+    const originalLength = wallet.splits?.length || 0;
+    const formSplits = formWallet?.splits || [];
+
+    for (let i = originalLength; i < formSplits.length; i++) {
+      if (formSplits[i]?.percentage !== undefined) {
+        total += Number(formSplits[i].percentage);
+      }
+    }
+
+    return total;
+  }, [
+    wallet.splits,
+    values,
+    walletFormType,
+    walletIndex,
+    daoSplitInfo,
+    parentDAOSplitInfo,
+    customSplitsWithIndices,
+    subgraphInfo?.parentAddress,
+    stakingContractSplitInfo,
+  ]);
+
+  // check for staking contract deployment, if available use that address
+  const { errors: formErrors } = useFormikContext<SafeSettingsEdits>();
+  const revenueSharingEditFormikErrors = (formErrors as SafeSettingsFormikErrors | undefined)
+    ?.revenueSharing;
+
+  const daoSplit = (
+    <RevSplitRow
+      formPath={`revenueSharing.${walletFormType}.${walletIndex}.specialSplits.dao`}
+      splitFormError={
+        revenueSharingEditFormikErrors?.[walletFormType]?.[walletIndex]?.specialSplits?.dao
+      }
+      existingWalletSplitAddress={daoSplitInfo?.address ?? safe?.address}
+      existingWalletSplitPercentage={daoSplitInfo?.percentage}
+      isLastRow={
+        !subgraphInfo?.parentAddress && !stakingContractAddress && !customSplitsWithIndices?.length
+      }
+      isReadOnlyAddress={true}
+    />
+  );
+
+  const parentDAOSplit = (
+    <RevSplitRow
+      formPath={`revenueSharing.${walletFormType}.${walletIndex}.specialSplits.parentDao`}
+      splitFormError={
+        revenueSharingEditFormikErrors?.[walletFormType]?.[walletIndex]?.specialSplits?.parentDao
+      }
+      existingWalletSplitAddress={
+        parentDAOSplitInfo?.address ?? subgraphInfo?.parentAddress ?? undefined
+      }
+      existingWalletSplitPercentage={parentDAOSplitInfo?.percentage}
+      isLastRow={!stakingContractAddress && !customSplitsWithIndices?.length}
+      isReadOnlyAddress={true}
+    />
+  );
+
+  const stakeTokenHolderSplit = (
+    <RevSplitRow
+      formPath={`revenueSharing.${walletFormType}.${walletIndex}.specialSplits.stakingContract`}
+      splitFormError={
+        revenueSharingEditFormikErrors?.[walletFormType]?.[walletIndex]?.specialSplits
+          ?.stakingContract
+      }
+      existingWalletSplitAddress={stakingContractSplitInfo?.address ?? stakingContractAddress}
+      existingWalletSplitPercentage={stakingContractSplitInfo?.percentage}
+      isLastRow={!customSplitsWithIndices?.length}
+      isReadOnlyAddress={true}
+    />
+  );
+
   return (
     <Flex
       mx={'-1rem'}
@@ -263,16 +416,32 @@ export function RevSplitTable({
         className="scroll-dark"
         overflow={{ base: 'auto', md: 'hidden' }}
       >
-        {/* Wallet Share Rows */}
-        {wallet.splits?.map((_: any, i: number, arr: any[]) => {
+        {daoSplit}
+        {subgraphInfo?.parentAddress && parentDAOSplit}
+        {stakingContractAddress && stakeTokenHolderSplit}
+        {customSplitsWithIndices?.map(({ split, originalIndex }, i, arr) => {
           const isLastRow = i === arr.length - 1;
+          const splitError =
+            revenueSharingEditFormikErrors?.[walletFormType]?.[walletIndex]?.splits?.[
+              originalIndex
+            ];
           return (
             <RevSplitRow
               key={i}
-              wallet={wallet}
-              walletIndex={index}
-              splitIndex={i}
+              formPath={`revenueSharing.${walletFormType}.${walletIndex}.splits.${originalIndex}`}
+              splitFormError={splitError}
+              existingWalletSplitAddress={split.address}
+              existingWalletSplitPercentage={split.percentage}
               isLastRow={isLastRow}
+              onRemoveSplit={() => {
+                // remove new wallets and/or any edits
+                setFieldValue(
+                  `revenueSharing.${walletFormType}.${walletIndex}.splits`,
+                  values?.revenueSharing?.[walletFormType][walletIndex]?.splits?.filter(
+                    (__: any, j: any) => j !== originalIndex,
+                  ),
+                );
+              }}
             />
           );
         })}
@@ -290,7 +459,9 @@ export function RevSplitTable({
         ml="auto"
         leftIcon={<Icon as={Plus} />}
         onClick={() => {
-          const formWalletSplits = [...(values.revenueSharing?.wallets?.[index]?.splits || [])];
+          const formWalletSplits = [
+            ...(values.revenueSharing?.[walletFormType][walletIndex]?.splits || []),
+          ];
           const formWalletSplitsLength = formWalletSplits.length;
           const walletsLength = wallet.splits?.length || 0;
           const newWalletIndex =
@@ -300,7 +471,7 @@ export function RevSplitTable({
             address: zeroAddress,
             percentage: '0',
           };
-          setFieldValue(`revenueSharing.wallets.${index}.splits`, formWalletSplits);
+          setFieldValue(`revenueSharing.${walletFormType}.${walletIndex}.splits`, formWalletSplits);
         }}
       >
         {t('addRecipientButton')}
@@ -312,26 +483,27 @@ export function RevSplitTable({
 export function RevSplitWalletAccordion({
   wallet,
   index,
+  walletFormType,
 }: {
-  wallet: RevenueSharingWalletFormValues & {
-    isCurrentDAOAddress: boolean;
-    isParentDAOAddress: boolean;
-  };
+  wallet: RevenueSharingWalletFormValues;
   index: number;
+  walletFormType: RevenueSharingWalletFormType;
 }) {
   return (
     <AccordionDropdown
       defaultExpandedIndices={index === 0 ? [0] : []}
       sectionTitle={
-        <SplitName
+        <WalletName
           index={index}
           wallet={wallet}
+          walletFormType={walletFormType}
         />
       }
       content={
         <RevSplitTable
           wallet={wallet}
-          index={index}
+          walletIndex={index}
+          walletFormType={walletFormType}
         />
       }
     />

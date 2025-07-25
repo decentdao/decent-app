@@ -7,11 +7,7 @@ import { Address } from 'viem';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import { createAccountSubstring } from '../../../hooks/utils/useGetAccountName';
 import { useDAOStore } from '../../../providers/App/AppProvider';
-import {
-  RevenueSharingWallet,
-  RevenueSharingWalletFormValues,
-  RevenueSharingWalletSplit,
-} from '../../../types/revShare';
+import { RevenueSharingWalletSplit } from '../../../types/revShare';
 import { Badge } from '../../ui/badges/Badge';
 import AddressCopier from '../../ui/links/AddressCopier';
 import { BarLoader } from '../../ui/loaders/BarLoader';
@@ -19,7 +15,7 @@ import { SafeSettingsEdits } from '../../ui/modals/SafeSettingsModal';
 import { SettingsContentBox } from '../SettingsContentBox';
 import { RevSplitWalletAccordion } from './RevenueSplitWallets';
 
-function RevenueShareHeader({ numberOfDeployedWallets }: { numberOfDeployedWallets: number }) {
+function RevenueShareHeader() {
   const { values, setFieldValue } = useFormikContext<SafeSettingsEdits>();
   const { t } = useTranslation('revenueSharing');
 
@@ -43,17 +39,13 @@ function RevenueShareHeader({ numberOfDeployedWallets }: { numberOfDeployedWalle
         ml="auto"
         leftIcon={<Icon as={Plus} />}
         onClick={() => {
-          const formWallets = [...(values.revenueSharing?.wallets || [])];
-          const formWalletsLength = formWallets.length;
-          const walletsLength = numberOfDeployedWallets;
-          const newWalletIndex =
-            formWalletsLength >= walletsLength ? formWalletsLength : walletsLength;
+          const formWallets = [...(values.revenueSharing?.new || [])];
 
-          formWallets[newWalletIndex] = {
+          formWallets[formWallets.length] = {
             name: t('defaultSplitName'),
             splits: [{} as Partial<RevenueSharingWalletSplit<string, string>>],
           };
-          setFieldValue('revenueSharing.wallets', formWallets);
+          setFieldValue('revenueSharing.new.wallets', formWallets);
         }}
       >
         {t('addSplitButton')}
@@ -109,18 +101,10 @@ function DaoSafeWalletCard({ displayedAddress }: { displayedAddress: Address }) 
 export function RevenueSharingSettingsContent() {
   const { daoKey } = useCurrentDAOKey();
   const {
-    node: { safe, subgraphInfo },
+    node: { safe },
   } = useDAOStore({ daoKey });
 
   const { values } = useFormikContext<SafeSettingsEdits>();
-
-  const isCurrentDAOAddress = (address: Address | string) => {
-    return address === safe?.address;
-  };
-
-  const isParentDAOAddress = (address: Address | string) => {
-    return address === subgraphInfo?.parentAddress;
-  };
 
   // TEST DATA; WILL COME FROM GLOBAL STORE
   const dummyAddress = useMemo(
@@ -153,7 +137,7 @@ export function RevenueSharingSettingsContent() {
     );
   }
 
-  const foo: any[] = [
+  const revenueShareWallets: any[] = [
     {
       address: dummyAddress,
       name: 'Test 1',
@@ -178,73 +162,31 @@ export function RevenueSharingSettingsContent() {
     },
   ];
 
-  // function to combine foo and values, where form values take precedence
-  const combineFooAndValues = (
-    existingWallets: RevenueSharingWallet[],
-    formWallets: RevenueSharingWalletFormValues[] | undefined,
-  ) => {
-    const formWalletsLength = formWallets?.length ?? 0;
-    const existingWalletsLength = existingWallets?.length;
-    const newWalletsArrayLength =
-      formWalletsLength >= existingWalletsLength ? formWalletsLength : existingWalletsLength;
-    return Array.from({ length: newWalletsArrayLength }, (_, index) => {
-      const formWallet = formWallets?.[index];
-      const existingWallet = existingWallets?.[index];
-      const existingSplits = existingWallet?.splits ?? [];
-      const formSplits = formWallet?.splits ?? [];
-      const currentSplitsArrayLength =
-        formSplits?.length >= existingSplits?.length ? formSplits?.length : existingSplits?.length;
-      return {
-        ...existingWallet,
-        name: formWallet?.name || existingWallet?.name,
-        splits: Array.from({ length: currentSplitsArrayLength }, (__, splitIndex) => {
-          const formSplit = formSplits?.[splitIndex];
-          const existingSplit = existingSplits?.[splitIndex];
-          if (formSplit && !existingSplit) {
-            return {
-              ...formSplit,
-            };
-          }
-          return {
-            ...existingSplit,
-            percentage: formSplit?.percentage || existingSplit?.percentage?.toString(),
-            address: formSplit?.address || existingSplit?.address,
-          };
-        }),
-      };
-    });
-  };
-
-  const wallets = combineFooAndValues(foo, values?.revenueSharing?.wallets)
-    .map(wallet => {
-      return {
-        ...wallet,
-        isCurrentDAOAddress: isCurrentDAOAddress(wallet.address),
-        isParentDAOAddress: isParentDAOAddress(wallet.address),
-      };
-    })
-    .sort((a, b) => {
-      if (a.isCurrentDAOAddress) return -1;
-      if (b.isCurrentDAOAddress) return 1;
-      if (a.isParentDAOAddress) return -1;
-      if (b.isParentDAOAddress) return 1;
-      return 0;
-    });
-
   return (
     <>
       <SettingsContentBox
         px={12}
         py={6}
       >
-        <RevenueShareHeader numberOfDeployedWallets={wallets.length} />
+        <RevenueShareHeader />
         <DaoSafeWalletCard displayedAddress={safe.address} />
         <Flex
           direction="column"
           gap="0.5rem"
         >
-          {wallets.map((wallet, index) => (
+          {/* form for existing wallets */}
+          {revenueShareWallets.map((wallet, index) => (
             <RevSplitWalletAccordion
+              walletFormType="existing"
+              key={index}
+              wallet={wallet}
+              index={index}
+            />
+          ))}
+          {/* form for new wallets */}
+          {values?.revenueSharing?.new?.map((wallet, index) => (
+            <RevSplitWalletAccordion
+              walletFormType="new"
               key={index}
               wallet={wallet}
               index={index}
