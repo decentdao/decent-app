@@ -1,11 +1,13 @@
 import { Text, InputProps, Flex, Input, IconButton } from '@chakra-ui/react';
 import { Check, PencilSimple } from '@phosphor-icons/react';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
+import { useClickOutside } from '../../../hooks/useClickOutside';
 
 export function EditableInput(
   props: InputProps & { onEditCancel: () => void; onEditSave: () => void },
 ) {
   const [showInput, setShowInput] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
 
   const cancelEdit = () => {
     setShowInput(false);
@@ -16,6 +18,12 @@ export function EditableInput(
     setShowInput(false);
     props.onEditSave();
   };
+
+  useClickOutside(ref, () => {
+    if (showInput) {
+      cancelEdit();
+    }
+  });
 
   if (!showInput) {
     return (
@@ -55,6 +63,7 @@ export function EditableInput(
   }
   return (
     <Flex
+      ref={ref}
       alignItems="center"
       justifyContent="space-between"
       w="full"
@@ -64,10 +73,6 @@ export function EditableInput(
     >
       <Input
         {...props}
-        onBlur={e => {
-          e.stopPropagation();
-          cancelEdit();
-        }}
         autoFocus
       />
       <IconButton
