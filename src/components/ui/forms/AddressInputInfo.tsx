@@ -26,9 +26,6 @@ export function AddressInputInfo(props: InputProps) {
     propValue !== '' && !!propValue && typeof propValue === 'string' && isAddress(propValue);
 
   useEffect(() => {
-    if (!showInput) {
-      return;
-    }
     if (!propValue) {
       setResolvedAddress(undefined);
       setResolvedDisplayName(undefined);
