@@ -3,7 +3,6 @@ import { Hex } from 'viem';
 export const BASE_ROUTES = {
   landing: '/',
   create: '/create/essentials',
-  tokenManager: '/token-manager',
 };
 
 const getDaoQueryParam = (addressPrefix: string, safeAddress: string) =>
@@ -37,6 +36,11 @@ export const DAO_ROUTES = {
     relative: (addressPrefix: string, safeAddress: string) =>
       `/hierarchy${getDaoQueryParam(addressPrefix, safeAddress)}`,
     path: 'hierarchy',
+  },
+  staking: {
+    relative: (addressPrefix: string, safeAddress: string) =>
+      `/staking${getDaoQueryParam(addressPrefix, safeAddress)}`,
+    path: 'staking',
   },
   roles: {
     relative: (addressPrefix: string, safeAddress: string) =>

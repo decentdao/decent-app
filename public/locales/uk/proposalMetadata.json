@@ -26,5 +26,8 @@
   "changeQuorumNumerator": "Update quorum percentage",
   "changeQuorumThreshold": "Update quorum threshold",
   "deployToken": "Розгорнути токен",
-  "updateERC20Address": "Оновити адресу ERC20"
+  "updateERC20Address": "Оновити адресу ERC20",
+  "updateTokenTransferable": "Токен оновлення, який можна передати",
+  "addTokenWhitelist": "Додати білий список токенів",
+  "removeTokenWhitelist": "Видалення білого списку токенів"
 }

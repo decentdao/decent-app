@@ -1,0 +1,89 @@
+name: UI Automation
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+  workflow_dispatch:
+
+jobs:
+  wait-for-cloudflare-deployment:
+    name: Wait for Cloudflare Pages Deployment
+    runs-on: ubuntu-latest
+    outputs:
+      preview_url: ${{ steps.get_preview_info.outputs.url }}
+      deployment_success: ${{ steps.wait_for_deployment.outputs.conclusion == 'success' }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Wait for Cloudflare Pages deployment
+        id: wait_for_deployment
+        uses: fountainhead/action-wait-for-check@v1.2.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          checkName: 'Cloudflare Pages'
+          ref: ${{ github.event.pull_request.head.sha }}
+          timeoutSeconds: 600
+          intervalSeconds: 15
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install ts-node for script execution
+        run: npm install --no-save ts-node
+
+      - name: Extract Preview URL
+        id: get_preview_info
+        if: steps.wait_for_deployment.outputs.conclusion == 'success'
+        run: |
+          npx ts-node --compiler-options='{"module":"commonjs","target":"es2020","esModuleInterop":true}' .github/scripts/extract-preview-url.ts
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
+
+  e2e-automation:
+    name: E2E Selenium Automation
+    needs: wait-for-cloudflare-deployment
+    runs-on: ubuntu-latest
+    if: needs.wait-for-cloudflare-deployment.outputs.deployment_success == 'true' && needs.wait-for-cloudflare-deployment.outputs.preview_url != ''
+    continue-on-error: true
+    permissions:
+      pull-requests: write
+
+    steps:
+      - name: Checkout UI automation repository
+        uses: actions/checkout@v4
+        with:
+          repository: decentdao/decent-ui-automation
+          path: ui-automation
+
+      - name: Install dependencies in automation repo
+        working-directory: ui-automation
+        run: |
+          npm ci
+
+      - name: Kill any leftover Chrome processes
+        run: pkill chrome || true
+
+      - name: Run Selenium tests
+        working-directory: ui-automation
+        run: |
+          npm test -- --base-url="${{ needs.wait-for-cloudflare-deployment.outputs.preview_url }}"
+        continue-on-error: true
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        with:
+          name: selenium-test-results
+          path: ui-automation/test-results/
+
+      - name: Prepend artifact link to summary
+        run: |
+          echo "[⬇️ Download Selenium Test Artifacts](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})" | cat - ui-automation/test-results/test-results-summary.md > ui-automation/test-results/test-results-summary.with-link.md
+
+      - name: Comment results on PR
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          number: ${{ github.event.pull_request.number }}
+          path: ui-automation/test-results/test-results-summary.with-link.md

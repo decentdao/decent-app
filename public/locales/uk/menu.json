@@ -1,6 +1,7 @@
 {
   "connect": "Підключіться",
   "connectWallet": "Підключити гаманець",
+  "tokenManager": "Менеджер токенів",
   "disconnect": "Від'єднати",
   "wallet": "Гаманець",
   "titleManageProposalTemplate": "Керування шаблоном",

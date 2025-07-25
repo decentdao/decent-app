@@ -1,4 +1,4 @@
-import { abis } from '@fractal-framework/fractal-contracts';
+import { legacy, abis } from '@decentdao/decent-contracts';
 import {
   Address,
   Hex,
@@ -165,7 +165,7 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
         encodedFunctionData: encodeFunctionData({
           functionName: 'setAzorius',
           args: [this.predictedAzoriusAddress],
-          abi: abis.LinearERC20Voting,
+          abi: legacy.abis.LinearERC20Voting,
         }),
       });
     } else if (daoData.votingStrategyType === VotingStrategyType.LINEAR_ERC721) {
@@ -181,7 +181,7 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
         encodedFunctionData: encodeFunctionData({
           functionName: 'setAzorius',
           args: [this.predictedAzoriusAddress],
-          abi: abis.LinearERC721Voting,
+          abi: legacy.abis.LinearERC721Voting,
         }),
       });
     } else {
@@ -394,7 +394,7 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
       encodedFunctionData: encodeFunctionData({
         functionName: 'approve',
         args: [this.predictedTokenClaimAddress, azoriusGovernanceDaoData.parentAllocationAmount],
-        abi: abis.VotesERC20,
+        abi: legacy.abis.VotesERC20,
       }),
     });
   }
@@ -433,22 +433,28 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
       this.calculateTokenAllocations(azoriusGovernanceDaoData);
 
     if (azoriusGovernanceDaoData.locked === TokenLockType.LOCKED) {
-      const encodedInitTokenData = encodeAbiParameters(
-        parseAbiParameters('address, bool, string, string, address[], uint256[]'),
-        [
-          this.safeContractAddress,
-          true,
-          azoriusGovernanceDaoData.tokenName,
-          azoriusGovernanceDaoData.tokenSymbol,
-          tokenAllocationsOwners,
-          tokenAllocationsValues,
-        ],
-      );
+      const allocations: { to: Address; amount: bigint }[] = tokenAllocationsOwners.map((o, i) => ({
+        to: o,
+        amount: tokenAllocationsValues[i],
+      }));
 
       this.encodedSetupTokenData = encodeFunctionData({
-        abi: abis.VotesERC20LockableV1,
+        abi: abis.deployables.VotesERC20V1,
         functionName: 'initialize',
-        args: [encodedInitTokenData],
+        args: [
+          // metadata_
+          {
+            name: azoriusGovernanceDaoData.tokenName,
+            symbol: azoriusGovernanceDaoData.tokenSymbol,
+          },
+          allocations,
+          // owner_
+          this.safeContractAddress,
+          // locked_
+          true,
+          // maxTotalSupply_
+          azoriusGovernanceDaoData.maxTotalSupply,
+        ],
       });
     } else {
       const encodedInitTokenData = encodeAbiParameters(
@@ -462,7 +468,7 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
       );
 
       this.encodedSetupTokenData = encodeFunctionData({
-        abi: abis.VotesERC20,
+        abi: legacy.abis.VotesERC20,
         functionName: 'setUp',
         args: [encodedInitTokenData],
       });
@@ -507,7 +513,7 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
       ],
     );
     const encodedSetupTokenClaimData = encodeFunctionData({
-      abi: abis.ERC20Claim,
+      abi: legacy.abis.ERC20Claim,
       functionName: 'setUp',
       args: [encodedInitTokenData],
     });
@@ -551,7 +557,7 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
     );
 
     const encodedStrategySetupData = encodeFunctionData({
-      abi: abis.LinearERC20Voting,
+      abi: legacy.abis.LinearERC20Voting,
       functionName: 'setUp',
       args: [encodedStrategyInitParams],
     });
@@ -586,7 +592,7 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
     );
 
     const encodedStrategySetupData = encodeFunctionData({
-      abi: abis.LinearERC721Voting,
+      abi: legacy.abis.LinearERC721Voting,
       functionName: 'setUp',
       args: [encodedStrategyInitParams],
     });
@@ -616,7 +622,7 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
       }
 
       const linearERC20VotingMasterCopyContract = getContract({
-        abi: abis.LinearERC20VotingV1,
+        abi: legacy.abis.LinearERC20VotingV1,
         address: this.linearVotingErc20MasterCopy,
         client: this.publicClient,
       });
@@ -681,7 +687,7 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
     );
 
     const encodedSetupAzoriusData = encodeFunctionData({
-      abi: abis.Azorius,
+      abi: legacy.abis.Azorius,
       functionName: 'setUp',
       args: [encodedInitAzoriusData],
     });

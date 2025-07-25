@@ -238,18 +238,36 @@ export const useDAOStoreFetcher = ({
   ]);
 
   useEffect(() => {
+    let aborted = false;
+
     async function loadDAOTreasury() {
       if (!daoKey || !safeAddress || invalidQuery || wrongNetwork) return;
 
       fetchDAOTreasury({
         safeAddress,
-        onTreasuryLoaded: treasuryData => setTreasury(daoKey, treasuryData),
-        onTransfersLoaded: transfers => setTransfers(daoKey, transfers),
-        onTransferLoaded: transfer => setTransfer(daoKey, transfer),
+        onTreasuryLoaded: treasuryData => {
+          if (!aborted) {
+            setTreasury(daoKey, treasuryData);
+          }
+        },
+        onTransfersLoaded: transfers => {
+          if (!aborted) {
+            setTransfers(daoKey, transfers);
+          }
+        },
+        onTransferLoaded: transfer => {
+          if (!aborted) {
+            setTransfer(daoKey, transfer);
+          }
+        },
       });
     }
 
     loadDAOTreasury();
+
+    return () => {
+      aborted = true;
+    };
   }, [
     daoKey,
     safeAddress,

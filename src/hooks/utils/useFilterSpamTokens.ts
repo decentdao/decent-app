@@ -31,7 +31,9 @@ export function useFilterSpamTokens(options: TokenListFilterOptions = {}) {
     }
 
     return tokens;
-  }, [governance]);
+    // We know vote token addresses are loaded once the type is determined
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [governance.type]);
 
   const tokenListFilter = useCallback(
     (tokens: TokenBalance[]) => {

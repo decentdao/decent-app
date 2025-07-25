@@ -4,6 +4,7 @@ export const analyticsEvents = {
   DaoDashboardPageOpened: 'DaoDashboardPageOpened',
   ModifyGovernancePageOpened: 'ModifyGovernancePageOpened',
   HierarchyPageOpened: 'HierarchyPageOpened',
+  StakingPageOpened: 'StakingPageOpened',
   RolesPageOpened: 'RolesPageOpened',
   RolesEditPageOpened: 'RolesEditPageOpened',
   SubDaoCreatePageOpened: 'SubDaoCreatePageOpened',

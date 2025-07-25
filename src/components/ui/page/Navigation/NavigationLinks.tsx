@@ -1,7 +1,16 @@
 import { Box, Flex, Hide } from '@chakra-ui/react';
-import { BookOpen, Coins, GitFork, House, Question, UsersThree } from '@phosphor-icons/react';
+import {
+  BookOpen,
+  Coins,
+  GitFork,
+  HandCoins,
+  House,
+  Question,
+  UsersThree,
+} from '@phosphor-icons/react';
 import { DAO_ROUTES } from '../../../../constants/routes';
 import { URL_DOCS, URL_FAQ } from '../../../../constants/url';
+import useFeatureFlag from '../../../../helpers/environmentFeatureFlags';
 import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
 import { LanguageSwitcher } from '../../../../i18n/LanguageSwitcher';
 import Divider from '../../utils/Divider';
@@ -45,6 +54,7 @@ function ExternalLinks({ closeDrawer }: { closeDrawer?: () => void }) {
 
 function InternalLinks({ closeDrawer }: { closeDrawer?: () => void }) {
   const { safeAddress, addressPrefix } = useCurrentDAOKey();
+  const isRevShareEnabled = useFeatureFlag('flag_revenue_sharing');
 
   if (!safeAddress) {
     return null;
@@ -101,6 +111,16 @@ function InternalLinks({ closeDrawer }: { closeDrawer?: () => void }) {
           scope="internal"
           closeDrawer={closeDrawer}
         />
+        {isRevShareEnabled && (
+          <NavigationLink
+            href={DAO_ROUTES.staking.relative(addressPrefix, safeAddress)}
+            labelKey="staking"
+            testId="navigation-stakingLink"
+            NavigationIcon={HandCoins}
+            scope="internal"
+            closeDrawer={closeDrawer}
+          />
+        )}
         <Hide above="md">
           <Divider variant="darker" />
         </Hide>

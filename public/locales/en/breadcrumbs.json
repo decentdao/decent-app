@@ -5,6 +5,7 @@
   "proposals": "All Proposals",
   "proposalNew": "Create Proposal",
   "nodes": "Organization",
+  "staking": "Staking",
   "roles": "Roles",
   "treasury": "Treasury",
   "proposal": "#{{proposalId}} {{proposalTitle}}",

@@ -1,4 +1,4 @@
-import { abis } from '@fractal-framework/fractal-contracts';
+import { abis, legacy } from '@decentdao/decent-contracts';
 import {
   checkAndEncodeArgs,
   HATS_MODULES_FACTORY_ABI,
@@ -28,6 +28,7 @@ import { HatsAbi } from '../../assets/abi/HatsAbi';
 import HatsAccount1ofNAbi from '../../assets/abi/HatsAccount1ofN';
 import { HatsElectionsEligibilityAbi } from '../../assets/abi/HatsElectionsEligibilityAbi';
 import { ZodiacModuleProxyFactoryAbi } from '../../assets/abi/ZodiacModuleProxyFactoryAbi';
+import { ROLES } from '../../constants/accessControlRoles';
 import { ERC6551_REGISTRY_SALT } from '../../constants/common';
 import {
   linearERC20VotingWithWhitelistSetupParams,
@@ -165,7 +166,7 @@ export default function useCreateRoles() {
         }
 
         const existingAbiAndAddress = {
-          abi: abis.LinearERC20Voting,
+          abi: legacy.abis.LinearERC20Voting,
           address: linearVotingErc20Address,
         };
 
@@ -213,7 +214,7 @@ export default function useCreateRoles() {
               ]);
 
         const encodedStrategySetupData = encodeFunctionData({
-          abi: abis.LinearERC20VotingWithHatsProposalCreation,
+          abi: legacy.abis.LinearERC20VotingWithHatsProposalCreation,
           functionName: 'setUp',
           args: [encodedStrategyInitParams],
         });
@@ -250,7 +251,7 @@ export default function useCreateRoles() {
         const enableDeployedVotingStrategyTx = {
           targetAddress: moduleAzoriusAddress,
           calldata: encodeFunctionData({
-            abi: abis.Azorius,
+            abi: legacy.abis.Azorius,
             functionName: 'enableStrategy',
             args: [predictedStrategyAddress],
           }),
@@ -260,7 +261,7 @@ export default function useCreateRoles() {
         if (gaslessVotingEnabled && paymasterAddress) {
           optionallyWhitelistWhitelistingStrategyOnPaymaster.push({
             calldata: encodeFunctionData({
-              abi: abis.DecentPaymasterV1,
+              abi: legacy.abis.DecentPaymasterV1,
               functionName: 'setFunctionValidator',
               args: [predictedStrategyAddress, voteSelector, voteValidator],
             }),
@@ -278,7 +279,7 @@ export default function useCreateRoles() {
         }
 
         const existingAbiAndAddress = {
-          abi: abis.LinearERC721Voting,
+          abi: legacy.abis.LinearERC721Voting,
           address: linearVotingErc721Address,
         };
 
@@ -331,7 +332,7 @@ export default function useCreateRoles() {
               ]);
 
         const encodedStrategySetupData = encodeFunctionData({
-          abi: abis.LinearERC721VotingWithHatsProposalCreation,
+          abi: legacy.abis.LinearERC721VotingWithHatsProposalCreation,
           functionName: 'setUp',
           args: [encodedStrategyInitParams],
         });
@@ -368,7 +369,7 @@ export default function useCreateRoles() {
         const enableDeployedVotingStrategyTx = {
           targetAddress: moduleAzoriusAddress,
           calldata: encodeFunctionData({
-            abi: abis.Azorius,
+            abi: legacy.abis.Azorius,
             functionName: 'enableStrategy',
             args: [predictedStrategyAddress],
           }),
@@ -378,7 +379,7 @@ export default function useCreateRoles() {
         if (gaslessVotingEnabled && paymasterAddress) {
           optionallyWhitelistWhitelistingStrategyOnPaymaster.push({
             calldata: encodeFunctionData({
-              abi: abis.DecentPaymasterV1,
+              abi: legacy.abis.DecentPaymasterV1,
               functionName: 'setFunctionValidator',
               args: [predictedStrategyAddress, voteSelector, voteValidator],
             }),
@@ -554,9 +555,9 @@ export default function useCreateRoles() {
           return {
             targetAddress: asset,
             calldata: encodeFunctionData({
-              abi: abis.VotesERC20LockableV1,
-              functionName: 'whitelist',
-              args: [sablierV2LockupLinear, true],
+              abi: abis.deployables.VotesERC20V1,
+              functionName: 'grantRole',
+              args: [ROLES.TRANSFER_FROM_ROLE, sablierV2LockupLinear],
             }),
           };
         });
@@ -675,7 +676,7 @@ export default function useCreateRoles() {
 
       const addedHats = await createHatStructsForNewTreeFromRolesFormValues(modifiedHats);
       const createAndDeclareTreeData = encodeFunctionData({
-        abi: abis.DecentHatsCreationModule,
+        abi: legacy.abis.DecentHatsCreationModule,
         functionName: 'createAndDeclareTree',
         args: [
           {
@@ -765,7 +766,7 @@ export default function useCreateRoles() {
         getEnableDisableDecentHatsModuleData(decentHatsModificationModule);
 
       const createNewRoleData = encodeFunctionData({
-        abi: abis.DecentHatsModificationModule,
+        abi: legacy.abis.DecentHatsModificationModule,
         functionName: 'createRoleHats',
         args: [
           {
@@ -818,7 +819,7 @@ export default function useCreateRoles() {
     async (address: Address) => {
       const decentAutonomousAdminV1Contract = getContract({
         address: address,
-        abi: abis.DecentAutonomousAdminV1,
+        abi: legacy.abis.DecentAutonomousAdminV1,
         client: publicClient,
       });
       const DECENT_AUTONOMOUS_ADMIN_V1_INTERFACE_ID = '0x0ac4a8e8';
@@ -862,7 +863,7 @@ export default function useCreateRoles() {
         args: [
           decentAutonomousAdminV1MasterCopy,
           encodeFunctionData({
-            abi: abis.DecentAutonomousAdminV1,
+            abi: legacy.abis.DecentAutonomousAdminV1,
             functionName: 'setUp',
             args: [zeroAddress],
           }),
@@ -1655,7 +1656,7 @@ export default function useCreateRoles() {
               ) {
                 allTxs.push({
                   calldata: encodeFunctionData({
-                    abi: abis.DecentAutonomousAdminV1,
+                    abi: legacy.abis.DecentAutonomousAdminV1,
                     functionName: 'triggerStartNextTerm',
                     args: [
                       {
@@ -1721,7 +1722,7 @@ export default function useCreateRoles() {
             allTxs.push({
               targetAddress: whitelistingVotingStrategyAddress,
               calldata: encodeFunctionData({
-                abi: abis.LinearERC20VotingWithHatsProposalCreation,
+                abi: legacy.abis.LinearERC20VotingWithHatsProposalCreation,
                 functionName: 'whitelistHat',
                 args: [hatId],
               }),
@@ -1743,7 +1744,7 @@ export default function useCreateRoles() {
           allTxs.push({
             targetAddress: whitelistingVotingStrategyAddress,
             calldata: encodeFunctionData({
-              abi: abis.LinearERC20VotingWithHatsProposalCreation,
+              abi: legacy.abis.LinearERC20VotingWithHatsProposalCreation,
               functionName: 'removeHatFromWhitelist',
               args: [hatId],
             }),

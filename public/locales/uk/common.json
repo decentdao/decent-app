@@ -133,5 +133,6 @@
   "addressRequired": "Адреса обов'язкова",
   "save": "Зберегти",
   "daoNameRequired": "Обов'язкова назва DAO",
-  "calendarPlaceholder": "YYYY-MM-DD"
+  "calendarPlaceholder": "YYYY-MM-DD",
+  "years": "Роки"
 }
