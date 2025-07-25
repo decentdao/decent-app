@@ -28,6 +28,7 @@
   "deployToken": "토큰 배포",
   "updateERC20Address": "ERC20 주소 업데이트",
   "updateTokenTransferable": "토큰 양도 가능 업데이트",
+  "updateTokenMaxTotalSupply": "토큰 최대 총 공급량 업데이트",
   "addTokenWhitelist": "토큰 화이트리스트 추가",
   "removeTokenWhitelist": "토큰 화이트리스트 제거"
 }
