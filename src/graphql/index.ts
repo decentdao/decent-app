@@ -7,9 +7,7 @@ const clientCache = new Map<string, ReturnType<typeof createClient>>();
 const createTheGraphClient = (config: TheGraphConfig) => {
   const theGraphAPIKey = import.meta.env.VITE_APP_THEGRAPH_API_KEY;
 
-  const url = import.meta.env.DEV
-    ? `https://api.studio.thegraph.com/query/${config.space}/${config.slug}/version/latest`
-    : `https://gateway.thegraph.com/api/${theGraphAPIKey}/subgraphs/id/${config.id}`;
+  const url = `https://gateway.thegraph.com/api/${theGraphAPIKey}/subgraphs/id/${config.id}`;
 
   // Check if we already have a client for this URL
   const cachedClient = clientCache.get(url);
