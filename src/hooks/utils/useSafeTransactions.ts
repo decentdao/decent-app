@@ -2,11 +2,17 @@ import { legacy } from '@decentdao/decent-contracts';
 import { SafeMultisigTransactionListResponse } from '@safe-global/api-kit';
 import { useCallback } from 'react';
 import { Address, getAddress, getContract, isAddress } from 'viem';
+import { ADDRESS_MULTISIG_METADATA } from '../../constants/common';
 import { isApproved, isRejected } from '../../helpers/activity';
 import { isMultisigRejectionProposal } from '../../helpers/multisigProposal';
 import { useDAOStore } from '../../providers/App/AppProvider';
 import { useSafeAPI } from '../../providers/App/hooks/useSafeAPI';
-import { DataDecoded, FractalProposal, FractalProposalState } from '../../types';
+import {
+  DataDecoded,
+  DecodedTransaction,
+  FractalProposal,
+  FractalProposalState,
+} from '../../types';
 import { parseDecodedData } from '../../utils';
 import { getAverageBlockTime } from '../../utils/contract';
 import { getTxTimelockedTimestamp } from '../../utils/guard';
@@ -138,27 +144,31 @@ export const useSafeTransactions = () => {
 
           const confirmations = transaction.confirmations ?? [];
           let decodedData: DataDecoded | undefined;
-          if (transaction.data && transaction.to) {
+          const skipDecode = transaction.to === ADDRESS_MULTISIG_METADATA;
+          if (!skipDecode && transaction.data && transaction.to) {
             decodedData = await safeAPI
               .decodeData(transaction.data, transaction.to)
               .catch(() => undefined);
           }
-          const data = decodedData
-            ? {
-                decodedTransactions: parseDecodedData(
-                  transaction.to,
-                  transaction.value,
-                  decodedData,
-                  true,
-                ),
-              }
-            : {
-                decodedTransactions: await decode(
-                  transaction.value,
-                  getAddress(transaction.to),
-                  transaction.data,
-                ),
-              };
+          let data = { decodedTransactions: [] } as { decodedTransactions: DecodedTransaction[] };
+          if (decodedData) {
+            data = {
+              decodedTransactions: parseDecodedData(
+                transaction.to,
+                transaction.value,
+                decodedData,
+                true,
+              ),
+            };
+          } else if (!decodedData && !skipDecode) {
+            data = {
+              decodedTransactions: await decode(
+                transaction.value,
+                getAddress(transaction.to),
+                transaction.data,
+              ),
+            };
+          }
 
           const targets = data
             ? [...data.decodedTransactions.map(tx => tx.target)]
