@@ -3,6 +3,16 @@ import { useState } from 'react';
 import { formatPercentageV1 } from '../../../utils';
 export function NumberInputPercentage(props: NumberInputProps) {
   const [showInput, setShowInput] = useState(false);
+  const invalid = props.isInvalid;
+  const invalidState = {
+    bg: 'color-error-950',
+    color: 'color-error-400',
+    _placeholder: {
+      color: 'color-error-500',
+    },
+    boxShadow:
+      '0px 0px 0px 2px #AF3A48, 0px 1px 0px 0px rgba(242, 161, 171, 0.30), 0px 0px 0px 1px rgba(0, 0, 0, 0.80)',
+  };
   if (!showInput) {
     return (
       <Flex
@@ -19,6 +29,7 @@ export function NumberInputPercentage(props: NumberInputProps) {
         onBlur={() => {
           setShowInput(false);
         }}
+        {...(invalid ? invalidState : {})}
       >
         <Text
           cursor="pointer"
