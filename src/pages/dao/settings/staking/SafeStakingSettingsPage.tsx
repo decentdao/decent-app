@@ -11,7 +11,69 @@ import { SafeSettingsEdits } from '../../../../components/ui/modals/SafeSettings
 import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
 import { useDAOStore } from '../../../../providers/App/AppProvider';
 
-export function SafeStakingSettingsContent() {
+function StakingForm({ stakingContractAddress }: { stakingContractAddress: Address | null }) {
+  const { t } = useTranslation('staking');
+
+  return (
+    <>
+      {stakingContractAddress ? (
+        <DisplayAddress
+          address={stakingContractAddress}
+          color="color-charcoal-50"
+          textStyle="text-sm-underlined"
+          p={0}
+        >
+          {stakingContractAddress}
+        </DisplayAddress>
+      ) : null}
+      <LabelComponent
+        label={t('stakingPeriod')}
+        isRequired
+        gridContainerProps={{
+          my: 6,
+          templateColumns: '1fr',
+          width: { base: '100%', md: '50%' },
+        }}
+      >
+        <DurationUnitStepperInput
+          secondsValue={0}
+          onSecondsValueChange={() => {}}
+          hideSteppers
+        />
+      </LabelComponent>
+
+      <Flex
+        flexDir="row"
+        px={4}
+        py={2}
+        border="1px solid"
+        borderColor="color-layout-border"
+        borderRadius="0.75rem"
+        mt={6}
+      >
+        <Flex
+          flexDir="column"
+          gap={2}
+        >
+          <Text
+            textStyle="text-sm-regular"
+            color="color-layout-foreground"
+          >
+            {t('includeStakingInVoting')}
+          </Text>
+          <Text
+            textStyle="text-sm-regular"
+            color="color-secondary-500"
+          >
+            {t('includeStakingInVotingDesc')}
+          </Text>
+        </Flex>
+      </Flex>
+    </>
+  );
+}
+
+export function SafeStakingSettingsPage() {
   const { t } = useTranslation('staking');
 
   const { daoKey } = useCurrentDAOKey();
@@ -47,70 +109,6 @@ export function SafeStakingSettingsContent() {
     );
   }
 
-  function StakingPeriodForm({
-    stakingContractAddress,
-  }: {
-    stakingContractAddress: Address | null;
-  }) {
-    return (
-      <>
-        {stakingContractAddress ? (
-          <DisplayAddress
-            address={stakingContractAddress}
-            color="color-charcoal-50"
-            textStyle="text-sm-underlined"
-            p={0}
-          >
-            {stakingContractAddress}
-          </DisplayAddress>
-        ) : null}
-        <LabelComponent
-          label={t('stakingPeriod')}
-          isRequired
-          gridContainerProps={{
-            my: 6,
-            templateColumns: '1fr',
-            width: { base: '100%', md: '50%' },
-          }}
-        >
-          <DurationUnitStepperInput
-            secondsValue={0}
-            onSecondsValueChange={() => {}}
-            hideSteppers
-          />
-        </LabelComponent>
-
-        <Flex
-          flexDir="row"
-          px={4}
-          py={2}
-          border="1px solid"
-          borderColor="color-layout-border"
-          borderRadius="0.75rem"
-          mt={6}
-        >
-          <Flex
-            flexDir="column"
-            gap={2}
-          >
-            <Text
-              textStyle="text-sm-regular"
-              color="color-layout-foreground"
-            >
-              {t('includeStakingInVoting')}
-            </Text>
-            <Text
-              textStyle="text-sm-regular"
-              color="color-secondary-500"
-            >
-              {t('includeStakingInVotingDesc')}
-            </Text>
-          </Flex>
-        </Flex>
-      </>
-    );
-  }
-
   return (
     <>
       {!!safe ? (
@@ -125,7 +123,7 @@ export function SafeStakingSettingsContent() {
             {t('stakingTitle')}
           </Text>
           {showForm ? (
-            <StakingPeriodForm stakingContractAddress={stakingAddress} />
+            <StakingForm stakingContractAddress={stakingAddress} />
           ) : (
             <NoStakingContract />
           )}

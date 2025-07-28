@@ -22,7 +22,7 @@ import { SafeGovernanceSettingsPage } from '../../pages/dao/settings/governance/
 import { SafeModulesSettingsPage } from '../../pages/dao/settings/modules-and-guard/SafeModulesSettingsPage';
 import { SafePermissionsSettingsContent } from '../../pages/dao/settings/permissions/SafePermissionsSettingsContent';
 import { SafeRevenueSharingSettingsPage } from '../../pages/dao/settings/revenue-sharing/SafeRevenueSharingSettingsContent';
-import { SafeStakingSettingsContent } from '../../pages/dao/settings/staking/SafeStakingSettingsContent';
+import { SafeStakingSettingsPage } from '../../pages/dao/settings/staking/SafeStakingSettingsPage';
 import { SafeTokenSettingsPage } from '../../pages/dao/settings/token/SafeTokenSettingsPage';
 import { useDAOStore } from '../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
@@ -341,7 +341,7 @@ export function SettingsNavigation({
               currentItem={currentItem}
               showDivider={false}
               onClick={() => {
-                onSettingsNavigationClick(<SafeStakingSettingsContent />);
+                onSettingsNavigationClick(<SafeStakingSettingsPage />);
                 setCurrentItem('staking');
               }}
               hasEdits={isNonEmpty(values.staking)}
