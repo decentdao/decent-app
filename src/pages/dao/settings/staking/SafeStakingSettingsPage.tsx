@@ -1,4 +1,4 @@
-import { Box, Button, Flex, Grid, GridItem, Text } from '@chakra-ui/react';
+import { Button, Flex, Grid, GridItem, Text } from '@chakra-ui/react';
 import { Field, FieldArray, FieldAttributes, useFormikContext } from 'formik';
 import { useTranslation } from 'react-i18next';
 import { SettingsContentBox } from '../../../../components/SafeSettings/SettingsContentBox';
@@ -116,41 +116,48 @@ function StakingForm() {
               gap={2}
               direction="column"
             >
-              <Flex justify="space-between">
-                <Text
-                  color="color-content-popover-foreground"
-                  textStyle="text-sm-regular"
-                >
-                  {t('rewardTokensTitle')}
-                </Text>
+              <LabelComponent
+                label={t('rewardTokensTitle')}
+                isRequired={false}
+                gridContainerProps={{
+                  my: 6,
+                  templateColumns: '1fr',
+                  width: { base: '100%' },
+                }}
+                helper={t('rewardTokensHelper')}
+              >
+                <>
+                  {rewardsTokens?.map(token => (
+                    <AddedToken
+                      key={token}
+                      address={token}
+                    />
+                  ))}
 
+                  {values.staking?.newRewardTokens?.map((_, index) => (
+                    <NewToken
+                      key={`staking.newRewardTokens.${index}`}
+                      name={`staking.newRewardTokens.${index}`}
+                    />
+                  ))}
+                </>
+              </LabelComponent>
+
+              <Flex justify="end">
                 <Flex>
                   <Button
                     variant="secondary"
                     size="md"
                     px={4}
-                    onClick={() => push('')}
+                    onClick={() => {
+                      console.debug('hey');
+                      push('');
+                    }}
                   >
                     {t('addRewardToken')}
                   </Button>
                 </Flex>
               </Flex>
-
-              <Box>
-                {rewardsTokens?.map(token => (
-                  <AddedToken
-                    key={token}
-                    address={token}
-                  />
-                ))}
-
-                {values.staking?.newRewardTokens?.map((_, index) => (
-                  <NewToken
-                    key={`staking.newRewardTokens.${index}`}
-                    name={`staking.newRewardTokens.${index}`}
-                  />
-                ))}
-              </Box>
             </Flex>
           );
         }}
