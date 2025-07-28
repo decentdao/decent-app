@@ -2,6 +2,7 @@ import { legacy, addresses } from '@decentdao/decent-contracts';
 import {
   getCompatibilityFallbackHandlerDeployment,
   getMultiSendCallOnlyDeployment,
+  getMultiSendDeployment,
   getProxyFactoryDeployment,
   getSafeL2SingletonDeployment,
 } from '@safe-global/safe-deployments';
@@ -57,6 +58,11 @@ export const sepoliaConfig: NetworkConfig = {
     ),
     multiSendCallOnly: getSafeContractDeploymentAddress(
       getMultiSendCallOnlyDeployment,
+      SAFE_VERSION,
+      chain.id.toString(),
+    ),
+    multiSend: getSafeContractDeploymentAddress(
+      getMultiSendDeployment,
       SAFE_VERSION,
       chain.id.toString(),
     ),
