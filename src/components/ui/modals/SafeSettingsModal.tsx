@@ -96,6 +96,9 @@ export type SafeSettingsEdits = {
     addressesToWhitelist?: string[];
     maximumTotalSupply?: BigIntValuePair;
   };
+  staking?: {
+    deploying?: boolean;
+  };
 };
 
 type MultisigEditGovernanceFormikErrors = {

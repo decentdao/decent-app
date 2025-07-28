@@ -344,6 +344,7 @@ export function SettingsNavigation({
                 onSettingsNavigationClick(<SafeStakingSettingsContent />);
                 setCurrentItem('staking');
               }}
+              hasEdits={isNonEmpty(values.staking)}
             />
           )}
         </>

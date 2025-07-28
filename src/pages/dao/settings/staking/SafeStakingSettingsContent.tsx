@@ -1,4 +1,5 @@
 import { Button, Flex, Text } from '@chakra-ui/react';
+import { useFormikContext } from 'formik';
 import { useTranslation } from 'react-i18next';
 import { Address } from 'viem';
 import { SettingsContentBox } from '../../../../components/SafeSettings/SettingsContentBox';
@@ -6,6 +7,7 @@ import DurationUnitStepperInput from '../../../../components/ui/forms/DurationUn
 import { LabelComponent } from '../../../../components/ui/forms/InputComponent';
 import { DisplayAddress } from '../../../../components/ui/links/DisplayAddress';
 import { BarLoader } from '../../../../components/ui/loaders/BarLoader';
+import { SafeSettingsEdits } from '../../../../components/ui/modals/SafeSettingsModal';
 import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
 import { useDAOStore } from '../../../../providers/App/AppProvider';
 
@@ -17,6 +19,10 @@ export function SafeStakingSettingsContent() {
     node: { safe },
     governance: { stakingAddress },
   } = useDAOStore({ daoKey });
+
+  const { values, setFieldValue } = useFormikContext<SafeSettingsEdits>();
+  const deploying = values.staking?.deploying || false;
+  const showForm = stakingAddress !== null || deploying;
 
   function NoStakingContract() {
     return (
@@ -33,7 +39,7 @@ export function SafeStakingSettingsContent() {
         <Button
           mt={1.5}
           width="fit-content"
-          onClick={() => {}}
+          onClick={() => setFieldValue('staking.deploying', true)}
         >
           {t('deployStaking')}
         </Button>
@@ -41,17 +47,23 @@ export function SafeStakingSettingsContent() {
     );
   }
 
-  function StakingPeriodForm({ stakingContractAddress }: { stakingContractAddress: Address }) {
+  function StakingPeriodForm({
+    stakingContractAddress,
+  }: {
+    stakingContractAddress: Address | null;
+  }) {
     return (
       <>
-        <DisplayAddress
-          address={stakingContractAddress}
-          color="color-charcoal-50"
-          textStyle="text-sm-underlined"
-          p={0}
-        >
-          {stakingContractAddress}
-        </DisplayAddress>
+        {stakingContractAddress ? (
+          <DisplayAddress
+            address={stakingContractAddress}
+            color="color-charcoal-50"
+            textStyle="text-sm-underlined"
+            p={0}
+          >
+            {stakingContractAddress}
+          </DisplayAddress>
+        ) : null}
         <LabelComponent
           label={t('stakingPeriod')}
           isRequired
@@ -112,7 +124,7 @@ export function SafeStakingSettingsContent() {
           >
             {t('stakingTitle')}
           </Text>
-          {stakingAddress ? (
+          {showForm ? (
             <StakingPeriodForm stakingContractAddress={stakingAddress} />
           ) : (
             <NoStakingContract />
