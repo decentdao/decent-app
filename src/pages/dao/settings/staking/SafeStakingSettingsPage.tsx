@@ -1,64 +1,16 @@
-import { Button, Flex, Grid, GridItem, Text } from '@chakra-ui/react';
-import { Field, FieldArray, FieldAttributes, useFormikContext } from 'formik';
+import { Button, Flex, Text } from '@chakra-ui/react';
+import { useFormikContext } from 'formik';
 import { useTranslation } from 'react-i18next';
 import { SettingsContentBox } from '../../../../components/SafeSettings/SettingsContentBox';
 import DurationUnitStepperInput from '../../../../components/ui/forms/DurationUnitStepperInput';
-import { AddressInput } from '../../../../components/ui/forms/EthAddressInput';
 import { LabelComponent } from '../../../../components/ui/forms/InputComponent';
 import { DisplayAddress } from '../../../../components/ui/links/DisplayAddress';
 import { BarLoader } from '../../../../components/ui/loaders/BarLoader';
-import {
-  SafeSettingsEdits,
-  SafeSettingsFormikErrors,
-} from '../../../../components/ui/modals/SafeSettingsModal';
+import { SafeSettingsEdits } from '../../../../components/ui/modals/SafeSettingsModal';
+import { AssetSelector } from '../../../../components/ui/utils/AssetSelector';
 import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
 import { useDAOStore } from '../../../../providers/App/AppProvider';
 import { BigIntValuePair } from '../../../../types';
-
-function AddedToken({ address }: { address: string }) {
-  return (
-    <Grid
-      templateColumns="repeat(2, 1fr)"
-      gap={4}
-    >
-      <GridItem p={3}>
-        <AddressInput
-          value={address}
-          isDisabled={true}
-          marginTop="-0.25rem"
-        />
-      </GridItem>
-    </Grid>
-  );
-}
-
-function NewToken({ name }: { name: string }) {
-  const { errors } = useFormikContext<SafeSettingsEdits>();
-  const stakingErrors = (errors as SafeSettingsFormikErrors | undefined)?.staking;
-
-  return (
-    <Grid
-      templateColumns="repeat(2, 1fr)"
-      gap={4}
-    >
-      <GridItem p={3}>
-        <Field name={name}>
-          {({ field }: FieldAttributes<any>) => (
-            <AddressInput
-              {...field}
-              isInvalid={
-                !!field.value &&
-                stakingErrors?.newRewardTokens !== undefined &&
-                stakingErrors.newRewardTokens.findIndex(a => `staking.${a.key}` === name) !== -1
-              }
-              marginTop="-0.25rem"
-            />
-          )}
-        </Field>
-      </GridItem>
-    </Grid>
-  );
-}
 
 function StakingForm() {
   const { t } = useTranslation('staking');
@@ -109,55 +61,24 @@ function StakingForm() {
         />
       </LabelComponent>
 
-      <FieldArray name="staking.newRewardTokens">
-        {({ push }) => {
-          return (
-            <Flex
-              gap={2}
-              direction="column"
-            >
-              <LabelComponent
-                label={t('rewardTokensTitle')}
-                isRequired={false}
-                gridContainerProps={{
-                  templateColumns: '1fr',
-                  width: { base: '100%' },
-                }}
-                helper={t('rewardTokensHelper')}
-              >
-                <>
-                  {rewardsTokens?.map(token => (
-                    <AddedToken
-                      key={token}
-                      address={token}
-                    />
-                  ))}
-
-                  {values.staking?.newRewardTokens?.map((_, index) => (
-                    <NewToken
-                      key={`staking.newRewardTokens.${index}`}
-                      name={`staking.newRewardTokens.${index}`}
-                    />
-                  ))}
-                </>
-              </LabelComponent>
-
-              <Flex justify="end">
-                <Flex>
-                  <Button
-                    variant="secondary"
-                    size="md"
-                    px={4}
-                    onClick={() => push('')}
-                  >
-                    {t('addRewardToken')}
-                  </Button>
-                </Flex>
-              </Flex>
-            </Flex>
-          );
+      <LabelComponent
+        label={t('rewardTokensTitle')}
+        isRequired={false}
+        gridContainerProps={{
+          templateColumns: '1fr',
+          width: { base: '100%' },
         }}
-      </FieldArray>
+        helper={t('rewardTokensHelper')}
+      >
+        <AssetSelector
+          includeNativeToken
+          canSelectMultiple
+          defaultSelectedAddresses={rewardsTokens}
+          onSelect={addresses => {
+            setFieldValue('staking.newRewardTokens', addresses);
+          }}
+        />
+      </LabelComponent>
     </>
   );
 }
