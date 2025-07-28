@@ -1,7 +1,6 @@
 {
   "connect": "연결",
   "connectWallet": "지갑 연결",
-  "tokenManager": "토큰 관리자",
   "disconnect": "연결 해제",
   "wallet": "지갑",
   "titleManageProposalTemplate": "템플릿 관리",

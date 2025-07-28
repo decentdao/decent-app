@@ -5,6 +5,7 @@
   "proposals": "すべての提案",
   "proposalNew": "提案を作成します",
   "nodes": "組織",
+  "staking": "ステーキング",
   "roles": "役割",
   "treasury": "財務省",
   "proposal": "#{{proposalId}} {{proposalTitle}}",

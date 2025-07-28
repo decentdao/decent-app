@@ -14,6 +14,8 @@
   "governanceTokenTransferableOffSubLabel": "Token transfers are OFF.",
   "governanceTokenWhitelistTitle": "Allow List",
   "governanceTokenWhitelistAddWallet": "Add Wallets",
+  "governanceTokenMaximumTotalSupplyTitle": "Fornecimento total máximo",
+  "governanceTokenMaximumTotalSupplySubTitle": "O teto da casa da moeda, ou o número máximo de fichas que podem ser cunhadas.",
   "noModulesAttached": "Sem módulos acoplados",
   "noGuardAttached": "Sem proteção",
   "modulesTitle": "Módulos",

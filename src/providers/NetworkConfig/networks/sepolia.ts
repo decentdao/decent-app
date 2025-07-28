@@ -1,20 +1,23 @@
-import { addresses } from '@fractal-framework/fractal-contracts';
+import { legacy, addresses } from '@decentdao/decent-contracts';
 import {
   getCompatibilityFallbackHandlerDeployment,
   getMultiSendCallOnlyDeployment,
   getProxyFactoryDeployment,
   getSafeL2SingletonDeployment,
 } from '@safe-global/safe-deployments';
-import { getAddress } from 'viem';
 import { sepolia } from 'wagmi/chains';
 import { GovernanceType } from '../../../types';
 import { NetworkConfig } from '../../../types/network';
-import { getEtherscanAPIUrl, getSafeContractDeploymentAddress } from './utils';
+import {
+  getEtherscanAPIUrl,
+  getSafeContractDeploymentAddress,
+  getAddressFromContractDeploymentInfo,
+} from './utils';
 
 const SAFE_VERSION = '1.3.0';
 
 const chain = sepolia;
-const a = addresses[chain.id];
+const a = legacy.addresses[chain.id];
 
 export const sepoliaConfig: NetworkConfig = {
   order: 30,
@@ -60,52 +63,63 @@ export const sepoliaConfig: NetworkConfig = {
 
     zodiacModuleProxyFactory: '0x000000000000aDdB49795b0f9bA5BC298cDda236',
 
-    linearVotingErc20MasterCopy: getAddress(a.LinearERC20Voting),
-    linearVotingErc20HatsWhitelistingMasterCopy: getAddress(
+    linearVotingErc20MasterCopy: getAddressFromContractDeploymentInfo(a.LinearERC20Voting),
+    linearVotingErc20HatsWhitelistingMasterCopy: getAddressFromContractDeploymentInfo(
       a.LinearERC20VotingWithHatsProposalCreation,
     ),
-    linearVotingErc721MasterCopy: getAddress(a.LinearERC721Voting),
-    linearVotingErc721HatsWhitelistingMasterCopy: getAddress(
+    linearVotingErc721MasterCopy: getAddressFromContractDeploymentInfo(a.LinearERC721Voting),
+    linearVotingErc721HatsWhitelistingMasterCopy: getAddressFromContractDeploymentInfo(
       a.LinearERC721VotingWithHatsProposalCreation,
     ),
 
-    linearVotingErc20V1MasterCopy: getAddress(a.LinearERC20VotingV1),
-    linearVotingErc20HatsWhitelistingV1MasterCopy: getAddress(
+    linearVotingErc20V1MasterCopy: getAddressFromContractDeploymentInfo(a.LinearERC20VotingV1),
+    linearVotingErc20HatsWhitelistingV1MasterCopy: getAddressFromContractDeploymentInfo(
       a.LinearERC20VotingWithHatsProposalCreationV1,
     ),
-    linearVotingErc721V1MasterCopy: getAddress(a.LinearERC721VotingV1),
-    linearVotingErc721HatsWhitelistingV1MasterCopy: getAddress(
+    linearVotingErc721V1MasterCopy: getAddressFromContractDeploymentInfo(a.LinearERC721VotingV1),
+    linearVotingErc721HatsWhitelistingV1MasterCopy: getAddressFromContractDeploymentInfo(
       a.LinearERC721VotingWithHatsProposalCreationV1,
     ),
 
-    moduleAzoriusMasterCopy: getAddress(a.Azorius),
-    moduleFractalMasterCopy: getAddress(a.FractalModule),
+    moduleAzoriusMasterCopy: getAddressFromContractDeploymentInfo(a.Azorius),
+    moduleFractalMasterCopy: getAddressFromContractDeploymentInfo(a.FractalModule),
 
-    freezeGuardAzoriusMasterCopy: getAddress(a.AzoriusFreezeGuard),
-    freezeGuardMultisigMasterCopy: getAddress(a.MultisigFreezeGuard),
+    freezeGuardAzoriusMasterCopy: getAddressFromContractDeploymentInfo(a.AzoriusFreezeGuard),
+    freezeGuardMultisigMasterCopy: getAddressFromContractDeploymentInfo(a.MultisigFreezeGuard),
 
-    freezeVotingErc20MasterCopy: getAddress(a.ERC20FreezeVoting),
-    freezeVotingErc721MasterCopy: getAddress(a.ERC721FreezeVoting),
-    freezeVotingMultisigMasterCopy: getAddress(a.MultisigFreezeVoting),
+    freezeVotingErc20MasterCopy: getAddressFromContractDeploymentInfo(a.ERC20FreezeVoting),
+    freezeVotingErc721MasterCopy: getAddressFromContractDeploymentInfo(a.ERC721FreezeVoting),
+    freezeVotingMultisigMasterCopy: getAddressFromContractDeploymentInfo(a.MultisigFreezeVoting),
 
-    votesErc20MasterCopy: getAddress(a.VotesERC20),
-    votesErc20LockableMasterCopy: getAddress(a.VotesERC20LockableV1),
+    votesErc20MasterCopy: getAddressFromContractDeploymentInfo(a.VotesERC20),
+    votesErc20LockableMasterCopy: addresses.deployables.VotesERC20V1,
+    votesERC20StakedV1MasterCopy: addresses.deployables.VotesERC20StakedV1,
 
-    claimErc20MasterCopy: getAddress(a.ERC20Claim),
+    claimErc20MasterCopy: getAddressFromContractDeploymentInfo(a.ERC20Claim),
 
-    decentAutonomousAdminV1MasterCopy: getAddress(a.DecentAutonomousAdminV1),
+    decentAutonomousAdminV1MasterCopy: getAddressFromContractDeploymentInfo(
+      a.DecentAutonomousAdminV1,
+    ),
 
     paymaster: {
-      decentPaymasterV1MasterCopy: getAddress(a.DecentPaymasterV1),
-      linearERC20VotingV1ValidatorV1: getAddress(a.LinearERC20VotingV1ValidatorV1),
-      linearERC721VotingV1ValidatorV1: getAddress(a.LinearERC721VotingV1ValidatorV1),
+      decentPaymasterV1MasterCopy: getAddressFromContractDeploymentInfo(a.DecentPaymasterV1),
+      linearERC20VotingV1ValidatorV1: getAddressFromContractDeploymentInfo(
+        a.LinearERC20VotingV1ValidatorV1,
+      ),
+      linearERC721VotingV1ValidatorV1: getAddressFromContractDeploymentInfo(
+        a.LinearERC721VotingV1ValidatorV1,
+      ),
     },
 
-    keyValuePairs: getAddress(a.KeyValuePairs),
+    keyValuePairs: getAddressFromContractDeploymentInfo(a.KeyValuePairs),
 
-    decentHatsCreationModule: getAddress(a.DecentHatsCreationModule),
-    decentHatsModificationModule: getAddress(a.DecentHatsModificationModule),
-    decentSablierStreamManagementModule: getAddress(a.DecentSablierStreamManagementModule),
+    decentHatsCreationModule: getAddressFromContractDeploymentInfo(a.DecentHatsCreationModule),
+    decentHatsModificationModule: getAddressFromContractDeploymentInfo(
+      a.DecentHatsModificationModule,
+    ),
+    decentSablierStreamManagementModule: getAddressFromContractDeploymentInfo(
+      a.DecentSablierStreamManagementModule,
+    ),
 
     hatsProtocol: '0x3bc1A0Ad72417f2d411118085256fC53CBdDd137',
     erc6551Registry: '0x000000006551c19487814612e58FE06813775758',

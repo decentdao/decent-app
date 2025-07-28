@@ -1,5 +1,5 @@
 import { Icon, IconButton } from '@chakra-ui/react';
-import { abis } from '@fractal-framework/fractal-contracts';
+import { legacy } from '@decentdao/decent-contracts';
 import { GearFine } from '@phosphor-icons/react';
 import { useMemo } from 'react';
 import { getContract } from 'viem';
@@ -58,7 +58,7 @@ export function ManageDAOMenu() {
           }
 
           const freezeVotingContract = getContract({
-            abi: abis.MultisigFreezeVoting,
+            abi: legacy.abis.MultisigFreezeVoting,
             address: guardContracts.freezeVotingContractAddress,
             client: walletClient,
           });
@@ -71,7 +71,7 @@ export function ManageDAOMenu() {
             throw new Error('wallet client not set');
           }
           const contract = getContract({
-            abi: abis.ERC20FreezeVoting,
+            abi: legacy.abis.ERC20FreezeVoting,
             address: guardContracts.freezeVotingContractAddress,
             client: walletClient,
           });
@@ -85,7 +85,7 @@ export function ManageDAOMenu() {
               throw new Error('wallet client not set');
             }
             const freezeERC721VotingContract = getContract({
-              abi: abis.ERC721FreezeVoting,
+              abi: legacy.abis.ERC721FreezeVoting,
               address: guardContracts.freezeVotingContractAddress,
               client: walletClient,
             });
