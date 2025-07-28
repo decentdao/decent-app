@@ -90,7 +90,7 @@ function StakingForm() {
         label={t('stakingPeriod')}
         isRequired
         gridContainerProps={{
-          my: 6,
+          my: 2,
           templateColumns: '1fr',
           width: { base: '100%', md: '50%' },
         }}
@@ -120,7 +120,6 @@ function StakingForm() {
                 label={t('rewardTokensTitle')}
                 isRequired={false}
                 gridContainerProps={{
-                  my: 6,
                   templateColumns: '1fr',
                   width: { base: '100%' },
                 }}
