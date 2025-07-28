@@ -148,10 +148,7 @@ function StakingForm() {
                     variant="secondary"
                     size="md"
                     px={4}
-                    onClick={() => {
-                      console.debug('hey');
-                      push('');
-                    }}
+                    onClick={() => push('')}
                   >
                     {t('addRewardToken')}
                   </Button>
