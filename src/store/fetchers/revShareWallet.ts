@@ -1,4 +1,4 @@
-import { abis } from '@fractal-framework/fractal-contracts';
+import { legacy } from '@decentdao/decent-contracts';
 import { useCallback } from 'react';
 import { Address, GetContractEventsReturnType } from 'viem';
 
@@ -9,7 +9,11 @@ const emptyRevShareWallets = [] as {
 
 export function useRevShareWalletFetcher() {
   const fetchRevenueSharingWallets = useCallback(
-    async ({ events }: { events: GetContractEventsReturnType<typeof abis.KeyValuePairs> }) => {
+    async ({
+      events,
+    }: {
+      events: GetContractEventsReturnType<typeof legacy.abis.KeyValuePairs>;
+    }) => {
       const mostRecentEvent = events.filter(event => event.args.key === 'revShareWallets').pop();
       if (!mostRecentEvent) {
         return emptyRevShareWallets;
