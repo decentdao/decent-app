@@ -1122,11 +1122,7 @@ export function useGovernanceFetcher() {
           });
         }
       } else {
-        return {
-          address: undefined,
-          minimumStakingPeriod: 0n,
-          rewardsTokens: [],
-        };
+        return undefined;
       }
     },
     [governance, publicClient, votesERC20StakedV1MasterCopy, zodiacModuleProxyFactory],
