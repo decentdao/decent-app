@@ -3,6 +3,7 @@
   "stakingNull": "Your DAO doesn't have a staking contract yet. You can deploy one now.",
   "deployStaking": "Deploy Staking Contract",
   "stakingPeriod": "Staking Period",
-  "includeStakingInVoting": "Include staking token in token voting",
-  "includeStakingInVotingDesc": "-no copy yet-"
+  "rewardTokensTitle": "Reward Tokens",
+  "rewardTokensHelper": "Specify which tokens from incoming revenue will distributed as rewards.",
+  "addRewardToken": "Add Token"
 }

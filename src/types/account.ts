@@ -20,6 +20,12 @@ export interface ERC20LockedTokenData extends ERC20TokenData {
   maxTotalSupply: bigint;
 }
 
+export interface StakedTokenExtraData {
+  address: Address | undefined;
+  minimumStakingPeriod: bigint;
+  rewardsTokens: Address[];
+}
+
 export interface ERC721TokenData extends BaseTokenData {
   totalSupply?: bigint;
   votingWeight: bigint;
