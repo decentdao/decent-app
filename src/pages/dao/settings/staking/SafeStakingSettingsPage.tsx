@@ -73,7 +73,7 @@ function StakingForm() {
         <AssetSelector
           includeNativeToken
           canSelectMultiple
-          defaultSelectedAddresses={rewardsTokens}
+          lockedSelections={rewardsTokens}
           onSelect={addresses => {
             setFieldValue('staking.newRewardTokens', addresses);
           }}

@@ -4,6 +4,6 @@
   "deployStaking": "Deploy Staking Contract",
   "stakingPeriod": "Staking Period",
   "rewardTokensTitle": "Reward Tokens",
-  "rewardTokensHelper": "Specify which tokens from incoming revenue will distributed as rewards.",
+  "rewardTokensHelper": "Specify which tokens from incoming revenue will distributed as rewards. You can't delete reward tokens.",
   "addRewardToken": "Add Token"
 }
