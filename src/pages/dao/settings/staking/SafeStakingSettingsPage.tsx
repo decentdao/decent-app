@@ -50,12 +50,15 @@ function StakingForm() {
         <DurationUnitStepperInput
           secondsValue={minPeriodValue}
           onSecondsValueChange={val => {
-            const notNullVal = val || 0;
+            if (val === undefined) {
+              return;
+            }
+
             const newMinPeriodValue: BigIntValuePair = {
-              bigintValue: BigInt(notNullVal),
-              value: notNullVal?.toString(),
+              bigintValue: BigInt(val),
+              value: val.toString(),
             };
-            if (minPeriodValue !== notNullVal) {
+            if ((minimumStakingPeriod || 0n) !== newMinPeriodValue.bigintValue) {
               setFieldValue('staking.minimumStakingPeriod', newMinPeriodValue);
             } else {
               setFieldValue('staking.minimumStakingPeriod', undefined);
