@@ -36,6 +36,7 @@ interface DropdownMenuProps<T = {}> {
    */
   renderItem?: (item: DropdownItem<T>, isSelected: boolean) => React.ReactNode;
   renderButton?: () => React.ReactNode;
+  closeOnSelect?: boolean;
 }
 
 export function DropdownMenu<T>({
@@ -48,11 +49,13 @@ export function DropdownMenu<T>({
   emptyMessage = 'No items available',
   renderItem,
   renderButton,
+  closeOnSelect = true,
 }: DropdownMenuProps<T>) {
   return (
     <Menu
       placement="bottom-start"
       offset={[0, 8]}
+      closeOnSelect={closeOnSelect}
     >
       {({ isOpen, onClose }) => (
         <>
