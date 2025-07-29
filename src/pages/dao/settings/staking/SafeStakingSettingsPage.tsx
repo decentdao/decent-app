@@ -55,7 +55,11 @@ function StakingForm() {
               bigintValue: BigInt(notNullVal),
               value: notNullVal?.toString(),
             };
-            setFieldValue('staking.minimumStakingPeriod', newMinPeriodValue);
+            if (minPeriodValue !== notNullVal) {
+              setFieldValue('staking.minimumStakingPeriod', newMinPeriodValue);
+            } else {
+              setFieldValue('staking.minimumStakingPeriod', undefined);
+            }
           }}
           hideSteppers
         />
