@@ -1253,7 +1253,7 @@ export function SafeSettingsModal({
     }
 
     if (revenueSharing) {
-      const { actions } = await handleEditRevenueShare(
+      const actions = await handleEditRevenueShare(
         safe.address,
         subgraphInfo?.parentAddress,
         stakingContractAddress,

@@ -12,7 +12,7 @@ import {
 import { RevenueSharingWallet, RevenueSharingWalletFormValues } from '../../../types/revShare';
 import { SafeSettingsEdits } from '../../ui/modals/SafeSettingsModal';
 
-const DEFAULT_SALT = '0x0000000000000000000000000000000000000000000000000000444543454E54';
+const DETERMINISTIC_SALT = '0x0000000000000000000000000000000000000000000000000000444543454E54';
 const DISTRIBUTION_INCENTIVE = 0;
 const TOTAL_ALLOCATION_PERCENT = 100;
 const TOTAL_ALLOCATION_PERCENT_BN = BigInt(TOTAL_ALLOCATION_PERCENT);
@@ -21,13 +21,13 @@ const DEFAULT_ETH_VALUE = {
   value: '0',
 };
 
-export const createCombinedSplitsWalletData = (
+export const mergeSplitWalletFormData = (
   formSplitWallets: RevenueSharingWalletFormValues[],
   deployedSplitWallets: RevenueSharingWallet[] | undefined,
 ) => {
   const maxLength = Math.max(formSplitWallets.length, deployedSplitWallets?.length || 0);
 
-  const existingFormWallets: RevenueSharingWalletFormValues[] = Array.from(
+  const reconciledWallets: RevenueSharingWalletFormValues[] = Array.from(
     { length: maxLength },
     (_, walletIndex) => {
       const existingWalletData = deployedSplitWallets?.[walletIndex];
@@ -53,10 +53,10 @@ export const createCombinedSplitsWalletData = (
     },
   );
 
-  return existingFormWallets;
+  return reconciledWallets;
 };
 
-const combineSpecialSplitUpdates = (
+const mergeSpecialSplitsIntoWallet = (
   wallets: RevenueSharingWalletFormValues[] | undefined,
   daoAddress: Address,
   parentDaoAddress: Address | undefined | null,
@@ -67,22 +67,22 @@ const combineSpecialSplitUpdates = (
   }
   return wallets.map(wallet => {
     const { specialSplits, splits } = wallet;
-    const combinedEdits = [...(splits || [])];
-    const daoSplitIndex = combinedEdits.findIndex(split => split.address === daoAddress);
-    const parentDaoSplitIndex = combinedEdits.findIndex(
+    const mergedSplits = [...(splits || [])];
+    const daoSplitIndex = mergedSplits.findIndex(split => split.address === daoAddress);
+    const parentDaoSplitIndex = mergedSplits.findIndex(
       split => !!parentDaoAddress && split.address === parentDaoAddress,
     );
-    const stakeHoldersSplitIndex = combinedEdits.findIndex(
+    const stakeHoldersSplitIndex = mergedSplits.findIndex(
       split => !!stakingContractAddress && split.address === stakingContractAddress,
     );
 
     if (daoSplitIndex === -1 && !!daoAddress && specialSplits?.dao?.percentage !== undefined) {
-      combinedEdits.push({
+      mergedSplits.push({
         address: daoAddress,
         percentage: specialSplits.dao.percentage,
       });
     } else if (!!daoAddress && specialSplits?.dao?.percentage !== undefined) {
-      combinedEdits[daoSplitIndex] = {
+      mergedSplits[daoSplitIndex] = {
         address: daoAddress,
         percentage: specialSplits.dao.percentage,
       };
@@ -93,12 +93,12 @@ const combineSpecialSplitUpdates = (
       !!parentDaoAddress &&
       specialSplits?.parentDao?.percentage !== undefined
     ) {
-      combinedEdits.push({
+      mergedSplits.push({
         address: parentDaoAddress,
         percentage: specialSplits.parentDao.percentage,
       });
     } else if (!!parentDaoAddress && specialSplits?.parentDao?.percentage !== undefined) {
-      combinedEdits[parentDaoSplitIndex] = {
+      mergedSplits[parentDaoSplitIndex] = {
         address: parentDaoAddress,
         percentage: specialSplits.parentDao.percentage,
       };
@@ -109,7 +109,7 @@ const combineSpecialSplitUpdates = (
       !!stakingContractAddress &&
       specialSplits?.stakingContract?.percentage !== undefined
     ) {
-      combinedEdits.push({
+      mergedSplits.push({
         address: stakingContractAddress,
         percentage: specialSplits.stakingContract.percentage,
       });
@@ -117,7 +117,7 @@ const combineSpecialSplitUpdates = (
       !!stakingContractAddress &&
       specialSplits?.stakingContract?.percentage !== undefined
     ) {
-      combinedEdits[stakeHoldersSplitIndex] = {
+      mergedSplits[stakeHoldersSplitIndex] = {
         address: stakingContractAddress,
         percentage: specialSplits.stakingContract.percentage,
       };
@@ -125,12 +125,12 @@ const combineSpecialSplitUpdates = (
 
     return {
       ...wallet,
-      splits: combinedEdits,
+      splits: mergedSplits,
     };
   });
 };
 
-export const createFormatedSplitsWalletData = (
+export const validateAndFormatSplitWallets = (
   formSplitWallets: RevenueSharingWalletFormValues[],
 ) => {
   return formSplitWallets.map(wallet => {
@@ -185,13 +185,13 @@ export const handleEditRevenueShare = async (
   }
 
   const { existing: existingFormUpdates, new: newFormUpdates } = updatedValues;
-  const existingWalletFormUpdates = combineSpecialSplitUpdates(
+  const existingWalletFormUpdates = mergeSpecialSplitsIntoWallet(
     existingFormUpdates,
     daoAddress,
     parentDaoAddress,
     stakingContractAddress,
   );
-  const newWalletFormUpdates = combineSpecialSplitUpdates(
+  const newWalletFormUpdates = mergeSpecialSplitsIntoWallet(
     newFormUpdates,
     daoAddress,
     parentDaoAddress,
@@ -202,10 +202,10 @@ export const handleEditRevenueShare = async (
   const transactionsUpdate: CreateProposalTransaction[] = [];
   const transactionsKeyValuesUpdate: CreateProposalTransaction[] = [];
   // address:name
-  const newSplitAddressWithNames: string[] = [];
+  const newWalletAddressNamePairs: string[] = [];
   let isNameUpdated = false;
 
-  const validatedNewWalletFormUpdates = createFormatedSplitsWalletData(newWalletFormUpdates);
+  const validatedNewWalletFormUpdates = validateAndFormatSplitWallets(newWalletFormUpdates);
   if (newWalletFormUpdates && newWalletFormUpdates.length > 0) {
     for (const newWalletFormUpdate of validatedNewWalletFormUpdates) {
       const { name, splits } = newWalletFormUpdate;
@@ -231,7 +231,7 @@ export const handleEditRevenueShare = async (
         splitType: SplitV2Type.Push,
         ownerAddress: daoAddress,
         creatorAddress: daoAddress,
-        salt: DEFAULT_SALT,
+        salt: DETERMINISTIC_SALT,
       });
 
       const recipients = splits.map(recipient => recipient.address);
@@ -268,29 +268,26 @@ export const handleEditRevenueShare = async (
           },
           {
             signature: 'string',
-            value: DEFAULT_SALT,
+            value: DETERMINISTIC_SALT,
           },
         ],
       });
 
-      newSplitAddressWithNames.push(`${predictedNewSplitsWalletAddress}:${name}`);
+      newWalletAddressNamePairs.push(`${predictedNewSplitsWalletAddress}:${name}`);
     }
   }
 
   // for updating existing wallet splits
   if (existingWalletFormUpdates?.length > 0) {
-    const updatedSplits = createCombinedSplitsWalletData(
-      existingWalletFormUpdates,
-      existingWallets,
-    );
+    const updatedSplits = mergeSplitWalletFormData(existingWalletFormUpdates, existingWallets);
     isNameUpdated = updatedSplits.some(
       updatedSplit =>
         updatedSplit.name !==
         existingWallets?.find(existingWallet => existingWallet.address === updatedSplit.address)
           ?.name,
     );
-    const formatedUpdatedSplits = createFormatedSplitsWalletData(updatedSplits);
-    for (const updatedSplit of formatedUpdatedSplits) {
+    const formattedUpdatedSplits = validateAndFormatSplitWallets(updatedSplits);
+    for (const updatedSplit of formattedUpdatedSplits) {
       if (!updatedSplit) {
         throw new Error('No original wallet data found');
       }
@@ -332,15 +329,15 @@ export const handleEditRevenueShare = async (
   }
 
   // create keyValuePairsUpdate if needed, new wallets, updated names
-  if (newSplitAddressWithNames.length > 0 || isNameUpdated) {
-    const existingWalletAddressWithName = existingWallets.map(
+  if (newWalletAddressNamePairs.length > 0 || isNameUpdated) {
+    const existingWalletAddressNamePairs = existingWallets.map(
       wallet => `${wallet.address}:${wallet.name}`,
     );
 
     // combines new wallets and existing wallets into one array
-    const combinedWalletsAddresses = [
-      ...existingWalletAddressWithName,
-      ...newSplitAddressWithNames,
+    const allWalletAddressNamePairs = [
+      ...existingWalletAddressNamePairs,
+      ...newWalletAddressNamePairs,
     ];
 
     transactionsKeyValuesUpdate.push({
@@ -354,28 +351,40 @@ export const handleEditRevenueShare = async (
         },
         {
           signature: 'string[]',
-          valueArray: [JSON.stringify(combinedWalletsAddresses)],
+          valueArray: [JSON.stringify(allWalletAddressNamePairs)],
         },
       ],
     });
   }
 
-  // deploy new split -> create split, update keyvalue
-  // update existing split -> update split, update keyvalue
+  const actions: CreateProposalActionData[] = [];
 
-  // update name -> update keyvalue
-  const action: CreateProposalActionData = {
-    actionType: ProposalActionType.CREATE_REVENUE_SHARE_WALLET,
-    transactions: transactionsCreate,
-  };
-  const actionUpdate: CreateProposalActionData = {
-    actionType: ProposalActionType.UPDATE_REVENUE_SHARE_WALLETS,
-    transactions: transactionsUpdate,
-  };
-  const actionUpdateName: CreateProposalActionData = {
-    actionType: ProposalActionType.UPDATE_REVENUE_SHARE_WALLET_SPLITS,
-    transactions: transactionsKeyValuesUpdate,
-  };
+  if (transactionsCreate.length > 0) {
+    for (const transaction of transactionsCreate) {
+      actions.push({
+        actionType: ProposalActionType.CREATE_REVENUE_SHARE_WALLET,
+        transactions: [transaction],
+      });
+    }
+  }
 
-  return { actions: [action, actionUpdate, actionUpdateName] };
+  if (transactionsUpdate.length > 0) {
+    for (const transaction of transactionsUpdate) {
+      actions.push({
+        actionType: ProposalActionType.UPDATE_REVENUE_SHARE_SPLITS,
+        transactions: [transaction],
+      });
+    }
+  }
+
+  if (transactionsKeyValuesUpdate.length > 0) {
+    for (const transaction of transactionsKeyValuesUpdate) {
+      actions.push({
+        actionType: ProposalActionType.UPDATE_REVENUE_SHARE_WALLET_METADATA,
+        transactions: [transaction],
+      });
+    }
+  }
+
+  return actions;
 };

@@ -13,7 +13,7 @@ import { BarLoader } from '../../ui/loaders/BarLoader';
 import { SafeSettingsEdits } from '../../ui/modals/SafeSettingsModal';
 import { SettingsContentBox } from '../SettingsContentBox';
 import { RevSplitWalletAccordion } from './RevenueSplitWallets';
-import { createCombinedSplitsWalletData } from './revenueShareFormHandlers';
+import { mergeSplitWalletFormData } from './revenueShareFormHandlers';
 
 function RevenueShareHeader() {
   const { values, setFieldValue } = useFormikContext<SafeSettingsEdits>();
@@ -120,7 +120,7 @@ export function RevenueSharingSettingsContent() {
     );
   }
 
-  const formWallets = createCombinedSplitsWalletData(
+  const formWallets = mergeSplitWalletFormData(
     values?.revenueSharing?.existing || [],
     revShareWallets,
   );

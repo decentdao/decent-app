@@ -69,8 +69,8 @@ export enum ProposalActionType {
   DAPP_INTEGRATION = 'dapp_integration',
   TRANSACTION_BUILDER = 'transaction_builder',
   CREATE_REVENUE_SHARE_WALLET = 'create_revenue_share_wallet',
-  UPDATE_REVENUE_SHARE_WALLETS = 'update_revenue_share_wallets',
-  UPDATE_REVENUE_SHARE_WALLET_SPLITS = 'update_revenue_share_wallet_splits',
+  UPDATE_REVENUE_SHARE_SPLITS = 'update_revenue_share_splits',
+  UPDATE_REVENUE_SHARE_WALLET_METADATA = 'update_revenue_share_wallet_metadata',
 }
 
 export type CreateProposalActionData<T = BigIntValuePair> = {
