@@ -59,7 +59,7 @@ export default function DurationUnitStepperInput({
       label: t('years', { ns: 'common' }),
     },
   ];
-  const [selectedUnit, setSelectedUnit] = useState(units[0]);
+  const [selectedUnit, setSelectedUnit] = useState(units[2]);
 
   const stepperButton = (direction: 'inc' | 'dec') => (
     <Button
