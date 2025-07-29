@@ -47,12 +47,7 @@ import {
   FractalTokenType,
   ProposalActionType,
 } from '../../../types';
-import {
-  RevenueSharingWalletForm,
-  RevenueSharingWalletFormError,
-  RevenueSharingWalletFormErrors,
-  RevenueSharingWalletFormValues,
-} from '../../../types/revShare';
+import { RevenueSharingWalletForm, RevenueSharingWalletFormErrors } from '../../../types/revShare';
 import { SENTINEL_MODULE } from '../../../utils/address';
 import { getEstimatedNumberOfBlocks } from '../../../utils/contract';
 import { prepareRefillPaymasterAction } from '../../../utils/dao/prepareRefillPaymasterActionData';
@@ -65,7 +60,10 @@ import {
 import { formatCoin } from '../../../utils/numberFormats';
 import { validateENSName } from '../../../utils/url';
 import { isNonEmpty } from '../../../utils/valueCheck';
-import { useCreateSplitsClient } from '../../SafeSettings/RevenueShare/revenueShareFormHandlers';
+import {
+  handleEditRevenueShare,
+  useCreateSplitsClient,
+} from '../../SafeSettings/RevenueShare/revenueShareFormHandlers';
 import { SafePermissionsStrategyAction } from '../../SafeSettings/SafePermissionsStrategyAction';
 import { SettingsNavigation } from '../../SafeSettings/SettingsNavigation';
 import { NewSignerItem } from '../../SafeSettings/Signers/SignersContainer';
@@ -147,7 +145,7 @@ export function SafeSettingsModal({
   const { daoKey } = useCurrentDAOKey();
 
   const {
-    node: { safe },
+    node: { safe, subgraphInfo },
     governance,
     governanceContracts: {
       strategies,
@@ -159,6 +157,9 @@ export function SafeSettingsModal({
     },
     revShareWallets,
   } = useDAOStore({ daoKey });
+
+  // TODO: get staking contract address from store
+  const stakingContractAddress = undefined;
 
   const [settingsContent, setSettingsContent] = useState(<SafeGeneralSettingsPage />);
 
@@ -1251,10 +1252,23 @@ export function SafeSettingsModal({
       });
     }
 
-    // TODO: Add revenue share
     if (revenueSharing) {
-      // const actions = await handleEditRevenueShare(values.revenueSharing, revShareWallets ?? [], splitsClient);
-      // addAction(action);
+      const { actions } = await handleEditRevenueShare(
+        safe.address,
+        subgraphInfo?.parentAddress,
+        stakingContractAddress,
+        values.revenueSharing,
+        revShareWallets ?? [],
+        splitsClient,
+        publicClient,
+      );
+      actions.forEach(action => {
+        addAction({
+          actionType: action.actionType,
+          transactions: action.transactions,
+          content: <></>,
+        });
+      });
     }
 
     navigate(DAO_ROUTES.proposalWithActionsNew.relative(addressPrefix, safe.address));
@@ -1560,7 +1574,7 @@ export function SafeSettingsModal({
         return errors;
       }}
       onSubmit={values => {
-        closeAllModals();
+        // closeAllModals();
         submitAllSettingsEditsProposal(values);
       }}
     >

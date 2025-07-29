@@ -6,13 +6,14 @@ import { Address } from 'viem';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import { createAccountSubstring } from '../../../hooks/utils/useGetAccountName';
 import { useDAOStore } from '../../../providers/App/AppProvider';
-import { RevenueSharingWalletFormValues, RevenueSharingWalletSplit } from '../../../types/revShare';
+import { RevenueSharingWalletSplit } from '../../../types/revShare';
 import { Badge } from '../../ui/badges/Badge';
 import AddressCopier from '../../ui/links/AddressCopier';
 import { BarLoader } from '../../ui/loaders/BarLoader';
 import { SafeSettingsEdits } from '../../ui/modals/SafeSettingsModal';
 import { SettingsContentBox } from '../SettingsContentBox';
 import { RevSplitWalletAccordion } from './RevenueSplitWallets';
+import { createCombinedSplitsWalletData } from './revenueShareFormHandlers';
 
 function RevenueShareHeader() {
   const { values, setFieldValue } = useFormikContext<SafeSettingsEdits>();
@@ -119,36 +120,10 @@ export function RevenueSharingSettingsContent() {
     );
   }
 
-  const existingFormWalletsLength = values?.revenueSharing?.existing?.length || 0;
-  const existingWalletsLength = revShareWallets?.length || 0;
-  const maxLength = Math.max(existingFormWalletsLength, existingWalletsLength);
-
-  const existingFormWallets: RevenueSharingWalletFormValues[] = Array.from(
-    { length: maxLength },
-    (_, walletIndex) => {
-      const existingWalletData = revShareWallets?.[walletIndex];
-      const existingWalletFormData = values?.revenueSharing?.existing?.[walletIndex];
-
-      const splitsLength = existingWalletData?.splits?.length || 0;
-      const newSplitsLength = existingWalletFormData?.splits?.length || 0;
-      const maxSplitsLength = Math.max(splitsLength, newSplitsLength);
-
-      return {
-        name: existingWalletFormData?.name || existingWalletData?.name,
-        address: existingWalletFormData?.address || existingWalletData?.address,
-        splits: Array.from({ length: maxSplitsLength }, (__, splitIndex) => {
-          const existingSplitData = existingWalletData?.splits?.[splitIndex];
-          const existingSplitFormData = existingWalletFormData?.splits?.[splitIndex];
-          return {
-            address: existingSplitFormData?.address || existingSplitData?.address,
-            percentage:
-              existingSplitFormData?.percentage || existingSplitData?.percentage.toString(),
-          };
-        }),
-      };
-    },
+  const formWallets = createCombinedSplitsWalletData(
+    values?.revenueSharing?.existing || [],
+    revShareWallets,
   );
-
   return (
     <>
       <SettingsContentBox
@@ -162,7 +137,7 @@ export function RevenueSharingSettingsContent() {
           gap="0.5rem"
         >
           {/* form for existing wallets */}
-          {existingFormWallets.map((wallet, walletIndex) => (
+          {formWallets.map((wallet, walletIndex) => (
             <RevSplitWalletAccordion
               walletFormType="existing"
               key={walletIndex}

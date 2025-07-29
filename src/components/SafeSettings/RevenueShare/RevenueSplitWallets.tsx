@@ -253,6 +253,7 @@ export function RevSplitTable({
     node: { safe, subgraphInfo },
   } = useDAOStore({ daoKey });
 
+  // TODO: get staking contract address from store
   const stakingContractAddress = undefined;
 
   const isCurrentDAOAddress = useCallback(
@@ -346,7 +347,6 @@ export function RevSplitTable({
     stakingContractSplitInfo,
   ]);
 
-  // check for staking contract deployment, if available use that address
   const { errors: formErrors } = useFormikContext<SafeSettingsEdits>();
   const revenueSharingEditFormikErrors = (formErrors as SafeSettingsFormikErrors | undefined)
     ?.revenueSharing;

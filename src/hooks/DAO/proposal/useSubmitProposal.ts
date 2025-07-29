@@ -103,7 +103,7 @@ export default function useSubmitProposal({
   const {
     chain,
     addressPrefix,
-    contracts: { multiSendCallOnly },
+    contracts: { multiSendCallOnly, multiSend },
   } = useNetworkConfigStore();
   const ipfsClient = useIPFSClient();
 
@@ -231,9 +231,36 @@ export default function useSubmitProposal({
         let to = proposalData.targets[0];
         let value = proposalData.values[0];
         let data = proposalData.calldatas[0];
+
         let operation: 0 | 1 = 0;
 
-        if (proposalData.targets.length > 1) {
+        if (proposalData.operation?.some(o => o === 1)) {
+          // Need to wrap it in Multisend function call
+          to = multiSend;
+          value = 0n;
+
+          const tempData = proposalData.targets.map((target, index) => {
+            return {
+              to: target,
+              value: proposalData.values[index],
+              data: proposalData.calldatas[index],
+              operation: proposalData?.operation?.[index] ?? 0,
+            } as MetaTransaction;
+          });
+
+          data = encodeFunctionData({
+            // same abi as multisend
+            abi: MultiSendCallOnlyAbi,
+            functionName: 'multiSend',
+            args: [encodeMultiSend(tempData)],
+          });
+
+          if (!isHex(data)) {
+            throw new Error('Error encoding proposal data');
+          }
+
+          operation = 1;
+        } else if (proposalData.targets.length > 1) {
           // Need to wrap it in Multisend function call
           to = multiSendCallOnly;
           value = 0n;
@@ -309,6 +336,7 @@ export default function useSubmitProposal({
       pendingProposalAdd,
       ipfsClient,
       multiSendCallOnly,
+      multiSend,
       isParentProposal,
       addressPrefix,
       t,

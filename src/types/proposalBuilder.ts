@@ -17,6 +17,7 @@ export interface CreateProposalTransaction<T = BigIntValuePair> {
   ethValue: T;
   functionName: string;
   parameters: CreateProposalParameter[];
+  operation?: 0 | 1;
 }
 
 export type CreateProposalMetadata = {
@@ -67,6 +68,9 @@ export enum ProposalActionType {
   WITHDRAW_PAYMASTER = 'withdraw_paymaster',
   DAPP_INTEGRATION = 'dapp_integration',
   TRANSACTION_BUILDER = 'transaction_builder',
+  CREATE_REVENUE_SHARE_WALLET = 'create_revenue_share_wallet',
+  UPDATE_REVENUE_SHARE_WALLETS = 'update_revenue_share_wallets',
+  UPDATE_REVENUE_SHARE_WALLET_SPLITS = 'update_revenue_share_wallet_splits',
 }
 
 export type CreateProposalActionData<T = BigIntValuePair> = {
