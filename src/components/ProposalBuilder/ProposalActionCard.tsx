@@ -136,6 +136,7 @@ export function AirdropAction({
     </Card>
   );
 }
+
 export function TransactionBuilderAction({
   action,
   onRemove,
@@ -222,6 +223,27 @@ export function ProposalActionCard({
         onRemove={() => removeAction(index)}
       />
     );
+  } else if (action.actionType === ProposalActionType.CREATE_REVENUE_SHARE_WALLET) {
+    // return (
+    //   <RevenueShareWalletActionCard
+    //     action={action}
+    //     onRemove={() => removeAction(index)}
+    //   />
+    // );
+  } else if (action.actionType === ProposalActionType.UPDATE_REVENUE_SHARE_SPLITS) {
+    // return (
+    //   <RevenueShareWalletsActionCard
+    //     action={action}
+    //     onRemove={() => removeAction(index)}
+    //   />
+    // );
+  } else if (action.actionType === ProposalActionType.UPDATE_REVENUE_SHARE_WALLET_METADATA) {
+    // return (
+    //   <RevenueShareWalletActionCard
+    //     action={action}
+    //     onRemove={() => removeAction(index)}
+    //   />
+    // );
   }
 
   const isAddAction = action.actionType === ProposalActionType.ADD;

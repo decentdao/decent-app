@@ -328,13 +328,14 @@ export const handleEditRevenueShare = async (
     }
   }
 
-  const actions: CreateProposalActionData[] = [];
+  const actions: (CreateProposalActionData & { title: string })[] = [];
 
   if (transactionsCreate.length > 0) {
     for (const transaction of transactionsCreate) {
       actions.push({
         actionType: ProposalActionType.CREATE_REVENUE_SHARE_WALLET,
         transactions: [transaction],
+        title: 'Create Revenue Share Wallet',
       });
     }
   }
@@ -344,6 +345,7 @@ export const handleEditRevenueShare = async (
       actions.push({
         actionType: ProposalActionType.UPDATE_REVENUE_SHARE_SPLITS,
         transactions: [transaction],
+        title: 'Update Revenue Share Splits',
       });
     }
   }
@@ -361,6 +363,7 @@ export const handleEditRevenueShare = async (
     ];
     actions.push({
       actionType: ProposalActionType.UPDATE_REVENUE_SHARE_WALLET_METADATA,
+      title: 'Update Revenue Share Wallet Metadata',
       transactions: [
         {
           targetAddress: daoAddress,

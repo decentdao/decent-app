@@ -1266,7 +1266,7 @@ export function SafeSettingsModal({
         addAction({
           actionType: action.actionType,
           transactions: action.transactions,
-          content: <></>,
+          content: <Text>{action.title}</Text>,
         });
       });
     }
@@ -1574,7 +1574,7 @@ export function SafeSettingsModal({
         return errors;
       }}
       onSubmit={values => {
-        // closeAllModals();
+        closeAllModals();
         submitAllSettingsEditsProposal(values);
       }}
     >
