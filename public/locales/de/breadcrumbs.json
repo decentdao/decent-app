@@ -5,6 +5,7 @@
   "proposals": "Alle Vorschläge",
   "proposalNew": "Vorschlag erstellen",
   "nodes": "Organisation",
+  "staking": "Abstecken",
   "roles": "Rollen",
   "treasury": "Schatzamt",
   "proposal": "#{{proposalId}} {{proposalTitle}}",
