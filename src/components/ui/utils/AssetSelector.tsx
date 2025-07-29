@@ -119,6 +119,7 @@ export function AssetSelector({
       isDisabled={disabled}
       selectPlaceholder={t('selectLabel', { ns: 'modals' })}
       emptyMessage={t('emptyRolesAssets', { ns: 'roles' })}
+      closeOnSelect={!canSelectMultiple}
       renderButton={
         canSelectMultiple && selectedItems.length > 1
           ? () => (

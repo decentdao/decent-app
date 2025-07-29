@@ -14,6 +14,8 @@
   "governanceTokenTransferableOffSubLabel": "Token transfers are OFF.",
   "governanceTokenWhitelistTitle": "Allow List",
   "governanceTokenWhitelistAddWallet": "Add Wallets",
+  "governanceTokenMaximumTotalSupplyTitle": "Максимальна загальна пропозиція",
+  "governanceTokenMaximumTotalSupplySubTitle": "Стеля монетного двору, або максимальна кількість токенів, яку можна викарбувати.",
   "noModulesAttached": "Модулі не приєднані",
   "noGuardAttached": "Охорони немає.",
   "modulesTitle": "Модулі",
