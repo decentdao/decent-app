@@ -1,6 +1,7 @@
 import { Button, Flex, Text } from '@chakra-ui/react';
 import { useFormikContext } from 'formik';
 import { useTranslation } from 'react-i18next';
+import { Address } from 'viem';
 import { SettingsContentBox } from '../../../../components/SafeSettings/SettingsContentBox';
 import DurationUnitStepperInput from '../../../../components/ui/forms/DurationUnitStepperInput';
 import { LabelComponent } from '../../../../components/ui/forms/InputComponent';
@@ -82,7 +83,17 @@ function StakingForm() {
           canSelectMultiple
           lockedSelections={rewardsTokens}
           onSelect={addresses => {
-            setFieldValue('staking.newRewardTokens', addresses);
+            const rewardTokensToBeAdded = addresses.filter(
+              a => !rewardsTokens?.includes(a as Address),
+            );
+            if (rewardTokensToBeAdded.length > 0) {
+              setFieldValue(
+                'staking.newRewardTokens',
+                addresses.filter(a => !rewardsTokens?.includes(a as Address)),
+              );
+            } else {
+              setFieldValue('staking.newRewardTokens', undefined);
+            }
           }}
         />
       </LabelComponent>
