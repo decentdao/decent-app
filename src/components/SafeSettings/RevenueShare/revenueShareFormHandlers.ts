@@ -200,7 +200,7 @@ export const handleEditRevenueShare = async (
 
   const transactionsCreate: CreateProposalTransaction[] = [];
   const transactionsUpdate: CreateProposalTransaction[] = [];
-  const transactionsKeyValuesUpdate: CreateProposalTransaction[] = [];
+
   // address:name
   const newWalletAddressNamePairs: string[] = [];
   let isNameUpdated = false;
@@ -328,35 +328,6 @@ export const handleEditRevenueShare = async (
     }
   }
 
-  // create keyValuePairsUpdate if needed, new wallets, updated names
-  if (newWalletAddressNamePairs.length > 0 || isNameUpdated) {
-    const existingWalletAddressNamePairs = existingWallets.map(
-      wallet => `${wallet.address}:${wallet.name}`,
-    );
-
-    // combines new wallets and existing wallets into one array
-    const allWalletAddressNamePairs = [
-      ...existingWalletAddressNamePairs,
-      ...newWalletAddressNamePairs,
-    ];
-
-    transactionsKeyValuesUpdate.push({
-      targetAddress: daoAddress,
-      functionName: 'updateValues',
-      ethValue: DEFAULT_ETH_VALUE,
-      parameters: [
-        {
-          signature: 'string[]',
-          valueArray: ['revShareWallets'],
-        },
-        {
-          signature: 'string[]',
-          valueArray: [JSON.stringify(allWalletAddressNamePairs)],
-        },
-      ],
-    });
-  }
-
   const actions: CreateProposalActionData[] = [];
 
   if (transactionsCreate.length > 0) {
@@ -377,13 +348,37 @@ export const handleEditRevenueShare = async (
     }
   }
 
-  if (transactionsKeyValuesUpdate.length > 0) {
-    for (const transaction of transactionsKeyValuesUpdate) {
-      actions.push({
-        actionType: ProposalActionType.UPDATE_REVENUE_SHARE_WALLET_METADATA,
-        transactions: [transaction],
-      });
-    }
+  // create keyValuePairsUpdate if needed, new wallets, updated names
+  if (newWalletAddressNamePairs.length > 0 || isNameUpdated) {
+    const existingWalletAddressNamePairs = existingWallets.map(
+      wallet => `${wallet.address}:${wallet.name}`,
+    );
+
+    // combines new wallets and existing wallets into one array
+    const allWalletAddressNamePairs = [
+      ...existingWalletAddressNamePairs,
+      ...newWalletAddressNamePairs,
+    ];
+    actions.push({
+      actionType: ProposalActionType.UPDATE_REVENUE_SHARE_WALLET_METADATA,
+      transactions: [
+        {
+          targetAddress: daoAddress,
+          functionName: 'updateValues',
+          ethValue: DEFAULT_ETH_VALUE,
+          parameters: [
+            {
+              signature: 'string[]',
+              valueArray: ['revShareWallets'],
+            },
+            {
+              signature: 'string[]',
+              valueArray: [JSON.stringify(allWalletAddressNamePairs)],
+            },
+          ],
+        },
+      ],
+    });
   }
 
   return actions;
