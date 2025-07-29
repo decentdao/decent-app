@@ -1,4 +1,4 @@
-import { Button, Flex, Text } from '@chakra-ui/react';
+import { Button, Flex, ListItem, Text, UnorderedList } from '@chakra-ui/react';
 import { useFormikContext } from 'formik';
 import { useTranslation } from 'react-i18next';
 import { Address } from 'viem';
@@ -18,12 +18,17 @@ function StakingForm() {
   const { daoKey } = useCurrentDAOKey();
   const {
     governance: { stakedToken },
+    treasury: { assetsFungible },
   } = useDAOStore({ daoKey });
   const { values, setFieldValue } = useFormikContext<SafeSettingsEdits>();
 
   const { address, minimumStakingPeriod, rewardsTokens } = stakedToken || {};
   const minPeriodValue = Number(
     values.staking?.minimumStakingPeriod?.bigintValue || minimumStakingPeriod || 0n,
+  );
+
+  const undistributedTokens = assetsFungible.filter(
+    asset => !rewardsTokens?.includes(asset.tokenAddress),
   );
 
   return (
@@ -67,6 +72,24 @@ function StakingForm() {
           }}
           hideSteppers
         />
+      </LabelComponent>
+
+      <LabelComponent
+        label={t('undistributedTokensTitle')}
+        isRequired={false}
+        gridContainerProps={{
+          templateColumns: '1fr',
+          width: { base: '100%' },
+        }}
+        helper={t('undistributedTokensHelper')}
+      >
+        <UnorderedList>
+          {undistributedTokens.map(asset => (
+            <ListItem key={asset.tokenAddress}>
+              <Text>{asset.symbol}</Text>
+            </ListItem>
+          ))}
+        </UnorderedList>
       </LabelComponent>
 
       <LabelComponent
