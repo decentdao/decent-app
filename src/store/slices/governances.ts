@@ -20,7 +20,7 @@ import {
   ProposalVote,
   ProposalVotesSummary,
   SnapshotProposal,
-  StakingDaoData,
+  StakedTokenExtraData,
   VotesTokenData,
   VotingStrategy,
 } from '../../types';
@@ -92,7 +92,7 @@ export type GovernancesSlice = {
   setGaslessVotingData: (daoKey: DAOKey, gasslesVotingData: GaslessVotingDaoData) => void;
   setVotesTokenAddress: (daoKey: DAOKey, votesTokenAddress: Address) => void;
   setERC20Token: (daoKey: DAOKey, erc20Token: ERC20LockedTokenData | undefined) => void;
-  setStakingData: (daoKey: DAOKey, stakingData: StakingDaoData) => void;
+  setStakingData: (daoKey: DAOKey, stakedToken: StakedTokenExtraData | undefined) => void;
 };
 
 export const EMPTY_GOVERNANCE: FractalGovernance & FractalGovernanceContracts = {
@@ -106,7 +106,7 @@ export const EMPTY_GOVERNANCE: FractalGovernance & FractalGovernanceContracts = 
   gaslessVotingEnabled: false,
   paymasterAddress: null,
   erc20Token: undefined,
-  stakingAddress: null,
+  stakedToken: undefined,
 };
 
 const filterPendingTxHashes = (
@@ -432,16 +432,16 @@ export const createGovernancesSlice: StateCreator<
       'setERC20Token',
     );
   },
-  setStakingData: (daoKey, stakingData) => {
+  setStakingData: (daoKey, stakedToken) => {
     set(
       state => {
         if (!state.governances[daoKey]) {
           state.governances[daoKey] = {
             ...EMPTY_GOVERNANCE,
-            stakingAddress: stakingData.stakingAddress,
+            stakedToken: stakedToken,
           };
         } else {
-          state.governances[daoKey].stakingAddress = stakingData.stakingAddress;
+          state.governances[daoKey].stakedToken = stakedToken;
         }
       },
       false,

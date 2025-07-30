@@ -1083,14 +1083,51 @@ export function useGovernanceFetcher() {
         stakingContractMastercopy: votesERC20StakedV1MasterCopy,
         chainId: publicClient.chain.id,
       });
-
       const stakingCode = await publicClient.getCode({
         address: stakingAddress,
       });
-
       const stakingExists = !!stakingCode && stakingCode !== '0x';
 
-      return { stakingAddress: stakingExists ? stakingAddress : null };
+      if (stakingExists) {
+        try {
+          const tokenContract = getContract({
+            abi: abis.deployables.VotesERC20StakedV1,
+            address: stakingAddress,
+            client: publicClient,
+          });
+
+          // Execute multicall
+          const [minimumStakingPeriod, rewardsTokens] = await publicClient.multicall({
+            contracts: [
+              {
+                ...tokenContract,
+                functionName: 'minimumStakingPeriod',
+              },
+              {
+                ...tokenContract,
+                functionName: 'rewardsTokens',
+              },
+            ],
+            allowFailure: false,
+          });
+          return {
+            address: stakingAddress,
+            minimumStakingPeriod,
+            rewardsTokens: [...rewardsTokens],
+          };
+        } catch (e) {
+          logError({
+            message: 'Error getting staking data',
+            network: publicClient.chain!.id,
+          });
+        }
+      } else {
+        return {
+          address: undefined,
+          minimumStakingPeriod: 0n,
+          rewardsTokens: [],
+        };
+      }
     },
     [governance, publicClient, votesERC20StakedV1MasterCopy, zodiacModuleProxyFactory],
   );

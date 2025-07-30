@@ -96,6 +96,11 @@ export type SafeSettingsEdits = {
     addressesToWhitelist?: string[];
     maximumTotalSupply?: BigIntValuePair;
   };
+  staking?: {
+    deploying?: boolean;
+    newRewardTokens?: Address[];
+    minimumStakingPeriod?: BigIntValuePair;
+  };
 };
 
 type MultisigEditGovernanceFormikErrors = {
@@ -122,12 +127,18 @@ type TokenEditFormikErrors = {
   maximumTotalSupply?: string;
 };
 
+type StakingEditFormikErrors = {
+  newRewardTokens?: { key: string; error: string }[];
+  minimumStakingPeriod?: string;
+};
+
 export type SafeSettingsFormikErrors = {
   multisig?: MultisigEditGovernanceFormikErrors;
   general?: GeneralEditFormikErrors;
   paymasterGasTank?: PaymasterGasTankEditFormikErrors;
   revenueSharing?: RevenueSharingEditFormikErrors;
   token?: TokenEditFormikErrors;
+  staking?: StakingEditFormikErrors;
 };
 
 export function SafeSettingsModal({
@@ -214,6 +225,9 @@ export function SafeSettingsModal({
       ) ||
       Object.keys(errors.token ?? {}).some(
         key => (errors.token as TokenEditFormikErrors)[key as keyof TokenEditFormikErrors],
+      ) ||
+      Object.keys(errors.staking ?? {}).some(
+        key => (errors.staking as StakingEditFormikErrors)[key as keyof StakingEditFormikErrors],
       );
 
     return (
@@ -1340,6 +1354,40 @@ export function SafeSettingsModal({
                 minValue: currentMaxTotalSupply.value,
               });
               errors.token = errorsToken;
+            }
+          }
+        } else {
+          errors.token = undefined;
+        }
+
+        if (values.staking) {
+          const { newRewardTokens } = values.staking;
+          const errorsStaking = errors.staking ?? {};
+
+          if (newRewardTokens && newRewardTokens.length > 0) {
+            const newTokenErrors = await Promise.all(
+              newRewardTokens.map(async (token, index) => {
+                if (!token) {
+                  return {
+                    key: `newRewardTokens.${index}`,
+                    error: t('addressRequired', { ns: 'common' }),
+                  };
+                }
+
+                const validation = await validateAddress({ address: token });
+                if (!validation.validation.isValidAddress) {
+                  return {
+                    key: `newRewardTokens.${index}`,
+                    error: t('errorInvalidAddress', { ns: 'common' }),
+                  };
+                }
+                return null;
+              }),
+            );
+
+            if (newTokenErrors.some(error => error !== null)) {
+              errorsStaking.newRewardTokens = newTokenErrors.filter(error => error !== null);
+              errors.staking = errorsStaking;
             }
           }
         } else {
