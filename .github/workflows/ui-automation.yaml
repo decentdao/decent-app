@@ -60,10 +60,6 @@ jobs:
           fetch-depth: 0
           clean: true
 
-      - name: Print commit hash
-        working-directory: ui-automation
-        run: git rev-parse HEAD
-
       - name: Install dependencies in automation repo
         working-directory: ui-automation
         run: |
