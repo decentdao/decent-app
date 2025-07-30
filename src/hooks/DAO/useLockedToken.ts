@@ -10,6 +10,7 @@ interface LockedTokenState {
   whitelisted: boolean;
   canTransfer: boolean;
   needWhitelist: boolean;
+  isImportedToken: boolean;
 }
 
 const DEFAULT_STATE = {
@@ -17,6 +18,7 @@ const DEFAULT_STATE = {
   whitelisted: false,
   canTransfer: true,
   needWhitelist: false,
+  isImportedToken: true,
 };
 
 export default function useLockedToken(
@@ -46,6 +48,7 @@ export default function useLockedToken(
           whitelisted,
           canTransfer: !locked || whitelisted || canGrantRole,
           needWhitelist: locked && !whitelisted,
+          isImportedToken: false,
         };
       } catch (e) {
         console.warn('Failed to read locked token state', e);
