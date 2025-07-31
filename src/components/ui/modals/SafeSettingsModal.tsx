@@ -1225,8 +1225,13 @@ export function SafeSettingsModal({
         throw new Error('minimumStakingPeriod parameters are not set');
       }
 
-      const daoErc20Token = governance.votesToken;
-      if (!daoErc20Token || governance.type !== GovernanceType.AZORIUS_ERC20) {
+      let daoErc20Token;
+      if (governance.type === GovernanceType.AZORIUS_ERC20) {
+        daoErc20Token = governance.votesToken;
+      } else if (governance.type === GovernanceType.MULTISIG) {
+        daoErc20Token = governance.erc20Token;
+      }
+      if (daoErc20Token === undefined) {
         throw new Error('No ERC20 to be staked');
       }
 
