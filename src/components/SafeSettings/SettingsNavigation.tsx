@@ -26,7 +26,7 @@ import { SafeStakingSettingsPage } from '../../pages/dao/settings/staking/SafeSt
 import { SafeTokenSettingsPage } from '../../pages/dao/settings/token/SafeTokenSettingsPage';
 import { useDAOStore } from '../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
-import { AzoriusGovernance } from '../../types';
+import { AzoriusGovernance, GovernanceType } from '../../types';
 import { isNonEmpty } from '../../utils/valueCheck';
 import { BarLoader } from '../ui/loaders/BarLoader';
 import { SafeSettingsEdits } from '../ui/modals/SafeSettingsModal';
@@ -224,6 +224,13 @@ export function SettingsNavigation({
 
   const paymasterHasEdits = paymasterDepositHasEdits || paymasterWithdrawHasEdits;
 
+  let daoErc20Token;
+  if (governance.type === GovernanceType.AZORIUS_ERC20) {
+    daoErc20Token = governance.votesToken;
+  } else if (governance.type === GovernanceType.MULTISIG) {
+    daoErc20Token = governance.erc20Token;
+  }
+
   return (
     <Flex
       backgroundColor="transparent"
@@ -333,7 +340,7 @@ export function SettingsNavigation({
               }}
             />
           )}
-          {isRevShareEnabled && (
+          {isRevShareEnabled && daoErc20Token !== undefined && (
             <SettingsNavigationItem
               title={t('daoSettingsStaking')}
               leftIcon={<PiggyBank fontSize="1.5rem" />}
