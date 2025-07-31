@@ -92,7 +92,12 @@ function StakingForm() {
         <UnorderedList>
           {undistributedTokens.map(asset => (
             <ListItem key={asset.tokenAddress}>
-              <Text>{asset.symbol}</Text>
+              <DisplayAddress
+                address={asset.tokenAddress}
+                truncate={false}
+              >
+                <Text>{asset.symbol}</Text>
+              </DisplayAddress>
             </ListItem>
           ))}
         </UnorderedList>
