@@ -7,7 +7,10 @@ import DurationUnitStepperInput from '../../../../components/ui/forms/DurationUn
 import { LabelComponent } from '../../../../components/ui/forms/InputComponent';
 import { DisplayAddress } from '../../../../components/ui/links/DisplayAddress';
 import { BarLoader } from '../../../../components/ui/loaders/BarLoader';
-import { SafeSettingsEdits } from '../../../../components/ui/modals/SafeSettingsModal';
+import {
+  SafeSettingsEdits,
+  SafeSettingsFormikErrors,
+} from '../../../../components/ui/modals/SafeSettingsModal';
 import { AssetSelector } from '../../../../components/ui/utils/AssetSelector';
 import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
 import { useDAOStore } from '../../../../providers/App/AppProvider';
@@ -21,6 +24,8 @@ function StakingForm() {
     treasury: { assetsFungible },
   } = useDAOStore({ daoKey });
   const { values, setFieldValue } = useFormikContext<SafeSettingsEdits>();
+  const { errors } = useFormikContext<SafeSettingsEdits>();
+  const stakingErrors = (errors as SafeSettingsFormikErrors | undefined)?.staking;
 
   const { address, minimumStakingPeriod, rewardsTokens } = stakedToken || {};
   const minPeriodValue = Number(
@@ -52,6 +57,7 @@ function StakingForm() {
           templateColumns: '1fr',
           width: { base: '100%', md: '50%' },
         }}
+        errorMessage={stakingErrors?.minimumStakingPeriod}
       >
         <DurationUnitStepperInput
           secondsValue={minPeriodValue}
@@ -96,6 +102,7 @@ function StakingForm() {
         label={t('rewardTokensTitle')}
         isRequired={false}
         gridContainerProps={{
+          mt: 6,
           templateColumns: '1fr',
           width: { base: '100%' },
         }}

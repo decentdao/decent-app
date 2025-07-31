@@ -57,6 +57,8 @@ jobs:
         with:
           repository: decentdao/decent-ui-automation
           path: ui-automation
+          fetch-depth: 0
+          clean: true
 
       - name: Install dependencies in automation repo
         working-directory: ui-automation

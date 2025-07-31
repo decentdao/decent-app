@@ -1221,15 +1221,17 @@ export function SafeSettingsModal({
         throw new Error('Staking contract already deployed');
       }
 
-      if (
-        stakingValues.minimumStakingPeriod === undefined ||
-        stakingValues.newRewardTokens === undefined
-      ) {
-        throw new Error('Initialize2 parameters are not set');
+      if (stakingValues.minimumStakingPeriod === undefined) {
+        throw new Error('minimumStakingPeriod parameters are not set');
       }
 
-      const daoErc20Token = governance.votesToken;
-      if (!daoErc20Token || governance.type !== GovernanceType.AZORIUS_ERC20) {
+      let daoErc20Token;
+      if (governance.type === GovernanceType.AZORIUS_ERC20) {
+        daoErc20Token = governance.votesToken;
+      } else if (governance.type === GovernanceType.MULTISIG) {
+        daoErc20Token = governance.erc20Token;
+      }
+      if (daoErc20Token === undefined) {
         throw new Error('No ERC20 to be staked');
       }
 
@@ -1273,20 +1275,21 @@ export function SafeSettingsModal({
         parameters: [
           {
             signature: 'uint256',
-            value: stakingValues.minimumStakingPeriod?.bigintValue?.toString(),
+            value: stakingValues.minimumStakingPeriod.bigintValue?.toString(),
           },
           {
             signature: 'address[]',
-            value: `[${stakingValues.newRewardTokens.join(',')}]`,
+            value: `[${(stakingValues.newRewardTokens || []).join(',')}]`,
           },
         ],
       });
     } else {
-      if (stakingValues.minimumStakingPeriod !== undefined) {
-        if (stakingContract === undefined) {
-          throw new Error('Staking contract not deployed');
-        }
+      // If deploying is false or undefined, then we are updating the staking contract
+      if (stakingContract === undefined) {
+        throw new Error('Staking contract not deployed');
+      }
 
+      if (stakingValues.minimumStakingPeriod !== undefined) {
         transactions.push({
           targetAddress: stakingContract.address,
           ethValue,
@@ -1302,10 +1305,6 @@ export function SafeSettingsModal({
       }
 
       if (stakingValues.newRewardTokens !== undefined) {
-        if (stakingContract === undefined) {
-          throw new Error('Staking contract not deployed');
-        }
-
         transactions.push({
           targetAddress: stakingContract.address,
           ethValue,
@@ -1511,37 +1510,16 @@ export function SafeSettingsModal({
         }
 
         if (values.staking) {
-          const { newRewardTokens } = values.staking;
+          const { deploying, minimumStakingPeriod } = values.staking;
           const errorsStaking = errors.staking ?? {};
 
-          if (newRewardTokens && newRewardTokens.length > 0) {
-            const newTokenErrors = await Promise.all(
-              newRewardTokens.map(async (token, index) => {
-                if (!token) {
-                  return {
-                    key: `newRewardTokens.${index}`,
-                    error: t('addressRequired', { ns: 'common' }),
-                  };
-                }
-
-                const validation = await validateAddress({ address: token });
-                if (!validation.validation.isValidAddress) {
-                  return {
-                    key: `newRewardTokens.${index}`,
-                    error: t('errorInvalidAddress', { ns: 'common' }),
-                  };
-                }
-                return null;
-              }),
-            );
-
-            if (newTokenErrors.some(error => error !== null)) {
-              errorsStaking.newRewardTokens = newTokenErrors.filter(error => error !== null);
-              errors.staking = errorsStaking;
-            }
+          // Validate required fields if deploying
+          if (!!deploying && minimumStakingPeriod === undefined) {
+            errorsStaking.minimumStakingPeriod = t('stakingPeriodMoreThanZero', { ns: 'common' });
+            errors.staking = errorsStaking;
           }
         } else {
-          errors.token = undefined;
+          errors.staking = undefined;
         }
 
         if (values.general) {
