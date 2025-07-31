@@ -302,7 +302,7 @@ export function SafeTokenSettingsPage() {
             </Flex>
           )}
 
-          {erc20Token && (
+          {erc20Token && !tokenState.isImportedToken && (
             <>
               <Flex
                 gap={4}
@@ -441,6 +441,7 @@ export function SafeTokenSettingsPage() {
                         setFieldValue('token.maximumTotalSupply', undefined);
                       }
                     }}
+                    isDisabled={tokenState.isImportedToken}
                     decimalPlaces={erc20Token.decimals}
                     onKeyDown={restrictChars}
                   />
