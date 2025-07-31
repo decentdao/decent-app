@@ -1,12 +1,16 @@
 import { Button, Flex, Text } from '@chakra-ui/react';
 import { useFormikContext } from 'formik';
 import { useTranslation } from 'react-i18next';
+import { Address } from 'viem';
 import { SettingsContentBox } from '../../../../components/SafeSettings/SettingsContentBox';
 import DurationUnitStepperInput from '../../../../components/ui/forms/DurationUnitStepperInput';
 import { LabelComponent } from '../../../../components/ui/forms/InputComponent';
 import { DisplayAddress } from '../../../../components/ui/links/DisplayAddress';
 import { BarLoader } from '../../../../components/ui/loaders/BarLoader';
-import { SafeSettingsEdits } from '../../../../components/ui/modals/SafeSettingsModal';
+import {
+  SafeSettingsEdits,
+  SafeSettingsFormikErrors,
+} from '../../../../components/ui/modals/SafeSettingsModal';
 import { AssetSelector } from '../../../../components/ui/utils/AssetSelector';
 import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
 import { useDAOStore } from '../../../../providers/App/AppProvider';
@@ -19,6 +23,8 @@ function StakingForm() {
     governance: { stakedToken },
   } = useDAOStore({ daoKey });
   const { values, setFieldValue } = useFormikContext<SafeSettingsEdits>();
+  const { errors } = useFormikContext<SafeSettingsEdits>();
+  const stakingErrors = (errors as SafeSettingsFormikErrors | undefined)?.staking;
 
   const { address, minimumStakingPeriod, rewardsTokens } = stakedToken || {};
   const minPeriodValue = Number(
@@ -46,16 +52,24 @@ function StakingForm() {
           templateColumns: '1fr',
           width: { base: '100%', md: '50%' },
         }}
+        errorMessage={stakingErrors?.minimumStakingPeriod}
       >
         <DurationUnitStepperInput
           secondsValue={minPeriodValue}
           onSecondsValueChange={val => {
-            const notNullVal = val || 0;
+            if (val === undefined) {
+              return;
+            }
+
             const newMinPeriodValue: BigIntValuePair = {
-              bigintValue: BigInt(notNullVal),
-              value: notNullVal?.toString(),
+              bigintValue: BigInt(val),
+              value: val.toString(),
             };
-            setFieldValue('staking.minimumStakingPeriod', newMinPeriodValue);
+            if ((minimumStakingPeriod || 0n) !== newMinPeriodValue.bigintValue) {
+              setFieldValue('staking.minimumStakingPeriod', newMinPeriodValue);
+            } else {
+              setFieldValue('staking.minimumStakingPeriod', undefined);
+            }
           }}
           hideSteppers
         />
@@ -65,6 +79,7 @@ function StakingForm() {
         label={t('rewardTokensTitle')}
         isRequired={false}
         gridContainerProps={{
+          mt: 6,
           templateColumns: '1fr',
           width: { base: '100%' },
         }}
@@ -73,9 +88,19 @@ function StakingForm() {
         <AssetSelector
           includeNativeToken
           canSelectMultiple
-          defaultSelectedAddresses={rewardsTokens}
+          lockedSelections={rewardsTokens}
           onSelect={addresses => {
-            setFieldValue('staking.newRewardTokens', addresses);
+            const rewardTokensToBeAdded = addresses.filter(
+              a => !rewardsTokens?.includes(a as Address),
+            );
+            if (rewardTokensToBeAdded.length > 0) {
+              setFieldValue(
+                'staking.newRewardTokens',
+                addresses.filter(a => !rewardsTokens?.includes(a as Address)),
+              );
+            } else {
+              setFieldValue('staking.newRewardTokens', undefined);
+            }
           }}
         />
       </LabelComponent>

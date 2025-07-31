@@ -21,7 +21,7 @@ export interface ERC20LockedTokenData extends ERC20TokenData {
 }
 
 export interface StakedTokenExtraData {
-  address: Address | undefined;
+  address: Address;
   minimumStakingPeriod: bigint;
   rewardsTokens: Address[];
 }
