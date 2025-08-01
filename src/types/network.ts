@@ -15,7 +15,6 @@ type ContractsBase = {
   compatibilityFallbackHandler: Address;
 
   multiSendCallOnly: Address;
-  multiSend: Address;
 
   zodiacModuleProxyFactory: Address;
 
