@@ -3,7 +3,9 @@
   "stakingNull": "Your DAO doesn't have a staking contract yet. You can deploy one now.",
   "deployStaking": "Deploy Staking Contract",
   "stakingPeriod": "Staking Period",
+  "undistributedTokensTitle": "Undistributed Tokens",
+  "undistributedTokensHelper": "The following tokens are held by the contract but are not being distributed as rewards. Add them to the list of Reward Tokens below.",
   "rewardTokensTitle": "Reward Tokens",
-  "rewardTokensHelper": "Specify which tokens from incoming revenue will distributed as rewards.",
+  "rewardTokensHelper": "Specify which tokens from incoming revenue will distributed as rewards. You can't delete reward tokens.",
   "addRewardToken": "Add Token"
 }

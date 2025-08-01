@@ -15,7 +15,10 @@ interface AssetSelectorProps {
   onlyNativeToken?: boolean;
   onSelect?: (addresses: string[]) => void;
   canSelectMultiple?: boolean;
-  defaultSelectedAddresses?: string[];
+  /**
+   * Can't unselected these pre-selected assets
+   */
+  lockedSelections?: string[];
 }
 
 export const NATIVE_TOKEN_ADDRESS = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
@@ -26,7 +29,7 @@ export function AssetSelector({
   onlyNativeToken,
   onSelect,
   canSelectMultiple = false,
-  defaultSelectedAddresses = [],
+  lockedSelections = [],
 }: AssetSelectorProps) {
   const { t } = useTranslation(['roles', 'treasury', 'modals']);
 
@@ -43,11 +46,7 @@ export function AssetSelector({
   });
 
   const [selectedAddresses, setSelectedAddresses] = useState<string[]>(
-    onlyNativeToken
-      ? defaultSelectedAddresses.includes(NATIVE_TOKEN_ADDRESS)
-        ? [NATIVE_TOKEN_ADDRESS]
-        : []
-      : defaultSelectedAddresses,
+    lockedSelections || (onlyNativeToken ? [NATIVE_TOKEN_ADDRESS] : []),
   );
 
   const nonNativeFungibleAssets = assetsFungible.filter(
@@ -106,6 +105,10 @@ export function AssetSelector({
             setSelectedAddresses(newSelection);
             onSelect?.(newSelection);
           } else {
+            if (lockedSelections.includes(item.value)) {
+              return;
+            }
+
             const newSelection = selectedAddresses.filter(address => address !== item.value);
             setSelectedAddresses(newSelection);
             onSelect?.(newSelection);
