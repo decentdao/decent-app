@@ -158,10 +158,7 @@ export const useDAOStoreFetcher = ({
         });
 
         const stakingData = await fetchStakingDAOData(safeAddress);
-
-        if (stakingData) {
-          setStakingData(daoKey, stakingData);
-        }
+        setStakingData(daoKey, stakingData);
 
         fetchDAOGuard({
           guardAddress: getAddress(safe.guard),

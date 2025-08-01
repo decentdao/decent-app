@@ -20,7 +20,7 @@ import {
   ProposalVote,
   ProposalVotesSummary,
   SnapshotProposal,
-  StakedTokenExtraData,
+  StakedTokenData,
   VotesTokenData,
   VotingStrategy,
 } from '../../types';
@@ -92,7 +92,7 @@ export type GovernancesSlice = {
   setGaslessVotingData: (daoKey: DAOKey, gasslesVotingData: GaslessVotingDaoData) => void;
   setVotesTokenAddress: (daoKey: DAOKey, votesTokenAddress: Address) => void;
   setERC20Token: (daoKey: DAOKey, erc20Token: ERC20LockedTokenData | undefined) => void;
-  setStakingData: (daoKey: DAOKey, stakedToken: StakedTokenExtraData | undefined) => void;
+  setStakingData: (daoKey: DAOKey, stakedToken: StakedTokenData | undefined) => void;
 };
 
 export const EMPTY_GOVERNANCE: FractalGovernance & FractalGovernanceContracts = {

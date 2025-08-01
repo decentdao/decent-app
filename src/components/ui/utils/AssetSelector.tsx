@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import { useDAOStore } from '../../../providers/App/AppProvider';
+import { TokenBalance } from '../../../types';
 import { formatCoin, formatUSD } from '../../../utils';
 import { DropdownMenu } from '../menus/DropdownMenu';
 
@@ -17,6 +18,7 @@ interface AssetSelectorProps {
    * Can't unselected these pre-selected assets
    */
   lockedSelections?: string[];
+  hideBalanceAndMergeTokens?: TokenBalance[];
 }
 
 export const NATIVE_TOKEN_ADDRESS = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
@@ -28,6 +30,7 @@ export function AssetSelector({
   onSelect,
   canSelectMultiple = false,
   lockedSelections = [],
+  hideBalanceAndMergeTokens,
 }: AssetSelectorProps) {
   const { t } = useTranslation(['roles', 'treasury', 'modals']);
 
@@ -40,7 +43,20 @@ export function AssetSelector({
     lockedSelections || (onlyNativeToken ? [NATIVE_TOKEN_ADDRESS] : []),
   );
 
-  const items = assetsFungible.map(asset => ({
+  const assets = hideBalanceAndMergeTokens
+    ? [
+        ...assetsFungible,
+        ...hideBalanceAndMergeTokens.filter(
+          asset =>
+            !assetsFungible.find(
+              a => a.tokenAddress.toLowerCase() === asset.tokenAddress.toLowerCase(),
+            ),
+        ),
+      ]
+    : assetsFungible;
+  const showBalance = hideBalanceAndMergeTokens === undefined;
+
+  const items = assets.map(asset => ({
     value: asset.tokenAddress,
     label: asset.symbol,
     icon: asset.logo ?? asset.thumbnail ?? '/images/coin-icon-default.svg',
@@ -184,33 +200,36 @@ export function AssetSelector({
                 >
                   {item.label}
                 </Text>
-                <Flex
-                  alignItems="center"
-                  gap={2}
-                >
-                  <Text
-                    textStyle="text-lg-regular"
-                    color="color-neutral-300"
+
+                {showBalance && (
+                  <Flex
+                    alignItems="center"
+                    gap={2}
                   >
-                    {balanceText}
-                  </Text>
-                  {usdValue && (
-                    <>
-                      <Text
-                        textStyle="text-lg-regular"
-                        color="color-neutral-300"
-                      >
-                        {'•'}
-                      </Text>
-                      <Text
-                        textStyle="text-lg-regular"
-                        color="color-neutral-300"
-                      >
-                        {formatUSD(usdValue)}
-                      </Text>
-                    </>
-                  )}
-                </Flex>
+                    <Text
+                      textStyle="text-lg-regular"
+                      color="color-neutral-300"
+                    >
+                      {balanceText}
+                    </Text>
+                    {usdValue && (
+                      <>
+                        <Text
+                          textStyle="text-lg-regular"
+                          color="color-neutral-300"
+                        >
+                          {'•'}
+                        </Text>
+                        <Text
+                          textStyle="text-lg-regular"
+                          color="color-neutral-300"
+                        >
+                          {formatUSD(usdValue)}
+                        </Text>
+                      </>
+                    )}
+                  </Flex>
+                )}
               </Flex>
             </Flex>
             {isSelected && (
