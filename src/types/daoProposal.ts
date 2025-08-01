@@ -12,7 +12,6 @@ export interface ExecuteData {
   targets: Address[];
   values: bigint[];
   calldatas: Hex[];
-  operation?: (0 | 1)[];
 }
 
 export type CreateProposalFunc = (proposal: {
