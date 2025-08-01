@@ -60,10 +60,7 @@ import {
 import { formatCoin } from '../../../utils/numberFormats';
 import { validateENSName } from '../../../utils/url';
 import { isNonEmpty } from '../../../utils/valueCheck';
-import {
-  handleEditRevenueShare,
-  useCreateSplitsClient,
-} from '../../SafeSettings/RevenueShare/revenueShareFormHandlers';
+import { handleEditRevenueShare } from '../../SafeSettings/RevenueShare/revenueShareFormHandlers';
 import { SafePermissionsStrategyAction } from '../../SafeSettings/SafePermissionsStrategyAction';
 import { SettingsNavigation } from '../../SafeSettings/SettingsNavigation';
 import { NewSignerItem } from '../../SafeSettings/Signers/SignersContainer';
@@ -168,8 +165,6 @@ export function SafeSettingsModal({
   };
 
   const { canUserCreateProposal } = useCanUserCreateProposal();
-
-  const splitsClient = useCreateSplitsClient();
 
   const { t } = useTranslation(['modals', 'common', 'proposalMetadata']);
 
@@ -1253,21 +1248,19 @@ export function SafeSettingsModal({
     }
 
     if (revenueSharing) {
-      const actions = await handleEditRevenueShare(
-        safe.address,
-        subgraphInfo?.parentAddress,
+      const action = await handleEditRevenueShare({
+        daoAddress: safe.address,
+        parentDaoAddress: subgraphInfo?.parentAddress,
         stakingContractAddress,
-        values.revenueSharing,
-        revShareWallets ?? [],
-        splitsClient,
+        keyValuePairsAddress: keyValuePairs,
+        updatedValues: values.revenueSharing,
+        existingWallets: revShareWallets ?? [],
         publicClient,
-      );
-      actions.forEach(action => {
-        addAction({
-          actionType: action.actionType,
-          transactions: action.transactions,
-          content: <Text>{action.title}</Text>,
-        });
+      });
+      addAction({
+        actionType: action.actionType,
+        transactions: action.transactions,
+        content: <Text>{action.title}</Text>,
       });
     }
 
@@ -1574,8 +1567,8 @@ export function SafeSettingsModal({
         return errors;
       }}
       onSubmit={values => {
-        closeAllModals();
         submitAllSettingsEditsProposal(values);
+        closeAllModals();
       }}
     >
       <Form>

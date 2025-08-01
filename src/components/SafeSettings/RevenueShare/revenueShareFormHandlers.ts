@@ -1,25 +1,42 @@
-import { SplitV2Client } from '@0xsplits/splits-sdk';
 import { getSplitV2FactoryAddress } from '@0xsplits/splits-sdk/constants';
+import { splitV2ABI, splitV2FactoryABI } from '@0xsplits/splits-sdk/constants/abi';
 import { SplitV2Type } from '@0xsplits/splits-sdk/types';
-import { Address, getAddress, PublicClient } from 'viem';
-import useNetworkPublicClient from '../../../hooks/useNetworkPublicClient';
-import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
-import {
-  CreateProposalTransaction,
-  CreateProposalActionData,
-  ProposalActionType,
-} from '../../../types';
+import { legacy } from '@decentdao/decent-contracts';
+import { Address, encodeFunctionData, getAddress, PublicClient } from 'viem';
+import { CreateProposalTransaction, ProposalActionType } from '../../../types';
 import { RevenueSharingWallet, RevenueSharingWalletFormValues } from '../../../types/revShare';
+import { bigintSerializer } from '../../../utils/bigintSerializer';
 import { SafeSettingsEdits } from '../../ui/modals/SafeSettingsModal';
+import { predictSplitContractAddress } from './prediction';
 
 const DETERMINISTIC_SALT = '0x0000000000000000000000000000000000000000000000000000444543454E54';
 const DISTRIBUTION_INCENTIVE = 0;
-const TOTAL_ALLOCATION_PERCENT = 100;
+/**
+ * Splits contracts express percentages in parts‑per‑million (PPM):
+ * 100.0000 % === 1_000_000 units.
+ */
+const TOTAL_ALLOCATION_PERCENT = 1_000_000; // 100.0000 % scaled for Splits
 const TOTAL_ALLOCATION_PERCENT_BN = BigInt(TOTAL_ALLOCATION_PERCENT);
 const DEFAULT_ETH_VALUE = {
   bigintValue: 0n,
   value: '0',
 };
+
+export const PERCENT_SCALE = 10_000n;
+
+/** Whole-number percent (0-100) ➜ PPM bigint */
+export function percentToPpm(percent: bigint | number | string): bigint {
+  const v = BigInt(percent);
+  if (v < 0n || v > 100n) throw new Error('Percent must be between 0 and 100');
+  return v * PERCENT_SCALE; // 12  → 120 000n
+}
+
+/** PPM bigint ➜ whole-number percent (0-100) as number */
+export function ppmToPercent(ppm: bigint | number | string): number {
+  const v = BigInt(ppm);
+  if (v % PERCENT_SCALE !== 0n) throw new Error('PPM value is not a whole percent');
+  return Number(v / PERCENT_SCALE); // 120 000n → 12
+}
 
 export const mergeSplitWalletFormData = (
   formSplitWallets: RevenueSharingWalletFormValues[],
@@ -56,6 +73,7 @@ export const mergeSplitWalletFormData = (
   return reconciledWallets;
 };
 
+// merges special splits updates into the form wallets
 const mergeSpecialSplitsIntoWallet = (
   wallets: RevenueSharingWalletFormValues[] | undefined,
   daoAddress: Address,
@@ -142,44 +160,36 @@ export const validateAndFormatSplitWallets = (
       name: wallet.name,
       address: wallet.address ? getAddress(wallet.address) : undefined,
       splits: wallet.splits.map(split => {
-        if (!split.address || !split.percentage) {
+        if (!split.address || split.percentage === undefined || split.percentage === null) {
           throw new Error('No address or percentage found');
         }
+
         return {
           address: getAddress(split.address),
-          percentage: BigInt(split.percentage),
+          percentage: percentToPpm(split.percentage),
         };
       }),
     };
   });
 };
 
-export const useCreateSplitsClient = () => {
-  const {
-    chain: { id: chainId },
-  } = useNetworkConfigStore();
-  const publicClient = useNetworkPublicClient();
-  const splitsClient = new SplitV2Client({
-    chainId,
-    publicClient,
-    includeEnsNames: false,
-    apiConfig: {
-      apiKey: '', // You can create an API key by signing up on our app, and accessing your account settings at app.splits.org/settings.
-    }, // Splits GraphQL API key config, this is required for the data client to access the splits graphQL API.
-  });
-
-  return splitsClient;
-};
-
-export const handleEditRevenueShare = async (
-  daoAddress: Address,
-  parentDaoAddress: Address | undefined | null,
-  stakingContractAddress: Address | undefined,
-  updatedValues: SafeSettingsEdits['revenueSharing'],
-  existingWallets: RevenueSharingWallet[],
-  splitsClient: SplitV2Client,
-  publicClient: PublicClient,
-) => {
+export const handleEditRevenueShare = async ({
+  daoAddress,
+  parentDaoAddress,
+  stakingContractAddress,
+  keyValuePairsAddress,
+  updatedValues,
+  existingWallets,
+  publicClient,
+}: {
+  daoAddress: Address;
+  parentDaoAddress: Address | undefined | null;
+  stakingContractAddress: Address | undefined;
+  keyValuePairsAddress: Address;
+  updatedValues: SafeSettingsEdits['revenueSharing'];
+  existingWallets: RevenueSharingWallet[];
+  publicClient: PublicClient;
+}) => {
   if (!updatedValues) {
     throw new Error('Revenue sharing is not set');
   }
@@ -198,8 +208,7 @@ export const handleEditRevenueShare = async (
     stakingContractAddress,
   );
 
-  const transactionsCreate: CreateProposalTransaction[] = [];
-  const transactionsUpdate: CreateProposalTransaction[] = [];
+  const transactions: CreateProposalTransaction[] = [];
 
   // address:name
   const newWalletAddressNamePairs: string[] = [];
@@ -217,46 +226,67 @@ export const handleEditRevenueShare = async (
       if (totalAllocationPercent !== TOTAL_ALLOCATION_PERCENT_BN) {
         throw new Error('Total allocation percent must be 100');
       }
-      const recipientsData = splits.map(split => {
-        return {
-          address: split.address,
-          percentAllocation: Number(split.percentage),
-        };
-      });
-
-      const predictedNewSplitsWalletAddress = await splitsClient.predictDeterministicAddress({
-        recipients: recipientsData,
-        distributorFeePercent: DISTRIBUTION_INCENTIVE,
-        totalAllocationPercent: TOTAL_ALLOCATION_PERCENT,
-        splitType: SplitV2Type.Push,
-        ownerAddress: daoAddress,
-        creatorAddress: daoAddress,
-        salt: DETERMINISTIC_SALT,
-      });
 
       const recipients = splits.map(recipient => recipient.address);
-      const allocations = splits.map(recipient => recipient.percentage.toString());
-      const createNewSplitsWalletData = {
-        recipients,
-        allocations,
-        totalAllocation: TOTAL_ALLOCATION_PERCENT,
-        distributionIncentive: DISTRIBUTION_INCENTIVE,
-      };
+      const allocations = splits.map(recipient => recipient.percentage);
 
       const splitFactoryAddress = getSplitV2FactoryAddress(
         publicClient.chain!.id,
         SplitV2Type.Push,
       );
+      const splitWalletImplementation = await publicClient.readContract({
+        address: splitFactoryAddress,
+        abi: splitV2FactoryABI,
+        functionName: 'SPLIT_WALLET_IMPLEMENTATION',
+      });
 
-      transactionsCreate.push({
+      const predictedNewSplitsWalletAddress = predictSplitContractAddress({
+        splitParams: {
+          recipients: recipients,
+          allocations: allocations,
+          totalAllocation: BigInt(TOTAL_ALLOCATION_PERCENT),
+          distributionIncentive: DISTRIBUTION_INCENTIVE,
+        },
+        owner: daoAddress,
+        deployer: splitFactoryAddress,
+        salt: DETERMINISTIC_SALT,
+        splitWalletImplementation: splitWalletImplementation,
+      });
+
+      const createSplitCalldata = encodeFunctionData({
+        abi: splitV2FactoryABI,
+        functionName: 'createSplitDeterministic',
+        args: [
+          {
+            recipients: recipients,
+            allocations: allocations,
+            totalAllocation: BigInt(TOTAL_ALLOCATION_PERCENT),
+            distributionIncentive: DISTRIBUTION_INCENTIVE,
+          },
+          daoAddress,
+          daoAddress,
+          DETERMINISTIC_SALT,
+        ],
+      });
+
+      transactions.push({
         targetAddress: splitFactoryAddress,
         functionName: 'createSplitDeterministic',
         ethValue: DEFAULT_ETH_VALUE,
-        operation: 1,
+        calldata: createSplitCalldata,
+        // parameters are passed for display purposes
         parameters: [
           {
             signature: '{address[], uint256[], uint256, uint256}',
-            value: JSON.stringify(createNewSplitsWalletData),
+            value: JSON.stringify(
+              {
+                recipients,
+                allocations,
+                totalAllocation: TOTAL_ALLOCATION_PERCENT,
+                distributionIncentive: DISTRIBUTION_INCENTIVE,
+              },
+              bigintSerializer,
+            ),
           },
           {
             signature: 'address',
@@ -305,47 +335,41 @@ export const handleEditRevenueShare = async (
       }
 
       const recipients = updatedSplit.splits.map(split => getAddress(split.address));
-      const allocations = updatedSplit.splits.map(split => split.percentage.toString());
+      const allocations = updatedSplit.splits.map(split => split.percentage);
 
-      const createNewSplitsWalletData = {
-        recipients,
-        allocations,
-        totalAllocation: BigInt(TOTAL_ALLOCATION_PERCENT),
-        distributionIncentive: DISTRIBUTION_INCENTIVE,
-      };
-
-      transactionsUpdate.push({
-        targetAddress: updatedSplit.address,
+      const updateSplitCalldata = encodeFunctionData({
+        abi: splitV2ABI,
         functionName: 'updateSplit',
-        ethValue: DEFAULT_ETH_VALUE,
-        parameters: [
+        args: [
           {
-            signature: '{address[], uint256[], uint256, uint256}',
-            value: JSON.stringify(createNewSplitsWalletData),
+            recipients: recipients,
+            allocations: allocations,
+            totalAllocation: BigInt(TOTAL_ALLOCATION_PERCENT),
+            distributionIncentive: DISTRIBUTION_INCENTIVE,
           },
         ],
       });
-    }
-  }
 
-  const actions: (CreateProposalActionData & { title: string })[] = [];
-
-  if (transactionsCreate.length > 0) {
-    for (const transaction of transactionsCreate) {
-      actions.push({
-        actionType: ProposalActionType.CREATE_REVENUE_SHARE_WALLET,
-        transactions: [transaction],
-        title: 'Create Revenue Share Wallet',
-      });
-    }
-  }
-
-  if (transactionsUpdate.length > 0) {
-    for (const transaction of transactionsUpdate) {
-      actions.push({
-        actionType: ProposalActionType.UPDATE_REVENUE_SHARE_SPLITS,
-        transactions: [transaction],
-        title: 'Update Revenue Share Splits',
+      transactions.push({
+        targetAddress: updatedSplit.address,
+        functionName: 'updateSplit',
+        calldata: updateSplitCalldata,
+        ethValue: DEFAULT_ETH_VALUE,
+        // parameters are passed for display purposes
+        parameters: [
+          {
+            signature: '{address[], uint256[], uint256, uint256}',
+            value: JSON.stringify(
+              {
+                recipients,
+                allocations,
+                totalAllocation: TOTAL_ALLOCATION_PERCENT,
+                distributionIncentive: DISTRIBUTION_INCENTIVE,
+              },
+              bigintSerializer,
+            ),
+          },
+        ],
       });
     }
   }
@@ -361,28 +385,36 @@ export const handleEditRevenueShare = async (
       ...existingWalletAddressNamePairs,
       ...newWalletAddressNamePairs,
     ];
-    actions.push({
-      actionType: ProposalActionType.UPDATE_REVENUE_SHARE_WALLET_METADATA,
-      title: 'Update Revenue Share Wallet Metadata',
-      transactions: [
+
+    const updateRevenueShareMetadataCalldata = encodeFunctionData({
+      abi: legacy.abis.KeyValuePairs,
+      functionName: 'updateValues',
+      args: [['revShareWallets'], [JSON.stringify(allWalletAddressNamePairs)]],
+    });
+
+    transactions.push({
+      targetAddress: keyValuePairsAddress,
+      functionName: 'updateValues',
+      calldata: updateRevenueShareMetadataCalldata,
+      ethValue: DEFAULT_ETH_VALUE,
+      // parameters are passed for display purposes
+      parameters: [
         {
-          targetAddress: daoAddress,
-          functionName: 'updateValues',
-          ethValue: DEFAULT_ETH_VALUE,
-          parameters: [
-            {
-              signature: 'string[]',
-              valueArray: ['revShareWallets'],
-            },
-            {
-              signature: 'string[]',
-              valueArray: [JSON.stringify(allWalletAddressNamePairs)],
-            },
-          ],
+          signature: 'string[]',
+          valueArray: ['revShareWallets'],
+        },
+        {
+          signature: 'string[]',
+          valueArray: [JSON.stringify(allWalletAddressNamePairs)],
         },
       ],
     });
   }
 
-  return actions;
+  return {
+    // todo make this dynamic
+    actionType: ProposalActionType.UPDATE_REVENUE_SHARE_SPLITS,
+    title: 'Update Revenue Share Splits',
+    transactions,
+  };
 };

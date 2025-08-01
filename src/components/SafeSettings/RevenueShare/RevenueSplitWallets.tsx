@@ -164,7 +164,6 @@ export function RevSplitRow({
                   value={fieldValue}
                   onChange={value => {
                     if (value.target.value === existingWalletSplitAddress) {
-                      console.log('🚀 ~ field.name:', field.name);
                       form.setFieldValue(field.name, undefined);
                     } else {
                       form.setFieldValue(field.name, value.target.value);
