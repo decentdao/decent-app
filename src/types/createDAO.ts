@@ -109,6 +109,7 @@ export type DAOGovernorERC721Token<T = bigint> = {
 export type DAOGovernorModuleConfig<T = bigint> = {
   votingStrategyType: VotingStrategyType;
   quorumPercentage: T;
+  proposalPermission: T;
   timelock: T;
   votingPeriod: T;
   executionPeriod: T;

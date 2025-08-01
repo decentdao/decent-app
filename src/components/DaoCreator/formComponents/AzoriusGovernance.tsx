@@ -133,6 +133,40 @@ export function AzoriusGovernance(props: ICreationStepProps) {
             </LabelComponent>
           )}
 
+          {/* QUORUM */}
+          {values.azorius.votingStrategyType === VotingStrategyType.LINEAR_ERC20 ? (
+            <LabelComponent
+              label={t('proposalPermission', { ns: 'common' })}
+              helper={t('helperProposalPermission')}
+              isRequired
+            >
+              <InputGroup>
+                <BigIntInput
+                  value={values.azorius.quorumPercentage.bigintValue}
+                  onChange={valuePair => setFieldValue('azorius.quorumPercentage', valuePair)}
+                  max="100"
+                  decimalPlaces={0}
+                  data-testid="govConfig-quorumPercentage"
+                />
+                <InputRightElement>%</InputRightElement>
+              </InputGroup>
+            </LabelComponent>
+          ) : (
+            <LabelComponent
+              label={t('proposalPermission', { ns: 'common' })}
+              helper={t('helperProposalPermission')}
+              isRequired
+            >
+              <BigIntInput
+                value={values.erc721Token.quorumThreshold.bigintValue}
+                onChange={valuePair => setFieldValue('erc721Token.quorumThreshold', valuePair)}
+                decimalPlaces={0}
+                min="1"
+                data-testid="govConfig-quorumThreshold"
+              />
+            </LabelComponent>
+          )}
+
           {/* VOTING PERIOD */}
           <LabelComponent
             label={t('labelVotingPeriod')}
