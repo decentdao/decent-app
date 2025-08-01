@@ -53,7 +53,8 @@ function StakingForm() {
         label={t('stakingPeriod')}
         isRequired
         gridContainerProps={{
-          my: 2,
+          mt: 2,
+          mb: 4,
           templateColumns: '1fr',
           width: { base: '100%', md: '50%' },
         }}
@@ -80,34 +81,36 @@ function StakingForm() {
         />
       </LabelComponent>
 
-      <LabelComponent
-        label={t('undistributedTokensTitle')}
-        isRequired={false}
-        gridContainerProps={{
-          templateColumns: '1fr',
-          width: { base: '100%' },
-        }}
-        helper={t('undistributedTokensHelper')}
-      >
-        <UnorderedList>
-          {undistributedTokens.map(asset => (
-            <ListItem key={asset.tokenAddress}>
-              <DisplayAddress
-                address={asset.tokenAddress}
-                truncate={false}
-              >
-                <Text>{asset.symbol}</Text>
-              </DisplayAddress>
-            </ListItem>
-          ))}
-        </UnorderedList>
-      </LabelComponent>
+      {undistributedTokens.length > 0 && (
+        <LabelComponent
+          label={t('undistributedTokensTitle')}
+          isRequired={false}
+          gridContainerProps={{
+            my: 2,
+            templateColumns: '1fr',
+            width: { base: '100%' },
+          }}
+          helper={t('undistributedTokensHelper')}
+        >
+          <UnorderedList>
+            {undistributedTokens.map(asset => (
+              <ListItem key={asset.tokenAddress}>
+                <DisplayAddress
+                  address={asset.tokenAddress}
+                  truncate={false}
+                >
+                  <Text>{asset.symbol}</Text>
+                </DisplayAddress>
+              </ListItem>
+            ))}
+          </UnorderedList>
+        </LabelComponent>
+      )}
 
       <LabelComponent
         label={t('rewardTokensTitle')}
         isRequired={false}
         gridContainerProps={{
-          mt: 6,
           templateColumns: '1fr',
           width: { base: '100%' },
         }}
