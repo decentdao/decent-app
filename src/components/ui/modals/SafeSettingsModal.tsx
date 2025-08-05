@@ -47,7 +47,15 @@ import {
   FractalTokenType,
   ProposalActionType,
 } from '../../../types';
-import { RevenueSharingWalletForm, RevenueSharingWalletFormErrors } from '../../../types/revShare';
+import {
+  RevenueSharingSplitFormError,
+  RevenueSharingWalletForm,
+  RevenueSharingWalletFormError,
+  RevenueSharingWalletFormErrors,
+  RevenueSharingWalletFormSpecialSplitsError,
+  RevenueSharingWalletFormType,
+  RevenueSharingWalletFormValues,
+} from '../../../types/revShare';
 import { SENTINEL_MODULE } from '../../../utils/address';
 import { getEstimatedNumberOfBlocks } from '../../../utils/contract';
 import { prepareRefillPaymasterAction } from '../../../utils/dao/prepareRefillPaymasterActionData';
@@ -213,15 +221,11 @@ export function SafeSettingsModal({
           ],
       ) ||
       Object.keys(errors.revenueSharing ?? {}).some(
-        key =>
-          (errors.revenueSharing as RevenueSharingWalletFormErrors)[
-            Number(key) as keyof RevenueSharingWalletFormErrors
-          ],
+        key => Object.keys((errors.revenueSharing as any)[key]).length > 0,
       ) ||
       Object.keys(errors.token ?? {}).some(
         key => (errors.token as TokenEditFormikErrors)[key as keyof TokenEditFormikErrors],
       );
-
     return (
       <Flex
         flexDirection="row"
@@ -1465,100 +1469,169 @@ export function SafeSettingsModal({
           errors.paymasterGasTank = undefined;
         }
 
-        // if (values.revenueSharing) {
-        //   const existingWallets = [...(revShareWallets ?? [])];
-        //   const formUpdateToWallets = values.revenueSharing?.existing;
-        //   const formNewWallets = values.revenueSharing?.new;
-        //   const walletErrors = {} as {
-        //     new: RevenueSharingWalletFormError[];
-        //     existing: RevenueSharingWalletFormError[];
-        //   };
+        /* -------------------------------------------------------------------------- */
+        /*                      REVENUE-SHARING (existing / new)                      */
+        /* -------------------------------------------------------------------------- */
+        if (values.revenueSharing) {
+          const { existing: existingWallets = [], new: newWallets = [] } = values.revenueSharing;
 
-        //   const updateRevenueSharingErrors = async (
-        //     _formWallet: RevenueSharingWalletFormValues,
-        //     _walletIndex: number,
-        //     _formType: 'new' | 'existing',
-        //   ) => {
-        //     const existingWallet = existingWallets[_walletIndex]; // possibly undefined
+          const revShareErrors: NonNullable<SafeSettingsFormikErrors['revenueSharing']> = {
+            existing: {},
+            new: {},
+          };
 
-        //     const formWallet = formUpdateToWallets[_walletIndex];
-        //     const walletError = walletErrors[_formType][_walletIndex];
+          /** Validate one wallet (existing | new) in place */
+          const validateWallet = async (
+            wallet: RevenueSharingWalletFormValues,
+            index: number,
+            type: RevenueSharingWalletFormType,
+          ) => {
+            const walletError: RevenueSharingWalletFormError = {};
 
-        //     // handle wallet name
-        //     if (formWallet?.name && !existingWallet) {
-        //       // no validation needed
-        //     } else if (!!existingWallet && !formWallet?.name) {
-        //       walletError.name = 'Name is required';
-        //     } else {
-        //       // do nothing
-        //     }
+            /* ---------- name ---------- */
+            if (
+              (type === 'new' && !wallet.name) || // required for new wallets
+              (wallet.name !== undefined && wallet.name.trim() === '')
+            ) {
+              walletError.name = t('walletNameRequired', { ns: 'revenueSharing' });
+            }
 
-        //     // handle splits
-        //     if (formWallet?.splits && formWallet.splits.length > 0) {
-        //       const totalSplitPercentage = formWallet.splits.reduce(
-        //         (total, s) => total + Number(s?.percentage || 0),
-        //         0,
-        //       );
-        //       for (let splitIndex = 0; splitIndex < formWallet.splits.length; splitIndex++) {
-        //         walletError.splits![splitIndex] = {
-        //           address: undefined,
-        //           percentage: undefined,
-        //         };
-        //         const split = formWallet.splits[splitIndex];
-        //         if (split?.address) {
-        //           const validation = await validateAddress({ address: split.address });
-        //           if (!validation.validation.isValidAddress) {
-        //             walletError.splits![splitIndex].address = 'Invalid split address';
-        //           }
-        //         } else {
-        //           walletError.splits![splitIndex].address = 'Split Address is required';
-        //         }
+            /* ---------- regular splits ---------- */
+            if (wallet.splits && wallet.splits.length > 0) {
+              await Promise.all(
+                wallet.splits.map(async (split, splitIdx) => {
+                  const splitErr: RevenueSharingSplitFormError = {};
 
-        //         if (split?.percentage) {
-        //           const percentage = Number(split.percentage);
-        //           if (percentage < 0 || percentage > 100) {
-        //             walletError.splits![splitIndex].percentage =
-        //               'Split Percentage must be between 0 and 100';
-        //           }
-        //           if (totalSplitPercentage > 100) {
-        //             walletError.splits![splitIndex].percentage = 'Total percentage must be 100%';
-        //           }
-        //         } else {
-        //           walletError.splits![splitIndex].percentage = 'Split Percentage is required';
-        //         }
-        //       }
-        //     } else if (formWallet.splits && formWallet.splits.length === 0) {
-        //       // validation handled by splits array
-        //     }
-        //     return walletErrors;
-        //   };
+                  /* address */
+                  if (!split?.address) {
+                    splitErr.address = t('addressRequired', { ns: 'common' });
+                  } else {
+                    const { validation } = await validateAddress({ address: split.address });
+                    if (!validation.isValidAddress) {
+                      splitErr.address = t('errorInvalidAddress', { ns: 'common' });
+                    }
+                  }
 
-        //   if (formNewWallets && formNewWallets.length > 0) {
-        //     for (let walletIndex = 0; walletIndex < formNewWallets.length; walletIndex++) {
-        //       updateRevenueSharingErrors(formNewWallets[walletIndex], walletIndex, 'new');
-        //     }
-        //   }
+                  /* percentage */
+                  if (split?.percentage === undefined || split.percentage === '') {
+                    splitErr.percentage = t('percentageRequired', { ns: 'revenueSharing' });
+                  } else {
+                    const pct = Number(split.percentage);
+                    if (isNaN(pct) || pct < 0 || pct > 100) {
+                      splitErr.percentage = t('percentageRangeInvalid', { ns: 'revenueSharing' });
+                    }
+                  }
 
-        //   if (formUpdateToWallets && formUpdateToWallets.length > 0) {
-        //     for (let walletIndex = 0; walletIndex < formUpdateToWallets.length; walletIndex++) {
-        //       updateRevenueSharingErrors(formUpdateToWallets[walletIndex], walletIndex, 'existing');
-        //     }
-        //   }
+                  if (Object.keys(splitErr).length > 0) {
+                    walletError.splits = {};
+                    walletError.splits![splitIdx] = splitErr;
+                  }
+                }),
+              );
+            }
+            const noRegularSplits = !wallet.splits || wallet.splits.length === 0;
 
-        //   if (
-        //     (walletErrors.new &&
-        //       walletErrors.existing &&
-        //       Object.values(walletErrors.new).length > 0) ||
-        //     Object.values(walletErrors.existing).length > 0
-        //   ) {
-        //     errors.revenueSharing = {
-        //       existing: walletErrors.existing,
-        //       new: walletErrors.new,
-        //     };
-        //   } else {
-        //     errors.revenueSharing = undefined;
-        //   }
-        // }
+            if (noRegularSplits && !wallet.specialSplits) {
+              walletError.walletError = t('splitsRequired', { ns: 'revenueSharing' });
+            }
+            /* ---------- special splits ---------- */
+            if (wallet.specialSplits) {
+              const addSpecialErr = (
+                key: keyof RevenueSharingWalletFormSpecialSplitsError,
+                err: RevenueSharingSplitFormError,
+              ) => {
+                if (!walletError.specialSplits) walletError.specialSplits = {};
+                walletError.specialSplits[key] = err;
+              };
+
+              const specials: (keyof typeof wallet.specialSplits)[] = [
+                'dao',
+                'parentDao',
+                'stakingContract',
+              ];
+
+              for (const key of specials) {
+                const split = wallet.specialSplits[key];
+                if (!split) continue;
+
+                const splitErr: RevenueSharingSplitFormError = {};
+
+                /* percentage */
+                if (split.percentage !== undefined) {
+                  const pct = Number(split.percentage);
+                  if (isNaN(pct) || pct < 0 || pct > 100) {
+                    splitErr.percentage = t('percentageRangeInvalid', { ns: 'revenueSharing' });
+                  }
+                } else {
+                  splitErr.percentage = t('percentageRequired', { ns: 'revenueSharing' });
+                }
+
+                if (Object.keys(splitErr).length > 0) addSpecialErr(key, splitErr);
+              }
+            }
+
+            /* ---------- percentage total (regular + specials) ---------- */
+            const sum = (...nums: (string | number | undefined)[]): number =>
+              nums.reduce<number>(
+                (tot, n) => tot + (n !== undefined && n !== '' ? Number(n) : 0),
+                0,
+              );
+
+            const totalPct =
+              sum(...(wallet.splits?.map(s => s?.percentage) ?? [])) +
+              sum(
+                wallet.specialSplits?.dao?.percentage,
+                wallet.specialSplits?.parentDao?.percentage,
+                wallet.specialSplits?.stakingContract?.percentage,
+              );
+
+            if (totalPct !== 100) {
+              const msg = t('errorTotalPercentage', { ns: 'revenueSharing' });
+
+              /* root-level (regular) split error */
+              walletError.splits = walletError.splits ?? {};
+              walletError.splits[0] = { ...(walletError.splits[0] ?? {}), percentage: msg };
+
+              /* also flag every special-split that exists */
+              const specials: (keyof RevenueSharingWalletFormSpecialSplitsError)[] = [
+                'dao',
+                'parentDao',
+                'stakingContract',
+              ];
+
+              for (const key of specials) {
+                if (wallet.specialSplits?.[key]) {
+                  if (!walletError.specialSplits) walletError.specialSplits = {};
+                  walletError.specialSplits[key] = {
+                    ...(walletError.specialSplits[key] ?? {}),
+                    percentage: msg,
+                  };
+                }
+              }
+            }
+
+            /* ---------- collect ---------- */
+            if (Object.keys(walletError).length > 0) {
+              revShareErrors[type][index] = walletError;
+            }
+          };
+
+          await Promise.all([
+            ...existingWallets.map((w, i) => validateWallet(w, i, 'existing')),
+            ...newWallets.map((w, i) => validateWallet(w, i, 'new')),
+          ]);
+
+          if (
+            Object.keys(revShareErrors.existing).length > 0 ||
+            Object.keys(revShareErrors.new).length > 0
+          ) {
+            errors.revenueSharing = revShareErrors;
+          } else {
+            errors.revenueSharing = undefined;
+          }
+        } else {
+          errors.revenueSharing = undefined;
+        }
 
         if (Object.values(errors).every(e => e === undefined)) {
           errors = {};

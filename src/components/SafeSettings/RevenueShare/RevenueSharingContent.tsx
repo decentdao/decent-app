@@ -6,7 +6,6 @@ import { Address } from 'viem';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import { createAccountSubstring } from '../../../hooks/utils/useGetAccountName';
 import { useDAOStore } from '../../../providers/App/AppProvider';
-import { RevenueSharingWalletSplit } from '../../../types/revShare';
 import { Badge } from '../../ui/badges/Badge';
 import AddressCopier from '../../ui/links/AddressCopier';
 import { BarLoader } from '../../ui/loaders/BarLoader';
@@ -43,7 +42,6 @@ function RevenueShareHeader() {
 
           formWallets[formWallets.length] = {
             name: t('defaultSplitName'),
-            splits: [{} as Partial<RevenueSharingWalletSplit<string, string>>],
           };
           setFieldValue('revenueSharing.new', formWallets);
         }}

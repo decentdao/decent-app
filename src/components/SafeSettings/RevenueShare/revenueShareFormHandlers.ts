@@ -38,6 +38,9 @@ export function ppmToPercent(ppm: bigint | number | string): number {
   return Number(v / PERCENT_SCALE); // 120 000n → 12
 }
 
+/**
+ * Merges form data with deployed data; form data takes precedence
+ */
 export const mergeSplitWalletFormData = (
   formSplitWallets: RevenueSharingWalletFormValues[],
   deployedSplitWallets: RevenueSharingWallet[] | undefined,
@@ -48,22 +51,22 @@ export const mergeSplitWalletFormData = (
     { length: maxLength },
     (_, walletIndex) => {
       const existingWalletData = deployedSplitWallets?.[walletIndex];
-      const existingWalletFormData = formSplitWallets?.[walletIndex];
+      const formWalletData = formSplitWallets?.[walletIndex];
 
       const splitsLength = existingWalletData?.splits?.length || 0;
-      const newSplitsLength = existingWalletFormData?.splits?.length || 0;
+      const newSplitsLength = formWalletData?.splits?.length || 0;
       const maxSplitsLength = Math.max(splitsLength, newSplitsLength);
 
       return {
-        name: existingWalletFormData?.name || existingWalletData?.name,
-        address: existingWalletFormData?.address || existingWalletData?.address,
+        name: formWalletData?.name ?? existingWalletData?.name,
+        address: formWalletData?.address ?? existingWalletData?.address,
         splits: Array.from({ length: maxSplitsLength }, (__, splitIndex) => {
           const existingSplitData = existingWalletData?.splits?.[splitIndex];
-          const existingSplitFormData = existingWalletFormData?.splits?.[splitIndex];
+          const existingSplitFormData = formWalletData?.splits?.[splitIndex];
           return {
-            address: existingSplitFormData?.address || existingSplitData?.address,
+            address: existingSplitFormData?.address ?? existingSplitData?.address,
             percentage:
-              existingSplitFormData?.percentage || existingSplitData?.percentage.toString(),
+              existingSplitFormData?.percentage ?? existingSplitData?.percentage.toString(),
           };
         }),
       };
@@ -73,7 +76,9 @@ export const mergeSplitWalletFormData = (
   return reconciledWallets;
 };
 
-// merges special splits updates into the form wallets
+/**
+ * Merges special splits updates into the form wallets
+ */
 const mergeSpecialSplitsIntoWallet = (
   wallets: RevenueSharingWalletFormValues[] | undefined,
   daoAddress: Address,
@@ -152,16 +157,16 @@ export const validateAndFormatSplitWallets = (
   formSplitWallets: RevenueSharingWalletFormValues[],
 ) => {
   return formSplitWallets.map(wallet => {
-    if (!wallet.name || !wallet.splits) {
-      throw new Error('No name, address, or splits found');
+    if (!wallet.name || wallet.splits === undefined || wallet.splits.length === 0) {
+      throw new Error('No name or splits found');
     }
 
     return {
       name: wallet.name,
       address: wallet.address ? getAddress(wallet.address) : undefined,
       splits: wallet.splits.map(split => {
-        if (!split.address || split.percentage === undefined || split.percentage === null) {
-          throw new Error('No address or percentage found');
+        if (!split.address || split.percentage === undefined) {
+          throw new Error('No splitaddress or percentage found');
         }
 
         return {
@@ -194,19 +199,7 @@ export const handleEditRevenueShare = async ({
     throw new Error('Revenue sharing is not set');
   }
 
-  const { existing: existingFormUpdates, new: newFormUpdates } = updatedValues;
-  const existingWalletFormUpdates = mergeSpecialSplitsIntoWallet(
-    existingFormUpdates,
-    daoAddress,
-    parentDaoAddress,
-    stakingContractAddress,
-  );
-  const newWalletFormUpdates = mergeSpecialSplitsIntoWallet(
-    newFormUpdates,
-    daoAddress,
-    parentDaoAddress,
-    stakingContractAddress,
-  );
+  const { existing: existingFormValues, new: newFormValues } = updatedValues;
 
   const transactions: CreateProposalTransaction[] = [];
 
@@ -214,8 +207,15 @@ export const handleEditRevenueShare = async ({
   const newWalletAddressNamePairs: string[] = [];
   let isNameUpdated = false;
 
-  const validatedNewWalletFormUpdates = validateAndFormatSplitWallets(newWalletFormUpdates);
-  if (newWalletFormUpdates && newWalletFormUpdates.length > 0) {
+  const mergedNewFormValues = mergeSpecialSplitsIntoWallet(
+    newFormValues,
+    daoAddress,
+    parentDaoAddress,
+    stakingContractAddress,
+  );
+
+  const validatedNewWalletFormUpdates = validateAndFormatSplitWallets(mergedNewFormValues);
+  if (validatedNewWalletFormUpdates && validatedNewWalletFormUpdates.length > 0) {
     for (const newWalletFormUpdate of validatedNewWalletFormUpdates) {
       const { name, splits } = newWalletFormUpdate;
 
@@ -260,7 +260,7 @@ export const handleEditRevenueShare = async ({
           {
             recipients: recipients,
             allocations: allocations,
-            totalAllocation: BigInt(TOTAL_ALLOCATION_PERCENT),
+            totalAllocation: totalAllocationPercent,
             distributionIncentive: DISTRIBUTION_INCENTIVE,
           },
           daoAddress,
@@ -282,7 +282,7 @@ export const handleEditRevenueShare = async ({
               {
                 recipients,
                 allocations,
-                totalAllocation: TOTAL_ALLOCATION_PERCENT,
+                totalAllocation: totalAllocationPercent,
                 distributionIncentive: DISTRIBUTION_INCENTIVE,
               },
               bigintSerializer,
@@ -307,17 +307,24 @@ export const handleEditRevenueShare = async ({
     }
   }
 
+  const mergedExistingFormValues = mergeSpecialSplitsIntoWallet(
+    existingFormValues,
+    daoAddress,
+    parentDaoAddress,
+    stakingContractAddress,
+  );
+  const mergedExistingWallets = mergeSplitWalletFormData(mergedExistingFormValues, existingWallets);
+  const validatedExistingWalletFormUpdates = validateAndFormatSplitWallets(mergedExistingWallets);
+
   // for updating existing wallet splits
-  if (existingWalletFormUpdates?.length > 0) {
-    const updatedSplits = mergeSplitWalletFormData(existingWalletFormUpdates, existingWallets);
-    isNameUpdated = updatedSplits.some(
+  if (validatedExistingWalletFormUpdates?.length > 0) {
+    isNameUpdated = validatedExistingWalletFormUpdates.some(
       updatedSplit =>
         updatedSplit.name !==
         existingWallets?.find(existingWallet => existingWallet.address === updatedSplit.address)
           ?.name,
     );
-    const formattedUpdatedSplits = validateAndFormatSplitWallets(updatedSplits);
-    for (const updatedSplit of formattedUpdatedSplits) {
+    for (const updatedSplit of validatedExistingWalletFormUpdates) {
       if (!updatedSplit) {
         throw new Error('No original wallet data found');
       }
@@ -344,7 +351,7 @@ export const handleEditRevenueShare = async ({
           {
             recipients: recipients,
             allocations: allocations,
-            totalAllocation: BigInt(TOTAL_ALLOCATION_PERCENT),
+            totalAllocation: totalAllocationPercent,
             distributionIncentive: DISTRIBUTION_INCENTIVE,
           },
         ],
@@ -363,7 +370,7 @@ export const handleEditRevenueShare = async ({
               {
                 recipients,
                 allocations,
-                totalAllocation: TOTAL_ALLOCATION_PERCENT,
+                totalAllocation: totalAllocationPercent,
                 distributionIncentive: DISTRIBUTION_INCENTIVE,
               },
               bigintSerializer,
@@ -376,7 +383,7 @@ export const handleEditRevenueShare = async ({
 
   // create keyValuePairsUpdate if needed, new wallets, updated names
   if (newWalletAddressNamePairs.length > 0 || isNameUpdated) {
-    const existingWalletAddressNamePairs = existingWallets.map(
+    const existingWalletAddressNamePairs = validatedNewWalletFormUpdates.map(
       wallet => `${wallet.address}:${wallet.name}`,
     );
 
