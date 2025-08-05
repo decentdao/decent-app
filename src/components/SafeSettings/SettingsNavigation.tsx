@@ -127,6 +127,7 @@ function SettingsNavigationItem({
   item = 'general',
   onClick,
   hasEdits = false,
+  testId,
 }: PropsWithChildren<{
   title: string;
   leftIcon: ReactNode;
@@ -135,6 +136,7 @@ function SettingsNavigationItem({
   currentItem: (typeof settingsNavigationItems)[number];
   onClick?: () => void;
   hasEdits?: boolean;
+  testId?: string;
 }>) {
   return (
     <Box
@@ -145,6 +147,7 @@ function SettingsNavigationItem({
       bg={currentItem === item ? 'white-alpha-04' : 'transparent'}
       p={{ base: 0, md: '0.5rem' }}
       cursor="pointer"
+      data-testid={testId}
     >
       <Flex
         alignItems="center"
@@ -265,6 +268,7 @@ export function SettingsNavigation({
             leftIcon={<GearFine fontSize="1.5rem" />}
             item="general"
             currentItem={currentItem}
+            testId="settings-nav-general"
             onClick={() => {
               onSettingsNavigationClick(<SafeGeneralSettingsPage />);
               setCurrentItem('general');
@@ -276,6 +280,7 @@ export function SettingsNavigation({
             leftIcon={<Bank fontSize="1.5rem" />}
             item="governance"
             currentItem={currentItem}
+            testId="settings-nav-governance"
             onClick={() => {
               onSettingsNavigationClick(<SafeGovernanceSettingsPage />);
               setCurrentItem('governance');
@@ -291,6 +296,7 @@ export function SettingsNavigation({
             leftIcon={<Stack fontSize="1.5rem" />}
             item="modulesAndGuard"
             currentItem={currentItem}
+            testId="settings-nav-modules"
             onClick={() => {
               onSettingsNavigationClick(<SafeModulesSettingsPage />);
               setCurrentItem('modulesAndGuard');
@@ -305,6 +311,7 @@ export function SettingsNavigation({
               item="permissions"
               currentItem={currentItem}
               showDivider={false}
+              testId="settings-nav-permissions"
               onClick={() => {
                 onSettingsNavigationClick(<SafePermissionsSettingsContent />);
                 setCurrentItem('permissions');
@@ -320,6 +327,7 @@ export function SettingsNavigation({
               leftIcon={<RocketLaunch fontSize="1.5rem" />}
               item="token"
               currentItem={currentItem}
+              testId="settings-nav-token"
               onClick={() => {
                 onSettingsNavigationClick(<SafeTokenSettingsPage />);
                 setCurrentItem('token');
@@ -334,6 +342,7 @@ export function SettingsNavigation({
               item="revenueSharing"
               currentItem={currentItem}
               showDivider={false}
+              testId="settings-nav-revenue-sharing"
               onClick={() => {
                 onSettingsNavigationClick(<SafeRevenueSharingSettingsPage />);
                 setCurrentItem('revenueSharing');
@@ -347,6 +356,7 @@ export function SettingsNavigation({
               item="staking"
               currentItem={currentItem}
               showDivider={false}
+              testId="settings-nav-staking"
               onClick={() => {
                 onSettingsNavigationClick(<SafeStakingSettingsPage />);
                 setCurrentItem('staking');
