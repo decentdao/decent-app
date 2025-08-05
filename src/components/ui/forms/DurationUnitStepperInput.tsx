@@ -24,6 +24,22 @@ interface DurationUnits {
   label: string;
 }
 
+function findBestDefaultUnit(
+  units: DurationUnits[],
+  secondsValue: number | undefined,
+): DurationUnits {
+  const sortedUnits = units.sort((a, b) => a.unit - b.unit);
+  if (secondsValue !== undefined) {
+    // Find the largest unit that divides the value evenly
+    const biggestUnit = sortedUnits.findLast(u => secondsValue % u.unit === 0);
+    if (biggestUnit) {
+      return biggestUnit;
+    }
+  }
+  // otherwise, return the smallest unit
+  return sortedUnits[0];
+}
+
 export default function DurationUnitStepperInput({
   secondsValue,
   onSecondsValueChange,
@@ -59,7 +75,7 @@ export default function DurationUnitStepperInput({
       label: t('years', { ns: 'common' }),
     },
   ];
-  const [selectedUnit, setSelectedUnit] = useState(units[2]);
+  const [selectedUnit, setSelectedUnit] = useState(findBestDefaultUnit(units, secondsValue));
 
   const stepperButton = (direction: 'inc' | 'dec') => (
     <Button
