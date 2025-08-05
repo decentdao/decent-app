@@ -1012,51 +1012,53 @@ export function useGovernanceFetcher() {
         });
 
         // Execute multicall
-        const [name, symbol, decimals, totalSupply, maxTotalSupply] = await publicClient.multicall({
-          contracts: [
-            {
-              ...tokenContract,
-              functionName: 'name',
-            },
-            {
-              ...tokenContract,
-              functionName: 'symbol',
-            },
-            {
-              ...tokenContract,
-              functionName: 'decimals',
-            },
-            {
-              ...tokenContract,
-              functionName: 'totalSupply',
-            },
-            {
-              ...tokenContract,
-              functionName: 'maxTotalSupply',
-            },
-          ],
-          allowFailure: false,
-        });
+        const [nameData, symbolData, decimalsData, totalSupplyData, maxTotalSupplyData] =
+          await publicClient.multicall({
+            contracts: [
+              {
+                ...tokenContract,
+                functionName: 'name',
+              },
+              {
+                ...tokenContract,
+                functionName: 'symbol',
+              },
+              {
+                ...tokenContract,
+                functionName: 'decimals',
+              },
+              {
+                ...tokenContract,
+                functionName: 'totalSupply',
+              },
+              {
+                ...tokenContract,
+                functionName: 'maxTotalSupply',
+              },
+            ],
+            allowFailure: true,
+          });
 
         const tokenData: ERC20LockedTokenData = {
-          name: name ? name.toString() : '',
-          symbol: symbol ? symbol.toString() : '',
-          decimals: decimals ? Number(decimals) : 18,
+          name: nameData.result || '',
+          symbol: symbolData.result || '',
+          decimals: decimalsData.result !== undefined ? decimalsData.result : 18,
           address: tokenContract.address,
-          totalSupply: totalSupply ? BigInt(totalSupply) : 0n,
-          maxTotalSupply: maxTotalSupply ? BigInt(maxTotalSupply) : 0n,
+          totalSupply: totalSupplyData.result !== undefined ? totalSupplyData.result : 0n,
+          maxTotalSupply: maxTotalSupplyData.result !== undefined ? maxTotalSupplyData.result : 0n,
           whitelistedAddresses,
         };
 
         return tokenData;
       } catch (e) {
         logError({
-          message: 'Error getting erc20Address data',
+          message: 'Error getting erc20Token data',
           network: publicClient.chain!.id,
           args: {
             transactionHash: erc20AddressEvent.transactionHash,
             logIndex: erc20AddressEvent.logIndex,
           },
+          error: e,
         });
 
         return;
@@ -1071,8 +1073,13 @@ export function useGovernanceFetcher() {
         return;
       }
 
-      const daoErc20Token = governance.votesToken;
-      if (!daoErc20Token || governance.type !== GovernanceType.AZORIUS_ERC20) {
+      let daoErc20Token;
+      if (governance.type === GovernanceType.AZORIUS_ERC20) {
+        daoErc20Token = governance.votesToken;
+      } else if (governance.type === GovernanceType.MULTISIG) {
+        daoErc20Token = governance.erc20Token;
+      }
+      if (daoErc20Token === undefined) {
         return;
       }
 
@@ -1083,14 +1090,47 @@ export function useGovernanceFetcher() {
         stakingContractMastercopy: votesERC20StakedV1MasterCopy,
         chainId: publicClient.chain.id,
       });
-
       const stakingCode = await publicClient.getCode({
         address: stakingAddress,
       });
-
       const stakingExists = !!stakingCode && stakingCode !== '0x';
 
-      return { stakingAddress: stakingExists ? stakingAddress : null };
+      if (stakingExists) {
+        try {
+          const tokenContract = getContract({
+            abi: abis.deployables.VotesERC20StakedV1,
+            address: stakingAddress,
+            client: publicClient,
+          });
+
+          // Execute multicall
+          const [minimumStakingPeriod, rewardsTokens] = await publicClient.multicall({
+            contracts: [
+              {
+                ...tokenContract,
+                functionName: 'minimumStakingPeriod',
+              },
+              {
+                ...tokenContract,
+                functionName: 'rewardsTokens',
+              },
+            ],
+            allowFailure: false,
+          });
+          return {
+            address: stakingAddress,
+            minimumStakingPeriod,
+            rewardsTokens: [...rewardsTokens],
+          };
+        } catch (e) {
+          logError({
+            message: 'Error getting staking data',
+            network: publicClient.chain!.id,
+          });
+        }
+      } else {
+        return undefined;
+      }
     },
     [governance, publicClient, votesERC20StakedV1MasterCopy, zodiacModuleProxyFactory],
   );

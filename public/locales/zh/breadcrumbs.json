@@ -5,6 +5,7 @@
   "proposals": "所有提案",
   "proposalNew": "创建提案",
   "nodes": "组织结构",
+  "staking": "定标",
   "roles": "角色",
   "treasury": "库房",
   "proposal": "#{{proposalId}} {{proposalTitle}}",

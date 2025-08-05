@@ -21,11 +21,11 @@ import { SafeGeneralSettingsPage } from '../../pages/dao/settings/general/SafeGe
 import { SafeGovernanceSettingsPage } from '../../pages/dao/settings/governance/SafeGovernanceSettingsPage';
 import { SafeModulesSettingsPage } from '../../pages/dao/settings/modules-and-guard/SafeModulesSettingsPage';
 import { SafePermissionsSettingsContent } from '../../pages/dao/settings/permissions/SafePermissionsSettingsContent';
-import { SafeStakingSettingsContent } from '../../pages/dao/settings/staking/SafeStakingSettingsContent';
+import { SafeStakingSettingsPage } from '../../pages/dao/settings/staking/SafeStakingSettingsPage';
 import { SafeTokenSettingsPage } from '../../pages/dao/settings/token/SafeTokenSettingsPage';
 import { useDAOStore } from '../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
-import { AzoriusGovernance } from '../../types';
+import { AzoriusGovernance, GovernanceType } from '../../types';
 import { isNonEmpty } from '../../utils/valueCheck';
 import { BarLoader } from '../ui/loaders/BarLoader';
 import { SafeSettingsEdits } from '../ui/modals/SafeSettingsModal';
@@ -127,6 +127,7 @@ function SettingsNavigationItem({
   item = 'general',
   onClick,
   hasEdits = false,
+  testId,
 }: PropsWithChildren<{
   title: string;
   leftIcon: ReactNode;
@@ -135,6 +136,7 @@ function SettingsNavigationItem({
   currentItem: (typeof settingsNavigationItems)[number];
   onClick?: () => void;
   hasEdits?: boolean;
+  testId?: string;
 }>) {
   return (
     <Box
@@ -145,6 +147,7 @@ function SettingsNavigationItem({
       bg={currentItem === item ? 'white-alpha-04' : 'transparent'}
       p={{ base: 0, md: '0.5rem' }}
       cursor="pointer"
+      data-testid={testId}
     >
       <Flex
         alignItems="center"
@@ -224,6 +227,13 @@ export function SettingsNavigation({
 
   const paymasterHasEdits = paymasterDepositHasEdits || paymasterWithdrawHasEdits;
 
+  let daoErc20Token;
+  if (governance.type === GovernanceType.AZORIUS_ERC20) {
+    daoErc20Token = governance.votesToken;
+  } else if (governance.type === GovernanceType.MULTISIG) {
+    daoErc20Token = governance.erc20Token;
+  }
+
   return (
     <Flex
       backgroundColor="transparent"
@@ -258,6 +268,7 @@ export function SettingsNavigation({
             leftIcon={<GearFine fontSize="1.5rem" />}
             item="general"
             currentItem={currentItem}
+            testId="settings-nav-general"
             onClick={() => {
               onSettingsNavigationClick(<SafeGeneralSettingsPage />);
               setCurrentItem('general');
@@ -269,6 +280,7 @@ export function SettingsNavigation({
             leftIcon={<Bank fontSize="1.5rem" />}
             item="governance"
             currentItem={currentItem}
+            testId="settings-nav-governance"
             onClick={() => {
               onSettingsNavigationClick(<SafeGovernanceSettingsPage />);
               setCurrentItem('governance');
@@ -284,6 +296,7 @@ export function SettingsNavigation({
             leftIcon={<Stack fontSize="1.5rem" />}
             item="modulesAndGuard"
             currentItem={currentItem}
+            testId="settings-nav-modules"
             onClick={() => {
               onSettingsNavigationClick(<SafeModulesSettingsPage />);
               setCurrentItem('modulesAndGuard');
@@ -298,6 +311,7 @@ export function SettingsNavigation({
               item="permissions"
               currentItem={currentItem}
               showDivider={false}
+              testId="settings-nav-permissions"
               onClick={() => {
                 onSettingsNavigationClick(<SafePermissionsSettingsContent />);
                 setCurrentItem('permissions');
@@ -313,6 +327,7 @@ export function SettingsNavigation({
               leftIcon={<RocketLaunch fontSize="1.5rem" />}
               item="token"
               currentItem={currentItem}
+              testId="settings-nav-token"
               onClick={() => {
                 onSettingsNavigationClick(<SafeTokenSettingsPage />);
                 setCurrentItem('token');
@@ -327,23 +342,26 @@ export function SettingsNavigation({
               item="revenueSharing"
               currentItem={currentItem}
               showDivider={false}
+              testId="settings-nav-revenue-sharing"
               onClick={() => {
                 onSettingsNavigationClick(<RevenueSharingSettingsContent />);
                 setCurrentItem('revenueSharing');
               }}
             />
           )}
-          {isRevShareEnabled && (
+          {isRevShareEnabled && daoErc20Token !== undefined && (
             <SettingsNavigationItem
               title={t('daoSettingsStaking')}
               leftIcon={<PiggyBank fontSize="1.5rem" />}
               item="staking"
               currentItem={currentItem}
               showDivider={false}
+              testId="settings-nav-staking"
               onClick={() => {
-                onSettingsNavigationClick(<SafeStakingSettingsContent />);
+                onSettingsNavigationClick(<SafeStakingSettingsPage />);
                 setCurrentItem('staking');
               }}
+              hasEdits={isNonEmpty(values.staking)}
             />
           )}
         </>

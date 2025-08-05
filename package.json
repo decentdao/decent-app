@@ -1,6 +1,6 @@
 {
   "name": "decent-interface",
-  "version": "0.17.0",
+  "version": "0.18.0",
   "private": true,
   "dependencies": {
     "@0xsplits/splits-sdk": "^6.0.1",

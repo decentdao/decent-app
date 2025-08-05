@@ -30,13 +30,20 @@ import Divider from '../../../../components/ui/utils/Divider';
 import { DAO_ROUTES } from '../../../../constants/routes';
 import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
 import useLockedToken from '../../../../hooks/DAO/useLockedToken';
+import { useCanUserCreateProposal } from '../../../../hooks/utils/useCanUserSubmitProposal';
 import { useFormHelpers } from '../../../../hooks/utils/useFormHelpers';
 import { useDAOStore } from '../../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../../providers/NetworkConfig/useNetworkConfigStore';
 import { BigIntValuePair } from '../../../../types';
 import { formatCoin } from '../../../../utils';
 
-function WhitelistedAddress({ address }: { address: string }) {
+function WhitelistedAddress({
+  address,
+  disabled = false,
+}: {
+  address: string;
+  disabled?: boolean;
+}) {
   const { values, setFieldValue } = useFormikContext<SafeSettingsEdits>();
 
   const addressesToUnwhitelist = values.token?.addressesToUnwhitelist || [];
@@ -93,6 +100,7 @@ function WhitelistedAddress({ address }: { address: string }) {
             variant="ghost"
             size="sm"
             color="color-base-error"
+            isDisabled={disabled}
             onClick={() => {
               setFieldValue('token.addressesToUnwhitelist', [...addressesToUnwhitelist, address]);
             }}
@@ -103,7 +111,15 @@ function WhitelistedAddress({ address }: { address: string }) {
   );
 }
 
-function NewWhitelistAddress({ name, onRemove }: { name: string; onRemove: () => void }) {
+function NewWhitelistAddress({
+  name,
+  onRemove,
+  disabled = false,
+}: {
+  name: string;
+  onRemove: () => void;
+  disabled?: boolean;
+}) {
   const { errors } = useFormikContext<SafeSettingsEdits>();
   const tokenErrors = (errors as SafeSettingsFormikErrors | undefined)?.token;
 
@@ -142,6 +158,7 @@ function NewWhitelistAddress({ name, onRemove }: { name: string; onRemove: () =>
           variant="ghost"
           size="sm"
           color="color-base-error"
+          isDisabled={disabled}
           onClick={() => onRemove()}
         />
       </GridItem>
@@ -154,6 +171,8 @@ export function SafeTokenSettingsPage() {
   const { t } = useTranslation('settings');
   const { addressPrefix } = useNetworkConfigStore();
   const { restrictChars } = useFormHelpers();
+  const { canUserCreateProposal } = useCanUserCreateProposal();
+  const notProposer = canUserCreateProposal === undefined || !canUserCreateProposal;
   const { daoKey } = useCurrentDAOKey();
   const {
     node: { safe },
@@ -302,7 +321,7 @@ export function SafeTokenSettingsPage() {
             </Flex>
           )}
 
-          {erc20Token && (
+          {erc20Token && !tokenState.isImportedToken && (
             <>
               <Flex
                 gap={4}
@@ -323,7 +342,7 @@ export function SafeTokenSettingsPage() {
                     variant="secondary"
                     size="md"
                     isChecked={isTransferable}
-                    disabled={!tokenState.locked}
+                    disabled={notProposer || !tokenState.locked}
                     onChange={e => {
                       const newCheckedState = e.target.checked;
                       if (newCheckedState !== tokenState.locked) {
@@ -373,6 +392,7 @@ export function SafeTokenSettingsPage() {
                               variant="secondary"
                               size="md"
                               px={4}
+                              isDisabled={notProposer}
                               onClick={() => push('')}
                             >
                               {t('governanceTokenWhitelistAddWallet')}
@@ -385,6 +405,7 @@ export function SafeTokenSettingsPage() {
                             <WhitelistedAddress
                               key={address}
                               address={address}
+                              disabled={notProposer}
                             />
                           ))}
 
@@ -399,6 +420,7 @@ export function SafeTokenSettingsPage() {
                                   remove(index);
                                 }
                               }}
+                              disabled={notProposer}
                             />
                           ))}
                         </Box>
@@ -441,6 +463,7 @@ export function SafeTokenSettingsPage() {
                         setFieldValue('token.maximumTotalSupply', undefined);
                       }
                     }}
+                    isDisabled={notProposer || tokenState.isImportedToken}
                     decimalPlaces={erc20Token.decimals}
                     onKeyDown={restrictChars}
                   />

@@ -1,8 +1,7 @@
-import { Flex, Icon, Image, Text } from '@chakra-ui/react';
-import { CheckCircle } from '@phosphor-icons/react';
+import { Button, Flex, Icon, Image, MenuButton, Text } from '@chakra-ui/react';
+import { CaretDown, CheckCircle } from '@phosphor-icons/react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Address, getAddress } from 'viem';
 import { useBalance } from 'wagmi';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import { useDAOStore } from '../../../providers/App/AppProvider';
@@ -10,25 +9,27 @@ import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetwo
 import { formatCoin, formatUSD } from '../../../utils';
 import { DropdownMenu } from '../menus/DropdownMenu';
 
-interface Asset {
-  name: string;
-  symbol: string;
-  decimals: number;
-  address: Address;
-  logo: string;
-}
-
 interface AssetSelectorProps {
   disabled?: boolean;
   includeNativeToken?: boolean;
   onlyNativeToken?: boolean;
-  onSelect?: (asset: Asset) => void;
+  onSelect?: (addresses: string[]) => void;
+  canSelectMultiple?: boolean;
+  /**
+   * Can't unselected these pre-selected assets
+   */
+  lockedSelections?: string[];
 }
+
+export const NATIVE_TOKEN_ADDRESS = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
 
 export function AssetSelector({
   disabled,
   includeNativeToken,
   onlyNativeToken,
+  onSelect,
+  canSelectMultiple = false,
+  lockedSelections = [],
 }: AssetSelectorProps) {
   const { t } = useTranslation(['roles', 'treasury', 'modals']);
 
@@ -44,20 +45,19 @@ export function AssetSelector({
     address: safe?.address,
   });
 
-  const [selectedAssetIndex, setSelectedAssetIndex] = useState<number | null>(
-    onlyNativeToken ? 0 : null,
+  const [selectedAddresses, setSelectedAddresses] = useState<string[]>(
+    lockedSelections || (onlyNativeToken ? [NATIVE_TOKEN_ADDRESS] : []),
   );
 
   const nonNativeFungibleAssets = assetsFungible.filter(
     asset => parseFloat(asset.balance) > 0 && !asset.nativeToken,
   );
 
-  const nativeTokenId = '0x0000000000000000000000000000000000000000';
   const nativeTokenItem = {
-    value: nativeTokenId,
+    value: NATIVE_TOKEN_ADDRESS,
     label: nativeTokenBalance?.symbol ?? 'Native Token',
     icon: networkConfig.nativeTokenIcon,
-    selected: selectedAssetIndex === 0,
+    selected: selectedAddresses.includes(NATIVE_TOKEN_ADDRESS),
     assetData: {
       name: nativeTokenBalance?.symbol ?? 'Native Token',
       balance: nativeTokenBalance?.value.toString() ?? '0',
@@ -70,11 +70,11 @@ export function AssetSelector({
     ? [nativeTokenItem]
     : [
         ...(includeNativeToken ? [nativeTokenItem] : []),
-        ...nonNativeFungibleAssets.map((asset, index) => ({
+        ...nonNativeFungibleAssets.map(asset => ({
           value: asset.tokenAddress,
           label: asset.symbol,
           icon: asset.logo ?? asset.thumbnail ?? '/images/coin-icon-default.svg',
-          selected: selectedAssetIndex === index + 1,
+          selected: selectedAddresses.includes(asset.tokenAddress),
           assetData: {
             name: asset.name,
             balance: asset.balance,
@@ -84,6 +84,7 @@ export function AssetSelector({
           },
         })),
       ];
+  const selectedItems = dropdownItems.filter(i => i.selected);
 
   return (
     <DropdownMenu<{
@@ -96,21 +97,95 @@ export function AssetSelector({
       };
     }>
       items={dropdownItems}
-      selectedItem={dropdownItems.find(item => item.selected)}
+      selectedItem={selectedItems[0]}
       onSelect={item => {
-        if (item.value === nativeTokenId) {
-          setSelectedAssetIndex(0);
+        if (canSelectMultiple) {
+          if (!selectedAddresses.includes(item.value)) {
+            const newSelection = [...selectedAddresses, item.value];
+            setSelectedAddresses(newSelection);
+            onSelect?.(newSelection);
+          } else {
+            if (lockedSelections.includes(item.value)) {
+              return;
+            }
+
+            const newSelection = selectedAddresses.filter(address => address !== item.value);
+            setSelectedAddresses(newSelection);
+            onSelect?.(newSelection);
+          }
         } else {
-          const index = nonNativeFungibleAssets.findIndex(
-            asset => asset.tokenAddress === getAddress(item.value),
-          );
-          setSelectedAssetIndex(index >= 0 ? index + 1 : null);
+          setSelectedAddresses([item.value]);
+          onSelect?.([item.value]);
         }
       }}
       title={t('titleAssets', { ns: 'treasury' })}
       isDisabled={disabled}
       selectPlaceholder={t('selectLabel', { ns: 'modals' })}
       emptyMessage={t('emptyRolesAssets', { ns: 'roles' })}
+      closeOnSelect={!canSelectMultiple}
+      renderButton={
+        canSelectMultiple && selectedItems.length > 1
+          ? () => (
+              <MenuButton
+                as={Button}
+                variant="unstyled"
+                bgColor="transparent"
+                isDisabled={disabled}
+                cursor={disabled ? 'not-allowed' : 'pointer'}
+                p={0}
+                sx={{
+                  '&:disabled': {
+                    '.payment-menu-asset *': {
+                      color: 'color-neutral-400',
+                      bg: 'transparent',
+                    },
+                  },
+                }}
+              >
+                <Flex
+                  gap={2}
+                  alignItems="center"
+                  border="1px solid"
+                  borderColor="color-neutral-800"
+                  borderRadius="9999px"
+                  w={`${(selectedItems.length - 1) * 0.7 + 6}rem`}
+                  className="payment-menu-asset"
+                  p="0.5rem"
+                >
+                  <Flex
+                    position="relative"
+                    minW="2rem"
+                    alignItems="center"
+                  >
+                    {selectedItems.map((item, idx) => (
+                      <Image
+                        key={item.value}
+                        src={item.icon}
+                        fallbackSrc="/images/coin-icon-default.svg"
+                        boxSize="1.5rem"
+                        border="2px solid white"
+                        borderRadius="full"
+                        position="absolute"
+                        left={`${idx * 0.8}rem`}
+                        zIndex={selectedItems.length - idx}
+                      />
+                    ))}
+                  </Flex>
+                  <Flex
+                    alignItems="center"
+                    ml={`${selectedItems.length * 0.8}rem`}
+                  >
+                    <Icon
+                      color="color-neutral-400"
+                      as={CaretDown}
+                      boxSize="1.5rem"
+                    />
+                  </Flex>
+                </Flex>
+              </MenuButton>
+            )
+          : undefined
+      }
       renderItem={(item, isSelected) => {
         const { balance, decimals, usdValue, symbol } = item.assetData;
         const balanceText = formatCoin(balance, true, decimals, symbol, true);
