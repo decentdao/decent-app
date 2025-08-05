@@ -179,8 +179,7 @@ export function SafeSettingsModal({
     revShareWallets,
   } = useDAOStore({ daoKey });
 
-  // TODO: get staking contract address from store
-  const stakingContractAddress = undefined;
+  const stakingContractAddress = governance?.stakedToken?.address;
 
   const [settingsContent, setSettingsContent] = useState(<SafeGeneralSettingsPage />);
 

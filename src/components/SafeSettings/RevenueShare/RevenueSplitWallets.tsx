@@ -250,10 +250,8 @@ export function RevSplitTable({
   const { daoKey } = useCurrentDAOKey();
   const {
     node: { safe, subgraphInfo },
+    governance: { stakedToken },
   } = useDAOStore({ daoKey });
-
-  // TODO: get staking contract address from store
-  const stakingContractAddress = undefined;
 
   const isCurrentDAOAddress = useCallback(
     (address: Address | string | undefined) => {
@@ -275,11 +273,11 @@ export function RevSplitTable({
 
   const isStakingContractAddress = useCallback(
     (address: Address | string | undefined) => {
-      if (!stakingContractAddress) return false;
+      if (!stakedToken?.address) return false;
       if (!address) return false;
-      return address === stakingContractAddress;
+      return address === stakedToken.address;
     },
-    [stakingContractAddress],
+    [stakedToken?.address],
   );
 
   const daoSplitInfo = wallet.splits?.find(({ address }) => isCurrentDAOAddress(address));
@@ -359,7 +357,7 @@ export function RevSplitTable({
       existingWalletSplitAddress={daoSplitInfo?.address ?? safe?.address}
       existingWalletSplitPercentage={daoSplitInfo?.percentage}
       isLastRow={
-        !subgraphInfo?.parentAddress && !stakingContractAddress && !customSplitsWithIndices?.length
+        !subgraphInfo?.parentAddress && !stakedToken?.address && !customSplitsWithIndices?.length
       }
       isReadOnlyAddress={true}
     />
@@ -375,7 +373,7 @@ export function RevSplitTable({
         parentDAOSplitInfo?.address ?? subgraphInfo?.parentAddress ?? undefined
       }
       existingWalletSplitPercentage={parentDAOSplitInfo?.percentage}
-      isLastRow={!stakingContractAddress && !customSplitsWithIndices?.length}
+      isLastRow={!stakedToken?.address && !customSplitsWithIndices?.length}
       isReadOnlyAddress={true}
     />
   );
@@ -387,7 +385,7 @@ export function RevSplitTable({
         revenueSharingEditFormikErrors?.[walletFormType]?.[walletIndex]?.specialSplits
           ?.stakingContract
       }
-      existingWalletSplitAddress={stakingContractSplitInfo?.address ?? stakingContractAddress}
+      existingWalletSplitAddress={stakingContractSplitInfo?.address ?? stakedToken?.address}
       existingWalletSplitPercentage={stakingContractSplitInfo?.percentage}
       isLastRow={!customSplitsWithIndices?.length}
       isReadOnlyAddress={true}
@@ -419,7 +417,7 @@ export function RevSplitTable({
       >
         {daoSplit}
         {subgraphInfo?.parentAddress && parentDAOSplit}
-        {stakingContractAddress && stakeTokenHolderSplit}
+        {stakedToken?.address && stakeTokenHolderSplit}
         {customSplitsWithIndices?.map(({ split, originalIndex }, i, arr) => {
           const isLastRow = i === arr.length - 1;
           const splitError =
