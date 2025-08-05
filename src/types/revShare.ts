@@ -39,13 +39,14 @@ export type RevenueSharingSplitFormError = Partial<RevenueSharingWalletSplit<str
 export type RevenueSharingSplitFormErrors = Record<number, RevenueSharingSplitFormError>;
 
 export interface RevenueSharingWalletFormSpecialSplitsError {
-  dao?: RevenueSharingSplitFormErrors;
-  parentDao?: RevenueSharingSplitFormErrors;
-  stakingContract?: RevenueSharingSplitFormErrors;
+  dao?: RevenueSharingSplitFormError;
+  parentDao?: RevenueSharingSplitFormError;
+  stakingContract?: RevenueSharingSplitFormError;
 }
 
 export interface RevenueSharingWalletFormError {
   name?: string;
+  walletError?: string;
   splits?: RevenueSharingSplitFormErrors;
   specialSplits?: RevenueSharingWalletFormSpecialSplitsError;
 }

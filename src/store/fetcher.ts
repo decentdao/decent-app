@@ -123,16 +123,15 @@ export const useDAOStoreFetcher = ({
           if (erc20Token) {
             setERC20Token(daoKey, erc20Token);
           }
-
-          const revShareWallets = await fetchRevenueSharingWallets({
-            events: keyValuePairsData.events,
-          });
-
-          if (revShareWallets) {
-            setRevShareWallets(daoKey, revShareWallets);
-          }
         }
 
+        const revShareWallets = await fetchRevenueSharingWallets({
+          chainId: chain.id,
+          daoAddress: safeAddress,
+        });
+        if (revShareWallets) {
+          setRevShareWallets(daoKey, revShareWallets);
+        }
         const onMultisigGovernanceLoaded = () => setMultisigGovernance(daoKey);
         const onAzoriusGovernanceLoaded = (governance: SetAzoriusGovernancePayload) =>
           setAzoriusGovernance(daoKey, governance);

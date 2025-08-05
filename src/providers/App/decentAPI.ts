@@ -2,6 +2,7 @@
 
 import axios, { AxiosResponse } from 'axios';
 import { Address } from 'viem';
+import { RevenueSharingWallet } from '../../types/revShare';
 import { StakingTokenData } from '../../types/revenueSharing';
 
 const DECENT_API_BASE_URL = 'https://api.decent.build';
@@ -61,4 +62,28 @@ export async function getDaoData(chainId: number, daoAddress: Address) {
   }
 
   return response.data.data;
+}
+
+export async function getDaoRevenueSharingWallets(
+  chainId: number,
+  daoAddress: Address,
+): Promise<RevenueSharingWallet[]> {
+  try {
+    const response: AxiosResponse<{
+      success: boolean;
+      data: {
+        name: string;
+        address: Address;
+        splits: { address: Address; percentage: number }[];
+      }[];
+    }> = await axiosClient.get(`/d/${chainId}/${daoAddress}/revShareWallets`);
+
+    if (!response.data.success) {
+      return [];
+    }
+
+    return response.data.data;
+  } catch {
+    return [];
+  }
 }

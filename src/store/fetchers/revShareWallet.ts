@@ -1,29 +1,15 @@
-import { legacy } from '@decentdao/decent-contracts';
 import { useCallback } from 'react';
-import { Address, GetContractEventsReturnType } from 'viem';
-
-const emptyRevShareWallets = [] as {
-  name: string;
-  address: Address;
-}[];
+import { Address } from 'viem';
+import { getDaoRevenueSharingWallets } from '../../providers/App/decentAPI';
 
 export function useRevShareWalletFetcher() {
   const fetchRevenueSharingWallets = useCallback(
-    async ({
-      events,
-    }: {
-      events: GetContractEventsReturnType<typeof legacy.abis.KeyValuePairs>;
-    }) => {
-      const mostRecentEvent = events.filter(event => event.args.key === 'revShareWallets').pop();
-      if (!mostRecentEvent) {
-        return emptyRevShareWallets;
-      }
+    async ({ chainId, daoAddress }: { chainId: number; daoAddress: Address }) => {
       try {
-        // expecting [{ name: string, address: Address }]
-        const revShareWalletsData = JSON.parse(mostRecentEvent.args.value as string);
-        return revShareWalletsData;
+        const revenueShareWallets = await getDaoRevenueSharingWallets(chainId, daoAddress);
+        return revenueShareWallets;
       } catch {
-        return emptyRevShareWallets;
+        return [];
       }
     },
     [],
