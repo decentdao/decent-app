@@ -79,6 +79,7 @@ type DAOGovernorERC20Token<T = bigint> = {
   tokenAllocations: { amount: T; address: string }[];
   parentAllocationAmount: T;
   maxTotalSupply: T;
+  requiredProposerWeight: T;
 };
 
 export interface CreatorFormState<T = BigIntValuePair> {
@@ -104,12 +105,12 @@ export type ERC721TokenConfig<T = bigint> = {
 export type DAOGovernorERC721Token<T = bigint> = {
   nfts: ERC721TokenConfig<T>[];
   quorumThreshold: T;
+  proposerThreshold: T;
 };
 
 export type DAOGovernorModuleConfig<T = bigint> = {
   votingStrategyType: VotingStrategyType;
   quorumPercentage: T;
-  proposalPermission: T;
   timelock: T;
   votingPeriod: T;
   executionPeriod: T;

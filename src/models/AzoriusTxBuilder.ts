@@ -539,6 +539,7 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
     votingPeriod: number,
     quorumPercentage: bigint,
     quorumDenominator: bigint,
+    requiredProposerWeight: bigint,
   ): {
     encodedStrategySetupData: Hex;
     strategyByteCodeLinear: Hex;
@@ -550,7 +551,7 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
         predictedTokenAddress, // governance token
         SENTINEL_MODULE, // Azorius module
         Number(votingPeriod),
-        1n, // proposer weight, how much is needed to create a proposal.
+        requiredProposerWeight, // proposer weight, how much is needed to create a proposal.
         (quorumPercentage * quorumDenominator) / 100n, // quorom numerator, denominator is 1,000,000, so quorum percentage is quorumNumerator * 100 / quorumDenominator
         500000n, // basis numerator, denominator is 1,000,000, so basis percentage is 50% (simple majority)
       ],
@@ -573,6 +574,7 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
     safeContractAddress: Address,
     daoData: AzoriusERC721DAO,
     votingPeriod: number,
+    proposerThreshold: bigint,
   ): {
     encodedStrategySetupData: Hex;
     strategyByteCodeLinear: Hex;
@@ -586,7 +588,7 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
         SENTINEL_MODULE, // Azorius module
         votingPeriod,
         daoData.quorumThreshold, // quorom threshold. Since smart contract can't know total of NFTs minted - we need to provide it manually
-        1n, // proposer weight, how much is needed to create a proposal.
+        proposerThreshold, // proposer weight, how much is needed to create a proposal.
         500000n, // basis numerator, denominator is 1,000,000, so basis percentage is 50% (simple majority)
       ],
     );
@@ -615,6 +617,8 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
   > {
     const azoriusGovernanceDaoData = this.daoData as AzoriusGovernanceDAO;
     if (azoriusGovernanceDaoData.votingStrategyType === VotingStrategyType.LINEAR_ERC20) {
+      const daoData = azoriusGovernanceDaoData as AzoriusERC20DAO;
+
       if (!this.predictedTokenAddress) {
         throw new Error(
           'Error predicting strategy address - predicted token address was not provided',
@@ -631,9 +635,10 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
       return this.setupLinearERC20VotingStrategy(
         this.safeContractAddress,
         this.predictedTokenAddress,
-        Number(azoriusGovernanceDaoData.votingPeriod),
-        azoriusGovernanceDaoData.quorumPercentage,
+        Number(daoData.votingPeriod),
+        daoData.quorumPercentage,
         quorumDenominator,
+        daoData.requiredProposerWeight,
       );
     } else if (azoriusGovernanceDaoData.votingStrategyType === VotingStrategyType.LINEAR_ERC721) {
       const daoData = azoriusGovernanceDaoData as AzoriusERC721DAO;
@@ -642,6 +647,7 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
         this.safeContractAddress,
         daoData,
         Number(daoData.votingPeriod),
+        daoData.proposerThreshold,
       );
     } else {
       return undefined;

@@ -133,23 +133,21 @@ export function AzoriusGovernance(props: ICreationStepProps) {
             </LabelComponent>
           )}
 
-          {/* QUORUM */}
+          {/* PROPOSAL PERMISSION */}
           {values.azorius.votingStrategyType === VotingStrategyType.LINEAR_ERC20 ? (
             <LabelComponent
               label={t('proposalPermission', { ns: 'common' })}
               helper={t('helperProposalPermission')}
               isRequired
             >
-              <InputGroup>
-                <BigIntInput
-                  value={values.azorius.quorumPercentage.bigintValue}
-                  onChange={valuePair => setFieldValue('azorius.quorumPercentage', valuePair)}
-                  max="100"
-                  decimalPlaces={0}
-                  data-testid="govConfig-quorumPercentage"
-                />
-                <InputRightElement>%</InputRightElement>
-              </InputGroup>
+              <BigIntInput
+                value={values.erc20Token.requiredProposerWeight.bigintValue}
+                onChange={valuePair =>
+                  setFieldValue('erc20Token.requiredProposerWeight', valuePair)
+                }
+                decimalPlaces={18}
+                data-testid="govConfig-proposalPermission"
+              />
             </LabelComponent>
           ) : (
             <LabelComponent
@@ -158,11 +156,10 @@ export function AzoriusGovernance(props: ICreationStepProps) {
               isRequired
             >
               <BigIntInput
-                value={values.erc721Token.quorumThreshold.bigintValue}
-                onChange={valuePair => setFieldValue('erc721Token.quorumThreshold', valuePair)}
+                value={values.erc721Token.proposerThreshold.bigintValue}
+                onChange={valuePair => setFieldValue('erc721Token.proposerThreshold', valuePair)}
                 decimalPlaces={0}
-                min="1"
-                data-testid="govConfig-quorumThreshold"
+                data-testid="govConfig-proposalPermission"
               />
             </LabelComponent>
           )}
