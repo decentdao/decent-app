@@ -1,6 +1,7 @@
 import { Text, InputProps, Flex, Icon } from '@chakra-ui/react';
 import { SealWarning } from '@phosphor-icons/react';
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Address, isAddress } from 'viem';
 import { createAccountSubstring } from '../../../hooks/utils/useGetAccountName';
 import { useGetSafeName } from '../../../hooks/utils/useGetSafeName';
@@ -11,6 +12,7 @@ import { DecentTooltip } from '../DecentTooltip';
 import { AddressInput } from './EthAddressInput';
 
 export function AddressInputInfo(props: InputProps) {
+  const { t } = useTranslation('common');
   const { resolveENSName } = useResolveENSName();
 
   const [resolvedAddress, setResolvedAddress] = useState<Address>();
@@ -92,10 +94,7 @@ export function AddressInputInfo(props: InputProps) {
           {displayedValue}
         </Text>
         {(resolvedAddress || resolvedDisplayName) && (
-          <DecentTooltip
-            label="While DAO Name or ENS is displayed, the full wallet 
-          address will appear in the agreement."
-          >
+          <DecentTooltip label={t('addressInfoTooltip')}>
             <Icon
               as={SealWarning}
               boxSize="1rem"
