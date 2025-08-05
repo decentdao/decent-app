@@ -80,11 +80,6 @@ export function AddressInputInfo(props: InputProps) {
               : 'color-alpha-white-950',
         }}
         bg={props.isReadOnly ? 'transparent' : props.isInvalid ? 'color-error-950' : 'transparent'}
-        boxShadow={
-          props.isInvalid
-            ? '0px 0px 0px 2px #AF3A48, 0px 1px 0px 0px rgba(242, 161, 171, 0.30), 0px 0px 0px 1px rgba(0, 0, 0, 0.80)'
-            : 'none'
-        }
       >
         <Text
           cursor="pointer"
