@@ -86,7 +86,7 @@ type NetworkConfigBase = {
     chainSupported: boolean;
     deFiSupported: boolean;
   };
-  staking: {};
+
   createOptions: GovernanceType[];
   stablecoins: {
     usdc: Address;

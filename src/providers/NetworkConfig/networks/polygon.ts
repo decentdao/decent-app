@@ -128,7 +128,7 @@ export const polygonConfig: NetworkConfig = {
     sablierV2LockupLinear: '0x8D4dDc187a73017a5d7Cef733841f55115B13762',
     disperse: '0xD152f549545093347A162Dce210e7293f1452150',
   },
-  staking: {},
+
   moralis: {
     chainSupported: true,
     deFiSupported: true,
