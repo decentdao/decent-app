@@ -56,7 +56,7 @@ function StakingForm() {
   );
 
   const undistributedTokens =
-    stakedToken?.assetsFungible.filter(
+    stakedToken?.assetsFungible?.filter(
       asset => asset.balance !== '0' && !rewardsTokens?.includes(asset.tokenAddress),
     ) || [];
 
