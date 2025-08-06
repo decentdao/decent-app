@@ -20,7 +20,7 @@ const SAFE_VERSION = '1.3.0';
 const chain = optimism;
 const a = legacy.addresses[chain.id];
 
-export const optimismConfig: NetworkConfig = {
+const optimismConfig: NetworkConfig = {
   order: 15,
   chain,
   rpcEndpoint: `https://opt-mainnet.g.alchemy.com/v2/${import.meta.env?.VITE_APP_ALCHEMY_API_KEY}`,

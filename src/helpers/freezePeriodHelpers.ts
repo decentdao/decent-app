@@ -1,4 +1,4 @@
-export const secondsLeftInFreezePeriod = (
+const secondsLeftInFreezePeriod = (
   freezeProposalCreatedTime: bigint,
   freezePeriod: bigint,
   currentTime: bigint,
@@ -7,7 +7,7 @@ export const secondsLeftInFreezePeriod = (
   return secondsLeft;
 };
 
-export const secondsLeftInFreezeProposalPeriod = (
+const secondsLeftInFreezeProposalPeriod = (
   freezeProposalCreatedTime: bigint,
   freezeProposalPeriod: bigint,
   currentTime: bigint,
