@@ -20,7 +20,7 @@ const SAFE_VERSION = '1.3.0';
 const chain = polygon;
 const a = legacy.addresses[chain.id];
 
-export const polygonConfig: NetworkConfig = {
+const polygonConfig: NetworkConfig = {
   order: 20,
   chain,
   rpcEndpoint: `https://polygon-mainnet.g.alchemy.com/v2/${import.meta.env?.VITE_APP_ALCHEMY_API_KEY}`,

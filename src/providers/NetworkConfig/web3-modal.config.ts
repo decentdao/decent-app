@@ -20,7 +20,7 @@ const metadata = {
   icons: [`${import.meta.env.VITE_APP_SITE_URL}/favicon-96x96.png`],
 };
 
-export const transportsReducer = (
+const transportsReducer = (
   accumulator: Record<string, HttpTransport>,
   network: NetworkConfig,
 ) => {

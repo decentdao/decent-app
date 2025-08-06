@@ -6,7 +6,7 @@ import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import { useDAOStore } from '../../../providers/App/AppProvider';
 import { GovernanceType } from '../../../types';
 
-export function CountProgressBadge(props: { total: number; current: number }) {
+function CountProgressBadge(props: { total: number; current: number }) {
   const { t } = useTranslation('proposal');
   const themeKey = props.current >= props.total ? 'green' : 'red';
 

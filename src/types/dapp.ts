@@ -14,7 +14,7 @@ export interface Dapp {
   enableWalletConnect?: boolean | undefined;
 }
 
-export const dappSchema = yup.object().shape({
+const dappSchema = yup.object().shape({
   id: yup.number().required(),
   url: yup.string().url().required(),
   name: yup.string().required(),

@@ -145,7 +145,7 @@ export const predictAccountAddress = async (params: {
   return predictedAddress;
 };
 
-export const getCurrentTermActiveStatus = async (
+const getCurrentTermActiveStatus = async (
   currentTermEndDateTs: bigint,
   eligibility: Address,
   publicClient: PublicClient,
@@ -177,7 +177,7 @@ export const isElectionEligibilityModule = async (
   return possibleElectionModule.implementationAddress === hatsElectionsImplementation;
 };
 
-export const prepareCurrentTerm = async (
+const prepareCurrentTerm = async (
   term: { nominee: Address; termEndDate: Date; termNumber: number } | undefined,
   eligibility: Address,
   publicClient: PublicClient,

@@ -9,13 +9,13 @@ interface IPFSAddResponse {
   Size: string;
 }
 
-export const INFURA_AUTH =
+const INFURA_AUTH =
   'Basic ' +
   Buffer.from(
     `${import.meta.env.VITE_APP_INFURA_IPFS_API_KEY}:${import.meta.env.VITE_APP_INFURA_IPFS_API_SECRET}`,
   ).toString('base64');
 export const GATEWAY_URL = 'https://ipfs.infura.io';
-export const BASE_URL = GATEWAY_URL + ':5001/api/v0';
+const BASE_URL = GATEWAY_URL + ':5001/api/v0';
 
 const axiosClient = axios.create({ baseURL: BASE_URL, headers: { Authorization: INFURA_AUTH } });
 

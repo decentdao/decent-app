@@ -6,8 +6,6 @@ import {
   VotingStrategyType,
 } from '../../types';
 
-export const DEFAULT_TOKEN_DECIMALS = 18;
-
 // @todo make the time lengths dynamic for whatever real-life values we're targeting here
 
 export const initialState: CreatorFormState = {
