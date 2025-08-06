@@ -29,6 +29,7 @@ import { getRandomBytes } from '../../../helpers';
 import useFeatureFlag from '../../../helpers/environmentFeatureFlags';
 import { usePaymasterDepositInfo } from '../../../hooks/DAO/accountAbstraction/usePaymasterDepositInfo';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
+import useLockedToken from '../../../hooks/DAO/useLockedToken';
 import { useValidationAddress } from '../../../hooks/schemas/common/useValidationAddress';
 import { useNetworkEnsAddressAsync } from '../../../hooks/useNetworkEnsAddress';
 import useNetworkPublicClient from '../../../hooks/useNetworkPublicClient';
@@ -295,7 +296,7 @@ export function SafeSettingsModal({
   const { addAction, resetActions } = useProposalActionsStore();
 
   const { addressPrefix } = useNetworkConfigStore();
-
+  const { loadTokenState } = useLockedToken();
   const { buildInstallVersionedVotingStrategies } = useInstallVersionedVotingStrategy();
   const { depositInfo: paymasterDepositInfo } = usePaymasterDepositInfo();
   const { address } = useAccount();
@@ -1298,9 +1299,17 @@ export function SafeSettingsModal({
 
       if (newRewardTokens.length > 0) {
         // Whitelist staking contract on new reward tokens
-        const filteredTokens = newRewardTokens.filter(token => token !== NATIVE_TOKEN_ADDRESS);
-        if (filteredTokens.length > 0) {
-          filteredTokens.map(token => {
+        const erc20RewardTokens = newRewardTokens.filter(token => token !== NATIVE_TOKEN_ADDRESS);
+        if (erc20RewardTokens.length > 0) {
+          // Is the token locked or is the token already whitelisted?
+          const tokenStates = await Promise.allSettled(
+            erc20RewardTokens.map(token => loadTokenState(token, predictedStakingAddress)),
+          );
+          const lockedTokens = erc20RewardTokens.filter(
+            (_, index) =>
+              tokenStates[index].status === 'fulfilled' && tokenStates[index].value.needWhitelist,
+          );
+          lockedTokens.map(token => {
             transactions.push(
               grantRoleTransactionOf(ROLES.TRANSFER_FROM_ROLE, token, predictedStakingAddress),
             );
@@ -1308,7 +1317,9 @@ export function SafeSettingsModal({
               grantRoleTransactionOf(ROLES.TRANSFER_TO_ROLE, token, predictedStakingAddress),
             );
           });
-          changeTitles.push(t('addTokenWhitelist', { ns: 'proposalMetadata' }));
+          if (lockedTokens.length > 0) {
+            changeTitles.push(t('addTokenWhitelist', { ns: 'proposalMetadata' }));
+          }
         }
       }
     } else {
@@ -1348,9 +1359,17 @@ export function SafeSettingsModal({
         changeTitles.push(t('addStakingRewardTokens', { ns: 'proposalMetadata' }));
 
         // Whitelist staking contract on new reward tokens
-        const filteredTokens = newRewardTokens.filter(token => token !== NATIVE_TOKEN_ADDRESS);
-        if (filteredTokens.length > 0) {
-          filteredTokens.map(token => {
+        const erc20RewardTokens = newRewardTokens.filter(token => token !== NATIVE_TOKEN_ADDRESS);
+        if (erc20RewardTokens.length > 0) {
+          // Is the token locked or is the token already whitelisted?
+          const tokenStates = await Promise.allSettled(
+            erc20RewardTokens.map(token => loadTokenState(token, stakingContract.address)),
+          );
+          const lockedTokens = erc20RewardTokens.filter(
+            (_, index) =>
+              tokenStates[index].status === 'fulfilled' && tokenStates[index].value.needWhitelist,
+          );
+          lockedTokens.map(token => {
             transactions.push(
               grantRoleTransactionOf(ROLES.TRANSFER_FROM_ROLE, token, stakingContract.address),
             );
@@ -1358,7 +1377,9 @@ export function SafeSettingsModal({
               grantRoleTransactionOf(ROLES.TRANSFER_TO_ROLE, token, stakingContract.address),
             );
           });
-          changeTitles.push(t('addTokenWhitelist', { ns: 'proposalMetadata' }));
+          if (lockedTokens.length > 0) {
+            changeTitles.push(t('addTokenWhitelist', { ns: 'proposalMetadata' }));
+          }
         }
       }
     }
