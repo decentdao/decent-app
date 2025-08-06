@@ -17,10 +17,14 @@ export function ERC20TokenContainer() {
   const { votesToken } = azoriusGovernance;
 
   return (
-    <Box width="100%">
+    <Box
+      width="100%"
+      data-testid="erc20-token-container"
+    >
       <Text
         color="color-white"
         textStyle="text-lg-regular"
+        data-testid="token-info-title"
       >
         {t('governanceTokenInfoTitle')}
       </Text>
@@ -33,6 +37,7 @@ export function ERC20TokenContainer() {
           borderColor="color-neutral-900"
           borderRadius="0.75rem"
           flexDirection="column"
+          data-testid="token-info-content"
         >
           {/* TOKEN NAME */}
           <Flex
@@ -40,12 +45,19 @@ export function ERC20TokenContainer() {
             justifyContent="space-between"
             px={6}
             py={2}
+            data-testid="token-name-row"
           >
-            <Text textStyle="text-base-regular">{t('governanceTokenNameTitle')}</Text>
+            <Text
+              textStyle="text-base-regular"
+              data-testid="token-name-label"
+            >
+              {t('governanceTokenNameTitle')}
+            </Text>
             <DisplayAddress
               mb={-2}
               mr={-4}
               address={votesToken.address}
+              data-testid="token-name-value"
             >
               {votesToken.name}
             </DisplayAddress>
@@ -59,11 +71,18 @@ export function ERC20TokenContainer() {
             justifyContent="space-between"
             px={6}
             py={2}
+            data-testid="token-symbol-row"
           >
-            <Text textStyle="text-base-regular">{t('governanceTokenSymbolLabel')}</Text>
+            <Text
+              textStyle="text-base-regular"
+              data-testid="token-symbol-label"
+            >
+              {t('governanceTokenSymbolLabel')}
+            </Text>
             <Text
               color="color-neutral-300"
               textStyle="text-base-regular"
+              data-testid="token-symbol-value"
             >
               ${votesToken.symbol}
             </Text>
@@ -77,11 +96,18 @@ export function ERC20TokenContainer() {
             justifyContent="space-between"
             px={6}
             py={2}
+            data-testid="token-supply-row"
           >
-            <Text textStyle="text-base-regular">{t('governanceTokenSupplyLabel')}</Text>
+            <Text
+              textStyle="text-base-regular"
+              data-testid="token-supply-label"
+            >
+              {t('governanceTokenSupplyLabel')}
+            </Text>
             <Text
               color="color-neutral-300"
               textStyle="text-base-regular"
+              data-testid="token-supply-value"
             >
               {formatCoin(
                 votesToken.totalSupply,
@@ -99,6 +125,7 @@ export function ERC20TokenContainer() {
           justifyContent="center"
           alignItems="center"
           minHeight="100px"
+          data-testid="token-loading"
         >
           <BarLoader />
         </Flex>

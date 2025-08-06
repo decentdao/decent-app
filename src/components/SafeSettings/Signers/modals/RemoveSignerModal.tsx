@@ -64,22 +64,30 @@ function RemoveSignerModal({
   }, [selectedSigner, signers]);
 
   return (
-    <Box>
-      <Text textStyle="text-sm-medium">{t('removeSignerLabel', { ns: 'modals' })}</Text>
+    <Box data-testid="remove-signer-modal">
+      <Text
+        textStyle="text-sm-medium"
+        data-testid="remove-signer-label"
+      >
+        {t('removeSignerLabel', { ns: 'modals' })}
+      </Text>
       <Input
         value={ensName ? ensName : selectedSigner}
         disabled={true}
         my="0.5rem"
+        data-testid="remove-signer-address-input"
       />
-      <HStack>
+      <HStack data-testid="remove-signer-warning-section">
         <Icon
           weight="fill"
           as={WarningDiamond}
           color="color-error-500"
+          data-testid="remove-signer-warning-icon"
         />
         <Text
           textStyle="text-sm-medium"
           color="color-error-500"
+          data-testid="remove-signer-warning-text"
         >
           {t('removeSignerWarning', { ns: 'modals' })}
         </Text>
@@ -89,8 +97,10 @@ function RemoveSignerModal({
         mt={5}
         mb={4}
       />
-      <HStack>
-        <Text>{t('updateThreshold', { ns: 'modals' })}</Text>
+      <HStack data-testid="threshold-section">
+        <Text data-testid="threshold-section-title">
+          {t('updateThreshold', { ns: 'modals' })}
+        </Text>
         <Flex ref={tooltipContainer}>
           <SupportTooltip
             containerRef={tooltipContainer}
@@ -98,11 +108,12 @@ function RemoveSignerModal({
             color="color-lilac-100"
             mx="2"
             mt="1"
+            data-testid="remove-signer-threshold-tooltip"
           />
         </Flex>
       </HStack>
 
-      <HStack>
+      <HStack data-testid="threshold-controls">
         <Select
           onChange={e => setThreshold(Number(e.target.value))}
           mt={4}
@@ -111,11 +122,13 @@ function RemoveSignerModal({
           borderColor="color-neutral-900"
           rounded="sm"
           cursor="pointer"
+          data-testid="remove-signer-threshold-select"
         >
           {thresholdOptions?.map(thresholdOption => (
             <option
               key={thresholdOption}
               value={thresholdOption}
+              data-testid={`remove-signer-threshold-option-${thresholdOption}`}
             >
               {thresholdOption}
             </option>
@@ -125,6 +138,7 @@ function RemoveSignerModal({
           <Text
             mt={3}
             ml={2}
+            data-testid="threshold-description"
           >{`${t('signersRequired1', { ns: 'modals' })} ${signers.length - 1} ${t(
             'signersRequired2',
             { ns: 'modals' },
@@ -141,15 +155,18 @@ function RemoveSignerModal({
         borderRadius="0.25rem"
         alignItems="center"
         gap="1rem"
+        data-testid="remove-signer-warning-box"
       >
         <Icon
           color="color-yellow-200"
           as={WarningCircle}
           boxSize="1.5rem"
+          data-testid="remove-signer-warning-box-icon"
         />
         <Text
           color="color-yellow-200"
           whiteSpace="pre-wrap"
+          data-testid="remove-signer-warning-box-text"
         >
           {t('updateSignerWarning', { ns: 'modals' })}
         </Text>
@@ -161,12 +178,14 @@ function RemoveSignerModal({
       <CustomNonceInput
         nonce={nonce}
         onChange={newNonce => setNonce(newNonce !== undefined ? parseInt(newNonce) : undefined)}
+        data-testid="remove-signer-nonce-input"
       />
       <Button
         isDisabled={!threshold || !nonce || !safe || nonce < safe.nonce}
         mt={6}
         width="100%"
         onClick={onSubmit}
+        data-testid="remove-signer-submit"
       >
         {t('createProposal', { ns: 'modals' })}
       </Button>

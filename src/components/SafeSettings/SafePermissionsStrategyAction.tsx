@@ -28,26 +28,45 @@ export function SafePermissionsStrategyAction({
     <Box
       width="100%"
       whiteSpace="balance"
+      data-testid="permissions-strategy-action"
     >
-      <Text as="span">{title}</Text>
+      <Text
+        as="span"
+        data-testid="permissions-action-title"
+      >
+        {title}
+      </Text>
       <Text
         color="color-lilac-100"
         as="span"
+        data-testid="permissions-create-proposals-text"
       >
         {` ${t('createProposals')} `}
       </Text>
-      <Text as="span">{` ${t('editPermissionActionDescription')} `}</Text>
+      <Text
+        as="span"
+        data-testid="permissions-action-description"
+      >
+        {` ${t('editPermissionActionDescription')} `}
+      </Text>
       <Icon
         as={Coins}
         color="color-lilac-100"
+        data-testid="permissions-threshold-icon"
       />
       <Text
         as="span"
         color="color-lilac-100"
+        data-testid="permissions-threshold-value"
       >
         {` ${proposerThreshold.value} ${azoriusGovernance.votesToken?.symbol || t('votingWeightThreshold')} `}
       </Text>
-      <Text as="span">{` ${t('editPermissionActionDescription2')} `}</Text>
+      <Text
+        as="span"
+        data-testid="permissions-action-description-2"
+      >
+        {` ${t('editPermissionActionDescription2')} `}
+      </Text>
     </Box>
   );
 }

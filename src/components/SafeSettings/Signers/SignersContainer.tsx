@@ -34,11 +34,13 @@ function Signer({
   onRemove,
   markedForRemoval,
   canRemove,
+  index,
 }: {
   signer: SignerItem;
   onRemove: (() => void) | null;
   markedForRemoval?: boolean;
   canRemove: boolean;
+  index: number;
 }) {
   if (!signer.isAdding && !signer.address) {
     throw new Error('Signer does not have an address');
@@ -60,6 +62,7 @@ function Signer({
     <Flex
       flexDirection="column"
       alignItems="stretch"
+      data-testid={`signer-item-${index}`}
     >
       <Flex
         flexDirection="row"
@@ -76,6 +79,7 @@ function Signer({
           textDecoration={markedForRemoval ? 'line-through' : 'none'}
           color={!!newSigner ? 'color-white' : 'color-neutral-900'}
           isInvalid={isInvalid}
+          data-testid={`signer-input-${index}`}
           onChange={e => {
             // Find and overwrite the address input value of this new signer with the input value
             const newSigners = values.multisig?.newSigners?.map((s: NewSignerItem) =>
@@ -100,6 +104,7 @@ function Signer({
             h="1.5rem"
             p="0"
             isDisabled={!showRemoveButton}
+            data-testid={`signer-remove-${index}`}
             onClick={onRemove ?? (() => {})}
           >
             <Icon
@@ -116,6 +121,7 @@ function Signer({
             aria-label="Remove Signer"
             h="1.5rem"
             p="0"
+            data-testid={`signer-restore-${index}`}
             onClick={() => {
               setFieldValue('multisig.signersToRemove', [
                 ...(values.multisig?.signersToRemove ?? []).filter(
@@ -201,7 +207,10 @@ export function SignersContainer() {
   }, [signers, values.multisig?.signersToRemove, values.multisig?.newSigners]);
 
   return (
-    <Box width="100%">
+    <Box
+      width="100%"
+      data-testid="signers-container"
+    >
       {/* LAUNCH TOKEN BANNER */}
       <Flex
         flexDirection="row"
@@ -211,6 +220,7 @@ export function SignersContainer() {
         mb={12}
         justifyContent="space-between"
         alignItems="center"
+        data-testid="launch-token-banner"
       >
         <Flex
           flexDirection="row"
@@ -221,6 +231,7 @@ export function SignersContainer() {
             src="/images/token-banner.svg"
             w="3.52244rem"
             h="3.75rem"
+            data-testid="launch-token-banner-image"
           />
           <Flex
             mt={4}
@@ -230,6 +241,7 @@ export function SignersContainer() {
               textStyle="text-xs-medium"
               color="color-lilac-700"
               fontWeight="bold"
+              data-testid="launch-token-title"
             >
               {t('launchTokenTitle', { ns: 'daoEdit' })}
             </Text>
@@ -237,6 +249,7 @@ export function SignersContainer() {
               textStyle="text-sm-medium"
               color="color-lilac-700"
               mb="1rem"
+              data-testid="launch-token-description"
             >
               {t('launchTokenDescription', { ns: 'daoEdit' })}
             </Text>
@@ -246,6 +259,7 @@ export function SignersContainer() {
           bg="color-white"
           _hover={{ bg: 'color-white' }}
           size="sm"
+          data-testid="launch-token-button"
           onClick={handleModifyGovernance}
         >
           {t('launchToken', { ns: 'daoEdit' })}
@@ -256,6 +270,7 @@ export function SignersContainer() {
         textStyle="text-lg-regular"
         color="color-white"
         mb={0.5}
+        data-testid="owners-section-title"
       >
         {t('owners', { ns: 'common' })}
       </Text>
@@ -264,11 +279,13 @@ export function SignersContainer() {
         border="1px solid"
         borderColor="color-neutral-900"
         borderRadius="0.75rem"
+        data-testid="owners-section"
       >
-        {signers.map(signer => (
+        {signers.map((signer, index) => (
           <Signer
             key={signer.key}
             signer={signer}
+            index={index}
             markedForRemoval={values.multisig?.signersToRemove?.includes(signer.address) ?? false}
             onRemove={
               enableRemove
@@ -283,10 +300,11 @@ export function SignersContainer() {
             canRemove={canRemoveMoreSigners}
           />
         ))}
-        {values.multisig?.newSigners?.map(signer => (
+        {values.multisig?.newSigners?.map((signer, index) => (
           <Signer
             key={signer.key}
             signer={signer}
+            index={signers.length + index}
             onRemove={() => {
               setFieldValue(
                 'multisig.newSigners',
@@ -303,10 +321,12 @@ export function SignersContainer() {
             justifyContent="flex-end"
             px={6}
             py={2}
+            data-testid="add-signer-section"
           >
             <Button
               variant="secondary"
               size="sm"
+              data-testid="signer-add-button"
               onClick={() => {
                 const key = genSignerItemKey();
                 setFieldValue('multisig.newSigners', [
@@ -332,6 +352,7 @@ export function SignersContainer() {
         mt={3}
         px={6}
         py={3}
+        data-testid="threshold-section"
       >
         <Flex
           flexDirection="row"
@@ -343,12 +364,14 @@ export function SignersContainer() {
             <Text
               textStyle="text-lg-regular"
               mb={0.5}
+              data-testid="threshold-title"
             >
               {t('threshold', { ns: 'common' })}
             </Text>
             <Text
               textStyle="text-base-regular"
               color="color-neutral-300"
+              data-testid="threshold-description"
             >
               {t('thresholdDescription', { ns: 'common' })}
             </Text>
@@ -357,6 +380,7 @@ export function SignersContainer() {
           {/* stepper */}
           <Flex w="200px">
             <NumberStepperInput
+              data-testid="threshold-input"
               onChange={value => {
                 let updatedValue;
                 if (value !== `${safe?.threshold}`) {

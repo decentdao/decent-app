@@ -29,24 +29,41 @@ export function SettingsPermissionsStrategyForm({
     <Flex
       flexDirection="column"
       gap={6}
+      data-testid="permissions-strategy-form"
     >
       <Flex
         flexDirection="column"
         gap={2}
         align="flex-start"
+        data-testid="permissions-asset-section"
       >
         <Flex
           gap={1}
           alignItems="center"
           ref={tooltipContainerRef}
+          data-testid="permissions-asset-header"
         >
-          <Text textStyle="text-xl-regular">{t('asset')}</Text>
-          <Text color="color-lilac-100">*</Text>
+          <Text
+            textStyle="text-xl-regular"
+            data-testid="permissions-asset-title"
+          >
+            {t('asset')}
+          </Text>
+          <Text
+            color="color-lilac-100"
+            data-testid="permissions-asset-required-indicator"
+          >
+            *
+          </Text>
           <ModalTooltip
             containerRef={tooltipContainerRef}
             label={t('assetTooltip')}
+            data-testid="permissions-asset-tooltip"
           >
-            <Box color="color-lilac-100">
+            <Box
+              color="color-lilac-100"
+              data-testid="permissions-asset-tooltip-icon"
+            >
               <Info />
             </Box>
           </ModalTooltip>
@@ -55,6 +72,7 @@ export function SettingsPermissionsStrategyForm({
           variant="unstyled"
           isDisabled
           p={0}
+          data-testid="permissions-asset-button"
         >
           <Flex
             gap={3}
@@ -65,15 +83,18 @@ export function SettingsPermissionsStrategyForm({
             w="fit-content"
             className="payment-menu-asset"
             p={2}
+            data-testid="permissions-asset-display"
           >
             <Image
               // @todo: Add asset logo
               src="/images/coin-icon-default.svg"
               boxSize="2.25rem"
+              data-testid="permissions-asset-image"
             />
             <Text
               textStyle="text-base-regular"
               color="color-white"
+              data-testid="permissions-asset-text"
             >
               {votesToken?.symbol || erc721Tokens?.map(token => token.symbol).join(', ')}
             </Text>
@@ -83,11 +104,13 @@ export function SettingsPermissionsStrategyForm({
       <LabelWrapper
         label={t('permissionAmountLabel')}
         labelColor="color-neutral-300"
+        data-testid="permissions-amount-section"
       >
         <BigIntInput
           onChange={setProposerThreshold}
           decimalPlaces={votesToken ? votesToken.decimals : 0}
           value={proposerThreshold.bigintValue}
+          data-testid="permissions-amount-input"
         />
       </LabelWrapper>
     </Flex>

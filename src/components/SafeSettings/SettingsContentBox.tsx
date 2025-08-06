@@ -10,6 +10,7 @@ export function SettingsContentBox({ children, ...props }: PropsWithChildren<Box
       borderBottomLeftRadius={{ base: '0.75rem', md: '0' }}
       overflowY="auto"
       scrollPaddingY={4}
+      data-testid="settings-content-box"
       {...props}
     >
       {children}

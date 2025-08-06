@@ -73,7 +73,7 @@ function AddSignerModal({
   });
 
   return (
-    <Box>
+    <Box data-testid="add-signer-modal">
       <Formik
         initialValues={{
           address: '',
@@ -87,7 +87,9 @@ function AddSignerModal({
         {({ handleSubmit, errors, values, setFieldValue }) => {
           return (
             <form onSubmit={handleSubmit}>
-              <Text>{t('addSignerLabel', { ns: 'modals' })}</Text>
+              <Text data-testid="add-signer-label">
+                {t('addSignerLabel', { ns: 'modals' })}
+              </Text>
               <Field name={'address'}>
                 {({ field }: FieldAttributes<any>) => (
                   <LabelWrapper
@@ -97,6 +99,7 @@ function AddSignerModal({
                     <AddressInput
                       {...field}
                       isInvalid={!!field.value && !!errors.address}
+                      data-testid="add-signer-address-input"
                     />
                   </LabelWrapper>
                 )}
@@ -105,8 +108,10 @@ function AddSignerModal({
                 mt={6}
                 mb={4}
               />
-              <HStack>
-                <Text>{t('updateThreshold', { ns: 'modals' })}</Text>
+              <HStack data-testid="threshold-section">
+                <Text data-testid="threshold-section-title">
+                  {t('updateThreshold', { ns: 'modals' })}
+                </Text>
                 <Flex ref={tooltipContainer}>
                   <SupportTooltip
                     containerRef={tooltipContainer}
@@ -114,10 +119,11 @@ function AddSignerModal({
                     label={t('updateSignersTooltip')}
                     mx="2"
                     mt="1"
+                    data-testid="add-signer-threshold-tooltip"
                   />
                 </Flex>
               </HStack>
-              <HStack>
+              <HStack data-testid="threshold-controls">
                 <Select
                   onChange={e => setFieldValue('threshold', Number(e.target.value))}
                   mt={4}
@@ -126,11 +132,13 @@ function AddSignerModal({
                   borderColor="color-neutral-900"
                   rounded="sm"
                   cursor="pointer"
+                  data-testid="add-signer-threshold-select"
                 >
                   {values.thresholdOptions?.map(thresholdOption => (
                     <option
                       key={thresholdOption}
                       value={thresholdOption}
+                      data-testid={`add-signer-threshold-option-${thresholdOption}`}
                     >
                       {thresholdOption}
                     </option>
@@ -140,6 +148,7 @@ function AddSignerModal({
                   <Text
                     mt={3}
                     ml={2}
+                    data-testid="threshold-description"
                   >{`${t('signersRequired1', { ns: 'modals' })} ${signers.length + 1} ${t(
                     'signersRequired2',
                     { ns: 'modals' },
@@ -157,15 +166,18 @@ function AddSignerModal({
                 borderRadius="0.25rem"
                 alignItems="center"
                 gap="1rem"
+                data-testid="add-signer-warning"
               >
                 <Icon
                   color="color-yellow-200"
                   as={WarningCircle}
                   boxSize="1.5rem"
+                  data-testid="add-signer-warning-icon"
                 />
                 <Text
                   color="color-yellow-200"
                   whiteSpace="pre-wrap"
+                  data-testid="add-signer-warning-text"
                 >
                   {t('updateSignerWarning', { ns: 'modals' })}
                 </Text>
@@ -175,12 +187,14 @@ function AddSignerModal({
               <CustomNonceInput
                 nonce={values.nonce}
                 onChange={newNonce => setFieldValue('nonce', newNonce)}
+                data-testid="add-signer-nonce-input"
               />
               <Button
                 type="submit"
                 isDisabled={!!Object.keys(errors).length || !safe}
                 mt={6}
                 width="100%"
+                data-testid="add-signer-submit"
               >
                 {t('createProposal', { ns: 'modals' })}
               </Button>
