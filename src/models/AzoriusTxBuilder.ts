@@ -20,7 +20,6 @@ import {
   AzoriusERC20DAO,
   AzoriusERC721DAO,
   AzoriusGovernanceDAO,
-  CreateProposalTransaction,
   SafeTransaction,
   TokenLockType,
   VotingStrategyType,
@@ -28,6 +27,31 @@ import {
 import { SENTINEL_MODULE } from '../utils/address';
 import { BaseTxBuilder } from './BaseTxBuilder';
 import { generateContractByteCodeLinear, generateSalt } from './helpers/utils';
+
+export function calculateTokenAllocations(
+  azoriusGovernanceDaoData: AzoriusERC20DAO,
+  safeContractAddress: Address,
+): [Address[], bigint[]] {
+  const tokenAllocationsOwners = azoriusGovernanceDaoData.tokenAllocations.map(tokenAllocation =>
+    getAddress(tokenAllocation.address),
+  );
+
+  const tokenAllocationsValues = azoriusGovernanceDaoData.tokenAllocations.map(
+    tokenAllocation => tokenAllocation.amount,
+  );
+  const tokenAllocationSum = tokenAllocationsValues.reduce((accumulator, tokenAllocation) => {
+    return tokenAllocation + accumulator;
+  }, 0n);
+
+  // Send any un-allocated tokens to the Safe Treasury
+  if (azoriusGovernanceDaoData.tokenSupply > tokenAllocationSum) {
+    // TODO -- verify this doesn't need to be the predicted safe address (that they are the same)
+    tokenAllocationsOwners.push(safeContractAddress);
+    tokenAllocationsValues.push(azoriusGovernanceDaoData.tokenSupply - tokenAllocationSum);
+  }
+
+  return [tokenAllocationsOwners, tokenAllocationsValues];
+}
 
 export class AzoriusTxBuilder extends BaseTxBuilder {
   private readonly safeContractAddress: Address;
@@ -263,71 +287,6 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
     });
   }
 
-  public getCreateTokenTx(): CreateProposalTransaction {
-    const azoriusErc20DaoData = this.daoData as AzoriusERC20DAO;
-
-    if (
-      !this.encodedSetupTokenData ||
-      !this.votesErc20MasterCopy ||
-      !this.votesErc20LockableMasterCopy
-    ) {
-      throw new Error('Encoded setup token data or votes erc20 master copy not set');
-    }
-
-    const votesErc20MasterCopy =
-      azoriusErc20DaoData.locked === TokenLockType.LOCKED
-        ? this.votesErc20LockableMasterCopy
-        : this.votesErc20MasterCopy;
-
-    return {
-      targetAddress: this.zodiacModuleProxyFactory,
-      ethValue: {
-        bigintValue: 0n,
-        value: '0',
-      },
-      functionName: 'deployModule',
-      parameters: [
-        {
-          signature: 'address',
-          value: votesErc20MasterCopy,
-        },
-        {
-          signature: 'bytes',
-          value: this.encodedSetupTokenData,
-        },
-        {
-          signature: 'uint256',
-          value: this.tokenNonce.toString(),
-        },
-      ],
-    };
-  }
-
-  public getUpdateERC20AddressTx(keyValuePairs: Address): CreateProposalTransaction {
-    if (!this.predictedTokenAddress) {
-      throw new Error('predictedTokenAddress not set');
-    }
-
-    return {
-      targetAddress: keyValuePairs,
-      ethValue: {
-        bigintValue: 0n,
-        value: '0',
-      },
-      functionName: 'updateValues',
-      parameters: [
-        {
-          signature: 'string[]',
-          valueArray: ['erc20Address'],
-        },
-        {
-          signature: 'string[]',
-          valueArray: [this.predictedTokenAddress],
-        },
-      ],
-    };
-  }
-
   public buildDeployStrategyTx(): SafeTransaction {
     const daoData = this.daoData as AzoriusGovernanceDAO;
 
@@ -403,34 +362,12 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
     return buildSignatures(this.multiSendCallOnly);
   }
 
-  private calculateTokenAllocations(
-    azoriusGovernanceDaoData: AzoriusERC20DAO,
-  ): [Address[], bigint[]] {
-    const tokenAllocationsOwners = azoriusGovernanceDaoData.tokenAllocations.map(tokenAllocation =>
-      getAddress(tokenAllocation.address),
-    );
-
-    const tokenAllocationsValues = azoriusGovernanceDaoData.tokenAllocations.map(
-      tokenAllocation => tokenAllocation.amount,
-    );
-    const tokenAllocationSum = tokenAllocationsValues.reduce((accumulator, tokenAllocation) => {
-      return tokenAllocation + accumulator;
-    }, 0n);
-
-    // Send any un-allocated tokens to the Safe Treasury
-    if (azoriusGovernanceDaoData.tokenSupply > tokenAllocationSum) {
-      // TODO -- verify this doesn't need to be the predicted safe address (that they are the same)
-      tokenAllocationsOwners.push(this.safeContractAddress);
-      tokenAllocationsValues.push(azoriusGovernanceDaoData.tokenSupply - tokenAllocationSum);
-    }
-
-    return [tokenAllocationsOwners, tokenAllocationsValues];
-  }
-
   private setEncodedSetupTokenData() {
     const azoriusGovernanceDaoData = this.daoData as AzoriusERC20DAO;
-    const [tokenAllocationsOwners, tokenAllocationsValues] =
-      this.calculateTokenAllocations(azoriusGovernanceDaoData);
+    const [tokenAllocationsOwners, tokenAllocationsValues] = calculateTokenAllocations(
+      azoriusGovernanceDaoData,
+      this.safeContractAddress,
+    );
 
     if (azoriusGovernanceDaoData.locked === TokenLockType.LOCKED) {
       const allocations: { to: Address; amount: bigint }[] = tokenAllocationsOwners.map((o, i) => ({

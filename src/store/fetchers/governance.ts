@@ -28,6 +28,7 @@ import { useSafeDecoder } from '../../hooks/utils/useSafeDecoder';
 import { useSafeTransactions } from '../../hooks/utils/useSafeTransactions';
 import { useTimeHelpers } from '../../hooks/utils/useTimeHelpers';
 import { useUpdateTimer } from '../../hooks/utils/useUpdateTimer';
+import useBalancesAPI from '../../providers/App/hooks/useBalancesAPI';
 import useIPFSClient from '../../providers/App/hooks/useIPFSClient';
 import { useSafeAPI } from '../../providers/App/hooks/useSafeAPI';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
@@ -71,6 +72,7 @@ export function useGovernanceFetcher() {
   const { t } = useTranslation(['dashboard']);
   const publicClient = useNetworkPublicClient();
   const safeApi = useSafeAPI();
+  const { getTokenBalances } = useBalancesAPI();
   const { getAddressContractType } = useAddressContractType();
   const user = useAccount();
   const snaphshotGraphQlClient = useMemo(() => createSnapshotSubgraphClient(), []);
@@ -1104,23 +1106,48 @@ export function useGovernanceFetcher() {
           });
 
           // Execute multicall
-          const [minimumStakingPeriod, rewardsTokens] = await publicClient.multicall({
-            contracts: [
-              {
-                ...tokenContract,
-                functionName: 'minimumStakingPeriod',
-              },
-              {
-                ...tokenContract,
-                functionName: 'rewardsTokens',
-              },
-            ],
-            allowFailure: false,
-          });
+          const [name, symbol, decimals, totalSupply, minimumStakingPeriod, rewardsTokens] =
+            await publicClient.multicall({
+              contracts: [
+                {
+                  ...tokenContract,
+                  functionName: 'name',
+                },
+                {
+                  ...tokenContract,
+                  functionName: 'symbol',
+                },
+                {
+                  ...tokenContract,
+                  functionName: 'decimals',
+                },
+                {
+                  ...tokenContract,
+                  functionName: 'totalSupply',
+                },
+                {
+                  ...tokenContract,
+                  functionName: 'minimumStakingPeriod',
+                },
+                {
+                  ...tokenContract,
+                  functionName: 'rewardsTokens',
+                },
+              ],
+              allowFailure: false,
+            });
+
+          const { data: tokenBalances } = await getTokenBalances(stakingAddress);
+
           return {
             address: stakingAddress,
+            name,
+            symbol,
+            decimals,
+            totalSupply,
             minimumStakingPeriod,
             rewardsTokens: [...rewardsTokens],
+            assetsFungible: tokenBalances || [],
           };
         } catch (e) {
           logError({
@@ -1132,7 +1159,13 @@ export function useGovernanceFetcher() {
         return undefined;
       }
     },
-    [governance, publicClient, votesERC20StakedV1MasterCopy, zodiacModuleProxyFactory],
+    [
+      getTokenBalances,
+      governance,
+      publicClient,
+      votesERC20StakedV1MasterCopy,
+      zodiacModuleProxyFactory,
+    ],
   );
 
   return {

@@ -2,10 +2,9 @@ import { Button, Flex, Icon, Image, MenuButton, Text } from '@chakra-ui/react';
 import { CaretDown, CheckCircle } from '@phosphor-icons/react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useBalance } from 'wagmi';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import { useDAOStore } from '../../../providers/App/AppProvider';
-import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
+import { TokenBalance } from '../../../types';
 import { formatCoin, formatUSD } from '../../../utils';
 import { DropdownMenu } from '../menus/DropdownMenu';
 
@@ -19,6 +18,7 @@ interface AssetSelectorProps {
    * Can't unselected these pre-selected assets
    */
   lockedSelections?: string[];
+  hideBalanceAndMergeTokens?: TokenBalance[];
 }
 
 export const NATIVE_TOKEN_ADDRESS = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
@@ -30,60 +30,52 @@ export function AssetSelector({
   onSelect,
   canSelectMultiple = false,
   lockedSelections = [],
+  hideBalanceAndMergeTokens,
 }: AssetSelectorProps) {
   const { t } = useTranslation(['roles', 'treasury', 'modals']);
 
-  const { getConfigByChainId, chain } = useNetworkConfigStore();
-  const networkConfig = getConfigByChainId(chain.id);
   const { daoKey } = useCurrentDAOKey();
   const {
     treasury: { assetsFungible },
-    node: { safe },
   } = useDAOStore({ daoKey });
-
-  const { data: nativeTokenBalance } = useBalance({
-    address: safe?.address,
-  });
 
   const [selectedAddresses, setSelectedAddresses] = useState<string[]>(
     lockedSelections || (onlyNativeToken ? [NATIVE_TOKEN_ADDRESS] : []),
   );
 
-  const nonNativeFungibleAssets = assetsFungible.filter(
-    asset => parseFloat(asset.balance) > 0 && !asset.nativeToken,
-  );
+  const assets = hideBalanceAndMergeTokens
+    ? [
+        ...assetsFungible,
+        ...hideBalanceAndMergeTokens.filter(
+          asset =>
+            !assetsFungible.find(
+              a => a.tokenAddress.toLowerCase() === asset.tokenAddress.toLowerCase(),
+            ),
+        ),
+      ]
+    : assetsFungible;
+  const showBalance = hideBalanceAndMergeTokens === undefined;
 
-  const nativeTokenItem = {
-    value: NATIVE_TOKEN_ADDRESS,
-    label: nativeTokenBalance?.symbol ?? 'Native Token',
-    icon: networkConfig.nativeTokenIcon,
-    selected: selectedAddresses.includes(NATIVE_TOKEN_ADDRESS),
+  const items = assets.map(asset => ({
+    value: asset.tokenAddress,
+    label: asset.symbol,
+    icon: asset.logo ?? asset.thumbnail ?? '/images/coin-icon-default.svg',
+    selected: selectedAddresses.includes(asset.tokenAddress),
     assetData: {
-      name: nativeTokenBalance?.symbol ?? 'Native Token',
-      balance: nativeTokenBalance?.value.toString() ?? '0',
-      decimals: nativeTokenBalance?.decimals ?? 18,
-      symbol: nativeTokenBalance?.symbol ?? 'Native Token',
+      name: asset.name,
+      balance: asset.balance,
+      decimals: asset.decimals,
+      usdValue: asset.usdValue,
+      symbol: asset.symbol,
     },
-  };
+  }));
+  const nativeItem = items.find(item => item.value === NATIVE_TOKEN_ADDRESS)!;
 
   const dropdownItems = onlyNativeToken
-    ? [nativeTokenItem]
-    : [
-        ...(includeNativeToken ? [nativeTokenItem] : []),
-        ...nonNativeFungibleAssets.map(asset => ({
-          value: asset.tokenAddress,
-          label: asset.symbol,
-          icon: asset.logo ?? asset.thumbnail ?? '/images/coin-icon-default.svg',
-          selected: selectedAddresses.includes(asset.tokenAddress),
-          assetData: {
-            name: asset.name,
-            balance: asset.balance,
-            decimals: asset.decimals,
-            usdValue: asset.usdValue,
-            symbol: asset.symbol,
-          },
-        })),
-      ];
+    ? [nativeItem]
+    : includeNativeToken
+      ? items
+      : items.filter(i => i.value !== NATIVE_TOKEN_ADDRESS);
   const selectedItems = dropdownItems.filter(i => i.selected);
 
   return (
@@ -208,33 +200,36 @@ export function AssetSelector({
                 >
                   {item.label}
                 </Text>
-                <Flex
-                  alignItems="center"
-                  gap={2}
-                >
-                  <Text
-                    textStyle="text-lg-regular"
-                    color="color-neutral-300"
+
+                {showBalance && (
+                  <Flex
+                    alignItems="center"
+                    gap={2}
                   >
-                    {balanceText}
-                  </Text>
-                  {usdValue && (
-                    <>
-                      <Text
-                        textStyle="text-lg-regular"
-                        color="color-neutral-300"
-                      >
-                        {'•'}
-                      </Text>
-                      <Text
-                        textStyle="text-lg-regular"
-                        color="color-neutral-300"
-                      >
-                        {formatUSD(usdValue)}
-                      </Text>
-                    </>
-                  )}
-                </Flex>
+                    <Text
+                      textStyle="text-lg-regular"
+                      color="color-neutral-300"
+                    >
+                      {balanceText}
+                    </Text>
+                    {usdValue && (
+                      <>
+                        <Text
+                          textStyle="text-lg-regular"
+                          color="color-neutral-300"
+                        >
+                          {'•'}
+                        </Text>
+                        <Text
+                          textStyle="text-lg-regular"
+                          color="color-neutral-300"
+                        >
+                          {formatUSD(usdValue)}
+                        </Text>
+                      </>
+                    )}
+                  </Flex>
+                )}
               </Flex>
             </Flex>
             {isSelected && (
