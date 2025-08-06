@@ -110,7 +110,7 @@ export function AssetSelector({
           onSelect?.([item.value]);
         }
       }}
-      title={t('titleAssets', { ns: 'treasury' })}
+      title={t('titleAssetsWithCount', { ns: 'treasury', count: dropdownItems.length })}
       isDisabled={disabled}
       selectPlaceholder={t('selectLabel', { ns: 'modals' })}
       emptyMessage={t('emptyRolesAssets', { ns: 'roles' })}
