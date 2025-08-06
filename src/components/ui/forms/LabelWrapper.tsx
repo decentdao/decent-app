@@ -25,7 +25,11 @@ function LabelWrapper({
 }: LabelWrapperProps) {
   return (
     <Box position="relative">
-      <FormLabel m="0px">
+      <FormLabel 
+        m="0px"
+        onClick={(e) => e.preventDefault()}
+        cursor="default"
+      >
         <Flex
           gap="0.5"
           alignItems="center"
