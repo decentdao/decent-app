@@ -3,6 +3,7 @@
   "buttonSendAssets": "Request Payment",
   "titleTransactions": "Transactions",
   "titleAssets": "Assets",
+  "titleAssetsWithCount": "Assets ({{count}})",
   "subtitleTreasuryBalance": "Total Treasury Balance",
   "subtitleStaking": "Lido ETH Staking",
   "columnCoins": "Coins",

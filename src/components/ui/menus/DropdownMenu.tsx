@@ -223,6 +223,8 @@ export function DropdownMenu<T>({
               px="0.25rem"
               pb="0.25rem"
               w="26.75rem"
+              maxHeight="20rem"
+              overflowY="scroll"
             >
               <EaseOutComponent>
                 {title && (
