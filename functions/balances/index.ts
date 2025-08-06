@@ -15,7 +15,8 @@ const endpoints = {
   tokens: {
     moralisPath: (address: string) => `/wallets/${address}/tokens`,
     transform: transformTokenResponse,
-    postProcess: (data: TokenBalance[]) => data.filter(token => token.balance !== '0'),
+    postProcess: (data: TokenBalance[]) =>
+      data.filter(token => token.nativeToken || token.balance !== '0'),
     fetch: async ({ chain, address }: { chain: string; address: string }, c: { env: Env }) => {
       const result = await fetchMoralis<TokenResponse>({
         endpoint: endpoints.tokens.moralisPath(address),

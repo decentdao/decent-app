@@ -14,15 +14,38 @@ import {
 import { AssetSelector } from '../../../../components/ui/utils/AssetSelector';
 import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
 import { useDAOStore } from '../../../../providers/App/AppProvider';
-import { BigIntValuePair } from '../../../../types';
+import { useNetworkConfigStore } from '../../../../providers/NetworkConfig/useNetworkConfigStore';
+import { BigIntValuePair, ERC20TokenData, GovernanceType, TokenBalance } from '../../../../types';
+
+function emptyTokenBalanceForAddress(
+  address: Address,
+  name: string,
+  symbol: string,
+  decimals: number,
+): TokenBalance {
+  const result: TokenBalance = {
+    tokenAddress: address,
+    decimals,
+    symbol,
+    name,
+    balance: '0',
+    verifiedContract: true,
+    nativeToken: false,
+    balanceFormatted: '0',
+    portfolioPercentage: 0,
+  };
+  return result;
+}
 
 function StakingForm() {
   const { t } = useTranslation('staking');
   const { daoKey } = useCurrentDAOKey();
   const {
-    governance: { stakedToken },
-    treasury: { assetsFungible },
+    governance: { stakedToken, votesToken, erc20Token, type },
   } = useDAOStore({ daoKey });
+  const {
+    stablecoins: { usdc },
+  } = useNetworkConfigStore();
   const { values, setFieldValue } = useFormikContext<SafeSettingsEdits>();
   const { errors } = useFormikContext<SafeSettingsEdits>();
   const stakingErrors = (errors as SafeSettingsFormikErrors | undefined)?.staking;
@@ -32,9 +55,32 @@ function StakingForm() {
     values.staking?.minimumStakingPeriod?.bigintValue || minimumStakingPeriod || 0n,
   );
 
-  const undistributedTokens = assetsFungible.filter(
-    asset => !rewardsTokens?.includes(asset.tokenAddress),
-  );
+  const undistributedTokens =
+    stakedToken?.assetsFungible.filter(
+      asset => asset.balance !== '0' && !rewardsTokens?.includes(asset.tokenAddress),
+    ) || [];
+
+  // Add staking contract holdings, DAO token and USDC
+  const mergeTokens: TokenBalance[] = [
+    ...(stakedToken?.assetsFungible || []),
+    emptyTokenBalanceForAddress(usdc, 'USDC', 'USD Coin', 6),
+  ];
+  let daoErc20Token: ERC20TokenData | undefined;
+  if (type === GovernanceType.AZORIUS_ERC20) {
+    daoErc20Token = votesToken;
+  } else if (type === GovernanceType.MULTISIG) {
+    daoErc20Token = erc20Token;
+  }
+  if (daoErc20Token) {
+    mergeTokens.push(
+      emptyTokenBalanceForAddress(
+        daoErc20Token.address,
+        daoErc20Token.symbol,
+        daoErc20Token.name,
+        daoErc20Token.decimals,
+      ),
+    );
+  }
 
   return (
     <>
@@ -53,7 +99,8 @@ function StakingForm() {
         label={t('stakingPeriod')}
         isRequired
         gridContainerProps={{
-          my: 2,
+          mt: 2,
+          mb: 4,
           templateColumns: '1fr',
           width: { base: '100%', md: '50%' },
         }}
@@ -80,34 +127,36 @@ function StakingForm() {
         />
       </LabelComponent>
 
-      <LabelComponent
-        label={t('undistributedTokensTitle')}
-        isRequired={false}
-        gridContainerProps={{
-          templateColumns: '1fr',
-          width: { base: '100%' },
-        }}
-        helper={t('undistributedTokensHelper')}
-      >
-        <UnorderedList>
-          {undistributedTokens.map(asset => (
-            <ListItem key={asset.tokenAddress}>
-              <DisplayAddress
-                address={asset.tokenAddress}
-                truncate={false}
-              >
-                <Text>{asset.symbol}</Text>
-              </DisplayAddress>
-            </ListItem>
-          ))}
-        </UnorderedList>
-      </LabelComponent>
+      {undistributedTokens.length > 0 && (
+        <LabelComponent
+          label={t('undistributedTokensTitle')}
+          isRequired={false}
+          gridContainerProps={{
+            my: 2,
+            templateColumns: '1fr',
+            width: { base: '100%' },
+          }}
+          helper={t('undistributedTokensHelper')}
+        >
+          <UnorderedList>
+            {undistributedTokens.map(asset => (
+              <ListItem key={asset.tokenAddress}>
+                <DisplayAddress
+                  address={asset.tokenAddress}
+                  truncate={false}
+                >
+                  <Text>{asset.symbol}</Text>
+                </DisplayAddress>
+              </ListItem>
+            ))}
+          </UnorderedList>
+        </LabelComponent>
+      )}
 
       <LabelComponent
         label={t('rewardTokensTitle')}
         isRequired={false}
         gridContainerProps={{
-          mt: 6,
           templateColumns: '1fr',
           width: { base: '100%' },
         }}
@@ -117,6 +166,7 @@ function StakingForm() {
           includeNativeToken
           canSelectMultiple
           lockedSelections={rewardsTokens}
+          hideBalanceAndMergeTokens={mergeTokens}
           onSelect={addresses => {
             const rewardTokensToBeAdded = addresses.filter(
               a => !rewardsTokens?.includes(a as Address),

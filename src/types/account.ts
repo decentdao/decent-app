@@ -1,4 +1,5 @@
 import { Address } from 'viem';
+import { TokenBalance } from './daoTreasury';
 
 export interface VotesTokenData extends VotesData, ERC20TokenData {}
 export interface VotesData {
@@ -20,10 +21,10 @@ export interface ERC20LockedTokenData extends ERC20TokenData {
   maxTotalSupply: bigint;
 }
 
-export interface StakedTokenExtraData {
-  address: Address;
+export interface StakedTokenData extends ERC20TokenData {
   minimumStakingPeriod: bigint;
   rewardsTokens: Address[];
+  assetsFungible: TokenBalance[];
 }
 
 export interface ERC721TokenData extends BaseTokenData {
