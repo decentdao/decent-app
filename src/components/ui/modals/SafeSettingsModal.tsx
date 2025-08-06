@@ -12,6 +12,7 @@ import {
   formatUnits,
   getContract,
   getCreate2Address,
+  Hex,
   keccak256,
   parseAbiParameters,
 } from 'viem';
@@ -67,6 +68,7 @@ import { isNonEmpty } from '../../../utils/valueCheck';
 import { SafePermissionsStrategyAction } from '../../SafeSettings/SafePermissionsStrategyAction';
 import { SettingsNavigation } from '../../SafeSettings/SettingsNavigation';
 import { NewSignerItem } from '../../SafeSettings/Signers/SignersContainer';
+import { NATIVE_TOKEN_ADDRESS } from '../utils/AssetSelector';
 import Divider from '../utils/Divider';
 import { ModalProvider } from './ModalProvider';
 
@@ -145,6 +147,27 @@ export type SafeSettingsFormikErrors = {
   token?: TokenEditFormikErrors;
   staking?: StakingEditFormikErrors;
 };
+
+function grantRoleTransactionOf(role: Hex, token: Address, account: Address) {
+  return {
+    targetAddress: token,
+    ethValue: {
+      bigintValue: 0n,
+      value: '0',
+    },
+    functionName: 'grantRole',
+    parameters: [
+      {
+        signature: 'bytes32',
+        value: role,
+      },
+      {
+        signature: 'address',
+        value: account,
+      },
+    ],
+  };
+}
 
 export function SafeSettingsModal({
   closeModal,
@@ -1131,21 +1154,9 @@ export function SafeSettingsModal({
       tokenValues.addressesToWhitelist.length > 0
     ) {
       tokenValues.addressesToWhitelist.map(addr => {
-        transactions.push({
-          targetAddress: token.address,
-          ethValue,
-          functionName: 'grantRole',
-          parameters: [
-            {
-              signature: 'bytes32',
-              value: ROLES.TRANSFER_FROM_ROLE,
-            },
-            {
-              signature: 'address',
-              value: addr,
-            },
-          ],
-        });
+        transactions.push(
+          grantRoleTransactionOf(ROLES.TRANSFER_FROM_ROLE, token.address, addr as Address),
+        );
       });
       changeTitles.push(t('addTokenWhitelist', { ns: 'proposalMetadata' }));
     }
@@ -1268,6 +1279,7 @@ export function SafeSettingsModal({
         stakingContractMastercopy: votesERC20StakedV1MasterCopy,
         chainId,
       });
+      const newRewardTokens = stakingValues.newRewardTokens || [];
       transactions.push({
         targetAddress: predictedStakingAddress,
         ethValue,
@@ -1279,10 +1291,26 @@ export function SafeSettingsModal({
           },
           {
             signature: 'address[]',
-            value: `[${(stakingValues.newRewardTokens || []).join(',')}]`,
+            value: `[${newRewardTokens.join(',')}]`,
           },
         ],
       });
+
+      if (newRewardTokens.length > 0) {
+        // Whitelist staking contract on new reward tokens
+        const filteredTokens = newRewardTokens.filter(token => token !== NATIVE_TOKEN_ADDRESS);
+        if (filteredTokens.length > 0) {
+          filteredTokens.map(token => {
+            transactions.push(
+              grantRoleTransactionOf(ROLES.TRANSFER_FROM_ROLE, token, predictedStakingAddress),
+            );
+            transactions.push(
+              grantRoleTransactionOf(ROLES.TRANSFER_TO_ROLE, token, predictedStakingAddress),
+            );
+          });
+          changeTitles.push(t('addTokenWhitelist', { ns: 'proposalMetadata' }));
+        }
+      }
     } else {
       // If deploying is false or undefined, then we are updating the staking contract
       if (stakingContract === undefined) {
@@ -1304,7 +1332,8 @@ export function SafeSettingsModal({
         changeTitles.push(t('updateStakingMinPeriod', { ns: 'proposalMetadata' }));
       }
 
-      if (stakingValues.newRewardTokens !== undefined) {
+      const newRewardTokens = stakingValues.newRewardTokens || [];
+      if (newRewardTokens.length > 0) {
         transactions.push({
           targetAddress: stakingContract.address,
           ethValue,
@@ -1312,11 +1341,25 @@ export function SafeSettingsModal({
           parameters: [
             {
               signature: 'address[]',
-              value: `[${stakingValues.newRewardTokens.join(',')}]`,
+              value: `[${newRewardTokens.join(',')}]`,
             },
           ],
         });
         changeTitles.push(t('addStakingRewardTokens', { ns: 'proposalMetadata' }));
+
+        // Whitelist staking contract on new reward tokens
+        const filteredTokens = newRewardTokens.filter(token => token !== NATIVE_TOKEN_ADDRESS);
+        if (filteredTokens.length > 0) {
+          filteredTokens.map(token => {
+            transactions.push(
+              grantRoleTransactionOf(ROLES.TRANSFER_FROM_ROLE, token, stakingContract.address),
+            );
+            transactions.push(
+              grantRoleTransactionOf(ROLES.TRANSFER_TO_ROLE, token, stakingContract.address),
+            );
+          });
+          changeTitles.push(t('addTokenWhitelist', { ns: 'proposalMetadata' }));
+        }
       }
     }
 
