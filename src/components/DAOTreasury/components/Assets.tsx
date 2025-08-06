@@ -20,7 +20,6 @@ import { CoinHeader, CoinRow } from './AssetCoin';
 import { DeFiHeader, DeFiRow } from './AssetDeFi';
 import { NFTHeader, NFTRow } from './AssetNFT';
 
-
 export function Assets() {
   const { daoKey } = useCurrentDAOKey();
   const {
