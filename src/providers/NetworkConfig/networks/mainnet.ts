@@ -136,13 +136,7 @@ export const mainnetConfig: NetworkConfig = {
       lightAccountFactory: '0x0000000000400CdFef5E2714E63d8040b700BC24',
     },
   },
-  staking: {
-    lido: {
-      rewardsAddress: '0x8202E3cBa328CCf3eeA5bF0A11596c5297Cf7525',
-      stETHContractAddress: '0xae7ab96520DE3A18E5e111B5EaAb095312D7fE84',
-      withdrawalQueueContractAddress: '0x889edC2eDab5f40e902b864aD4d7AdE8E412F9B1',
-    },
-  },
+  staking: {},
   moralis: {
     chainSupported: true,
     deFiSupported: true,
