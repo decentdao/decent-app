@@ -83,11 +83,7 @@ const setIndexedDBValue = async (
   });
 };
 
-const getIndexedDBValue = async (
-  storeKey: string,
-  key: string,
-  chainId: number,
-): Promise<any> => {
+const getIndexedDBValue = async (storeKey: string, key: string, chainId: number): Promise<any> => {
   return withIndexedDB(async db => {
     let transaction: IDBTransaction, store: IDBObjectStore, request: IDBRequest<any>;
 

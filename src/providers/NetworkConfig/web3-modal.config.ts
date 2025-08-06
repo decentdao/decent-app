@@ -20,10 +20,7 @@ const metadata = {
   icons: [`${import.meta.env.VITE_APP_SITE_URL}/favicon-96x96.png`],
 };
 
-const transportsReducer = (
-  accumulator: Record<string, HttpTransport>,
-  network: NetworkConfig,
-) => {
+const transportsReducer = (accumulator: Record<string, HttpTransport>, network: NetworkConfig) => {
   accumulator[network.chain.id] = http(network.rpcEndpoint);
   return accumulator;
 };
