@@ -136,7 +136,7 @@ export const sepoliaConfig: NetworkConfig = {
       lightAccountFactory: '0x0000000000400CdFef5E2714E63d8040b700BC24',
     },
   },
-  staking: {},
+
   moralis: {
     chainSupported: true,
     deFiSupported: false,
