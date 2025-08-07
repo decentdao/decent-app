@@ -223,13 +223,6 @@ export function ProposalActionCard({
         onRemove={() => removeAction(index)}
       />
     );
-  } else if (action.actionType === ProposalActionType.UPDATE_REVENUE_SHARE_SPLITS) {
-    // return (
-    //   <RevenueShareWalletsActionCard
-    //     action={action}
-    //     onRemove={() => removeAction(index)}
-    //   />
-    // );
   } 
 
   const isAddAction = action.actionType === ProposalActionType.ADD;
