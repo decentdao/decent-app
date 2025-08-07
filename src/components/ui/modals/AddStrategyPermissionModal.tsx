@@ -34,7 +34,12 @@ export function AddStrategyPermissionModal({
         alignItems="center"
         data-testid="add-strategy-permission-header"
       >
-        <Text textStyle="text-xl-regular" data-testid="add-strategy-permission-title">{t('addPermissionTitle')}</Text>
+        <Text
+          textStyle="text-xl-regular"
+          data-testid="add-strategy-permission-title"
+        >
+          {t('addPermissionTitle')}
+        </Text>
         <Show above="md">
           <IconButton
             variant="ghost"
@@ -46,7 +51,10 @@ export function AddStrategyPermissionModal({
           />
         </Show>
       </Flex>
-      <Flex gap={2} data-testid="add-strategy-permission-options">
+      <Flex
+        gap={2}
+        data-testid="add-strategy-permission-options"
+      >
         <Card
           display="flex"
           flexDirection="column"
@@ -61,7 +69,10 @@ export function AddStrategyPermissionModal({
           }}
           data-testid="add-strategy-permission-create-proposals-card"
         >
-          <Box color="color-lilac-100" data-testid="add-strategy-permission-create-proposals-icon">
+          <Box
+            color="color-lilac-100"
+            data-testid="add-strategy-permission-create-proposals-icon"
+          >
             <Scroll size={24} />
           </Box>
           <Flex
@@ -69,8 +80,18 @@ export function AddStrategyPermissionModal({
             gap={1}
             data-testid="add-strategy-permission-create-proposals-content"
           >
-            <Text textStyle="text-xl-regular" data-testid="add-strategy-permission-create-proposals-title">{t('permissionCreateProposalsTitle')}</Text>
-            <Text color="color-neutral-300" data-testid="add-strategy-permission-create-proposals-description">{t('permissionCreateProposalsDescription')}</Text>
+            <Text
+              textStyle="text-xl-regular"
+              data-testid="add-strategy-permission-create-proposals-title"
+            >
+              {t('permissionCreateProposalsTitle')}
+            </Text>
+            <Text
+              color="color-neutral-300"
+              data-testid="add-strategy-permission-create-proposals-description"
+            >
+              {t('permissionCreateProposalsDescription')}
+            </Text>
           </Flex>
         </Card>
 
@@ -82,7 +103,10 @@ export function AddStrategyPermissionModal({
           cursor="not-allowed"
           data-testid="add-strategy-permission-coming-soon-card"
         >
-          <Box color="color-neutral-400" data-testid="add-strategy-permission-coming-soon-icon">
+          <Box
+            color="color-neutral-400"
+            data-testid="add-strategy-permission-coming-soon-icon"
+          >
             <CheckSquare size={24} />
           </Box>
           <Flex
@@ -91,8 +115,15 @@ export function AddStrategyPermissionModal({
             color="color-neutral-400"
             data-testid="add-strategy-permission-coming-soon-content"
           >
-            <Text textStyle="text-xl-regular" data-testid="add-strategy-permission-coming-soon-title">{t('permissionComingSoonTitle')}</Text>
-            <Text data-testid="add-strategy-permission-coming-soon-description">{t('permissionComingSoonDescription')}</Text>
+            <Text
+              textStyle="text-xl-regular"
+              data-testid="add-strategy-permission-coming-soon-title"
+            >
+              {t('permissionComingSoonTitle')}
+            </Text>
+            <Text data-testid="add-strategy-permission-coming-soon-description">
+              {t('permissionComingSoonDescription')}
+            </Text>
           </Flex>
         </Card>
       </Flex>

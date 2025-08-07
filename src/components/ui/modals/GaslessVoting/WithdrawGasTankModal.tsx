@@ -52,8 +52,8 @@ export function WithdrawGasTankModal({ close }: { close: () => void }) {
         data-testid="withdraw-gas-modal-header"
       >
         <Text textStyle="text-xl-regular">{t('withdrawGas')}</Text>
-        <CloseButton 
-          onClick={close} 
+        <CloseButton
+          onClick={close}
           data-testid="withdraw-gas-modal-close"
         />
       </Flex>

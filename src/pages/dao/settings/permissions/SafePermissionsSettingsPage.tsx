@@ -145,7 +145,9 @@ export function SafePermissionsSettingsPage() {
                   <Coins fontSize="1.5rem" />
                 </Box>
                 <Box>
-                  <Text data-testid="permissions-create-proposals-title">{t('permissionCreateProposalsTitle')}</Text>
+                  <Text data-testid="permissions-create-proposals-title">
+                    {t('permissionCreateProposalsTitle')}
+                  </Text>
                   <Text
                     textStyle="text-sm-medium"
                     color="color-neutral-300"

@@ -81,7 +81,7 @@ export function RefillGasTankModal({
         data-testid="refill-gas-modal-header"
       >
         <Text textStyle="text-xl-regular">{t('refillTank')}</Text>
-        <CloseButton 
+        <CloseButton
           onClick={close}
           data-testid="refill-gas-modal-close"
         />

@@ -98,9 +98,7 @@ function RemoveSignerModal({
         mb={4}
       />
       <HStack data-testid="threshold-section">
-        <Text data-testid="threshold-section-title">
-          {t('updateThreshold', { ns: 'modals' })}
-        </Text>
+        <Text data-testid="threshold-section-title">{t('updateThreshold', { ns: 'modals' })}</Text>
         <Flex ref={tooltipContainer}>
           <SupportTooltip
             containerRef={tooltipContainer}

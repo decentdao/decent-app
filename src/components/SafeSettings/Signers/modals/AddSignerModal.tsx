@@ -87,9 +87,7 @@ function AddSignerModal({
         {({ handleSubmit, errors, values, setFieldValue }) => {
           return (
             <form onSubmit={handleSubmit}>
-              <Text data-testid="add-signer-label">
-                {t('addSignerLabel', { ns: 'modals' })}
-              </Text>
+              <Text data-testid="add-signer-label">{t('addSignerLabel', { ns: 'modals' })}</Text>
               <Field name={'address'}>
                 {({ field }: FieldAttributes<any>) => (
                   <LabelWrapper
