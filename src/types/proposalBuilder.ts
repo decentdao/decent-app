@@ -69,9 +69,7 @@ export enum ProposalActionType {
   WITHDRAW_PAYMASTER = 'withdraw_paymaster',
   DAPP_INTEGRATION = 'dapp_integration',
   TRANSACTION_BUILDER = 'transaction_builder',
-  CREATE_REVENUE_SHARE_WALLET = 'create_revenue_share_wallet',
   UPDATE_REVENUE_SHARE_SPLITS = 'update_revenue_share_splits',
-  UPDATE_REVENUE_SHARE_WALLET_METADATA = 'update_revenue_share_wallet_metadata',
 }
 
 export type CreateProposalActionData<T = BigIntValuePair> = {

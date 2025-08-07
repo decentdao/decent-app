@@ -223,13 +223,6 @@ export function ProposalActionCard({
         onRemove={() => removeAction(index)}
       />
     );
-  } else if (action.actionType === ProposalActionType.CREATE_REVENUE_SHARE_WALLET) {
-    // return (
-    //   <RevenueShareWalletActionCard
-    //     action={action}
-    //     onRemove={() => removeAction(index)}
-    //   />
-    // );
   } else if (action.actionType === ProposalActionType.UPDATE_REVENUE_SHARE_SPLITS) {
     // return (
     //   <RevenueShareWalletsActionCard
@@ -237,24 +230,14 @@ export function ProposalActionCard({
     //     onRemove={() => removeAction(index)}
     //   />
     // );
-  } else if (action.actionType === ProposalActionType.UPDATE_REVENUE_SHARE_WALLET_METADATA) {
-    // return (
-    //   <RevenueShareWalletActionCard
-    //     action={action}
-    //     onRemove={() => removeAction(index)}
-    //   />
-    // );
-  }
+  } 
 
   const isAddAction = action.actionType === ProposalActionType.ADD;
   const isEditAction = action.actionType === ProposalActionType.EDIT;
   const isDeleteAction = action.actionType === ProposalActionType.DELETE;
 
   return (
-    <Flex
-      gap={4}
-      alignItems="center"
-    >
+
       <Card
         backgroundColor={
           isAddAction || isEditAction
@@ -264,9 +247,10 @@ export function ProposalActionCard({
               : 'color-neutral-900'
         }
       >
+       <Flex justifyContent="space-between">
         <Flex
-          gap={2}
           alignItems="center"
+          gap="0.5rem"
         >
           <Icon
             as={
@@ -288,7 +272,6 @@ export function ProposalActionCard({
           />
           {action.content}
         </Flex>
-      </Card>
       <IconButton
         aria-label="Remove action"
         icon={<Trash />}
@@ -297,6 +280,7 @@ export function ProposalActionCard({
         color="color-error-400"
         onClick={() => removeAction(index)}
       />
-    </Flex>
-  );
+      </Flex>
+      </Card>
+    );
 }
