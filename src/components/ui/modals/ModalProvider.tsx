@@ -32,7 +32,6 @@ import { SafeProposalDappDetailModal } from './SafeDapp/SafeProposalDappDetailMo
 import { SafeProposalDappsModal } from './SafeDapp/SafeProposalDappsModal';
 import { SafeSettingsModal } from './SafeSettingsModal';
 import { SendAssetsModal } from './SendAssetsModal';
-import StakeModal from './Stake';
 import { UnsavedChangesWarningContent } from './UnsavedChangesWarningContent';
 
 export enum ModalType {
@@ -198,10 +197,7 @@ const getModalData = (args: {
       modalTitle = t('delegateTitle');
       modalContent = <DelegateModal close={popModal} />;
       break;
-    case ModalType.STAKE:
-      modalTitle = t('stakeTitle');
-      modalContent = <StakeModal close={popModal} />;
-      break;
+
     case ModalType.CONFIRM_URL:
       if (!current.props.url) {
         throw new Error('URL is required for CONFIRM_URL modal');

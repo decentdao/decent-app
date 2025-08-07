@@ -86,13 +86,7 @@ type NetworkConfigBase = {
     chainSupported: boolean;
     deFiSupported: boolean;
   };
-  staking: {
-    lido?: {
-      stETHContractAddress: Address;
-      rewardsAddress: Address;
-      withdrawalQueueContractAddress: Address;
-    };
-  };
+
   createOptions: GovernanceType[];
   stablecoins: {
     usdc: Address;

@@ -19,7 +19,7 @@ const SAFE_VERSION = '1.3.0';
 const chain = sepolia;
 const a = legacy.addresses[chain.id];
 
-export const sepoliaConfig: NetworkConfig = {
+const sepoliaConfig: NetworkConfig = {
   order: 30,
   chain,
   rpcEndpoint: `https://eth-sepolia.g.alchemy.com/v2/${import.meta.env?.VITE_APP_ALCHEMY_API_KEY}`,
@@ -136,7 +136,7 @@ export const sepoliaConfig: NetworkConfig = {
       lightAccountFactory: '0x0000000000400CdFef5E2714E63d8040b700BC24',
     },
   },
-  staking: {},
+
   moralis: {
     chainSupported: true,
     deFiSupported: false,

@@ -174,7 +174,7 @@ function PaymentsColumn({ paymentsCount }: { paymentsCount?: number }) {
   );
 }
 
-export function RolesRow({
+function RolesRow({
   name,
   wearerAddress,
   paymentsCount,
@@ -211,7 +211,7 @@ export function RolesRow({
   );
 }
 
-export function RolesRowEdit({
+function RolesRowEdit({
   name,
   wearerAddress,
   editStatus,

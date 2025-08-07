@@ -20,7 +20,7 @@ const SAFE_VERSION = '1.3.0';
 const chain = base;
 const a = legacy.addresses[chain.id];
 
-export const baseConfig: NetworkConfig = {
+const baseConfig: NetworkConfig = {
   order: 10,
   chain,
   rpcEndpoint: `https://base-mainnet.g.alchemy.com/v2/${import.meta.env?.VITE_APP_ALCHEMY_API_KEY}`,
@@ -128,7 +128,7 @@ export const baseConfig: NetworkConfig = {
     sablierV2LockupLinear: '0x4CB16D4153123A74Bc724d161050959754f378D8',
     disperse: '0xD152f549545093347A162Dce210e7293f1452150',
   },
-  staking: {},
+
   moralis: {
     chainSupported: true,
     deFiSupported: true,

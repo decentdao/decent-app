@@ -110,7 +110,7 @@ export function AssetSelector({
           onSelect?.([item.value]);
         }
       }}
-      title={t('titleAssets', { ns: 'treasury' })}
+      title={t('titleAssetsWithCount', { ns: 'treasury', count: dropdownItems.length })}
       isDisabled={disabled}
       selectPlaceholder={t('selectLabel', { ns: 'modals' })}
       emptyMessage={t('emptyRolesAssets', { ns: 'roles' })}
@@ -143,6 +143,7 @@ export function AssetSelector({
                   w={`${(selectedItems.length - 1) * 0.7 + 6}rem`}
                   className="payment-menu-asset"
                   p="0.5rem"
+                  justify="space-between"
                 >
                   <Flex
                     position="relative"
@@ -163,10 +164,7 @@ export function AssetSelector({
                       />
                     ))}
                   </Flex>
-                  <Flex
-                    alignItems="center"
-                    ml={`${selectedItems.length * 0.8}rem`}
-                  >
+                  <Flex alignItems="center">
                     <Icon
                       color="color-neutral-400"
                       as={CaretDown}
