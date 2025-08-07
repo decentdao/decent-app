@@ -3,10 +3,10 @@ import { X } from '@phosphor-icons/react';
 import { useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
-export const DEMO_MODE_QUERY_PARAM = 'demo_mode';
+const DEMO_MODE_QUERY_PARAM = 'demo_mode';
 const DEMO_MODE_STORAGE_KEY = `decent_${DEMO_MODE_QUERY_PARAM}`;
 
-export const DEMO_MODE_VALUES = {
+const DEMO_MODE_VALUES = {
   ON: 'on',
   OFF: 'off',
 } as const;
