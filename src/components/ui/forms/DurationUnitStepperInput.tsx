@@ -48,6 +48,7 @@ export default function DurationUnitStepperInput({
   color = 'color-white',
   hideSteppers = false,
   placeholder = '0',
+  'data-testid': testId,
 }: {
   secondsValue: number | undefined;
   onSecondsValueChange: (val: number | undefined) => void;
@@ -55,6 +56,7 @@ export default function DurationUnitStepperInput({
   color?: string;
   hideSteppers?: boolean;
   placeholder?: string;
+  'data-testid'?: string;
 }) {
   const { t } = useTranslation('common');
 
@@ -96,14 +98,20 @@ export default function DurationUnitStepperInput({
       onChange={val => onSecondsValueChange(Number(val) * selectedUnit.unit)}
       min={minSeconds / selectedUnit.unit}
       focusInputOnChange
+      data-testid={testId}
     >
       <HStack gap="0.25rem">
-        {!hideSteppers && <NumberDecrementStepper>{stepperButton('dec')}</NumberDecrementStepper>}
+        {!hideSteppers && (
+          <NumberDecrementStepper data-testid={testId ? `${testId}-decrement` : undefined}>
+            {stepperButton('dec')}
+          </NumberDecrementStepper>
+        )}
         <InputGroup>
           <NumberInputField
             min={0}
             color={color}
             placeholder={placeholder}
+            data-testid={testId ? `${testId}-input` : undefined}
           />
           <InputRightElement
             color="color-neutral-700"
@@ -117,6 +125,7 @@ export default function DurationUnitStepperInput({
               rounded="lg"
               cursor="pointer"
               border="none"
+              data-testid={testId ? `${testId}-unit-select` : undefined}
               sx={{
                 _focusVisible: {
                   boxShadow: 'none',

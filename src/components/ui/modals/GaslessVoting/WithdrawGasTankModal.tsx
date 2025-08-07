@@ -45,13 +45,17 @@ export function WithdrawGasTankModal({ close }: { close: () => void }) {
     paymasterGasTankErrors.withdraw?.recipientAddress !== undefined;
 
   return (
-    <Box>
+    <Box data-testid="withdraw-gas-modal">
       <Flex
         justify="space-between"
         align="center"
+        data-testid="withdraw-gas-modal-header"
       >
         <Text textStyle="text-xl-regular">{t('withdrawGas')}</Text>
-        <CloseButton onClick={close} />
+        <CloseButton 
+          onClick={close} 
+          data-testid="withdraw-gas-modal-close"
+        />
       </Flex>
 
       <Flex
@@ -85,6 +89,7 @@ export function WithdrawGasTankModal({ close }: { close: () => void }) {
               placeholder="0"
               isInvalid={paymasterGasTankErrors.withdraw?.amount !== undefined}
               errorBorderColor="color-error-500"
+              data-testid="withdraw-gas-amount-input"
             />
           </LabelWrapper>
 
@@ -97,6 +102,7 @@ export function WithdrawGasTankModal({ close }: { close: () => void }) {
             <AssetSelector
               onlyNativeToken
               disabled
+              data-testid="withdraw-gas-asset-selector"
             />
             <Text
               color={
@@ -128,6 +134,7 @@ export function WithdrawGasTankModal({ close }: { close: () => void }) {
               setFieldValue('paymasterGasTank.withdraw.recipientAddress', e.target.value);
             }}
             isInvalid={paymasterGasTankErrors.withdraw?.recipientAddress !== undefined}
+            data-testid="withdraw-gas-recipient-input"
           />
         </LabelWrapper>
         <Button
@@ -137,6 +144,7 @@ export function WithdrawGasTankModal({ close }: { close: () => void }) {
           onClick={() => {
             setFieldValue('paymasterGasTank.withdraw.recipientAddress', safe?.address);
           }}
+          data-testid="withdraw-gas-to-treasury-button"
         >
           {t('toDaoTreasury')}
         </Button>
@@ -153,6 +161,7 @@ export function WithdrawGasTankModal({ close }: { close: () => void }) {
             setFieldValue('paymasterGasTank.withdraw', undefined);
             close();
           }}
+          data-testid="withdraw-gas-cancel-button"
         >
           {t('cancel', { ns: 'common' })}
         </Button>
@@ -163,6 +172,7 @@ export function WithdrawGasTankModal({ close }: { close: () => void }) {
             paymasterGasTankErrors.withdraw?.recipientAddress !== undefined ||
             isSubmitDisabled
           }
+          data-testid="withdraw-gas-submit-button"
         >
           {t('submitWithdrawAmount')}
         </Button>

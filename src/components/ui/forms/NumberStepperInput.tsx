@@ -19,6 +19,7 @@ export function NumberStepperInput({
   disabled,
   isInvalid,
   color,
+  'data-testid': testId,
 }: {
   value?: string | number;
   onChange: (val: string) => void;
@@ -26,6 +27,7 @@ export function NumberStepperInput({
   disabled?: boolean;
   isInvalid?: boolean;
   color?: string;
+  'data-testid'?: string;
 }) {
   const stepperButton = (direction: 'inc' | 'dec') => (
     <Button
@@ -47,17 +49,23 @@ export function NumberStepperInput({
       focusInputOnChange
       isDisabled={disabled}
       isInvalid={isInvalid}
+      data-testid={testId}
     >
       <HStack gap="0.25rem">
-        <NumberDecrementStepper>{stepperButton('dec')}</NumberDecrementStepper>
+        <NumberDecrementStepper data-testid={testId ? `${testId}-decrement` : undefined}>
+          {stepperButton('dec')}
+        </NumberDecrementStepper>
         <InputGroup>
           <NumberInputField
             color={color}
             min={0}
+            data-testid={testId ? `${testId}-input` : undefined}
           />
           <InputRightElement mr="1rem">{rightElement}</InputRightElement>
         </InputGroup>
-        <NumberIncrementStepper>{stepperButton('inc')}</NumberIncrementStepper>
+        <NumberIncrementStepper data-testid={testId ? `${testId}-increment` : undefined}>
+          {stepperButton('inc')}
+        </NumberIncrementStepper>
       </HStack>
     </NumberInput>
   );

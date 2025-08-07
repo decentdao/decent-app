@@ -37,6 +37,7 @@ interface DropdownMenuProps<T = {}> {
   renderItem?: (item: DropdownItem<T>, isSelected: boolean) => React.ReactNode;
   renderButton?: () => React.ReactNode;
   closeOnSelect?: boolean;
+  'data-testid'?: string;
 }
 
 export function DropdownMenu<T>({
@@ -50,6 +51,7 @@ export function DropdownMenu<T>({
   renderItem,
   renderButton,
   closeOnSelect = true,
+  'data-testid': testId,
 }: DropdownMenuProps<T>) {
   return (
     <Menu
@@ -69,6 +71,7 @@ export function DropdownMenu<T>({
               isDisabled={isDisabled}
               cursor={isDisabled ? 'not-allowed' : 'pointer'}
               p={0}
+              data-testid={testId}
               sx={{
                 '&:disabled': {
                   '.payment-menu-asset *': {

@@ -60,6 +60,7 @@ function WhitelistedAddress({
           isDisabled={true}
           textDecoration={willBeRemoved ? 'line-through' : 'none'}
           marginTop="-0.25rem"
+          data-testid={`token-whitelisted-address-${address.slice(0, 6)}`}
         />
       </GridItem>
       <GridItem
@@ -139,6 +140,7 @@ function NewWhitelistAddress({
                 tokenErrors?.addressesToWhitelist.findIndex(a => `token.${a.key}` === name) !== -1
               }
               marginTop="-0.25rem"
+              data-testid={`token-new-whitelist-address-${name.split('.').pop()}`}
             />
           )}
         </Field>

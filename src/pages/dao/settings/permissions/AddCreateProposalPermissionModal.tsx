@@ -105,6 +105,7 @@ export function AddCreateProposalPermissionModal({
         onClick={closeModal}
         width={fullWidth ? 'full' : 'auto'}
         mt={6}
+        data-testid="permissions-save-button"
       >
         {t('save', { ns: 'common' })}
       </Button>
@@ -134,6 +135,7 @@ export function AddCreateProposalPermissionModal({
                 padding={0}
                 onClick={openConfirmDeleteStrategyModal}
                 color="color-error-400"
+                data-testid="permissions-delete-button-mobile"
               >
                 {t('delete', { ns: 'common' })}
               </Button>
@@ -166,9 +168,10 @@ export function AddCreateProposalPermissionModal({
                   aria-label={t('back', { ns: 'common' })}
                   onClick={closeModal}
                   icon={<ArrowLeft size={24} />}
+                  data-testid="permissions-back-button"
                 />
               ))}
-            <Text>{t('permissionCreateProposalsTitle')}</Text>
+            <Text data-testid="permissions-modal-title">{t('permissionCreateProposalsTitle')}</Text>
             {votingStrategyAddress && votingStrategyAddress !== zeroAddress ? (
               <IconButton
                 size="button-md"
@@ -177,6 +180,7 @@ export function AddCreateProposalPermissionModal({
                 icon={<Trash size={24} />}
                 aria-label={t('delete', { ns: 'common' })}
                 onClick={openConfirmDeleteStrategyModal}
+                data-testid="permissions-delete-button"
               />
             ) : (
               <IconButton
@@ -186,6 +190,7 @@ export function AddCreateProposalPermissionModal({
                 aria-label={t('close', { ns: 'common' })}
                 onClick={closeModal}
                 icon={<X size={24} />}
+                data-testid="permissions-close-button"
               />
             )}
           </Flex>

@@ -129,6 +129,7 @@ export function SafePermissionsSettingsPage() {
                 },
               },
             }}
+            data-testid="permissions-create-proposals-card"
           >
             <Flex justifyContent="space-between">
               <Flex
@@ -144,10 +145,11 @@ export function SafePermissionsSettingsPage() {
                   <Coins fontSize="1.5rem" />
                 </Box>
                 <Box>
-                  <Text>{t('permissionCreateProposalsTitle')}</Text>
+                  <Text data-testid="permissions-create-proposals-title">{t('permissionCreateProposalsTitle')}</Text>
                   <Text
                     textStyle="text-sm-medium"
                     color="color-neutral-300"
+                    data-testid="permissions-create-proposals-description"
                   >
                     {votesToken
                       ? t('permissionsErc20CreateProposalsDescription', {
@@ -171,6 +173,7 @@ export function SafePermissionsSettingsPage() {
                   opacity={0}
                   color="color-neutral-400"
                   border="none"
+                  data-testid="permissions-edit-button"
                 />
               )}
             </Flex>
@@ -187,6 +190,7 @@ export function SafePermissionsSettingsPage() {
               width="max-content"
               onClick={openAddPermissionModal}
               alignSelf="flex-end"
+              data-testid="permissions-add-permission-button"
             >
               {t('addPermission')}
             </Button>

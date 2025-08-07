@@ -169,6 +169,7 @@ export function GovernanceParams() {
                     )
                   }
                   minWidth="100%"
+                  data-testid="governance-quorum-percentage"
                 />
                 <InputRightElement color="color-neutral-700">%</InputRightElement>
               </InputGroup>
@@ -218,6 +219,7 @@ export function GovernanceParams() {
                     ],
                   )
                 }
+                data-testid="governance-quorum-threshold"
               />
             </LabelComponent>
           </Flex>
@@ -261,6 +263,7 @@ export function GovernanceParams() {
                     ],
                   );
                 }}
+                data-testid="governance-voting-period"
               />
             </LabelComponent>
           </Flex>
@@ -304,6 +307,7 @@ export function GovernanceParams() {
                     ],
                   );
                 }}
+                data-testid="governance-timelock-period"
               />
             </LabelComponent>
           </Flex>
@@ -349,6 +353,7 @@ export function GovernanceParams() {
                     ],
                   )
                 }
+                data-testid="governance-execution-period"
               />
             </LabelComponent>
           </Flex>

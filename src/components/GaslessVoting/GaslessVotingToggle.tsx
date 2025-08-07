@@ -60,6 +60,7 @@ function WithdrawingGasComponent() {
         color="color-error-500"
         sx={{ '&:disabled:hover': { color: 'inherit', opacity: 0.4 } }}
         type="button"
+        data-testid="gasless-voting-withdraw-remove"
         onClick={() => setFieldValue('paymasterGasTank.withdraw', undefined)}
       />
     </Flex>
@@ -102,6 +103,7 @@ function DepositingGasComponent() {
         color="color-red-500"
         sx={{ '&:disabled:hover': { color: 'inherit', opacity: 0.4 } }}
         type="button"
+        data-testid="gasless-voting-deposit-remove"
         onClick={() => setFieldValue('paymasterGasTank.deposit', undefined)}
       />
     </Flex>
@@ -173,6 +175,7 @@ function GaslessVotingToggleContent({
           isChecked={isEnabled}
           onChange={() => onToggle()}
           variant="secondary"
+          data-testid="gasless-voting-toggle"
         />
       </HStack>
     </Box>
@@ -298,6 +301,7 @@ export function GaslessVotingToggleDAOSettings(props: GaslessVotingToggleProps) 
                     variant="secondary"
                     size="sm"
                     onClick={openWithdrawGasModal}
+                    data-testid="gasless-voting-withdraw-button"
                   >
                     {t('withdrawGas')}
                   </Button>
@@ -305,6 +309,7 @@ export function GaslessVotingToggleDAOSettings(props: GaslessVotingToggleProps) 
                     variant="secondary"
                     size="sm"
                     onClick={openRefillGasModal}
+                    data-testid="gasless-voting-refill-button"
                   >
                     {t('addGas')}
                   </Button>

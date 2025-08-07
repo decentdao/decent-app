@@ -19,6 +19,7 @@ interface AssetSelectorProps {
    */
   lockedSelections?: string[];
   hideBalanceAndMergeTokens?: TokenBalance[];
+  'data-testid'?: string;
 }
 
 export const NATIVE_TOKEN_ADDRESS = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
@@ -31,6 +32,7 @@ export function AssetSelector({
   canSelectMultiple = false,
   lockedSelections = [],
   hideBalanceAndMergeTokens,
+  'data-testid': testId,
 }: AssetSelectorProps) {
   const { t } = useTranslation(['roles', 'treasury', 'modals']);
 
@@ -90,6 +92,7 @@ export function AssetSelector({
     }>
       items={dropdownItems}
       selectedItem={selectedItems[0]}
+      data-testid={testId || 'asset-selector'}
       onSelect={item => {
         if (canSelectMultiple) {
           if (!selectedAddresses.includes(item.value)) {

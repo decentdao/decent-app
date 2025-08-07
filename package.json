@@ -72,9 +72,9 @@
     "localized": "node scripts/localization_verify.js",
     "pretty": "prettier . --write",
     "pretty:check": "prettier . --check",
-    "dev": "VITE_APP_GIT_HASH=$(git rev-parse --short HEAD) vite",
-    "preview": "VITE_APP_GIT_HASH=$(git rev-parse --short HEAD) vite preview",
-    "build": "NODE_OPTIONS=--max-old-space-size=8192 VITE_APP_GIT_HASH=$(git rev-parse --short HEAD) vite build && NODE_OPTIONS=--max-old-space-size=8192 vite build --mode page-function",
+    "dev": "node scripts/git-hash.js vite",
+    "preview": "node scripts/git-hash.js vite preview",
+    "build": "node scripts/git-hash.js vite build && node scripts/git-hash.js vite build --mode page-function",
     "test": "vitest --dir=test"
   },
   "engines": {
@@ -105,6 +105,8 @@
     "@typescript-eslint/parser": "^7.0.0",
     "@vitejs/plugin-react": "^4.2.1",
     "@walletconnect/types": "^2.19.2",
+    "concurrently": "^9.2.0",
+    "cross-env": "^10.0.0",
     "eslint": "^8.22.0",
     "eslint-config-airbnb-typescript": "^18.0.0",
     "eslint-config-prettier": "^9.1.0",

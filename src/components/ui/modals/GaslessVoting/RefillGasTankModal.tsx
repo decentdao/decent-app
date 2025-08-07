@@ -78,9 +78,13 @@ export function RefillGasTankModal({
         justify="space-between"
         align="center"
         mb={4}
+        data-testid="refill-gas-modal-header"
       >
         <Text textStyle="text-xl-regular">{t('refillTank')}</Text>
-        <CloseButton onClick={close} />
+        <CloseButton 
+          onClick={close}
+          data-testid="refill-gas-modal-close"
+        />
       </Flex>
 
       <Flex
@@ -95,6 +99,7 @@ export function RefillGasTankModal({
           }}
           borderColor="color-lilac-100"
           iconColor="color-lilac-100"
+          data-testid="refill-gas-direct-deposit-checkbox"
           sx={{
             '& .chakra-checkbox__control': {
               borderRadius: '0.25rem',
@@ -131,6 +136,7 @@ export function RefillGasTankModal({
             isInvalid={overDraft || paymasterGasTankErrors.deposit?.amount !== undefined}
             errorBorderColor="color-error-500"
             autoFocus
+            data-testid="refill-gas-amount-input"
           />
         </LabelWrapper>
 
@@ -143,6 +149,7 @@ export function RefillGasTankModal({
           <AssetSelector
             onlyNativeToken
             disabled
+            data-testid="refill-gas-asset-selector"
           />
           <Text
             textStyle="text-xs-medium"
@@ -170,11 +177,13 @@ export function RefillGasTankModal({
             setFieldValue('paymasterGasTank.deposit', undefined);
             close();
           }}
+          data-testid="refill-gas-cancel-button"
         >
           {t('cancel', { ns: 'common' })}
         </Button>
         <Button
           isDisabled={isSubmitDisabled}
+          data-testid="refill-gas-submit-button"
           onClick={() => {
             if (values.isDirectDeposit) {
               if (!walletClient) {

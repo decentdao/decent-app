@@ -123,6 +123,7 @@ function StakingForm() {
               setFieldValue('staking.minimumStakingPeriod', undefined);
             }
           }}
+          data-testid="staking-minimum-period"
           hideSteppers
         />
       </LabelComponent>
@@ -180,6 +181,7 @@ function StakingForm() {
               setFieldValue('staking.newRewardTokens', undefined);
             }
           }}
+          data-testid="staking-reward-tokens-selector"
         />
       </LabelComponent>
     </>

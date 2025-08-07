@@ -20,6 +20,7 @@ export interface BigIntInputProps
   max?: string;
   maxValue?: bigint;
   parentFormikValue?: BigIntValuePair;
+  'data-testid'?: string;
 }
 /**
  * This component will add a chakra Input component that accepts and sets a bigint
@@ -44,6 +45,7 @@ export function BigIntInput({
   max,
   maxValue,
   parentFormikValue = { value: '', bigintValue: undefined },
+  'data-testid': testId,
   ...rest
 }: BigIntInputProps) {
   const { t } = useTranslation('common');
@@ -184,6 +186,7 @@ export function BigIntInput({
           e.currentTarget.blur();
         }}
         type="number"
+        data-testid={testId}
         {...rest}
       />
       {maxValue !== undefined && (
@@ -200,6 +203,7 @@ export function BigIntInput({
             }}
             variant="text"
             size="md"
+            data-testid={testId ? `${testId}-max` : undefined}
           >
             {t('max')}
           </Button>

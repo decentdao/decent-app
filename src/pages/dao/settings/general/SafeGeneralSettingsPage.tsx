@@ -214,6 +214,7 @@ export function SafeGeneralSettingsPage() {
 
                     setFieldValue('general.sponsoredVoting', newValue);
                   }}
+                  data-testid="general-gasless-voting-toggle"
                 />
               </>
             )}
