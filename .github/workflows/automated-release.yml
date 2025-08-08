@@ -4,22 +4,22 @@ on:
   workflow_dispatch:
     inputs:
       version_type:
-        description: "Version bump type (ignored if custom_version is provided)"
+        description: 'Version bump type (ignored if custom_version is provided)'
         required: false
-        default: patch
+        default: minor
         type: choice
         options: [patch, minor, major]
       custom_version:
-        description: "Explicit version (e.g., 1.2.3). If set, overrides version_type"
+        description: 'Explicit version (e.g., 1.2.3). If set, overrides version_type'
         required: false
         type: string
       base_branch:
-        description: "Base branch to cut release from"
+        description: 'Base branch to cut release from'
         required: false
         default: develop
         type: string
       main_branch:
-        description: "Main branch to release into"
+        description: 'Main branch to release into'
         required: false
         default: main
         type: string
@@ -45,7 +45,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '23.x'
+          node-version-file: '.nvmrc'
           cache: 'npm'
 
       - name: Configure git
@@ -287,4 +287,4 @@ jobs:
       - name: No changes to release
         if: steps.check_changes.outputs.has_changes == 'false'
         run: |
-          echo "No changes since last release. Skipping release creation." 
+          echo "No changes since last release. Skipping release creation."
