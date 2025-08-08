@@ -191,8 +191,7 @@ jobs:
             --title "Release v${{ steps.version.outputs.version }}" \
             --body "$PR_BODY" \
             --base "${{ inputs.main_branch }}" \
-            --head "${{ steps.version.outputs.branch_name }}" \
-            --label "release"
+            --head "${{ steps.version.outputs.branch_name }}"
 
       - name: Create PR to develop
         if: steps.check_changes.outputs.has_changes == 'true'
@@ -203,8 +202,7 @@ jobs:
             --title "Merge release v${{ steps.version.outputs.version }} into ${{ inputs.base_branch }}" \
             --body "Automated PR to merge release changes back into ${{ inputs.base_branch }} branch." \
             --base "${{ inputs.base_branch }}" \
-            --head "${{ steps.version.outputs.branch_name }}" \
-            --label "release"
+            --head "${{ steps.version.outputs.branch_name }}"
 
       - name: Wait for main PR to be merged
         if: steps.check_changes.outputs.has_changes == 'true'
