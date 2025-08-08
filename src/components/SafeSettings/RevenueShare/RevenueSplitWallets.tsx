@@ -188,9 +188,11 @@ export function RevSplitRow({
               return (
                 <NumberInputPercentage
                   variant="tableStyle"
+                  precision={0}
                   isInvalid={!!splitFormError?.percentage}
                   value={fieldValue}
                   min={0}
+                  max={100}
                   onChange={value => {
                     if (value === existingWalletSplitPercentage) {
                       form.setFieldValue(field.name, undefined);
