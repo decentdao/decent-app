@@ -9,6 +9,7 @@ import { bigintSerializer } from '../../../utils/bigintSerializer';
 import { SafeSettingsEdits } from '../../ui/modals/SafeSettingsModal';
 import { predictSplitContractAddress } from './prediction';
 
+// decent hexed
 const DETERMINISTIC_SALT = '0x0000000000000000000000000000000000000000000000000000444543454E54';
 const DISTRIBUTION_INCENTIVE = 0;
 /**
@@ -22,21 +23,21 @@ const DEFAULT_ETH_VALUE = {
   value: '0',
 };
 
-export const PERCENT_SCALE = 10_000n;
+const PERCENT_SCALE = 10_000n;
 
 /** Whole-number percent (0-100) ➜ PPM bigint */
-export function percentToPpm(percent: bigint | number | string): bigint {
+function percentToPpm(percent: bigint | number | string): bigint {
   const v = BigInt(percent);
   if (v < 0n || v > 100n) throw new Error('Percent must be between 0 and 100');
   return v * PERCENT_SCALE; // 12  → 120 000n
 }
 
 /** PPM bigint ➜ whole-number percent (0-100) as number */
-export function ppmToPercent(ppm: bigint | number | string): number {
-  const v = BigInt(ppm);
-  if (v % PERCENT_SCALE !== 0n) throw new Error('PPM value is not a whole percent');
-  return Number(v / PERCENT_SCALE); // 120 000n → 12
-}
+// function ppmToPercent(ppm: bigint | number | string): number {
+//   const v = BigInt(ppm);
+//   if (v % PERCENT_SCALE !== 0n) throw new Error('PPM value is not a whole percent');
+//   return Number(v / PERCENT_SCALE); // 120 000n → 12
+// }
 
 /**
  * Merges form data with deployed data; form data takes precedence
@@ -383,7 +384,7 @@ export const handleEditRevenueShare = async ({
 
   // create keyValuePairsUpdate if needed, new wallets, updated names
   if (newWalletAddressNamePairs.length > 0 || isNameUpdated) {
-    const existingWalletAddressNamePairs = validatedNewWalletFormUpdates.map(
+    const existingWalletAddressNamePairs = validatedExistingWalletFormUpdates.map(
       wallet => `${wallet.address}:${wallet.name}`,
     );
 
@@ -419,8 +420,8 @@ export const handleEditRevenueShare = async ({
   }
 
   return {
-    // todo make this dynamic
     actionType: ProposalActionType.UPDATE_REVENUE_SHARE_SPLITS,
+    // @todo move to translations
     title: 'Update Revenue Share Splits',
     transactions,
   };

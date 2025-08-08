@@ -98,6 +98,7 @@ function WalletName({
             onChange={value => {
               form.setFieldValue(field.name, value.target.value);
             }}
+            // todo: not working correctly; possibly remove
             onEditCancel={() => {
               const lastEditName =
                 form.values.revenueSharing[walletFormType][index].lastEdit?.name || wallet.name;
@@ -131,16 +132,16 @@ function WalletName({
 }
 
 export function RevSplitRow({
-  existingWalletSplitAddress,
-  existingWalletSplitPercentage,
+  splitAddress: existingWalletSplitAddress,
+  splitPercentage: existingWalletSplitPercentage,
   formPath,
   splitFormError,
   isLastRow,
   isReadOnlyAddress,
   onRemoveSplit,
 }: {
-  existingWalletSplitAddress: string | undefined;
-  existingWalletSplitPercentage: string | undefined;
+  splitAddress: string | undefined;
+  splitPercentage: string | undefined;
   formPath: string;
   splitFormError: RevenueSharingSplitFormError | undefined;
   isLastRow?: boolean;
@@ -255,7 +256,7 @@ export function RevSplitTable({
     governance: { stakedToken },
   } = useDAOStore({ daoKey });
 
-  const isCurrentDAOAddress = useCallback(
+  const isCurrentDAOAddressExist = useCallback(
     (address: Address | string | undefined) => {
       if (!safe?.address) return false;
       if (!address) return false;
@@ -264,7 +265,7 @@ export function RevSplitTable({
     [safe],
   );
 
-  const isParentDAOAddress = useCallback(
+  const isParentDAOAddressExist = useCallback(
     (address: Address | string | undefined) => {
       if (!subgraphInfo?.parentAddress) return false;
       if (!address) return false;
@@ -273,7 +274,7 @@ export function RevSplitTable({
     [subgraphInfo],
   );
 
-  const isStakingContractAddress = useCallback(
+  const isStakingContractAddressExist = useCallback(
     (address: Address | string | undefined) => {
       if (!stakedToken?.address) return false;
       if (!address) return false;
@@ -282,20 +283,20 @@ export function RevSplitTable({
     [stakedToken?.address],
   );
 
-  const daoSplitInfo = wallet.splits?.find(({ address }) => isCurrentDAOAddress(address));
-  const parentDAOSplitInfo = wallet.splits?.find(({ address }) => isParentDAOAddress(address));
+  const daoSplitInfo = wallet.splits?.find(({ address }) => isCurrentDAOAddressExist(address));
+  const parentDAOSplitInfo = wallet.splits?.find(({ address }) => isParentDAOAddressExist(address));
 
   const stakingContractSplitInfo = wallet.splits?.find(({ address }) =>
-    isStakingContractAddress(address),
+    isStakingContractAddressExist(address),
   );
 
-  const customSplitsWithIndices = wallet.splits
+  const regularFormSplitsWithIndices = wallet.splits
     ?.map((split, originalIndex) => ({ split, originalIndex }))
     .filter(
       ({ split }) =>
-        !isCurrentDAOAddress(split.address) &&
-        !isParentDAOAddress(split.address) &&
-        !isStakingContractAddress(split.address),
+        !isCurrentDAOAddressExist(split.address) &&
+        !isParentDAOAddressExist(split.address) &&
+        !isStakingContractAddressExist(split.address),
     );
 
   const totalPercentage = useMemo(() => {
@@ -319,7 +320,7 @@ export function RevSplitTable({
     const stakingOriginalPercentage = stakingContractSplitInfo?.percentage;
     total += Number(stakingFormPercentage ?? stakingOriginalPercentage ?? '0');
 
-    customSplitsWithIndices?.forEach(({ split, originalIndex }) => {
+    regularFormSplitsWithIndices?.forEach(({ split, originalIndex }) => {
       const formPercentage = formWallet?.splits?.[originalIndex]?.percentage;
       total += Number(formPercentage ?? split.percentage ?? '0');
     });
@@ -341,7 +342,7 @@ export function RevSplitTable({
     walletIndex,
     daoSplitInfo,
     parentDAOSplitInfo,
-    customSplitsWithIndices,
+    regularFormSplitsWithIndices,
     subgraphInfo?.parentAddress,
     stakingContractSplitInfo,
   ]);
@@ -356,10 +357,10 @@ export function RevSplitTable({
       splitFormError={
         revenueSharingEditFormikErrors?.[walletFormType]?.[walletIndex]?.specialSplits?.dao
       }
-      existingWalletSplitAddress={daoSplitInfo?.address ?? safe?.address}
-      existingWalletSplitPercentage={daoSplitInfo?.percentage}
+      splitAddress={daoSplitInfo?.address ?? safe?.address}
+      splitPercentage={daoSplitInfo?.percentage}
       isLastRow={
-        !subgraphInfo?.parentAddress && !stakedToken?.address && !customSplitsWithIndices?.length
+        !subgraphInfo?.parentAddress && !stakedToken?.address && !regularFormSplitsWithIndices?.length
       }
       isReadOnlyAddress={true}
     />
@@ -371,11 +372,11 @@ export function RevSplitTable({
       splitFormError={
         revenueSharingEditFormikErrors?.[walletFormType]?.[walletIndex]?.specialSplits?.parentDao
       }
-      existingWalletSplitAddress={
+      splitAddress={
         parentDAOSplitInfo?.address ?? subgraphInfo?.parentAddress ?? undefined
       }
-      existingWalletSplitPercentage={parentDAOSplitInfo?.percentage}
-      isLastRow={!stakedToken?.address && !customSplitsWithIndices?.length}
+      splitPercentage={parentDAOSplitInfo?.percentage}
+      isLastRow={!stakedToken?.address && !regularFormSplitsWithIndices?.length}
       isReadOnlyAddress={true}
     />
   );
@@ -387,9 +388,9 @@ export function RevSplitTable({
         revenueSharingEditFormikErrors?.[walletFormType]?.[walletIndex]?.specialSplits
           ?.stakingContract
       }
-      existingWalletSplitAddress={stakingContractSplitInfo?.address ?? stakedToken?.address}
-      existingWalletSplitPercentage={stakingContractSplitInfo?.percentage}
-      isLastRow={!customSplitsWithIndices?.length}
+      splitAddress={stakingContractSplitInfo?.address ?? stakedToken?.address}
+      splitPercentage={stakingContractSplitInfo?.percentage}
+      isLastRow={!regularFormSplitsWithIndices?.length}
       isReadOnlyAddress={true}
     />
   );
@@ -420,7 +421,7 @@ export function RevSplitTable({
         {daoSplit}
         {subgraphInfo?.parentAddress && parentDAOSplit}
         {stakedToken?.address && stakeTokenHolderSplit}
-        {customSplitsWithIndices?.map(({ split, originalIndex }, i, arr) => {
+        {regularFormSplitsWithIndices?.map(({ split, originalIndex }, i, arr) => {
           const isLastRow = i === arr.length - 1;
           const splitError =
             revenueSharingEditFormikErrors?.[walletFormType]?.[walletIndex]?.splits?.[
@@ -431,8 +432,8 @@ export function RevSplitTable({
               key={i}
               formPath={`revenueSharing.${walletFormType}.${walletIndex}.splits.${originalIndex}`}
               splitFormError={splitError}
-              existingWalletSplitAddress={split.address}
-              existingWalletSplitPercentage={split.percentage}
+              splitAddress={split.address}
+              splitPercentage={split.percentage}
               isLastRow={isLastRow}
               onRemoveSplit={
                 !wallet.address
