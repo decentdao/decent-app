@@ -110,17 +110,19 @@ jobs:
             exit 0
           fi
 
-      - name: Check if base has changes since last tag
+      - name: Check if base has changes since last release
         id: check_changes
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
-          if [ -z "$LATEST_TAG" ]; then
-            echo "No previous tags found, proceeding with release"
+          LATEST_RELEASE=$(gh release list --limit 1 --json tagName --jq '.[0].tagName' 2>/dev/null || echo "")
+          if [ -z "$LATEST_RELEASE" ]; then
+            echo "No previous releases found, proceeding with release"
             echo "has_changes=true" >> $GITHUB_OUTPUT
           else
-            COMMITS_SINCE_TAG=$(git rev-list ${LATEST_TAG}..${{ inputs.base_branch }} --count)
-            echo "Commits since $LATEST_TAG: $COMMITS_SINCE_TAG"
-            if [ "$COMMITS_SINCE_TAG" -gt "0" ]; then
+            COMMITS_SINCE_RELEASE=$(git rev-list ${LATEST_RELEASE}..${{ inputs.base_branch }} --count)
+            echo "Commits since $LATEST_RELEASE: $COMMITS_SINCE_RELEASE"
+            if [ "$COMMITS_SINCE_RELEASE" -gt "0" ]; then
               echo "has_changes=true" >> $GITHUB_OUTPUT
             else
               echo "has_changes=false" >> $GITHUB_OUTPUT
@@ -160,12 +162,14 @@ jobs:
       - name: Get commits since last release
         if: steps.check_changes.outputs.has_changes == 'true'
         id: get_commits
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
-          if [ -z "$LATEST_TAG" ]; then
+          LATEST_RELEASE=$(gh release list --limit 1 --json tagName --jq '.[0].tagName' 2>/dev/null || echo "")
+          if [ -z "$LATEST_RELEASE" ]; then
             COMMIT_RANGE="${{ inputs.base_branch }}"
           else
-            COMMIT_RANGE="${LATEST_TAG}..${{ inputs.base_branch }}"
+            COMMIT_RANGE="${LATEST_RELEASE}..${{ inputs.base_branch }}"
           fi
 
           COMMITS=$(git log $COMMIT_RANGE --oneline --pretty=format:"- %s (%h)" | head -50)
