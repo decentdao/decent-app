@@ -141,18 +141,18 @@ jobs:
           git add package.json package-lock.json || true
           git commit -m "chore(release): v${{ steps.version.outputs.version }}"
 
-      - name: Install dependencies (for localization)
-        if: steps.check_changes.outputs.has_changes == 'true'
-        run: npm ci
+      # - name: Install dependencies (for localization)
+      #   if: steps.check_changes.outputs.has_changes == 'true'
+      #   run: npm ci
 
-      - name: Run localization
-        if: steps.check_changes.outputs.has_changes == 'true'
-        env:
-          DEEPL_API_KEY: ${{ secrets.DEEPL_API_KEY }}
-        run: |
-          npm run localize
-          git add -A
-          git commit -m "localize" || echo "No localization changes to commit"
+      # - name: Run localization
+      #   if: steps.check_changes.outputs.has_changes == 'true'
+      #   env:
+      #     DEEPL_API_KEY: ${{ secrets.DEEPL_API_KEY }}
+      #   run: |
+      #     npm run localize
+      #     git add -A
+      #     git commit -m "localize" || echo "No localization changes to commit"
 
       - name: Push release branch
         if: steps.check_changes.outputs.has_changes == 'true'
