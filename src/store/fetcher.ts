@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Address, getAddress } from 'viem';
 import { logError } from '../helpers/errorLogging';
+import { getDaoRevenueSharingWallets } from '../providers/App/decentAPI';
 import { useNetworkConfigStore } from '../providers/NetworkConfig/useNetworkConfigStore';
 import {
   AzoriusProposal,
@@ -13,7 +14,6 @@ import { useGovernanceFetcher } from './fetchers/governance';
 import { useGuardFetcher } from './fetchers/guard';
 import { useKeyValuePairsFetcher } from './fetchers/keyValuePairs';
 import { useNodeFetcher } from './fetchers/node';
-import { useRevShareWalletFetcher } from './fetchers/revShareWallet';
 import { useTreasuryFetcher } from './fetchers/treasury';
 import { useRolesStore } from './roles/useRolesStore';
 import { SetAzoriusGovernancePayload } from './slices/governances';
@@ -69,7 +69,6 @@ export const useDAOStoreFetcher = ({
   } = useGovernanceFetcher();
   const { fetchDAOGuard } = useGuardFetcher();
   const { fetchKeyValuePairsData } = useKeyValuePairsFetcher();
-  const { fetchRevenueSharingWallets } = useRevShareWalletFetcher();
   const { setHatKeyValuePairData } = useRolesStore();
 
   useEffect(() => {
@@ -125,10 +124,7 @@ export const useDAOStoreFetcher = ({
           }
         }
 
-        const revShareWallets = await fetchRevenueSharingWallets({
-          chainId: chain.id,
-          daoAddress: safeAddress,
-        });
+        const revShareWallets = await getDaoRevenueSharingWallets(chain.id, safeAddress);
         if (revShareWallets) {
           setRevShareWallets(daoKey, revShareWallets);
         }
