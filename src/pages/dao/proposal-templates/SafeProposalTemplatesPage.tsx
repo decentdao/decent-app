@@ -186,7 +186,10 @@ export function SafeProposalTemplatesPage() {
         ]}
       >
         {canUserCreateProposal && safeAddress && (
-          <Link to={DAO_ROUTES.proposalTemplateNew.relative(addressPrefix, safeAddress)}>
+          <Link
+            to={DAO_ROUTES.proposalTemplateNew.relative(addressPrefix, safeAddress)}
+            data-testid="proposalTemplates-create"
+          >
             <Button minW={0}>
               <AddPlus />
               <Show above="sm">{tCommon('create')}</Show>

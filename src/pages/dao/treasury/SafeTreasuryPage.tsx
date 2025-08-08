@@ -50,11 +50,11 @@ export function SafeTreasuryPage() {
     safeAddress !== undefined && showSendButton
       ? [
           {
-            optionKey: t('limitOrder'),
+            optionKey: 'limitOrder',
             onClick: openDappBrowserModal,
           },
           {
-            optionKey: t('transfer'),
+            optionKey: 'transfer',
             onClick: openSendAssetsModal,
           },
         ]
@@ -91,18 +91,21 @@ export function SafeTreasuryPage() {
               </Flex>
             }
             options={options!}
-            namespace="proposal"
+            namespace="treasury"
             buttonAs={Button}
-            buttonProps={{
-              variant: 'tertiary',
-              paddingX: '0.5rem',
-              paddingY: '0.25rem',
-              _hover: { bg: 'color-neutral-950' },
-              _active: {
-                color: 'color-lilac-100',
-                bg: 'color-neutral-950',
-              },
-            }}
+            buttonProps={
+              {
+                variant: 'tertiary',
+                paddingX: '0.5rem',
+                paddingY: '0.25rem',
+                _hover: { bg: 'color-neutral-950' },
+                _active: {
+                  color: 'color-lilac-100',
+                  bg: 'color-neutral-950',
+                },
+                'data-testid': 'treasury-treasuryActions',
+              } as any
+            }
           />
         )}
       </PageHeader>

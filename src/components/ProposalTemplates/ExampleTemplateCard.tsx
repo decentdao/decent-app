@@ -15,6 +15,10 @@ export default function ExampleTemplateCard({
   description,
   onProposalTemplateClick,
 }: ExampleTemplateCardProps) {
+  const sanitizedTitle = title
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/(^-|-$)/g, '');
   return (
     <ContentBox
       containerBoxProps={{
@@ -24,6 +28,7 @@ export default function ExampleTemplateCard({
         p: '1rem',
       }}
       onClick={onProposalTemplateClick}
+      testId={`proposalTemplates-${sanitizedTitle}`}
     >
       <Flex>
         <Icon

@@ -58,7 +58,7 @@ export function SafeHierarchyPage() {
         ]}
         buttonProps={
           canUserCreateProposal
-            ? {
+            ? ({
                 children: t('optionCreateSubDAO', { ns: 'menu' }),
                 onClick: () => {
                   if (safeAddress) {
@@ -66,7 +66,8 @@ export function SafeHierarchyPage() {
                   }
                 },
                 size: 'sm',
-              }
+                'data-testid': 'organization-createSubDAO',
+              } as any)
             : undefined
         }
       />

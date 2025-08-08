@@ -96,27 +96,30 @@ export function SafeRolesEditPage() {
               path: '',
             },
           ]}
-          buttonProps={{
-            variant: 'secondary',
-            children: t('addRole'),
-            size: 'sm',
-            gap: 0,
-            leftIcon: (
-              <Box mr="-0.25rem">
-                <Plus size="1rem" />
-              </Box>
-            ),
-            onClick: async () => {
-              const newId = toHex(getRandomBytes(), { size: 32 });
-              const newRole: RoleHatFormValue = {
-                id: newId,
-                canCreateProposals: false,
-                payments: [],
-              };
-              setFieldValue('roleEditing', newRole);
-              showRoleEditDetails(newId);
-            },
-          }}
+          buttonProps={
+            {
+              variant: 'secondary',
+              children: t('addRole'),
+              size: 'sm',
+              gap: 0,
+              leftIcon: (
+                <Box mr="-0.25rem">
+                  <Plus size="1rem" />
+                </Box>
+              ),
+              onClick: async () => {
+                const newId = toHex(getRandomBytes(), { size: 32 });
+                const newRole: RoleHatFormValue = {
+                  id: newId,
+                  canCreateProposals: false,
+                  payments: [],
+                };
+                setFieldValue('roleEditing', newRole);
+                showRoleEditDetails(newId);
+              },
+              'data-testid': 'roles-addRole',
+            } as any
+          }
         />
 
         <Show above="md">

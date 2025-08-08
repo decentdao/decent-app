@@ -51,7 +51,7 @@ export function SafeRolesPage() {
         ]}
         buttonProps={
           canUserCreateProposal
-            ? {
+            ? ({
                 variant: 'secondary',
                 size: 'sm',
                 leftIcon: (
@@ -65,7 +65,8 @@ export function SafeRolesPage() {
                 gap: 0,
                 children: t('editRoles'),
                 onClick: () => navigate(DAO_ROUTES.rolesEdit.relative(addressPrefix, safeAddress)),
-              }
+                'data-testid': 'roles-editRoles',
+              } as any)
             : undefined
         }
       />

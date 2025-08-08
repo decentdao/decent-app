@@ -266,6 +266,7 @@ export function ProposalsHome() {
                   size="sm"
                   minW={0}
                   w="100%"
+                  data-testid="mobile-createProposal"
                 >
                   {t('createProposal')}
                 </Button>
@@ -368,7 +369,10 @@ export function ProposalsHome() {
                 </Button>
               )}
               {canUserCreateProposal && safe?.address && (
-                <CreateProposalMenu safeAddress={safe.address} />
+                <CreateProposalMenu
+                  safeAddress={safe.address}
+                  testId="desktop-createProposal"
+                />
               )}
             </Flex>
           </Show>

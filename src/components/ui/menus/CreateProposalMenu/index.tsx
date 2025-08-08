@@ -12,7 +12,13 @@ import { useDecentModal } from '../../modals/useDecentModal';
 import { OptionMenu } from '../OptionMenu';
 import { IOption } from '../OptionMenu/types';
 
-export function CreateProposalMenu({ safeAddress }: { safeAddress: Address }) {
+export function CreateProposalMenu({
+  safeAddress,
+  testId,
+}: {
+  safeAddress: Address;
+  testId?: string;
+}) {
   const { t } = useTranslation('proposal');
 
   const { addressPrefix } = useNetworkConfigStore();
@@ -26,7 +32,7 @@ export function CreateProposalMenu({ safeAddress }: { safeAddress: Address }) {
 
   // @dev Create a new proposal, clearing any pending actions
   options.push({
-    optionKey: t('createFromScratch'),
+    optionKey: 'createFromScratch',
     onClick: () => {
       resetActions();
       navigate(DAO_ROUTES.proposalNew.relative(addressPrefix, safeAddress));
@@ -34,7 +40,7 @@ export function CreateProposalMenu({ safeAddress }: { safeAddress: Address }) {
   });
   // @dev Continue a proposal adding adding a action via a template
   options.push({
-    optionKey: t('browseTemplates'),
+    optionKey: 'browseTemplates',
     onClick: () => {
       resetActions();
       navigate(DAO_ROUTES.proposalTemplates.relative(addressPrefix, safeAddress));
@@ -42,7 +48,7 @@ export function CreateProposalMenu({ safeAddress }: { safeAddress: Address }) {
   });
   if (iframeFeatureEnabled) {
     options.push({
-      optionKey: t('useDapps'),
+      optionKey: 'useDapps',
       onClick: () => {
         resetActions();
         openDappsBrowserModal();
@@ -76,6 +82,7 @@ export function CreateProposalMenu({ safeAddress }: { safeAddress: Address }) {
           color: 'color-lilac-100',
           bg: 'color-neutral-950',
         },
+        ...(testId && { 'data-testid': testId }),
       }}
     />
   );
