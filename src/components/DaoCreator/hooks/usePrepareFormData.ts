@@ -111,6 +111,7 @@ export function usePrepareFormData() {
       tokenAllocations,
       parentAllocationAmount,
       quorumPercentage,
+      requiredProposerWeight,
       timelock,
       votingPeriod,
       executionPeriod,
@@ -151,6 +152,7 @@ export function usePrepareFormData() {
         tokenSupply: tokenSupply.bigintValue!,
         parentAllocationAmount: parentAllocationAmount?.bigintValue!,
         quorumPercentage: quorumPercentage.bigintValue!,
+        requiredProposerWeight: requiredProposerWeight.bigintValue!,
         timelock: await getEstimatedNumberOfBlocks(timelock.bigintValue!, publicClient),
         executionPeriod: await getEstimatedNumberOfBlocks(
           executionPeriod.bigintValue!,
@@ -174,6 +176,7 @@ export function usePrepareFormData() {
   const prepareAzoriusERC721FormData = useCallback(
     async ({
       quorumPercentage,
+      proposerThreshold,
       timelock,
       executionPeriod,
       votingPeriod,
@@ -209,6 +212,7 @@ export function usePrepareFormData() {
 
       return {
         quorumPercentage: quorumPercentage.bigintValue!,
+        proposerThreshold: proposerThreshold.bigintValue!,
         timelock: await getEstimatedNumberOfBlocks(timelock.bigintValue!, publicClient),
         executionPeriod: await getEstimatedNumberOfBlocks(
           executionPeriod.bigintValue!,

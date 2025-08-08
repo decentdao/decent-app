@@ -32,6 +32,7 @@
   "helperVotingPeriod": "The length of time where voting is enabled after a proposal is created.",
   "helperQuorumERC20": "The percentage of total possible token votes required to vote on a proposal to make the result valid.",
   "helperQuorumERC721": "The minimum weight of total available token voting weight required to vote on a proposal to make the result valid.",
+  "helperProposalPermission": "The minimum number of tokens a member must hold in order to create proposals.",
   "governanceDescription": "These values can be modified later.",
   "titleGuardConfig": "Configure Administration",
   "titleFreezeParams": "Freeze Parameters",
