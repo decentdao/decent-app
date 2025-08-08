@@ -133,6 +133,37 @@ export function AzoriusGovernance(props: ICreationStepProps) {
             </LabelComponent>
           )}
 
+          {/* PROPOSAL PERMISSION */}
+          {values.azorius.votingStrategyType === VotingStrategyType.LINEAR_ERC20 ? (
+            <LabelComponent
+              label={t('proposalPermission', { ns: 'common' })}
+              helper={t('helperProposalPermission')}
+              isRequired
+            >
+              <BigIntInput
+                value={values.erc20Token.requiredProposerWeight.bigintValue}
+                onChange={valuePair =>
+                  setFieldValue('erc20Token.requiredProposerWeight', valuePair)
+                }
+                decimalPlaces={18}
+                data-testid="govConfig-proposalPermission"
+              />
+            </LabelComponent>
+          ) : (
+            <LabelComponent
+              label={t('proposalPermission', { ns: 'common' })}
+              helper={t('helperProposalPermission')}
+              isRequired
+            >
+              <BigIntInput
+                value={values.erc721Token.proposerThreshold.bigintValue}
+                onChange={valuePair => setFieldValue('erc721Token.proposerThreshold', valuePair)}
+                decimalPlaces={0}
+                data-testid="govConfig-proposalPermission"
+              />
+            </LabelComponent>
+          )}
+
           {/* VOTING PERIOD */}
           <LabelComponent
             label={t('labelVotingPeriod')}
