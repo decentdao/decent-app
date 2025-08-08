@@ -1,0 +1,290 @@
+name: Manual Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version_type:
+        description: "Version bump type (ignored if custom_version is provided)"
+        required: false
+        default: patch
+        type: choice
+        options: [patch, minor, major]
+      custom_version:
+        description: "Explicit version (e.g., 1.2.3). If set, overrides version_type"
+        required: false
+        type: string
+      base_branch:
+        description: "Base branch to cut release from"
+        required: false
+        default: develop
+        type: string
+      main_branch:
+        description: "Main branch to release into"
+        required: false
+        default: main
+        type: string
+
+concurrency:
+  group: automated-release
+  cancel-in-progress: false
+
+jobs:
+  create-release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '23.x'
+          cache: 'npm'
+
+      - name: Configure git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Fetch tags
+        run: git fetch --tags --force
+
+      - name: Switch to base and pull latest
+        run: |
+          git switch "${{ inputs.base_branch }}"
+          git pull origin "${{ inputs.base_branch }}"
+
+      - name: Generate version number
+        id: version
+        env:
+          VERSION_TYPE: ${{ inputs.version_type }}
+          CUSTOM_VERSION: ${{ inputs.custom_version }}
+        run: |
+          CURRENT_VERSION=$(node -p "require('./package.json').version")
+          echo "Current version: $CURRENT_VERSION"
+
+          if [ -n "$CUSTOM_VERSION" ]; then
+            # Basic semver validation X.Y.Z
+            if node -e "if(!/^\\d+\\.\\d+\\.\\d+$/.test(process.env.V)){process.exit(1)}" V="$CUSTOM_VERSION"; then
+              NEXT_VERSION="$CUSTOM_VERSION"
+            else
+              echo "Invalid custom_version provided: $CUSTOM_VERSION" >&2
+              exit 1
+            fi
+          else
+            case "$VERSION_TYPE" in
+              patch)
+                NEXT_VERSION=$(node -e "const [x,y,z]=require('./package.json').version.split('.').map(Number); console.log([x,y,z+1].join('.'));")
+                ;;
+              minor)
+                NEXT_VERSION=$(node -e "const [x,y]=require('./package.json').version.split('.').map(Number); console.log([x,y+1,0].join('.'));")
+                ;;
+              major)
+                NEXT_VERSION=$(node -e "const [x]=require('./package.json').version.split('.').map(Number); console.log([x+1,0,0].join('.'));")
+                ;;
+              *)
+                echo "Unknown version_type: $VERSION_TYPE" >&2
+                exit 1
+                ;;
+            esac
+          fi
+
+          echo "Next version: $NEXT_VERSION"
+          echo "version=$NEXT_VERSION" >> $GITHUB_OUTPUT
+          echo "branch_name=release/v$NEXT_VERSION" >> $GITHUB_OUTPUT
+
+      - name: Skip if release PR already exists
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          EXISTING=$(gh pr list --search "Release v in:title" --label release --state open --base "${{ inputs.main_branch }}" --json number --jq 'length')
+          if [ "$EXISTING" -gt 0 ]; then
+            echo "Open release PR already exists. Skipping workflow."
+            exit 0
+          fi
+
+      - name: Check if base has changes since last tag
+        id: check_changes
+        run: |
+          LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+          if [ -z "$LATEST_TAG" ]; then
+            echo "No previous tags found, proceeding with release"
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+          else
+            COMMITS_SINCE_TAG=$(git rev-list ${LATEST_TAG}..${{ inputs.base_branch }} --count)
+            echo "Commits since $LATEST_TAG: $COMMITS_SINCE_TAG"
+            if [ "$COMMITS_SINCE_TAG" -gt "0" ]; then
+              echo "has_changes=true" >> $GITHUB_OUTPUT
+            else
+              echo "has_changes=false" >> $GITHUB_OUTPUT
+            fi
+          fi
+
+      - name: Create release branch
+        if: steps.check_changes.outputs.has_changes == 'true'
+        run: |
+          git checkout -b "${{ steps.version.outputs.branch_name }}"
+
+      - name: Bump version in package.json
+        if: steps.check_changes.outputs.has_changes == 'true'
+        run: |
+          npm version "${{ steps.version.outputs.version }}" --no-git-tag-version
+          git add package.json package-lock.json || true
+          git commit -m "chore(release): v${{ steps.version.outputs.version }}"
+
+      - name: Install dependencies (for localization)
+        if: steps.check_changes.outputs.has_changes == 'true'
+        run: npm ci
+
+      - name: Run localization
+        if: steps.check_changes.outputs.has_changes == 'true'
+        run: |
+          npm run localize
+          git add -A
+          git commit -m "localize" || echo "No localization changes to commit"
+
+      - name: Push release branch
+        if: steps.check_changes.outputs.has_changes == 'true'
+        run: |
+          git push origin "${{ steps.version.outputs.branch_name }}"
+
+      - name: Get commits since last release
+        if: steps.check_changes.outputs.has_changes == 'true'
+        id: get_commits
+        run: |
+          LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+          if [ -z "$LATEST_TAG" ]; then
+            COMMIT_RANGE="${{ inputs.base_branch }}"
+          else
+            COMMIT_RANGE="${LATEST_TAG}..${{ inputs.base_branch }}"
+          fi
+
+          COMMITS=$(git log $COMMIT_RANGE --oneline --pretty=format:"- %s (%h)" | head -50)
+          echo "$COMMITS" > commits.txt
+
+          LINEAR_ISSUES=$(git log $COMMIT_RANGE --grep='[A-Z]\+-[0-9]\+' --oneline | grep -Eo '[A-Z]+-[0-9]+' | sort -u | head -20 || true)
+          echo "$LINEAR_ISSUES" > linear_issues.txt
+
+      - name: Create PR to main
+        if: steps.check_changes.outputs.has_changes == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          COMMITS=$(cat commits.txt)
+          LINEAR_ISSUES=$(cat linear_issues.txt)
+          PR_BODY="## Release v${{ steps.version.outputs.version }}\n\n**Automated release created on $(date '+%Y-%m-%d')**\n\n### Changes included:\n$COMMITS\n\n### Linear Issues:\n$(echo "$LINEAR_ISSUES" | sed 's/^/- /' || echo "No Linear issues found")\n\n---\n*This PR was automatically created by the manual release workflow.*"
+
+          gh pr create \
+            --title "Release v${{ steps.version.outputs.version }}" \
+            --body "$PR_BODY" \
+            --base "${{ inputs.main_branch }}" \
+            --head "${{ steps.version.outputs.branch_name }}" \
+            --label "release"
+
+      - name: Create PR to develop
+        if: steps.check_changes.outputs.has_changes == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh pr create \
+            --title "Merge release v${{ steps.version.outputs.version }} into ${{ inputs.base_branch }}" \
+            --body "Automated PR to merge release changes back into ${{ inputs.base_branch }} branch." \
+            --base "${{ inputs.base_branch }}" \
+            --head "${{ steps.version.outputs.branch_name }}" \
+            --label "release"
+
+      - name: Wait for main PR to be merged
+        if: steps.check_changes.outputs.has_changes == 'true'
+        id: wait_for_merge
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "Waiting for main PR to be merged before tagging and creating release..."
+          PR_NUMBER=$(gh pr list --head "${{ steps.version.outputs.branch_name }}" --base "${{ inputs.main_branch }}" --json number --jq '.[0].number')
+          if [ -z "$PR_NUMBER" ] || [ "$PR_NUMBER" = "null" ]; then
+            echo "No PR found to ${{ inputs.main_branch }} from ${{ steps.version.outputs.branch_name }}" >&2
+            echo "merged=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+          echo "pr_number=$PR_NUMBER" >> $GITHUB_OUTPUT
+
+          for i in {1..15}; do
+            PR_STATE=$(gh pr view $PR_NUMBER --json state --jq '.state')
+            echo "PR State: $PR_STATE (attempt $i/15)"
+            if [ "$PR_STATE" = "MERGED" ]; then
+              echo "PR has been merged!"
+              echo "merged=true" >> $GITHUB_OUTPUT
+              break
+            elif [ "$PR_STATE" = "CLOSED" ]; then
+              echo "PR was closed without merging"
+              echo "merged=false" >> $GITHUB_OUTPUT
+              break
+            fi
+            if [ $i -lt 15 ]; then
+              echo "Waiting 2 minutes before next check..."
+              sleep 120
+            else
+              echo "Timeout waiting for PR to be merged"
+              echo "merged=false" >> $GITHUB_OUTPUT
+            fi
+          done
+
+      - name: Create Git tag and GitHub Release
+        if: steps.check_changes.outputs.has_changes == 'true' && steps.wait_for_merge.outputs.merged == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git switch "${{ inputs.main_branch }}"
+          git pull origin "${{ inputs.main_branch }}"
+
+          git tag -a v${{ steps.version.outputs.version }} -m "Release v${{ steps.version.outputs.version }}"
+          git push origin v${{ steps.version.outputs.version }}
+
+          gh release create v${{ steps.version.outputs.version }} \
+            --title "Release v${{ steps.version.outputs.version }}" \
+            --notes-from-tag \
+            --generate-notes \
+            --latest
+
+      - name: Auto-merge develop PR if no conflicts
+        if: steps.check_changes.outputs.has_changes == 'true' && steps.wait_for_merge.outputs.merged == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          DEVELOP_PR_NUMBER=$(gh pr list --head "${{ steps.version.outputs.branch_name }}" --base "${{ inputs.base_branch }}" --json number --jq '.[0].number')
+          if [ -z "$DEVELOP_PR_NUMBER" ] || [ "$DEVELOP_PR_NUMBER" = "null" ]; then
+            echo "No develop PR found"
+            exit 0
+          fi
+          MERGEABLE=$(gh pr view $DEVELOP_PR_NUMBER --json mergeable --jq '.mergeable')
+          if [ "$MERGEABLE" = "MERGEABLE" ]; then
+            echo "Auto-merging develop PR as it has no conflicts"
+            gh pr merge $DEVELOP_PR_NUMBER --merge --delete-branch
+          else
+            echo "Develop PR has conflicts and requires manual intervention"
+            gh pr comment $DEVELOP_PR_NUMBER --body "⚠️ This PR has merge conflicts and requires manual resolution."
+          fi
+
+      - name: Summary
+        if: steps.check_changes.outputs.has_changes == 'true'
+        run: |
+          if [ "${{ steps.wait_for_merge.outputs.merged }}" = "true" ]; then
+            echo "✅ Release v${{ steps.version.outputs.version }} created successfully!"
+            echo "📦 GitHub Release: https://github.com/${{ github.repository }}/releases/tag/v${{ steps.version.outputs.version }}"
+            echo "🔀 Main PR merged and develop PR processed"
+          else
+            echo "⏳ Release v${{ steps.version.outputs.version }} PRs created but awaiting manual merge"
+            echo "🔗 Main PR: https://github.com/${{ github.repository }}/pull/${{ steps.wait_for_merge.outputs.pr_number }}"
+          fi
+
+      - name: No changes to release
+        if: steps.check_changes.outputs.has_changes == 'false'
+        run: |
+          echo "No changes since last release. Skipping release creation." 
