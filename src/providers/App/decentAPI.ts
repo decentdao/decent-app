@@ -3,7 +3,6 @@
 import axios, { AxiosResponse } from 'axios';
 import { Address } from 'viem';
 import { RevenueSharingWallet } from '../../types/revShare';
-import { StakingTokenData } from '../../types/revenueSharing';
 
 const DECENT_API_BASE_URL = 'https://api.decent.build';
 
@@ -38,18 +37,6 @@ export async function queryDaosByName(name: string) {
     params: { name },
   });
   return response.data.data;
-}
-
-interface TokenStakingDataResponse {
-  success: boolean;
-  data: StakingTokenData;
-}
-
-export async function getTokenStakingData(chainId: number, tokenAddress: Address) {
-  const response: AxiosResponse<TokenStakingDataResponse> = await axiosClient.get(
-    `/t/${chainId}/${tokenAddress}`,
-  );
-  return response.data;
 }
 
 export async function getDaoData(chainId: number, daoAddress: Address) {
