@@ -33,7 +33,7 @@ const languages = {
 const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
 
 // Your DeepL API key
-const DEEPL_API_KEY = process.env.VITE_APP_DEEPL_API_KEY;
+const DEEPL_API_KEY = process.env.DEEPL_API_KEY;
 
 if (!DEEPL_API_KEY) {
   console.error('Please set the DEEPL_API_KEY environment variable.');
