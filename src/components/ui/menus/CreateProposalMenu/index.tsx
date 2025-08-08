@@ -12,7 +12,13 @@ import { useDecentModal } from '../../modals/useDecentModal';
 import { OptionMenu } from '../OptionMenu';
 import { IOption } from '../OptionMenu/types';
 
-export function CreateProposalMenu({ safeAddress }: { safeAddress: Address }) {
+export function CreateProposalMenu({
+  safeAddress,
+  testId,
+}: {
+  safeAddress: Address;
+  testId?: string;
+}) {
   const { t } = useTranslation('proposal');
 
   const { addressPrefix } = useNetworkConfigStore();
@@ -76,6 +82,7 @@ export function CreateProposalMenu({ safeAddress }: { safeAddress: Address }) {
           color: 'color-lilac-100',
           bg: 'color-neutral-950',
         },
+        ...(testId && { 'data-testid': testId }),
       }}
     />
   );
