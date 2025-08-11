@@ -3,6 +3,7 @@
   "buttonSendAssets": "Solicitud de pago",
   "titleTransactions": "Transacciones",
   "titleAssets": "Activos",
+  "titleAssetsWithCount": "Assets ({{count}})",
   "subtitleTreasuryBalance": "Saldo total del Tesoro",
   "columnCoins": "Monedas",
   "columnValue": "Valor",

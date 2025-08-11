@@ -3,6 +3,7 @@
   "buttonSendAssets": "支払い請求",
   "titleTransactions": "トランザクション",
   "titleAssets": "資産",
+  "titleAssetsWithCount": "Assets ({{count}})",
   "subtitleTreasuryBalance": "財務省預金残高",
   "columnCoins": "コイン",
   "columnValue": "価値",

@@ -3,6 +3,7 @@
   "buttonSendAssets": "Demande de paiement",
   "titleTransactions": "Transactions",
   "titleAssets": "Actifs",
+  "titleAssetsWithCount": "Assets ({{count}})",
   "subtitleTreasuryBalance": "Total du solde de trésorerie",
   "columnCoins": "Pièces de monnaie",
   "columnValue": "Valeur",

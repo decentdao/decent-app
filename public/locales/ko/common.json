@@ -28,6 +28,7 @@
   "minutes": "분",
   "minutesShort": "분",
   "quorum": "쿼럼",
+  "proposalPermission": "제안 권한",
   "deploy": "배포",
   "loading": "로드 중...",
   "goHome": "홈으로 이동",
@@ -134,5 +135,6 @@
   "save": "저장",
   "daoNameRequired": "DAO 이름은 필수입니다.",
   "calendarPlaceholder": "YYYY-MM-DD",
-  "years": "년"
+  "years": "년",
+  "stakingPeriodMoreThanZero": "스테이킹 기간은 0보다 길어야 합니다."
 }

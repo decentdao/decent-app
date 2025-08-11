@@ -3,6 +3,7 @@
   "buttonSendAssets": "申请付款",
   "titleTransactions": "交易",
   "titleAssets": "资产",
+  "titleAssetsWithCount": "Assets ({{count}})",
   "subtitleTreasuryBalance": "国库余额共计",
   "columnCoins": "硬币",
   "columnValue": "价值",

@@ -28,6 +28,7 @@
   "minutes": "Minutos",
   "minutesShort": "min",
   "quorum": "Quórum",
+  "proposalPermission": "Autorização de propostas",
   "deploy": "Implantar",
   "loading": "Carregando...",
   "goHome": "Ir para casa",
@@ -134,5 +135,6 @@
   "save": "Guardar",
   "daoNameRequired": "O nome do DAO é obrigatório",
   "calendarPlaceholder": "AAAA-MM-DD",
-  "years": "Anos"
+  "years": "Anos",
+  "stakingPeriodMoreThanZero": "O período de aposta deve ser superior a zero"
 }

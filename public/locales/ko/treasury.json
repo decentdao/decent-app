@@ -3,6 +3,7 @@
   "buttonSendAssets": "결제 요청",
   "titleTransactions": "거래",
   "titleAssets": "자산",
+  "titleAssetsWithCount": "Assets ({{count}})",
   "subtitleTreasuryBalance": "총 국고 잔액",
   "columnCoins": "코인",
   "columnValue": "가치",

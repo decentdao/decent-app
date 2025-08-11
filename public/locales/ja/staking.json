@@ -3,6 +3,9 @@
   "stakingNull": "あなたのDAOはまだステーキング契約を持っていません。今すぐデプロイできます。",
   "deployStaking": "杭打ち契約の展開",
   "stakingPeriod": "杭打ち期間",
-  "includeStakingInVoting": "トークン投票にステークトークンを含める",
-  "includeStakingInVotingDesc": "-コピーはまだない"
+  "undistributedTokensTitle": "Undistributed Tokens",
+  "undistributedTokensHelper": "Any tokens displayed here were received as revenue but are not being distributed as rewards. To distribute these types of tokens, add them to the list of Reward Tokens below.",
+  "rewardTokensTitle": "Reward Tokens",
+  "rewardTokensHelper": "Specify which tokens from incoming revenue will be distributed as rewards. Once added, tokens cannot be removed from this list!",
+  "addRewardToken": "Add Token"
 }

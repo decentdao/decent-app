@@ -3,6 +3,9 @@
   "stakingNull": "Ваша DAO ще не має контракту зі стейкінгом. Ви можете укласти його зараз.",
   "deployStaking": "Розгортання договору стейкінгу",
   "stakingPeriod": "Період стейкінгу",
-  "includeStakingInVoting": "Включити стейкінг токенів у голосування за токени",
-  "includeStakingInVotingDesc": "-ще немає копії."
+  "undistributedTokensTitle": "Undistributed Tokens",
+  "undistributedTokensHelper": "Any tokens displayed here were received as revenue but are not being distributed as rewards. To distribute these types of tokens, add them to the list of Reward Tokens below.",
+  "rewardTokensTitle": "Reward Tokens",
+  "rewardTokensHelper": "Specify which tokens from incoming revenue will be distributed as rewards. Once added, tokens cannot be removed from this list!",
+  "addRewardToken": "Add Token"
 }

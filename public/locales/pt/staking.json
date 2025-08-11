@@ -3,6 +3,9 @@
   "stakingNull": "O seu DAO ainda não tem um contrato de staking. Pode implementar um agora.",
   "deployStaking": "Implementar contrato de piquetagem",
   "stakingPeriod": "Período de piquetagem",
-  "includeStakingInVoting": "Incluir o token de aposta na votação do token",
-  "includeStakingInVotingDesc": "-ainda não há cópia-"
+  "undistributedTokensTitle": "Undistributed Tokens",
+  "undistributedTokensHelper": "Any tokens displayed here were received as revenue but are not being distributed as rewards. To distribute these types of tokens, add them to the list of Reward Tokens below.",
+  "rewardTokensTitle": "Reward Tokens",
+  "rewardTokensHelper": "Specify which tokens from incoming revenue will be distributed as rewards. Once added, tokens cannot be removed from this list!",
+  "addRewardToken": "Add Token"
 }

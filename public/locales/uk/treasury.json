@@ -3,6 +3,7 @@
   "buttonSendAssets": "Запит на оплату",
   "titleTransactions": "Транзакції",
   "titleAssets": "Активи",
+  "titleAssetsWithCount": "Assets ({{count}})",
   "subtitleTreasuryBalance": "Загальний залишок коштів у казначействі",
   "columnCoins": "Монети",
   "columnValue": "Значення",

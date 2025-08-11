@@ -3,6 +3,9 @@
   "stakingNull": "您的 DAO 还没有定价合约。您现在就可以部署一个。",
   "deployStaking": "Deploy Staking Contract",
   "stakingPeriod": "Staking Period",
-  "includeStakingInVoting": "Include staking token in token voting",
-  "includeStakingInVotingDesc": "-no copy yet-"
+  "undistributedTokensTitle": "Undistributed Tokens",
+  "undistributedTokensHelper": "Any tokens displayed here were received as revenue but are not being distributed as rewards. To distribute these types of tokens, add them to the list of Reward Tokens below.",
+  "rewardTokensTitle": "Reward Tokens",
+  "rewardTokensHelper": "Specify which tokens from incoming revenue will be distributed as rewards. Once added, tokens cannot be removed from this list!",
+  "addRewardToken": "Add Token"
 }

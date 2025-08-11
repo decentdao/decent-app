@@ -32,6 +32,7 @@
   "helperVotingPeriod": "プロポーザル作成後、投票が有効になる期間。",
   "helperQuorumERC20": "ある議案に対する投票に必要なトークン総投票数の割合。",
   "helperQuorumERC721": "投票可能なトークンの総重量のうち、投票結果を有効にするために必要な最小の重み。",
+  "helperProposalPermission": "メンバーがプロポーザルを作成するために保有しなければならない最小トークン数。",
   "governanceDescription": "これらの値は後で変更することができる。",
   "titleGuardConfig": "管理部門の設定",
   "titleFreezeParams": "凍結パラメータ",

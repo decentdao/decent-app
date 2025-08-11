@@ -32,6 +32,7 @@
   "helperVotingPeriod": "Tiempo durante el cual se habilita la votación tras la creación de una propuesta.",
   "helperQuorumERC20": "Porcentaje del total de votos simbólicos posibles que es necesario votar sobre una propuesta para que el resultado sea válido.",
   "helperQuorumERC721": "El peso mínimo del peso total disponible de los votos por fichas necesario para votar una propuesta y que el resultado sea válido.",
+  "helperProposalPermission": "El número mínimo de fichas que un miembro debe poseer para crear propuestas.",
   "governanceDescription": "Estos valores pueden modificarse posteriormente.",
   "titleGuardConfig": "Configurar la administración",
   "titleFreezeParams": "Parámetros de congelación",

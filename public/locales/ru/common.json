@@ -28,6 +28,7 @@
   "minutes": "Протоколы",
   "minutesShort": "мин",
   "quorum": "Кворум",
+  "proposalPermission": "Разрешение на предложение",
   "deploy": "Развернуть",
   "loading": "Загрузка...",
   "goHome": "Идите домой",
@@ -134,5 +135,6 @@
   "save": "Сохранить",
   "daoNameRequired": "Имя DAO является обязательным",
   "calendarPlaceholder": "ГГГГ-ММ-ДД",
-  "years": "Годы"
+  "years": "Годы",
+  "stakingPeriodMoreThanZero": "Ставочный период должен быть больше нуля"
 }

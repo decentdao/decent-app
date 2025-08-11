@@ -28,6 +28,7 @@
   "minutes": "Procès-verbal",
   "minutesShort": "min",
   "quorum": "Quorum",
+  "proposalPermission": "Autorisation de la proposition",
   "deploy": "Déployer",
   "loading": "Chargement...",
   "goHome": "Rentrer à la maison",
@@ -134,5 +135,6 @@
   "save": "Économiser",
   "daoNameRequired": "Le nom du DAO est obligatoire",
   "calendarPlaceholder": "YYYY-MM-DD",
-  "years": "Années"
+  "years": "Années",
+  "stakingPeriodMoreThanZero": "La période de jalonnement doit être supérieure à zéro"
 }
