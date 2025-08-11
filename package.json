@@ -3,6 +3,7 @@
   "version": "0.18.0",
   "private": true,
   "dependencies": {
+    "@0xsplits/splits-sdk": "^6.0.1",
     "@amplitude/analytics-browser": "^2.11.1",
     "@chakra-ui/anatomy": "^2.2.2",
     "@chakra-ui/react": "^2.8.2",
@@ -72,7 +73,7 @@
     "localized": "node scripts/localization_verify.js",
     "pretty": "prettier . --write",
     "pretty:check": "prettier . --check",
-    "dev": "VITE_APP_GIT_HASH=$(git rev-parse --short HEAD) vite",
+    "dev": "VITE_APP_GIT_HASH=$(git rev-parse --short HEAD) vite --force",
     "preview": "VITE_APP_GIT_HASH=$(git rev-parse --short HEAD) vite preview",
     "build": "NODE_OPTIONS=--max-old-space-size=8192 VITE_APP_GIT_HASH=$(git rev-parse --short HEAD) vite build && NODE_OPTIONS=--max-old-space-size=8192 vite build --mode page-function",
     "test": "vitest --dir=test"

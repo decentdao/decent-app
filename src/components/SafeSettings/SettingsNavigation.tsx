@@ -21,7 +21,6 @@ import { SafeGeneralSettingsPage } from '../../pages/dao/settings/general/SafeGe
 import { SafeGovernanceSettingsPage } from '../../pages/dao/settings/governance/SafeGovernanceSettingsPage';
 import { SafeModulesSettingsPage } from '../../pages/dao/settings/modules-and-guard/SafeModulesSettingsPage';
 import { SafePermissionsSettingsContent } from '../../pages/dao/settings/permissions/SafePermissionsSettingsContent';
-import { SafeRevenueSharingSettingsPage } from '../../pages/dao/settings/revenue-sharing/SafeRevenueSharingSettingsContent';
 import { SafeStakingSettingsPage } from '../../pages/dao/settings/staking/SafeStakingSettingsPage';
 import { SafeTokenSettingsPage } from '../../pages/dao/settings/token/SafeTokenSettingsPage';
 import { useDAOStore } from '../../providers/App/AppProvider';
@@ -31,6 +30,7 @@ import { isNonEmpty } from '../../utils/valueCheck';
 import { BarLoader } from '../ui/loaders/BarLoader';
 import { SafeSettingsEdits } from '../ui/modals/SafeSettingsModal';
 import Divider from '../ui/utils/Divider';
+import { RevenueSharingSettingsContent } from './RevenueShare/RevenueSharingContent';
 
 function SettingsLink({
   path,
@@ -344,7 +344,7 @@ export function SettingsNavigation({
               showDivider={false}
               testId="settings-nav-revenue-sharing"
               onClick={() => {
-                onSettingsNavigationClick(<SafeRevenueSharingSettingsPage />);
+                onSettingsNavigationClick(<RevenueSharingSettingsContent />);
                 setCurrentItem('revenueSharing');
               }}
             />

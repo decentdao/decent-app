@@ -231,6 +231,7 @@ export default function useSubmitProposal({
         let to = proposalData.targets[0];
         let value = proposalData.values[0];
         let data = proposalData.calldatas[0];
+
         let operation: 0 | 1 = 0;
 
         if (proposalData.targets.length > 1) {

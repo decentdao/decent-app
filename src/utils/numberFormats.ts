@@ -18,6 +18,19 @@ export const formatPercentage = (
   return Number(percent.toFixed(2)) + '%';
 };
 
+// this version is used in NumberInputPercentage which handles the percentage sign
+export const formatPercentageV1 = (
+  numerator: bigint | number | string,
+  denominator: bigint | number | string,
+) => {
+  const fraction = BigDecimal.divide(numerator.toString(), denominator.toString(), 18);
+  const percent = parseFloat(BigDecimal.multiply(fraction, 100));
+  if (percent < 0) {
+    return '0';
+  }
+  return Number(percent.toFixed(2));
+};
+
 const usdFormatter = new Intl.NumberFormat('en-US', {
   style: 'currency',
   currency: 'USD',
