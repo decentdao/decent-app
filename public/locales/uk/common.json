@@ -28,6 +28,7 @@
   "minutes": "Протокол",
   "minutesShort": "хв",
   "quorum": "Кворум",
+  "proposalPermission": "Дозвіл на подання пропозиції",
   "deploy": "Розгорнути",
   "loading": "Завантаження...",
   "goHome": "Іди додому.",
@@ -134,5 +135,6 @@
   "save": "Зберегти",
   "daoNameRequired": "Обов'язкова назва DAO",
   "calendarPlaceholder": "YYYY-MM-DD",
-  "years": "Роки"
+  "years": "Роки",
+  "stakingPeriodMoreThanZero": "Період стейкінгу повинен бути більше нуля"
 }

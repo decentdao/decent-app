@@ -26,5 +26,8 @@
   "updateTokenTransferable": "Jeton de mise à jour transférable",
   "updateTokenMaxTotalSupply": "Mise à jour de l'offre maximale de jetons",
   "addTokenWhitelist": "Ajouter une liste blanche de jetons",
-  "removeTokenWhitelist": "Supprimer la liste blanche de jetons"
+  "removeTokenWhitelist": "Supprimer la liste blanche de jetons",
+  "deployStakingContract": "Déployer un contrat de jalonnement",
+  "updateStakingMinPeriod": "Mise à jour du jalonnement Période minimale",
+  "addStakingRewardTokens": "Ajouter des jetons de récompense de mise"
 }

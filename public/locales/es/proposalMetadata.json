@@ -26,5 +26,8 @@
   "updateTokenTransferable": "Token de actualización transferible",
   "updateTokenMaxTotalSupply": "Actualizar ficha Suministro total máximo",
   "addTokenWhitelist": "Añadir lista blanca de tokens",
-  "removeTokenWhitelist": "Eliminar la lista blanca de tokens"
+  "removeTokenWhitelist": "Eliminar la lista blanca de tokens",
+  "deployStakingContract": "Desplegar el contrato de replanteo",
+  "updateStakingMinPeriod": "Actualizar estaca Período mín.",
+  "addStakingRewardTokens": "Añadir fichas de recompensa de apuestas"
 }

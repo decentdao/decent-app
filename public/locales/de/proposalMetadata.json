@@ -26,5 +26,8 @@
   "updateTokenTransferable": "Update Token Übertragbar",
   "updateTokenMaxTotalSupply": "Token aktualisieren Max Gesamtangebot",
   "addTokenWhitelist": "Token-Whitelist hinzufügen",
-  "removeTokenWhitelist": "Token-Whitelist entfernen"
+  "removeTokenWhitelist": "Token-Whitelist entfernen",
+  "deployStakingContract": "Absteckungsvertrag einsetzen",
+  "updateStakingMinPeriod": "Aktualisierung des Einsatzes Min. Zeitraum",
+  "addStakingRewardTokens": "Einsatz-Belohnungsmarken hinzufügen"
 }

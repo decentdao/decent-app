@@ -28,6 +28,7 @@
   "minutes": "Verbale",
   "minutesShort": "min",
   "quorum": "Quorum",
+  "proposalPermission": "Autorizzazione alla proposta",
   "deploy": "Distribuire",
   "loading": "Caricamento...",
   "goHome": "Vai a casa",
@@ -134,5 +135,6 @@
   "save": "Risparmiare",
   "daoNameRequired": "Il nome del DAO è obbligatorio",
   "calendarPlaceholder": "AAAA-MM-GG",
-  "years": "Anni"
+  "years": "Anni",
+  "stakingPeriodMoreThanZero": "Il periodo di staking deve essere superiore a zero"
 }

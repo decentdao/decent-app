@@ -3,6 +3,7 @@
   "buttonSendAssets": "Запрос на оплату",
   "titleTransactions": "Транзакции",
   "titleAssets": "Активы",
+  "titleAssetsWithCount": "Активы ({{count}})",
   "subtitleTreasuryBalance": "Итого остаток казначейства",
   "columnCoins": "Монеты",
   "columnValue": "Значение",

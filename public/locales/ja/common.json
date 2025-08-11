@@ -28,6 +28,7 @@
   "minutes": "議事録",
   "minutesShort": "分",
   "quorum": "定足数",
+  "proposalPermission": "提案許可",
   "deploy": "デプロイ",
   "loading": "読み込み中...",
   "goHome": "ホームへ",
@@ -134,5 +135,6 @@
   "save": "セーブ",
   "daoNameRequired": "DAO名は必須",
   "calendarPlaceholder": "YYYY-MM-DD",
-  "years": "年"
+  "years": "年",
+  "stakingPeriodMoreThanZero": "杭打ち期間はゼロ以上でなければならない"
 }

@@ -32,6 +32,7 @@
   "helperVotingPeriod": "제안서가 생성된 후 투표를 활성화할 수 있는 기간입니다.",
   "helperQuorumERC20": "제안에 투표하여 결과를 유효하게 만드는 데 필요한 총 가능한 토큰 투표의 비율입니다.",
   "helperQuorumERC721": "제안에 투표하여 결과를 유효하게 만드는 데 필요한 총 사용 가능한 토큰 투표 가중치의 최소 가중치입니다.",
+  "helperProposalPermission": "제안서를 작성하기 위해 회원이 보유해야 하는 최소 토큰 수입니다.",
   "governanceDescription": "이러한 값은 나중에 수정할 수 있습니다.",
   "titleGuardConfig": "관리 구성",
   "titleFreezeParams": "동결 매개변수",

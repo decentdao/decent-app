@@ -28,6 +28,7 @@
   "minutes": "分鐘",
   "minutesShort": "min",
   "quorum": "法定人數",
+  "proposalPermission": "提案許可",
   "deploy": "部署",
   "loading": "載入中...",
   "goHome": "回家",
@@ -134,5 +135,6 @@
   "save": "節省",
   "daoNameRequired": "DAO 名稱為必填項目",
   "calendarPlaceholder": "YYYY-MM-DD",
-  "years": "年數"
+  "years": "年數",
+  "stakingPeriodMoreThanZero": "投注期必須大於零"
 }

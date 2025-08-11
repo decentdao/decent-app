@@ -26,5 +26,8 @@
   "updateTokenTransferable": "可转让更新令牌",
   "updateTokenMaxTotalSupply": "更新令牌最大供应总量",
   "addTokenWhitelist": "添加令牌白名单",
-  "removeTokenWhitelist": "删除令牌白名单"
+  "removeTokenWhitelist": "删除令牌白名单",
+  "deployStakingContract": "部署定标合同",
+  "updateStakingMinPeriod": "更新定标最小周期",
+  "addStakingRewardTokens": "添加投注奖励代币"
 }

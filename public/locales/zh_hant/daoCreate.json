@@ -32,6 +32,7 @@
   "helperVotingPeriod": "提案建立後啟用投票的時間長度。",
   "helperQuorumERC20": "為使投票結果有效，對某項提案進行投票所需的代幣投票佔可能投票總數的百分比。",
   "helperQuorumERC721": "為使投票結果有效，對某項提案進行投票所需的最小可用代幣投票權重。",
+  "helperProposalPermission": "會員必須持有的最低代幣數量，才能建立提案。",
   "governanceDescription": "這些值可以稍後修改。",
   "titleGuardConfig": "設定管理",
   "titleFreezeParams": "凍結參數",

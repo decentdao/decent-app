@@ -3,6 +3,9 @@
   "stakingNull": "您的 DAO 还没有定价合约。您现在就可以部署一个。",
   "deployStaking": "Deploy Staking Contract",
   "stakingPeriod": "Staking Period",
-  "includeStakingInVoting": "Include staking token in token voting",
-  "includeStakingInVotingDesc": "-no copy yet-"
+  "undistributedTokensTitle": "未分配代币",
+  "undistributedTokensHelper": "此处显示的任何代币都是作为收入收到的，但不作为奖励分发。要分发这些类型的代币，请将它们添加到下面的奖励代币列表中。",
+  "rewardTokensTitle": "奖励代币",
+  "rewardTokensHelper": "指定将从收入中分配哪些代币作为奖励。代币一旦添加，就不能从该列表中删除！",
+  "addRewardToken": "添加令牌"
 }
