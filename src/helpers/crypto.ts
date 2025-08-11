@@ -42,7 +42,7 @@ export function getRandomBytes() {
   return bytesToBigInt(self.crypto.getRandomValues(new Uint8Array(32)));
 }
 
-export const calculateSafeTransactionHash = (
+const calculateSafeTransactionHash = (
   safeAddress: Address,
   safeTx: SafeTransaction,
   chainId: number,
@@ -92,7 +92,7 @@ export const buildSafeTransaction = (template: {
   };
 };
 
-export const safeSignTypedData = async (
+const safeSignTypedData = async (
   walletClient: WalletClient,
   contractAddress: Address,
   safeTx: SafeTransaction,

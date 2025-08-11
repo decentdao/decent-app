@@ -1,6 +1,7 @@
 import { Box } from '@chakra-ui/react';
 import { Formik } from 'formik';
 
+import useFeatureFlag from '../../helpers/environmentFeatureFlags';
 import { useDAOCreateSchema } from '../../hooks/schemas/DAOCreate/useDAOCreateSchema';
 import {
   AzoriusERC20DAO,
@@ -11,6 +12,7 @@ import {
   SafeMultisigDAO,
   SubDAO,
 } from '../../types';
+import { DEV_VOTING_PERIOD_MINUTES } from '../../utils/dev/devModeConstants';
 import StepController from './StepController';
 import { initialState } from './constants';
 import { DAOCreateMode } from './formComponents/EstablishEssentials';
@@ -37,6 +39,16 @@ function DaoCreator({
 
   const { prepareMultisigFormData, prepareAzoriusERC20FormData, prepareAzoriusERC721FormData } =
     usePrepareFormData();
+
+  const devFeatureEnabled = useFeatureFlag('flag_dev');
+  const modifiedInitialState = initialState;
+  if (devFeatureEnabled) {
+    const devModeVotingPeriodMins = BigInt(DEV_VOTING_PERIOD_MINUTES);
+    modifiedInitialState.azorius.votingPeriod = {
+      bigintValue: devModeVotingPeriodMins,
+      value: devModeVotingPeriodMins.toString(),
+    };
+  }
 
   return (
     <Box>

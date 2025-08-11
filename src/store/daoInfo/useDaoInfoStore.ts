@@ -2,7 +2,7 @@ import { getAddress } from 'viem';
 import { create } from 'zustand';
 import { DAOOwnedEntities, DAOSubgraph, DecentModule, IDAO, SafeWithNextNonce } from '../../types';
 
-export const initialDaoInfoStore: IDAO & DAOOwnedEntities = {
+const initialDaoInfoStore: IDAO & DAOOwnedEntities = {
   safe: null,
   subgraphInfo: null,
   modules: null,

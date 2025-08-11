@@ -28,6 +28,7 @@
   "minutes": "Minutes",
   "minutesShort": "min",
   "quorum": "Quorum",
+  "proposalPermission": "Proposal Permission",
   "deploy": "Deploy",
   "loading": "Loading...",
   "goHome": "Go Home",

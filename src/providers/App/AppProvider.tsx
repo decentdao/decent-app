@@ -1,11 +1,8 @@
-import { createContext } from 'react';
 import { DaoInfoStore } from '../../store/daoInfo/useDaoInfoStore';
 import { EMPTY_GOVERNANCE } from '../../store/slices/governances';
 import { useGlobalStore } from '../../store/store';
 import { DAOKey, DAOSubgraph, DecentModule, FractalStore, SafeWithNextNonce } from '../../types';
 import { RevenueSharingWallet } from '../../types/revShare';
-
-export const FractalContext = createContext<FractalStore | null>(null);
 
 type FractalStoreWithNode = FractalStore & {
   node: DaoInfoStore;

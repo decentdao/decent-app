@@ -101,7 +101,7 @@ export function AssetSelector({ formIndex, disabled }: { formIndex: number; disa
                   setFieldValue(`roleEditing.payments.${formIndex}.asset`, undefined);
                 }
               }}
-              title={t('titleAssets', { ns: 'treasury' })}
+              title={t('titleAssetsWithCount', { ns: 'treasury', count: dropdownItems.length })}
               isDisabled={disabled}
               selectPlaceholder={t('selectLabel', { ns: 'modals' })}
               emptyMessage={t('emptyRolesAssets', { ns: 'roles' })}

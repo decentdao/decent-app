@@ -20,7 +20,7 @@ const SAFE_VERSION = '1.3.0';
 const chain = optimism;
 const a = legacy.addresses[chain.id];
 
-export const optimismConfig: NetworkConfig = {
+const optimismConfig: NetworkConfig = {
   order: 15,
   chain,
   rpcEndpoint: `https://opt-mainnet.g.alchemy.com/v2/${import.meta.env?.VITE_APP_ALCHEMY_API_KEY}`,
@@ -128,7 +128,7 @@ export const optimismConfig: NetworkConfig = {
     sablierV2LockupLinear: '0x5C22471A86E9558ed9d22235dD5E0429207ccf4B',
     disperse: '0xD152f549545093347A162Dce210e7293f1452150',
   },
-  staking: {},
+
   moralis: {
     chainSupported: true,
     deFiSupported: true,

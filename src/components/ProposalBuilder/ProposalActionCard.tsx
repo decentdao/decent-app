@@ -71,7 +71,7 @@ function SendAssetsAction({
   );
 }
 
-export function AirdropAction({
+function AirdropAction({
   action,
   onRemove,
 }: {
@@ -137,7 +137,7 @@ export function AirdropAction({
   );
 }
 
-export function TransactionBuilderAction({
+function TransactionBuilderAction({
   action,
   onRemove,
 }: {

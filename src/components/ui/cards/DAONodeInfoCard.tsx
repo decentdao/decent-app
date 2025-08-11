@@ -7,7 +7,6 @@ import { FavoriteIcon } from '../icons/FavoriteIcon';
 import AddressCopier from '../links/AddressCopier';
 
 export const NODE_HEIGHT_REM = 6.75;
-export const NODE_MARGIN_TOP_REM = 1.25;
 
 /**
  * Info card used on each DAO in the hierarchy page.
