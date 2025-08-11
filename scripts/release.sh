@@ -22,6 +22,7 @@ MAIN_BRANCH="main"
 PUSH_REMOTE="origin"
 TARGET_REPO="decentdao/decent-app"
 DRY_RUN="${DRY_RUN:-false}"
+PR_REVIEWERS="Da-Colon,twodam,tbwebb22,cbajandas,jigglyjams"
 
 # Parse command line arguments
 parse_args() {
@@ -319,7 +320,8 @@ ${summary}
         --title "Release v${version}" \
         --body "$main_pr_body" \
         --base "$MAIN_BRANCH" \
-        --head "$branch_name" || {
+        --head "$branch_name" \
+        --reviewer "$PR_REVIEWERS" || {
             log_error "Failed to create PR to $MAIN_BRANCH"
             return 1
         }
@@ -331,7 +333,8 @@ ${summary}
         --title "Merge release v${version} into $BASE_BRANCH" \
         --body "Automated PR to merge release changes back into $BASE_BRANCH branch." \
         --base "$BASE_BRANCH" \
-        --head "$branch_name" || {
+        --head "$branch_name" \
+        --reviewer "$PR_REVIEWERS" || {
             log_error "Failed to create PR to $BASE_BRANCH"
             return 1
         }
