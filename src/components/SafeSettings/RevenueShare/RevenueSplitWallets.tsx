@@ -360,7 +360,9 @@ export function RevSplitTable({
       splitAddress={daoSplitInfo?.address ?? safe?.address}
       splitPercentage={daoSplitInfo?.percentage}
       isLastRow={
-        !subgraphInfo?.parentAddress && !stakedToken?.address && !regularFormSplitsWithIndices?.length
+        !subgraphInfo?.parentAddress &&
+        !stakedToken?.address &&
+        !regularFormSplitsWithIndices?.length
       }
       isReadOnlyAddress={true}
     />
@@ -372,9 +374,7 @@ export function RevSplitTable({
       splitFormError={
         revenueSharingEditFormikErrors?.[walletFormType]?.[walletIndex]?.specialSplits?.parentDao
       }
-      splitAddress={
-        parentDAOSplitInfo?.address ?? subgraphInfo?.parentAddress ?? undefined
-      }
+      splitAddress={parentDAOSplitInfo?.address ?? subgraphInfo?.parentAddress ?? undefined}
       splitPercentage={parentDAOSplitInfo?.percentage}
       isLastRow={!stakedToken?.address && !regularFormSplitsWithIndices?.length}
       isReadOnlyAddress={true}

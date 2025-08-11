@@ -223,24 +223,23 @@ export function ProposalActionCard({
         onRemove={() => removeAction(index)}
       />
     );
-  } 
+  }
 
   const isAddAction = action.actionType === ProposalActionType.ADD;
   const isEditAction = action.actionType === ProposalActionType.EDIT;
   const isDeleteAction = action.actionType === ProposalActionType.DELETE;
 
   return (
-
-      <Card
-        backgroundColor={
-          isAddAction || isEditAction
-            ? 'color-neutral-950'
-            : isDeleteAction
-              ? 'color-error-900'
-              : 'color-neutral-900'
-        }
-      >
-       <Flex justifyContent="space-between">
+    <Card
+      backgroundColor={
+        isAddAction || isEditAction
+          ? 'color-neutral-950'
+          : isDeleteAction
+            ? 'color-error-900'
+            : 'color-neutral-900'
+      }
+    >
+      <Flex justifyContent="space-between">
         <Flex
           alignItems="center"
           gap="0.5rem"
@@ -265,15 +264,15 @@ export function ProposalActionCard({
           />
           {action.content}
         </Flex>
-      <IconButton
-        aria-label="Remove action"
-        icon={<Trash />}
-        variant="ghost"
-        size="icon-sm"
-        color="color-error-400"
-        onClick={() => removeAction(index)}
-      />
+        <IconButton
+          aria-label="Remove action"
+          icon={<Trash />}
+          variant="ghost"
+          size="icon-sm"
+          color="color-error-400"
+          onClick={() => removeAction(index)}
+        />
       </Flex>
-      </Card>
-    );
+    </Card>
+  );
 }
