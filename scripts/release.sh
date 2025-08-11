@@ -154,7 +154,7 @@ check_for_changes() {
 
 calculate_next_version() {
     local current_version=$(node -p "require('./package.json').version")
-    echo "Current version: $current_version" >&2
+    echo "[INFO] Current version: $current_version" >&2
     
     local next_version=""
     
@@ -163,7 +163,7 @@ calculate_next_version() {
         if [[ $CUSTOM_VERSION =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
             next_version="$CUSTOM_VERSION"
         else
-            log_error "Invalid version format: $CUSTOM_VERSION (expected X.Y.Z)"
+            echo "[ERROR] Invalid version format: $CUSTOM_VERSION (expected X.Y.Z)" >&2
             exit 1
         fi
     else
@@ -179,7 +179,7 @@ calculate_next_version() {
                 next_version=$(node -e "const [x]=require('./package.json').version.split('.').map(Number); console.log([x+1,0,0].join('.'))")
                 ;;
             *)
-                log_error "Unknown version type: $VERSION_TYPE"
+                echo "[ERROR] Unknown version type: $VERSION_TYPE" >&2
                 exit 1
                 ;;
         esac
@@ -192,20 +192,20 @@ create_release_branch() {
     local version="$1"
     local branch_name="release/v${version}"
     
-    log_info "Creating release branch: $branch_name"
+    echo "[INFO] Creating release branch: $branch_name" >&2
     
     if [ "$DRY_RUN" == "true" ]; then
-        log_info "[DRY RUN] Would create branch: $branch_name"
+        echo "[INFO] [DRY RUN] Would create branch: $branch_name" >&2
         echo "$branch_name"
         return
     fi
     
     # Make sure we're on the latest base branch
-    git checkout "$BASE_BRANCH"
-    git pull origin "$BASE_BRANCH"
+    git checkout "$BASE_BRANCH" >/dev/null 2>&1
+    git pull origin "$BASE_BRANCH" >/dev/null 2>&1
     
     # Create and checkout release branch
-    git checkout -b "$branch_name"
+    git checkout -b "$branch_name" >/dev/null 2>&1
     
     echo "$branch_name"
 }
