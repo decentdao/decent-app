@@ -13,10 +13,6 @@
   "updateSnapshotSpace": "Оновлення простору знімків",
   "lidoWithdrawalTitle": "Виведення коштів з Лідо",
   "lidoWithdrawalDescription": "Ця пропозиція спалить ваш NFT Lido Withdrawal і поверне ETH у ваш сейф.",
-  "unstakeStEthTitle": "Зніміть ставку STETH",
-  "unstakeStEthDescription": "Ця пропозиція зніме стейки stETH з Lido і створить NFT Lido Withdrawal, який можна буде використовувати для отримання вашого ETH.",
-  "stakeWithLidoTitle": "Ставте ETH за допомогою Lido",
-  "stakeWithLidoDescription": "Ця пропозиція поставить ETH в Лідо, повернувши stETH до вашої скарбниці.",
   "addSigners": "Додати підписантів",
   "removeSigners": "Видалити підписантів",
   "changeThreshold": "Update signer threshold",
@@ -30,5 +26,8 @@
   "updateTokenTransferable": "Токен оновлення, який можна передати",
   "updateTokenMaxTotalSupply": "Оновити максимальний загальний запас токенів",
   "addTokenWhitelist": "Додати білий список токенів",
-  "removeTokenWhitelist": "Видалення білого списку токенів"
+  "removeTokenWhitelist": "Видалення білого списку токенів",
+  "deployStakingContract": "Розгортання договору стейкінгу",
+  "updateStakingMinPeriod": "Оновити мінімальний період стейкінгу",
+  "addStakingRewardTokens": "Додавання жетонів винагороди за стейкінг"
 }

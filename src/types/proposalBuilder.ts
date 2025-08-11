@@ -1,4 +1,5 @@
 import { ReactNode } from 'react';
+import { Hex } from 'viem';
 import { BigIntValuePair } from './common';
 
 export enum CreateProposalSteps {
@@ -17,6 +18,7 @@ export interface CreateProposalTransaction<T = BigIntValuePair> {
   ethValue: T;
   functionName: string;
   parameters: CreateProposalParameter[];
+  calldata?: Hex;
 }
 
 export type CreateProposalMetadata = {
@@ -67,6 +69,7 @@ export enum ProposalActionType {
   WITHDRAW_PAYMASTER = 'withdraw_paymaster',
   DAPP_INTEGRATION = 'dapp_integration',
   TRANSACTION_BUILDER = 'transaction_builder',
+  UPDATE_REVENUE_SHARE_SPLITS = 'update_revenue_share_splits',
 }
 
 export type CreateProposalActionData<T = BigIntValuePair> = {

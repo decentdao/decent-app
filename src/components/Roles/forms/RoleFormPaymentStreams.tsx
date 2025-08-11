@@ -14,7 +14,7 @@ import { RolePaymentDetails } from '../RolePaymentDetails';
 import { RoleFormPaymentStream } from './RoleFormPaymentStream';
 import RoleFormPaymentStreamTermed from './RoleFormPaymentStreamTermed';
 
-export function RoleFormPaymentRenderer() {
+function RoleFormPaymentRenderer() {
   const { values } = useFormikContext<RoleFormValues>();
 
   if (values.roleEditing?.roleEditingPaymentIndex !== undefined) {

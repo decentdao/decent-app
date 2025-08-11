@@ -447,7 +447,3 @@ export function useSafeAPI() {
 
   return safeAPI;
 }
-
-export function getSafeAPI(networkConfig: NetworkConfig) {
-  return new EnhancedSafeApiKit(networkConfig);
-}

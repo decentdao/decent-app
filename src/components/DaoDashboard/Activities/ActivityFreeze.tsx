@@ -9,7 +9,7 @@ import { FreezeButton } from '../../Activity/FreezeButton';
 import { DecentTooltip } from '../../ui/DecentTooltip';
 import { Badge } from '../../ui/badges/Badge';
 
-export function FreezeDescription({ isFrozen }: { isFrozen: boolean }) {
+function FreezeDescription({ isFrozen }: { isFrozen: boolean }) {
   const { t } = useTranslation('dashboard');
   return (
     <Text

@@ -3,6 +3,9 @@
   "stakingNull": "DAO에 아직 스테이킹 컨트랙트가 없습니다. 지금 스테이킹 컨트랙트를 배포할 수 있습니다.",
   "deployStaking": "스테이킹 컨트랙트 배포",
   "stakingPeriod": "스테이킹 기간",
-  "includeStakingInVoting": "토큰 투표에 스테이킹 토큰 포함하기",
-  "includeStakingInVotingDesc": "-아직 복사본 없음-"
+  "undistributedTokensTitle": "미분배 토큰",
+  "undistributedTokensHelper": "여기에 표시된 토큰은 수익으로 받았지만 보상으로 분배되지 않은 토큰입니다. 이러한 유형의 토큰을 배포하려면 아래의 보상 토큰 목록에 해당 토큰을 추가하세요.",
+  "rewardTokensTitle": "보상 토큰",
+  "rewardTokensHelper": "들어오는 수익 중 어떤 토큰을 보상으로 분배할지 지정합니다. 토큰을 추가한 후에는 이 목록에서 제거할 수 없습니다!",
+  "addRewardToken": "토큰 추가"
 }

@@ -139,6 +139,26 @@ const secondaryV1 = defineStyle({
   },
 });
 
+const ghostDisabled = {
+  opacity: 0.5,
+};
+
+const ghostV1 = defineStyle({
+  bg: 'transparent',
+  color: 'color-content-content1-foreground',
+  _hover: {
+    bg: 'color-alpha-white-950',
+    _disabled: {
+      ...ghostDisabled,
+    },
+  },
+  _disabled: {
+    ...ghostDisabled,
+  },
+  _active: {},
+  _focus: {},
+});
+
 const buttonVariants = {
   primary,
   secondary,
@@ -146,6 +166,7 @@ const buttonVariants = {
   tertiary,
   stepper,
   danger,
+  ghostV1,
 };
 
 export default buttonVariants;

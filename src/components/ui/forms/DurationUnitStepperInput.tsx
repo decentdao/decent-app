@@ -12,6 +12,7 @@ import {
 import { Plus, Minus } from '@phosphor-icons/react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { SEXY_BOX_SHADOW_T_T } from '../../../constants/common';
 import {
   SECONDS_IN_DAY,
   SECONDS_IN_HOUR,
@@ -22,6 +23,22 @@ import {
 interface DurationUnits {
   unit: number;
   label: string;
+}
+
+function findBestDefaultUnit(
+  units: DurationUnits[],
+  secondsValue: number | undefined,
+): DurationUnits {
+  const sortedUnits = units.sort((a, b) => a.unit - b.unit);
+  if (secondsValue !== undefined) {
+    // Find the largest unit that divides the value evenly
+    const biggestUnit = sortedUnits.findLast(u => secondsValue % u.unit === 0);
+    if (biggestUnit) {
+      return biggestUnit;
+    }
+  }
+  // otherwise, return the smallest unit
+  return sortedUnits[0];
 }
 
 export default function DurationUnitStepperInput({
@@ -59,12 +76,13 @@ export default function DurationUnitStepperInput({
       label: t('years', { ns: 'common' }),
     },
   ];
-  const [selectedUnit, setSelectedUnit] = useState(units[0]);
+  const [selectedUnit, setSelectedUnit] = useState(findBestDefaultUnit(units, secondsValue));
 
   const stepperButton = (direction: 'inc' | 'dec') => (
     <Button
       variant="secondary"
-      borderColor="color-neutral-900"
+      border="none"
+      boxShadow={SEXY_BOX_SHADOW_T_T}
       p="0.5rem"
       size="md"
     >

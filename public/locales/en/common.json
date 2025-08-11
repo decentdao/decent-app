@@ -28,6 +28,7 @@
   "minutes": "Minutes",
   "minutesShort": "min",
   "quorum": "Quorum",
+  "proposalPermission": "Proposal Permission",
   "deploy": "Deploy",
   "loading": "Loading...",
   "goHome": "Go Home",
@@ -134,5 +135,7 @@
   "save": "Save",
   "daoNameRequired": "DAO name is required",
   "calendarPlaceholder": "YYYY-MM-DD",
-  "years": "Years"
+  "years": "Years",
+  "addressInfoTooltip": "While DAO Name or ENS is displayed, the full wallet address will appear in the proposal.",
+  "stakingPeriodMoreThanZero": "Staking period must be more than zero"
 }

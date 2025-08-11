@@ -32,6 +32,7 @@
   "helperVotingPeriod": "Il periodo di tempo in cui è possibile votare dopo la creazione di una proposta.",
   "helperQuorumERC20": "La percentuale del totale dei possibili voti per gettone necessari per votare una proposta e rendere valido il risultato.",
   "helperQuorumERC721": "Il peso minimo del peso totale disponibile dei gettoni di voto necessario per votare una proposta e rendere valido il risultato.",
+  "helperProposalPermission": "Il numero minimo di gettoni che un membro deve possedere per creare proposte.",
   "governanceDescription": "Questi valori possono essere modificati in seguito.",
   "titleGuardConfig": "Configurare l'amministrazione",
   "titleFreezeParams": "Parametri di congelamento",

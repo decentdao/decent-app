@@ -13,10 +13,6 @@
   "updateSnapshotSpace": "更新快照空間",
   "lidoWithdrawalTitle": "麗都退房",
   "lidoWithdrawalDescription": "此建議將燒毀您的Lido提款NFT，並將ETH返回到您的Safe。",
-  "unstakeStEthTitle": "解鎖stETH",
-  "unstakeStEthDescription": "此建議將從Lido解鎖StETH，並鑄造一個Lido提款NFT，可用於認領您的ETH。",
-  "stakeWithLidoTitle": "用Lido賭ETH",
-  "stakeWithLidoDescription": "此提案將ETH賭在Lido，將stETH歸還您的金庫。",
   "addSigners": "Add signers",
   "removeSigners": "Remove signers",
   "changeThreshold": "Update signer threshold",
@@ -30,5 +26,8 @@
   "updateTokenTransferable": "可轉讓更新代幣",
   "updateTokenMaxTotalSupply": "更新代幣 最大總供應量",
   "addTokenWhitelist": "新增令牌白名單",
-  "removeTokenWhitelist": "移除令牌白名單"
+  "removeTokenWhitelist": "移除令牌白名單",
+  "deployStakingContract": "Deploy Staking Contract",
+  "updateStakingMinPeriod": "Update Staking Min Period",
+  "addStakingRewardTokens": "Add Staking Reward Tokens"
 }

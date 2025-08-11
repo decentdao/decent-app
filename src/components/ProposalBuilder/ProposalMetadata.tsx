@@ -42,7 +42,7 @@ export interface ProposalMetadataProps extends FormikProps<CreateProposalForm> {
   typeProps: ProposalMetadataTypeProps;
 }
 
-export function PlainTextProposalMetadata({
+function PlainTextProposalMetadata({
   values,
   typeProps,
 }: Pick<ProposalMetadataProps, 'values' | 'typeProps'>) {
@@ -95,7 +95,7 @@ export function PlainTextProposalMetadata({
   );
 }
 
-export function MarkdownProposalMetadata({
+function MarkdownProposalMetadata({
   values: { proposalMetadata },
   typeProps,
 }: Pick<ProposalMetadataProps, 'values' | 'typeProps'>) {

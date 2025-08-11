@@ -3,6 +3,9 @@
   "stakingNull": "Votre DAO n'a pas encore de contrat de staking. Vous pouvez en déployer un maintenant.",
   "deployStaking": "Déployer un contrat de jalonnement",
   "stakingPeriod": "Période de jalonnement",
-  "includeStakingInVoting": "Inclure le jeton de jalonnement dans le vote par jeton",
-  "includeStakingInVotingDesc": "-pas encore de copie-"
+  "undistributedTokensTitle": "Jetons non distribués",
+  "undistributedTokensHelper": "Les jetons affichés ici ont été reçus en tant que revenus mais ne sont pas distribués en tant que récompenses. Pour distribuer ces types de jetons, ajoutez-les à la liste des jetons de récompense ci-dessous.",
+  "rewardTokensTitle": "Jetons de récompense",
+  "rewardTokensHelper": "Indiquez quels jetons provenant des revenus entrants seront distribués en tant que récompenses. Une fois ajoutés, les jetons ne peuvent plus être supprimés de cette liste !",
+  "addRewardToken": "Ajouter un jeton"
 }

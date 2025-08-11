@@ -16,7 +16,7 @@ export type NodesSlice = {
   getDaoNode: (daoKey: DAOKey) => IDAO;
 };
 
-export const EMPTY_NODE: IDAO = {
+const EMPTY_NODE: IDAO = {
   safe: null,
   subgraphInfo: null,
   modules: null,

@@ -55,7 +55,7 @@ const withIndexedDB = (callback: (db: IDBDatabase) => Promise<any>) => {
   });
 };
 
-export const setIndexedDBValue = async (
+const setIndexedDBValue = async (
   objectStoreName: string,
   key: string,
   value: any,
@@ -83,11 +83,7 @@ export const setIndexedDBValue = async (
   });
 };
 
-export const getIndexedDBValue = async (
-  storeKey: string,
-  key: string,
-  chainId: number,
-): Promise<any> => {
+const getIndexedDBValue = async (storeKey: string, key: string, chainId: number): Promise<any> => {
   return withIndexedDB(async db => {
     let transaction: IDBTransaction, store: IDBObjectStore, request: IDBRequest<any>;
 

@@ -1,12 +1,13 @@
 import { TokenInfoResponse, TransferResponse } from '@safe-global/api-kit';
 import { SafeMultisigTransactionResponse } from '@safe-global/safe-core-sdk-types';
 import { Address } from 'viem';
-import { ERC20LockedTokenData, ERC721TokenData, VotesTokenData } from './account';
+import { ERC20LockedTokenData, ERC721TokenData, StakedTokenData, VotesTokenData } from './account';
 import { DAOOwnedEntities } from './daoGeneral';
 import { FreezeGuardType, FreezeVotingType } from './daoGovernance';
 import { AzoriusProposal, MultisigProposal, ProposalData } from './daoProposal';
 import { DefiBalance, NFTBalance, TokenBalance, TokenEventType, TransferType } from './daoTreasury';
 import { ProposalTemplate } from './proposalBuilder';
+import { RevenueSharingWallet } from './revShare';
 import { SafeInfoResponseWithGuard } from './safeGlobal';
 import { SnapshotProposal } from './snapshot';
 
@@ -148,6 +149,7 @@ export interface IDAO {
   safe: GnosisSafe | null;
   subgraphInfo: DAOSubgraph | null;
   modules: DecentModule[] | null;
+  revShareWallets?: RevenueSharingWallet[];
 }
 
 export interface GovernanceActivity extends ActivityBase {
@@ -294,6 +296,7 @@ export type Governance = {
   tokenClaimContractAddress?: Address;
   isAzorius: boolean;
   erc20Token: ERC20LockedTokenData | undefined;
+  stakedToken: StakedTokenData | undefined;
 } & DAOOwnedEntities;
 
 export interface VotingStrategyAzorius extends VotingStrategy {

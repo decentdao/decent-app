@@ -11,43 +11,46 @@ import {
 import { WarningCircle } from '@phosphor-icons/react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import useFeatureFlag from '../../../helpers/environmentFeatureFlags';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import { useDAOStore } from '../../../providers/App/AppProvider';
-import { FractalModuleType, ICreationStepProps, VotingStrategyType } from '../../../types';
-import { DEV_VOTING_PERIOD_MINUTES } from '../../../utils/dev/devModeConstants';
+import {
+  BigIntValuePair,
+  FractalModuleType,
+  ICreationStepProps,
+  VotingStrategyType,
+} from '../../../types';
 import { BigIntInput } from '../../ui/forms/BigIntInput';
 import { CustomNonceInput } from '../../ui/forms/CustomNonceInput';
+import DurationUnitStepperInput from '../../ui/forms/DurationUnitStepperInput';
 import { LabelComponent } from '../../ui/forms/InputComponent';
-import { NumberStepperInput } from '../../ui/forms/NumberStepperInput';
 import { StepButtons } from '../StepButtons';
 import { StepWrapper } from '../StepWrapper';
 import useStepRedirect from '../hooks/useStepRedirect';
 import { DAOCreateMode } from './EstablishEssentials';
 
-function DayStepperInput({
-  inputValue,
-  onInputChange,
-}: {
-  inputValue: number;
-  onInputChange: (val: number) => void;
-}) {
-  const { t } = useTranslation('common');
-
+function renderUnitInputWith(
+  formName: string,
+  formValue: BigIntValuePair,
+  setFieldValue: (name: string, value: any) => void,
+) {
   return (
-    <InputGroup>
-      <Flex
-        flexDirection="column"
-        gap="0.5rem"
-        w="250px"
-      >
-        <NumberStepperInput
-          rightElement={<Text color="color-neutral-700">{t('days', { ns: 'common' })}</Text>}
-          value={inputValue}
-          onChange={val => onInputChange(Number(val))}
-        />
-      </Flex>
-    </InputGroup>
+    <Flex
+      flexDirection="column"
+      gap="0.5rem"
+      w="300px"
+    >
+      <DurationUnitStepperInput
+        secondsValue={Number(formValue?.bigintValue ?? 0n) * 60}
+        onSecondsValueChange={sec => {
+          const min = sec ? sec / 60 : 0;
+          const newMinutesPair: BigIntValuePair = {
+            bigintValue: BigInt(min),
+            value: min.toString(),
+          };
+          setFieldValue(formName, newMinutesPair);
+        }}
+      />
+    </Flex>
   );
 }
 
@@ -82,32 +85,6 @@ export function AzoriusGovernance(props: ICreationStepProps) {
   }, [setFieldValue, safe, showCustomNonce, mode]);
 
   useStepRedirect({ values });
-
-  // Use local flag only for flag_dev
-  const devFeatureEnabled = useFeatureFlag('flag_dev');
-  const devModeVotingPeriodDays = DEV_VOTING_PERIOD_MINUTES / 24 / 60;
-  const defaultVotingPeriodDays = devFeatureEnabled ? devModeVotingPeriodDays : 7;
-
-  const [votingPeriodDays, setVotingPeriodDays] = useState(defaultVotingPeriodDays);
-  const [timelockPeriodDays, setTimelockPeriodDays] = useState(1);
-  const [executionPeriodDays, setExecutionPeriodDays] = useState(2);
-
-  useEffect(() => {
-    // convert days to minutes
-    const minutes = votingPeriodDays * 24 * 60;
-    setFieldValue('azorius.votingPeriod', { bigintValue: minutes, value: minutes.toString() });
-  }, [setFieldValue, votingPeriodDays]);
-
-  // same for timelock and execution period
-  useEffect(() => {
-    const minutes = timelockPeriodDays * 24 * 60;
-    setFieldValue('azorius.timelock', { bigintValue: minutes, value: minutes.toString() });
-  }, [setFieldValue, timelockPeriodDays]);
-
-  useEffect(() => {
-    const minutes = executionPeriodDays * 24 * 60;
-    setFieldValue('azorius.executionPeriod', { bigintValue: minutes, value: minutes.toString() });
-  }, [setFieldValue, executionPeriodDays]);
 
   return (
     <>
@@ -156,16 +133,48 @@ export function AzoriusGovernance(props: ICreationStepProps) {
             </LabelComponent>
           )}
 
+          {/* PROPOSAL PERMISSION */}
+          {values.azorius.votingStrategyType === VotingStrategyType.LINEAR_ERC20 ? (
+            <LabelComponent
+              label={t('proposalPermission', { ns: 'common' })}
+              helper={t('helperProposalPermission')}
+              isRequired
+            >
+              <BigIntInput
+                value={values.erc20Token.requiredProposerWeight.bigintValue}
+                onChange={valuePair =>
+                  setFieldValue('erc20Token.requiredProposerWeight', valuePair)
+                }
+                decimalPlaces={18}
+                data-testid="govConfig-proposalPermission"
+              />
+            </LabelComponent>
+          ) : (
+            <LabelComponent
+              label={t('proposalPermission', { ns: 'common' })}
+              helper={t('helperProposalPermission')}
+              isRequired
+            >
+              <BigIntInput
+                value={values.erc721Token.proposerThreshold.bigintValue}
+                onChange={valuePair => setFieldValue('erc721Token.proposerThreshold', valuePair)}
+                decimalPlaces={0}
+                data-testid="govConfig-proposalPermission"
+              />
+            </LabelComponent>
+          )}
+
           {/* VOTING PERIOD */}
           <LabelComponent
             label={t('labelVotingPeriod')}
             helper={t('helperVotingPeriod')}
             isRequired
           >
-            <DayStepperInput
-              inputValue={votingPeriodDays}
-              onInputChange={setVotingPeriodDays}
-            />
+            {renderUnitInputWith(
+              'azorius.votingPeriod',
+              values.azorius.votingPeriod,
+              setFieldValue,
+            )}
           </LabelComponent>
 
           {/* TIMELOCK PERIOD */}
@@ -174,10 +183,7 @@ export function AzoriusGovernance(props: ICreationStepProps) {
             helper={t('helperTimelockPeriod')}
             isRequired
           >
-            <DayStepperInput
-              inputValue={timelockPeriodDays}
-              onInputChange={setTimelockPeriodDays}
-            />
+            {renderUnitInputWith('azorius.timelock', values.azorius.timelock, setFieldValue)}
           </LabelComponent>
 
           {/* EXECUTION PERIOD */}
@@ -186,10 +192,11 @@ export function AzoriusGovernance(props: ICreationStepProps) {
             helper={t('helperExecutionPeriod')}
             isRequired
           >
-            <DayStepperInput
-              inputValue={executionPeriodDays}
-              onInputChange={setExecutionPeriodDays}
-            />
+            {renderUnitInputWith(
+              'azorius.executionPeriod',
+              values.azorius.executionPeriod,
+              setFieldValue,
+            )}
           </LabelComponent>
 
           <Alert

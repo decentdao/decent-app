@@ -3,6 +3,9 @@
   "stakingNull": "Su DAO aún no tiene un contrato de estafa. Puedes desplegar uno ahora.",
   "deployStaking": "Desplegar el contrato de replanteo",
   "stakingPeriod": "Período de estaca",
-  "includeStakingInVoting": "Incluir la ficha de apuesta en la votación de fichas",
-  "includeStakingInVotingDesc": "-todavía no hay copia-"
+  "undistributedTokensTitle": "Fichas no distribuidas",
+  "undistributedTokensHelper": "Las fichas que aparecen aquí se recibieron como ingresos, pero no se distribuyen como recompensas. Para distribuir este tipo de fichas, añádelas a la lista de fichas de recompensa que aparece a continuación.",
+  "rewardTokensTitle": "Fichas de recompensa",
+  "rewardTokensHelper": "Especifique qué tokens de los ingresos entrantes se distribuirán como recompensas. Una vez añadidas, las fichas no se pueden eliminar de esta lista.",
+  "addRewardToken": "Añadir ficha"
 }

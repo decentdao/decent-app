@@ -19,7 +19,6 @@ import Divider from '../../ui/utils/Divider';
 import { CoinHeader, CoinRow } from './AssetCoin';
 import { DeFiHeader, DeFiRow } from './AssetDeFi';
 import { NFTHeader, NFTRow } from './AssetNFT';
-import LidoButtons from './LidoButtons';
 
 export function Assets() {
   const { daoKey } = useCurrentDAOKey();
@@ -70,7 +69,7 @@ export function Assets() {
           my="1rem"
         />
       </Hide>
-      <LidoButtons />
+
       {hasAssets && safe?.address && (
         <>
           <Show below="lg">

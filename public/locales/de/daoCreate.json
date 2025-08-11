@@ -32,6 +32,7 @@
   "helperVotingPeriod": "Die Zeitspanne, in der die Abstimmung nach der Erstellung eines Vorschlags möglich ist.",
   "helperQuorumERC20": "Der prozentuale Anteil der insgesamt möglichen Token-Stimmen, der für die Abstimmung über einen Vorschlag erforderlich ist, damit das Ergebnis gültig ist.",
   "helperQuorumERC721": "Das Mindestgewicht des gesamten verfügbaren Token-Stimmgewichts, das für die Abstimmung über einen Vorschlag erforderlich ist, damit das Ergebnis gültig ist.",
+  "helperProposalPermission": "Die Mindestanzahl an Token, die ein Mitglied besitzen muss, um Vorschläge erstellen zu können.",
   "governanceDescription": "Diese Werte können später geändert werden.",
   "titleGuardConfig": "Verwaltung konfigurieren",
   "titleFreezeParams": "Parameter einfrieren",

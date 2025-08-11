@@ -6,8 +6,6 @@ import {
   VotingStrategyType,
 } from '../../types';
 
-export const DEFAULT_TOKEN_DECIMALS = 18;
-
 // @todo make the time lengths dynamic for whatever real-life values we're targeting here
 
 export const initialState: CreatorFormState = {
@@ -39,6 +37,10 @@ export const initialState: CreatorFormState = {
     maxTotalSupply: {
       value: '',
     },
+    requiredProposerWeight: {
+      value: '1',
+      bigintValue: 1n,
+    },
   },
   erc721Token: {
     nfts: [
@@ -52,6 +54,10 @@ export const initialState: CreatorFormState = {
     quorumThreshold: {
       value: '10',
       bigintValue: 10n,
+    },
+    proposerThreshold: {
+      value: '1',
+      bigintValue: 1n,
     },
   },
   /**

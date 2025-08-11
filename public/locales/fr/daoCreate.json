@@ -32,6 +32,7 @@
   "helperVotingPeriod": "Durée pendant laquelle le vote est autorisé après la création d'une proposition.",
   "helperQuorumERC20": "Le pourcentage du total des votes symboliques possibles requis pour voter sur une proposition afin que le résultat soit valide.",
   "helperQuorumERC721": "Le poids minimum du total des votes par jetons disponibles requis pour voter sur une proposition afin que le résultat soit valide.",
+  "helperProposalPermission": "Le nombre minimum de jetons qu'un membre doit détenir pour pouvoir créer des propositions.",
   "governanceDescription": "Ces valeurs peuvent être modifiées ultérieurement.",
   "titleGuardConfig": "Configuration de l'administration",
   "titleFreezeParams": "Paramètres de gel",

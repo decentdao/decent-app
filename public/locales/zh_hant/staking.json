@@ -3,6 +3,9 @@
   "stakingNull": "Your DAO doesn't have a staking contract yet. You can deploy one now.",
   "deployStaking": "Deploy Staking Contract",
   "stakingPeriod": "Staking Period",
-  "includeStakingInVoting": "Include staking token in token voting",
-  "includeStakingInVotingDesc": "-no copy yet-"
+  "undistributedTokensTitle": "未分配代幣",
+  "undistributedTokensHelper": "這裡顯示的任何代幣都是作為收入收到的，但不作為獎勵分發。若要分發這些類型的代幣，請將代幣加入下方的獎勵代幣清單。",
+  "rewardTokensTitle": "獎勵代幣",
+  "rewardTokensHelper": "指定來自收入的代幣將作為獎勵分發。代幣一旦加入，就無法從此清單中移除！",
+  "addRewardToken": "加入代幣"
 }

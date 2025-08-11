@@ -35,6 +35,8 @@ interface DropdownMenuProps<T = {}> {
    * including the selected icon if desired.
    */
   renderItem?: (item: DropdownItem<T>, isSelected: boolean) => React.ReactNode;
+  renderButton?: () => React.ReactNode;
+  closeOnSelect?: boolean;
 }
 
 export function DropdownMenu<T>({
@@ -46,65 +48,72 @@ export function DropdownMenu<T>({
   selectPlaceholder = 'Select',
   emptyMessage = 'No items available',
   renderItem,
+  renderButton,
+  closeOnSelect = true,
 }: DropdownMenuProps<T>) {
   return (
     <Menu
       placement="bottom-start"
       offset={[0, 8]}
+      closeOnSelect={closeOnSelect}
     >
       {({ isOpen, onClose }) => (
         <>
-          <MenuButton
-            as={Button}
-            variant="unstyled"
-            bgColor="transparent"
-            isDisabled={isDisabled}
-            cursor={isDisabled ? 'not-allowed' : 'pointer'}
-            p={0}
-            sx={{
-              '&:disabled': {
-                '.payment-menu-asset *': {
-                  color: 'color-neutral-400',
-                  bg: 'transparent',
+          {renderButton ? (
+            renderButton()
+          ) : (
+            <MenuButton
+              as={Button}
+              variant="unstyled"
+              bgColor="transparent"
+              isDisabled={isDisabled}
+              cursor={isDisabled ? 'not-allowed' : 'pointer'}
+              p={0}
+              sx={{
+                '&:disabled': {
+                  '.payment-menu-asset *': {
+                    color: 'color-neutral-400',
+                    bg: 'transparent',
+                  },
                 },
-              },
-            }}
-          >
-            <Flex
-              gap={2}
-              alignItems="center"
-              border="1px solid"
-              borderColor="color-neutral-800"
-              borderRadius="9999px"
-              w="fit-content"
-              className="payment-menu-asset"
-              p="0.5rem"
+              }}
             >
-              {selectedItem?.icon && (
-                <Image
-                  src={selectedItem.icon}
-                  fallbackSrc="/images/coin-icon-default.svg"
-                  boxSize="1.5rem"
-                />
-              )}
               <Flex
+                gap={2}
                 alignItems="center"
-                gap="0.75rem"
+                border="1px solid"
+                borderColor="color-neutral-800"
+                borderRadius="9999px"
+                w="fit-content"
+                className="payment-menu-asset"
+                p="0.5rem"
               >
-                <Text
-                  textStyle="text-lg-regular"
-                  color="color-white"
+                {selectedItem?.icon && (
+                  <Image
+                    src={selectedItem.icon}
+                    fallbackSrc="/images/coin-icon-default.svg"
+                    boxSize="1.5rem"
+                  />
+                )}
+                <Flex
+                  alignItems="center"
+                  gap="0.75rem"
                 >
-                  {selectedItem?.label ?? selectPlaceholder}
-                </Text>
-                <Icon
-                  color="color-neutral-400"
-                  as={CaretDown}
-                  boxSize="1.5rem"
-                />
+                  <Text
+                    textStyle="text-lg-regular"
+                    color="color-white"
+                  >
+                    {selectedItem?.label ?? selectPlaceholder}
+                  </Text>
+                  <Icon
+                    color="color-neutral-400"
+                    as={CaretDown}
+                    boxSize="1.5rem"
+                  />
+                </Flex>
               </Flex>
-            </Flex>
-          </MenuButton>
+            </MenuButton>
+          )}
 
           {/* Mobile view: Draggable Drawer */}
           <Show below="lg">
@@ -214,6 +223,8 @@ export function DropdownMenu<T>({
               px="0.25rem"
               pb="0.25rem"
               w="26.75rem"
+              maxHeight="20rem"
+              overflowY="scroll"
             >
               <EaseOutComponent>
                 {title && (

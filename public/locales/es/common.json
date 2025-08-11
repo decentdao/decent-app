@@ -28,6 +28,7 @@
   "minutes": "Actas",
   "minutesShort": "min",
   "quorum": "Quórum",
+  "proposalPermission": "Propuesta Permiso",
   "deploy": "Despliegue",
   "loading": "Cargando...",
   "goHome": "Volver a casa",
@@ -134,5 +135,7 @@
   "save": "Guardar",
   "daoNameRequired": "El nombre de la DAO es obligatorio",
   "calendarPlaceholder": "AAAA-MM-DD",
-  "years": "Años"
+  "years": "Años",
+  "addressInfoTooltip": "Mientras se muestra el nombre de la DAO o el ENS, la dirección completa del monedero aparecerá en la propuesta.",
+  "stakingPeriodMoreThanZero": "El periodo de estaca debe ser superior a cero"
 }

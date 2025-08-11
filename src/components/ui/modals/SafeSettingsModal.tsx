@@ -1,5 +1,5 @@
 import { Button, Flex, Text } from '@chakra-ui/react';
-import { legacy } from '@decentdao/decent-contracts';
+import { abis, legacy } from '@decentdao/decent-contracts';
 import { Formik, Form, useFormikContext } from 'formik';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -45,8 +45,18 @@ import {
   CreateProposalActionData,
   CreateProposalTransaction,
   FractalTokenType,
+  GovernanceType,
   ProposalActionType,
 } from '../../../types';
+import {
+  RevenueSharingSplitFormError,
+  RevenueSharingWalletForm,
+  RevenueSharingWalletFormError,
+  RevenueSharingWalletFormErrors,
+  RevenueSharingWalletFormSpecialSplitsError,
+  RevenueSharingWalletFormType,
+  RevenueSharingWalletFormValues,
+} from '../../../types/revShare';
 import { SENTINEL_MODULE } from '../../../utils/address';
 import { getEstimatedNumberOfBlocks } from '../../../utils/contract';
 import { prepareRefillPaymasterAction } from '../../../utils/dao/prepareRefillPaymasterActionData';
@@ -57,8 +67,13 @@ import {
   getVoteSelectorAndValidator,
 } from '../../../utils/gaslessVoting';
 import { formatCoin } from '../../../utils/numberFormats';
+import {
+  getStakingContractAddress,
+  getStakingContractSaltNonce,
+} from '../../../utils/stakingContractUtils';
 import { validateENSName } from '../../../utils/url';
 import { isNonEmpty } from '../../../utils/valueCheck';
+import { handleEditRevenueShare } from '../../SafeSettings/RevenueShare/revenueShareFormHandlers';
 import { SafePermissionsStrategyAction } from '../../SafeSettings/SafePermissionsStrategyAction';
 import { SettingsNavigation } from '../../SafeSettings/SettingsNavigation';
 import { NewSignerItem } from '../../SafeSettings/Signers/SignersContainer';
@@ -96,6 +111,12 @@ export type SafeSettingsEdits = {
     addressesToWhitelist?: string[];
     maximumTotalSupply?: BigIntValuePair;
   };
+  revenueSharing?: RevenueSharingWalletForm;
+  staking?: {
+    deploying?: boolean;
+    newRewardTokens?: Address[];
+    minimumStakingPeriod?: BigIntValuePair;
+  };
 };
 
 type MultisigEditGovernanceFormikErrors = {
@@ -113,21 +134,26 @@ type PaymasterGasTankEditFormikErrors = {
   deposit?: { amount?: string };
 };
 
-type RevenueSharingEditFormikErrors = {
-  revenueSharing?: string; // @TODO placeholder
-};
-
 type TokenEditFormikErrors = {
   addressesToWhitelist?: { key: string; error: string }[];
   maximumTotalSupply?: string;
+};
+
+type StakingEditFormikErrors = {
+  newRewardTokens?: { key: string; error: string }[];
+  minimumStakingPeriod?: string;
 };
 
 export type SafeSettingsFormikErrors = {
   multisig?: MultisigEditGovernanceFormikErrors;
   general?: GeneralEditFormikErrors;
   paymasterGasTank?: PaymasterGasTankEditFormikErrors;
-  revenueSharing?: RevenueSharingEditFormikErrors;
+  revenueSharing?: {
+    existing: RevenueSharingWalletFormErrors;
+    new: RevenueSharingWalletFormErrors;
+  };
   token?: TokenEditFormikErrors;
+  staking?: StakingEditFormikErrors;
 };
 
 export function SafeSettingsModal({
@@ -140,7 +166,7 @@ export function SafeSettingsModal({
   const { daoKey } = useCurrentDAOKey();
 
   const {
-    node: { safe },
+    node: { safe, subgraphInfo },
     governance,
     governanceContracts: {
       strategies,
@@ -150,7 +176,10 @@ export function SafeSettingsModal({
       linearVotingErc20WithHatsWhitelistingAddress,
       linearVotingErc721WithHatsWhitelistingAddress,
     },
+    revShareWallets,
   } = useDAOStore({ daoKey });
+
+  const stakingContractAddress = governance?.stakedToken?.address;
 
   const [settingsContent, setSettingsContent] = useState(<SafeGeneralSettingsPage />);
 
@@ -176,6 +205,7 @@ export function SafeSettingsModal({
       linearVotingErc20V1MasterCopy,
       linearVotingErc721V1MasterCopy,
       hatsProtocol,
+      votesERC20StakedV1MasterCopy,
     },
     bundlerMinimumStake,
   } = useNetworkConfigStore();
@@ -207,15 +237,14 @@ export function SafeSettingsModal({
           ],
       ) ||
       Object.keys(errors.revenueSharing ?? {}).some(
-        key =>
-          (errors.revenueSharing as RevenueSharingEditFormikErrors)[
-            key as keyof RevenueSharingEditFormikErrors
-          ],
+        key => Object.keys((errors.revenueSharing as any)[key]).length > 0,
       ) ||
       Object.keys(errors.token ?? {}).some(
         key => (errors.token as TokenEditFormikErrors)[key as keyof TokenEditFormikErrors],
+      ) ||
+      Object.keys(errors.staking ?? {}).some(
+        key => (errors.staking as StakingEditFormikErrors)[key as keyof StakingEditFormikErrors],
       );
-
     return (
       <Flex
         flexDirection="row"
@@ -1177,13 +1206,155 @@ export function SafeSettingsModal({
     return { action, title };
   };
 
+  const handleEditStaking = async (updatedValues: SafeSettingsEdits) => {
+    if (!safe?.address) {
+      throw new Error('Safe address is not set');
+    }
+
+    if (!votesERC20StakedV1MasterCopy) {
+      throw new Error('VotesERC20StakedV1MasterCopy is not set');
+    }
+
+    if (!isNonEmpty(updatedValues.staking)) {
+      throw new Error('Staking are not set');
+    }
+    const stakingValues = updatedValues.staking!;
+
+    const stakingContract = governance.stakedToken;
+
+    const changeTitles = [];
+    const transactions: CreateProposalTransaction[] = [];
+
+    if (stakingValues.deploying) {
+      if (stakingContract !== undefined) {
+        throw new Error('Staking contract already deployed');
+      }
+
+      if (stakingValues.minimumStakingPeriod === undefined) {
+        throw new Error('minimumStakingPeriod parameters are not set');
+      }
+
+      let daoErc20Token;
+      if (governance.type === GovernanceType.AZORIUS_ERC20) {
+        daoErc20Token = governance.votesToken;
+      } else if (governance.type === GovernanceType.MULTISIG) {
+        daoErc20Token = governance.erc20Token;
+      }
+      if (daoErc20Token === undefined) {
+        throw new Error('No ERC20 to be staked');
+      }
+
+      const encodedInitializationData = encodeFunctionData({
+        abi: abis.deployables.VotesERC20StakedV1,
+        functionName: 'initialize',
+        args: [safe.address, daoErc20Token.address],
+      });
+
+      changeTitles.push(t('deployStakingContract', { ns: 'proposalMetadata' }));
+      transactions.push({
+        targetAddress: zodiacModuleProxyFactory,
+        ethValue,
+        functionName: 'deployModule',
+        parameters: [
+          {
+            signature: 'address',
+            value: votesERC20StakedV1MasterCopy,
+          },
+          {
+            signature: 'bytes',
+            value: encodedInitializationData,
+          },
+          {
+            signature: 'uint256',
+            value: getStakingContractSaltNonce(safe.address, chainId).toString(),
+          },
+        ],
+      });
+      const predictedStakingAddress = getStakingContractAddress({
+        safeAddress: safe.address,
+        stakedTokenAddress: daoErc20Token.address,
+        zodiacModuleProxyFactory,
+        stakingContractMastercopy: votesERC20StakedV1MasterCopy,
+        chainId,
+      });
+      transactions.push({
+        targetAddress: predictedStakingAddress,
+        ethValue,
+        functionName: 'initialize2',
+        parameters: [
+          {
+            signature: 'uint256',
+            value: stakingValues.minimumStakingPeriod.bigintValue?.toString(),
+          },
+          {
+            signature: 'address[]',
+            value: `[${(stakingValues.newRewardTokens || []).join(',')}]`,
+          },
+        ],
+      });
+    } else {
+      // If deploying is false or undefined, then we are updating the staking contract
+      if (stakingContract === undefined) {
+        throw new Error('Staking contract not deployed');
+      }
+
+      if (stakingValues.minimumStakingPeriod !== undefined) {
+        transactions.push({
+          targetAddress: stakingContract.address,
+          ethValue,
+          functionName: 'updateMinimumStakingPeriod',
+          parameters: [
+            {
+              signature: 'uint256',
+              value: stakingValues.minimumStakingPeriod.bigintValue?.toString(),
+            },
+          ],
+        });
+        changeTitles.push(t('updateStakingMinPeriod', { ns: 'proposalMetadata' }));
+      }
+
+      if (stakingValues.newRewardTokens !== undefined) {
+        transactions.push({
+          targetAddress: stakingContract.address,
+          ethValue,
+          functionName: 'addRewardsTokens',
+          parameters: [
+            {
+              signature: 'address[]',
+              value: `[${stakingValues.newRewardTokens.join(',')}]`,
+            },
+          ],
+        });
+        changeTitles.push(t('addStakingRewardTokens', { ns: 'proposalMetadata' }));
+      }
+    }
+
+    const title = changeTitles.join(`; `);
+
+    const action: CreateProposalActionData = {
+      actionType: ProposalActionType.EDIT,
+      transactions,
+    };
+
+    return { action, title };
+  };
+
   const submitAllSettingsEditsProposal = async (values: SafeSettingsEdits) => {
     if (!safe?.address) {
       throw new Error('Safe address is not set');
     }
 
     resetActions();
-    const { general, multisig, azorius, permissions, paymasterGasTank, token } = values;
+    const {
+      general,
+      multisig,
+      azorius,
+      permissions,
+      paymasterGasTank,
+      token,
+      staking,
+      revenueSharing,
+    } = values;
     if (general) {
       const { action, title } = await handleEditGeneral(values);
 
@@ -1232,6 +1403,32 @@ export function SafeSettingsModal({
 
     if (token) {
       const { action, title } = await handleEditToken(values);
+
+      addAction({
+        actionType: action.actionType,
+        transactions: action.transactions,
+        content: <Text>{title}</Text>,
+      });
+    }
+
+    if (revenueSharing) {
+      const action = await handleEditRevenueShare({
+        daoAddress: safe.address,
+        parentDaoAddress: subgraphInfo?.parentAddress,
+        stakingContractAddress,
+        keyValuePairsAddress: keyValuePairs,
+        updatedValues: values.revenueSharing,
+        existingWallets: revShareWallets ?? [],
+        publicClient,
+      });
+      addAction({
+        actionType: action.actionType,
+        transactions: action.transactions,
+        content: <Text>{action.title}</Text>,
+      });
+    }
+    if (staking) {
+      const { action, title } = await handleEditStaking(values);
 
       addAction({
         actionType: action.actionType,
@@ -1346,6 +1543,19 @@ export function SafeSettingsModal({
           errors.token = undefined;
         }
 
+        if (values.staking) {
+          const { deploying, minimumStakingPeriod } = values.staking;
+          const errorsStaking = errors.staking ?? {};
+
+          // Validate required fields if deploying
+          if (!!deploying && minimumStakingPeriod === undefined) {
+            errorsStaking.minimumStakingPeriod = t('stakingPeriodMoreThanZero', { ns: 'common' });
+            errors.staking = errorsStaking;
+          }
+        } else {
+          errors.staking = undefined;
+        }
+
         if (values.general) {
           const { name, snapshot } = values.general;
           const errorsGeneral = errors.general ?? {};
@@ -1441,6 +1651,170 @@ export function SafeSettingsModal({
           errors.paymasterGasTank = undefined;
         }
 
+        /* -------------------------------------------------------------------------- */
+        /*                      REVENUE-SHARING (existing / new)                      */
+        /* -------------------------------------------------------------------------- */
+        if (values.revenueSharing) {
+          const { existing: existingWallets = [], new: newWallets = [] } = values.revenueSharing;
+
+          const revShareErrors: NonNullable<SafeSettingsFormikErrors['revenueSharing']> = {
+            existing: {},
+            new: {},
+          };
+
+          /** Validate one wallet (existing | new) in place */
+          const validateWallet = async (
+            wallet: RevenueSharingWalletFormValues,
+            index: number,
+            type: RevenueSharingWalletFormType,
+          ) => {
+            const walletError: RevenueSharingWalletFormError = {};
+
+            /* ---------- name ---------- */
+            if (
+              (type === 'new' && !wallet.name) || // required for new wallets
+              (wallet.name !== undefined && wallet.name.trim() === '')
+            ) {
+              walletError.name = t('walletNameRequired', { ns: 'revenueSharing' });
+            }
+
+            /* ---------- regular splits ---------- */
+            if (wallet.splits && wallet.splits.length > 0) {
+              await Promise.all(
+                wallet.splits.map(async (split, splitIdx) => {
+                  const splitErr: RevenueSharingSplitFormError = {};
+
+                  /* address */
+                  if (!split?.address) {
+                    splitErr.address = t('addressRequired', { ns: 'common' });
+                  } else {
+                    const { validation } = await validateAddress({ address: split.address });
+                    if (!validation.isValidAddress) {
+                      splitErr.address = t('errorInvalidAddress', { ns: 'common' });
+                    }
+                  }
+
+                  /* percentage */
+                  if (split?.percentage === undefined || split.percentage === '') {
+                    splitErr.percentage = t('percentageRequired', { ns: 'revenueSharing' });
+                  } else {
+                    const pct = Number(split.percentage);
+                    if (isNaN(pct) || pct < 0 || pct > 100) {
+                      splitErr.percentage = t('percentageRangeInvalid', { ns: 'revenueSharing' });
+                    }
+                  }
+
+                  if (Object.keys(splitErr).length > 0) {
+                    walletError.splits = {};
+                    walletError.splits![splitIdx] = splitErr;
+                  }
+                }),
+              );
+            }
+            const noRegularSplits = !wallet.splits || wallet.splits.length === 0;
+
+            if (noRegularSplits && !wallet.specialSplits) {
+              walletError.walletError = t('splitsRequired', { ns: 'revenueSharing' });
+            }
+            /* ---------- special splits ---------- */
+            if (wallet.specialSplits) {
+              const addSpecialErr = (
+                key: keyof RevenueSharingWalletFormSpecialSplitsError,
+                err: RevenueSharingSplitFormError,
+              ) => {
+                if (!walletError.specialSplits) walletError.specialSplits = {};
+                walletError.specialSplits[key] = err;
+              };
+
+              const specials: (keyof typeof wallet.specialSplits)[] = [
+                'dao',
+                'parentDao',
+                'stakingContract',
+              ];
+
+              for (const key of specials) {
+                const split = wallet.specialSplits[key];
+                if (!split) continue;
+
+                const splitErr: RevenueSharingSplitFormError = {};
+
+                /* percentage */
+                if (split.percentage !== undefined) {
+                  const pct = Number(split.percentage);
+                  if (isNaN(pct) || pct < 0 || pct > 100) {
+                    splitErr.percentage = t('percentageRangeInvalid', { ns: 'revenueSharing' });
+                  }
+                } else {
+                  splitErr.percentage = t('percentageRequired', { ns: 'revenueSharing' });
+                }
+
+                if (Object.keys(splitErr).length > 0) addSpecialErr(key, splitErr);
+              }
+            }
+
+            /* ---------- percentage total (regular + specials) ---------- */
+            const sum = (...nums: (string | number | undefined)[]): number =>
+              nums.reduce<number>(
+                (tot, n) => tot + (n !== undefined && n !== '' ? Number(n) : 0),
+                0,
+              );
+
+            const totalPct =
+              sum(...(wallet.splits?.map(s => s?.percentage) ?? [])) +
+              sum(
+                wallet.specialSplits?.dao?.percentage,
+                wallet.specialSplits?.parentDao?.percentage,
+                wallet.specialSplits?.stakingContract?.percentage,
+              );
+
+            if (totalPct !== 100) {
+              const msg = t('errorTotalPercentage', { ns: 'revenueSharing' });
+
+              /* root-level (regular) split error */
+              walletError.splits = walletError.splits ?? {};
+              walletError.splits[0] = { ...(walletError.splits[0] ?? {}), percentage: msg };
+
+              /* also flag every special-split that exists */
+              const specials: (keyof RevenueSharingWalletFormSpecialSplitsError)[] = [
+                'dao',
+                'parentDao',
+                'stakingContract',
+              ];
+
+              for (const key of specials) {
+                if (wallet.specialSplits?.[key]) {
+                  if (!walletError.specialSplits) walletError.specialSplits = {};
+                  walletError.specialSplits[key] = {
+                    ...(walletError.specialSplits[key] ?? {}),
+                    percentage: msg,
+                  };
+                }
+              }
+            }
+
+            /* ---------- collect ---------- */
+            if (Object.keys(walletError).length > 0) {
+              revShareErrors[type][index] = walletError;
+            }
+          };
+
+          await Promise.all([
+            ...existingWallets.map((w, i) => validateWallet(w, i, 'existing')),
+            ...newWallets.map((w, i) => validateWallet(w, i, 'new')),
+          ]);
+
+          if (
+            Object.keys(revShareErrors.existing).length > 0 ||
+            Object.keys(revShareErrors.new).length > 0
+          ) {
+            errors.revenueSharing = revShareErrors;
+          } else {
+            errors.revenueSharing = undefined;
+          }
+        } else {
+          errors.revenueSharing = undefined;
+        }
+
         if (Object.values(errors).every(e => e === undefined)) {
           errors = {};
         }
@@ -1448,8 +1822,8 @@ export function SafeSettingsModal({
         return errors;
       }}
       onSubmit={values => {
-        closeAllModals();
         submitAllSettingsEditsProposal(values);
+        closeAllModals();
       }}
     >
       <Form>

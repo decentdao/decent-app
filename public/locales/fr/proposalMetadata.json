@@ -13,10 +13,6 @@
   "updateSnapshotSpace": "Mise à jour de l'espace de cliché",
   "lidoWithdrawalTitle": "Retrait du Lido",
   "lidoWithdrawalDescription": "Cette proposition brûlera votre NFT de retrait du Lido et remettra l'ETH dans votre coffre-fort.",
-  "unstakeStEthTitle": "Détachement de l'ETH",
-  "unstakeStEthDescription": "Cette proposition déstockera l'ETH du Lido et créera un NFT de retrait du Lido qui pourra être utilisé pour réclamer votre ETH.",
-  "stakeWithLidoTitle": "Miser sur l'ETH avec Lido",
-  "stakeWithLidoDescription": "Cette proposition mettra en jeu l'ETH dans le Lido, retournant l'ETH dans votre trésorerie.",
   "addSigners": "Ajouter des signataires",
   "removeSigners": "Supprimer les signataires",
   "changeThreshold": "Mise à jour du seuil de signature",
@@ -30,5 +26,8 @@
   "updateTokenTransferable": "Jeton de mise à jour transférable",
   "updateTokenMaxTotalSupply": "Mise à jour de l'offre maximale de jetons",
   "addTokenWhitelist": "Ajouter une liste blanche de jetons",
-  "removeTokenWhitelist": "Supprimer la liste blanche de jetons"
+  "removeTokenWhitelist": "Supprimer la liste blanche de jetons",
+  "deployStakingContract": "Déployer un contrat de jalonnement",
+  "updateStakingMinPeriod": "Mise à jour du jalonnement Période minimale",
+  "addStakingRewardTokens": "Ajouter des jetons de récompense de mise"
 }

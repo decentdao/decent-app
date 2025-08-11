@@ -13,10 +13,6 @@
   "updateSnapshotSpace": "Atualizar espaço de instantâneo",
   "lidoWithdrawalTitle": "Retirada do Lido",
   "lidoWithdrawalDescription": "Esta proposta irá queimar o seu Lido Withdrawal NFT e devolver o ETH ao seu Cofre.",
-  "unstakeStEthTitle": "Desempatar o stETH",
-  "unstakeStEthDescription": "Esta proposta irá retirar o stETH do Lido e cunhar um Lido Withdrawal NFT que pode ser usado para reivindicar seu ETH.",
-  "stakeWithLidoTitle": "Apostar em ETH com a Lido",
-  "stakeWithLidoDescription": "Esta proposta irá apostar ETH no Lido, devolvendo stETH ao teu tesouro.",
   "addSigners": "Adicionar signatários",
   "removeSigners": "Remover signatários",
   "changeThreshold": "Atualizar o limiar do signatário",
@@ -30,5 +26,8 @@
   "updateTokenTransferable": "Token de atualização transferível",
   "updateTokenMaxTotalSupply": "Atualizar Token Fornecimento total máximo",
   "addTokenWhitelist": "Adicionar lista branca de tokens",
-  "removeTokenWhitelist": "Remover lista branca de tokens"
+  "removeTokenWhitelist": "Remover lista branca de tokens",
+  "deployStakingContract": "Implementar contrato de piquetagem",
+  "updateStakingMinPeriod": "Atualizar período mínimo de piquetagem",
+  "addStakingRewardTokens": "Adicionar fichas de recompensa de aposta"
 }

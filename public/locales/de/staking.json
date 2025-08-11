@@ -3,6 +3,9 @@
   "stakingNull": "Ihre DAO hat noch keinen Einsatzvertrag. Sie können jetzt einen einsetzen.",
   "deployStaking": "Einsatz des Absteckvertrags",
   "stakingPeriod": "Absteckzeitraum",
-  "includeStakingInVoting": "Staking Token in Token-Abstimmung einbeziehen",
-  "includeStakingInVotingDesc": "-noch keine Kopie-"
+  "undistributedTokensTitle": "Nicht verteilte Token",
+  "undistributedTokensHelper": "Alle hier angezeigten Wertmarken wurden als Einnahmen erhalten, werden aber nicht als Belohnungen verteilt. Um diese Arten von Token zu verteilen, fügen Sie sie der Liste der Belohnungs-Token unten hinzu.",
+  "rewardTokensTitle": "Belohnungsmünzen",
+  "rewardTokensHelper": "Geben Sie an, welche Token aus den eingehenden Einnahmen als Belohnungen verteilt werden sollen. Einmal hinzugefügte Token können nicht mehr aus dieser Liste entfernt werden!",
+  "addRewardToken": "Token hinzufügen"
 }

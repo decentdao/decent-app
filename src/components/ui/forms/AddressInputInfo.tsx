@@ -1,37 +1,66 @@
 import { Text, InputProps, Flex, Icon } from '@chakra-ui/react';
 import { SealWarning } from '@phosphor-icons/react';
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Address, isAddress } from 'viem';
+import { createAccountSubstring } from '../../../hooks/utils/useGetAccountName';
+import { useGetSafeName } from '../../../hooks/utils/useGetSafeName';
 import { useResolveENSName } from '../../../hooks/utils/useResolveENSName';
+import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
 import { validateENSName } from '../../../utils/url';
 import { DecentTooltip } from '../DecentTooltip';
 import { AddressInput } from './EthAddressInput';
 
 export function AddressInputInfo(props: InputProps) {
-  const [showInput, setShowInput] = useState(false);
-  const [resolvedAddress, setResolvedAddress] = useState<Address>();
+  const { t } = useTranslation('common');
   const { resolveENSName } = useResolveENSName();
 
+  const [resolvedAddress, setResolvedAddress] = useState<Address>();
+  const { chain } = useNetworkConfigStore();
+  const { getSafeName } = useGetSafeName(chain.id);
+  const [resolvedDisplayName, setResolvedDisplayName] = useState<string | undefined>();
+
+  const [showInput, setShowInput] = useState(false);
+
+  const propValue = props.value;
+
+  const isPropValueAddress =
+    propValue !== '' && !!propValue && typeof propValue === 'string' && isAddress(propValue);
+
   useEffect(() => {
-    if (props.value === '' || !props.value || typeof props.value !== 'string') {
+    if (!propValue) {
       setResolvedAddress(undefined);
+      setResolvedDisplayName(undefined);
       return;
     }
-    if (isAddress(props.value)) {
+    if (!isPropValueAddress) {
+      setResolvedAddress(undefined);
+      setResolvedDisplayName(undefined);
+      return;
+    }
+    if (isAddress(propValue)) {
+      getSafeName(propValue as Address).then(setResolvedDisplayName);
       setResolvedAddress(undefined);
       return;
     }
     // check if there
-    if (validateENSName(props.value)) {
-      resolveENSName(props.value).then(ra => {
+    if (validateENSName(propValue)) {
+      resolveENSName(propValue).then(ra => {
         setResolvedAddress(ra.resolvedAddress);
       });
       return;
     }
-    setResolvedAddress(undefined);
-  }, [props.value, resolveENSName]);
 
-  if (!showInput && props.value) {
+    setResolvedAddress(undefined);
+  }, [isPropValueAddress, propValue, resolveENSName, getSafeName, showInput]);
+
+  if ((!showInput && propValue) || props.isReadOnly) {
+    const displayedValue = resolvedDisplayName
+      ? resolvedDisplayName
+      : isPropValueAddress
+        ? createAccountSubstring(propValue)
+        : propValue;
+
     return (
       <Flex
         alignItems="center"
@@ -46,27 +75,26 @@ export function AddressInputInfo(props: InputProps) {
           setShowInput(false);
         }}
         _hover={{
-          bg: 'color-alpha-white-950',
+          bg: props.isReadOnly
+            ? 'transparent'
+            : props.isInvalid
+              ? 'color-error-950'
+              : 'color-alpha-white-950',
         }}
+        bg={props.isReadOnly ? 'transparent' : props.isInvalid ? 'color-error-950' : 'transparent'}
       >
         <Text
           cursor="pointer"
-          _hover={{
-            bg: 'color-alpha-white-950',
-          }}
           textStyle="text-sm-regular"
-          color="color-layout-foreground"
+          color={props.isInvalid ? 'color-error-400' : 'color-layout-foreground'}
           overflow="hidden"
           textOverflow="ellipsis"
           whiteSpace="nowrap"
         >
-          {props.value}
+          {displayedValue}
         </Text>
-        {resolvedAddress && (
-          <DecentTooltip
-            label="While ENS is displayed, the full wallet 
-          address will appear in the agreement."
-          >
+        {(resolvedAddress || resolvedDisplayName) && (
+          <DecentTooltip label={t('addressInfoTooltip')}>
             <Icon
               as={SealWarning}
               boxSize="1rem"
@@ -80,7 +108,10 @@ export function AddressInputInfo(props: InputProps) {
     <AddressInput
       {...props}
       onBlur={() => {
-        setShowInput(false);
+        // delay to allow the input's debounce to finish
+        setTimeout(() => {
+          setShowInput(false);
+        }, 200);
       }}
       autoFocus
     />
