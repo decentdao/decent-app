@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Address, getAddress } from 'viem';
 import { logError } from '../helpers/errorLogging';
+import { getDaoRevenueSharingWallets } from '../providers/App/decentAPI';
 import { useNetworkConfigStore } from '../providers/NetworkConfig/useNetworkConfigStore';
 import {
   AzoriusProposal,
@@ -52,6 +53,7 @@ export const useDAOStoreFetcher = ({
     setAllProposalsLoaded,
     setVotesTokenAddress,
     setStakingData,
+    setRevShareWallets,
   } = useGlobalStore();
   const { chain } = useNetworkConfigStore();
 
@@ -122,6 +124,10 @@ export const useDAOStoreFetcher = ({
           }
         }
 
+        const revShareWallets = await getDaoRevenueSharingWallets(chain.id, safeAddress);
+        if (revShareWallets) {
+          setRevShareWallets(daoKey, revShareWallets);
+        }
         const onMultisigGovernanceLoaded = () => setMultisigGovernance(daoKey);
         const onAzoriusGovernanceLoaded = (governance: SetAzoriusGovernancePayload) =>
           setAzoriusGovernance(daoKey, governance);

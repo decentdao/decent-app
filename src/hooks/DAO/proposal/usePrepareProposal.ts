@@ -16,6 +16,12 @@ export function usePrepareProposal() {
             ...tx,
             calldata: '0x' as Hex,
           };
+          // todo https://linear.app/decent-labs/issue/ENG-1341/actions-workflow-should-support-viems-encodefunctiondata
+        } else if (tx?.calldata) {
+          return {
+            ...tx,
+            calldata: tx.calldata,
+          };
         } else {
           const signature = tx.parameters.map(parameter => parameter.signature.trim()).join(', ');
 
