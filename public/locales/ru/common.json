@@ -136,5 +136,6 @@
   "daoNameRequired": "Имя DAO является обязательным",
   "calendarPlaceholder": "ГГГГ-ММ-ДД",
   "years": "Годы",
+  "addressInfoTooltip": "Пока отображается DAO Name или ENS, полный адрес кошелька будет отображаться в предложении.",
   "stakingPeriodMoreThanZero": "Ставочный период должен быть больше нуля"
 }

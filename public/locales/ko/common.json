@@ -136,5 +136,6 @@
   "daoNameRequired": "DAO 이름은 필수입니다.",
   "calendarPlaceholder": "YYYY-MM-DD",
   "years": "년",
+  "addressInfoTooltip": "DAO 이름 또는 ENS가 표시되는 동안 제안서에 전체 지갑 주소가 표시됩니다.",
   "stakingPeriodMoreThanZero": "스테이킹 기간은 0보다 길어야 합니다."
 }

@@ -136,5 +136,6 @@
   "daoNameRequired": "DAO 名稱為必填項目",
   "calendarPlaceholder": "YYYY-MM-DD",
   "years": "年數",
+  "addressInfoTooltip": "當顯示 DAO Name 或 ENS 時，完整的錢包地址會出現在提案中。",
   "stakingPeriodMoreThanZero": "投注期必須大於零"
 }
