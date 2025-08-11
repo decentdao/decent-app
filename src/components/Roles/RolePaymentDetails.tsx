@@ -147,6 +147,7 @@ interface PaymentDetailsTopProps {
 }
 function PaymentDetailsTop({ payment, onClick, isActiveStream }: PaymentDetailsTopProps) {
   const { t } = useTranslation(['roles']);
+  const isPaymentCancelled = payment.isCancelling || payment.isCancelled;
   return (
     <Box
       onClick={onClick}
@@ -179,7 +180,7 @@ function PaymentDetailsTop({ payment, onClick, isActiveStream }: PaymentDetailsT
             </Text>
           </Flex>
           <Flex gap={6}>
-            {(payment.isCancelled || payment.isCancelling) && (
+            {isPaymentCancelled && (
               <Tag
                 variant="outlined"
                 color="color-error-400"
@@ -193,7 +194,7 @@ function PaymentDetailsTop({ payment, onClick, isActiveStream }: PaymentDetailsT
                 {t('cancelled')}
               </Tag>
             )}
-            {!payment.isCancelableStream && (
+            {!payment.isCancelableStream && !isPaymentCancelled && (
               <Tag
                 variant="outlined"
                 color="color-yellow-200"
