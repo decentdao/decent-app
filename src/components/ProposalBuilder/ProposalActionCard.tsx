@@ -136,6 +136,7 @@ function AirdropAction({
     </Card>
   );
 }
+
 function TransactionBuilderAction({
   action,
   onRemove,
@@ -229,22 +230,19 @@ export function ProposalActionCard({
   const isDeleteAction = action.actionType === ProposalActionType.DELETE;
 
   return (
-    <Flex
-      gap={4}
-      alignItems="center"
+    <Card
+      backgroundColor={
+        isAddAction || isEditAction
+          ? 'color-neutral-950'
+          : isDeleteAction
+            ? 'color-error-900'
+            : 'color-neutral-900'
+      }
     >
-      <Card
-        backgroundColor={
-          isAddAction || isEditAction
-            ? 'color-neutral-950'
-            : isDeleteAction
-              ? 'color-error-900'
-              : 'color-neutral-900'
-        }
-      >
+      <Flex justifyContent="space-between">
         <Flex
-          gap={2}
           alignItems="center"
+          gap="0.5rem"
         >
           <Icon
             as={
@@ -266,15 +264,15 @@ export function ProposalActionCard({
           />
           {action.content}
         </Flex>
-      </Card>
-      <IconButton
-        aria-label="Remove action"
-        icon={<Trash />}
-        variant="ghost"
-        size="icon-sm"
-        color="color-error-400"
-        onClick={() => removeAction(index)}
-      />
-    </Flex>
+        <IconButton
+          aria-label="Remove action"
+          icon={<Trash />}
+          variant="ghost"
+          size="icon-sm"
+          color="color-error-400"
+          onClick={() => removeAction(index)}
+        />
+      </Flex>
+    </Card>
   );
 }

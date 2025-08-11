@@ -110,9 +110,9 @@ const BADGE_MAPPING: Record<BadgeLabelKey, BadgeType> = {
     _hover: { bg: 'color-error-800', textColor: 'color-error-50' },
   },
   revShareDaoSafeWarning: {
-    bg: 'color-warning-900',
-    textColor: 'color-warning-200',
-    _hover: { bg: 'color-warning-900', textColor: 'color-warning-200' },
+    bg: 'color-content-warning-muted',
+    textColor: 'color-base-warning',
+    _hover: { bg: 'color-content-warning-muted', textColor: 'color-base-warning' },
   },
   revShareTotalError: {
     bg: 'color-error-400',
@@ -133,13 +133,14 @@ interface IBadge {
   labelKey: keyof typeof BADGE_MAPPING;
   children?: ReactNode;
   leftIcon?: ReactNode;
+  namespace?: string;
 }
 
-export function Badge({ labelKey, children, size, leftIcon }: IBadge) {
+export function Badge({ labelKey, children, size, namespace = 'proposal', leftIcon }: IBadge) {
   const { tooltipKey, ...colors } = BADGE_MAPPING[labelKey];
   const sizes = BADGE_SIZES[size];
 
-  const { t } = useTranslation('proposal');
+  const { t } = useTranslation(namespace);
   return (
     <DecentTooltip
       label={tooltipKey ? t(tooltipKey) : undefined}
