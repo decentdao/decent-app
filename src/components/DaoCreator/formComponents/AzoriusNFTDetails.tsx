@@ -101,6 +101,7 @@ export default function AzoriusNFTDetails(props: ICreationStepProps) {
                       }}
                       inputContainerProps={{
                         width: '100%',
+                        mb: addressErrorMessage ? '1rem' : 'auto',
                       }}
                     >
                       <Field name={`erc721Token.nfts.${i}.tokenAddress`}>
@@ -132,6 +133,7 @@ export default function AzoriusNFTDetails(props: ICreationStepProps) {
                       }}
                       inputContainerProps={{
                         width: '100%',
+                        mb: weightErrorMessage ? '1rem' : 'auto',
                       }}
                     >
                       <Flex>
