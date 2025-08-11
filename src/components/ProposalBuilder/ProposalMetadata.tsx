@@ -144,7 +144,11 @@ function MarkdownProposalMetadata({
   );
 }
 
-export default function ProposalMetadata({ values, typeProps, setFieldValue }: ProposalMetadataProps) {
+export default function ProposalMetadata({
+  values,
+  typeProps,
+  setFieldValue,
+}: ProposalMetadataProps) {
   const proposalV1FeatureEnabled = useFeatureFlag('flag_proposal_v1');
 
   if (proposalV1FeatureEnabled) {
