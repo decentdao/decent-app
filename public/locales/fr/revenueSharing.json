@@ -1,14 +1,11 @@
 {
-  "revenueSharingTitle": "Part des recettes",
   "revShareDaoSafeWarning": "Les fonds envoyés à cette adresse ne seront pas fractionnés",
-  "revShareTotalError": "Le total est supérieur à 100 %.",
+  "title": "Part des recettes",
+  "addSplitButton": "Ajouter la division des recettes",
+  "defaultSplitName": "Répartition des recettes",
   "daoSafeWallet": "Portefeuille sécurisé DAO",
-  "revSplitWallet": "Répartition des recettes Portefeuille",
-  "counterparties": "Contreparties",
-  "revShareAddSplitWallet": "Ajouter un portefeuille",
-  "currentDaoTreasureShareLabel": "Part de trésorerie actuelle de l'OFA",
-  "parentDaoTreasureShareLabel": "DAO mère",
-  "currentTokenHolderShareLabel": "Détenteur actuel de jetons",
-  "revSplitTotalLabel": "Total",
-  "addRevenueShare": "Ajouter la part des recettes"
+  "totalError": "{{percentage}Le total doit être égal à 100%.",
+  "recipients": "Bénéficiaires",
+  "addRecipientButton": "Ajouter un destinataire",
+  "removeSplitButtonLabel": "Retirer la fente"
 }

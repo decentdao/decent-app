@@ -1,14 +1,11 @@
 {
-  "revenueSharingTitle": "Cuota de ingresos",
   "revShareDaoSafeWarning": "Los fondos enviados a esta dirección no se dividirán",
-  "revShareTotalError": "El total supera el 100",
+  "title": "Cuota de ingresos",
+  "addSplitButton": "Añadir reparto de ingresos",
+  "defaultSplitName": "Reparto de ingresos",
   "daoSafeWallet": "Cartera segura DAO",
-  "revSplitWallet": "Billetera de reparto de ingresos",
-  "counterparties": "Contrapartidas",
-  "revShareAddSplitWallet": "Añadir cartera",
-  "currentDaoTreasureShareLabel": "Acción de tesorería actual de la DAO",
-  "parentDaoTreasureShareLabel": "DAO matriz",
-  "currentTokenHolderShareLabel": "Participaciones actuales",
-  "revSplitTotalLabel": "Total",
-  "addRevenueShare": "Añadir cuota de ingresos"
+  "totalError": "{{percentage}}% El total debe ser igual al 100%",
+  "recipients": "Destinatarios",
+  "addRecipientButton": "Añadir destinatario",
+  "removeSplitButtonLabel": "Quitar Split"
 }

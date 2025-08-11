@@ -3,6 +3,9 @@
   "stakingNull": "あなたのDAOはまだステーキング契約を持っていません。今すぐデプロイできます。",
   "deployStaking": "杭打ち契約の展開",
   "stakingPeriod": "杭打ち期間",
-  "includeStakingInVoting": "トークン投票にステークトークンを含める",
-  "includeStakingInVotingDesc": "-コピーはまだない"
+  "undistributedTokensTitle": "未配布トークン",
+  "undistributedTokensHelper": "ここに表示されているトークンは収益として受領されたものですが、リワードとして配布されているものではありません。これらの種類のトークンを配布するには、以下のリワード トークンのリストに追加してください。",
+  "rewardTokensTitle": "報酬トークン",
+  "rewardTokensHelper": "入ってくる収益からどのトークンを報酬として配布するかを指定します。一度追加したトークンは、このリストから削除できません！",
+  "addRewardToken": "トークンの追加"
 }

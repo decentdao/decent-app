@@ -1,14 +1,11 @@
 {
-  "revenueSharingTitle": "Частка доходу",
   "revShareDaoSafeWarning": "Кошти, надіслані на цю адресу, не будуть розділені",
-  "revShareTotalError": "Загальна сума перевищує 100",
+  "title": "Частка доходу",
+  "addSplitButton": "Додати розподіл доходу",
+  "defaultSplitName": "Розподіл доходу",
   "daoSafeWallet": "Безпечний гаманець DAO",
-  "revSplitWallet": "Гаманець для розділення доходів",
-  "counterparties": "Контрагенти",
-  "revShareAddSplitWallet": "Додати гаманець",
-  "currentDaoTreasureShareLabel": "Поточна частка казначейства DAO",
-  "parentDaoTreasureShareLabel": "Батьківський DAO",
-  "currentTokenHolderShareLabel": "Поточний стейкінг власника токенів",
-  "revSplitTotalLabel": "Всього",
-  "addRevenueShare": "Додати частку доходу"
+  "totalError": "{{percentage}}% Загальна сума повинна дорівнювати 100%",
+  "recipients": "Recipients",
+  "addRecipientButton": "Add Recipient",
+  "removeSplitButtonLabel": "Remove Split"
 }

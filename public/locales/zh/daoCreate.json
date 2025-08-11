@@ -32,6 +32,7 @@
   "helperVotingPeriod": "提案创建后启用投票的时间长度。",
   "helperQuorumERC20": "为使表决结果有效，对某项提案进行表决所需的象征性投票占可能的象征性投票总数的百分比。",
   "helperQuorumERC721": "为使投票结果有效，对某项提案进行投票时所需的代币投票权重占可用代币投票权重总数的最小权重。",
+  "helperProposalPermission": "成员必须持有的最低代币数量，才能创建提案。",
   "governanceDescription": "这些值可以稍后修改。",
   "titleGuardConfig": "配置管理",
   "titleFreezeParams": "冻结参数",

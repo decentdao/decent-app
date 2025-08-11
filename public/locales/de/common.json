@@ -28,6 +28,7 @@
   "minutes": "Protokoll",
   "minutesShort": "min",
   "quorum": "Quorum",
+  "proposalPermission": "Vorschlag Erlaubnis",
   "deploy": "Bereitstellung von",
   "loading": "Laden...",
   "goHome": "Nach Hause gehen",
@@ -134,5 +135,7 @@
   "save": "Speichern Sie",
   "daoNameRequired": "DAO-Name ist erforderlich",
   "calendarPlaceholder": "JJJJ-MM-TT",
-  "years": "Jahre"
+  "years": "Jahre",
+  "addressInfoTooltip": "Während der DAO-Name oder ENS angezeigt wird, erscheint die vollständige Wallet-Adresse im Vorschlag.",
+  "stakingPeriodMoreThanZero": "Die Einsatzdauer muss größer als Null sein"
 }

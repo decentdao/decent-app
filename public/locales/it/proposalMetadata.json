@@ -26,5 +26,8 @@
   "updateTokenTransferable": "Gettone di aggiornamento trasferibile",
   "updateTokenMaxTotalSupply": "Aggiornamento gettone Fornitura totale massima",
   "addTokenWhitelist": "Aggiungere una whitelist di token",
-  "removeTokenWhitelist": "Rimuovere la whitelist dei token"
+  "removeTokenWhitelist": "Rimuovere la whitelist dei token",
+  "deployStakingContract": "Distribuzione del contratto di picchettamento",
+  "updateStakingMinPeriod": "Aggiornamento del periodo di picchettamento minimo",
+  "addStakingRewardTokens": "Aggiungere gettoni di ricompensa per il gioco d'azzardo"
 }

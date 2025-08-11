@@ -3,6 +3,7 @@
   "buttonSendAssets": "Zahlung anfordern",
   "titleTransactions": "Transaktionen",
   "titleAssets": "Vermögenswerte",
+  "titleAssetsWithCount": "Vermögenswerte ({{count}})",
   "subtitleTreasuryBalance": "Gesamtes Schatzamt Guthaben",
   "columnCoins": "Münzen",
   "columnValue": "Wert",

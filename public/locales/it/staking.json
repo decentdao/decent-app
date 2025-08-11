@@ -3,6 +3,9 @@
   "stakingNull": "Il vostro DAO non ha ancora un contratto di partecipazione. Potete distribuirne uno ora.",
   "deployStaking": "Distribuzione del contratto di picchettamento",
   "stakingPeriod": "Periodo di picchettamento",
-  "includeStakingInVoting": "Includere il token di puntata nella votazione del token",
-  "includeStakingInVotingDesc": "-non c'è ancora una copia-"
+  "undistributedTokensTitle": "Gettoni non distribuiti",
+  "undistributedTokensHelper": "I gettoni visualizzati qui sono stati ricevuti come entrate, ma non vengono distribuiti come ricompense. Per distribuire questi tipi di gettoni, aggiungeteli all'elenco dei gettoni ricompensa qui sotto.",
+  "rewardTokensTitle": "Gettoni di ricompensa",
+  "rewardTokensHelper": "Specificare quali token delle entrate saranno distribuiti come ricompense. Una volta aggiunti, i token non possono essere rimossi da questo elenco!",
+  "addRewardToken": "Aggiungi gettone"
 }

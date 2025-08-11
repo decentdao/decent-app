@@ -26,5 +26,8 @@
   "updateTokenTransferable": "Передаваемый токен обновления",
   "updateTokenMaxTotalSupply": "Обновить токен Максимальное общее количество",
   "addTokenWhitelist": "Добавить белый список токенов",
-  "removeTokenWhitelist": "Удалить белый список токенов"
+  "removeTokenWhitelist": "Удалить белый список токенов",
+  "deployStakingContract": "Развертывание контракта на ставку",
+  "updateStakingMinPeriod": "Обновить ставку Мин. период",
+  "addStakingRewardTokens": "Добавить жетоны вознаграждения за ставки"
 }
