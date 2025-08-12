@@ -1,4 +1,4 @@
-import { Box, Flex, Icon, Show, Text, useBreakpointValue } from '@chakra-ui/react';
+import { Box, Flex, Icon, Show, Text } from '@chakra-ui/react';
 import {
   Bank,
   CaretRight,
@@ -13,100 +13,21 @@ import {
 import { useFormikContext } from 'formik';
 import { PropsWithChildren, ReactNode, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Link, useLocation, useMatch } from 'react-router-dom';
-import { DAO_ROUTES } from '../../constants/routes';
 import useFeatureFlag from '../../helpers/environmentFeatureFlags';
 import { useCurrentDAOKey } from '../../hooks/DAO/useCurrentDAOKey';
-import { SafeGeneralSettingsPage } from '../../pages/dao/settings/general/SafeGeneralSettingsPage';
-import { SafeGovernanceSettingsPage } from '../../pages/dao/settings/governance/SafeGovernanceSettingsPage';
-import { SafeModulesSettingsPage } from '../../pages/dao/settings/modules-and-guard/SafeModulesSettingsPage';
-import { SafePermissionsSettingsContent } from '../../pages/dao/settings/permissions/SafePermissionsSettingsContent';
-import { SafeStakingSettingsPage } from '../../pages/dao/settings/staking/SafeStakingSettingsPage';
-import { SafeTokenSettingsPage } from '../../pages/dao/settings/token/SafeTokenSettingsPage';
 import { useDAOStore } from '../../providers/App/AppProvider';
-import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
 import { AzoriusGovernance, GovernanceType } from '../../types';
 import { isNonEmpty } from '../../utils/valueCheck';
 import { BarLoader } from '../ui/loaders/BarLoader';
 import { SafeSettingsEdits } from '../ui/modals/SafeSettingsModal';
 import Divider from '../ui/utils/Divider';
 import { RevenueSharingSettingsContent } from './RevenueShare/RevenueSharingContent';
-
-function SettingsLink({
-  path,
-  title,
-  leftIcon,
-  children,
-  showDivider = true,
-  onClick,
-}: PropsWithChildren<{
-  path: string;
-  title: string;
-  leftIcon: ReactNode;
-  showDivider?: boolean;
-  onClick?: () => void;
-}>) {
-  const pathWithoutSearch = path.substring(0, path.indexOf('?'));
-  const isCurrentPath = useMatch(pathWithoutSearch);
-  const location = useLocation();
-  const paths = location.pathname.split('/');
-  const isMobile = useBreakpointValue({ base: true, md: false });
-  const isIndexSettingsPage = paths.length === 2;
-
-  return (
-    <Box
-      as={Link}
-      to={path}
-      onClick={onClick}
-      borderRadius={{ md: '0.5rem' }}
-      transition="all ease-out 300ms"
-      _hover={{ bgColor: 'color-neutral-900' }}
-      bg={
-        isCurrentPath ||
-        (!isMobile &&
-          isIndexSettingsPage &&
-          pathWithoutSearch === `/${DAO_ROUTES.settings.path}/${DAO_ROUTES.settingsGeneral.path}`)
-          ? 'white-alpha-04'
-          : 'transparent'
-      }
-      p={{ base: 0, md: '0.5rem' }}
-    >
-      <Flex
-        alignItems="center"
-        justifyContent="space-between"
-      >
-        <Flex
-          gap={4}
-          alignItems="center"
-          color="color-lilac-100"
-        >
-          {leftIcon}
-          <Text color="color-white">{title}</Text>
-        </Flex>
-        <Show below="md">
-          <Flex
-            alignItems="center"
-            color="color-neutral-400"
-            gap={2}
-          >
-            {children}
-            <CaretRight />
-          </Flex>
-        </Show>
-      </Flex>
-      {showDivider && (
-        <Show below="md">
-          <Divider
-            variant="darker"
-            width="calc(100% + 2rem)"
-            mx="-1rem"
-            my="1rem"
-          />
-        </Show>
-      )}
-    </Box>
-  );
-}
+import { SafeGeneralSettingTab } from './TabContents/general/SafeGeneralSettingTab';
+import { SafeGovernanceSettingTab } from './TabContents/governance/SafeGovernanceSettingTab';
+import { SafeModulesSettingTab } from './TabContents/modules-and-guard/SafeModulesSettingTab';
+import { SafePermissionsSettingTab } from './TabContents/permissions/SafePermissionsSettingTab';
+import { SafeStakingSettingTab } from './TabContents/staking/SafeStakingSettingTab';
+import { SafeTokenSettingTab } from './TabContents/token/SafeTokenSettingTab';
 
 const settingsNavigationItems = [
   'general',
@@ -199,7 +120,6 @@ export function SettingsNavigation({
   onSettingsNavigationClick: (content: JSX.Element) => void;
 }) {
   const { t } = useTranslation('settings');
-  const { addressPrefix } = useNetworkConfigStore();
   const { daoKey } = useCurrentDAOKey();
   const {
     governance,
@@ -209,7 +129,6 @@ export function SettingsNavigation({
 
   const isTokenDeploymentEnabled = useFeatureFlag('flag_token_deployment');
   const isRevShareEnabled = useFeatureFlag('flag_revenue_sharing');
-  const isMobile = useBreakpointValue({ base: true, md: false });
 
   const [currentItem, setCurrentItem] =
     useState<(typeof settingsNavigationItems)[number]>('general');
@@ -261,7 +180,7 @@ export function SettingsNavigation({
         >
           <BarLoader />
         </Flex>
-      ) : !isMobile ? (
+      ) : (
         <>
           <SettingsNavigationItem
             title={t('daoSettingsGeneral')}
@@ -270,7 +189,7 @@ export function SettingsNavigation({
             currentItem={currentItem}
             testId="settings-nav-general"
             onClick={() => {
-              onSettingsNavigationClick(<SafeGeneralSettingsPage />);
+              onSettingsNavigationClick(<SafeGeneralSettingTab />);
               setCurrentItem('general');
             }}
             hasEdits={generalHasEdits || paymasterHasEdits}
@@ -282,7 +201,7 @@ export function SettingsNavigation({
             currentItem={currentItem}
             testId="settings-nav-governance"
             onClick={() => {
-              onSettingsNavigationClick(<SafeGovernanceSettingsPage />);
+              onSettingsNavigationClick(<SafeGovernanceSettingTab />);
               setCurrentItem('governance');
             }}
             hasEdits={values.azorius !== undefined || values.multisig !== undefined}
@@ -298,7 +217,7 @@ export function SettingsNavigation({
             currentItem={currentItem}
             testId="settings-nav-modules"
             onClick={() => {
-              onSettingsNavigationClick(<SafeModulesSettingsPage />);
+              onSettingsNavigationClick(<SafeModulesSettingTab />);
               setCurrentItem('modulesAndGuard');
             }}
           >
@@ -313,7 +232,7 @@ export function SettingsNavigation({
               showDivider={false}
               testId="settings-nav-permissions"
               onClick={() => {
-                onSettingsNavigationClick(<SafePermissionsSettingsContent />);
+                onSettingsNavigationClick(<SafePermissionsSettingTab />);
                 setCurrentItem('permissions');
               }}
               hasEdits={values.permissions !== undefined}
@@ -329,7 +248,7 @@ export function SettingsNavigation({
               currentItem={currentItem}
               testId="settings-nav-token"
               onClick={() => {
-                onSettingsNavigationClick(<SafeTokenSettingsPage />);
+                onSettingsNavigationClick(<SafeTokenSettingTab />);
                 setCurrentItem('token');
               }}
             />
@@ -357,53 +276,10 @@ export function SettingsNavigation({
               showDivider={false}
               testId="settings-nav-staking"
               onClick={() => {
-                onSettingsNavigationClick(<SafeStakingSettingsPage />);
+                onSettingsNavigationClick(<SafeStakingSettingTab />);
                 setCurrentItem('staking');
               }}
               hasEdits={isNonEmpty(values.staking)}
-            />
-          )}
-        </>
-      ) : (
-        <>
-          <SettingsLink
-            path={DAO_ROUTES.settingsGeneral.relative(addressPrefix, safe.address)}
-            leftIcon={<GearFine fontSize="1.5rem" />}
-            title={t('daoSettingsGeneral')}
-            onClick={() => onSettingsNavigationClick(<SafeGeneralSettingsPage />)}
-          />
-          <SettingsLink
-            path={DAO_ROUTES.settingsGovernance.relative(addressPrefix, safe.address)}
-            leftIcon={<Bank fontSize="1.5rem" />}
-            title={t('daoSettingsGovernance')}
-          >
-            <Text color="color-neutral-300">
-              {t(azoriusGovernance.votingStrategy?.strategyType ?? 'labelMultisig')}
-            </Text>
-          </SettingsLink>
-          <SettingsLink
-            path={DAO_ROUTES.settingsModulesAndGuard.relative(addressPrefix, safe.address)}
-            leftIcon={<Stack fontSize="1.5rem" />}
-            title={t('modulesAndGuardsTitle')}
-          >
-            <Text color="color-neutral-300">{(modules ?? []).length + (safe?.guard ? 1 : 0)}</Text>
-          </SettingsLink>
-          {governance.isAzorius && (
-            <SettingsLink
-              path={DAO_ROUTES.settingsPermissions.relative(addressPrefix, safe.address)}
-              leftIcon={<CheckSquare fontSize="1.5rem" />}
-              title={t('permissionsTitle')}
-              showDivider={false}
-            >
-              <Text color="color-neutral-300">{azoriusGovernance.votingStrategy ? 1 : 0}</Text>
-            </SettingsLink>
-          )}
-          {!governance.isAzorius && isTokenDeploymentEnabled && (
-            <SettingsLink
-              path={DAO_ROUTES.settingsToken.relative(addressPrefix, safe.address)}
-              leftIcon={<RocketLaunch fontSize="1.5rem" />}
-              title={t('tokenTitle')}
-              onClick={() => onSettingsNavigationClick(<SafeTokenSettingsPage />)}
             />
           )}
         </>

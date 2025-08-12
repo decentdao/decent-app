@@ -23,13 +23,6 @@ import SafeRolesEditFormikPageWrapper from './pages/dao/roles/edit/SafeRolesEdit
 import { SafeRolesEditPage } from './pages/dao/roles/edit/SafeRolesEditPage';
 import { SafeRoleEditDetailsPage } from './pages/dao/roles/edit/details/SafeRoleEditDetailsPage';
 import { SafeRolesEditProposalSummaryPage } from './pages/dao/roles/edit/summary/SafeRolesEditProposalSummaryPage';
-import { SafeSettingsPage } from './pages/dao/settings/SafeSettingsPage';
-import { SafeGeneralSettingsPage } from './pages/dao/settings/general/SafeGeneralSettingsPage';
-import { SafeGovernanceSettingsPage } from './pages/dao/settings/governance/SafeGovernanceSettingsPage';
-import { SafeModulesSettingsPage } from './pages/dao/settings/modules-and-guard/SafeModulesSettingsPage';
-import { SafePermissionsCreateProposal } from './pages/dao/settings/permissions/SafePermissionsCreateProposal';
-import { SafePermissionsSettingsPage } from './pages/dao/settings/permissions/SafePermissionsSettingsPage';
-import { SafeTokenSettingsPage } from './pages/dao/settings/token/SafeTokenSettingsPage';
 import { SafeStakingPage } from './pages/dao/staking/SafeStakingPage';
 import { SafeTreasuryPage } from './pages/dao/treasury/SafeTreasuryPage';
 import HomePage from './pages/home/HomePage';
@@ -189,43 +182,6 @@ export const router = (addressPrefix: string, daoAddress: string | undefined) =>
                 {
                   path: 'new/sablier',
                   element: <SafeSablierProposalCreatePage />,
-                },
-              ],
-            },
-            {
-              // @todo: remove. Using modal instead
-              path: DAO_ROUTES.settings.path,
-              element: <SafeSettingsPage />,
-              children: [
-                {
-                  index: true,
-                  element: <SafeGeneralSettingsPage />,
-                },
-                {
-                  path: DAO_ROUTES.settingsGeneral.path,
-                  element: <SafeGeneralSettingsPage />,
-                },
-                {
-                  path: DAO_ROUTES.settingsGovernance.path,
-                  element: <SafeGovernanceSettingsPage />,
-                },
-                {
-                  path: DAO_ROUTES.settingsModulesAndGuard.path,
-                  element: <SafeModulesSettingsPage />,
-                },
-                {
-                  path: DAO_ROUTES.settingsPermissions.path,
-                  element: <SafePermissionsSettingsPage />,
-                  children: [
-                    {
-                      path: DAO_ROUTES.settingsPermissionsCreateProposal.path,
-                      element: <SafePermissionsCreateProposal />,
-                    },
-                  ],
-                },
-                {
-                  path: DAO_ROUTES.settingsToken.path,
-                  element: <SafeTokenSettingsPage />,
                 },
               ],
             },

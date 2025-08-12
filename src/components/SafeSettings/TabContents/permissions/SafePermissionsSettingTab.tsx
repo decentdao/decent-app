@@ -3,20 +3,20 @@ import { Coins, Plus } from '@phosphor-icons/react';
 import { useFormikContext } from 'formik';
 import { useTranslation } from 'react-i18next';
 import PencilWithLineIcon from '../../../../assets/theme/custom/icons/PencilWithLineIcon';
-import { SettingsContentBox } from '../../../../components/SafeSettings/SettingsContentBox';
-import NoDataCard from '../../../../components/ui/containers/NoDataCard';
-import { BarLoader } from '../../../../components/ui/loaders/BarLoader';
-import { ModalType } from '../../../../components/ui/modals/ModalProvider';
-import { SafeSettingsEdits } from '../../../../components/ui/modals/SafeSettingsModal';
-import { useDecentModal } from '../../../../components/ui/modals/useDecentModal';
-import Divider from '../../../../components/ui/utils/Divider';
 import { NEUTRAL_2_82_TRANSPARENT } from '../../../../constants/common';
 import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
 import { useCanUserCreateProposal } from '../../../../hooks/utils/useCanUserSubmitProposal';
 import { useDAOStore } from '../../../../providers/App/AppProvider';
 import { AzoriusGovernance } from '../../../../types';
+import NoDataCard from '../../../ui/containers/NoDataCard';
+import { BarLoader } from '../../../ui/loaders/BarLoader';
+import { ModalType } from '../../../ui/modals/ModalProvider';
+import { SafeSettingsEdits } from '../../../ui/modals/SafeSettingsModal';
+import { useDecentModal } from '../../../ui/modals/useDecentModal';
+import Divider from '../../../ui/utils/Divider';
+import { SettingsContentBox } from '../../SettingsContentBox';
 
-export function SafePermissionsSettingsContent() {
+export function SafePermissionsSettingTab() {
   const { t } = useTranslation(['settings', 'common']);
   const { daoKey } = useCurrentDAOKey();
   const {

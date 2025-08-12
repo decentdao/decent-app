@@ -1,20 +1,16 @@
 import { Box, Flex, Hide, Show, Text } from '@chakra-ui/react';
 import { useTranslation } from 'react-i18next';
 import { zeroAddress } from 'viem';
-import { SettingsContentBox } from '../../../../components/SafeSettings/SettingsContentBox';
-import { DisplayAddress } from '../../../../components/ui/links/DisplayAddress';
-import { BarLoader } from '../../../../components/ui/loaders/BarLoader';
-import NestedPageHeader from '../../../../components/ui/page/Header/NestedPageHeader';
-import { DAO_ROUTES } from '../../../../constants/routes';
 import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
 import { createAccountSubstring } from '../../../../hooks/utils/useGetAccountName';
 import { useDAOStore } from '../../../../providers/App/AppProvider';
-import { useNetworkConfigStore } from '../../../../providers/NetworkConfig/useNetworkConfigStore';
 import { FractalModuleType } from '../../../../types';
+import { DisplayAddress } from '../../../ui/links/DisplayAddress';
+import { BarLoader } from '../../../ui/loaders/BarLoader';
+import { SettingsContentBox } from '../../SettingsContentBox';
 
-export function SafeModulesSettingsPage() {
+export function SafeModulesSettingTab() {
   const { t } = useTranslation('settings');
-  const { addressPrefix } = useNetworkConfigStore();
   const { daoKey } = useCurrentDAOKey();
   const {
     guardContracts: { freezeGuardContractAddress, freezeVotingContractAddress },
@@ -23,15 +19,6 @@ export function SafeModulesSettingsPage() {
 
   return (
     <>
-      <Show below="md">
-        <NestedPageHeader
-          title={t('modulesAndGuardsTitle')}
-          backButton={{
-            text: t('settings'),
-            href: DAO_ROUTES.settings.relative(addressPrefix, safe?.address || zeroAddress),
-          }}
-        />
-      </Show>
       <SettingsContentBox>
         <Flex
           flexDirection="column"
