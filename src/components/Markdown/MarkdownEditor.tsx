@@ -6,6 +6,7 @@ import useIPFSClient, { GATEWAY_URL } from '../../providers/App/hooks/useIPFSCli
 interface MarkdownEditorProps {
   height: string;
   onChange?: (markdown: string) => void;
+  onBlur?: (markdown: string) => void;
   placeholder?: string;
   initialValue?: string;
 }
@@ -13,6 +14,7 @@ interface MarkdownEditorProps {
 export function MarkdownEditor({
   height,
   onChange,
+  onBlur,
   placeholder = '',
   initialValue = '',
 }: MarkdownEditorProps) {
@@ -100,6 +102,9 @@ export function MarkdownEditor({
               cb(`${GATEWAY_URL}/ipfs/${response.Hash}`),
             );
           },
+        }}
+        onBlur={() => {
+          if (onBlur) onBlur(editor?.getMarkdown() || '');
         }}
         theme="dark"
       />
