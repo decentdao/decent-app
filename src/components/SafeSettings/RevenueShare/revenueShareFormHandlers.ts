@@ -1,5 +1,5 @@
 import { getSplitV2o2FactoryAddress } from '@0xsplits/splits-sdk/constants';
-import { splitV2ABI, splitV2FactoryABI } from '@0xsplits/splits-sdk/constants/abi';
+import { splitV2ABI, splitV2o2FactoryAbi } from '@0xsplits/splits-sdk/constants/abi';
 import { SplitV2Type } from '@0xsplits/splits-sdk/types';
 import { legacy } from '@decentdao/decent-contracts';
 import { Address, encodeFunctionData, getAddress, PublicClient } from 'viem';
@@ -237,7 +237,7 @@ export const handleEditRevenueShare = async ({
       );
       const splitWalletImplementation = await publicClient.readContract({
         address: splitFactoryAddress,
-        abi: splitV2FactoryABI,
+        abi: splitV2o2FactoryAbi,
         functionName: 'SPLIT_WALLET_IMPLEMENTATION',
       });
 
@@ -255,7 +255,7 @@ export const handleEditRevenueShare = async ({
       });
 
       const createSplitCalldata = encodeFunctionData({
-        abi: splitV2FactoryABI,
+        abi: splitV2o2FactoryAbi,
         functionName: 'createSplitDeterministic',
         args: [
           {
