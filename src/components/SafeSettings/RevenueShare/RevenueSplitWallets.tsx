@@ -402,6 +402,7 @@ export function RevSplitTable({
   return (
     <Flex
       mx={'-1rem'}
+      mt={'-1rem'}
       direction="column"
     >
       <Divider my={4} />
