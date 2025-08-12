@@ -1,20 +1,18 @@
-import { Button, Flex, Show, Text } from '@chakra-ui/react';
+import { Button, Flex, Text } from '@chakra-ui/react';
 import { useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { zeroAddress } from 'viem';
-import { SettingsContentBox } from '../../../../components/SafeSettings/SettingsContentBox';
-import { DisplayAddress } from '../../../../components/ui/links/DisplayAddress';
-import { ModalContext } from '../../../../components/ui/modals/ModalProvider';
-import NestedPageHeader from '../../../../components/ui/page/Header/NestedPageHeader';
-import Divider from '../../../../components/ui/utils/Divider';
 import { DAO_ROUTES } from '../../../../constants/routes';
 import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
 import { useDAOStore } from '../../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../../providers/NetworkConfig/useNetworkConfigStore';
 import { formatCoin } from '../../../../utils';
+import { DisplayAddress } from '../../../ui/links/DisplayAddress';
+import { ModalContext } from '../../../ui/modals/ModalProvider';
+import Divider from '../../../ui/utils/Divider';
+import { SettingsContentBox } from '../../SettingsContentBox';
 
-export function SafeTokenSettingsPage() {
+export function SafeTokenSettingTab() {
   const navigate = useNavigate();
   const { t } = useTranslation('settings');
   const { addressPrefix } = useNetworkConfigStore();
@@ -28,15 +26,6 @@ export function SafeTokenSettingsPage() {
 
   return (
     <>
-      <Show below="md">
-        <NestedPageHeader
-          title={t('tokenTitle')}
-          backButton={{
-            text: t('settings'),
-            href: DAO_ROUTES.settings.relative(addressPrefix, safe?.address || zeroAddress),
-          }}
-        />
-      </Show>
       <SettingsContentBox>
         <Flex
           gap={6}

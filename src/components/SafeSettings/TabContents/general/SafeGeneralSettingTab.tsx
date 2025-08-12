@@ -1,27 +1,21 @@
-import { Box, Flex, Show, Text } from '@chakra-ui/react';
+import { Box, Flex, Text } from '@chakra-ui/react';
 import { useFormikContext } from 'formik';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { zeroAddress } from 'viem';
-import { GaslessVotingToggleDAOSettings } from '../../../../components/GaslessVoting/GaslessVotingToggle';
-import { SettingsContentBox } from '../../../../components/SafeSettings/SettingsContentBox';
-import { InputComponent } from '../../../../components/ui/forms/InputComponent';
-import { BarLoader } from '../../../../components/ui/loaders/BarLoader';
-import {
-  SafeSettingsEdits,
-  SafeSettingsFormikErrors,
-} from '../../../../components/ui/modals/SafeSettingsModal';
-import NestedPageHeader from '../../../../components/ui/page/Header/NestedPageHeader';
-import Divider from '../../../../components/ui/utils/Divider';
-import { DAO_ROUTES } from '../../../../constants/routes';
 import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
 import { useCanUserCreateProposal } from '../../../../hooks/utils/useCanUserSubmitProposal';
 import { createAccountSubstring } from '../../../../hooks/utils/useGetAccountName';
 import { useDAOStore } from '../../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../../providers/NetworkConfig/useNetworkConfigStore';
 import { GovernanceType } from '../../../../types';
+import { GaslessVotingToggleDAOSettings } from '../../../GaslessVoting/GaslessVotingToggle';
+import { InputComponent } from '../../../ui/forms/InputComponent';
+import { BarLoader } from '../../../ui/loaders/BarLoader';
+import { SafeSettingsEdits, SafeSettingsFormikErrors } from '../../../ui/modals/SafeSettingsModal';
+import Divider from '../../../ui/utils/Divider';
+import { SettingsContentBox } from '../../SettingsContentBox';
 
-export function SafeGeneralSettingsPage() {
+export function SafeGeneralSettingTab() {
   const { t } = useTranslation('settings');
   const { setFieldValue, values: formValues, errors } = useFormikContext<SafeSettingsEdits>();
   const generalEditFormikErrors = (errors as SafeSettingsFormikErrors | undefined)?.general;
@@ -43,7 +37,7 @@ export function SafeGeneralSettingsPage() {
   }, [gaslessVotingEnabled]);
 
   const { canUserCreateProposal } = useCanUserCreateProposal();
-  const { addressPrefix, bundlerMinimumStake } = useNetworkConfigStore();
+  const { bundlerMinimumStake } = useNetworkConfigStore();
   const accountAbstractionSupported = bundlerMinimumStake !== undefined;
 
   const isMultisigGovernance = votingStrategyType === GovernanceType.MULTISIG;
@@ -77,15 +71,6 @@ export function SafeGeneralSettingsPage() {
 
   return (
     <>
-      <Show below="md">
-        <NestedPageHeader
-          title={t('daoSettingsGeneral')}
-          backButton={{
-            text: t('settings'),
-            href: DAO_ROUTES.settings.relative(addressPrefix, safeAddress || zeroAddress),
-          }}
-        />
-      </Show>
       {!!safe ? (
         <SettingsContentBox
           px={12}

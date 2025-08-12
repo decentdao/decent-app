@@ -2,20 +2,17 @@ import { Button, Flex, ListItem, Text, UnorderedList } from '@chakra-ui/react';
 import { useFormikContext } from 'formik';
 import { useTranslation } from 'react-i18next';
 import { Address } from 'viem';
-import { SettingsContentBox } from '../../../../components/SafeSettings/SettingsContentBox';
-import DurationUnitStepperInput from '../../../../components/ui/forms/DurationUnitStepperInput';
-import { LabelComponent } from '../../../../components/ui/forms/InputComponent';
-import { DisplayAddress } from '../../../../components/ui/links/DisplayAddress';
-import { BarLoader } from '../../../../components/ui/loaders/BarLoader';
-import {
-  SafeSettingsEdits,
-  SafeSettingsFormikErrors,
-} from '../../../../components/ui/modals/SafeSettingsModal';
-import { AssetSelector } from '../../../../components/ui/utils/AssetSelector';
 import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
 import { useDAOStore } from '../../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../../providers/NetworkConfig/useNetworkConfigStore';
 import { BigIntValuePair, ERC20TokenData, GovernanceType, TokenBalance } from '../../../../types';
+import DurationUnitStepperInput from '../../../ui/forms/DurationUnitStepperInput';
+import { LabelComponent } from '../../../ui/forms/InputComponent';
+import { DisplayAddress } from '../../../ui/links/DisplayAddress';
+import { BarLoader } from '../../../ui/loaders/BarLoader';
+import { SafeSettingsEdits, SafeSettingsFormikErrors } from '../../../ui/modals/SafeSettingsModal';
+import { AssetSelector } from '../../../ui/utils/AssetSelector';
+import { SettingsContentBox } from '../../SettingsContentBox';
 
 function emptyTokenBalanceForAddress(
   address: Address,
@@ -186,7 +183,7 @@ function StakingForm() {
   );
 }
 
-export function SafeStakingSettingsPage() {
+export function SafeStakingSettingTab() {
   const { t } = useTranslation('staking');
 
   const { daoKey } = useCurrentDAOKey();

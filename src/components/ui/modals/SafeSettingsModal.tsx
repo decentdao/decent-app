@@ -32,7 +32,6 @@ import useNetworkPublicClient from '../../../hooks/useNetworkPublicClient';
 import { useCanUserCreateProposal } from '../../../hooks/utils/useCanUserSubmitProposal';
 import { useInstallVersionedVotingStrategy } from '../../../hooks/utils/useInstallVersionedVotingStrategy';
 import { generateContractByteCodeLinear } from '../../../models/helpers/utils';
-import { SafeGeneralSettingsPage } from '../../../pages/dao/settings/general/SafeGeneralSettingsPage';
 import { useDAOStore } from '../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
 import { useProposalActionsStore } from '../../../store/actions/useProposalActionsStore';
@@ -75,6 +74,7 @@ import { handleEditRevenueShare } from '../../SafeSettings/RevenueShare/revenueS
 import { SafePermissionsStrategyAction } from '../../SafeSettings/SafePermissionsStrategyAction';
 import { SettingsNavigation } from '../../SafeSettings/SettingsNavigation';
 import { NewSignerItem } from '../../SafeSettings/Signers/SignersContainer';
+import { SafeGeneralSettingTab } from '../../SafeSettings/TabContents/general/SafeGeneralSettingTab';
 import Divider from '../utils/Divider';
 import { ModalProvider } from './ModalProvider';
 
@@ -167,7 +167,7 @@ export function SafeSettingsModal({
 
   const stakingContractAddress = governance?.stakedToken?.address;
 
-  const [settingsContent, setSettingsContent] = useState(<SafeGeneralSettingsPage />);
+  const [settingsContent, setSettingsContent] = useState(<SafeGeneralSettingTab />);
 
   const handleSettingsNavigationClick = (content: JSX.Element) => {
     setSettingsContent(content);

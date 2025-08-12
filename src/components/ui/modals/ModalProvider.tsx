@@ -4,13 +4,13 @@ import { createContext, ReactNode, useCallback, useEffect, useState } from 'reac
 import { useTranslation } from 'react-i18next';
 import { Address } from 'viem';
 import { NEUTRAL_2_50_TRANSPARENT } from '../../../constants/common';
-import { AddCreateProposalPermissionModal } from '../../../pages/dao/settings/permissions/AddCreateProposalPermissionModal';
 import { AirdropData, CreateProposalTransaction, ProposalTemplate } from '../../../types';
 import { SendAssetsData } from '../../../utils/dao/prepareSendAssetsActionData';
 import { ProposalTransactionsFormModal } from '../../ProposalBuilder/ProposalTransactionsForm';
 import AddSignerModal from '../../SafeSettings/Signers/modals/AddSignerModal';
 import RemoveSignerModal from '../../SafeSettings/Signers/modals/RemoveSignerModal';
 import DraggableDrawer from '../containers/DraggableDrawer';
+import { AddCreateProposalPermissionModal } from './AddCreateProposalPermissionModal';
 import { AddStrategyPermissionModal } from './AddStrategyPermissionModal';
 import { AirdropModal } from './AirdropModal/AirdropModal';
 import { ConfirmDeleteStrategyModal } from './ConfirmDeleteStrategyModal';
