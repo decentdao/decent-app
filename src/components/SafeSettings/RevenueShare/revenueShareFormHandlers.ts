@@ -1,4 +1,4 @@
-import { getSplitV2FactoryAddress } from '@0xsplits/splits-sdk/constants';
+import { getSplitV2o2FactoryAddress } from '@0xsplits/splits-sdk/constants';
 import { splitV2ABI, splitV2FactoryABI } from '@0xsplits/splits-sdk/constants/abi';
 import { SplitV2Type } from '@0xsplits/splits-sdk/types';
 import { legacy } from '@decentdao/decent-contracts';
@@ -231,7 +231,7 @@ export const handleEditRevenueShare = async ({
       const recipients = splits.map(recipient => recipient.address);
       const allocations = splits.map(recipient => recipient.percentage);
 
-      const splitFactoryAddress = getSplitV2FactoryAddress(
+      const splitFactoryAddress = getSplitV2o2FactoryAddress(
         publicClient.chain!.id,
         SplitV2Type.Push,
       );
