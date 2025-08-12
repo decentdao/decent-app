@@ -3,8 +3,6 @@ import { CaretDown } from '@phosphor-icons/react';
 import { Field, FieldAttributes, FieldProps, useFormikContext } from 'formik';
 import { useTranslation } from 'react-i18next';
 import { parseUnits } from 'viem';
-import useLockedToken from '../../hooks/DAO/useLockedToken';
-import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
 import { AirdropFormValues, TokenBalance } from '../../types';
 import LabelWrapper from '../ui/forms/LabelWrapper';
 
@@ -18,23 +16,10 @@ export function AirdropFormAssetSelector({
   const { t } = useTranslation();
   const { values, setFieldValue } = useFormikContext<AirdropFormValues>();
 
-  const {
-    contracts: { disperse },
-  } = useNetworkConfigStore();
-  const { tokenState } = useLockedToken({
-    token: values.selectedAsset.tokenAddress,
-    account: disperse,
-  });
-
   return (
     <Field name="selectedAsset">
       {({ field }: FieldAttributes<FieldProps<TokenBalance>>) => (
-        <LabelWrapper
-          errorMessage={
-            tokenState.canTransfer ? undefined : t('streamIsNotTransferable', { ns: 'proposal' })
-          }
-          label={t('selectLabel', { ns: 'modals' })}
-        >
+        <LabelWrapper label={t('selectLabel', { ns: 'modals' })}>
           <Select
             {...field}
             bgColor="color-black"

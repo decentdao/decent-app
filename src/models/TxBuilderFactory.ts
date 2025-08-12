@@ -41,7 +41,6 @@ export class TxBuilderFactory extends BaseTxBuilder {
   private linearVotingErc20MasterCopy: Address;
   private linearVotingErc721MasterCopy: Address;
   private moduleAzoriusMasterCopy: Address;
-  private votesErc20LockableMasterCopy?: Address;
 
   constructor(
     publicClient: PublicClient,
@@ -64,7 +63,6 @@ export class TxBuilderFactory extends BaseTxBuilder {
     linearVotingErc20MasterCopy: Address,
     linearVotingErc721MasterCopy: Address,
     moduleAzoriusMasterCopy: Address,
-    votesErc20LockableMasterCopy?: Address,
     parentAddress?: Address,
     parentTokenAddress?: Address,
   ) {
@@ -73,7 +71,6 @@ export class TxBuilderFactory extends BaseTxBuilder {
 
     this.compatibilityFallbackHandler = compatibilityFallbackHandler;
     this.votesErc20MasterCopy = votesErc20MasterCopy;
-    this.votesErc20LockableMasterCopy = votesErc20LockableMasterCopy;
     this.keyValuePairs = keyValuePairs;
     this.gnosisSafeProxyFactory = gnosisSafeProxyFactory;
     this.gnosisSafeProxy = gnosisSafeProxy;
@@ -198,7 +195,6 @@ export class TxBuilderFactory extends BaseTxBuilder {
       this.linearVotingErc20MasterCopy,
       this.linearVotingErc721MasterCopy,
       this.moduleAzoriusMasterCopy,
-      this.votesErc20LockableMasterCopy,
       this.parentAddress,
       this.parentTokenAddress,
     );

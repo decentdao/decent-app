@@ -1,4 +1,4 @@
-import { legacy, abis } from '@decentdao/decent-contracts';
+import { legacy } from '@decentdao/decent-contracts';
 import {
   Address,
   Hex,
@@ -21,7 +21,6 @@ import {
   AzoriusERC721DAO,
   AzoriusGovernanceDAO,
   SafeTransaction,
-  TokenLockType,
   VotingStrategyType,
 } from '../types';
 import { SENTINEL_MODULE } from '../utils/address';
@@ -70,7 +69,6 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
   public linearERC721VotingAddress: Address | undefined;
   public votesTokenAddress: Address | undefined;
   private votesErc20MasterCopy: Address;
-  private votesErc20LockableMasterCopy?: Address;
   private zodiacModuleProxyFactory: Address;
   private multiSendCallOnly: Address;
   private claimErc20MasterCopy: Address;
@@ -93,7 +91,6 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
     linearVotingErc20MasterCopy: Address,
     linearVotingErc721MasterCopy: Address,
     moduleAzoriusMasterCopy: Address,
-    votesErc20LockableMasterCopy?: Address,
     parentAddress?: Address,
     parentTokenAddress?: Address,
   ) {
@@ -106,7 +103,6 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
     this.strategyNonce = getRandomBytes();
     this.azoriusNonce = getRandomBytes();
     this.votesErc20MasterCopy = votesErc20MasterCopy;
-    this.votesErc20LockableMasterCopy = votesErc20LockableMasterCopy;
     this.zodiacModuleProxyFactory = zodiacModuleProxyFactory;
     this.multiSendCallOnly = multiSendCallOnly;
     this.claimErc20MasterCopy = claimErc20MasterCopy;
@@ -117,9 +113,6 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
     if (daoData.votingStrategyType === VotingStrategyType.LINEAR_ERC20) {
       daoData = daoData as AzoriusERC20DAO;
       if (!daoData.isTokenImported) {
-        if (daoData.locked === TokenLockType.LOCKED && !votesErc20LockableMasterCopy) {
-          throw new Error('Votes Erc20 Lockable Master Copy address not set');
-        }
         this.setEncodedSetupTokenData();
         this.setPredictedTokenAddress();
       } else {
@@ -262,20 +255,11 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
   }
 
   public buildCreateTokenTx(): SafeTransaction {
-    const azoriusErc20DaoData = this.daoData as AzoriusERC20DAO;
-
-    if (
-      !this.encodedSetupTokenData ||
-      !this.votesErc20MasterCopy ||
-      !this.votesErc20LockableMasterCopy
-    ) {
+    if (!this.encodedSetupTokenData || !this.votesErc20MasterCopy) {
       throw new Error('Encoded setup token data or votes erc20 master copy not set');
     }
 
-    const votesErc20MasterCopy =
-      azoriusErc20DaoData.locked === TokenLockType.LOCKED
-        ? this.votesErc20LockableMasterCopy
-        : this.votesErc20MasterCopy;
+    const votesErc20MasterCopy = this.votesErc20MasterCopy;
 
     return buildContractCall({
       target: this.zodiacModuleProxyFactory,
@@ -369,62 +353,25 @@ export class AzoriusTxBuilder extends BaseTxBuilder {
       this.safeContractAddress,
     );
 
-    if (azoriusGovernanceDaoData.locked === TokenLockType.LOCKED) {
-      const allocations: { to: Address; amount: bigint }[] = tokenAllocationsOwners.map((o, i) => ({
-        to: o,
-        amount: tokenAllocationsValues[i],
-      }));
+    const encodedInitTokenData = encodeAbiParameters(
+      parseAbiParameters('string, string, address[], uint256[]'),
+      [
+        azoriusGovernanceDaoData.tokenName,
+        azoriusGovernanceDaoData.tokenSymbol,
+        tokenAllocationsOwners,
+        tokenAllocationsValues,
+      ],
+    );
 
-      this.encodedSetupTokenData = encodeFunctionData({
-        abi: abis.deployables.VotesERC20V1,
-        functionName: 'initialize',
-        args: [
-          // metadata_
-          {
-            name: azoriusGovernanceDaoData.tokenName,
-            symbol: azoriusGovernanceDaoData.tokenSymbol,
-          },
-          allocations,
-          // owner_
-          this.safeContractAddress,
-          // locked_
-          true,
-          // maxTotalSupply_
-          azoriusGovernanceDaoData.maxTotalSupply,
-        ],
-      });
-    } else {
-      const encodedInitTokenData = encodeAbiParameters(
-        parseAbiParameters('string, string, address[], uint256[]'),
-        [
-          azoriusGovernanceDaoData.tokenName,
-          azoriusGovernanceDaoData.tokenSymbol,
-          tokenAllocationsOwners,
-          tokenAllocationsValues,
-        ],
-      );
-
-      this.encodedSetupTokenData = encodeFunctionData({
-        abi: legacy.abis.VotesERC20,
-        functionName: 'setUp',
-        args: [encodedInitTokenData],
-      });
-    }
+    this.encodedSetupTokenData = encodeFunctionData({
+      abi: legacy.abis.VotesERC20,
+      functionName: 'setUp',
+      args: [encodedInitTokenData],
+    });
   }
 
   private setPredictedTokenAddress() {
-    const azoriusGovernanceDaoData = this.daoData as AzoriusERC20DAO;
-    if (
-      azoriusGovernanceDaoData.locked === TokenLockType.LOCKED &&
-      !this.votesErc20LockableMasterCopy
-    ) {
-      throw new Error('Votes Erc20 Lockable Master Copy address not set');
-    }
-    const tokenByteCodeLinear = generateContractByteCodeLinear(
-      azoriusGovernanceDaoData.locked === TokenLockType.LOCKED
-        ? this.votesErc20LockableMasterCopy!
-        : this.votesErc20MasterCopy,
-    );
+    const tokenByteCodeLinear = generateContractByteCodeLinear(this.votesErc20MasterCopy);
     const tokenSalt = generateSalt(this.encodedSetupTokenData!, this.tokenNonce);
 
     this.predictedTokenAddress = getCreate2Address({

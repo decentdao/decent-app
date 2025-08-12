@@ -9,14 +9,12 @@ import {
   encodeAbiParameters,
   encodeFunctionData,
   encodePacked,
-  formatUnits,
   getContract,
   getCreate2Address,
   keccak256,
   parseAbiParameters,
 } from 'viem';
 import { useAccount, useBalance } from 'wagmi';
-import { ROLES } from '../../../constants/accessControlRoles';
 import {
   linearERC20VotingWithWhitelistSetupParams,
   linearERC721VotingWithWhitelistSetupParams,
@@ -105,12 +103,6 @@ export type SafeSettingsEdits = {
   permissions?: {
     proposerThreshold?: BigIntValuePair;
   };
-  token?: {
-    transferable?: boolean;
-    addressesToUnwhitelist?: string[];
-    addressesToWhitelist?: string[];
-    maximumTotalSupply?: BigIntValuePair;
-  };
   revenueSharing?: RevenueSharingWalletForm;
   staking?: {
     deploying?: boolean;
@@ -134,11 +126,6 @@ type PaymasterGasTankEditFormikErrors = {
   deposit?: { amount?: string };
 };
 
-type TokenEditFormikErrors = {
-  addressesToWhitelist?: { key: string; error: string }[];
-  maximumTotalSupply?: string;
-};
-
 type StakingEditFormikErrors = {
   newRewardTokens?: { key: string; error: string }[];
   minimumStakingPeriod?: string;
@@ -152,7 +139,6 @@ export type SafeSettingsFormikErrors = {
     existing: RevenueSharingWalletFormErrors;
     new: RevenueSharingWalletFormErrors;
   };
-  token?: TokenEditFormikErrors;
   staking?: StakingEditFormikErrors;
 };
 
@@ -238,9 +224,6 @@ export function SafeSettingsModal({
       ) ||
       Object.keys(errors.revenueSharing ?? {}).some(
         key => Object.keys((errors.revenueSharing as any)[key]).length > 0,
-      ) ||
-      Object.keys(errors.token ?? {}).some(
-        key => (errors.token as TokenEditFormikErrors)[key as keyof TokenEditFormikErrors],
       ) ||
       Object.keys(errors.staking ?? {}).some(
         key => (errors.staking as StakingEditFormikErrors)[key as keyof StakingEditFormikErrors],
@@ -1103,109 +1086,6 @@ export function SafeSettingsModal({
     };
   };
 
-  const handleEditToken = async (updatedValues: SafeSettingsEdits) => {
-    if (!safe?.address) {
-      throw new Error('Safe address is not set');
-    }
-
-    if (!isNonEmpty(updatedValues.token)) {
-      throw new Error('Token are not set');
-    }
-    const tokenValues = updatedValues.token!;
-
-    if (!governance.erc20Token) {
-      throw new Error('ERC20Token are not set');
-    }
-    const token = governance.erc20Token;
-
-    const changeTitles = [];
-    const transactions: CreateProposalTransaction[] = [];
-
-    if (tokenValues.transferable !== undefined) {
-      changeTitles.push(t('updateTokenTransferable', { ns: 'proposalMetadata' }));
-      transactions.push({
-        targetAddress: token.address,
-        ethValue,
-        functionName: 'lock',
-        parameters: [
-          {
-            signature: 'bool',
-            value: (!tokenValues.transferable).toString(),
-          },
-        ],
-      });
-    }
-    if (
-      tokenValues.addressesToWhitelist !== undefined &&
-      tokenValues.addressesToWhitelist.length > 0
-    ) {
-      tokenValues.addressesToWhitelist.map(addr => {
-        transactions.push({
-          targetAddress: token.address,
-          ethValue,
-          functionName: 'grantRole',
-          parameters: [
-            {
-              signature: 'bytes32',
-              value: ROLES.TRANSFER_FROM_ROLE,
-            },
-            {
-              signature: 'address',
-              value: addr,
-            },
-          ],
-        });
-      });
-      changeTitles.push(t('addTokenWhitelist', { ns: 'proposalMetadata' }));
-    }
-    if (
-      tokenValues.addressesToUnwhitelist !== undefined &&
-      tokenValues.addressesToUnwhitelist.length > 0
-    ) {
-      tokenValues.addressesToUnwhitelist.map(addr => {
-        transactions.push({
-          targetAddress: token.address,
-          ethValue,
-          functionName: 'revokeRole',
-          parameters: [
-            {
-              signature: 'bytes32',
-              value: ROLES.TRANSFER_FROM_ROLE,
-            },
-            {
-              signature: 'address',
-              value: addr,
-            },
-          ],
-        });
-      });
-      changeTitles.push(t('removeTokenWhitelist', { ns: 'proposalMetadata' }));
-    }
-    if (tokenValues.maximumTotalSupply?.bigintValue !== undefined) {
-      changeTitles.push(t('updateTokenMaxTotalSupply', { ns: 'proposalMetadata' }));
-      transactions.push({
-        targetAddress: token.address,
-        ethValue,
-        functionName: 'setMaxTotalSupply',
-        parameters: [
-          {
-            signature: 'uint256',
-            value: tokenValues.maximumTotalSupply.bigintValue.toString(),
-          },
-        ],
-      });
-    }
-
-    const title = changeTitles.join(`; `);
-
-    const action: CreateProposalActionData = {
-      actionType: ProposalActionType.EDIT,
-      transactions,
-    };
-
-    return { action, title };
-  };
-
   const handleEditStaking = async (updatedValues: SafeSettingsEdits) => {
     if (!safe?.address) {
       throw new Error('Safe address is not set');
@@ -1345,16 +1225,8 @@ export function SafeSettingsModal({
     }
 
     resetActions();
-    const {
-      general,
-      multisig,
-      azorius,
-      permissions,
-      paymasterGasTank,
-      token,
-      staking,
-      revenueSharing,
-    } = values;
+    const { general, multisig, azorius, permissions, paymasterGasTank, staking, revenueSharing } =
+      values;
     if (general) {
       const { action, title } = await handleEditGeneral(values);
 
@@ -1399,16 +1271,6 @@ export function SafeSettingsModal({
       const action = await handleEditPermissions(values);
 
       addAction(action);
-    }
-
-    if (token) {
-      const { action, title } = await handleEditToken(values);
-
-      addAction({
-        actionType: action.actionType,
-        transactions: action.transactions,
-        content: <Text>{title}</Text>,
-      });
     }
 
     if (revenueSharing) {
@@ -1489,58 +1351,6 @@ export function SafeSettingsModal({
           }
         } else {
           errors.multisig = undefined;
-        }
-
-        if (values.token) {
-          const { addressesToWhitelist, maximumTotalSupply } = values.token;
-          const errorsToken = errors.token ?? {};
-
-          if (addressesToWhitelist && addressesToWhitelist.length > 0) {
-            const whitelistErrors = await Promise.all(
-              addressesToWhitelist.map(async (addressToWhitelist, index) => {
-                if (!addressToWhitelist) {
-                  return {
-                    key: `addressesToWhitelist.${index}`,
-                    error: t('addressRequired', { ns: 'common' }),
-                  };
-                }
-
-                const validation = await validateAddress({ address: addressToWhitelist });
-                if (!validation.validation.isValidAddress) {
-                  return {
-                    key: `addressesToWhitelist.${index}`,
-                    error: t('errorInvalidAddress', { ns: 'common' }),
-                  };
-                }
-                return null;
-              }),
-            );
-
-            if (whitelistErrors.some(error => error !== null)) {
-              errorsToken.addressesToWhitelist = whitelistErrors.filter(error => error !== null);
-              errors.token = errorsToken;
-            }
-          }
-
-          const erc20Token = governance.erc20Token;
-          const currentMaxTotalSupply: BigIntValuePair = {
-            bigintValue: erc20Token?.maxTotalSupply,
-            value: formatUnits(erc20Token?.maxTotalSupply || 0n, erc20Token?.decimals || 0),
-          };
-          if (maximumTotalSupply?.bigintValue && currentMaxTotalSupply.bigintValue) {
-            const lessThanCurrent =
-              maximumTotalSupply.bigintValue < currentMaxTotalSupply.bigintValue;
-
-            if (lessThanCurrent) {
-              errorsToken.maximumTotalSupply = t('errorMinimumValue', {
-                ns: 'common',
-                minValue: currentMaxTotalSupply.value,
-              });
-              errors.token = errorsToken;
-            }
-          }
-        } else {
-          errors.token = undefined;
         }
 
         if (values.staking) {

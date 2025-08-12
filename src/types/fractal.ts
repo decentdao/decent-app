@@ -1,7 +1,7 @@
 import { TokenInfoResponse, TransferResponse } from '@safe-global/api-kit';
 import { SafeMultisigTransactionResponse } from '@safe-global/safe-core-sdk-types';
 import { Address } from 'viem';
-import { ERC20LockedTokenData, ERC721TokenData, StakedTokenData, VotesTokenData } from './account';
+import { ERC20TokenData, ERC721TokenData, StakedTokenData, VotesTokenData } from './account';
 import { DAOOwnedEntities } from './daoGeneral';
 import { FreezeGuardType, FreezeVotingType } from './daoGovernance';
 import { AzoriusProposal, MultisigProposal, ProposalData } from './daoProposal';
@@ -295,7 +295,7 @@ export type Governance = {
   proposalTemplates?: ProposalTemplate[] | null;
   tokenClaimContractAddress?: Address;
   isAzorius: boolean;
-  erc20Token: ERC20LockedTokenData | undefined;
+  erc20Token: ERC20TokenData | undefined;
   stakedToken: StakedTokenData | undefined;
 } & DAOOwnedEntities;
 

@@ -12,7 +12,6 @@ import {
 } from 'viem';
 import { useAccount } from 'wagmi';
 import LockReleaseAbi from '../../assets/abi/LockRelease';
-import { ROLES } from '../../constants/accessControlRoles';
 import { SENTINEL_ADDRESS } from '../../constants/common';
 import { createSnapshotSubgraphClient } from '../../graphql';
 import { ProposalsQuery, ProposalsResponse } from '../../graphql/SnapshotQueries';
@@ -36,7 +35,7 @@ import {
   AzoriusProposal,
   CreateProposalMetadata,
   DecentModule,
-  ERC20LockedTokenData,
+  ERC20TokenData,
   ERC721TokenData,
   FractalProposal,
   FractalProposalState,
@@ -937,75 +936,6 @@ export function useGovernanceFetcher() {
         return undefined;
       }
 
-      let whitelistedAddresses: Address[] = [];
-      try {
-        // Gather whitelisted addresses from event Whitelisted(address indexed account, bool isWhitelisted)
-        const lockedTokenContract = getContract({
-          abi: abis.deployables.VotesERC20V1,
-          address: erc20AddressInEvent,
-          client: publicClient,
-        });
-
-        const grantEvents = (
-          await lockedTokenContract.getEvents.RoleGranted(
-            { role: ROLES.TRANSFER_FROM_ROLE },
-            {
-              fromBlock: 0n,
-            },
-          )
-        ).map(e => ({
-          args: {
-            account: e.args.account,
-            role: e.args.role,
-            sender: e.args.sender,
-            isWhitelisted: true,
-          },
-          blockNumber: e.blockNumber,
-          logIndex: e.logIndex,
-        }));
-        const revokeEvents = (
-          await lockedTokenContract.getEvents.RoleRevoked(
-            { role: ROLES.TRANSFER_FROM_ROLE },
-            {
-              fromBlock: 0n,
-            },
-          )
-        ).map(e => ({
-          args: {
-            account: e.args.account,
-            role: e.args.role,
-            sender: e.args.sender,
-            isWhitelisted: false,
-          },
-          blockNumber: e.blockNumber,
-          logIndex: e.logIndex,
-        }));
-
-        // Order events by block number and log index
-        const orderedEvents = [...grantEvents, ...revokeEvents].sort((a, b) => {
-          if (a.blockNumber > b.blockNumber) {
-            return 1;
-          } else if (a.blockNumber < b.blockNumber) {
-            return -1;
-          } else {
-            return a.logIndex - b.logIndex;
-          }
-        });
-
-        const whitelistMap: { [address: Address]: boolean } = {};
-        orderedEvents.forEach(event => {
-          const { account, isWhitelisted } = event.args;
-          if (account !== undefined) {
-            whitelistMap[account] = isWhitelisted;
-          }
-        });
-        Object.entries(whitelistMap).forEach(([address, isWhitelisted]) => {
-          if (isWhitelisted) {
-            whitelistedAddresses.push(address as Address);
-          }
-        });
-      } catch (error) {}
-
       try {
         const tokenContract = getContract({
           abi: abis.deployables.VotesERC20V1,
@@ -1014,41 +944,34 @@ export function useGovernanceFetcher() {
         });
 
         // Execute multicall
-        const [nameData, symbolData, decimalsData, totalSupplyData, maxTotalSupplyData] =
-          await publicClient.multicall({
-            contracts: [
-              {
-                ...tokenContract,
-                functionName: 'name',
-              },
-              {
-                ...tokenContract,
-                functionName: 'symbol',
-              },
-              {
-                ...tokenContract,
-                functionName: 'decimals',
-              },
-              {
-                ...tokenContract,
-                functionName: 'totalSupply',
-              },
-              {
-                ...tokenContract,
-                functionName: 'maxTotalSupply',
-              },
-            ],
-            allowFailure: true,
-          });
+        const [nameData, symbolData, decimalsData, totalSupplyData] = await publicClient.multicall({
+          contracts: [
+            {
+              ...tokenContract,
+              functionName: 'name',
+            },
+            {
+              ...tokenContract,
+              functionName: 'symbol',
+            },
+            {
+              ...tokenContract,
+              functionName: 'decimals',
+            },
+            {
+              ...tokenContract,
+              functionName: 'totalSupply',
+            },
+          ],
+          allowFailure: true,
+        });
 
-        const tokenData: ERC20LockedTokenData = {
+        const tokenData: ERC20TokenData = {
           name: nameData.result || '',
           symbol: symbolData.result || '',
           decimals: decimalsData.result !== undefined ? decimalsData.result : 18,
           address: tokenContract.address,
           totalSupply: totalSupplyData.result !== undefined ? totalSupplyData.result : 0n,
-          maxTotalSupply: maxTotalSupplyData.result !== undefined ? maxTotalSupplyData.result : 0n,
-          whitelistedAddresses,
         };
 
         return tokenData;
