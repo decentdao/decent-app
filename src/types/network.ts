@@ -39,7 +39,6 @@ type ContractsBase = {
   freezeVotingMultisigMasterCopy: Address;
 
   votesErc20MasterCopy: Address;
-  votesErc20LockableMasterCopy?: Address;
   votesERC20StakedV1MasterCopy?: Address;
 
   claimErc20MasterCopy: Address;
