@@ -39,6 +39,7 @@ interface InputProps extends Omit<BaseProps, 'children'> {
 }
 
 interface TextareaProps extends Omit<BaseProps, 'children'> {
+  onBlur?: React.ChangeEventHandler<HTMLTextAreaElement> | undefined;
   onChange: React.ChangeEventHandler<HTMLTextAreaElement> | undefined;
   placeholder?: string;
   rows?: number;

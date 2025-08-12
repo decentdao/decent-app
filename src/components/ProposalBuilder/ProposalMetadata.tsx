@@ -45,7 +45,8 @@ export interface ProposalMetadataProps extends FormikProps<CreateProposalForm> {
 function PlainTextProposalMetadata({
   values,
   typeProps,
-}: Pick<ProposalMetadataProps, 'values' | 'typeProps'>) {
+  setFieldValue,
+}: Pick<ProposalMetadataProps, 'values' | 'typeProps' | 'setFieldValue'>) {
   const { t } = useTranslation(['proposal']);
   const { setProposalMetadata } = useProposalActionsStore();
   const { proposalMetadata } = values;
@@ -58,7 +59,7 @@ function PlainTextProposalMetadata({
     >
       <CustomNonceInput
         nonce={values.proposalMetadata.nonce}
-        onChange={newNonce => setProposalMetadata('nonce', newNonce)}
+        onChange={newNonce => setFieldValue('proposalMetadata.nonce', newNonce)}
         align="end"
         renderTrimmed={false}
       />
@@ -68,7 +69,8 @@ function PlainTextProposalMetadata({
         placeholder={t('proposalTitlePlaceholder', { ns: 'proposal' })}
         isRequired
         value={proposalMetadata.title}
-        onChange={e => setProposalMetadata('title', e.target.value)}
+        onChange={e => setFieldValue('proposalMetadata.title', e.target.value)}
+        onBlur={e => setProposalMetadata('title', e.target.value)}
         testId="metadata.title"
         maxLength={50}
       />
@@ -79,7 +81,8 @@ function PlainTextProposalMetadata({
         placeholder={t('proposalDescriptionPlaceholder', { ns: 'proposal' })}
         isRequired={false}
         value={proposalMetadata.description}
-        onChange={e => setProposalMetadata('description', e.target.value)}
+        onChange={e => setFieldValue('proposalMetadata.description', e.target.value)}
+        onBlur={e => setProposalMetadata('description', e.target.value)}
         rows={12}
       />
       <InputComponent
@@ -87,7 +90,8 @@ function PlainTextProposalMetadata({
         placeholder={t('proposalAdditionalResourcesPlaceholder', { ns: 'proposal' })}
         helper={t('proposalAdditionalResourcesHelper', { ns: 'proposal' })}
         value={proposalMetadata.documentationUrl || ''}
-        onChange={e => setProposalMetadata('documentationUrl', e.target.value)}
+        onChange={e => setFieldValue('proposalMetadata.documentationUrl', e.target.value)}
+        onBlur={e => setProposalMetadata('documentationUrl', e.target.value)}
         testId="metadata.documentationUrl"
         isRequired={false}
       />
@@ -98,7 +102,8 @@ function PlainTextProposalMetadata({
 function MarkdownProposalMetadata({
   values: { proposalMetadata },
   typeProps,
-}: Pick<ProposalMetadataProps, 'values' | 'typeProps'>) {
+  setFieldValue,
+}: Pick<ProposalMetadataProps, 'values' | 'typeProps' | 'setFieldValue'>) {
   const { t } = useTranslation(['proposal']);
   const { setProposalMetadata } = useProposalActionsStore();
 
@@ -112,7 +117,8 @@ function MarkdownProposalMetadata({
         placeholder={t('proposalTitlePlaceholder', { ns: 'proposal' })}
         isRequired
         value={proposalMetadata.title}
-        onChange={e => setProposalMetadata('title', e.target.value)}
+        onChange={e => setFieldValue('proposalMetadata.title', e.target.value)}
+        onBlur={e => setProposalMetadata('title', e.target.value)}
         data-testid="metadata.title"
         maxLength={50}
       />
@@ -124,13 +130,13 @@ function MarkdownProposalMetadata({
         <MarkdownEditor
           initialValue={proposalMetadata.description}
           placeholder={typeProps.descriptionHelper}
-          onChange={value => setProposalMetadata('description', value)}
+          onChange={value => setFieldValue('proposalMetadata.description', value)}
           height="400px"
         />
       </Container>
       <CustomNonceInput
         nonce={proposalMetadata.nonce}
-        onChange={newNonce => setProposalMetadata('nonce', newNonce)}
+        onChange={newNonce => setFieldValue('proposalMetadata.nonce', newNonce)}
         align="end"
         renderTrimmed={false}
       />
@@ -138,7 +144,11 @@ function MarkdownProposalMetadata({
   );
 }
 
-export default function ProposalMetadata({ values, typeProps }: ProposalMetadataProps) {
+export default function ProposalMetadata({
+  values,
+  typeProps,
+  setFieldValue,
+}: ProposalMetadataProps) {
   const proposalV1FeatureEnabled = useFeatureFlag('flag_proposal_v1');
 
   if (proposalV1FeatureEnabled) {
@@ -146,6 +156,7 @@ export default function ProposalMetadata({ values, typeProps }: ProposalMetadata
       <MarkdownProposalMetadata
         values={values}
         typeProps={typeProps}
+        setFieldValue={setFieldValue}
       />
     );
   } else {
@@ -153,6 +164,7 @@ export default function ProposalMetadata({ values, typeProps }: ProposalMetadata
       <PlainTextProposalMetadata
         values={values}
         typeProps={typeProps}
+        setFieldValue={setFieldValue}
       />
     );
   }
