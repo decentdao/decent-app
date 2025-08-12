@@ -6,17 +6,18 @@ import { useClickOutside } from '../../../hooks/useClickOutside';
 export function EditableInput(
   props: InputProps & { onEditCancel: () => void; onEditSave: () => void },
 ) {
+  const { onEditCancel, onEditSave, ...rest } = props;
   const [showInput, setShowInput] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
   const cancelEdit = () => {
     setShowInput(false);
-    props.onEditCancel();
+    onEditCancel();
   };
 
   const saveEdit = () => {
     setShowInput(false);
-    props.onEditSave();
+    onEditSave();
   };
 
   useClickOutside(ref, () => {
@@ -30,6 +31,7 @@ export function EditableInput(
       <Flex
         alignItems="center"
         h="full"
+        py="0.5rem"
         gap="1rem"
         minW="10rem"
         px="1rem"
@@ -42,7 +44,7 @@ export function EditableInput(
       >
         <Text
           cursor="pointer"
-          textStyle="text-sm-regular"
+          textStyle="text-base-regular"
           color={props.isInvalid ? 'color-error-400' : 'color-layout-foreground'}
           whiteSpace="nowrap"
         >
@@ -68,11 +70,10 @@ export function EditableInput(
       justifyContent="space-between"
       w="full"
       h="full"
-      px="1rem"
       gap="1rem"
     >
       <Input
-        {...props}
+        {...rest}
         autoFocus
       />
       <IconButton
