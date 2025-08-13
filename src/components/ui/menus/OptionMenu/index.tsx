@@ -1,4 +1,14 @@
-import { Menu, MenuButton, MenuList, As, MenuProps, Portal, Box, ButtonProps, IconButtonProps } from '@chakra-ui/react';
+import {
+  Menu,
+  MenuButton,
+  MenuList,
+  As,
+  MenuProps,
+  Portal,
+  Box,
+  ButtonProps,
+  IconButtonProps,
+} from '@chakra-ui/react';
 import { MouseEvent, ReactNode, RefObject } from 'react';
 import { useTranslation } from 'react-i18next';
 import { NEUTRAL_2_82_TRANSPARENT } from '../../../../constants/common';
