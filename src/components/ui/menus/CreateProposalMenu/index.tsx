@@ -33,6 +33,7 @@ export function CreateProposalMenu({
   // @dev Create a new proposal, clearing any pending actions
   options.push({
     optionKey: t('createFromScratch'),
+    testId: 'createFromScratch',
     onClick: () => {
       resetActions();
       navigate(DAO_ROUTES.proposalNew.relative(addressPrefix, safeAddress));
@@ -41,6 +42,7 @@ export function CreateProposalMenu({
   // @dev Continue a proposal adding adding a action via a template
   options.push({
     optionKey: t('browseTemplates'),
+    testId: 'browseTemplates',
     onClick: () => {
       resetActions();
       navigate(DAO_ROUTES.proposalTemplates.relative(addressPrefix, safeAddress));
@@ -49,6 +51,7 @@ export function CreateProposalMenu({
   if (iframeFeatureEnabled) {
     options.push({
       optionKey: t('useDapps'),
+      testId: 'useDapps',
       onClick: () => {
         resetActions();
         openDappsBrowserModal();

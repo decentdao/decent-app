@@ -7,6 +7,7 @@ type ExampleTemplateCardProps = {
   title: string;
   description: string;
   onProposalTemplateClick: () => void;
+  testId: string;
 };
 
 export default function ExampleTemplateCard({
@@ -14,11 +15,8 @@ export default function ExampleTemplateCard({
   title,
   description,
   onProposalTemplateClick,
+  testId,
 }: ExampleTemplateCardProps) {
-  const sanitizedTitle = title
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/(^-|-$)/g, '');
   return (
     <ContentBox
       containerBoxProps={{
@@ -28,7 +26,7 @@ export default function ExampleTemplateCard({
         p: '1rem',
       }}
       onClick={onProposalTemplateClick}
-      testId={`proposalTemplates-${sanitizedTitle}`}
+      testId={testId}
     >
       <Flex>
         <Icon
