@@ -1,4 +1,4 @@
-import { Menu, MenuButton, MenuList, As, MenuProps, Portal, Box } from '@chakra-ui/react';
+import { Menu, MenuButton, MenuList, As, MenuProps, Portal, Box, ButtonProps, IconButtonProps } from '@chakra-ui/react';
 import { MouseEvent, ReactNode, RefObject } from 'react';
 import { useTranslation } from 'react-i18next';
 import { NEUTRAL_2_82_TRANSPARENT } from '../../../../constants/common';
@@ -6,12 +6,16 @@ import { DecentTooltip } from '../../DecentTooltip';
 import { OptionsList } from './OptionsList';
 import { IOption, IOptionsList } from './types';
 
+type ExtendedButtonProps = (ButtonProps | IconButtonProps) & {
+  'data-testid'?: string;
+};
+
 interface OptionMenuProps extends Omit<MenuProps, 'children'>, IOptionsList {
   trigger: ReactNode;
   tooltipKey?: string;
   options: IOption[];
   buttonAs?: As;
-  buttonProps?: Record<string, string | boolean | number | Record<string, any>>;
+  buttonProps?: ExtendedButtonProps;
   children?: ReactNode;
   menuListMr?: string;
   containerRef?: RefObject<HTMLDivElement | null>;
