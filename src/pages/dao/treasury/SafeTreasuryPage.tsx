@@ -50,11 +50,11 @@ export function SafeTreasuryPage() {
     safeAddress !== undefined && showSendButton
       ? [
           {
-            optionKey: 'limitOrder',
+            optionKey: t('limitOrder'),
             onClick: openDappBrowserModal,
           },
           {
-            optionKey: 'transfer',
+            optionKey: t('transfer'),
             onClick: openSendAssetsModal,
           },
         ]
