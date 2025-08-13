@@ -16,10 +16,6 @@ export interface ERC20TokenData extends BaseTokenData {
   decimals: number;
   totalSupply: bigint;
 }
-export interface ERC20LockedTokenData extends ERC20TokenData {
-  whitelistedAddresses: Address[];
-  maxTotalSupply: bigint;
-}
 
 export interface StakedTokenData extends ERC20TokenData {
   minimumStakingPeriod: bigint;
