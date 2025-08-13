@@ -51,7 +51,9 @@ export function OptionsList({
                 borderRadius="0.5rem"
                 gap={2}
                 closeOnSelect={closeOnSelect}
-                data-testid={'optionMenu-' + option.optionKey}
+                data-testid={
+                  option.testId ? `optionMenu-${option.testId}` : `optionMenu-${option.optionKey}`
+                }
               >
                 {showOptionSelected ? (
                   <Flex flex="1">

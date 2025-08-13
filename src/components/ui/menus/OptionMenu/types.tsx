@@ -5,6 +5,7 @@ export interface IOption {
   isSelected?: boolean;
   renderer?: () => JSX.Element;
   isDisabled?: boolean;
+  testId?: string;
 }
 
 export interface IOptionsList {

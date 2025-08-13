@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { OptionMenu } from '../components/ui/menus/OptionMenu';
 import { supportedLanguages } from '.';
 
-export function LanguageSwitcher() {
+export function LanguageSwitcher({ 'data-testid': testId }: { 'data-testid'?: string }) {
   const { i18n, t } = useTranslation('languages');
 
   const supported = supportedLanguages.map(function (languageCode) {
@@ -33,6 +33,7 @@ export function LanguageSwitcher() {
       namespace="languages"
       buttonProps={{
         width: 'full',
+        ...(testId && { 'data-testid': testId }),
       }}
     />
   );

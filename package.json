@@ -73,9 +73,9 @@
     "localized": "node scripts/localization_verify.js",
     "pretty": "prettier . --write",
     "pretty:check": "prettier . --check",
-    "dev": "VITE_APP_GIT_HASH=$(git rev-parse --short HEAD) vite --force",
-    "preview": "VITE_APP_GIT_HASH=$(git rev-parse --short HEAD) vite preview",
-    "build": "NODE_OPTIONS=--max-old-space-size=8192 VITE_APP_GIT_HASH=$(git rev-parse --short HEAD) vite build && NODE_OPTIONS=--max-old-space-size=8192 vite build --mode page-function",
+    "dev": "vite --force",
+    "preview": "vite preview",
+    "build": "NODE_OPTIONS=--max-old-space-size=8192 vite build && NODE_OPTIONS=--max-old-space-size=8192 vite build --mode page-function",
     "test": "vitest --dir=test"
   },
   "engines": {

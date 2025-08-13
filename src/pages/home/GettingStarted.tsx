@@ -58,15 +58,17 @@ function CardContent({ icon, title, subtitle }: CardContentProps) {
 interface ActionCardProps extends CardContentProps {
   to: string;
   external?: boolean;
+  testId?: string;
 }
 
-export function ActionCard({ to, external, ...contentProps }: ActionCardProps) {
+export function ActionCard({ to, external, testId, ...contentProps }: ActionCardProps) {
   if (external) {
     return (
       <a
         href={to}
         target="_blank"
         rel="noopener noreferrer"
+        data-testid={testId}
       >
         <CardContent {...contentProps} />
       </a>
@@ -74,7 +76,10 @@ export function ActionCard({ to, external, ...contentProps }: ActionCardProps) {
   }
 
   return (
-    <Link to={to}>
+    <Link
+      to={to}
+      data-testid={testId}
+    >
       <CardContent {...contentProps} />
     </Link>
   );
@@ -99,6 +104,7 @@ export function GettingStarted() {
           title={t('createCTA')}
           subtitle={t('createCTASubtitle')}
           to={BASE_ROUTES.create}
+          testId="homepage-createDAO"
         />
 
         <ActionCard
@@ -107,6 +113,7 @@ export function GettingStarted() {
           subtitle={t('exploreDocsCTASubtitle')}
           to={URL_DOCS}
           external
+          testId="homepage-exploreDocs"
         />
       </Grid>
     </Flex>

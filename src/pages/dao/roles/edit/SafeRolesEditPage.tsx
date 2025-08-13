@@ -116,6 +116,7 @@ export function SafeRolesEditPage() {
               setFieldValue('roleEditing', newRole);
               showRoleEditDetails(newId);
             },
+            'data-testid': 'roles-addRole',
           }}
         />
 
