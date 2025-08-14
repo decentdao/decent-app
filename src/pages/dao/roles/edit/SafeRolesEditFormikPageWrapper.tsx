@@ -7,7 +7,6 @@ import { useRolesSchema } from '../../../../hooks/schemas/roles/useRolesSchema';
 import useCreateRoles from '../../../../hooks/utils/useCreateRoles';
 import { analyticsEvents } from '../../../../insights/analyticsEvents';
 import { useDAOStore } from '../../../../providers/App/AppProvider';
-import { useRolesStore } from '../../../../store/roles/useRolesStore';
 import { RoleFormValues } from '../../../../types/roles';
 
 export default function SafeRolesEditFormikPageWrapper() {
@@ -18,10 +17,10 @@ export default function SafeRolesEditFormikPageWrapper() {
   const { daoKey } = useCurrentDAOKey();
   const {
     node: { safe },
+    roles: { hatsTree },
   } = useDAOStore({ daoKey });
 
   const { rolesSchema } = useRolesSchema();
-  const { hatsTree } = useRolesStore();
 
   const { createEditRolesProposal } = useCreateRoles();
   const initialValues: RoleFormValues = useMemo(() => {
