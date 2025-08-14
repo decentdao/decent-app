@@ -7,6 +7,7 @@ import { createGovernancesSlice, GovernancesSlice } from './slices/governances';
 import { createGuardSlice, GuardSlice } from './slices/guards';
 import { createNodesSlice, NodesSlice } from './slices/nodes';
 import { createRevShareSlice, RevShareSlice } from './slices/revShare';
+import { createRolesSlice, RolesSlice } from './slices/roles';
 import { createTreasuriesSlice, TreasuriesSlice } from './slices/treasuries';
 
 export type StoreSlice<T> = { [daoKey: DAOKey]: T };
@@ -15,7 +16,8 @@ export type GlobalStore = NodesSlice &
   TreasuriesSlice &
   GovernancesSlice &
   GuardSlice &
-  RevShareSlice;
+  RevShareSlice &
+  RolesSlice;
 export type StoreMiddleware = [['zustand/immer', never], ['zustand/devtools', never]];
 
 const localStorageSerializer = {
@@ -42,6 +44,7 @@ export const useGlobalStore = create<GlobalStore>()(
         ...createGovernancesSlice(...params),
         ...createGuardSlice(...params),
         ...createRevShareSlice(...params),
+        ...createRolesSlice(...params),
       })),
       devToolsMiddlewareConfig,
     ),

@@ -3,9 +3,12 @@ import { useFormikContext } from 'formik';
 import { useTranslation } from 'react-i18next';
 import { Address, getAddress, Hex } from 'viem';
 import PencilWithLineIcon from '../../assets/theme/custom/icons/PencilWithLineIcon';
+import { useCurrentDAOKey } from '../../hooks/DAO/useCurrentDAOKey';
 import { useNetworkEnsAvatar } from '../../hooks/useNetworkEnsAvatar';
 import { useGetAccountName } from '../../hooks/utils/useGetAccountName';
-import { useRolesStore } from '../../store/roles/useRolesStore';
+import { useDAOStore } from '../../providers/App/AppProvider';
+import { isPaymentStreaming } from '../../store/roles/rolesStoreUtils';
+import { useGlobalStore } from '../../store/store';
 import {
   DecentTree,
   EditBadgeStatus,
@@ -244,7 +247,18 @@ function RolesRowEdit({
         isMemberTermPending={isMemberTermPending}
         isCurrentTermActive={isCurrentTermActive}
       />
-      <PaymentsColumn paymentsCount={payments?.filter(p => p.isStreaming()).length || undefined} />
+      <PaymentsColumn
+        paymentsCount={
+          payments?.filter(p =>
+            isPaymentStreaming({
+              startDate: p.startDate,
+              cliffDate: p.cliffDate,
+              endDate: p.endDate,
+              isCancelled: p.isCancelled,
+            }),
+          ).length || undefined
+        }
+      />
     </Tr>
   );
 }
@@ -288,7 +302,16 @@ export function RolesTable({
                   wearerAddress={role.wearerAddress}
                   handleRoleClick={() => handleRoleClick(role.id)}
                   isCurrentTermActive={isCurrentTermActive}
-                  paymentsCount={role.payments.filter(p => p.isStreaming()).length || undefined}
+                  paymentsCount={
+                    role.payments.filter(p =>
+                      isPaymentStreaming({
+                        startDate: p.startDate,
+                        cliffDate: p.cliffDate,
+                        endDate: p.endDate,
+                        isCancelled: p.isCancelled,
+                      }),
+                    ).length || undefined
+                  }
                 />
               );
             })}
@@ -300,7 +323,11 @@ export function RolesTable({
 }
 
 export function RolesEditTable({ handleRoleClick }: { handleRoleClick: (hatId: Hex) => void }) {
-  const { hatsTree, getHat } = useRolesStore();
+  const { daoKey } = useCurrentDAOKey();
+  const {
+    roles: { hatsTree },
+  } = useDAOStore({ daoKey });
+  const { getHat } = useGlobalStore();
   const { values, setFieldValue } = useFormikContext<RoleFormValues>();
   if (hatsTree === undefined) {
     return <RoleCardLoading />;
@@ -336,7 +363,8 @@ export function RolesEditTable({ handleRoleClick }: { handleRoleClick: (hatId: H
           }}
         >
           {values.hats.map(role => {
-            const existingRole = getHat(role.id);
+            if (!daoKey) return null;
+            const existingRole = getHat(daoKey, role.id);
             const isCurrentTermActive = existingRole?.roleTerms.currentTerm?.isActive;
             const roleTermNominee = role.roleTerms?.[0]?.nominee;
             const isMemberTermPending =

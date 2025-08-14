@@ -1,5 +1,6 @@
 import { DaoInfoStore } from '../../store/daoInfo/useDaoInfoStore';
 import { EMPTY_GOVERNANCE } from '../../store/slices/governances';
+import { EMPTY_ROLES, RolesPerDao } from '../../store/slices/roles';
 import { useGlobalStore } from '../../store/store';
 import { DAOKey, DAOSubgraph, DecentModule, FractalStore, SafeWithNextNonce } from '../../types';
 import { RevenueSharingWallet } from '../../types/revShare';
@@ -7,6 +8,7 @@ import { RevenueSharingWallet } from '../../types/revShare';
 type FractalStoreWithNode = FractalStore & {
   node: DaoInfoStore;
   revShareWallets: RevenueSharingWallet[] | undefined;
+  roles: RolesPerDao;
 };
 
 export const useDAOStore = ({ daoKey }: { daoKey: DAOKey | undefined }): FractalStoreWithNode => {
@@ -18,6 +20,7 @@ export const useDAOStore = ({ daoKey }: { daoKey: DAOKey | undefined }): Fractal
     getGuard,
     getGuardAccountData,
     getRevShareWallets,
+    getRoles,
   } = useGlobalStore();
 
   if (!daoKey) {
@@ -69,6 +72,7 @@ export const useDAOStore = ({ daoKey }: { daoKey: DAOKey | undefined }): Fractal
         lockReleaseAddress: undefined,
       },
       revShareWallets: undefined,
+      roles: EMPTY_ROLES,
     };
   }
 
@@ -80,6 +84,7 @@ export const useDAOStore = ({ daoKey }: { daoKey: DAOKey | undefined }): Fractal
   const guard = getGuard(daoKey);
   const guardAccountData = getGuardAccountData(daoKey);
   const revShareWallets = getRevShareWallets(daoKey);
+  const roles = getRoles(daoKey);
 
   return {
     node: {
@@ -109,6 +114,7 @@ export const useDAOStore = ({ daoKey }: { daoKey: DAOKey | undefined }): Fractal
     treasury,
     governance,
     revShareWallets,
+    roles,
     governanceContracts: {
       isLoaded: governance.isLoaded,
       strategies: governance.strategies,

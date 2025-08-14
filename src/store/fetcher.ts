@@ -14,8 +14,8 @@ import { useGovernanceFetcher } from './fetchers/governance';
 import { useGuardFetcher } from './fetchers/guard';
 import { useKeyValuePairsFetcher } from './fetchers/keyValuePairs';
 import { useNodeFetcher } from './fetchers/node';
+import { useRolesFetcher } from './fetchers/roles';
 import { useTreasuryFetcher } from './fetchers/treasury';
-import { useRolesStore } from './roles/useRolesStore';
 import { SetAzoriusGovernancePayload } from './slices/governances';
 import { useGlobalStore } from './store';
 
@@ -69,12 +69,15 @@ export const useDAOStoreFetcher = ({
   } = useGovernanceFetcher();
   const { fetchDAOGuard } = useGuardFetcher();
   const { fetchKeyValuePairsData } = useKeyValuePairsFetcher();
-  const { setHatKeyValuePairData } = useRolesStore();
+  const { fetchDAORoles } = useRolesFetcher();
+  const { setHatKeyValuePairData } = useGlobalStore();
 
   useEffect(() => {
     async function loadDAOData() {
       if (!daoKey || !safeAddress || invalidQuery || wrongNetwork) return;
       try {
+        let linearVotingErc20WithHatsWhitelistingAddress: Address | undefined = undefined;
+        let linearVotingErc721WithHatsWhitelistingAddress: Address | undefined = undefined;
         setErrorLoading(false);
         const { safe, daoInfo, modules } = await fetchDAONode({
           safeAddress,
@@ -97,40 +100,19 @@ export const useDAOStoreFetcher = ({
           }
         }
         setProposalTemplates(daoKey, proposalTemplates);
-        const keyValuePairsData = await fetchKeyValuePairsData({
-          safeAddress,
-        });
-
-        if (keyValuePairsData) {
-          setHatKeyValuePairData({
-            daoKey,
-            contextChainId: chain.id,
-            hatsTreeId: keyValuePairsData.hatsTreeId,
-            streamIdsToHatIds: keyValuePairsData.streamIdsToHatIds,
-          });
-
-          const gaslessVotingData = await fetchGaslessVotingDAOData({
-            safeAddress,
-            events: keyValuePairsData.events,
-          });
-
-          if (gaslessVotingData) {
-            setGaslessVotingData(daoKey, gaslessVotingData);
-          }
-
-          const erc20Token = await fetchMultisigERC20Token({ events: keyValuePairsData.events });
-          if (erc20Token) {
-            setERC20Token(daoKey, erc20Token);
-          }
-        }
 
         const revShareWallets = await getDaoRevenueSharingWallets(chain.id, safeAddress);
         if (revShareWallets) {
           setRevShareWallets(daoKey, revShareWallets);
         }
         const onMultisigGovernanceLoaded = () => setMultisigGovernance(daoKey);
-        const onAzoriusGovernanceLoaded = (governance: SetAzoriusGovernancePayload) =>
+        const onAzoriusGovernanceLoaded = (governance: SetAzoriusGovernancePayload) => {
+          linearVotingErc20WithHatsWhitelistingAddress =
+            governance.linearVotingErc20WithHatsWhitelistingAddress;
+          linearVotingErc721WithHatsWhitelistingAddress =
+            governance.linearVotingErc721WithHatsWhitelistingAddress;
           setAzoriusGovernance(daoKey, governance);
+        };
         const onProposalsLoaded = (proposals: FractalProposal[]) => {
           setAllProposalsLoaded(daoKey, true);
           setProposals(daoKey, proposals);
@@ -174,6 +156,44 @@ export const useDAOStoreFetcher = ({
             setGuard(daoKey, guardData);
           }
         });
+
+        const keyValuePairsData = await fetchKeyValuePairsData({
+          safeAddress,
+        });
+
+        if (keyValuePairsData) {
+          setHatKeyValuePairData(daoKey, {
+            contextChainId: chain.id,
+            hatsTreeId: keyValuePairsData.hatsTreeId,
+            streamIdsToHatIds: keyValuePairsData.streamIdsToHatIds,
+          });
+
+          const whitelistingVotingStrategy =
+            linearVotingErc20WithHatsWhitelistingAddress ||
+            linearVotingErc721WithHatsWhitelistingAddress;
+
+          await fetchDAORoles({
+            daoKey,
+            hatsTreeId: keyValuePairsData.hatsTreeId ?? undefined,
+            contextChainId: chain.id,
+            // Governance whitelisting strategy may not be loaded yet; we can refetch later if needed
+            whitelistingVotingStrategy,
+          });
+
+          const gaslessVotingData = await fetchGaslessVotingDAOData({
+            safeAddress,
+            events: keyValuePairsData.events,
+          });
+
+          if (gaslessVotingData) {
+            setGaslessVotingData(daoKey, gaslessVotingData);
+          }
+
+          const erc20Token = await fetchMultisigERC20Token({ events: keyValuePairsData.events });
+          if (erc20Token) {
+            setERC20Token(daoKey, erc20Token);
+          }
+        }
 
         if (daoInfo.daoSnapshotENS) {
           fetchDAOSnapshotProposals({ daoSnapshotENS: daoInfo.daoSnapshotENS }).then(

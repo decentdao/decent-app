@@ -7,13 +7,15 @@ import { useTranslation } from 'react-i18next';
 import { Address, getContract, Hex } from 'viem';
 import { DETAILS_BOX_SHADOW } from '../../constants/common';
 import { useDateTimeDisplay } from '../../helpers/dateTime';
+import { useCurrentDAOKey } from '../../hooks/DAO/useCurrentDAOKey';
 import { useNetworkEnsAvatar } from '../../hooks/useNetworkEnsAvatar';
 import { useNetworkWalletClient } from '../../hooks/useNetworkWalletClient';
 import { useCopyText } from '../../hooks/utils/useCopyText';
 import { useGetAccountName } from '../../hooks/utils/useGetAccountName';
 import { useTransaction } from '../../hooks/utils/useTransaction';
+import { useDAOStore } from '../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
-import { useRolesStore } from '../../store/roles/useRolesStore';
+import { useGlobalStore } from '../../store/store';
 import { RoleFormTermStatus } from '../../types/roles';
 import { DEFAULT_DATE_TIME_FORMAT_NO_TZ } from '../../utils';
 import Avatar from '../ui/page/Header/Avatar';
@@ -279,7 +281,11 @@ export default function RoleTerm({
   displayLightContainer?: boolean;
 }) {
   const [contractCall, contractCallPending] = useTransaction();
-  const { hatsTree, getHat, updateCurrentTermStatus } = useRolesStore();
+  const { daoKey } = useCurrentDAOKey();
+  const {
+    roles: { hatsTree },
+  } = useDAOStore({ daoKey });
+  const { getHat, updateCurrentTermStatus } = useGlobalStore();
   const { data: walletClient } = useNetworkWalletClient();
   const { t } = useTranslation(['roles']);
   const {
@@ -287,9 +293,9 @@ export default function RoleTerm({
   } = useNetworkConfigStore();
 
   const roleHat = useMemo(() => {
-    if (!hatId) return undefined;
-    return getHat(hatId);
-  }, [getHat, hatId]);
+    if (!hatId || !daoKey) return undefined;
+    return getHat(daoKey, hatId);
+  }, [daoKey, getHat, hatId]);
 
   const termPosition = useMemo(() => {
     if (!roleHat) return undefined;
@@ -342,10 +348,12 @@ export default function RoleTerm({
       failedMessage: t('startTermFailureToastMessage'),
       successMessage: t('startTermSuccessToastMessage'),
       successCallback: () => {
-        updateCurrentTermStatus(roleHat.id, 'active');
+        if (!daoKey) return;
+        updateCurrentTermStatus(daoKey, roleHat.id, 'active');
       },
     });
   }, [
+    daoKey,
     contractCall,
     hatsProtocol,
     hatsTree?.adminHat.wearer,

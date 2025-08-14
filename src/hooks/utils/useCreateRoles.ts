@@ -42,7 +42,7 @@ import { generateContractByteCodeLinear } from '../../models/helpers/utils';
 import { useDAOStore } from '../../providers/App/AppProvider';
 import useIPFSClient from '../../providers/App/hooks/useIPFSClient';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
-import { useRolesStore } from '../../store/roles/useRolesStore';
+import { useGlobalStore } from '../../store/store';
 import {
   AzoriusGovernance,
   CreateProposalMetadata,
@@ -102,8 +102,9 @@ export default function useCreateRoles() {
     },
     node: { safe, subgraphInfo },
     governance: { gaslessVotingEnabled, paymasterAddress },
+    roles: { hatsTreeId, hatsTree },
   } = useDAOStore({ daoKey });
-  const { hatsTree, hatsTreeId, getHat } = useRolesStore();
+  const { getHat } = useGlobalStore();
   const {
     addressPrefix,
     chain,
@@ -949,13 +950,17 @@ export default function useCreateRoles() {
         throw new Error('Cannot prepare transactions without wearer');
       }
 
+      if (!daoKey) {
+        throw new Error('Cannot prepare transactions without DAO key');
+      }
+
       const paymentTxs = []; // Initialize an empty array to hold the transaction data
       const cancelledStreamsOnHat = getCancelledStreamsFromFormHat(formHat);
       if (cancelledStreamsOnHat.length) {
         // This role edit includes stream cancels. In case there are any unclaimed funds on these streams,
         // we need to flush them out to the original wearer.
 
-        const originalHat = getHat(formHat.id);
+        const originalHat = getHat(daoKey, formHat.id);
         if (!originalHat) {
           throw new Error('Cannot find original hat');
         }
@@ -1024,6 +1029,7 @@ export default function useCreateRoles() {
     },
     [
       safeAddress,
+      daoKey,
       getCancelledStreamsFromFormHat,
       getNewStreamsFromFormHat,
       getHat,
@@ -1067,7 +1073,10 @@ export default function useCreateRoles() {
 
   const prepareConvertRoleToTermedTxs = useCallback(
     async (formHat: RoleHatFormValueEdited) => {
-      const roleHatCurrentState = getHat(formHat.id);
+      if (!daoKey) {
+        throw new Error('Cannot prepare transactions without DAO key');
+      }
+      const roleHatCurrentState = getHat(daoKey, formHat.id);
 
       if (!roleHatCurrentState) {
         throw new Error('Cannot find role hat');
@@ -1282,6 +1291,7 @@ export default function useCreateRoles() {
       prepareFlushStreamTxs,
       publicClient,
       safeAddress,
+      daoKey,
     ],
   );
 
@@ -1289,6 +1299,9 @@ export default function useCreateRoles() {
     async (proposalMetadata: CreateProposalMetadata, modifiedHats: RoleHatFormValueEdited[]) => {
       if (!hatsTree || !safeAddress) {
         throw new Error('Cannot prepare transactions without hats tree or DAO address');
+      }
+      if (!daoKey) {
+        throw new Error('Cannot prepare transactions without DAO key');
       }
 
       const topHatAccount = hatsTree.topHat.smartAddress;
@@ -1369,7 +1382,7 @@ export default function useCreateRoles() {
             );
           }
 
-          const originalHat = getHat(formHat.id);
+          const originalHat = getHat(daoKey, formHat.id);
           if (!originalHat) {
             throw new Error('Cannot find original hat');
           }
@@ -1471,7 +1484,7 @@ export default function useCreateRoles() {
 
             // formHat's `wearer` is the new wearer. We grab the original wearer (before this member change attempt)
             // on the hat, because we need that address to transfer to the new wearer.
-            const originalHat = getHat(formHat.id);
+            const originalHat = getHat(daoKey, formHat.id);
             if (!originalHat) {
               throw new Error('Cannot find original hat');
             }
@@ -1637,7 +1650,7 @@ export default function useCreateRoles() {
           }
 
           if (formHat.editedRole.fieldNames.includes('canCreateProposals')) {
-            const originalHat = getHat(formHat.id);
+            const originalHat = getHat(daoKey, formHat.id);
             if (!originalHat) {
               throw new Error('Cannot find original hat');
             }
@@ -1734,6 +1747,7 @@ export default function useCreateRoles() {
       parseRoleTermsFromFormRoleTerms,
       prepareConvertRoleToTermedTxs,
       buildDeployWhitelistingStrategy,
+      daoKey,
     ],
   );
 
