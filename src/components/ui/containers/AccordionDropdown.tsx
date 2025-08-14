@@ -64,6 +64,7 @@ export function AccordionDropdown({
                 justifyContent="space-between"
               >
                 <AccordionButton
+                  as="div"
                   p={0}
                   textStyle="text-xl-regular"
                   color="color-lilac-100"
