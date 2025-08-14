@@ -569,5 +569,10 @@ export const canUserCancelPayment = (payment: {
   isCancelled?: boolean;
   endDate?: Date;
 }): boolean => {
-  return !!payment.cancelable && !payment.isCancelled && !!payment.endDate && payment.endDate.getTime() > Date.now();
+  return (
+    !!payment.cancelable &&
+    !payment.isCancelled &&
+    !!payment.endDate &&
+    payment.endDate.getTime() > Date.now()
+  );
 };

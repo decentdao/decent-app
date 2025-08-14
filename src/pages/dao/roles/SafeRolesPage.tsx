@@ -110,7 +110,7 @@ export function SafeRolesPage() {
                         cliffDate: p.cliffDate,
                         endDate: p.endDate,
                         isCancelled: p.isCancelled,
-                      })
+                      }),
                     ).length || undefined
                   }
                   isCurrentTermActive={roleHat.roleTerms.currentTerm?.isActive}

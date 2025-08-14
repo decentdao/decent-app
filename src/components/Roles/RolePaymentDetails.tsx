@@ -146,7 +146,12 @@ interface PaymentDetailsTopProps {
   onClick?: () => void;
   isActiveStream: boolean;
 }
-function PaymentDetailsTop({ payment, onClick, isActiveStream, isStreaming }: PaymentDetailsTopProps) {
+function PaymentDetailsTop({
+  payment,
+  onClick,
+  isActiveStream,
+  isStreaming,
+}: PaymentDetailsTopProps) {
   const { t } = useTranslation(['roles']);
   const isPaymentCancelled = payment.isCancelling || payment.isCancelled;
   return (

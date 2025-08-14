@@ -255,7 +255,7 @@ function RolesRowEdit({
               cliffDate: p.cliffDate,
               endDate: p.endDate,
               isCancelled: p.isCancelled,
-            })
+            }),
           ).length || undefined
         }
       />
@@ -309,7 +309,7 @@ export function RolesTable({
                         cliffDate: p.cliffDate,
                         endDate: p.endDate,
                         isCancelled: p.isCancelled,
-                      })
+                      }),
                     ).length || undefined
                   }
                 />
