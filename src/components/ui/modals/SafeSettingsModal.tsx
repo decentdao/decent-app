@@ -1489,68 +1489,68 @@ export function SafeSettingsModal({
             }
 
             /* ---------- regular splits ---------- */
-          if (wallet.splits && wallet.splits.length > 0) {
-            await Promise.all(
-              wallet.splits.map(async (split, splitIdx) => {
-                const splitErr: RevenueSharingSplitFormError = {};
-                const existingWallet = type === 'existing' ? revShareWallets?.[index] : undefined;
-                const existingSplit = existingWallet?.splits?.[splitIdx];
+            if (wallet.splits && wallet.splits.length > 0) {
+              await Promise.all(
+                wallet.splits.map(async (split, splitIdx) => {
+                  const splitErr: RevenueSharingSplitFormError = {};
+                  const existingWallet = type === 'existing' ? revShareWallets?.[index] : undefined;
+                  const existingSplit = existingWallet?.splits?.[splitIdx];
 
-                /* address */
-                if (type === 'existing') {
-                  const effectiveAddress = split?.address ?? existingSplit?.address;
-                  if (!effectiveAddress) {
-                    splitErr.address = t('addressRequired', { ns: 'common' });
-                  } else if (split?.address) {
-                    const { validation } = await validateAddress({ address: split.address });
-                    if (!validation.isValidAddress) {
-                      splitErr.address = t('errorInvalidAddress', { ns: 'common' });
+                  /* address */
+                  if (type === 'existing') {
+                    const effectiveAddress = split?.address ?? existingSplit?.address;
+                    if (!effectiveAddress) {
+                      splitErr.address = t('addressRequired', { ns: 'common' });
+                    } else if (split?.address) {
+                      const { validation } = await validateAddress({ address: split.address });
+                      if (!validation.isValidAddress) {
+                        splitErr.address = t('errorInvalidAddress', { ns: 'common' });
+                      }
                     }
-                  }
-                } else {
-                  if (!split?.address) {
-                    splitErr.address = t('addressRequired', { ns: 'common' });
                   } else {
-                    const { validation } = await validateAddress({ address: split.address });
-                    if (!validation.isValidAddress) {
-                      splitErr.address = t('errorInvalidAddress', { ns: 'common' });
+                    if (!split?.address) {
+                      splitErr.address = t('addressRequired', { ns: 'common' });
+                    } else {
+                      const { validation } = await validateAddress({ address: split.address });
+                      if (!validation.isValidAddress) {
+                        splitErr.address = t('errorInvalidAddress', { ns: 'common' });
+                      }
                     }
                   }
-                }
 
-                /* percentage */
-                if (type === 'existing') {
-                  const effectivePct =
-                    split?.percentage !== undefined && split?.percentage !== ''
-                      ? split.percentage
-                      : existingSplit?.percentage?.toString();
-                  if (effectivePct === undefined || effectivePct === '') {
-                    splitErr.percentage = t('percentageRequired', { ns: 'revenueSharing' });
-                  } else if (split?.percentage !== undefined && split?.percentage !== '') {
-                    const pct = Number(split.percentage);
-                    if (isNaN(pct) || pct < 0 || pct > 100) {
-                      splitErr.percentage = t('percentageRangeInvalid', { ns: 'revenueSharing' });
+                  /* percentage */
+                  if (type === 'existing') {
+                    const effectivePct =
+                      split?.percentage !== undefined && split?.percentage !== ''
+                        ? split.percentage
+                        : existingSplit?.percentage?.toString();
+                    if (effectivePct === undefined || effectivePct === '') {
+                      splitErr.percentage = t('percentageRequired', { ns: 'revenueSharing' });
+                    } else if (split?.percentage !== undefined && split?.percentage !== '') {
+                      const pct = Number(split.percentage);
+                      if (isNaN(pct) || pct < 0 || pct > 100) {
+                        splitErr.percentage = t('percentageRangeInvalid', { ns: 'revenueSharing' });
+                      }
                     }
-                  }
-                } else {
-                  if (split?.percentage === undefined || split.percentage === '') {
-                    splitErr.percentage = t('percentageRequired', { ns: 'revenueSharing' });
                   } else {
-                    const pct = Number(split.percentage);
-                    if (isNaN(pct) || pct < 0 || pct > 100) {
-                      splitErr.percentage = t('percentageRangeInvalid', { ns: 'revenueSharing' });
+                    if (split?.percentage === undefined || split.percentage === '') {
+                      splitErr.percentage = t('percentageRequired', { ns: 'revenueSharing' });
+                    } else {
+                      const pct = Number(split.percentage);
+                      if (isNaN(pct) || pct < 0 || pct > 100) {
+                        splitErr.percentage = t('percentageRangeInvalid', { ns: 'revenueSharing' });
+                      }
                     }
                   }
-                }
 
-                if (Object.keys(splitErr).length > 0) {
-                  walletError.splits = {};
-                  walletError.splits![splitIdx] = splitErr;
-                }
-              }),
-            );
-          }
-          // Determine if we truly have no regular splits considering existing data
+                  if (Object.keys(splitErr).length > 0) {
+                    walletError.splits = {};
+                    walletError.splits![splitIdx] = splitErr;
+                  }
+                }),
+              );
+            }
+            // Determine if we truly have no regular splits considering existing data
             const existingWallet = type === 'existing' ? revShareWallets?.[index] : undefined;
             const noRegularSplits = (() => {
               const hasFormSplits = !!wallet.splits && wallet.splits.length > 0;
@@ -1615,9 +1615,7 @@ export function SafeSettingsModal({
                 return wallet.splits?.map(s => ({
                   address: s?.address,
                   percentage:
-                    s?.percentage !== undefined && s?.percentage !== ''
-                      ? Number(s.percentage)
-                      : 0,
+                    s?.percentage !== undefined && s?.percentage !== '' ? Number(s.percentage) : 0,
                 }));
               }
               const existingSplits = existingWallet?.splits ?? [];
@@ -1625,14 +1623,16 @@ export function SafeSettingsModal({
               const maxLen = Math.max(existingSplits.length, formSplits.length);
               return Array.from({ length: maxLen }, (_, i) => {
                 const f = formSplits[i];
-                const ex = existingSplits[i] as { address?: string; percentage?: number } | undefined;
+                const ex = existingSplits[i] as
+                  | { address?: string; percentage?: number }
+                  | undefined;
                 const addr = f?.address ?? ex?.address;
                 const percentage =
                   f?.percentage !== undefined && f?.percentage !== ''
                     ? Number(f.percentage)
                     : ex?.percentage !== undefined
-                    ? Number(ex.percentage)
-                    : 0;
+                      ? Number(ex.percentage)
+                      : 0;
                 return { address: addr, percentage };
               });
             })();
