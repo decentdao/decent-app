@@ -14,18 +14,21 @@ import { DAO_ROUTES } from '../../../constants/routes';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import { useCanUserCreateProposal } from '../../../hooks/utils/useCanUserSubmitProposal';
 import { analyticsEvents } from '../../../insights/analyticsEvents';
+import { useDAOStore } from '../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
-import { useRolesStore } from '../../../store/roles/useRolesStore';
+import { isPaymentStreaming } from '../../../store/roles/rolesStoreUtils';
 
 export function SafeRolesPage() {
   useEffect(() => {
     amplitude.track(analyticsEvents.RolesPageOpened);
   }, []);
 
-  const { hatsTree } = useRolesStore();
   const { addressPrefix } = useNetworkConfigStore();
   const { t } = useTranslation(['roles']);
-  const { safeAddress } = useCurrentDAOKey();
+  const { safeAddress, daoKey } = useCurrentDAOKey();
+  const {
+    roles: { hatsTree },
+  } = useDAOStore({ daoKey });
   const navigate = useNavigate();
 
   const { canUserCreateProposal } = useCanUserCreateProposal();
@@ -100,7 +103,16 @@ export function SafeRolesPage() {
                       : roleHat.wearerAddress
                   }
                   handleRoleClick={() => handleNavigateToRole(roleHat.id)}
-                  paymentsCount={roleHat.payments.filter(p => p.isStreaming()).length || undefined}
+                  paymentsCount={
+                    roleHat.payments.filter(p =>
+                      isPaymentStreaming({
+                        startDate: p.startDate,
+                        cliffDate: p.cliffDate,
+                        endDate: p.endDate,
+                        isCancelled: p.isCancelled,
+                      })
+                    ).length || undefined
+                  }
                   isCurrentTermActive={roleHat.roleTerms.currentTerm?.isActive}
                 />
               );
