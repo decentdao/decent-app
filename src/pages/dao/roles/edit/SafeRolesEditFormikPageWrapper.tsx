@@ -38,7 +38,7 @@ export default function SafeRolesEditFormikPageWrapper() {
         roleTerms: hat.roleTerms.allTerms,
         payments: hat.payments.map(payment => ({
           ...payment,
-          cancelable: true,
+          cancelable: payment.canUserCancel(),
           isCancelling: false,
         })),
       })),
