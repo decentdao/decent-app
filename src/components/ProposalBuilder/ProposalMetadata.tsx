@@ -82,7 +82,6 @@ function PlainTextProposalMetadata({
         isRequired={false}
         value={proposalMetadata.description}
         onChange={e => setFieldValue('proposalMetadata.description', e.target.value)}
-        onBlur={e => setProposalMetadata('description', e.target.value)}
         rows={12}
       />
       <InputComponent
@@ -131,6 +130,7 @@ function MarkdownProposalMetadata({
           initialValue={proposalMetadata.description}
           placeholder={typeProps.descriptionHelper}
           onChange={value => setFieldValue('proposalMetadata.description', value)}
+          onBlur={value => setProposalMetadata('description', value)}
           height="400px"
         />
       </Container>

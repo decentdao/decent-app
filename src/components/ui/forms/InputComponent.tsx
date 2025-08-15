@@ -144,6 +144,7 @@ export function TextareaComponent(props: TextareaProps) {
     value,
     disabled,
     onChange,
+    onBlur,
     rows,
     placeholder,
     maxLength,
@@ -157,6 +158,7 @@ export function TextareaComponent(props: TextareaProps) {
     >
       <Textarea
         id={id}
+        onBlur={onBlur}
         resize={resize}
         onChange={onChange}
         value={value}

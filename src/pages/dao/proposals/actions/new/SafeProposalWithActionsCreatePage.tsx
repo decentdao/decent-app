@@ -43,7 +43,12 @@ export function SafeProposalWithActionsCreatePage() {
       proposalMetadata
         ? {
             ...DEFAULT_PROPOSAL,
-            proposalMetadata: { nonce: safe?.nextNonce, ...proposalMetadata },
+            proposalMetadata: {
+              nonce: safe?.nextNonce,
+              title: proposalMetadata.title,
+              description: proposalMetadata.description,
+              documentationUrl: proposalMetadata.documentationUrl,
+            },
           }
         : {
             ...DEFAULT_PROPOSAL,
