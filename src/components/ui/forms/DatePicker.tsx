@@ -44,7 +44,7 @@ function CalendarView({
       formatShortWeekday={(_, date) => date.toString().slice(0, 2)}
       prevLabel={<Icon as={CaretLeft} />}
       nextLabel={<Icon as={CaretRight} />}
-      activeStartDate={minDate}
+      defaultActiveStartDate={minDate}
       value={selectedDate}
       // remove double-skip buttons for cleaner UI
       next2Label={null}
