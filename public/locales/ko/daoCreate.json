@@ -106,11 +106,5 @@
   "networks": "네트워크",
   "networkDescription": "이 DAO를 어떤 네트워크에 배포하시겠습니까?",
   "attachFractalModuleDescription": "이 설정은 부모 DAO가 자식 DAO의 투표 과정을 우회하여 자식 DAO에서 임의의 트랜잭션을 실행할 수 있는지 여부를 제어합니다.",
-  "fractalModuleAttachedDescription": "이 설정은 이미 DAO에 연결된 프랙탈 모듈이므로 수정할 수 없습니다.",
-  "labelTokenLocking": "잠금",
-  "helperTokenLocking": "토큰이 처음에 잠겨 있는지 여부.",
-  "labelTokenLocked": "양도 불가",
-  "descTokenUnlocked": "토큰이 잠금 해제되어 자유롭게 전송할 수 있습니다.",
-  "labelTokenUnlocked": "잠금 해제",
-  "descTokenLocked": "토큰은 처음에 잠겨 있습니다. DAO와 화이트리스트 주소를 제외하고는 토큰을 전송할 수 없습니다. 토큰 보유자는 일반적인 제안 및 투표권을 갖습니다. DAO는 투표를 통해 화이트리스트에 주소를 추가하거나 잠금을 해제할 수 있습니다."
+  "fractalModuleAttachedDescription": "이 설정은 이미 DAO에 연결된 프랙탈 모듈이므로 수정할 수 없습니다."
 }

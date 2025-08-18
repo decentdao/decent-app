@@ -23,10 +23,6 @@
   "changeQuorumThreshold": "Aggiornamento della soglia di quorum",
   "deployToken": "Distribuire il token",
   "updateERC20Address": "Aggiornamento dell'indirizzo ERC20",
-  "updateTokenTransferable": "Gettone di aggiornamento trasferibile",
-  "updateTokenMaxTotalSupply": "Aggiornamento gettone Fornitura totale massima",
-  "addTokenWhitelist": "Aggiungere una whitelist di token",
-  "removeTokenWhitelist": "Rimuovere la whitelist dei token",
   "deployStakingContract": "Distribuzione del contratto di picchettamento",
   "updateStakingMinPeriod": "Aggiornamento del periodo di picchettamento minimo",
   "addStakingRewardTokens": "Aggiungere gettoni di ricompensa per il gioco d'azzardo"

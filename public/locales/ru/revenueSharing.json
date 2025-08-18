@@ -7,5 +7,6 @@
   "totalError": "{{percentage}}% Итого должно быть равно 100%",
   "recipients": "Получатели",
   "addRecipientButton": "Добавить получателя",
-  "removeSplitButtonLabel": "Удалить сплит"
+  "removeSplitButtonLabel": "Удалить сплит",
+  "stakingRecipientDisplay": "Ставка держателя жетона"
 }

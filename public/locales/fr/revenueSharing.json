@@ -7,5 +7,6 @@
   "totalError": "{{percentage}Le total doit être égal à 100%.",
   "recipients": "Bénéficiaires",
   "addRecipientButton": "Ajouter un destinataire",
-  "removeSplitButtonLabel": "Retirer la fente"
+  "removeSplitButtonLabel": "Retirer la fente",
+  "stakingRecipientDisplay": "Jalonnement des détenteurs de jetons"
 }
