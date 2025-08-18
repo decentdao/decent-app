@@ -7,5 +7,6 @@
   "totalError": "{{percentage}}% El total debe ser igual al 100%",
   "recipients": "Destinatarios",
   "addRecipientButton": "Añadir destinatario",
-  "removeSplitButtonLabel": "Quitar Split"
+  "removeSplitButtonLabel": "Quitar Split",
+  "stakingRecipientDisplay": "Estaquillas portafichas"
 }

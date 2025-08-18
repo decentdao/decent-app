@@ -7,5 +7,6 @@
   "totalError": "{{percentage}}% Il totale deve essere uguale a 100%",
   "recipients": "Destinatari",
   "addRecipientButton": "Aggiungi destinatario",
-  "removeSplitButtonLabel": "Rimuovere la divisione"
+  "removeSplitButtonLabel": "Rimuovere la divisione",
+  "stakingRecipientDisplay": "Picchettamento dei titolari di gettoni"
 }

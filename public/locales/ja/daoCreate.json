@@ -106,11 +106,5 @@
   "networks": "ネットワーク",
   "networkDescription": "このDAOをどのネットワークにデプロイしたいですか？",
   "attachFractalModuleDescription": "この設定は、親 DAO が子 DAO の投票プロセスをバイパスして子 DAO 上で任意のトランザクションを実行できるかどうかを制御します。",
-  "fractalModuleAttachedDescription": "フラクタルモジュールはすでにDAOに取り付けられているため、この設定は変更できない。",
-  "labelTokenLocking": "ロック",
-  "helperTokenLocking": "トークンが最初にロックされているかどうか。",
-  "labelTokenLocked": "譲渡不可",
-  "descTokenUnlocked": "トークンはアンロックされており、自由に譲渡できる。",
-  "labelTokenUnlocked": "ロック解除",
-  "descTokenLocked": "トークンは最初にロックされる。トークンはDAOとホワイトリストのアドレス以外には譲渡できない。トークン保有者は通常の提案権と投票権を持つ。DAOはホワイトリストにアドレスを追加するか、ロックを解除するか投票できる。"
+  "fractalModuleAttachedDescription": "フラクタルモジュールはすでにDAOに取り付けられているため、この設定は変更できない。"
 }

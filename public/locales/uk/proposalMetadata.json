@@ -23,10 +23,6 @@
   "changeQuorumThreshold": "Update quorum threshold",
   "deployToken": "Розгорнути токен",
   "updateERC20Address": "Оновити адресу ERC20",
-  "updateTokenTransferable": "Токен оновлення, який можна передати",
-  "updateTokenMaxTotalSupply": "Оновити максимальний загальний запас токенів",
-  "addTokenWhitelist": "Додати білий список токенів",
-  "removeTokenWhitelist": "Видалення білого списку токенів",
   "deployStakingContract": "Розгортання договору стейкінгу",
   "updateStakingMinPeriod": "Оновити мінімальний період стейкінгу",
   "addStakingRewardTokens": "Додавання жетонів винагороди за стейкінг"

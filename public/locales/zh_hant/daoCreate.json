@@ -106,11 +106,5 @@
   "networks": "網路",
   "networkDescription": "您想在哪個網路部署這個DAO？",
   "attachFractalModuleDescription": "此設定可控制父DAO是否能繞過子DAO的投票程序，在子DAO上執行任意交易。",
-  "fractalModuleAttachedDescription": "由於Fractal模組已連接至DAO，因此無法修改此設定。",
-  "labelTokenLocking": "鎖定",
-  "helperTokenLocking": "代幣最初是否鎖定。",
-  "labelTokenLocked": "不可轉讓",
-  "descTokenUnlocked": "代幣已解鎖，可自由轉讓。",
-  "labelTokenUnlocked": "解鎖",
-  "descTokenLocked": "代幣最初是鎖定的。除了DAO和白名單地址外，代幣不可轉讓。代幣持有者有正常的提案權和投票權。DAO可以投票將地址加入白名單或解除鎖定。"
+  "fractalModuleAttachedDescription": "由於Fractal模組已連接至DAO，因此無法修改此設定。"
 }
