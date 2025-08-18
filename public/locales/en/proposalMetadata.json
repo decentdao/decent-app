@@ -23,10 +23,6 @@
   "changeQuorumThreshold": "Update quorum threshold",
   "deployToken": "Deploy token",
   "updateERC20Address": "Update ERC20 Address",
-  "updateTokenTransferable": "Update Token Transferable",
-  "updateTokenMaxTotalSupply": "Update Token Max Total Supply",
-  "addTokenWhitelist": "Add Token Whitelist",
-  "removeTokenWhitelist": "Remove Token Whitelist",
   "deployStakingContract": "Deploy Staking Contract",
   "updateStakingMinPeriod": "Update Staking Min Period",
   "addStakingRewardTokens": "Add Staking Reward Tokens"

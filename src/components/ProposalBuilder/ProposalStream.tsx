@@ -19,11 +19,9 @@ import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Address, erc20Abi, formatUnits, getContract, isAddress } from 'viem';
 import { useCurrentDAOKey } from '../../hooks/DAO/useCurrentDAOKey';
-import useLockedToken from '../../hooks/DAO/useLockedToken';
 import useNetworkPublicClient from '../../hooks/useNetworkPublicClient';
 import { useFilterSpamTokens } from '../../hooks/utils/useFilterSpamTokens';
 import { useDAOStore } from '../../providers/App/AppProvider';
-import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
 import { BigIntValuePair } from '../../types';
 import { Stream } from '../../types/proposalBuilder';
 import { formatCoin } from '../../utils';
@@ -59,13 +57,6 @@ export function ProposalStream({
   } = useDAOStore({ daoKey });
   const filterSpamTokens = useFilterSpamTokens();
   const { t } = useTranslation(['proposal', 'common']);
-  const {
-    contracts: { sablierV2Batch },
-  } = useNetworkConfigStore();
-  const { tokenState } = useLockedToken({
-    token: stream.tokenAddress as Address,
-    account: sablierV2Batch,
-  });
 
   const safeAddress = safe?.address;
   const fungibleNonNativeAssetsWithBalance = filterSpamTokens(assetsFungible);
@@ -129,7 +120,6 @@ export function ProposalStream({
               helper={t('streamedTokenAddressHelper', { balance: tokenBalanceFormatted })}
               isRequired
               disabled={pendingTransaction}
-              errorMessage={tokenState.canTransfer ? undefined : t('streamIsNotTransferable')}
               subLabel={
                 <Box marginX="-0.75rem">
                   <DisplayAddress

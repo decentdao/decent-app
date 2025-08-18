@@ -14,10 +14,8 @@ import { ModalType } from '../../../components/ui/modals/ModalProvider';
 import { useDecentModal } from '../../../components/ui/modals/useDecentModal';
 import PageHeader from '../../../components/ui/page/Header/PageHeader';
 import Divider from '../../../components/ui/utils/Divider';
-import { ROLES } from '../../../constants/accessControlRoles';
 import { DAO_ROUTES } from '../../../constants/routes';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
-import useLockedToken from '../../../hooks/DAO/useLockedToken';
 import useSendAssetsActionModal from '../../../hooks/DAO/useSendAssetsActionModal';
 import { useCanUserCreateProposal } from '../../../hooks/utils/useCanUserSubmitProposal';
 import { analyticsEvents } from '../../../insights/analyticsEvents';
@@ -58,14 +56,11 @@ export function SafeProposalTemplatesPage() {
       asset => !asset.possibleSpam && !asset.nativeToken && parseFloat(asset.balance) > 0,
     ).length > 0;
 
-  const { loadTokenState } = useLockedToken();
-
   const handleAirdropSubmit = useCallback(
     async (data: AirdropData) => {
       if (!safeAddress) return;
 
       const totalAmount = data.recipients.reduce((acc, recipient) => acc + recipient.amount, 0n);
-      const tokenState = await loadTokenState(data.asset.tokenAddress, disperse);
       let transactions = [
         {
           targetAddress: data.asset.tokenAddress,
@@ -99,23 +94,6 @@ export function SafeProposalTemplatesPage() {
           ],
         },
       ];
-      if (tokenState.needWhitelist) {
-        transactions = [
-          {
-            targetAddress: data.asset.tokenAddress,
-            ethValue: {
-              bigintValue: 0n,
-              value: '0',
-            },
-            functionName: 'grantRole',
-            parameters: [
-              { signature: 'bytes32', value: ROLES.TRANSFER_FROM_ROLE },
-              { signature: 'address', value: disperse },
-            ],
-          },
-          ...transactions,
-        ];
-      }
 
       resetActions();
       addAction({
@@ -126,7 +104,7 @@ export function SafeProposalTemplatesPage() {
 
       navigate(DAO_ROUTES.proposalWithActionsNew.relative(addressPrefix, safeAddress));
     },
-    [addAction, addressPrefix, disperse, loadTokenState, navigate, resetActions, safeAddress],
+    [addAction, addressPrefix, disperse, navigate, resetActions, safeAddress],
   );
 
   const { open: openAirdropModal } = useDecentModal(ModalType.AIRDROP, {
@@ -143,6 +121,7 @@ export function SafeProposalTemplatesPage() {
         title: tProposalTemplate('templateAirdropTitle'),
         description: tProposalTemplate('templateAirdropDescription'),
         onProposalTemplateClick: openAirdropModal,
+        testId: 'templateAirdrop',
       },
       {
         icon: HourglassMedium,
@@ -155,12 +134,14 @@ export function SafeProposalTemplatesPage() {
             toast.info(tModals('noAssetsWithBalance'));
           }
         },
+        testId: 'templateSablier',
       },
       {
         icon: ArrowsDownUp,
         title: tProposalTemplate('templateTransferTitle'),
         description: tProposalTemplate('templateTransferDescription'),
         onProposalTemplateClick: openSendAssetsModal,
+        testId: 'templateTransfer',
       },
     ];
   }, [
@@ -186,7 +167,10 @@ export function SafeProposalTemplatesPage() {
         ]}
       >
         {canUserCreateProposal && safeAddress && (
-          <Link to={DAO_ROUTES.proposalTemplateNew.relative(addressPrefix, safeAddress)}>
+          <Link
+            to={DAO_ROUTES.proposalTemplateNew.relative(addressPrefix, safeAddress)}
+            data-testid="proposalTemplates-create"
+          >
             <Button minW={0}>
               <AddPlus />
               <Show above="sm">{tCommon('create')}</Show>
@@ -247,6 +231,7 @@ export function SafeProposalTemplatesPage() {
             title={exampleTemplate.title}
             description={exampleTemplate.description}
             onProposalTemplateClick={exampleTemplate.onProposalTemplateClick}
+            testId={exampleTemplate.testId}
           />
         ))}
       </Grid>

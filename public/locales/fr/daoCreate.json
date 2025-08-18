@@ -106,11 +106,5 @@
   "networks": "Réseaux",
   "networkDescription": "Sur quel réseau souhaitez-vous déployer cette DAO ?",
   "attachFractalModuleDescription": "Ce paramètre détermine si le DAO parent pourra exécuter des transactions arbitraires sur le DAO enfant en contournant le processus de vote sur le DAO enfant.",
-  "fractalModuleAttachedDescription": "Ce paramètre ne peut pas être modifié car le module Fractal est déjà attaché au DAO.",
-  "labelTokenLocking": "Verrouillage",
-  "helperTokenLocking": "Si les jetons sont initialement verrouillés.",
-  "labelTokenLocked": "Non transférable",
-  "descTokenUnlocked": "Les jetons sont déverrouillés et peuvent être transférés librement.",
-  "labelTokenUnlocked": "Débloqué",
-  "descTokenLocked": "Les jetons sont initialement verrouillés. Ils ne sont pas transférables, sauf pour la DAO et les adresses figurant sur la liste blanche. Les détenteurs de jetons ont un droit de proposition et de vote normal. La DAO peut voter pour ajouter des adresses à la liste blanche ou pour les déverrouiller."
+  "fractalModuleAttachedDescription": "Ce paramètre ne peut pas être modifié car le module Fractal est déjà attaché au DAO."
 }

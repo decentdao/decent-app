@@ -7,5 +7,6 @@
   "totalError": "{{percentage}合計が100%でなければならない",
   "recipients": "受賞者",
   "addRecipientButton": "受取人の追加",
-  "removeSplitButtonLabel": "スプリットの削除"
+  "removeSplitButtonLabel": "スプリットの削除",
+  "stakingRecipientDisplay": "トークン・ホルダー・ステーキング"
 }

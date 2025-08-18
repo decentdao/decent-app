@@ -1,6 +1,6 @@
 import * as amplitude from '@amplitude/analytics-browser';
 import { Center } from '@chakra-ui/react';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { ProposalBuilder } from '../../../../../components/ProposalBuilder/ProposalBuilder';
@@ -38,18 +38,41 @@ export function SafeProposalWithActionsCreatePage() {
     setTransactions(txs);
   }, [getTransactions, actions, safe]);
 
-  const defaultProposalValues = proposalMetadata
-    ? { ...DEFAULT_PROPOSAL, proposalMetadata: { nonce: safe?.nextNonce, ...proposalMetadata } }
-    : {
-        ...DEFAULT_PROPOSAL,
-        proposalMetadata: { ...DEFAULT_PROPOSAL.proposalMetadata, nonce: safe?.nextNonce },
-      };
+  const defaultProposalValues = useMemo(
+    () =>
+      proposalMetadata
+        ? {
+            ...DEFAULT_PROPOSAL,
+            proposalMetadata: {
+              nonce: safe?.nextNonce,
+              title: proposalMetadata.title,
+              description: proposalMetadata.description,
+              documentationUrl: proposalMetadata.documentationUrl,
+            },
+          }
+        : {
+            ...DEFAULT_PROPOSAL,
+            proposalMetadata: {
+              ...DEFAULT_PROPOSAL.proposalMetadata,
+              nonce: safe?.nextNonce,
+            },
+          },
+    [proposalMetadata, safe?.nextNonce],
+  );
 
   const { addressPrefix } = useNetworkConfigStore();
 
   const HEADER_HEIGHT = useHeaderHeight();
   const { t } = useTranslation('proposal');
   const navigate = useNavigate();
+
+  const formInitialValues = useMemo(
+    () => ({
+      ...defaultProposalValues,
+      transactions,
+    }),
+    [defaultProposalValues, transactions],
+  );
 
   if (!type || !safe?.address || !safe) {
     return (
@@ -81,13 +104,9 @@ export function SafeProposalWithActionsCreatePage() {
     createProposalBlocked: boolean;
     onStepChange: (step: CreateProposalSteps) => void;
   }) => <CreateProposalButton isDisabled={createProposalBlocked} />;
-
   return (
     <ProposalBuilder
-      initialValues={{
-        ...defaultProposalValues,
-        transactions,
-      }}
+      initialValues={formInitialValues}
       pageHeaderTitle={t('createProposal', { ns: 'proposal' })}
       pageHeaderBreadcrumbs={pageHeaderBreadcrumbs}
       pageHeaderButtonClickHandler={pageHeaderButtonClickHandler}

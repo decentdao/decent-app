@@ -23,10 +23,6 @@
   "changeQuorumThreshold": "Atualizar o limiar do quórum",
   "deployToken": "Implantar token",
   "updateERC20Address": "Atualizar o endereço ERC20",
-  "updateTokenTransferable": "Token de atualização transferível",
-  "updateTokenMaxTotalSupply": "Atualizar Token Fornecimento total máximo",
-  "addTokenWhitelist": "Adicionar lista branca de tokens",
-  "removeTokenWhitelist": "Remover lista branca de tokens",
   "deployStakingContract": "Implementar contrato de piquetagem",
   "updateStakingMinPeriod": "Atualizar período mínimo de piquetagem",
   "addStakingRewardTokens": "Adicionar fichas de recompensa de aposta"

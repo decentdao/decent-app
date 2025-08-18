@@ -7,9 +7,10 @@ interface ContentBoxProps {
   children: ReactNode;
   containerBoxProps?: BoxProps;
   onClick?: (event: MouseEvent<HTMLDivElement>) => void;
+  testId?: string;
 }
 
-function ContentBox({ title, children, containerBoxProps, onClick }: ContentBoxProps) {
+function ContentBox({ title, children, containerBoxProps, onClick, testId }: ContentBoxProps) {
   return (
     <Box
       rounded="lg"
@@ -19,6 +20,7 @@ function ContentBox({ title, children, containerBoxProps, onClick }: ContentBoxP
       {...containerBoxProps}
       cursor={!!onClick ? 'pointer' : 'default'}
       onClick={onClick}
+      data-testid={testId}
     >
       {title && <ContentBoxTitle>{title}</ContentBoxTitle>}
       <Box

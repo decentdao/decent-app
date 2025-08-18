@@ -1,4 +1,4 @@
-import { abis, legacy } from '@decentdao/decent-contracts';
+import { legacy } from '@decentdao/decent-contracts';
 import {
   checkAndEncodeArgs,
   HATS_MODULES_FACTORY_ABI,
@@ -28,7 +28,6 @@ import { HatsAbi } from '../../assets/abi/HatsAbi';
 import HatsAccount1ofNAbi from '../../assets/abi/HatsAccount1ofN';
 import { HatsElectionsEligibilityAbi } from '../../assets/abi/HatsElectionsEligibilityAbi';
 import { ZodiacModuleProxyFactoryAbi } from '../../assets/abi/ZodiacModuleProxyFactoryAbi';
-import { ROLES } from '../../constants/accessControlRoles';
 import { ERC6551_REGISTRY_SALT } from '../../constants/common';
 import {
   linearERC20VotingWithWhitelistSetupParams,
@@ -64,7 +63,6 @@ import { prepareSendAssetsActionData } from '../../utils/dao/prepareSendAssetsAc
 import { getVoteSelectorAndValidator } from '../../utils/gaslessVoting';
 import useSubmitProposal from '../DAO/proposal/useSubmitProposal';
 import { useCurrentDAOKey } from '../DAO/useCurrentDAOKey';
-import useLockedToken from '../DAO/useLockedToken';
 import useCreateSablierStream from '../streams/useCreateSablierStream';
 import useNetworkPublicClient from '../useNetworkPublicClient';
 import {
@@ -128,7 +126,6 @@ export default function useCreateRoles() {
       accountAbstraction,
     },
   } = useNetworkConfigStore();
-  const { loadTokenState } = useLockedToken();
 
   const { t } = useTranslation(['roles', 'navigation', 'modals', 'common']);
 
@@ -537,34 +534,6 @@ export default function useCreateRoles() {
     [],
   );
 
-  const createWhitelistSablierTransactions = useCallback(
-    async (payments: SablierPaymentFormValues[]) => {
-      const sablierPayments = parseSablierPaymentsFromFormRolePayments(payments);
-      const sablierUniqueAssets = [...new Set(sablierPayments.map(sp => sp.asset))];
-      const isLinearWhitelistedOfStreams = await Promise.allSettled(
-        sablierUniqueAssets.map(asset => loadTokenState(asset, sablierV2LockupLinear)),
-      );
-      return sablierUniqueAssets
-        .filter((_, index) => {
-          return (
-            isLinearWhitelistedOfStreams[index].status === 'fulfilled' &&
-            isLinearWhitelistedOfStreams[index].value.needWhitelist
-          );
-        })
-        .map(asset => {
-          return {
-            targetAddress: asset,
-            calldata: encodeFunctionData({
-              abi: abis.deployables.VotesERC20V1,
-              functionName: 'grantRole',
-              args: [ROLES.TRANSFER_FROM_ROLE, sablierV2LockupLinear],
-            }),
-          };
-        });
-    },
-    [loadTokenState, parseSablierPaymentsFromFormRolePayments, sablierV2LockupLinear],
-  );
-
   const createHatStructsForNewTreeFromRolesFormValues = useCallback(
     async (modifiedRoles: RoleHatFormValueEdited[]) => {
       return Promise.all(
@@ -670,10 +639,6 @@ export default function useCreateRoles() {
         isMutable: true,
       };
 
-      const whitelistSablierTxs = await createWhitelistSablierTransactions(
-        modifiedHats.flatMap(mH => mH.payments),
-      );
-
       const addedHats = await createHatStructsForNewTreeFromRolesFormValues(modifiedHats);
       const createAndDeclareTreeData = encodeFunctionData({
         abi: legacy.abis.DecentHatsCreationModule,
@@ -696,20 +661,14 @@ export default function useCreateRoles() {
       });
 
       return {
-        targets: [
-          ...whitelistSablierTxs.map(({ targetAddress }) => targetAddress),
-          safeAddress,
-          decentHatsCreationModule,
-          safeAddress,
-        ],
+        targets: [safeAddress, decentHatsCreationModule, safeAddress],
         calldatas: [
-          ...whitelistSablierTxs.map(({ calldata }) => calldata),
           enableDecentHatsModuleData,
           createAndDeclareTreeData,
           disableDecentHatsModuleData,
         ],
         metaData: proposalMetadata,
-        values: [...whitelistSablierTxs.map(() => 0n), 0n, 0n, 0n],
+        values: [0n, 0n, 0n],
       };
     },
     [
@@ -718,7 +677,6 @@ export default function useCreateRoles() {
       decentHatsCreationModule,
       subgraphInfo?.daoName,
       ipfsClient,
-      createWhitelistSablierTransactions,
       createHatStructsForNewTreeFromRolesFormValues,
       hatsProtocol,
       erc6551Registry,
@@ -1386,11 +1344,6 @@ export default function useCreateRoles() {
         )),
       );
 
-      const whitelistSablierTransactions = await createWhitelistSablierTransactions(
-        modifiedHats.flatMap(mH => mH.payments),
-      );
-      allTxs.push(...whitelistSablierTransactions);
-
       for (let index = 0; index < modifiedHats.length; index++) {
         const formHat = modifiedHats[index];
         if (formHat.name === undefined || formHat.description === undefined) {
@@ -1762,7 +1715,6 @@ export default function useCreateRoles() {
       hatsTree,
       safeAddress,
       prepareAdminHatTxs,
-      createWhitelistSablierTransactions,
       linearVotingErc20WithHatsWhitelistingAddress,
       linearVotingErc721WithHatsWhitelistingAddress,
       prepareNewHatTxs,

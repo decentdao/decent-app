@@ -2,7 +2,6 @@ import {
   CreatorFormState,
   GovernanceType,
   TokenCreationType,
-  TokenLockType,
   VotingStrategyType,
 } from '../../types';
 
@@ -21,7 +20,6 @@ export const initialState: CreatorFormState = {
       value: '',
     },
     tokenSymbol: '',
-    locked: TokenLockType.UNLOCKED,
     tokenAllocations: [
       {
         address: '',
@@ -32,9 +30,6 @@ export const initialState: CreatorFormState = {
     ],
     tokenImportAddress: undefined,
     parentAllocationAmount: {
-      value: '',
-    },
-    maxTotalSupply: {
       value: '',
     },
     requiredProposerWeight: {

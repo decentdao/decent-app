@@ -1,6 +1,5 @@
 import * as amplitude from '@amplitude/analytics-browser';
 import { Center } from '@chakra-ui/react';
-import { abis } from '@decentdao/decent-contracts';
 import groupBy from 'lodash.groupby';
 import { useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -15,11 +14,9 @@ import { GoToTransactionsStepButton } from '../../../../../components/ProposalBu
 import { DEFAULT_SABLIER_PROPOSAL } from '../../../../../components/ProposalBuilder/constants';
 import NoDataCard from '../../../../../components/ui/containers/NoDataCard';
 import { BarLoader } from '../../../../../components/ui/loaders/BarLoader';
-import { ROLES } from '../../../../../constants/accessControlRoles';
 import { useHeaderHeight } from '../../../../../constants/common';
 import { DAO_ROUTES } from '../../../../../constants/routes';
 import { useCurrentDAOKey } from '../../../../../hooks/DAO/useCurrentDAOKey';
-import useLockedToken from '../../../../../hooks/DAO/useLockedToken';
 import { useFilterSpamTokens } from '../../../../../hooks/utils/useFilterSpamTokens';
 import { analyticsEvents } from '../../../../../insights/analyticsEvents';
 import { useDAOStore } from '../../../../../providers/App/AppProvider';
@@ -49,7 +46,6 @@ export function SafeSablierProposalCreatePage() {
   const { t } = useTranslation('proposal');
   const navigate = useNavigate();
   const { proposalMetadata: actionsProposalMetadata } = useProposalActionsStore();
-  const { loadTokenState } = useLockedToken();
 
   const prepareProposalData = useCallback(
     async (values: CreateProposalForm | CreateSablierProposalForm) => {
@@ -64,16 +60,8 @@ export function SafeSablierProposalCreatePage() {
       const calldatas: Hash[] = [];
 
       const groupedStreams = groupBy(streams, 'tokenAddress');
-      const isBatchWhitelistedOfStreams = await Promise.allSettled(
-        Object.keys(groupedStreams).map(token => loadTokenState(token as Address, sablierV2Batch)),
-      );
-      const isLockupWhitelistedOfStreams = await Promise.allSettled(
-        Object.keys(groupedStreams).map(token =>
-          loadTokenState(token as Address, sablierV2LockupTranched),
-        ),
-      );
 
-      Object.keys(groupedStreams).forEach((token, index) => {
+      Object.keys(groupedStreams).forEach(token => {
         const tokenAddress = getAddress(token);
         const tokenStreams = groupedStreams[token];
         const approvedTotal = tokenStreams.reduce(
@@ -89,34 +77,6 @@ export function SafeSablierProposalCreatePage() {
         targets.push(tokenAddress);
         txValues.push(0n);
         calldatas.push(approveCalldata);
-
-        if (
-          isBatchWhitelistedOfStreams[index].status === 'fulfilled' &&
-          isBatchWhitelistedOfStreams[index].value.needWhitelist
-        ) {
-          const whitelistCalldata = encodeFunctionData({
-            abi: abis.deployables.VotesERC20V1,
-            functionName: 'grantRole',
-            args: [ROLES.TRANSFER_FROM_ROLE, sablierV2Batch],
-          });
-          targets.push(tokenAddress);
-          txValues.push(0n);
-          calldatas.push(whitelistCalldata);
-        }
-
-        if (
-          isLockupWhitelistedOfStreams[index].status === 'fulfilled' &&
-          isLockupWhitelistedOfStreams[index].value.needWhitelist
-        ) {
-          const whitelistCalldata = encodeFunctionData({
-            abi: abis.deployables.VotesERC20V1,
-            functionName: 'grantRole',
-            args: [ROLES.TRANSFER_FROM_ROLE, sablierV2LockupTranched],
-          });
-          targets.push(tokenAddress);
-          txValues.push(0n);
-          calldatas.push(whitelistCalldata);
-        }
 
         const createStreamsCalldata = encodeFunctionData({
           abi: SablierV2BatchAbi,
@@ -154,7 +114,7 @@ export function SafeSablierProposalCreatePage() {
         metaData: proposalMetadata,
       };
     },
-    [loadTokenState, sablierV2Batch, sablierV2LockupTranched, safe?.address],
+    [sablierV2Batch, sablierV2LockupTranched, safe?.address],
   );
 
   const HEADER_HEIGHT = useHeaderHeight();

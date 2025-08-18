@@ -34,10 +34,6 @@ export const useERC20TokenSchema = () => {
             then: __schema => __schema.required(),
           }),
         }),
-        locked: Yup.string().when('tokenCreationType', {
-          is: (value: TokenCreationType) => !!value && value === TokenCreationType.NEW,
-          then: __schema => __schema.required(),
-        }),
         tokenImportAddress: Yup.string().when('tokenCreationType', {
           is: (value: TokenCreationType) => !!value && value === TokenCreationType.IMPORTED,
           then: __schema => __schema.test(addressValidationTestSimple).test(validERC20Address),

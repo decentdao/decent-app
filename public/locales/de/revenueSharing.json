@@ -7,5 +7,6 @@
   "totalError": "{{percentage}Summe muss 100% betragen",
   "recipients": "Empfänger",
   "addRecipientButton": "Empfänger hinzufügen",
-  "removeSplitButtonLabel": "Split entfernen"
+  "removeSplitButtonLabel": "Split entfernen",
+  "stakingRecipientDisplay": "Abstecken von Wertmarkenhaltern"
 }

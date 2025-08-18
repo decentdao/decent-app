@@ -7,5 +7,6 @@
   "totalError": "{{percentage}}% Total must equal 100%",
   "recipients": "Recipients",
   "addRecipientButton": "Add Recipient",
-  "removeSplitButtonLabel": "Remove Split"
+  "removeSplitButtonLabel": "Remove Split",
+  "stakingRecipientDisplay": "代幣持有人定價"
 }

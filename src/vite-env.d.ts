@@ -21,8 +21,6 @@ interface ImportMetaEnv {
 
   readonly VITE_APP_FIREBASE_CONFIG: string;
   readonly VITE_APP_FIREBASE_TIME_INTERVALS: number;
-
-  readonly VITE_APP_GIT_HASH: string;
 }
 
 interface ImportMeta {

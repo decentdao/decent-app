@@ -1,18 +1,25 @@
-import { abis } from '@decentdao/decent-contracts';
+import { legacy } from '@decentdao/decent-contracts';
 import { useCallback } from 'react';
-import { Address, encodeFunctionData, encodePacked, getCreate2Address, keccak256 } from 'viem';
+import {
+  encodeAbiParameters,
+  encodeFunctionData,
+  encodePacked,
+  getCreate2Address,
+  keccak256,
+  parseAbiParameters,
+} from 'viem';
 import { useAccount } from 'wagmi';
 import { getRandomBytes } from '../../helpers';
 import { calculateTokenAllocations } from '../../models/AzoriusTxBuilder';
 import { generateContractByteCodeLinear, generateSalt } from '../../models/helpers/utils';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
-import { AzoriusERC20DAO, CreateProposalTransaction, TokenLockType } from '../../types';
+import { AzoriusERC20DAO, CreateProposalTransaction } from '../../types';
 import { useNetworkWalletClient } from '../useNetworkWalletClient';
 import { useCurrentDAOKey } from './useCurrentDAOKey';
 
 export default function useDeployTokenTx() {
   const {
-    contracts: { votesErc20LockableMasterCopy, keyValuePairs, zodiacModuleProxyFactory },
+    contracts: { votesErc20MasterCopy, keyValuePairs, zodiacModuleProxyFactory },
   } = useNetworkConfigStore();
   const user = useAccount();
   const { data: walletClient } = useNetworkWalletClient();
@@ -29,8 +36,8 @@ export default function useDeployTokenTx() {
 
       // deploy(and allocate) token if token is not imported
       if (!daoData.isTokenImported) {
-        if (!votesErc20LockableMasterCopy) {
-          throw new Error('VotesERC20LockableMasterCopy is not deployed');
+        if (!votesErc20MasterCopy) {
+          throw new Error('VotesErc20MasterCopy is not deployed');
         }
 
         const azoriusGovernanceDaoData = daoData as AzoriusERC20DAO;
@@ -38,30 +45,20 @@ export default function useDeployTokenTx() {
           azoriusGovernanceDaoData,
           safeAddress,
         );
-        const allocations: { to: Address; amount: bigint }[] = tokenAllocationsOwners.map(
-          (o, i) => ({
-            to: o,
-            amount: tokenAllocationsValues[i],
-          }),
+        const encodedInitTokenData = encodeAbiParameters(
+          parseAbiParameters('string, string, address[], uint256[]'),
+          [
+            azoriusGovernanceDaoData.tokenName,
+            azoriusGovernanceDaoData.tokenSymbol,
+            tokenAllocationsOwners,
+            tokenAllocationsValues,
+          ],
         );
         const tokenNonce = getRandomBytes();
         const encodedSetupTokenData = encodeFunctionData({
-          abi: abis.deployables.VotesERC20V1,
-          functionName: 'initialize',
-          args: [
-            // metadata_
-            {
-              name: azoriusGovernanceDaoData.tokenName,
-              symbol: azoriusGovernanceDaoData.tokenSymbol,
-            },
-            allocations,
-            // owner_
-            safeAddress,
-            // locked_
-            azoriusGovernanceDaoData.locked === TokenLockType.LOCKED,
-            // maxTotalSupply_
-            azoriusGovernanceDaoData.maxTotalSupply,
-          ],
+          abi: legacy.abis.VotesERC20,
+          functionName: 'setUp',
+          args: [encodedInitTokenData],
         });
         txs.push({
           targetAddress: zodiacModuleProxyFactory,
@@ -73,7 +70,7 @@ export default function useDeployTokenTx() {
           parameters: [
             {
               signature: 'address',
-              value: votesErc20LockableMasterCopy,
+              value: votesErc20MasterCopy,
             },
             {
               signature: 'bytes',
@@ -86,7 +83,7 @@ export default function useDeployTokenTx() {
           ],
         });
 
-        const tokenByteCodeLinear = generateContractByteCodeLinear(votesErc20LockableMasterCopy);
+        const tokenByteCodeLinear = generateContractByteCodeLinear(votesErc20MasterCopy);
         const tokenSalt = generateSalt(encodedSetupTokenData, tokenNonce);
         predictedTokenAddress = getCreate2Address({
           from: zodiacModuleProxyFactory,
@@ -121,7 +118,7 @@ export default function useDeployTokenTx() {
       keyValuePairs,
       safeAddress,
       user.address,
-      votesErc20LockableMasterCopy,
+      votesErc20MasterCopy,
       walletClient,
       zodiacModuleProxyFactory,
     ],
