@@ -7,7 +7,6 @@ import {
   paymentSorterByActiveStatus,
   paymentSorterByStartDate,
   paymentSorterByWithdrawAmount,
-  canUserCancelPayment,
 } from '../../../store/roles/rolesStoreUtils';
 import { RoleFormValues, SablierPaymentFormValues } from '../../../types/roles';
 import Divider from '../../ui/utils/Divider';
@@ -84,6 +83,8 @@ export function RoleFormPaymentStreams() {
               iconSpacing={0}
               onClick={async () => {
                 pushPayment({
+                  isStreaming: () => false,
+                  canUserCancel: () => false,
                   isCancelling: false,
                   isValidatedAndSaved: false,
                   cancelable: true, // Newly added payments are cancelable by default
@@ -129,7 +130,7 @@ export function RoleFormPaymentStreams() {
                 <RolePaymentDetails
                   key={thisPaymentIndex}
                   onClick={
-                    canUserCancelPayment(payment)
+                    payment.canUserCancel()
                       ? () => setFieldValue('roleEditing.roleEditingPaymentIndex', thisPaymentIndex)
                       : undefined
                   }
@@ -142,7 +143,8 @@ export function RoleFormPaymentStreams() {
                     startDate: payment.startDate,
                     cliffDate: payment.cliffDate,
                     isCancelled: payment.isCancelled ?? false,
-                    isCancelableStream: payment.cancelable ?? true,
+                    isStreaming: payment.isStreaming,
+                    isCancelableStream: payment.cancelable,
                     isCancelling: payment.isCancelling,
                   }}
                 />
