@@ -18,9 +18,8 @@ import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { getAddress, Hex } from 'viem';
 import { DETAILS_BOX_SHADOW } from '../../../constants/common';
-import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import { useNetworkEnsAddressAsync } from '../../../hooks/useNetworkEnsAddress';
-import { useGlobalStore } from '../../../store/store';
+import { useRolesStore } from '../../../store/roles/useRolesStore';
 import { RoleFormTermStatus, RoleFormValues } from '../../../types/roles';
 import { DatePicker } from '../../ui/forms/DatePicker';
 import { AddressInput } from '../../ui/forms/EthAddressInput';
@@ -288,16 +287,15 @@ function RoleTermExpiredTerms({
 export default function RoleFormTerms() {
   const { t } = useTranslation('roles');
   const { values, setFieldValue } = useFormikContext<RoleFormValues>();
-  const { daoKey } = useCurrentDAOKey();
-  const { getHat } = useGlobalStore();
+  const { getHat } = useRolesStore();
   const roleFormHatId = values.roleEditing?.id;
   const roleHatTerms = useMemo(() => {
-    if (!roleFormHatId || !daoKey) {
+    if (!roleFormHatId) {
       return undefined;
     }
-    const hat = getHat(daoKey, roleFormHatId);
+    const hat = getHat(roleFormHatId);
     return hat?.roleTerms;
-  }, [getHat, daoKey, roleFormHatId]);
+  }, [getHat, roleFormHatId]);
 
   const roleFormTerms = useMemo(
     () => values.roleEditing?.roleTerms || [],

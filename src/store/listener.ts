@@ -13,6 +13,7 @@ import {
 import { useAccountListeners } from './listeners/account';
 import { useGovernanceListeners } from './listeners/governance';
 import { useKeyValuePairsListener } from './listeners/keyValuePairs';
+import { useRolesStore } from './roles/useRolesStore';
 import { useGlobalStore } from './store';
 
 /**
@@ -31,8 +32,9 @@ export const useDAOStoreListener = ({ daoKey }: { daoKey: DAOKey | undefined }) 
     updateProposalState,
     setGuardAccountData,
     setGaslessVotingData,
-    setHatKeyValuePairData,
   } = useGlobalStore();
+
+  const { setHatKeyValuePairData } = useRolesStore();
 
   const governance = daoKey ? getGovernance(daoKey) : undefined;
   const lockedVotesTokenAddress = governance?.lockReleaseAddress;
@@ -186,7 +188,8 @@ export const useDAOStoreListener = ({ daoKey }: { daoKey: DAOKey | undefined }) 
     }) => {
       // TODO: Implement setting to global store in scope of ENG-632
       if (daoKey) {
-        setHatKeyValuePairData(daoKey, {
+        setHatKeyValuePairData({
+          daoKey,
           contextChainId,
           hatsTreeId,
           streamIdsToHatIds,

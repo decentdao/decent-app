@@ -14,8 +14,7 @@ import { useCanUserCreateProposal } from '../../hooks/utils/useCanUserSubmitProp
 import { useDAOStore } from '../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
 import { useProposalActionsStore } from '../../store/actions/useProposalActionsStore';
-import { isPaymentStreaming } from '../../store/roles/rolesStoreUtils';
-import { useGlobalStore } from '../../store/store';
+import { useRolesStore } from '../../store/roles/useRolesStore';
 import { BigIntValuePair, ProposalActionType } from '../../types';
 import { DEFAULT_DATE_FORMAT, formatCoin } from '../../utils';
 import { prepareWithdrawToDAOActionData } from '../../utils/dao/prepareWithdrawToDAOActionData';
@@ -140,18 +139,13 @@ interface PaymentDetailsTopProps {
     amount: BigIntValuePair;
     isCancelled: boolean;
     isCancelling?: boolean;
+    isStreaming: () => boolean;
     isCancelableStream: boolean;
   };
-  isStreaming: boolean;
   onClick?: () => void;
   isActiveStream: boolean;
 }
-function PaymentDetailsTop({
-  payment,
-  onClick,
-  isActiveStream,
-  isStreaming,
-}: PaymentDetailsTopProps) {
+function PaymentDetailsTop({ payment, onClick, isActiveStream }: PaymentDetailsTopProps) {
   const { t } = useTranslation(['roles']);
   const isPaymentCancelled = payment.isCancelling || payment.isCancelled;
   return (
@@ -214,7 +208,7 @@ function PaymentDetailsTop({
                 {t('nonCancelable')}
               </Tag>
             )}
-            <GreenStreamingDot isStreaming={isStreaming} />
+            <GreenStreamingDot isStreaming={payment.isStreaming()} />
           </Flex>
         </Flex>
       </Flex>
@@ -342,6 +336,7 @@ interface RolePaymentDetailsProps {
     isCancelled: boolean;
     isCancelling?: boolean;
     isCancelableStream: boolean;
+    isStreaming: () => boolean;
     withdrawableAmount?: bigint;
   };
   onClick?: () => void;
@@ -362,7 +357,7 @@ export function RolePaymentDetails({
   } = useDAOStore({ daoKey });
   const { address: connectedAccount } = useAccount();
   const { addressPrefix } = useNetworkConfigStore();
-  const { refreshWithdrawableAmount } = useGlobalStore();
+  const { refreshWithdrawableAmount } = useRolesStore();
   const navigate = useNavigate();
   const publicClient = useNetworkPublicClient();
   const canWithdraw = useMemo(() => {
@@ -407,11 +402,8 @@ export function RolePaymentDetails({
       if (!payment.streamId) {
         throw new Error('Payment stream ID is missing');
       }
-      if (!daoKey) {
-        throw new Error('DAO key is missing');
-      }
 
-      refreshWithdrawableAmount(daoKey, roleHatId, payment.streamId, publicClient);
+      refreshWithdrawableAmount(roleHatId, payment.streamId, publicClient);
     },
     withdrawInformation: {
       withdrawableAmount: payment.withdrawableAmount,
@@ -421,12 +413,9 @@ export function RolePaymentDetails({
   });
   const { addAction, resetActions } = useProposalActionsStore();
   const { t } = useTranslation('roles');
-  const { getHat } = useGlobalStore();
+  const { getHat } = useRolesStore();
 
   const handleClickWithdraw = useCallback(() => {
-    if (!daoKey) {
-      throw new Error('DAO key is missing');
-    }
     if (safe?.address) {
       if (isDAORecipient && roleHatId) {
         const withdrawableAmount = formatCoin(
@@ -436,7 +425,7 @@ export function RolePaymentDetails({
           payment.asset.symbol,
         );
 
-        const roleName = getHat(daoKey, roleHatId)?.name;
+        const roleName = getHat(roleHatId)?.name;
 
         if (
           payment.streamId &&
@@ -490,8 +479,10 @@ export function RolePaymentDetails({
     safe?.address,
     t,
     withdraw,
-    daoKey,
   ]);
+
+  const isActiveStream =
+    !payment.isCancelled && Date.now() < payment.endDate.getTime() && !payment.isCancelling;
 
   return (
     <Flex
@@ -508,20 +499,15 @@ export function RolePaymentDetails({
       >
         <PaymentDetailsTop
           payment={payment}
-          isStreaming={isPaymentStreaming({
-            startDate: payment.startDate,
-            cliffDate: payment.cliffDate,
-            endDate: payment.endDate,
-            isCancelled: payment.isCancelled,
-          })}
           onClick={onClick}
-          isActiveStream={!payment.isCancelled}
+          isActiveStream={isActiveStream}
         />
+
         <PaymentDetailsBottom
           payment={payment}
           assignedTerm={assignedTerm}
           canWithdraw={canWithdraw}
-          isDAORecipient={!!isDAORecipient}
+          isDAORecipient={isDAORecipient}
           handleClickWithdraw={handleClickWithdraw}
         />
       </Box>

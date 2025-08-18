@@ -7,8 +7,8 @@ import { Blocker, useNavigate } from 'react-router-dom';
 import { Hex } from 'viem';
 import { DAO_ROUTES } from '../../../constants/routes';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
-import { useDAOStore } from '../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
+import { useRolesStore } from '../../../store/roles/useRolesStore';
 import { EditBadgeStatus, RoleFormValues, RoleHatFormValue } from '../../../types/roles';
 import RoleFormInfo from './RoleFormInfo';
 import { RoleFormMember } from './RoleFormMember';
@@ -24,16 +24,14 @@ export function RoleFormTabs({
   pushRole: (roleHatFormValue: RoleHatFormValue) => void;
   blocker: Blocker;
 }) {
-  const { daoKey, safeAddress } = useCurrentDAOKey();
-  const {
-    roles: { hatsTree },
-  } = useDAOStore({ daoKey });
+  const { hatsTree } = useRolesStore();
 
   const navigate = useNavigate();
   const { addressPrefix } = useNetworkConfigStore();
   const { editedRoleData, isRoleUpdated, existingRoleHat } = useRoleFormEditedRole({ hatsTree });
   const { t } = useTranslation(['roles', 'common']);
   const { values, setFieldValue, errors, setTouched } = useFormikContext<RoleFormValues>();
+  const { safeAddress } = useCurrentDAOKey();
   useEffect(() => {
     if (values.hats.length && !values.roleEditing) {
       const role = values.hats.find(hat => hat.id === hatId);

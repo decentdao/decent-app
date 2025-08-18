@@ -1,4 +1,5 @@
 import { Outlet } from 'react-router-dom';
+import { useHatsTree } from '../../hooks/DAO/loaders/useHatsTree';
 import { useCurrentDAOKey } from '../../hooks/DAO/useCurrentDAOKey';
 import { useAutomaticSwitchChain } from '../../hooks/utils/useAutomaticSwitchChain';
 import { usePageTitle } from '../../hooks/utils/usePageTitle';
@@ -15,6 +16,8 @@ export function SafeController() {
   useUpdateSafeData(safeAddress);
   usePageTitle();
   useTemporaryProposals();
+
+  useHatsTree();
 
   const { errorLoading } = useDAOStoreFetcher({ daoKey, safeAddress, invalidQuery, wrongNetwork });
   useDAOStoreListener({ daoKey });

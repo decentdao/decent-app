@@ -319,7 +319,24 @@ const getPaymentStreams = async (
         startDate,
         endDate,
         cliffDate,
+        isStreaming: () => {
+          const start = !lockupLinearStream.cliff
+            ? startDate.getTime()
+            : cliffDate !== undefined
+              ? cliffDate.getTime()
+              : undefined;
+          const end = endDate ? endDate.getTime() : undefined;
+          const cancelled = lockupLinearStream.canceled;
+          const now = new Date().getTime();
+
+          return !cancelled && !!start && !!end && start <= now && end > now;
+        },
         cancelable: lockupLinearStream.cancelable,
+        canUserCancel: () =>
+          lockupLinearStream.cancelable &&
+          !lockupLinearStream.canceled &&
+          !!endDate &&
+          endDate.getTime() > Date.now(),
       };
     });
 
@@ -549,31 +566,4 @@ export const paymentSorterByWithdrawAmount = (
   if (!b?.withdrawableAmount) return -1;
 
   return Number(a.withdrawableAmount - b.withdrawableAmount); // Sort by amount
-};
-
-export const isPaymentStreaming = (payment: {
-  startDate?: Date;
-  cliffDate?: Date;
-  endDate?: Date;
-  isCancelled?: boolean;
-}): boolean => {
-  if (payment.isCancelled) return false;
-  const start = payment.cliffDate?.getTime() ?? payment.startDate?.getTime();
-  const end = payment.endDate?.getTime();
-  if (!start || !end) return false;
-  const now = Date.now();
-  return start <= now && end > now;
-};
-
-export const canUserCancelPayment = (payment: {
-  cancelable?: boolean;
-  isCancelled?: boolean;
-  endDate?: Date;
-}): boolean => {
-  return (
-    !!payment.cancelable &&
-    !payment.isCancelled &&
-    !!payment.endDate &&
-    payment.endDate.getTime() > Date.now()
-  );
 };
