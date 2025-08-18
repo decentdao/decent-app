@@ -19,8 +19,9 @@ import { getRandomBytes } from '../../../../helpers';
 import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
 import { useNavigationBlocker } from '../../../../hooks/utils/useNavigationBlocker';
 import { analyticsEvents } from '../../../../insights/analyticsEvents';
+import { useDAOStore } from '../../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../../providers/NetworkConfig/useNetworkConfigStore';
-import { useRolesStore } from '../../../../store/roles/useRolesStore';
+import { useGlobalStore } from '../../../../store/store';
 import { RoleFormValues, RoleHatFormValue } from '../../../../types/roles';
 
 export function SafeRolesEditPage() {
@@ -29,12 +30,15 @@ export function SafeRolesEditPage() {
   }, []);
 
   const { t } = useTranslation(['roles', 'navigation', 'modals', 'common']);
-  const { safeAddress } = useCurrentDAOKey();
+  const { safeAddress, daoKey } = useCurrentDAOKey();
   const { addressPrefix } = useNetworkConfigStore();
 
   const { values, setFieldValue } = useFormikContext<RoleFormValues>();
 
-  const { hatsTree, getHat } = useRolesStore();
+  const {
+    roles: { hatsTree },
+  } = useDAOStore({ daoKey });
+  const { getHat } = useGlobalStore();
 
   const navigate = useNavigate();
 
@@ -133,7 +137,8 @@ export function SafeRolesEditPage() {
             />
           )}
           {values.hats.map(hat => {
-            const existingRole = getHat(hat.id);
+            if (!daoKey) return null;
+            const existingRole = getHat(daoKey, hat.id);
             const isCurrentTermActive = existingRole?.roleTerms.currentTerm?.isActive;
             const isMemberTermPending =
               !isCurrentTermActive && existingRole?.wearerAddress !== hat.roleTerms?.[0]?.nominee;
