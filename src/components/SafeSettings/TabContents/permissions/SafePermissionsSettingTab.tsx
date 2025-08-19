@@ -5,7 +5,6 @@ import { useTranslation } from 'react-i18next';
 import PencilWithLineIcon from '../../../../assets/theme/custom/icons/PencilWithLineIcon';
 import { NEUTRAL_2_82_TRANSPARENT } from '../../../../constants/common';
 import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
-import { useCanUserCreateProposal } from '../../../../hooks/utils/useCanUserSubmitProposal';
 import { useDAOStore } from '../../../../providers/App/AppProvider';
 import { AzoriusGovernance } from '../../../../types';
 import NoDataCard from '../../../ui/containers/NoDataCard';
@@ -25,11 +24,10 @@ export function SafePermissionsSettingTab() {
     node: { safe },
   } = useDAOStore({ daoKey });
 
-  const { canUserCreateProposal } = useCanUserCreateProposal();
   const azoriusGovernance = governance as AzoriusGovernance;
   const { votesToken, erc721Tokens } = azoriusGovernance;
 
-  const { values } = useFormikContext<SafeSettingsEdits>();
+  const { values, status: { readOnly } = {} } = useFormikContext<SafeSettingsEdits>();
 
   const { open: openAddCreateProposalPermissionModal } = useDecentModal(
     ModalType.ADD_CREATE_PROPOSAL_PERMISSION,
@@ -145,7 +143,7 @@ export function SafePermissionsSettingTab() {
                     </Text>
                   </Box>
                 </Flex>
-                {canUserCreateProposal && (
+                {!readOnly && (
                   <IconButton
                     variant="secondary"
                     size="icon-md"
@@ -159,7 +157,7 @@ export function SafePermissionsSettingTab() {
               </Flex>
             </Box>
           )}
-          {canUserCreateProposal && (
+          {!readOnly && (
             <Flex flexDir="column">
               <Divider />
               <Button

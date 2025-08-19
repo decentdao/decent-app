@@ -1,7 +1,7 @@
 import { NumberInputProps, NumberInput, NumberInputField, Text, Flex } from '@chakra-ui/react';
 import { useState } from 'react';
 import { formatPercentageV1 } from '../../../utils';
-export function NumberInputPercentage(props: NumberInputProps) {
+export function NumberInputPercentage(props: NumberInputProps & { isReadOnly?: boolean }) {
   const [showInput, setShowInput] = useState(false);
   const invalid = props.isInvalid;
   const invalidState = {
@@ -21,10 +21,12 @@ export function NumberInputPercentage(props: NumberInputProps) {
         px="1rem"
         alignItems="center"
         _hover={{
-          bg: 'color-alpha-white-950',
+          bg: props.isReadOnly ? 'transparent' : 'color-alpha-white-950',
         }}
         onClick={() => {
-          setShowInput(true);
+          if (!props.isReadOnly) {
+            setShowInput(true);
+          }
         }}
         onBlur={() => {
           setShowInput(false);
@@ -32,7 +34,7 @@ export function NumberInputPercentage(props: NumberInputProps) {
         {...(invalid ? invalidState : {})}
       >
         <Text
-          cursor="pointer"
+          cursor={props.isReadOnly ? "default" : "pointer"}
           w="full"
           position="relative"
           sx={{

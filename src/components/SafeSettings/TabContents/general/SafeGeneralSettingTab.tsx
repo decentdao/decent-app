@@ -3,7 +3,6 @@ import { useFormikContext } from 'formik';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
-import { useCanUserCreateProposal } from '../../../../hooks/utils/useCanUserSubmitProposal';
 import { createAccountSubstring } from '../../../../hooks/utils/useGetAccountName';
 import { useDAOStore } from '../../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../../providers/NetworkConfig/useNetworkConfigStore';
@@ -17,7 +16,7 @@ import { SettingsContentBox } from '../../SettingsContentBox';
 
 export function SafeGeneralSettingTab() {
   const { t } = useTranslation('settings');
-  const { setFieldValue, values: formValues, errors } = useFormikContext<SafeSettingsEdits>();
+  const { setFieldValue, values: formValues, errors, status: { readOnly } = {} } = useFormikContext<SafeSettingsEdits>();
   const generalEditFormikErrors = (errors as SafeSettingsFormikErrors | undefined)?.general;
 
   const [existingDaoName, setExistingDaoName] = useState('');
@@ -36,7 +35,6 @@ export function SafeGeneralSettingTab() {
     setExistingIsGaslessVotingEnabledToggled(gaslessVotingEnabled);
   }, [gaslessVotingEnabled]);
 
-  const { canUserCreateProposal } = useCanUserCreateProposal();
   const { bundlerMinimumStake } = useNetworkConfigStore();
   const accountAbstractionSupported = bundlerMinimumStake !== undefined;
 
@@ -115,8 +113,8 @@ export function SafeGeneralSettingTab() {
                       e.target.value === existingDaoName ? undefined : e.target.value.trim();
                     setFieldValue('general.name', newValue);
                   }}
-                  disabled={!canUserCreateProposal}
                   value={formValues.general?.name ?? existingDaoName}
+                  disabled={readOnly}
                   placeholder={formValues.general?.name === undefined ? 'Amazing DAO' : ''}
                   testId="daoSettings.name"
                   isInvalid={!!generalEditFormikErrors?.name}
@@ -153,7 +151,7 @@ export function SafeGeneralSettingTab() {
                       ? existingSnapshotENS
                       : formValues.general?.snapshot
                   }
-                  disabled={!canUserCreateProposal}
+                  disabled={readOnly}
                   placeholder="example.eth"
                   testId="daoSettings.snapshotENS"
                   inputContainerProps={{

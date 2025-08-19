@@ -43,7 +43,7 @@ function StakingForm() {
   const {
     stablecoins: { usdc },
   } = useNetworkConfigStore();
-  const { values, setFieldValue } = useFormikContext<SafeSettingsEdits>();
+  const { values, setFieldValue, status: { readOnly } = {} } = useFormikContext<SafeSettingsEdits>();
   const { errors } = useFormikContext<SafeSettingsEdits>();
   const stakingErrors = (errors as SafeSettingsFormikErrors | undefined)?.staking;
 
@@ -104,6 +104,7 @@ function StakingForm() {
         errorMessage={stakingErrors?.minimumStakingPeriod}
       >
         <DurationUnitStepperInput
+          isDisabled={readOnly}
           secondsValue={minPeriodValue}
           onSecondsValueChange={val => {
             if (val === undefined) {
@@ -162,6 +163,7 @@ function StakingForm() {
         <AssetSelector
           includeNativeToken
           canSelectMultiple
+          disabled={readOnly}
           lockedSelections={rewardsTokens}
           hideBalanceAndMergeTokens={mergeTokens}
           onSelect={addresses => {
@@ -192,7 +194,7 @@ export function SafeStakingSettingTab() {
     governance: { stakedToken },
   } = useDAOStore({ daoKey });
 
-  const { values, setFieldValue } = useFormikContext<SafeSettingsEdits>();
+  const { values, setFieldValue, status: { readOnly } = {} } = useFormikContext<SafeSettingsEdits>();
   const deploying = values.staking?.deploying || false;
   const showForm = stakedToken?.address !== undefined || deploying;
 
@@ -210,6 +212,7 @@ export function SafeStakingSettingTab() {
         </Text>
         <Button
           mt={1.5}
+          isDisabled={readOnly}
           width="fit-content"
           onClick={() => setFieldValue('staking.deploying', true)}
         >

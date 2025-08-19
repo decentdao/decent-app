@@ -36,6 +36,7 @@ interface InputProps extends Omit<BaseProps, 'children'> {
   placeholder?: string;
   testId: string;
   isInvalid?: boolean;
+  isReadOnly?: boolean;
 }
 
 interface TextareaProps extends Omit<BaseProps, 'children'> {

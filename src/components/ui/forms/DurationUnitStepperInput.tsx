@@ -48,6 +48,7 @@ export default function DurationUnitStepperInput({
   color = 'color-white',
   hideSteppers = false,
   placeholder = '0',
+  isDisabled = false,
 }: {
   secondsValue: number | undefined;
   onSecondsValueChange: (val: number | undefined) => void;
@@ -55,6 +56,7 @@ export default function DurationUnitStepperInput({
   color?: string;
   hideSteppers?: boolean;
   placeholder?: string;
+  isDisabled?: boolean;
 }) {
   const { t } = useTranslation('common');
 
@@ -96,6 +98,7 @@ export default function DurationUnitStepperInput({
       onChange={val => onSecondsValueChange(Number(val) * selectedUnit.unit)}
       min={minSeconds / selectedUnit.unit}
       focusInputOnChange
+      isDisabled={isDisabled}
     >
       <HStack gap="0.25rem">
         {!hideSteppers && <NumberDecrementStepper>{stepperButton('dec')}</NumberDecrementStepper>}
@@ -112,6 +115,7 @@ export default function DurationUnitStepperInput({
             borderLeftColor="white-alpha-16"
           >
             <Select
+              isDisabled={isDisabled}
               bgColor="color-black"
               borderColor="color-neutral-900"
               rounded="lg"
@@ -135,7 +139,7 @@ export default function DurationUnitStepperInput({
                 }
               }}
               value={selectedUnit.label}
-            >
+            > 
               {units.map((u, i) => (
                 <option
                   key={i}

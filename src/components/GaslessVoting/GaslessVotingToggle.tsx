@@ -8,7 +8,6 @@ import useFeatureFlag from '../../helpers/environmentFeatureFlags';
 import { usePaymasterDepositInfo } from '../../hooks/DAO/accountAbstraction/usePaymasterDepositInfo';
 import { useCurrentDAOKey } from '../../hooks/DAO/useCurrentDAOKey';
 import useNetworkPublicClient from '../../hooks/useNetworkPublicClient';
-import { useCanUserCreateProposal } from '../../hooks/utils/useCanUserSubmitProposal';
 import { createAccountSubstring } from '../../hooks/utils/useGetAccountName';
 import { useDAOStore } from '../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
@@ -112,11 +111,11 @@ function GaslessVotingToggleContent({
   isEnabled,
   onToggle,
   isSettings,
+  readOnly,
   displayNeedStakingLabel,
-}: GaslessVotingToggleProps & { isSettings?: boolean; displayNeedStakingLabel?: boolean }) {
+}: GaslessVotingToggleProps & { isSettings?: boolean; readOnly?: boolean; displayNeedStakingLabel?: boolean }) {
   const { t } = useTranslation('gaslessVoting');
   const { bundlerMinimumStake } = useNetworkConfigStore();
-  const { canUserCreateProposal } = useCanUserCreateProposal();
 
   const publicClient = useNetworkPublicClient();
   const nativeCurrency = publicClient.chain.nativeCurrency;
@@ -169,7 +168,7 @@ function GaslessVotingToggleContent({
         </Flex>
         <Switch
           size="md"
-          isDisabled={isSettings && !canUserCreateProposal}
+          isDisabled={isSettings && readOnly}
           isChecked={isEnabled}
           onChange={() => onToggle()}
           variant="secondary"
@@ -199,7 +198,7 @@ export function GaslessVotingToggleDAOSettings(props: GaslessVotingToggleProps) 
   const gaslessFeatureEnabled = useFeatureFlag('flag_gasless_voting');
   const gaslessStakingEnabled = gaslessFeatureEnabled && bundlerMinimumStake !== undefined;
 
-  const { values, setFieldValue } = settingsModalFormikContext;
+  const { values, setFieldValue, status: { readOnly } = {} } = settingsModalFormikContext;
 
   const paymasterGasTankEdits = values?.paymasterGasTank;
   useEffect(() => {
@@ -248,6 +247,7 @@ export function GaslessVotingToggleDAOSettings(props: GaslessVotingToggleProps) 
       <GaslessVotingToggleContent
         {...props}
         isSettings
+        readOnly={readOnly}
         displayNeedStakingLabel={gaslessStakingEnabled && stakedAmount < minStakeAmount}
       />
 

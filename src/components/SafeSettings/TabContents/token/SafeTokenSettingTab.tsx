@@ -1,4 +1,5 @@
 import { Button, Flex, Text } from '@chakra-ui/react';
+import { useFormikContext } from 'formik';
 import { useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
@@ -9,6 +10,7 @@ import { useNetworkConfigStore } from '../../../../providers/NetworkConfig/useNe
 import { formatCoin } from '../../../../utils';
 import { DisplayAddress } from '../../../ui/links/DisplayAddress';
 import { ModalContext } from '../../../ui/modals/ModalProvider';
+import { SafeSettingsEdits } from '../../../ui/modals/SafeSettingsModal';
 import Divider from '../../../ui/utils/Divider';
 import { SettingsContentBox } from '../../SettingsContentBox';
 
@@ -23,6 +25,7 @@ export function SafeTokenSettingTab() {
   } = useDAOStore({ daoKey });
 
   const { closeAllModals } = useContext(ModalContext);
+  const { status: { readOnly } = {} } = useFormikContext<SafeSettingsEdits>();
 
   return (
     <>
@@ -126,6 +129,7 @@ export function SafeTokenSettingTab() {
               </Flex>
 
               <Button
+                isDisabled={readOnly}
                 onClick={() => {
                   if (!safe) return;
                   closeAllModals();

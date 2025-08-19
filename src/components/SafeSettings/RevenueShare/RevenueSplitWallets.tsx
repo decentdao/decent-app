@@ -81,6 +81,7 @@ function WalletName({
   wallet: RevenueSharingWalletFormValues;
   walletFormType: RevenueSharingWalletFormType;
 }) {
+  const { status: { readOnly } = {} } = useFormikContext<SafeSettingsEdits>();
   return (
     <Grid
       templateColumns="auto 1fr"
@@ -92,6 +93,7 @@ function WalletName({
         {({ field, form }: FieldProps<string, any>) => (
           <EditableInput
             value={field.value || wallet.name}
+            isReadOnly={readOnly}
             onClick={e => {
               e.stopPropagation();
             }}
@@ -151,6 +153,7 @@ export function RevSplitRow({
   onRemoveSplit?: () => void;
 }) {
   const { t } = useTranslation('revenueSharing');
+  const { status: { readOnly } = {} } = useFormikContext<SafeSettingsEdits>();
 
   return (
     <>
@@ -162,7 +165,7 @@ export function RevSplitRow({
               return (
                 <AddressInputInfo
                   isInvalid={!!splitFormError?.address}
-                  isReadOnly={isReadOnlyAddress}
+                  isReadOnly={isReadOnlyAddress || readOnly}
                   staticDisplayValue={isStakingContract ? t('stakingRecipientDisplay') : undefined}
                   variant="tableStyle"
                   value={fieldValue}
@@ -194,6 +197,7 @@ export function RevSplitRow({
                   variant="tableStyle"
                   precision={0}
                   isInvalid={!!splitFormError?.percentage}
+                  isReadOnly={readOnly}
                   value={fieldValue}
                   min={0}
                   max={100}
@@ -221,7 +225,7 @@ export function RevSplitRow({
           >
             <IconButton
               aria-label={t('removeSplitButtonLabel')}
-              hidden={!onRemoveSplit}
+              hidden={!onRemoveSplit || readOnly}
               icon={<Trash />}
               color="color-error-400"
               borderColor="color-error-400"
@@ -251,7 +255,7 @@ export function RevSplitTable({
   walletIndex: number;
   walletFormType: RevenueSharingWalletFormType;
 }) {
-  const { values, setFieldValue } = useFormikContext<SafeSettingsEdits>();
+  const { values, setFieldValue, status: { readOnly } = {} } = useFormikContext<SafeSettingsEdits>();
   const { t } = useTranslation('revenueSharing');
   const { daoKey } = useCurrentDAOKey();
   const {
@@ -469,6 +473,7 @@ export function RevSplitTable({
         size="sm"
         ml="auto"
         leftIcon={<Icon as={Plus} />}
+        isDisabled={readOnly}
         onClick={() => {
           const formWalletSplits = [...(wallet.splits || [])];
 

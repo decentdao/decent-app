@@ -34,6 +34,7 @@ import {
   validateFormHasErrors,
 } from '../../SafeSettings/handlers';
 import Divider from '../utils/Divider';
+import { FormReadOnlyController } from './FormReadOnlyController';
 import { ModalProvider } from './ModalProvider';
 
 export type SafeSettingsEdits = {
@@ -369,6 +370,7 @@ export function SafeSettingsModal({
   return (
     <Formik<SafeSettingsEdits>
       initialValues={{}}
+      initialStatus={{ readOnly: !canUserCreateProposal }}
       validate={values => {
         return validateSafeSettingsForm(values, {
           validateAddress,
@@ -390,6 +392,7 @@ export function SafeSettingsModal({
       }}
     >
       <Form>
+        <FormReadOnlyController isReadOnly={!canUserCreateProposal} />
         <ModalProvider
           baseZIndex={2000}
           closeBaseModal={closeModal}
