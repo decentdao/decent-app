@@ -1,10 +1,9 @@
 import { Button, Flex, Text } from '@chakra-ui/react';
-import { abis } from '@decentdao/decent-contracts';
 import { Formik, Form, useFormikContext } from 'formik';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { Address, encodeFunctionData } from 'viem';
+import { Address } from 'viem';
 import { useAccount, useBalance } from 'wagmi';
 import { DAO_ROUTES } from '../../../constants/routes';
 import useFeatureFlag from '../../../helpers/environmentFeatureFlags';
@@ -19,10 +18,6 @@ import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetwo
 import { useProposalActionsStore } from '../../../store/actions/useProposalActionsStore';
 import {
   BigIntValuePair,
-  CreateProposalActionData,
-  CreateProposalTransaction,
-  GovernanceType,
-  ProposalActionType,
 } from '../../../types';
 import {
   RevenueSharingSplitFormError,
@@ -33,10 +28,6 @@ import {
   RevenueSharingWalletFormType,
   RevenueSharingWalletFormValues,
 } from '../../../types/revShare';
-import {
-  getStakingContractAddress,
-  getStakingContractSaltNonce,
-} from '../../../utils/stakingContractUtils';
 import { validateENSName } from '../../../utils/url';
 import { isNonEmpty } from '../../../utils/valueCheck';
 import { handleEditRevenueShare } from '../../SafeSettings/RevenueShare/revenueShareFormHandlers';
@@ -49,6 +40,7 @@ import {
   handleEditMultisigGovernance,
   handleEditAzoriusGovernance,
   handleEditPermissions,
+  handleEditStaking,
 } from '../../SafeSettings/handlers';
 import Divider from '../utils/Divider';
 import { ModalProvider } from './ModalProvider';
@@ -262,138 +254,6 @@ export function SafeSettingsModal({
     value: '0',
   };
 
-  const handleEditStaking = async (updatedValues: SafeSettingsEdits) => {
-    if (!safe?.address) {
-      throw new Error('Safe address is not set');
-    }
-
-    if (!votesERC20StakedV1MasterCopy) {
-      throw new Error('VotesERC20StakedV1MasterCopy is not set');
-    }
-
-    if (!isNonEmpty(updatedValues.staking)) {
-      throw new Error('Staking are not set');
-    }
-    const stakingValues = updatedValues.staking!;
-
-    const stakingContract = governance.stakedToken;
-
-    const changeTitles = [];
-    const transactions: CreateProposalTransaction[] = [];
-
-    if (stakingValues.deploying) {
-      if (stakingContract !== undefined) {
-        throw new Error('Staking contract already deployed');
-      }
-
-      if (stakingValues.minimumStakingPeriod === undefined) {
-        throw new Error('minimumStakingPeriod parameters are not set');
-      }
-
-      let daoErc20Token;
-      if (governance.type === GovernanceType.AZORIUS_ERC20) {
-        daoErc20Token = governance.votesToken;
-      } else if (governance.type === GovernanceType.MULTISIG) {
-        daoErc20Token = governance.erc20Token;
-      }
-      if (daoErc20Token === undefined) {
-        throw new Error('No ERC20 to be staked');
-      }
-
-      const encodedInitializationData = encodeFunctionData({
-        abi: abis.deployables.VotesERC20StakedV1,
-        functionName: 'initialize',
-        args: [safe.address, daoErc20Token.address],
-      });
-
-      changeTitles.push(t('deployStakingContract', { ns: 'proposalMetadata' }));
-      transactions.push({
-        targetAddress: zodiacModuleProxyFactory,
-        ethValue,
-        functionName: 'deployModule',
-        parameters: [
-          {
-            signature: 'address',
-            value: votesERC20StakedV1MasterCopy,
-          },
-          {
-            signature: 'bytes',
-            value: encodedInitializationData,
-          },
-          {
-            signature: 'uint256',
-            value: getStakingContractSaltNonce(safe.address, chainId).toString(),
-          },
-        ],
-      });
-      const predictedStakingAddress = getStakingContractAddress({
-        safeAddress: safe.address,
-        stakedTokenAddress: daoErc20Token.address,
-        zodiacModuleProxyFactory,
-        stakingContractMastercopy: votesERC20StakedV1MasterCopy,
-        chainId,
-      });
-      transactions.push({
-        targetAddress: predictedStakingAddress,
-        ethValue,
-        functionName: 'initialize2',
-        parameters: [
-          {
-            signature: 'uint256',
-            value: stakingValues.minimumStakingPeriod.bigintValue?.toString(),
-          },
-          {
-            signature: 'address[]',
-            value: `[${(stakingValues.newRewardTokens || []).join(',')}]`,
-          },
-        ],
-      });
-    } else {
-      // If deploying is false or undefined, then we are updating the staking contract
-      if (stakingContract === undefined) {
-        throw new Error('Staking contract not deployed');
-      }
-
-      if (stakingValues.minimumStakingPeriod !== undefined) {
-        transactions.push({
-          targetAddress: stakingContract.address,
-          ethValue,
-          functionName: 'updateMinimumStakingPeriod',
-          parameters: [
-            {
-              signature: 'uint256',
-              value: stakingValues.minimumStakingPeriod.bigintValue?.toString(),
-            },
-          ],
-        });
-        changeTitles.push(t('updateStakingMinPeriod', { ns: 'proposalMetadata' }));
-      }
-
-      if (stakingValues.newRewardTokens !== undefined) {
-        transactions.push({
-          targetAddress: stakingContract.address,
-          ethValue,
-          functionName: 'addRewardsTokens',
-          parameters: [
-            {
-              signature: 'address[]',
-              value: `[${stakingValues.newRewardTokens.join(',')}]`,
-            },
-          ],
-        });
-        changeTitles.push(t('addStakingRewardTokens', { ns: 'proposalMetadata' }));
-      }
-    }
-
-    const title = changeTitles.join(`; `);
-
-    const action: CreateProposalActionData = {
-      actionType: ProposalActionType.EDIT,
-      transactions,
-    };
-
-    return { action, title };
-  };
 
   const submitAllSettingsEditsProposal = async (values: SafeSettingsEdits) => {
     if (!safe?.address) {
@@ -515,7 +375,22 @@ export function SafeSettingsModal({
       });
     }
     if (staking) {
-      const { action, title } = await handleEditStaking(values);
+      if (!zodiacModuleProxyFactory) {
+        throw new Error('Zodiac module proxy factory is not available');
+      }
+      if (!votesERC20StakedV1MasterCopy) {
+        throw new Error('VotesERC20StakedV1MasterCopy is not available');
+      }
+      
+      const { action, title } = await handleEditStaking(values, {
+        safe,
+        governance,
+        votesERC20StakedV1MasterCopy,
+        zodiacModuleProxyFactory,
+        ethValue,
+        chainId,
+        t,
+      });
 
       addAction({
         actionType: action.actionType,

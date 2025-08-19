@@ -1,6 +1,7 @@
 // Safe Settings Handlers
-export * from './paymasterHandlers';
-export * from './generalHandlers';
-export * from './multisigHandlers';
-export * from './azoriusHandlers';
-export * from './permissionsHandlers';
+export { handleEditPaymaster } from './paymasterHandlers';
+export { handleEditGeneral } from './generalHandlers';
+export { handleEditMultisigGovernance } from './multisigHandlers';
+export { handleEditAzoriusGovernance } from './azoriusHandlers';
+export { handleEditPermissions } from './permissionsHandlers';
+export { handleEditStaking } from './stakingHandlers';
