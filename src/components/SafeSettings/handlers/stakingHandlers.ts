@@ -8,7 +8,10 @@ import {
   GovernanceType,
   ProposalActionType,
 } from '../../../types';
-import { getStakingContractAddress, getStakingContractSaltNonce } from '../../../utils/stakingContractUtils';
+import {
+  getStakingContractAddress,
+  getStakingContractSaltNonce,
+} from '../../../utils/stakingContractUtils';
 import { isNonEmpty } from '../../../utils/valueCheck';
 import { SafeSettingsEdits } from '../types';
 

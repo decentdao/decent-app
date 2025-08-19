@@ -16,13 +16,8 @@ import { useInstallVersionedVotingStrategy } from '../../../hooks/utils/useInsta
 import { useDAOStore } from '../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
 import { useProposalActionsStore } from '../../../store/actions/useProposalActionsStore';
-import {
-  BigIntValuePair,
-} from '../../../types';
-import {
-  RevenueSharingWalletForm,
-  RevenueSharingWalletFormErrors,
-} from '../../../types/revShare';
+import { BigIntValuePair } from '../../../types';
+import { RevenueSharingWalletForm, RevenueSharingWalletFormErrors } from '../../../types/revShare';
 import { handleEditRevenueShare } from '../../SafeSettings/RevenueShare/revenueShareFormHandlers';
 import { SettingsNavigation } from '../../SafeSettings/SettingsNavigation';
 import { NewSignerItem } from '../../SafeSettings/Signers/SignersContainer';
@@ -224,7 +219,6 @@ export function SafeSettingsModal({
     value: '0',
   };
 
-
   const submitAllSettingsEditsProposal = async (values: SafeSettingsEdits) => {
     if (!safe?.address) {
       throw new Error('Safe address is not set');
@@ -351,7 +345,7 @@ export function SafeSettingsModal({
       if (!votesERC20StakedV1MasterCopy) {
         throw new Error('VotesERC20StakedV1MasterCopy is not available');
       }
-      
+
       const { action, title } = await handleEditStaking(values, {
         safe,
         governance,
@@ -383,7 +377,9 @@ export function SafeSettingsModal({
           safeBalance,
           safe,
           revShareWallets,
-          subgraphInfo: subgraphInfo ? { parentAddress: subgraphInfo.parentAddress || undefined } : undefined,
+          subgraphInfo: subgraphInfo
+            ? { parentAddress: subgraphInfo.parentAddress || undefined }
+            : undefined,
           stakingContractAddress,
           t,
         });
