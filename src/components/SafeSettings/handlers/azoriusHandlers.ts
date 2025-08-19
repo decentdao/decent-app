@@ -10,7 +10,7 @@ import { getEstimatedNumberOfBlocks } from '../../../utils/contract';
 import { SafeSettingsEdits } from '../types';
 
 interface AzoriusHandlerDependencies {
-  t: (key: string, options?: any) => string;
+  t: (key: string, options?: { ns: string }) => string;
   moduleAzoriusAddress: Address | undefined;
   strategies: Array<{ type: FractalTokenType; address: Address }>;
   ethValue: { bigintValue: bigint; value: string };
