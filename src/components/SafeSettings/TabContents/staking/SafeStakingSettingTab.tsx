@@ -43,7 +43,11 @@ function StakingForm() {
   const {
     stablecoins: { usdc },
   } = useNetworkConfigStore();
-  const { values, setFieldValue, status: { readOnly } = {} } = useFormikContext<SafeSettingsEdits>();
+  const {
+    values,
+    setFieldValue,
+    status: { readOnly } = {},
+  } = useFormikContext<SafeSettingsEdits>();
   const { errors } = useFormikContext<SafeSettingsEdits>();
   const stakingErrors = (errors as SafeSettingsFormikErrors | undefined)?.staking;
 
@@ -194,7 +198,11 @@ export function SafeStakingSettingTab() {
     governance: { stakedToken },
   } = useDAOStore({ daoKey });
 
-  const { values, setFieldValue, status: { readOnly } = {} } = useFormikContext<SafeSettingsEdits>();
+  const {
+    values,
+    setFieldValue,
+    status: { readOnly } = {},
+  } = useFormikContext<SafeSettingsEdits>();
   const deploying = values.staking?.deploying || false;
   const showForm = stakedToken?.address !== undefined || deploying;
 

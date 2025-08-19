@@ -255,7 +255,11 @@ export function RevSplitTable({
   walletIndex: number;
   walletFormType: RevenueSharingWalletFormType;
 }) {
-  const { values, setFieldValue, status: { readOnly } = {} } = useFormikContext<SafeSettingsEdits>();
+  const {
+    values,
+    setFieldValue,
+    status: { readOnly } = {},
+  } = useFormikContext<SafeSettingsEdits>();
   const { t } = useTranslation('revenueSharing');
   const { daoKey } = useCurrentDAOKey();
   const {

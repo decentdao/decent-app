@@ -148,7 +148,12 @@ export function SignersContainer() {
 
   const { t } = useTranslation(['common', 'breadcrumbs', 'daoEdit']);
 
-  const { setFieldValue, values, errors, status: { readOnly } = {} } = useFormikContext<SafeSettingsEdits>();
+  const {
+    setFieldValue,
+    values,
+    errors,
+    status: { readOnly } = {},
+  } = useFormikContext<SafeSettingsEdits>();
 
   const multisigEditFormikErrors = (errors as SafeSettingsFormikErrors | undefined)?.multisig;
 

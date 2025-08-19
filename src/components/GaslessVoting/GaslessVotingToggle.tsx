@@ -113,7 +113,11 @@ function GaslessVotingToggleContent({
   isSettings,
   readOnly,
   displayNeedStakingLabel,
-}: GaslessVotingToggleProps & { isSettings?: boolean; readOnly?: boolean; displayNeedStakingLabel?: boolean }) {
+}: GaslessVotingToggleProps & {
+  isSettings?: boolean;
+  readOnly?: boolean;
+  displayNeedStakingLabel?: boolean;
+}) {
   const { t } = useTranslation('gaslessVoting');
   const { bundlerMinimumStake } = useNetworkConfigStore();
 

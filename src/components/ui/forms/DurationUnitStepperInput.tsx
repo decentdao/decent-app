@@ -139,7 +139,7 @@ export default function DurationUnitStepperInput({
                 }
               }}
               value={selectedUnit.label}
-            > 
+            >
               {units.map((u, i) => (
                 <option
                   key={i}

@@ -34,7 +34,7 @@ export function NumberInputPercentage(props: NumberInputProps & { isReadOnly?: b
         {...(invalid ? invalidState : {})}
       >
         <Text
-          cursor={props.isReadOnly ? "default" : "pointer"}
+          cursor={props.isReadOnly ? 'default' : 'pointer'}
           w="full"
           position="relative"
           sx={{

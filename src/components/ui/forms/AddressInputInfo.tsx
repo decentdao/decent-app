@@ -86,7 +86,7 @@ export function AddressInputInfo(props: InputProps & { staticDisplayValue?: stri
         bg={props.isReadOnly ? 'transparent' : props.isInvalid ? 'color-error-950' : 'transparent'}
       >
         <Text
-          cursor={props.isReadOnly ? "default" : "pointer"}
+          cursor={props.isReadOnly ? 'default' : 'pointer'}
           textStyle="text-sm-regular"
           color={props.isInvalid ? 'color-error-400' : 'color-layout-foreground'}
           overflow="hidden"

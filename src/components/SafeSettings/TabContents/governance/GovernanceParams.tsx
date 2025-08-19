@@ -27,7 +27,11 @@ export function GovernanceParams() {
     node: { safe },
   } = useDAOStore({ daoKey });
 
-  const { values, setFieldValue, status: { readOnly } = {} } = useFormikContext<SafeSettingsEdits>();
+  const {
+    values,
+    setFieldValue,
+    status: { readOnly } = {},
+  } = useFormikContext<SafeSettingsEdits>();
   const publicClient = useNetworkPublicClient();
   const { getTimeDuration } = useTimeHelpers();
 

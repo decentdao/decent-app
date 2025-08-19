@@ -16,7 +16,12 @@ import { SettingsContentBox } from '../../SettingsContentBox';
 
 export function SafeGeneralSettingTab() {
   const { t } = useTranslation('settings');
-  const { setFieldValue, values: formValues, errors, status: { readOnly } = {} } = useFormikContext<SafeSettingsEdits>();
+  const {
+    setFieldValue,
+    values: formValues,
+    errors,
+    status: { readOnly } = {},
+  } = useFormikContext<SafeSettingsEdits>();
   const generalEditFormikErrors = (errors as SafeSettingsFormikErrors | undefined)?.general;
 
   const [existingDaoName, setExistingDaoName] = useState('');
