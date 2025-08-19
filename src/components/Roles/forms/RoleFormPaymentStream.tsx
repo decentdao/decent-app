@@ -5,7 +5,9 @@ import { Field, FieldAttributes, FieldProps, FormikErrors, useFormikContext } fr
 import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DETAILS_BOX_SHADOW } from '../../../constants/common';
-import { useRolesStore } from '../../../store/roles/useRolesStore';
+import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
+import { canUserCancelPayment } from '../../../store/roles/rolesStoreUtils';
+import { useGlobalStore } from '../../../store/store';
 import { RoleFormValues, RoleHatFormValue } from '../../../types/roles';
 import { DevSet10MinPaymentStream } from '../../../utils/dev/DevSet10MinPaymentStream';
 import { DatePicker } from '../../ui/forms/DatePicker';
@@ -110,9 +112,11 @@ function FixedDate({ formIndex, disabled }: { formIndex: number; disabled: boole
 }
 
 export function RoleFormPaymentStream({ formIndex }: { formIndex: number }) {
+  const { daoKey } = useCurrentDAOKey();
+  const { getPayment } = useGlobalStore();
   const { t } = useTranslation(['roles']);
   const { values, errors, setFieldValue } = useFormikContext<RoleFormValues>();
-  const { getPayment } = useRolesStore();
+
   const roleEditingPaymentsErrors = (errors.roleEditing as FormikErrors<RoleHatFormValue>)
     ?.payments;
   const hatId = values.roleEditing?.id;
@@ -123,12 +127,12 @@ export function RoleFormPaymentStream({ formIndex }: { formIndex: number }) {
   const streamId = values.roleEditing?.payments?.[formIndex]?.streamId;
 
   const existingPayment = useMemo(
-    () => (!!streamId && !!hatId ? getPayment(hatId, streamId) : undefined),
-    [hatId, streamId, getPayment],
+    () => (!!streamId && !!hatId && !!daoKey ? getPayment(daoKey, hatId, streamId) : undefined),
+    [daoKey, hatId, streamId, getPayment],
   );
 
   const canBeCancelled = existingPayment
-    ? existingPayment.canUserCancel() && !payment?.isCancelling
+    ? canUserCancelPayment(existingPayment) && !payment?.isCancelling
     : false;
 
   const handleConfirmCancelPayment = useCallback(() => {

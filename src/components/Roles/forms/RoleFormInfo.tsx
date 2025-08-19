@@ -4,7 +4,6 @@ import { useTranslation } from 'react-i18next';
 import { DETAILS_BOX_SHADOW } from '../../../constants/common';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import { useDAOStore } from '../../../providers/App/AppProvider';
-import { useRolesStore } from '../../../store/roles/useRolesStore';
 import { GovernanceType } from '../../../types';
 import { RoleFormValues } from '../../../types/roles';
 import { InputComponent, TextareaComponent } from '../../ui/forms/InputComponent';
@@ -14,8 +13,8 @@ export default function RoleFormInfo() {
   const { daoKey } = useCurrentDAOKey();
   const {
     governance: { type },
+    roles: { hatsTreeId, hatsTree },
   } = useDAOStore({ daoKey });
-  const { hatsTree, hatsTreeId } = useRolesStore();
 
   const { setFieldValue, values } = useFormikContext<RoleFormValues>();
 
