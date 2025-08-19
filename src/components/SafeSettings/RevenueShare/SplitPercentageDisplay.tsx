@@ -2,7 +2,12 @@ import { Flex, Icon, Text } from '@chakra-ui/react';
 import { CheckCircle, WarningCircle } from '@phosphor-icons/react';
 import { useTranslation } from 'react-i18next';
 
-export function SplitPercentageDisplay({ percentage }: { percentage: number | undefined, isInvalid?: boolean }) {
+export function SplitPercentageDisplay({
+  percentage,
+}: {
+  percentage: number | undefined;
+  isInvalid?: boolean;
+}) {
   const { t } = useTranslation('revenueSharing');
 
   if (!percentage) {
