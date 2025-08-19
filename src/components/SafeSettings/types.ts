@@ -1,10 +1,5 @@
 import { Address } from 'viem';
-import {
-  AzoriusGovernance,
-  BigIntValuePair,
-  FractalTokenType,
-  GovernanceType,
-} from '../../types';
+import { AzoriusGovernance, BigIntValuePair, FractalTokenType, GovernanceType } from '../../types';
 import {
   RevenueSharingSplitFormError,
   RevenueSharingWalletForm,

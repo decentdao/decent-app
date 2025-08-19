@@ -54,7 +54,8 @@ export const handleEditPaymaster = async (
       false,
     );
 
-    const withdrawContent = 'Withdraw ' + formattedWithdrawAmount + ' ' + nativeCurrency.symbol + ' from the gas tank';
+    const withdrawContent =
+      'Withdraw ' + formattedWithdrawAmount + ' ' + nativeCurrency.symbol + ' from the gas tank';
     actions.push({
       ...actionData,
       content: React.createElement(Text, null, withdrawContent),
@@ -76,7 +77,7 @@ export const handleEditPaymaster = async (
       nativeToken: nativeCurrency,
       entryPointAddress: accountAbstraction.entryPointv07 as `0x${string}`,
     });
-    
+
     const formattedRefillAmount = formatCoin(
       paymasterGasTank.deposit.amount.bigintValue,
       true,
@@ -85,7 +86,8 @@ export const handleEditPaymaster = async (
       false,
     );
 
-    const refillContent = 'Refill gas tank with ' + formattedRefillAmount + ' ' + nativeCurrency.symbol;
+    const refillContent =
+      'Refill gas tank with ' + formattedRefillAmount + ' ' + nativeCurrency.symbol;
     actions.push({
       ...actionData,
       content: React.createElement(Text, null, refillContent),
