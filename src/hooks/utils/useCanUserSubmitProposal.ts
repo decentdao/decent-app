@@ -129,7 +129,8 @@ export function useCanUserCreateProposal() {
       }
     };
     loadCanUserCreateProposal();
-  }, [getCanUserCreateProposal, canUserCreateProposal, addressPrefix, publicClient.chain.id]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [getCanUserCreateProposal, addressPrefix, publicClient.chain.id]);
 
   return { canUserCreateProposal, getCanUserCreateProposal };
 }
