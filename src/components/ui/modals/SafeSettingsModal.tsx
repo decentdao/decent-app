@@ -38,7 +38,6 @@ import { useProposalActionsStore } from '../../../store/actions/useProposalActio
 import {
   AzoriusGovernance,
   BigIntValuePair,
-  CreateProposalAction,
   CreateProposalActionData,
   CreateProposalTransaction,
   FractalTokenType,
@@ -56,14 +55,11 @@ import {
 } from '../../../types/revShare';
 import { SENTINEL_MODULE } from '../../../utils/address';
 import { getEstimatedNumberOfBlocks } from '../../../utils/contract';
-import { prepareRefillPaymasterAction } from '../../../utils/dao/prepareRefillPaymasterActionData';
-import { prepareWithdrawPaymasterAction } from '../../../utils/dao/prepareWithdrawPaymasterActionData';
 import {
   getPaymasterSaltNonce,
   getPaymasterAddress,
   getVoteSelectorAndValidator,
 } from '../../../utils/gaslessVoting';
-import { formatCoin } from '../../../utils/numberFormats';
 import {
   getStakingContractAddress,
   getStakingContractSaltNonce,
@@ -75,6 +71,7 @@ import { SafePermissionsStrategyAction } from '../../SafeSettings/SafePermission
 import { SettingsNavigation } from '../../SafeSettings/SettingsNavigation';
 import { NewSignerItem } from '../../SafeSettings/Signers/SignersContainer';
 import { SafeGeneralSettingTab } from '../../SafeSettings/TabContents/general/SafeGeneralSettingTab';
+import { handleEditPaymaster } from '../../SafeSettings/handlers';
 import Divider from '../utils/Divider';
 import { ModalProvider } from './ModalProvider';
 
@@ -289,92 +286,6 @@ export function SafeSettingsModal({
     value: '0',
   };
 
-  const handleEditPaymaster = async (
-    updatedValues: SafeSettingsEdits,
-  ): Promise<CreateProposalAction[] | undefined> => {
-    const { paymasterAddress } = governance;
-    if (!paymasterAddress) {
-      throw new Error('Paymaster address is not set');
-    }
-
-    const actions: CreateProposalAction[] = [];
-    const nativeCurrency = publicClient.chain.nativeCurrency;
-    const { paymasterGasTank } = updatedValues;
-
-    if (paymasterGasTank?.withdraw?.amount?.bigintValue) {
-      if (!paymasterGasTank.withdraw.recipientAddress) {
-        throw new Error('Recipient address is not set');
-      }
-
-      const actionData = prepareWithdrawPaymasterAction({
-        withdrawData: {
-          withdrawAmount: paymasterGasTank.withdraw.amount.bigintValue,
-          recipientAddress: paymasterGasTank.withdraw.recipientAddress,
-        },
-        paymasterAddress,
-      });
-
-      const formattedWithdrawAmount = formatCoin(
-        paymasterGasTank.withdraw.amount.bigintValue,
-        true,
-        nativeCurrency.decimals,
-        nativeCurrency.symbol,
-        false,
-      );
-
-      actions.push({
-        ...actionData,
-        content: (
-          <Text>
-            {t('withdrawGasAction', {
-              amount: formattedWithdrawAmount,
-              symbol: nativeCurrency.symbol,
-              ns: 'gaslessVoting',
-            })}
-          </Text>
-        ),
-      });
-    }
-
-    if (paymasterGasTank?.deposit?.amount?.bigintValue) {
-      if (!accountAbstraction) {
-        throw new Error('Account Abstraction addresses are not set');
-      }
-
-      if (paymasterGasTank.deposit.isDirectDeposit) {
-        return;
-      }
-
-      const actionData = prepareRefillPaymasterAction({
-        refillAmount: paymasterGasTank.deposit.amount.bigintValue,
-        paymasterAddress,
-        nativeToken: nativeCurrency,
-        entryPointAddress: accountAbstraction.entryPointv07,
-      });
-      const formattedRefillAmount = formatCoin(
-        paymasterGasTank.deposit.amount.bigintValue,
-        true,
-        nativeCurrency.decimals,
-        nativeCurrency.symbol,
-        false,
-      );
-
-      actions.push({
-        ...actionData,
-        content: (
-          <Text>
-            {t('refillPaymasterAction', {
-              amount: formattedRefillAmount,
-              symbol: nativeCurrency.symbol,
-              ns: 'gaslessVoting',
-            })}
-          </Text>
-        ),
-      });
-    }
-
-    return actions;
-  };
 
   const handleEditGeneral = async (updatedValues: SafeSettingsEdits) => {
     const changeTitles = [];
@@ -1238,7 +1149,7 @@ export function SafeSettingsModal({
     }
 
     if (paymasterGasTank) {
-      const actions = await handleEditPaymaster(values);
+      const actions = await handleEditPaymaster(values, governance, accountAbstraction, publicClient);
 
       if (actions && actions.length > 0) {
         actions.forEach(action => {
@@ -1544,8 +1455,11 @@ export function SafeSettingsModal({
                   }
 
                   if (Object.keys(splitErr).length > 0) {
-                    walletError.splits = {};
-                    walletError.splits![splitIdx] = splitErr;
+                    walletError.splits = walletError.splits ?? {};
+                    walletError.splits[splitIdx] = {
+                      ...(walletError.splits[splitIdx] ?? {}),
+                      ...splitErr,
+                    };
                   }
                 }),
               );
