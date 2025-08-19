@@ -289,9 +289,10 @@ const getPaymentStreams = async (
 
       const startDate = secondsTimestampToDate(lockupLinearStream.startTime);
       const endDate = secondsTimestampToDate(lockupLinearStream.endTime);
-      const cliffDate = lockupLinearStream.cliff
-        ? secondsTimestampToDate(lockupLinearStream.cliffTime)
-        : undefined;
+      const cliffDate =
+        lockupLinearStream.cliff && lockupLinearStream.cliffTime !== null
+          ? secondsTimestampToDate(lockupLinearStream.cliffTime)
+          : undefined;
 
       const logo =
         getValue({
@@ -301,7 +302,7 @@ const getPaymentStreams = async (
 
       return {
         streamId: lockupLinearStream.id,
-        contractAddress: lockupLinearStream.contract.address,
+        contractAddress: lockupLinearStream.contract,
         recipient: getAddress(lockupLinearStream.recipient),
         asset: {
           address: getAddress(lockupLinearStream.asset.address),

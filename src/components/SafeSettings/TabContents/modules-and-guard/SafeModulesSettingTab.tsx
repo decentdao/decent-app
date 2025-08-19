@@ -27,6 +27,7 @@ export function SafeModulesSettingTab() {
           <Text
             textStyle="text-lg-regular"
             color="color-white"
+            data-testid="settings-modules-title"
           >
             {t('modulesTitle')}
           </Text>

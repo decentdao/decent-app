@@ -102,6 +102,7 @@ export function SafeTreasuryPage() {
                 color: 'color-lilac-100',
                 bg: 'color-neutral-950',
               },
+              'data-testid': 'treasury-treasuryActions',
             }}
           />
         )}

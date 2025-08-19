@@ -23,10 +23,6 @@
   "changeQuorumThreshold": "Update quorum threshold",
   "deployToken": "部署令牌",
   "updateERC20Address": "更新 ERC20 位址",
-  "updateTokenTransferable": "可轉讓更新代幣",
-  "updateTokenMaxTotalSupply": "更新代幣 最大總供應量",
-  "addTokenWhitelist": "新增令牌白名單",
-  "removeTokenWhitelist": "移除令牌白名單",
   "deployStakingContract": "Deploy Staking Contract",
   "updateStakingMinPeriod": "Update Staking Min Period",
   "addStakingRewardTokens": "Add Staking Reward Tokens"

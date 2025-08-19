@@ -11,13 +11,17 @@ import AddressCopier from '../../links/AddressCopier';
 import Divider from '../../utils/Divider';
 import Breadcrumbs, { Crumb } from './Breadcrumbs';
 
+type ButtonPropsWithTestId = ButtonProps & {
+  'data-testid'?: string;
+};
+
 interface PageHeaderProps {
   title?: string;
   showSafeAddress?: boolean;
   breadcrumbs: Crumb[];
   hasDAOLink?: boolean;
   ButtonIcon?: PhosphorIcon;
-  buttonProps?: ButtonProps;
+  buttonProps?: ButtonPropsWithTestId;
   children?: ReactNode;
 }
 /**

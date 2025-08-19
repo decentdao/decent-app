@@ -23,10 +23,6 @@
   "changeQuorumThreshold": "쿼럼 임계값 업데이트",
   "deployToken": "토큰 배포",
   "updateERC20Address": "ERC20 주소 업데이트",
-  "updateTokenTransferable": "토큰 양도 가능 업데이트",
-  "updateTokenMaxTotalSupply": "토큰 최대 총 공급량 업데이트",
-  "addTokenWhitelist": "토큰 화이트리스트 추가",
-  "removeTokenWhitelist": "토큰 화이트리스트 제거",
   "deployStakingContract": "스테이킹 컨트랙트 배포",
   "updateStakingMinPeriod": "스테이킹 최소 기간 업데이트",
   "addStakingRewardTokens": "스테이킹 보상 토큰 추가"

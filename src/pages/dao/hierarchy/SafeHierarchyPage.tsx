@@ -66,6 +66,7 @@ export function SafeHierarchyPage() {
                   }
                 },
                 size: 'sm',
+                'data-testid': 'organization-createSubDAO',
               }
             : undefined
         }

@@ -138,6 +138,7 @@ export function RevSplitRow({
   splitFormError,
   isLastRow,
   isReadOnlyAddress,
+  isStakingContract,
   onRemoveSplit,
 }: {
   splitAddress: string | undefined;
@@ -146,6 +147,7 @@ export function RevSplitRow({
   splitFormError: RevenueSharingSplitFormError | undefined;
   isLastRow?: boolean;
   isReadOnlyAddress?: boolean;
+  isStakingContract?: boolean;
   onRemoveSplit?: () => void;
 }) {
   const { t } = useTranslation('revenueSharing');
@@ -161,6 +163,7 @@ export function RevSplitRow({
                 <AddressInputInfo
                   isInvalid={!!splitFormError?.address}
                   isReadOnly={isReadOnlyAddress}
+                  staticDisplayValue={isStakingContract ? t('stakingRecipientDisplay') : undefined}
                   variant="tableStyle"
                   value={fieldValue}
                   onChange={value => {
@@ -388,6 +391,7 @@ export function RevSplitTable({
         revenueSharingEditFormikErrors?.[walletFormType]?.[walletIndex]?.specialSplits
           ?.stakingContract
       }
+      isStakingContract
       splitAddress={stakingContractSplitInfo?.address ?? stakedToken?.address}
       splitPercentage={stakingContractSplitInfo?.percentage}
       isLastRow={!regularFormSplitsWithIndices?.length}
@@ -398,6 +402,7 @@ export function RevSplitTable({
   return (
     <Flex
       mx={'-1rem'}
+      mt={'-1rem'}
       direction="column"
     >
       <Divider my={4} />

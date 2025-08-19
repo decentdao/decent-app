@@ -106,11 +106,5 @@
   "networks": "Netzwerke",
   "networkDescription": "In welchem Netz möchten Sie diese DAO einsetzen?",
   "attachFractalModuleDescription": "Diese Einstellung steuert, ob die Parent-DAO in der Lage sein wird, beliebige Transaktionen auf der Child-DAO unter Umgehung des Abstimmungsprozesses auf der Child-DAO auszuführen.",
-  "fractalModuleAttachedDescription": "Diese Einstellung kann nicht geändert werden, da das Fractal-Modul bereits mit dem DAO verbunden ist.",
-  "labelTokenLocking": "Verriegelung",
-  "helperTokenLocking": "Ob die Token zunächst gesperrt sind.",
-  "labelTokenLocked": "Nicht übertragbar",
-  "descTokenUnlocked": "Token werden freigeschaltet und können frei übertragen werden.",
-  "labelTokenUnlocked": "Ungesperrt",
-  "descTokenLocked": "Die Token sind zunächst gesperrt. Sie sind nicht übertragbar, außer für die DAO und Adressen auf der Whitelist. Token-Inhaber haben ein normales Vorschlags- und Stimmrecht. Die DAO kann über die Aufnahme von Adressen in die Whitelist oder die Aufhebung der Sperre abstimmen."
+  "fractalModuleAttachedDescription": "Diese Einstellung kann nicht geändert werden, da das Fractal-Modul bereits mit dem DAO verbunden ist."
 }

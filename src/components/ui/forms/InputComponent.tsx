@@ -39,6 +39,7 @@ interface InputProps extends Omit<BaseProps, 'children'> {
 }
 
 interface TextareaProps extends Omit<BaseProps, 'children'> {
+  onBlur?: React.ChangeEventHandler<HTMLTextAreaElement> | undefined;
   onChange: React.ChangeEventHandler<HTMLTextAreaElement> | undefined;
   placeholder?: string;
   rows?: number;
@@ -143,6 +144,7 @@ export function TextareaComponent(props: TextareaProps) {
     value,
     disabled,
     onChange,
+    onBlur,
     rows,
     placeholder,
     maxLength,
@@ -156,6 +158,7 @@ export function TextareaComponent(props: TextareaProps) {
     >
       <Textarea
         id={id}
+        onBlur={onBlur}
         resize={resize}
         onChange={onChange}
         value={value}

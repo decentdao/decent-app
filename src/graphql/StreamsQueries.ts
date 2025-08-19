@@ -8,12 +8,6 @@ interface StreamAsset {
   decimals: number;
 }
 
-// Define the contract structure with only used properties
-interface StreamContract {
-  address: Address;
-}
-
-// Define the main stream structure with only used properties
 export interface Stream {
   id: string;
   startTime: string;
@@ -22,10 +16,10 @@ export interface Stream {
   canceled: boolean;
   category: string;
   cliff: boolean;
-  cliffTime: string;
+  cliffTime: string | null;
   depositAmount: string;
   recipient: string;
-  contract: StreamContract;
+  contract: Address;
   asset: StreamAsset;
 }
 

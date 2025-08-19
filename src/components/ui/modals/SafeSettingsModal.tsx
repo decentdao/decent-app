@@ -1493,24 +1493,53 @@ export function SafeSettingsModal({
               await Promise.all(
                 wallet.splits.map(async (split, splitIdx) => {
                   const splitErr: RevenueSharingSplitFormError = {};
+                  const existingWallet = type === 'existing' ? revShareWallets?.[index] : undefined;
+                  const existingSplit = existingWallet?.splits?.[splitIdx];
 
                   /* address */
-                  if (!split?.address) {
-                    splitErr.address = t('addressRequired', { ns: 'common' });
+                  if (type === 'existing') {
+                    const effectiveAddress = split?.address ?? existingSplit?.address;
+                    if (!effectiveAddress) {
+                      splitErr.address = t('addressRequired', { ns: 'common' });
+                    } else if (split?.address) {
+                      const { validation } = await validateAddress({ address: split.address });
+                      if (!validation.isValidAddress) {
+                        splitErr.address = t('errorInvalidAddress', { ns: 'common' });
+                      }
+                    }
                   } else {
-                    const { validation } = await validateAddress({ address: split.address });
-                    if (!validation.isValidAddress) {
-                      splitErr.address = t('errorInvalidAddress', { ns: 'common' });
+                    if (!split?.address) {
+                      splitErr.address = t('addressRequired', { ns: 'common' });
+                    } else {
+                      const { validation } = await validateAddress({ address: split.address });
+                      if (!validation.isValidAddress) {
+                        splitErr.address = t('errorInvalidAddress', { ns: 'common' });
+                      }
                     }
                   }
 
                   /* percentage */
-                  if (split?.percentage === undefined || split.percentage === '') {
-                    splitErr.percentage = t('percentageRequired', { ns: 'revenueSharing' });
+                  if (type === 'existing') {
+                    const effectivePct =
+                      split?.percentage !== undefined && split?.percentage !== ''
+                        ? split.percentage
+                        : existingSplit?.percentage?.toString();
+                    if (effectivePct === undefined || effectivePct === '') {
+                      splitErr.percentage = t('percentageRequired', { ns: 'revenueSharing' });
+                    } else if (split?.percentage !== undefined && split?.percentage !== '') {
+                      const pct = Number(split.percentage);
+                      if (isNaN(pct) || pct < 0 || pct > 100) {
+                        splitErr.percentage = t('percentageRangeInvalid', { ns: 'revenueSharing' });
+                      }
+                    }
                   } else {
-                    const pct = Number(split.percentage);
-                    if (isNaN(pct) || pct < 0 || pct > 100) {
-                      splitErr.percentage = t('percentageRangeInvalid', { ns: 'revenueSharing' });
+                    if (split?.percentage === undefined || split.percentage === '') {
+                      splitErr.percentage = t('percentageRequired', { ns: 'revenueSharing' });
+                    } else {
+                      const pct = Number(split.percentage);
+                      if (isNaN(pct) || pct < 0 || pct > 100) {
+                        splitErr.percentage = t('percentageRangeInvalid', { ns: 'revenueSharing' });
+                      }
                     }
                   }
 
@@ -1521,7 +1550,16 @@ export function SafeSettingsModal({
                 }),
               );
             }
-            const noRegularSplits = !wallet.splits || wallet.splits.length === 0;
+            // Determine if we truly have no regular splits considering existing data
+            const existingWallet = type === 'existing' ? revShareWallets?.[index] : undefined;
+            const noRegularSplits = (() => {
+              const hasFormSplits = !!wallet.splits && wallet.splits.length > 0;
+              if (type === 'existing') {
+                const hasExistingSplits = (existingWallet?.splits?.length ?? 0) > 0;
+                return !hasFormSplits && !hasExistingSplits;
+              }
+              return !hasFormSplits;
+            })();
 
             if (noRegularSplits && !wallet.specialSplits) {
               walletError.walletError = t('splitsRequired', { ns: 'revenueSharing' });
@@ -1569,13 +1607,74 @@ export function SafeSettingsModal({
                 0,
               );
 
-            const totalPct =
-              sum(...(wallet.splits?.map(s => s?.percentage) ?? [])) +
-              sum(
+            // Build effective regular splits for 'existing' by merging form deltas over existing data
+            const effectiveRegularSplits:
+              | { address: string | undefined; percentage: number }[]
+              | undefined = (() => {
+              if (type !== 'existing') {
+                return wallet.splits?.map(s => ({
+                  address: s?.address,
+                  percentage:
+                    s?.percentage !== undefined && s?.percentage !== '' ? Number(s.percentage) : 0,
+                }));
+              }
+              const existingSplits = existingWallet?.splits ?? [];
+              const formSplits = wallet.splits ?? [];
+              const maxLen = Math.max(existingSplits.length, formSplits.length);
+              return Array.from({ length: maxLen }, (_, i) => {
+                const f = formSplits[i];
+                const ex = existingSplits[i] as
+                  | { address?: string; percentage?: number }
+                  | undefined;
+                const addr = f?.address ?? ex?.address;
+                const percentage =
+                  f?.percentage !== undefined && f?.percentage !== ''
+                    ? Number(f.percentage)
+                    : ex?.percentage !== undefined
+                      ? Number(ex.percentage)
+                      : 0;
+                return { address: addr, percentage };
+              });
+            })();
+
+            let totalPct = sum(...(effectiveRegularSplits?.map(s => s.percentage) ?? []));
+
+            if (type === 'existing' && wallet.specialSplits) {
+              const specialsMap: {
+                key: keyof RevenueSharingWalletFormSpecialSplitsError;
+                addr?: string;
+                pct?: string | number;
+              }[] = [
+                { key: 'dao', addr: safe?.address, pct: wallet.specialSplits.dao?.percentage },
+                {
+                  key: 'parentDao',
+                  addr: subgraphInfo?.parentAddress ?? undefined,
+                  pct: wallet.specialSplits.parentDao?.percentage,
+                },
+                {
+                  key: 'stakingContract',
+                  addr: stakingContractAddress,
+                  pct: wallet.specialSplits.stakingContract?.percentage,
+                },
+              ];
+
+              for (const { addr, pct } of specialsMap) {
+                if (!addr || pct === undefined || pct === '') continue;
+                const idx = effectiveRegularSplits?.findIndex(s => s.address === addr) ?? -1;
+                if (idx >= 0 && effectiveRegularSplits) {
+                  const prev = effectiveRegularSplits[idx].percentage || 0;
+                  totalPct -= prev; // remove previous value for this special
+                }
+                totalPct += Number(pct); // add new special value
+              }
+            } else if (type === 'new') {
+              // For new wallets, specials are additive to regular splits
+              totalPct += sum(
                 wallet.specialSplits?.dao?.percentage,
                 wallet.specialSplits?.parentDao?.percentage,
                 wallet.specialSplits?.stakingContract?.percentage,
               );
+            }
 
             if (totalPct !== 100) {
               const msg = t('errorTotalPercentage', { ns: 'revenueSharing' });

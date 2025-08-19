@@ -121,6 +121,7 @@ export function SafeProposalTemplatesPage() {
         title: tProposalTemplate('templateAirdropTitle'),
         description: tProposalTemplate('templateAirdropDescription'),
         onProposalTemplateClick: openAirdropModal,
+        testId: 'templateAirdrop',
       },
       {
         icon: HourglassMedium,
@@ -133,12 +134,14 @@ export function SafeProposalTemplatesPage() {
             toast.info(tModals('noAssetsWithBalance'));
           }
         },
+        testId: 'templateSablier',
       },
       {
         icon: ArrowsDownUp,
         title: tProposalTemplate('templateTransferTitle'),
         description: tProposalTemplate('templateTransferDescription'),
         onProposalTemplateClick: openSendAssetsModal,
+        testId: 'templateTransfer',
       },
     ];
   }, [
@@ -164,7 +167,10 @@ export function SafeProposalTemplatesPage() {
         ]}
       >
         {canUserCreateProposal && safeAddress && (
-          <Link to={DAO_ROUTES.proposalTemplateNew.relative(addressPrefix, safeAddress)}>
+          <Link
+            to={DAO_ROUTES.proposalTemplateNew.relative(addressPrefix, safeAddress)}
+            data-testid="proposalTemplates-create"
+          >
             <Button minW={0}>
               <AddPlus />
               <Show above="sm">{tCommon('create')}</Show>
@@ -225,6 +231,7 @@ export function SafeProposalTemplatesPage() {
             title={exampleTemplate.title}
             description={exampleTemplate.description}
             onProposalTemplateClick={exampleTemplate.onProposalTemplateClick}
+            testId={exampleTemplate.testId}
           />
         ))}
       </Grid>

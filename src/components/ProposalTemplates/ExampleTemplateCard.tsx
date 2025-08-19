@@ -7,6 +7,7 @@ type ExampleTemplateCardProps = {
   title: string;
   description: string;
   onProposalTemplateClick: () => void;
+  testId: string;
 };
 
 export default function ExampleTemplateCard({
@@ -14,6 +15,7 @@ export default function ExampleTemplateCard({
   title,
   description,
   onProposalTemplateClick,
+  testId,
 }: ExampleTemplateCardProps) {
   return (
     <ContentBox
@@ -24,6 +26,7 @@ export default function ExampleTemplateCard({
         p: '1rem',
       }}
       onClick={onProposalTemplateClick}
+      testId={testId}
     >
       <Flex>
         <Icon

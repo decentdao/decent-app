@@ -23,10 +23,6 @@
   "changeQuorumThreshold": "定足数のしきい値を更新",
   "deployToken": "トークンの配備",
   "updateERC20Address": "ERC20アドレスの更新",
-  "updateTokenTransferable": "更新トークン譲渡可能",
-  "updateTokenMaxTotalSupply": "トークンの最大供給数を更新",
-  "addTokenWhitelist": "トークン・ホワイトリストの追加",
-  "removeTokenWhitelist": "トークンのホワイトリストを削除する",
   "deployStakingContract": "杭打ち契約の展開",
   "updateStakingMinPeriod": "ステーキング最小期間の更新",
   "addStakingRewardTokens": "ステーキング報酬トークンを追加する"

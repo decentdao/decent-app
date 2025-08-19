@@ -7,5 +7,6 @@
   "totalError": "{{percentage}}% O total deve ser igual a 100%",
   "recipients": "Beneficiários",
   "addRecipientButton": "Adicionar destinatário",
-  "removeSplitButtonLabel": "Remover divisão"
+  "removeSplitButtonLabel": "Remover divisão",
+  "stakingRecipientDisplay": "Estaca do titular da ficha"
 }
