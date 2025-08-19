@@ -4,6 +4,7 @@ import {
   CreateProposalActionData,
   CreateProposalTransaction,
   FractalTokenType,
+  FractalVotingStrategy,
   ProposalActionType,
 } from '../../../types';
 import { getEstimatedNumberOfBlocks } from '../../../utils/contract';
@@ -12,7 +13,7 @@ import { SafeSettingsEdits } from '../types';
 interface AzoriusHandlerDependencies {
   t: (key: string, options?: { ns: string }) => string;
   moduleAzoriusAddress: Address | undefined;
-  strategies: Array<{ type: FractalTokenType; address: Address }>;
+  strategies: FractalVotingStrategy[];
   ethValue: { bigintValue: bigint; value: string };
   publicClient: PublicClient;
 }

@@ -8,7 +8,7 @@ import { SENTINEL_MODULE } from '../../../utils/address';
 import { SafeSettingsEdits } from '../types';
 
 interface MultisigHandlerDependencies {
-  t: (key: string, options?: any) => string;
+  t: (key: string, options?: { ns: string }) => string;
   safe: { address: Address; threshold: number; owners: Address[] } | null;
   ethValue: { bigintValue: bigint; value: string };
   getEnsAddress: ({ name }: { name?: string }) => Promise<Address | null>;

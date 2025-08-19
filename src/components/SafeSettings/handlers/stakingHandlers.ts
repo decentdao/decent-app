@@ -22,7 +22,7 @@ interface StakingHandlerDependencies {
   zodiacModuleProxyFactory: Address;
   ethValue: BigIntValuePair;
   chainId: number;
-  t: (key: string, options?: any) => string;
+  t: (key: string, options?: { ns: string }) => string;
 }
 
 export const handleEditStaking = async (

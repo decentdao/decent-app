@@ -3,6 +3,7 @@ import { Address, encodeAbiParameters, encodeFunctionData, parseAbiParameters } 
 import {
   CreateProposalActionData,
   CreateProposalTransaction,
+  FractalVotingStrategy,
   ProposalActionType,
 } from '../../../types';
 import {
@@ -12,8 +13,9 @@ import {
 } from '../../../utils/gaslessVoting';
 import { SafeSettingsEdits } from '../types';
 
-interface GeneralHandlerDependencies {
-  t: (key: string, options?: any) => string;
+// Extended interface for general handler with specific dependencies
+export interface GeneralHandlerDependencies {
+  t: (key: string, options?: { ns: string }) => string;
   safe: { address: Address } | null;
   governance: { paymasterAddress: Address | null };
   accountAbstraction:
@@ -35,9 +37,9 @@ interface GeneralHandlerDependencies {
   paymasterDepositInfo: { stake?: bigint } | undefined;
   buildInstallVersionedVotingStrategies: () => Promise<{
     installVersionedStrategyCreateProposalTxs: CreateProposalTransaction[];
-    newStrategies: Array<{ type: any; address: Address; version?: any }>;
+    newStrategies: Array<FractalVotingStrategy>;
   }>;
-  strategies: Array<{ type: any; address: Address; version?: any }>;
+  strategies: Array<FractalVotingStrategy>;
 }
 
 export const handleEditGeneral = async (
