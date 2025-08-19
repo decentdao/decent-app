@@ -178,7 +178,7 @@ export function SafeSettingsModal({
           px="2rem"
           onClick={closeModal}
         >
-          {t('discardChanges', { ns: 'common' })}
+          {t(canUserCreateProposal ? 'discardChanges' : 'close', { ns: 'common' })}
         </Button>
         {canUserCreateProposal && (
           <Button

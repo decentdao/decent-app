@@ -137,5 +137,6 @@
   "calendarPlaceholder": "YYYY-MM-DD",
   "years": "Years",
   "addressInfoTooltip": "While DAO Name or ENS is displayed, the full wallet address will appear in the proposal.",
-  "stakingPeriodMoreThanZero": "Staking period must be more than zero"
+  "stakingPeriodMoreThanZero": "Staking period must be more than zero",
+  "close": "Close"
 }
