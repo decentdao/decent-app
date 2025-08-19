@@ -15,7 +15,11 @@ import { RevSplitWalletAccordion } from './RevenueSplitWallets';
 import { mergeSplitWalletFormData } from './revenueShareFormHandlers';
 
 function RevenueShareHeader() {
-  const { values, setFieldValue } = useFormikContext<SafeSettingsEdits>();
+  const {
+    values,
+    setFieldValue,
+    status: { readOnly } = {},
+  } = useFormikContext<SafeSettingsEdits>();
   const { t } = useTranslation('revenueSharing');
 
   return (
@@ -37,6 +41,7 @@ function RevenueShareHeader() {
         size="sm"
         ml="auto"
         leftIcon={<Icon as={Plus} />}
+        isDisabled={readOnly}
         onClick={() => {
           const formWallets = [...(values.revenueSharing?.new || [])];
 

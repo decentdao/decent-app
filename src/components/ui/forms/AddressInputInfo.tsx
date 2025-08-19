@@ -69,7 +69,9 @@ export function AddressInputInfo(props: InputProps & { staticDisplayValue?: stri
         h="full"
         px="1rem"
         onClick={() => {
-          setShowInput(true);
+          if (!props.isReadOnly) {
+            setShowInput(true);
+          }
         }}
         onBlur={() => {
           setShowInput(false);
@@ -84,7 +86,7 @@ export function AddressInputInfo(props: InputProps & { staticDisplayValue?: stri
         bg={props.isReadOnly ? 'transparent' : props.isInvalid ? 'color-error-950' : 'transparent'}
       >
         <Text
-          cursor="pointer"
+          cursor={props.isReadOnly ? 'default' : 'pointer'}
           textStyle="text-sm-regular"
           color={props.isInvalid ? 'color-error-400' : 'color-layout-foreground'}
           overflow="hidden"

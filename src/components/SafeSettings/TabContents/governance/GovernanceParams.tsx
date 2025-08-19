@@ -27,7 +27,11 @@ export function GovernanceParams() {
     node: { safe },
   } = useDAOStore({ daoKey });
 
-  const { values, setFieldValue } = useFormikContext<SafeSettingsEdits>();
+  const {
+    values,
+    setFieldValue,
+    status: { readOnly } = {},
+  } = useFormikContext<SafeSettingsEdits>();
   const publicClient = useNetworkPublicClient();
   const { getTimeDuration } = useTimeHelpers();
 
@@ -144,6 +148,7 @@ export function GovernanceParams() {
             >
               <InputGroup>
                 <BigIntInput
+                  isDisabled={readOnly}
                   value={
                     values.azorius?.quorumPercentage !== undefined
                       ? values.azorius?.quorumPercentage
@@ -193,6 +198,7 @@ export function GovernanceParams() {
               gridContainerProps={inputGridContainerProps}
             >
               <BigIntInput
+                isDisabled={readOnly}
                 value={
                   values.azorius?.quorumThreshold !== undefined
                     ? values.azorius?.quorumThreshold
@@ -239,6 +245,7 @@ export function GovernanceParams() {
               gridContainerProps={inputGridContainerProps}
             >
               <DurationUnitStepperInput
+                isDisabled={readOnly}
                 secondsValue={Number(
                   values.azorius?.votingPeriod !== undefined
                     ? values.azorius?.votingPeriod
@@ -282,6 +289,7 @@ export function GovernanceParams() {
               gridContainerProps={inputGridContainerProps}
             >
               <DurationUnitStepperInput
+                isDisabled={readOnly}
                 secondsValue={Number(
                   values.azorius?.timelockPeriod !== undefined
                     ? values.azorius?.timelockPeriod
@@ -325,6 +333,7 @@ export function GovernanceParams() {
               gridContainerProps={inputGridContainerProps}
             >
               <DurationUnitStepperInput
+                isDisabled={readOnly}
                 secondsValue={Number(
                   values.azorius?.executionPeriod !== undefined
                     ? values.azorius?.executionPeriod
