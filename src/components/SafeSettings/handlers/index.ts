@@ -5,3 +5,8 @@ export { handleEditMultisigGovernance } from './multisigHandlers';
 export { handleEditAzoriusGovernance } from './azoriusHandlers';
 export { handleEditPermissions } from './permissionsHandlers';
 export { handleEditStaking } from './stakingHandlers';
+export {
+  validateSafeSettingsForm,
+  validateFormHasEdits,
+  validateFormHasErrors,
+} from './validationHandlers';
