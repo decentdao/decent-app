@@ -87,25 +87,25 @@ function StakingForm() {
   return (
     <>
       {address ? (
-       <LabelComponent
-         label={t('stakingAddressTitle')}
-         isRequired={false}
-         gridContainerProps={{
-           mt: 2,
-           templateColumns: '1fr',
-           width: 'fit-content',
-         }}
-         errorMessage={stakingErrors?.minimumStakingPeriod}
-       >
-         <AddressCopier
-           address={address}
-           color="color-charcoal-50"
-           textStyle="text-sm-underlined"
-           displayAs="address"
-           h={0}
-           p={4}
-         />
-       </LabelComponent>
+        <LabelComponent
+          label={t('stakingAddressTitle')}
+          isRequired={false}
+          gridContainerProps={{
+            mt: 2,
+            templateColumns: '1fr',
+            width: 'fit-content',
+          }}
+          errorMessage={stakingErrors?.minimumStakingPeriod}
+        >
+          <AddressCopier
+            address={address}
+            color="color-charcoal-50"
+            textStyle="text-sm-underlined"
+            displayAs="address"
+            h={0}
+            p={4}
+          />
+        </LabelComponent>
       ) : null}
 
       <LabelComponent

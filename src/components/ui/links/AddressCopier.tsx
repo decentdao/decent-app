@@ -33,7 +33,13 @@ export default function AddressCopier({
       }}
       width="fit-content"
       {...rest}
-      text={displayAs === 'truncated' ? accountSubstring || address : displayAs === 'displayName' ? displayName || address : address}
+      text={
+        displayAs === 'truncated'
+          ? accountSubstring || address
+          : displayAs === 'displayName'
+            ? displayName || address
+            : address
+      }
       icon={CopySimple}
       iconPosition="end"
       {...(variant === 'secondary' && {
