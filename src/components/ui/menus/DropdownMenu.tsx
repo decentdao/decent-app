@@ -225,6 +225,7 @@ export function DropdownMenu<T>({
               w="26.75rem"
               maxHeight="20rem"
               overflowY="scroll"
+              className="scroll-dark"
             >
               <EaseOutComponent>
                 {title && (

@@ -197,7 +197,6 @@ export function RevSplitRow({
                 <NumberInputPercentage
                   variant="tableStyle"
                   precision={0}
-                  isInvalid={!!splitFormError?.percentage}
                   isReadOnly={readOnly}
                   value={fieldValue}
                   min={0}
