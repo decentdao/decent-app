@@ -97,7 +97,8 @@ function StakingForm() {
       ) : null}
 
       <LabelComponent
-        label={t('stakingPeriod')}
+        label={t('minimumStakingPeriod')}
+        helper={t('minimumStakingPeriodHelper')}
         isRequired
         gridContainerProps={{
           mt: 2,
