@@ -510,54 +510,49 @@ export function RevSplitWalletAccordion({
   walletFormType: RevenueSharingWalletFormType;
 }) {
   const { daoKey } = useCurrentDAOKey();
-  const {
-    revShareWallets,
-  } = useDAOStore({ daoKey });
+  const { revShareWallets } = useDAOStore({ daoKey });
   const revShareWallet = revShareWallets?.find(_wallet => _wallet.address === wallet.address);
   const { distribute, isPending, error } = useDistributeAllRevenue(revShareWallet);
-  
-  return (
-    <Box
-      w="100%"
-    >
 
-    <AccordionDropdown
-      defaultExpandedIndices={index === 0 ? [0] : []}
-      sectionTitle={
-        <Flex
-        alignItems="center"
-        justifyContent="space-between"
-        >
-          <WalletName
-            index={index}
-            wallet={wallet}
-            walletFormType={walletFormType}
-            />
-        </Flex>
-      }
-      content={
-        <RevSplitTable
-        wallet={wallet}
-        walletIndex={index}
-        walletFormType={walletFormType}
-        />
-      }
-      />
-      
-  <Button
-            w="full"
-            mt="1rem"
-            variant="secondaryV1"
-            size="sm"
-            isDisabled={!revShareWallet?.tokens?.length}
-            leftIcon={<Icon as={Money} />}
-            onClick={(e) => {
-              e.stopPropagation();
-              distribute();
-            }}
+  return (
+    <Box w="100%">
+      <AccordionDropdown
+        defaultExpandedIndices={index === 0 ? [0] : []}
+        sectionTitle={
+          <Flex
+            alignItems="center"
+            justifyContent="space-between"
           >
-            distributeButton
-          </Button>
-      </Box>
+            <WalletName
+              index={index}
+              wallet={wallet}
+              walletFormType={walletFormType}
+            />
+          </Flex>
+        }
+        content={
+          <RevSplitTable
+            wallet={wallet}
+            walletIndex={index}
+            walletFormType={walletFormType}
+          />
+        }
+      />
+
+      <Button
+        w="full"
+        mt="1rem"
+        variant="secondaryV1"
+        size="sm"
+        isDisabled={!revShareWallet?.tokens?.length}
+        leftIcon={<Icon as={Money} />}
+        onClick={e => {
+          e.stopPropagation();
+          distribute();
+        }}
+      >
+        distributeButton
+      </Button>
+    </Box>
   );
 }
