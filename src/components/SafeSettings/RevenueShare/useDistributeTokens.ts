@@ -3,6 +3,7 @@ import { useCallback, useState } from 'react';
 import { Address, encodeFunctionData, getAddress } from 'viem';
 import { useCreateSplitsClient } from '../../../hooks/revenueShare/useSplitsClient';
 import { RevenueSharingWallet } from '../../../types/revShare';
+import { DISTRIBUTION_INCENTIVE, TOTAL_ALLOCATION_PERCENT_BN } from './revenueShareFormHandlers';
 
 export function useDistributeAllRevenue(wallet: RevenueSharingWallet | undefined) {
   const [isPending, setPending] = useState(false);
@@ -32,8 +33,8 @@ export function useDistributeAllRevenue(wallet: RevenueSharingWallet | undefined
             {
               recipients: wallet.splits?.map(split => getAddress(split.address)) || [],
               allocations: wallet.splits?.map(split => BigInt(split.percentage * 10000)) || [],
-              totalAllocation: BigInt(1_000_000), // 100% in PPM
-              distributionIncentive: 0,
+              totalAllocation: TOTAL_ALLOCATION_PERCENT_BN,
+              distributionIncentive: DISTRIBUTION_INCENTIVE,
             },
             token,
             splitClient._walletClient?.account?.address as Address,
