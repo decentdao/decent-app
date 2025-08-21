@@ -4,8 +4,6 @@ import { Address, encodeFunctionData, getAddress } from 'viem';
 import { useCreateSplitsClient } from '../../../hooks/revenueShare/useSplitsClient';
 import { RevenueSharingWallet } from '../../../types/revShare';
 
-const ETH_SENTINEL_ADDRESS = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE' as Address;
-
 export function useDistributeAllRevenue(wallet: RevenueSharingWallet | undefined) {
   const [isPending, setPending] = useState(false);
   const [error, setError] = useState<Error | null>(null);
@@ -37,7 +35,7 @@ export function useDistributeAllRevenue(wallet: RevenueSharingWallet | undefined
               totalAllocation: BigInt(1_000_000), // 100% in PPM
               distributionIncentive: 0,
             },
-            (token as string) === 'native' ? ETH_SENTINEL_ADDRESS : token,
+            token,
             splitClient._walletClient?.account?.address as Address,
           ],
         }),
