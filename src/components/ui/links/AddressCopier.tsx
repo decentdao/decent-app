@@ -23,6 +23,15 @@ export default function AddressCopier({
 }: AddressCopierProps) {
   const { accountSubstring, displayName } = useGetAccountName(address);
   const copyToClipboard = useCopyText();
+  const isTruncated = displayAs === 'truncated';
+  const isDisplayName = displayAs === 'displayName';
+
+  let displayedText: string | Address = address;
+  if (isTruncated) {
+    displayedText = accountSubstring || address;
+  } else if (isDisplayName) {
+    displayedText = displayName || address;
+  }
 
   return (
     <CeleryButtonWithIcon
@@ -33,13 +42,7 @@ export default function AddressCopier({
       }}
       width="fit-content"
       {...rest}
-      text={
-        displayAs === 'truncated'
-          ? accountSubstring || address
-          : displayAs === 'displayName'
-            ? displayName || address
-            : address
-      }
+      text={displayedText}
       icon={CopySimple}
       iconPosition="end"
       {...(variant === 'secondary' && {
