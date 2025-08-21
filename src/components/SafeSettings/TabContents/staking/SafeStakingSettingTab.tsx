@@ -8,6 +8,7 @@ import { useNetworkConfigStore } from '../../../../providers/NetworkConfig/useNe
 import { BigIntValuePair, ERC20TokenData, GovernanceType, TokenBalance } from '../../../../types';
 import DurationUnitStepperInput from '../../../ui/forms/DurationUnitStepperInput';
 import { LabelComponent } from '../../../ui/forms/InputComponent';
+import AddressCopier from '../../../ui/links/AddressCopier';
 import { DisplayAddress } from '../../../ui/links/DisplayAddress';
 import { BarLoader } from '../../../ui/loaders/BarLoader';
 import { SafeSettingsEdits, SafeSettingsFormikErrors } from '../../../ui/modals/SafeSettingsModal';
@@ -86,14 +87,25 @@ function StakingForm() {
   return (
     <>
       {address ? (
-        <DisplayAddress
-          address={address}
-          color="color-charcoal-50"
-          textStyle="text-sm-underlined"
-          p={0}
+        <LabelComponent
+          label={t('stakingAddressTitle')}
+          isRequired={false}
+          gridContainerProps={{
+            mt: 2,
+            templateColumns: '1fr',
+            width: 'fit-content',
+          }}
+          errorMessage={stakingErrors?.minimumStakingPeriod}
         >
-          {address}
-        </DisplayAddress>
+          <AddressCopier
+            address={address}
+            color="color-charcoal-50"
+            textStyle="text-sm-underlined"
+            displayAs="address"
+            h={0}
+            p={4}
+          />
+        </LabelComponent>
       ) : null}
 
       <LabelComponent
