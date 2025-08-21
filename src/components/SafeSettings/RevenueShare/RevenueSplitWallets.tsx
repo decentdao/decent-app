@@ -166,7 +166,7 @@ export function RevSplitRow({
                 <AddressInputInfo
                   isInvalid={!!splitFormError?.address}
                   isReadOnly={isReadOnlyAddress || readOnly}
-                  staticDisplayValue={isStakingContract ? t('stakingRecipientDisplay') : undefined}
+                  displayValue={isStakingContract ? t('stakingRecipientDisplay') : undefined}
                   variant="tableStyle"
                   value={fieldValue}
                   onChange={value => {
