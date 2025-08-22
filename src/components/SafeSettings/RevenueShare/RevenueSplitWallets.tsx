@@ -523,7 +523,7 @@ export function RevSplitWalletAccordion({
     } else if (toastId.current) {
       toast.dismiss(toastId.current);
       toast.success(t('tokensDistributed'), {
-        duration: 1000
+        duration: 1000,
       });
     }
     if (error) {
@@ -532,7 +532,7 @@ export function RevSplitWalletAccordion({
 
     return () => {
       toast.dismiss(toastId.current);
-    }
+    };
   }, [isPending, error, t]);
 
   return (
@@ -550,21 +550,19 @@ export function RevSplitWalletAccordion({
               wallet={wallet}
               walletFormType={walletFormType}
             />
-            <DecentTooltip
-              label={t('distributeButtonTooltip')}
-            >
+            <DecentTooltip label={t('distributeButtonTooltip')}>
               <Button
                 variant="secondaryV1"
                 size="sm"
                 hidden={!revShareWallet?.address}
                 isDisabled={!revShareWallet?.tokens?.length}
-              onClick={e => {
-                e.stopPropagation();
-                distribute();
-              }}
-            >
-              {t('distributeButton')}
-            </Button>
+                onClick={e => {
+                  e.stopPropagation();
+                  distribute();
+                }}
+              >
+                {t('distributeButton')}
+              </Button>
             </DecentTooltip>
           </Flex>
         }
