@@ -1,7 +1,7 @@
 import { Box, Button, Flex, Grid, GridItem, Icon, IconButton, Text } from '@chakra-ui/react';
 import { Plus, Trash } from '@phosphor-icons/react';
 import { Field, FieldProps, useFormikContext } from 'formik';
-import { useCallback, useEffect, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { Address, isAddress } from 'viem';
@@ -515,17 +515,23 @@ export function RevSplitWalletAccordion({
   const revShareWallet = revShareWallets?.find(_wallet => _wallet.address === wallet.address);
   const { t } = useTranslation('revenueSharing');
   const { distribute, isPending, error } = useDistributeAllRevenue(revShareWallet);
+  const toastId = useRef<string | number | undefined>();
 
   useEffect(() => {
-    let toastId: string | number | undefined;
     if (isPending) {
-      toastId = toast.loading(t('distributingTokens'));
-    } else {
-      toast.dismiss(toastId);
-      toast.success(t('tokensDistributed'));
+      toastId.current = toast.loading(t('distributingTokens'));
+    } else if (toastId.current) {
+      toast.dismiss(toastId.current);
+      toast.success(t('tokensDistributed'), {
+        duration: 1000
+      });
     }
     if (error) {
       toast.error(error);
+    }
+
+    return () => {
+      toast.dismiss(toastId.current);
     }
   }, [isPending, error, t]);
 
