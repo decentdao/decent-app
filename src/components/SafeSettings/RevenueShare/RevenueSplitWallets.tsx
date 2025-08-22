@@ -518,20 +518,25 @@ export function RevSplitWalletAccordion({
   const toastId = useRef<string | number | undefined>();
 
   useEffect(() => {
+    const dismissToast = () => {
+      toast.dismiss(toastId.current);
+      toastId.current = undefined;
+    };
     if (isPending) {
       toastId.current = toast.loading(t('distributingTokens'));
     } else if (toastId.current) {
-      toast.dismiss(toastId.current);
+      dismissToast();
       toast.success(t('tokensDistributed'), {
         duration: 1000,
       });
     }
     if (error) {
+      dismissToast();
       toast.error(error);
     }
 
     return () => {
-      toast.dismiss(toastId.current);
+      dismissToast();
     };
   }, [isPending, error, t]);
 
