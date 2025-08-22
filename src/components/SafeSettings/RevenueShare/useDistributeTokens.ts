@@ -1,13 +1,16 @@
 import { splitV2ABI } from '@0xsplits/splits-sdk/constants/abi';
 import { useCallback, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Address, encodeFunctionData, getAddress } from 'viem';
+import { logError } from '../../../helpers/errorLogging';
 import { useCreateSplitsClient } from '../../../hooks/revenueShare/useSplitsClient';
 import { RevenueSharingWallet } from '../../../types/revShare';
 import { DISTRIBUTION_INCENTIVE, TOTAL_ALLOCATION_PERCENT_BN } from './revenueShareFormHandlers';
 
 export function useDistributeAllRevenue(wallet: RevenueSharingWallet | undefined) {
   const [isPending, setPending] = useState(false);
-  const [error, setError] = useState<Error | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const { t } = useTranslation('revenueSharing');
   const splitClient = useCreateSplitsClient();
 
   const distribute = useCallback(async () => {
@@ -31,8 +34,8 @@ export function useDistributeAllRevenue(wallet: RevenueSharingWallet | undefined
           functionName: 'distribute',
           args: [
             {
-              recipients: wallet.splits?.map(split => getAddress(split.address)) || [],
-              allocations: wallet.splits?.map(split => BigInt(split.percentage * 10000)) || [],
+              recipients: wallet.splits.map(split => getAddress(split.address)),
+              allocations: wallet.splits.map(split => BigInt(split.percentage * 10000)),
               totalAllocation: TOTAL_ALLOCATION_PERCENT_BN,
               distributionIncentive: DISTRIBUTION_INCENTIVE,
             },
@@ -48,12 +51,13 @@ export function useDistributeAllRevenue(wallet: RevenueSharingWallet | undefined
       return events;
     } catch (e) {
       const err = e instanceof Error ? e : new Error(String(e));
-      setError(err);
+      logError(error);
+      setError(t('tokenDistributionFailed'));
       throw err;
     } finally {
       setPending(false);
     }
-  }, [wallet, splitClient]);
+  }, [wallet, splitClient, error, t]);
 
   return {
     distribute,

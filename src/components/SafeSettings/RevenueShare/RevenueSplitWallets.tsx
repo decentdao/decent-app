@@ -1,8 +1,9 @@
 import { Box, Button, Flex, Grid, GridItem, Icon, IconButton, Text } from '@chakra-ui/react';
-import { Money, Plus, Trash } from '@phosphor-icons/react';
+import { Plus, Trash } from '@phosphor-icons/react';
 import { Field, FieldProps, useFormikContext } from 'formik';
-import { useCallback, useMemo } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import { toast } from 'sonner';
 import { Address, isAddress } from 'viem';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import { createAccountSubstring } from '../../../hooks/utils/useGetAccountName';
@@ -12,6 +13,7 @@ import {
   RevenueSharingWalletFormType,
   RevenueSharingWalletFormValues,
 } from '../../../types/revShare';
+import { DecentTooltip } from '../../ui/DecentTooltip';
 import { AccordionDropdown } from '../../ui/containers/AccordionDropdown';
 import { AddressInputInfo } from '../../ui/forms/AddressInputInfo';
 import { EditableInput } from '../../ui/forms/EditableInput';
@@ -511,7 +513,21 @@ export function RevSplitWalletAccordion({
   const { daoKey } = useCurrentDAOKey();
   const { revShareWallets } = useDAOStore({ daoKey });
   const revShareWallet = revShareWallets?.find(_wallet => _wallet.address === wallet.address);
+  const { t } = useTranslation('revenueSharing');
   const { distribute, isPending, error } = useDistributeAllRevenue(revShareWallet);
+
+  useEffect(() => {
+    let toastId: string | number | undefined;
+    if (isPending) {
+      toastId = toast.loading(t('distributingTokens'));
+    } else {
+      toast.dismiss(toastId);
+      toast.success(t('tokensDistributed'));
+    }
+    if (error) {
+      toast.error(error);
+    }
+  }, [isPending, error, t]);
 
   return (
     <Box w="100%">
@@ -519,6 +535,7 @@ export function RevSplitWalletAccordion({
         defaultExpandedIndices={index === 0 ? [0] : []}
         sectionTitle={
           <Flex
+            w="100%"
             alignItems="center"
             justifyContent="space-between"
           >
@@ -527,6 +544,22 @@ export function RevSplitWalletAccordion({
               wallet={wallet}
               walletFormType={walletFormType}
             />
+            <DecentTooltip
+              label={t('distributeButtonTooltip')}
+            >
+              <Button
+                variant="secondaryV1"
+                size="sm"
+                hidden={!revShareWallet?.address}
+                isDisabled={!revShareWallet?.tokens?.length}
+              onClick={e => {
+                e.stopPropagation();
+                distribute();
+              }}
+            >
+              {t('distributeButton')}
+            </Button>
+            </DecentTooltip>
           </Flex>
         }
         content={
@@ -537,21 +570,6 @@ export function RevSplitWalletAccordion({
           />
         }
       />
-
-      <Button
-        w="full"
-        mt="1rem"
-        variant="secondaryV1"
-        size="sm"
-        isDisabled={!revShareWallet?.tokens?.length}
-        leftIcon={<Icon as={Money} />}
-        onClick={e => {
-          e.stopPropagation();
-          distribute();
-        }}
-      >
-        distributeButton
-      </Button>
     </Box>
   );
 }
