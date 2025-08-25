@@ -149,8 +149,14 @@ export default function RewardsCard() {
       .then(() => {
         if (toastRef.current) {
           toast.dismiss(toastRef.current);
-          toast.success(t('claimRewardSuccess'));
         }
+        toast.success(t('claimRewardSuccess'));
+        // Update claimable rewards;
+        stakeContract.read
+          .claimableRewards([walletClient.account.address])
+          .then((claimableRewards: bigint[]) => {
+            setIsClaimable(claimableRewards.some(reward => reward > 0));
+          });
       })
       .catch(e => {
         logError(e);
