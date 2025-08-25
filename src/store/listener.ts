@@ -32,9 +32,11 @@ export const useDAOStoreListener = ({ daoKey }: { daoKey: DAOKey | undefined }) 
     setGuardAccountData,
     setGaslessVotingData,
     setHatKeyValuePairData,
+    setStakedTokenAccountData,
   } = useGlobalStore();
 
   const governance = daoKey ? getGovernance(daoKey) : undefined;
+  const stakingAddress = governance?.stakedToken?.address;
   const lockedVotesTokenAddress = governance?.lockReleaseAddress;
   const votesTokenAddress = governance?.votesTokenAddress;
   const moduleAzoriusAddress = governance?.moduleAzoriusAddress;
@@ -157,7 +159,17 @@ export const useDAOStoreListener = ({ daoKey }: { daoKey: DAOKey | undefined }) 
     [daoKey, setGovernanceLockReleaseAccountData],
   );
 
+  const onStakedTokenAccountDataLoaded = useCallback(
+    (accountData: { balance: bigint }) => {
+      if (daoKey) {
+        setStakedTokenAccountData(daoKey, accountData);
+      }
+    },
+    [daoKey, setStakedTokenAccountData],
+  );
+
   useAccountListeners({
+    stakingAddress,
     votesTokenAddress,
     azoriusGuardAddress,
     multisigGuardAddress,
@@ -172,6 +184,7 @@ export const useDAOStoreListener = ({ daoKey }: { daoKey: DAOKey | undefined }) 
     onGuardAccountDataLoaded,
     onGovernanceAccountDataLoaded,
     onGovernanceLockReleaseAccountDataLoaded,
+    onStakedTokenAccountDataLoaded,
   });
 
   const onRolesDataFetched = useCallback(

@@ -50,3 +50,56 @@ export function useDateTimeDisplay(referenceDate: Date) {
     });
   }
 }
+
+/**
+ * Takes a duration in seconds and returns a human readable string with the appropriate time unit.
+ * Automatically selects the most appropriate unit (minutes, hours, days, weeks, years).
+ *
+ * @param seconds the duration in seconds (supports number, bigint, or undefined)
+ * @returns a string formatted as "{count} {unit}" (e.g., "5 minutes", "2 hours", "1 week")
+ */
+export function useDurationDisplay(seconds: number | bigint | undefined) {
+  const { t } = useTranslation('common');
+
+  // Handle undefined or null
+  if (seconds === undefined || seconds === null || seconds === 0n || seconds === 0) {
+    return '';
+  }
+
+  // Convert bigint to number for calculations
+  const numSeconds = typeof seconds === 'bigint' ? Number(seconds) : seconds;
+  const absSeconds = Math.abs(numSeconds);
+
+  // Less than 5 minutes
+  if (absSeconds < 300) {
+    return t('labelNowishLeft').replace(' left', '');
+  }
+
+  // Minutes (5 minutes to 1 hour)
+  if (absSeconds < 3600) {
+    const minutes = Math.floor(absSeconds / 60);
+    return t('labelMinutesLeft', { count: minutes }).replace(' left', '');
+  }
+
+  // Hours (1 hour to 1 day)
+  if (absSeconds < 86400) {
+    const hours = Math.floor(absSeconds / 3600);
+    return t('labelHoursLeft', { count: hours }).replace(' left', '');
+  }
+
+  // Days (1 day to 1 week)
+  if (absSeconds < 604800) {
+    const days = Math.floor(absSeconds / 86400);
+    return t('labelDaysLeft', { count: days }).replace(' left', '');
+  }
+
+  // Weeks (1 week to 1 year)
+  if (absSeconds < 31536000) {
+    const weeks = Math.floor(absSeconds / 604800);
+    return t('labelWeeksLeft', { count: weeks }).replace(' left', '');
+  }
+
+  // Years
+  const years = Math.floor(absSeconds / 31536000);
+  return t('labelYearsLeft', { count: years }).replace(' left', '');
+}

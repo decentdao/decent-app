@@ -53,13 +53,14 @@ function StakingForm() {
   const stakingErrors = (errors as SafeSettingsFormikErrors | undefined)?.staking;
 
   const { address, minimumStakingPeriod, rewardsTokens } = stakedToken || {};
+  const rewardsTokenAddresses = rewardsTokens?.map(token => token.address) || [];
   const minPeriodValue = Number(
     values.staking?.minimumStakingPeriod?.bigintValue || minimumStakingPeriod || 0n,
   );
 
   const undistributedTokens =
     stakedToken?.assetsFungible.filter(
-      asset => asset.balance !== '0' && !rewardsTokens?.includes(asset.tokenAddress),
+      asset => asset.balance !== '0' && !rewardsTokenAddresses.includes(asset.tokenAddress),
     ) || [];
 
   // Add staking contract holdings, DAO token and USDC
@@ -181,16 +182,16 @@ function StakingForm() {
           includeNativeToken
           canSelectMultiple
           disabled={readOnly}
-          lockedSelections={rewardsTokens}
+          lockedSelections={rewardsTokenAddresses}
           hideBalanceAndMergeTokens={mergeTokens}
           onSelect={addresses => {
             const rewardTokensToBeAdded = addresses.filter(
-              a => !rewardsTokens?.includes(a as Address),
+              a => !rewardsTokenAddresses.includes(a as Address),
             );
             if (rewardTokensToBeAdded.length > 0) {
               setFieldValue(
                 'staking.newRewardTokens',
-                addresses.filter(a => !rewardsTokens?.includes(a as Address)),
+                addresses.filter(a => !rewardsTokenAddresses.includes(a as Address)),
               );
             } else {
               setFieldValue('staking.newRewardTokens', undefined);

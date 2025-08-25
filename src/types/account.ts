@@ -19,8 +19,17 @@ export interface ERC20TokenData extends BaseTokenData {
 
 export interface StakedTokenData extends ERC20TokenData {
   minimumStakingPeriod: bigint;
-  rewardsTokens: Address[];
+  rewardsTokens: {
+    name: string;
+    symbol: string;
+    decimals: number;
+    address: Address;
+    balance: string;
+    formattedBalance: string;
+    usdValue: number;
+  }[];
   assetsFungible: TokenBalance[];
+  balance: bigint | null;
 }
 
 export interface ERC721TokenData extends BaseTokenData {
