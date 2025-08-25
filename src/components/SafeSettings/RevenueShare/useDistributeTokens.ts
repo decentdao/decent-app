@@ -51,13 +51,13 @@ export function useDistributeAllRevenue(wallet: RevenueSharingWallet | undefined
       return events;
     } catch (e) {
       const err = e instanceof Error ? e : new Error(String(e));
-      logError(error);
+      logError(err);
       setError(t('tokenDistributionFailed'));
       throw err;
     } finally {
       setPending(false);
     }
-  }, [wallet, splitClient, error, t]);
+  }, [wallet, splitClient, t]);
 
   return {
     distribute,
