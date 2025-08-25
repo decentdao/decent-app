@@ -4,7 +4,7 @@ import CheckDocumentIcon from './CheckDocumentIcon';
 
 export default function NoStakingDeployed({ deploy }: { deploy: () => void }) {
   const { t } = useTranslation('staking');
-  
+
   return (
     <Flex
       padding={6}

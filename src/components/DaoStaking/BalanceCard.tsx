@@ -62,22 +62,18 @@ export default function BalanceCard() {
   const { t } = useTranslation('staking');
   const { daoKey } = useCurrentDAOKey();
   const {
-
-    governance: { stakedToken, votesToken }
+    governance: { stakedToken, votesToken },
   } = useDAOStore({ daoKey });
 
   const stBalance = stakedToken?.balance || 0n;
   const vtBalance = votesToken?.balance || 0n;
   const totalBalance = stBalance + vtBalance;
-  
 
   const stakedBalance = formatUnits(stBalance, stakedToken?.decimals || 0);
   const availableBalance = formatUnits(vtBalance, votesToken?.decimals || 0);
 
-
-  const stakedPercentage = totalBalance > 0n ? Number(stBalance * 100n / totalBalance) : 0;
-  const availablePercentage = totalBalance > 0n ? Number(vtBalance * 100n / totalBalance) : 0;
-  
+  const stakedPercentage = totalBalance > 0n ? Number((stBalance * 100n) / totalBalance) : 0;
+  const availablePercentage = totalBalance > 0n ? Number((vtBalance * 100n) / totalBalance) : 0;
 
   return (
     <Flex
@@ -116,7 +112,6 @@ export default function BalanceCard() {
           gap="8px"
           alignSelf="stretch"
         >
-
           <BalanceEntry
             label={t('stakedLabel')}
             value={stakedBalance}
@@ -138,7 +133,16 @@ export default function BalanceCard() {
             gap="8px"
             width="full"
           >
-            <Progress bg="color-primary-100" fill="color-primary-400" value={stakedPercentage} max={100} width="full" size="xs" h="6px" borderRadius="8px"/>
+            <Progress
+              bg="color-primary-100"
+              fill="color-primary-400"
+              value={stakedPercentage}
+              max={100}
+              width="full"
+              size="xs"
+              h="6px"
+              borderRadius="8px"
+            />
             <Flex
               justifyContent="space-between"
               alignItems="flex-start"

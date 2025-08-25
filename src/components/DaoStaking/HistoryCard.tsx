@@ -4,7 +4,6 @@ import { PropsWithChildren, useState } from 'react';
 import { DecentTooltip } from '../ui/DecentTooltip';
 import StyledTable, { StyledTableData } from './StyledTable';
 
-
 // @TODO: Erased this comment if it's not needed;
 
 function BadgeText({ children }: PropsWithChildren) {

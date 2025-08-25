@@ -18,14 +18,12 @@ export function SafeStakingPage() {
     amplitude.track(analyticsEvents.StakingPageOpened);
   }, []);
 
-
   const { daoKey } = useCurrentDAOKey();
   const {
-    governance: { stakedToken }
+    governance: { stakedToken },
   } = useDAOStore({ daoKey });
   const { t } = useTranslation('staking');
   const { open: openSettingsModal } = useDecentModal(ModalType.SAFE_SETTINGS);
-
 
   return (
     <Box>

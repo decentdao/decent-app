@@ -111,7 +111,9 @@ function StakeFormPanel({
           type="submit"
           isDisabled={buttonsDisabled}
         >
-          {mode === 'stake' ? t('stakeButton', { symbol: tokenSymbol }) : t('unstakeButton', { symbol: tokenSymbol })}
+          {mode === 'stake'
+            ? t('stakeButton', { symbol: tokenSymbol })
+            : t('unstakeButton', { symbol: tokenSymbol })}
         </Button>
       </Flex>
     </Flex>
@@ -164,7 +166,7 @@ export default function StakeCard() {
             }}
             validationSchema={validationSchema}
             onSubmit={values => {
-            console.log("🚀 ~ values:", values)
+              console.log('🚀 ~ values:', values);
             }}
           >
             {({ handleSubmit, setFieldValue }) => (

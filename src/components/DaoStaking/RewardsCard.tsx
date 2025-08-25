@@ -2,7 +2,7 @@ import { Button, Flex, Text } from '@chakra-ui/react';
 import { CaretDown, CaretUp } from '@phosphor-icons/react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import {  useDurationDisplay } from '../../helpers/dateTime';
+import { useDurationDisplay } from '../../helpers/dateTime';
 import { useCurrentDAOKey } from '../../hooks/DAO/useCurrentDAOKey';
 import { useDAOStore } from '../../providers/App/AppProvider';
 import { formatUSD } from '../../utils';
@@ -10,7 +10,7 @@ import Divider from '../ui/utils/Divider';
 
 function ViewTokens({ numOfTokens }: { numOfTokens: number }) {
   const { t } = useTranslation('staking');
-  
+
   return (
     <Flex
       direction="column"
@@ -80,7 +80,7 @@ function RewardsTokens() {
               key={index}
               direction="column"
               alignSelf="stretch"
-              >
+            >
               <Flex
                 gap="4px"
                 justifyContent="space-between"
@@ -100,7 +100,12 @@ function RewardsTokens() {
                   {token.formattedBalance}
                 </Text>
               </Flex>
-              {index !== arr.length - 1 && index !== 1 && <Divider variant="darker" mb="8px"/>}
+              {index !== arr.length - 1 && index !== 1 && (
+                <Divider
+                  variant="darker"
+                  mb="8px"
+                />
+              )}
             </Flex>
           ))}
         </>
@@ -116,8 +121,9 @@ export default function RewardsCard() {
     governance: { stakedToken },
   } = useDAOStore({ daoKey });
 
-  const totalRewards = stakedToken?.rewardsTokens.reduce((acc, token) => acc + token.usdValue, 0) ?? 0;
-  const lockPeriod = useDurationDisplay(stakedToken?.minimumStakingPeriod)
+  const totalRewards =
+    stakedToken?.rewardsTokens.reduce((acc, token) => acc + token.usdValue, 0) ?? 0;
+  const lockPeriod = useDurationDisplay(stakedToken?.minimumStakingPeriod);
   return (
     <Flex
       padding="14px 12px"

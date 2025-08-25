@@ -1,10 +1,10 @@
-import { Flex, Text } from "@chakra-ui/react";
-import { Info } from "@phosphor-icons/react";
+import { Flex, Text } from '@chakra-ui/react';
+import { Info } from '@phosphor-icons/react';
 import { useTranslation } from 'react-i18next';
 
 export function StakingAdditionalInfo() {
   const { t } = useTranslation('staking');
-  
+
   return (
     <Flex
       direction="column"
