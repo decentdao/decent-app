@@ -33,5 +33,9 @@
   "stakingInformationDescription": " • Staking locks all tokens for {{minimumStakingPeriod}}. \n • Locked tokens can’t be transferred or unstaked.\n • Each new stake resets the lock period.",
   "stakeTab": "Stake",
   "unstakeTab": "Unstake",
-  "requiredField": "Required"
+  "requiredField": "Required",
+  "claimAllTooltip": "Claim all eligible rewards",
+  "claimRewardPending": "Claiming rewards...",
+  "claimRewardSuccess": "Rewards claimed successfully",
+  "claimRewardError": "Failed to claim rewards"
 }
