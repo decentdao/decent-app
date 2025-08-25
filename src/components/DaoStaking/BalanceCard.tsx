@@ -1,4 +1,8 @@
-import { Box, Flex, Text } from '@chakra-ui/react';
+import { Flex, Progress, Text } from '@chakra-ui/react';
+import { useTranslation } from 'react-i18next';
+import { formatUnits } from 'viem';
+import { useCurrentDAOKey } from '../../hooks/DAO/useCurrentDAOKey';
+import { useDAOStore } from '../../providers/App/AppProvider';
 
 function BalanceEntry({ label, value }: { label: string; value: string }) {
   return (
@@ -55,6 +59,26 @@ function ProgressLabel({ color, label }: { color: string; label: string }) {
 }
 
 export default function BalanceCard() {
+  const { t } = useTranslation('staking');
+  const { daoKey } = useCurrentDAOKey();
+  const {
+
+    governance: { stakedToken, votesToken }
+  } = useDAOStore({ daoKey });
+
+  const stBalance = stakedToken?.balance || 0n;
+  const vtBalance = votesToken?.balance || 0n;
+  const totalBalance = stBalance + vtBalance;
+  
+
+  const stakedBalance = formatUnits(stBalance, stakedToken?.decimals || 0);
+  const availableBalance = formatUnits(vtBalance, votesToken?.decimals || 0);
+
+
+  const stakedPercentage = totalBalance > 0n ? Number(stBalance * 100n / totalBalance) : 0;
+  const availablePercentage = totalBalance > 0n ? Number(vtBalance * 100n / totalBalance) : 0;
+  
+
   return (
     <Flex
       padding="14px 12px"
@@ -82,7 +106,7 @@ export default function BalanceCard() {
             color="color-charcoal-400"
             textStyle="labels-large"
           >
-            Balance Overview
+            {t('balanceOverview')}
           </Text>
         </Flex>
 
@@ -92,17 +116,14 @@ export default function BalanceCard() {
           gap="8px"
           alignSelf="stretch"
         >
+
           <BalanceEntry
-            label="Total Balance"
-            value="$500.00K"
+            label={t('stakedLabel')}
+            value={stakedBalance}
           />
           <BalanceEntry
-            label="Staked"
-            value="$175.00K"
-          />
-          <BalanceEntry
-            label="Available"
-            value="$325.00K"
+            label={t('availableLabel')}
+            value={availableBalance}
           />
         </Flex>
 
@@ -115,30 +136,9 @@ export default function BalanceCard() {
             direction="column"
             alignItems="flex-start"
             gap="8px"
-            flex="1 0 0"
+            width="full"
           >
-            <Flex
-              alignItems="center"
-              gap="8px"
-              alignSelf="stretch"
-            >
-              <Flex
-                direction="column"
-                justifyContent="center"
-                alignItems="flex-start"
-                flex="1 0 0"
-                borderRadius="9999px"
-                background="color-primary-100"
-              >
-                <Box
-                  width="192px"
-                  height="6px"
-                  borderRadius="9999px 0px 0px 9999px"
-                  background="color-primary-400"
-                ></Box>
-              </Flex>
-            </Flex>
-
+            <Progress bg="color-primary-100" fill="color-primary-400" value={stakedPercentage} max={100} width="full" size="xs" h="6px" borderRadius="8px"/>
             <Flex
               justifyContent="space-between"
               alignItems="flex-start"
@@ -146,11 +146,11 @@ export default function BalanceCard() {
             >
               <ProgressLabel
                 color="color-primary-400"
-                label="85% Staked"
+                label={`${stakedPercentage}% ${t('stakedLabel')}`}
               />
               <ProgressLabel
                 color="color-primary-100"
-                label="15% Available"
+                label={`${availablePercentage}% ${t('availableLabel')}`}
               />
             </Flex>
           </Flex>
