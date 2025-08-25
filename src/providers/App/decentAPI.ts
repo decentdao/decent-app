@@ -62,6 +62,7 @@ export async function getDaoRevenueSharingWallets(
       data: {
         name: string;
         address: Address;
+        tokens: Address[];
         splits: { address: Address; percentage: number }[];
       }[];
     }> = await axiosClient.get(`/d/${chainId}/${daoAddress}/splits`);
