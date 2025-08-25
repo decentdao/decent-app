@@ -177,27 +177,28 @@ function StakingForm() {
         }}
         helper={t('rewardTokensHelper')}
       >
-        <AssetSelector
-          includeNativeToken
-          canSelectMultiple
-          disabled={readOnly}
-          lockedSelections={rewardsTokens}
-          hideBalanceAndMergeTokens={mergeTokens}
-          onSelect={addresses => {
-            const rewardTokensToBeAdded = addresses.filter(
-              a => !rewardsTokens?.includes(a as Address),
-            );
-            if (rewardTokensToBeAdded.length > 0) {
-              setFieldValue(
-                'staking.newRewardTokens',
-                addresses.filter(a => !rewardsTokens?.includes(a as Address)),
-              );
-            } else {
-              setFieldValue('staking.newRewardTokens', undefined);
-            }
-          }}
-        />
+        <></>
       </LabelComponent>
+      <AssetSelector
+        includeNativeToken
+        canSelectMultiple
+        disabled={readOnly}
+        lockedSelections={rewardsTokens}
+        hideBalanceAndMergeTokens={mergeTokens}
+        onSelect={addresses => {
+          const rewardTokensToBeAdded = addresses.filter(
+            a => !rewardsTokens?.includes(a as Address),
+          );
+          if (rewardTokensToBeAdded.length > 0) {
+            setFieldValue(
+              'staking.newRewardTokens',
+              addresses.filter(a => !rewardsTokens?.includes(a as Address)),
+            );
+          } else {
+            setFieldValue('staking.newRewardTokens', undefined);
+          }
+        }}
+      />
     </>
   );
 }
