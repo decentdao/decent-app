@@ -77,7 +77,6 @@ function StakeFormPanel({
             color="color-content-content1-foreground"
             textStyle="text-xs-regular"
           >
-            {/* TODO: Add to translations */}
             {t('availableBalance')}
             <Text
               as="span"
