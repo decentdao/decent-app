@@ -35,5 +35,8 @@
   "unstakeTab": "Unstake",
   "requiredField": "Required",
   "availableRewards": "Available Rewards:",
-  "distribute": "Distribute"
+  "distribute": "Distribute",
+  "distributeTooltipNoStakers": "Must be at least one staker to distribute rewards",
+  "distributeTooltipNoTokens": "Must be at least one token to distribute rewards",
+  "distributeTooltip": "Distribute eligible rewards to stakers"
 }

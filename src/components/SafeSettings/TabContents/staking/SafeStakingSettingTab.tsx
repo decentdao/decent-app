@@ -12,6 +12,7 @@ import { useNetworkWalletClient } from '../../../../hooks/useNetworkWalletClient
 import { useDAOStore } from '../../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../../providers/NetworkConfig/useNetworkConfigStore';
 import { BigIntValuePair, ERC20TokenData, GovernanceType, TokenBalance } from '../../../../types';
+import { DecentTooltip } from '../../../ui/DecentTooltip';
 import DurationUnitStepperInput from '../../../ui/forms/DurationUnitStepperInput';
 import { LabelComponent } from '../../../ui/forms/InputComponent';
 import AddressCopier from '../../../ui/links/AddressCopier';
@@ -73,6 +74,7 @@ function StakingForm() {
     ) || [];
 
   const [hasTokensToDistribute, setHasTokensToDistribute] = useState(false);
+  const [hasStakers, setHasStakers] = useState(false);
   useEffect(() => {
     try {
       if (!stakedToken?.address || !publicClient) {
@@ -98,9 +100,8 @@ function StakingForm() {
           const [rewardsResult, totalStakedResult] = results;
 
           if (rewardsResult.status === 'success' && totalStakedResult.status === 'success') {
-            const hasRewards = rewardsResult.result.some(reward => reward > 0n);
-            const hasStakers = totalStakedResult.result > 0n;
-            setHasTokensToDistribute(hasRewards && hasStakers);
+            setHasTokensToDistribute(rewardsResult.result.some(reward => reward > 0n));
+            setHasStakers(totalStakedResult.result > 0n);
           }
         });
     } catch (error) {
@@ -314,13 +315,17 @@ function StakingForm() {
               ))}
           </>
         </LabelComponent>
+        <DecentTooltip
+          label={ !hasTokensToDistribute ? t('distributeTooltipNoTokens') : !hasStakers ? t('distributeTooltipNoStakers') : t('distributeTooltip')}
+        >
         <Button
           variant="secondaryV1"
-          isDisabled={!hasTokensToDistribute}
+          isDisabled={!hasTokensToDistribute || !hasStakers}
           onClick={distributeRewards}
-        >
+          >
           {t('distribute')}
         </Button>
+          </DecentTooltip>
       </Flex>
     </>
   );
