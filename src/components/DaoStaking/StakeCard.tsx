@@ -67,6 +67,7 @@ function StakeFormPanel({
           placeholder="0.00"
           value={values.amount?.bigintValue}
           decimalPlaces={tokenDecimals}
+          parentFormikValue={values.amount}
           onChange={value => {
             setFieldValue('amount', value);
           }}
