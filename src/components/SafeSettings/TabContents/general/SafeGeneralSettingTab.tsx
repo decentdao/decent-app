@@ -115,9 +115,10 @@ export function SafeGeneralSettingTab() {
                   isRequired={false}
                   onChange={e => {
                     const newValue =
-                      e.target.value === existingDaoName ? undefined : e.target.value.trim();
+                      e.target.value === existingDaoName ? undefined : e.target.value;
                     setFieldValue('general.name', newValue);
                   }}
+                  onBlur={e => setFieldValue('general.name', e.target.value.trim())}
                   value={formValues.general?.name ?? existingDaoName}
                   disabled={readOnly}
                   placeholder={formValues.general?.name === undefined ? 'Amazing DAO' : ''}
