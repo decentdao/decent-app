@@ -131,13 +131,16 @@ export default function StakeCard() {
   } = useDAOStore({ daoKey });
   const unstakedToken = erc20Token ?? votesToken;
 
-  const { data: walletClient } = useNetworkWalletClient()
+  const { data: walletClient } = useNetworkWalletClient();
 
   const stakedTokenSymbol = stakedToken?.symbol || '';
   const maxAvailableToUnstake = formatUnits(stakedToken?.balance || 0n, stakedToken?.decimals || 0);
-  
+
   const unStakedTokenSymbol = unstakedToken?.symbol || '';
-  const maxAvailableToStake = formatUnits(unstakedToken?.balance || 0n, unstakedToken?.decimals || 0);
+  const maxAvailableToStake = formatUnits(
+    unstakedToken?.balance || 0n,
+    unstakedToken?.decimals || 0,
+  );
 
   // Define validation schema inside component to access translation function
   const validationSchema = Yup.object({
@@ -149,11 +152,11 @@ export default function StakeCard() {
   });
 
   async function stakedFormHandler(values: StakeFormProps) {
-    if(!walletClient || !stakedToken?.address ) return;
+    if (!walletClient || !stakedToken?.address) return;
 
     const { mode, amount } = values;
-    
-    if(!amount.bigintValue) {
+
+    if (!amount.bigintValue) {
       toast.error(t('requiredField'));
       return;
     }
@@ -179,41 +182,38 @@ export default function StakeCard() {
 
     const tokenSymbol = mode === 'stake' ? unStakedTokenSymbol : stakedTokenSymbol;
     const formattedAmount = formatUnits(
-      amount.bigintValue, 
-      mode === 'stake' ? unstakedToken?.decimals || 0 : stakedToken?.decimals || 0
+      amount.bigintValue,
+      mode === 'stake' ? unstakedToken?.decimals || 0 : stakedToken?.decimals || 0,
     );
 
     // Show pending toast
     const toastId = toast.loading(
-      mode === 'stake' 
+      mode === 'stake'
         ? t('stakingPending', { amount: formattedAmount, symbol: tokenSymbol })
         : t('unstakingPending', { amount: formattedAmount, symbol: tokenSymbol }),
-      { duration: Infinity }
+      { duration: Infinity },
     );
 
     try {
-      if(mode === 'stake') {
+      if (mode === 'stake') {
         await stakingContract.write.stake([amount.bigintValue]);
       } else {
         await stakingContract.write.unstake([amount.bigintValue]);
       }
-      
+
       // Show success toast
       toast.success(
         mode === 'stake'
           ? t('stakingSuccess', { amount: formattedAmount, symbol: tokenSymbol })
           : t('unstakingSuccess', { amount: formattedAmount, symbol: tokenSymbol }),
-        { id: toastId }
+        { id: toastId },
       );
     } catch (error) {
       // Log error to Sentry
       logError(error);
-      
+
       // Show error toast
-      toast.error(
-        mode === 'stake' ? t('stakingError') : t('unstakingError'),
-        { id: toastId }
-      );
+      toast.error(mode === 'stake' ? t('stakingError') : t('unstakingError'), { id: toastId });
     }
   }
 
@@ -243,9 +243,7 @@ export default function StakeCard() {
             onSubmit={stakedFormHandler}
           >
             {({ handleSubmit, setFieldValue }) => (
-              <form
-                onSubmit={handleSubmit}
-              >
+              <form onSubmit={handleSubmit}>
                 <Tabs
                   variant="solid"
                   size="md"
