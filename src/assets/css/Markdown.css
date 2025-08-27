@@ -5,6 +5,7 @@
 .toastui-editor-contents {
   min-width: 100%;
   max-width: 0;
+  z-index: auto !important;
 }
 .toastui-editor-contents,
 .toastui-editor-contents > * {
