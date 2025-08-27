@@ -75,7 +75,8 @@ export default function BalanceCard() {
   const availableBalance = formatUnits(unStakedBalance, unstakedToken?.decimals || 0);
 
   const stakedPercentage = totalBalance > 0n ? Number((stBalance * 100n) / totalBalance) : 0;
-  const availablePercentage = totalBalance > 0n ? Number((unStakedBalance * 100n) / totalBalance) : 0;
+  const availablePercentage =
+    totalBalance > 0n ? Number((unStakedBalance * 100n) / totalBalance) : 0;
 
   return (
     <Flex
