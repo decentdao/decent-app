@@ -5,9 +5,9 @@ import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { formatUnits, getContract } from 'viem';
 import * as Yup from 'yup';
-import { logError } from '../../helpers/errorLogging';
 import { useCurrentDAOKey } from '../../hooks/DAO/useCurrentDAOKey';
 import { useNetworkWalletClient } from '../../hooks/useNetworkWalletClient';
+import { useTransaction } from '../../hooks/utils/useTransaction';
 import { useDAOStore } from '../../providers/App/AppProvider';
 import { BigIntValuePair } from '../../types';
 import { BigIntInput } from '../ui/forms/BigIntInput';
@@ -133,6 +133,7 @@ export default function StakeCard() {
   const unstakedToken = erc20Token ?? votesToken;
 
   const { data: walletClient } = useNetworkWalletClient();
+  const [contractCall, contractCallPending] = useTransaction();
 
   const stakedTokenSymbol = stakedToken?.symbol || '';
   const maxAvailableToUnstake = formatUnits(stakedToken?.balance || 0n, stakedToken?.decimals || 0);
@@ -187,35 +188,22 @@ export default function StakeCard() {
       mode === 'stake' ? unstakedToken?.decimals || 0 : stakedToken?.decimals || 0,
     );
 
-    // Show pending toast
-    const toastId = toast.loading(
-      mode === 'stake'
+    contractCall({
+      contractFn: () => {
+        if (mode === 'stake') {
+          return stakingContract.write.stake([amount.bigintValue!]);
+        } else {
+          return stakingContract.write.unstake([amount.bigintValue!]);
+        }
+      },
+      pendingMessage: mode === 'stake'
         ? t('stakingPending', { amount: formattedAmount, symbol: tokenSymbol })
         : t('unstakingPending', { amount: formattedAmount, symbol: tokenSymbol }),
-      { duration: Infinity },
-    );
-
-    try {
-      if (mode === 'stake') {
-        await stakingContract.write.stake([amount.bigintValue]);
-      } else {
-        await stakingContract.write.unstake([amount.bigintValue]);
-      }
-
-      // Show success toast
-      toast.success(
-        mode === 'stake'
-          ? t('stakingSuccess', { amount: formattedAmount, symbol: tokenSymbol })
-          : t('unstakingSuccess', { amount: formattedAmount, symbol: tokenSymbol }),
-        { id: toastId },
-      );
-    } catch (error) {
-      // Log error to Sentry
-      logError(error);
-
-      // Show error toast
-      toast.error(mode === 'stake' ? t('stakingError') : t('unstakingError'), { id: toastId });
-    }
+      successMessage: mode === 'stake'
+        ? t('stakingSuccess', { amount: formattedAmount, symbol: tokenSymbol })
+        : t('unstakingSuccess', { amount: formattedAmount, symbol: tokenSymbol }),
+      failedMessage: mode === 'stake' ? t('stakingError') : t('unstakingError'),
+    });
   }
 
   return (
@@ -274,7 +262,7 @@ export default function StakeCard() {
                             bigintValue: unstakedToken?.balance,
                           })
                         }
-                        buttonsDisabled={!unstakedToken?.balance || unstakedToken?.balance === 0n}
+                        buttonsDisabled={!unstakedToken?.balance || unstakedToken?.balance === 0n || contractCallPending}
                         mode="stake"
                       />
                     </TabPanel>
@@ -289,7 +277,7 @@ export default function StakeCard() {
                             bigintValue: stakedToken?.balance,
                           })
                         }
-                        buttonsDisabled={!stakedToken?.balance || stakedToken?.balance === 0n}
+                        buttonsDisabled={!stakedToken?.balance || stakedToken?.balance === 0n || contractCallPending}
                         mode="unstake"
                       />
                     </TabPanel>
