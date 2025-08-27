@@ -3,7 +3,6 @@ import { TokenBalance } from './daoTreasury';
 
 export interface VotesTokenData extends VotesData, ERC20TokenData {}
 export interface VotesData {
-  balance: bigint | null;
   delegatee: Address | null;
 }
 
@@ -15,6 +14,7 @@ export interface BaseTokenData {
 export interface ERC20TokenData extends BaseTokenData {
   decimals: number;
   totalSupply: bigint;
+  balance: bigint | null;
 }
 
 export interface StakedTokenData extends ERC20TokenData {
@@ -29,7 +29,6 @@ export interface StakedTokenData extends ERC20TokenData {
     usdValue: number;
   }[];
   assetsFungible: TokenBalance[];
-  balance: bigint | null;
 }
 
 export interface ERC721TokenData extends BaseTokenData {

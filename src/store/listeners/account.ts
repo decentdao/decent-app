@@ -8,6 +8,7 @@ import { useGuardFetcher } from '../fetchers/guard';
 export function useAccountListeners({
   stakingAddress,
   votesTokenAddress,
+  erc20TokenAddress,
   lockReleaseAddress,
   azoriusGuardAddress,
   multisigGuardAddress,
@@ -21,9 +22,11 @@ export function useAccountListeners({
   onGovernanceLockReleaseAccountDataLoaded,
   onGuardAccountDataLoaded,
   onStakedTokenAccountDataLoaded,
+  onERC20TokenAccountDataLoaded,
 }: {
   stakingAddress?: Address;
   votesTokenAddress?: Address;
+  erc20TokenAddress?: Address;
   lockReleaseAddress?: Address;
   azoriusGuardAddress?: Address;
   multisigGuardAddress?: Address;
@@ -41,11 +44,17 @@ export function useAccountListeners({
   }) => void;
   onGuardAccountDataLoaded: (accountData: GuardAccountData) => void;
   onStakedTokenAccountDataLoaded: (accountData: { balance: bigint }) => void;
+  onERC20TokenAccountDataLoaded: (accountData: { balance: bigint }) => void;
 }) {
   const { address: account } = useAccount();
-  const { fetchVotingTokenAccountData, fetchLockReleaseAccountData, fetchStakedTokenAccountData } =
-    useGovernanceFetcher();
+  const {
+    fetchVotingTokenAccountData,
+    fetchLockReleaseAccountData,
+    fetchStakedTokenAccountData,
+    fetchERC20TokenAccountData,
+  } = useGovernanceFetcher();
   const { fetchGuardAccountData } = useGuardFetcher();
+
   useEffect(() => {
     async function loadAccountData() {
       if (!account || !votesTokenAddress) {
@@ -135,4 +144,18 @@ export function useAccountListeners({
 
     loadStakedTokenAccountData();
   }, [account, fetchStakedTokenAccountData, onStakedTokenAccountDataLoaded, stakingAddress]);
+
+  useEffect(() => {
+    async function loadERC20TokenAccountData() {
+      if (account === undefined || erc20TokenAddress === undefined) {
+        return;
+      }
+
+      const stakedTokenAccountData = await fetchERC20TokenAccountData(erc20TokenAddress, account);
+
+      onERC20TokenAccountDataLoaded(stakedTokenAccountData);
+    }
+
+    loadERC20TokenAccountData();
+  }, [account, fetchERC20TokenAccountData, onERC20TokenAccountDataLoaded, erc20TokenAddress]);
 }
