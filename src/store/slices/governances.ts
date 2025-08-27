@@ -93,6 +93,7 @@ export type GovernancesSlice = {
   setVotesTokenAddress: (daoKey: DAOKey, votesTokenAddress: Address) => void;
   setERC20Token: (daoKey: DAOKey, erc20Token: ERC20TokenData | undefined) => void;
   setStakingData: (daoKey: DAOKey, stakedToken: StakedTokenData | undefined) => void;
+  setStakedTokenAccountData: (daoKey: DAOKey, stakedTokenAccountData: { balance: bigint }) => void;
 };
 
 export const EMPTY_GOVERNANCE: FractalGovernance & FractalGovernanceContracts = {
@@ -309,7 +310,7 @@ export const createGovernancesSlice: StateCreator<
     set(
       state => {
         const azoriusGovernance = state.governances[daoKey];
-
+        // TOOD: we need to update the typing, this returns early if voteToken isn't first set? seems like a bug
         if (
           !state.governances[daoKey] ||
           !state.governances[daoKey].isAzorius ||
@@ -446,6 +447,23 @@ export const createGovernancesSlice: StateCreator<
       },
       false,
       'setStakingData',
+    );
+  },
+  setStakedTokenAccountData: (daoKey, stakedTokenAccountData) => {
+    set(
+      state => {
+        if (
+          !state.governances[daoKey] ||
+          !state.governances[daoKey].isAzorius ||
+          !state.governances[daoKey].stakedToken
+        ) {
+          return;
+        }
+
+        state.governances[daoKey].stakedToken.balance = stakedTokenAccountData.balance;
+      },
+      false,
+      'setStakedTokenAccountData',
     );
   },
   getGovernance: daoKey => {

@@ -1,7 +1,38 @@
-import { Flex, Tab, TabList, Tabs, Text, Image } from '@chakra-ui/react';
-import { Info } from '@phosphor-icons/react';
+import { Flex, Tab, TabList, Tabs, Text, TabPanel, TabPanels, Button } from '@chakra-ui/react';
+import { Formik, useFormikContext } from 'formik';
+import { useTranslation } from 'react-i18next';
+import { formatUnits } from 'viem';
+import * as Yup from 'yup';
+import { useCurrentDAOKey } from '../../hooks/DAO/useCurrentDAOKey';
+import { useDAOStore } from '../../providers/App/AppProvider';
+import { BigIntValuePair } from '../../types';
+import { BigIntInput } from '../ui/forms/BigIntInput';
+import { StakingAdditionalInfo } from './StakingAdditionalInfo';
 
-function BottomActions() {
+const MODES = ['stake', 'unstake'] as const;
+type Mode = (typeof MODES)[number];
+interface StakeFormProps {
+  mode: Mode;
+  amount: BigIntValuePair;
+}
+
+function StakeFormPanel({
+  maxAvailableValue,
+  tokenSymbol,
+  tokenDecimals,
+  maxButtonOnClick,
+  buttonsDisabled,
+  mode,
+}: {
+  maxAvailableValue: string;
+  tokenSymbol: string;
+  tokenDecimals: number;
+  maxButtonOnClick: () => void;
+  buttonsDisabled: boolean;
+  mode: Mode;
+}) {
+  const { t } = useTranslation('staking');
+  const { values, setFieldValue } = useFormikContext<StakeFormProps>();
   return (
     <Flex
       direction="column"
@@ -23,48 +54,19 @@ function BottomActions() {
             color="color-content-muted"
             textStyle="text-xs-regular"
           >
-            Amount to Stake
+            {mode === 'stake' ? t('amountToStake') : t('amountToUnstake')}
           </Text>
         </Flex>
 
-        <Flex
-          padding={2}
-          justifyContent="space-between"
-          alignItems="center"
-          alignSelf="stretch"
-          borderRadius={8}
-          border="1px solid var(--colors-color-layout-border);"
-        >
-          <Text
-            color="color-layout-foreground"
-            textStyle="text-3xl-regular"
-          >
-            325,000.00
-          </Text>
-          <Flex
-            padding="8px"
-            alignItems="center"
-            gap="1px"
-          >
-            <Image
-              src=""
-              fallbackSrc="/images/coin-icon-default.svg"
-              boxSize="2rem"
-            />
-            <Flex
-              padding="0px 4px"
-              alignItems="center"
-              gap="4px"
-            >
-              <Text
-                color="color-content-content1-foreground"
-                textStyle="text-sm-medium"
-              >
-                DRVN
-              </Text>
-            </Flex>
-          </Flex>
-        </Flex>
+        <BigIntInput
+          size="xl"
+          placeholder="0.00"
+          value={values.amount?.bigintValue}
+          decimalPlaces={tokenDecimals}
+          onChange={value => {
+            setFieldValue('amount', value);
+          }}
+        />
 
         <Flex
           justifyContent="space-between"
@@ -75,34 +77,23 @@ function BottomActions() {
             color="color-content-content1-foreground"
             textStyle="text-xs-regular"
           >
-            Available:{' '}
+            {t('availableBalance')}
             <Text
               as="span"
               color="color-content-content4-foreground"
             >
-              325.00L DRVN
+              {`${maxAvailableValue} ${tokenSymbol}`}
             </Text>
           </Text>
 
-          <Flex
-            width={10}
-            height={5}
-            minWidth={5}
-            minHeight={5}
-            padding="2px 4px"
-            justifyContent="center"
-            alignItems="center"
-            gap={0.25}
-            borderRadius={8}
-            background="color-content-content2"
+          <Button
+            size="sm"
+            variant="secondaryV1"
+            onClick={maxButtonOnClick}
+            isDisabled={buttonsDisabled}
           >
-            <Text
-              color="color-content-content1-foreground"
-              textStyle="text-xs-medium"
-            >
-              Max
-            </Text>
-          </Flex>
+            {t('maxButton')}
+          </Button>
         </Flex>
       </Flex>
 
@@ -113,77 +104,42 @@ function BottomActions() {
         gap={2}
         alignSelf="stretch"
       >
-        <Flex
-          height="52px"
-          padding="0px 32px"
-          justifyContent="center"
-          alignItems="center"
-          gap={2}
-          flex="1 0 0"
-          borderRadius="8px"
-          borderTop="1px solid var(--colors-color-layout-border-primary)"
-          background="color-base-primary"
+        <Button
+          size="lg"
+          w="full"
+          type="submit"
+          isDisabled={buttonsDisabled}
         >
-          <Text
-            color="color-base-primary-foreground"
-            textStyle="text-base-regular"
-          >
-            Stake TOKEN
-          </Text>
-        </Flex>
-      </Flex>
-
-      <Flex
-        padding="12px"
-        alignItems="flex-start"
-        gap="16px"
-        alignSelf="stretch"
-        borderRadius="12px"
-        border="1px solid var(--colors-color-layout-border)"
-        background="color-information-950"
-      >
-        <Flex
-          alignItems="flex-start"
-          gap="16px"
-          flex="1 0 0"
-          color="color-base-information-foreground"
-        >
-          <Info
-            width="24px"
-            height="24px"
-            format="outline"
-            weight="fill"
-            color="var(--colors-color-base-information-foreground)"
-          />
-
-          <Flex
-            direction="column"
-            alignItems="flex-start"
-            flex="1 0 0"
-          >
-            <Text
-              color="color-base-information-foreground"
-              textStyle="text-sm-medium"
-            >
-              Staking Information
-            </Text>
-            <Text
-              color="color-base-information-foreground"
-              textStyle="text-sm-regular"
-              whiteSpace="pre-wrap"
-            >
-              {
-                ' • Staking locks all tokens for {minimumStakingPeriod}. \n • Locked tokens can’t be transferred or unstaked.\n • Each new stake resets the lock period.'
-              }
-            </Text>
-          </Flex>
-        </Flex>
+          {mode === 'stake'
+            ? t('stakeButton', { symbol: tokenSymbol })
+            : t('unstakeButton', { symbol: tokenSymbol })}
+        </Button>
       </Flex>
     </Flex>
   );
 }
 
 export default function StakeCard() {
+  const { t } = useTranslation('staking');
+  const { daoKey } = useCurrentDAOKey();
+  const {
+    governance: { stakedToken, votesToken },
+  } = useDAOStore({ daoKey });
+
+  const stakedTokenSymbol = stakedToken?.symbol || '';
+  const maxAvailableToStake = formatUnits(votesToken?.balance || 0n, votesToken?.decimals || 0);
+
+  const unStakedTokenSymbol = votesToken?.symbol || '';
+  const maxAvailableToUnstake = formatUnits(stakedToken?.balance || 0n, stakedToken?.decimals || 0);
+
+  const validationSchema = Yup.object({
+    amount: Yup.object({
+      value: Yup.string().required(),
+      bigintValue: Yup.mixed<bigint>().required(),
+    }),
+    mode: Yup.string().required(),
+  });
+
   return (
     <Flex
       direction="column"
@@ -199,18 +155,80 @@ export default function StakeCard() {
           alignItems="flex-start"
           gap={3}
           alignSelf="stretch"
+          sx={{ '& form': { width: 'full' } }}
         >
-          <Tabs
-            variant="solid"
-            size="md"
+          <Formik<StakeFormProps>
+            initialValues={{
+              amount: { value: '', bigintValue: undefined },
+              mode: MODES[0],
+            }}
+            validationSchema={validationSchema}
+            onSubmit={values => {
+              console.log('🚀 ~ values:', values);
+            }}
           >
-            <TabList>
-              <Tab>Stake</Tab>
-              <Tab>Unstake</Tab>
-            </TabList>
-          </Tabs>
+            {({ handleSubmit, setFieldValue }) => (
+              <form
+                onSubmit={e => {
+                  // TODO: going to add toast error handling here
+                  handleSubmit(e);
+                }}
+              >
+                <Tabs
+                  variant="solid"
+                  size="md"
+                  w="full"
+                  // ensure tabs are unmounted; this is to prevent memory leaks
+                  isLazy
+                  lazyBehavior="unmount"
+                  onChange={index => {
+                    setFieldValue('mode', MODES[index]);
+                    setFieldValue('amount', { value: '', bigintValue: undefined });
+                  }}
+                >
+                  <TabList w="fit-content">
+                    <Tab>{t('stakeTab')}</Tab>
+                    <Tab>{t('unstakeTab')}</Tab>
+                  </TabList>
+
+                  <TabPanels>
+                    <TabPanel w="full">
+                      <StakeFormPanel
+                        maxAvailableValue={maxAvailableToStake}
+                        tokenSymbol={unStakedTokenSymbol}
+                        tokenDecimals={votesToken?.decimals || 0}
+                        maxButtonOnClick={() =>
+                          setFieldValue('amount', {
+                            value: maxAvailableToStake,
+                            bigintValue: votesToken?.balance,
+                          })
+                        }
+                        buttonsDisabled={!votesToken?.balance || votesToken?.balance === 0n}
+                        mode="stake"
+                      />
+                    </TabPanel>
+                    <TabPanel w="full">
+                      <StakeFormPanel
+                        maxAvailableValue={maxAvailableToUnstake}
+                        tokenSymbol={stakedTokenSymbol}
+                        tokenDecimals={stakedToken?.decimals || 0}
+                        maxButtonOnClick={() =>
+                          setFieldValue('amount', {
+                            value: maxAvailableToUnstake,
+                            bigintValue: stakedToken?.balance,
+                          })
+                        }
+                        buttonsDisabled={!stakedToken?.balance || stakedToken?.balance === 0n}
+                        mode="unstake"
+                      />
+                    </TabPanel>
+                  </TabPanels>
+                </Tabs>
+              </form>
+            )}
+          </Formik>
         </Flex>
-        <BottomActions />
+        <StakingAdditionalInfo />
       </Flex>
     </Flex>
   );

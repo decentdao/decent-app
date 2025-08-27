@@ -1,12 +1,13 @@
 import * as amplitude from '@amplitude/analytics-browser';
 import { Box, Divider, Flex } from '@chakra-ui/react';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import BalanceCard from '../../../components/DaoStaking/BalanceCard';
-import HistoryCard from '../../../components/DaoStaking/HistoryCard';
 import NoStakingDeployed from '../../../components/DaoStaking/NoStakingDeployed';
 import RewardsCard from '../../../components/DaoStaking/RewardsCard';
 import StakeCard from '../../../components/DaoStaking/StakeCard';
+import { ModalType } from '../../../components/ui/modals/ModalProvider';
+import { useDecentModal } from '../../../components/ui/modals/useDecentModal';
 import PageHeader from '../../../components/ui/page/Header/PageHeader';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import { analyticsEvents } from '../../../insights/analyticsEvents';
@@ -17,22 +18,17 @@ export function SafeStakingPage() {
     amplitude.track(analyticsEvents.StakingPageOpened);
   }, []);
 
-  const [deployed, setDeployed] = useState(false);
-
   const { daoKey } = useCurrentDAOKey();
   const {
-    treasury: {},
-    node: { subgraphInfo },
+    governance: { stakedToken },
   } = useDAOStore({ daoKey });
-  const { t } = useTranslation('breadcrumbs');
+  const { t } = useTranslation('staking');
+  const { open: openSettingsModal } = useDecentModal(ModalType.SAFE_SETTINGS);
 
   return (
     <Box>
       <PageHeader
-        title={t('headerTitle', {
-          daoName: subgraphInfo?.daoName,
-          subject: t('staking'),
-        })}
+        title={t('stakingTitle')}
         breadcrumbs={[
           {
             terminus: t('staking'),
@@ -41,7 +37,7 @@ export function SafeStakingPage() {
         ]}
       />
 
-      {deployed ? (
+      {!!stakedToken ? (
         <Flex
           padding="24px"
           direction="column"
@@ -77,10 +73,9 @@ export function SafeStakingPage() {
             </Flex>
           </Flex>
           <Divider color="color-layout-divider" />
-          <HistoryCard />
         </Flex>
       ) : (
-        <NoStakingDeployed deploy={() => setDeployed(true)} />
+        <NoStakingDeployed deploy={openSettingsModal} />
       )}
     </Box>
   );

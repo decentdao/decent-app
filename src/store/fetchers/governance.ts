@@ -3,6 +3,7 @@ import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   Address,
+  erc20Abi,
   erc721Abi,
   formatUnits,
   getAddress,
@@ -1061,15 +1062,65 @@ export function useGovernanceFetcher() {
             });
 
           const { data: tokenBalances } = await getTokenBalances(stakingAddress);
+          // try to get reward token data from tokenBalances
+          const rewardsTokensData = await Promise.all(
+            rewardsTokens.map(async tokenAddress => {
+              const foundToken = tokenBalances?.find(asset => asset.tokenAddress === tokenAddress);
+              // if not found, look up on chain with publicClient multicall
+              if (!foundToken) {
+                const contract = getContract({
+                  abi: erc20Abi,
+                  address: tokenAddress,
+                  client: publicClient,
+                });
+                const [nameData, symbolData, decimalsData] = await publicClient.multicall({
+                  contracts: [
+                    {
+                      ...contract,
+                      functionName: 'name',
+                    },
+                    {
+                      ...contract,
+                      functionName: 'symbol',
+                    },
+                    {
+                      ...contract,
+                      functionName: 'decimals',
+                    },
+                  ],
+                  allowFailure: false,
+                });
+                return {
+                  address: tokenAddress,
+                  name: nameData,
+                  symbol: symbolData,
+                  decimals: decimalsData,
+                  balance: '0',
+                  formattedBalance: '0',
+                  usdValue: 0,
+                };
+              }
+              return {
+                address: tokenAddress,
+                name: foundToken.name,
+                symbol: foundToken.symbol,
+                decimals: foundToken.decimals,
+                balance: foundToken.balance,
+                formattedBalance: foundToken.balanceFormatted,
+                usdValue: foundToken.usdValue || 0,
+              };
+            }),
+          );
 
           return {
             address: stakingAddress,
             name,
             symbol,
+            balance: null,
             decimals,
             totalSupply,
             minimumStakingPeriod,
-            rewardsTokens: [...rewardsTokens],
+            rewardsTokens: rewardsTokensData,
             assetsFungible: tokenBalances || [],
           };
         } catch (e) {
@@ -1091,6 +1142,29 @@ export function useGovernanceFetcher() {
     ],
   );
 
+  const fetchStakedTokenAccountData = useCallback(
+    async (stakingAddress: Address, account: Address) => {
+      if (wrongNetwork) {
+        return { balance: 0n, delegatee: zeroAddress };
+      }
+
+      const [balance] = await publicClient.multicall({
+        contracts: [
+          {
+            abi: abis.deployables.VotesERC20StakedV1,
+            address: stakingAddress,
+            functionName: 'balanceOf',
+            args: [account],
+          },
+        ],
+        allowFailure: false,
+      });
+
+      return { balance };
+    },
+    [publicClient, wrongNetwork],
+  );
+
   return {
     fetchDAOGovernance,
     fetchDAOProposalTemplates,
@@ -1100,5 +1174,6 @@ export function useGovernanceFetcher() {
     fetchGaslessVotingDAOData,
     fetchMultisigERC20Token,
     fetchStakingDAOData,
+    fetchStakedTokenAccountData,
   };
 }

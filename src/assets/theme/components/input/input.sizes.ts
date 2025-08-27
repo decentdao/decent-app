@@ -33,7 +33,7 @@ const baseWithAddons = defineStyle({
 
 // @todo is this being used?
 const xlStyle = {
-  apply: 'text-base-regular',
+  apply: 'textStyles.text-3xl-regular',
   h: '4.375rem',
 };
 

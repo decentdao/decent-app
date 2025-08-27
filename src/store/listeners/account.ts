@@ -6,6 +6,7 @@ import { useGovernanceFetcher } from '../fetchers/governance';
 import { useGuardFetcher } from '../fetchers/guard';
 
 export function useAccountListeners({
+  stakingAddress,
   votesTokenAddress,
   lockReleaseAddress,
   azoriusGuardAddress,
@@ -19,7 +20,9 @@ export function useAccountListeners({
   onGovernanceAccountDataLoaded,
   onGovernanceLockReleaseAccountDataLoaded,
   onGuardAccountDataLoaded,
+  onStakedTokenAccountDataLoaded,
 }: {
+  stakingAddress?: Address;
   votesTokenAddress?: Address;
   lockReleaseAddress?: Address;
   azoriusGuardAddress?: Address;
@@ -37,9 +40,11 @@ export function useAccountListeners({
     delegatee: Address;
   }) => void;
   onGuardAccountDataLoaded: (accountData: GuardAccountData) => void;
+  onStakedTokenAccountDataLoaded: (accountData: { balance: bigint }) => void;
 }) {
   const { address: account } = useAccount();
-  const { fetchVotingTokenAccountData, fetchLockReleaseAccountData } = useGovernanceFetcher();
+  const { fetchVotingTokenAccountData, fetchLockReleaseAccountData, fetchStakedTokenAccountData } =
+    useGovernanceFetcher();
   const { fetchGuardAccountData } = useGuardFetcher();
   useEffect(() => {
     async function loadAccountData() {
@@ -116,4 +121,18 @@ export function useAccountListeners({
     freezeProposalPeriod,
     freezePeriod,
   ]);
+
+  useEffect(() => {
+    async function loadStakedTokenAccountData() {
+      if (account === undefined || stakingAddress === undefined) {
+        return;
+      }
+
+      const stakedTokenAccountData = await fetchStakedTokenAccountData(stakingAddress, account);
+
+      onStakedTokenAccountDataLoaded(stakedTokenAccountData);
+    }
+
+    loadStakedTokenAccountData();
+  }, [account, fetchStakedTokenAccountData, onStakedTokenAccountDataLoaded, stakingAddress]);
 }
