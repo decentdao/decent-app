@@ -34,3 +34,26 @@ export function getTrustWalletLogoUrl(tokenAddress: string, chainId: number): st
   const networkName = getChainIdToTrustWalletNetwork(chainId);
   return `https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/${networkName}/assets/${tokenAddress}/logo.png`;
 }
+
+/**
+ * Checks if a Trust Wallet logo exists and returns the URL or undefined
+ * @param tokenAddress - The token contract address
+ * @param chainId - The chain ID from publicClient.chain.id
+ * @returns Promise<string | undefined> - The logo URL if it exists, undefined otherwise
+ */
+export async function getValidatedTrustWalletLogoUrl(
+  tokenAddress: string,
+  chainId: number,
+): Promise<string | undefined> {
+  const logoUrl = getTrustWalletLogoUrl(tokenAddress, chainId);
+  
+  try {
+    const response = await fetch(logoUrl, { method: 'HEAD' });
+    if (response.ok && response.headers.get('content-type')?.startsWith('image/')) {
+      return logoUrl;
+    }
+    return undefined;
+  } catch {
+    return undefined;
+  }
+}

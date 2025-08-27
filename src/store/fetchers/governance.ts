@@ -56,7 +56,7 @@ import {
 import { blocksToSeconds } from '../../utils/contract';
 import { getPaymasterAddress } from '../../utils/gaslessVoting';
 import { getStakingContractAddress } from '../../utils/stakingContractUtils';
-import { getTrustWalletLogoUrl } from '../../utils/trustWallet';
+import { getValidatedTrustWalletLogoUrl } from '../../utils/trustWallet';
 import { SetAzoriusGovernancePayload } from '../slices/governances';
 import { useGlobalStore } from '../store';
 
@@ -1092,6 +1092,10 @@ export function useGovernanceFetcher() {
                   ],
                   allowFailure: false,
                 });
+                
+                // Validate Trust Wallet logo URL
+                const validatedLogo = await getValidatedTrustWalletLogoUrl(tokenAddress, publicClient.chain!.id);
+                
                 return {
                   address: tokenAddress,
                   name: nameData,
@@ -1099,7 +1103,7 @@ export function useGovernanceFetcher() {
                   decimals: decimalsData,
                   balance: '0',
                   formattedBalance: '0',
-                  logo: getTrustWalletLogoUrl(tokenAddress, publicClient.chain!.id),
+                  logo: validatedLogo,
                   usdValue: 0,
                 };
               }
