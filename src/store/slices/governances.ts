@@ -460,6 +460,9 @@ export const createGovernancesSlice: StateCreator<
             stakedToken: stakedToken,
           };
         } else {
+          if (stakedToken?.balance === null && !!state.governances[daoKey].stakedToken?.balance) {
+            stakedToken.balance = state.governances[daoKey].stakedToken?.balance;
+          }
           state.governances[daoKey].stakedToken = stakedToken;
         }
       },
@@ -477,7 +480,6 @@ export const createGovernancesSlice: StateCreator<
         ) {
           return;
         }
-
         state.governances[daoKey].stakedToken.balance = stakedTokenAccountData.balance;
       },
       false,
