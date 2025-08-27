@@ -1,6 +1,7 @@
 import { Flex, Tab, TabList, Tabs, Text, TabPanel, TabPanels, Button } from '@chakra-ui/react';
 import { abis } from '@decentdao/decent-contracts';
 import { Formik, useFormikContext } from 'formik';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { formatUnits, getContract } from 'viem';
@@ -27,6 +28,8 @@ function StakeFormPanel({
   maxButtonOnClick,
   buttonsDisabled,
   mode,
+  needsApproval,
+  onApprove,
 }: {
   maxAvailableValue: string;
   tokenSymbol: string;
@@ -34,6 +37,8 @@ function StakeFormPanel({
   maxButtonOnClick: () => void;
   buttonsDisabled: boolean;
   mode: Mode;
+  needsApproval?: boolean;
+  onApprove?: () => void;
 }) {
   const { t } = useTranslation('staking');
   const { values, setFieldValue } = useFormikContext<StakeFormProps>();
@@ -112,10 +117,13 @@ function StakeFormPanel({
         <Button
           size="lg"
           w="full"
-          type="submit"
+          type={mode === 'stake' && needsApproval ? 'button' : 'submit'}
           isDisabled={buttonsDisabled}
+          onClick={mode === 'stake' && needsApproval ? onApprove : undefined}
         >
-          {mode === 'stake'
+          {mode === 'stake' && needsApproval
+            ? t('approveButton', { symbol: tokenSymbol })
+            : mode === 'stake'
             ? t('stakeButton', { symbol: tokenSymbol })
             : t('unstakeButton', { symbol: tokenSymbol })}
         </Button>
@@ -134,6 +142,8 @@ export default function StakeCard() {
 
   const { data: walletClient } = useNetworkWalletClient();
   const [contractCall, contractCallPending] = useTransaction();
+  const [allowance, setAllowance] = useState<bigint>(0n);
+  const [checkingAllowance, setCheckingAllowance] = useState(false);
 
   const stakedTokenSymbol = stakedToken?.symbol || '';
   const maxAvailableToUnstake = formatUnits(stakedToken?.balance || 0n, stakedToken?.decimals || 0);
@@ -144,6 +154,39 @@ export default function StakeCard() {
     unstakedToken?.decimals || 0,
   );
 
+  // Check allowance on component mount and when tokens change
+  useEffect(() => {
+    async function checkAllowance() {
+      if (!walletClient?.account?.address || !unstakedToken?.address || !stakedToken?.address) {
+        setAllowance(0n);
+        return;
+      }
+
+      setCheckingAllowance(true);
+      try {
+        const tokenContract = getContract({
+          address: unstakedToken.address,
+          abi: abis.deployables.VotesERC20V1,
+          client: walletClient,
+        });
+
+        const currentAllowance = await tokenContract.read.allowance([
+          walletClient.account.address,
+          stakedToken.address,
+        ]);
+
+        setAllowance(currentAllowance as bigint);
+      } catch (error) {
+        console.error('Error checking allowance:', error);
+        setAllowance(0n);
+      } finally {
+        setCheckingAllowance(false);
+      }
+    }
+
+    checkAllowance();
+  }, [walletClient?.account?.address, unstakedToken?.address, stakedToken?.address, walletClient]);
+
   // Define validation schema inside component to access translation function
   const validationSchema = Yup.object({
     amount: Yup.object({
@@ -152,6 +195,29 @@ export default function StakeCard() {
     }),
     mode: Yup.string().required(),
   });
+
+  async function handleApprove(amount: bigint) {
+    if (!walletClient || !unstakedToken?.address || !stakedToken?.address) return;
+
+    const tokenContract = getContract({
+      address: unstakedToken.address,
+      abi: abis.deployables.VotesERC20V1,
+      client: walletClient,
+    });
+
+    const formattedAmount = formatUnits(amount, unstakedToken.decimals || 0);
+
+    contractCall({
+      contractFn: () => tokenContract.write.approve([stakedToken.address, amount]),
+      pendingMessage: t('approvePending', { amount: formattedAmount, symbol: unStakedTokenSymbol }),
+      successMessage: t('approveSuccess', { amount: formattedAmount, symbol: unStakedTokenSymbol }),
+      failedMessage: t('approveError'),
+      successCallback: () => {
+        // Update allowance after successful approval
+        setAllowance(amount);
+      },
+    });
+  }
 
   async function stakedFormHandler(values: StakeFormProps) {
     if (!walletClient || !stakedToken?.address) return;
@@ -231,60 +297,68 @@ export default function StakeCard() {
             validationSchema={validationSchema}
             onSubmit={stakedFormHandler}
           >
-            {({ handleSubmit, setFieldValue }) => (
-              <form onSubmit={handleSubmit}>
-                <Tabs
-                  variant="solid"
-                  size="md"
-                  w="full"
-                  // ensure tabs are unmounted; this is to prevent memory leaks
-                  isLazy
-                  lazyBehavior="unmount"
-                  onChange={index => {
-                    setFieldValue('mode', MODES[index]);
-                    setFieldValue('amount', { value: '', bigintValue: undefined });
-                  }}
-                >
-                  <TabList w="fit-content">
-                    <Tab>{t('stakeTab')}</Tab>
-                    <Tab>{t('unstakeTab')}</Tab>
-                  </TabList>
+            {({ handleSubmit, setFieldValue, values }) => {
+              const needsApproval = values.mode === 'stake' && 
+                values.amount.bigintValue && 
+                values.amount.bigintValue > allowance;
 
-                  <TabPanels>
-                    <TabPanel w="full">
-                      <StakeFormPanel
-                        maxAvailableValue={maxAvailableToStake}
-                        tokenSymbol={unStakedTokenSymbol}
-                        tokenDecimals={unstakedToken?.decimals || 0}
-                        maxButtonOnClick={() =>
-                          setFieldValue('amount', {
-                            value: maxAvailableToStake,
-                            bigintValue: unstakedToken?.balance,
-                          })
-                        }
-                        buttonsDisabled={!unstakedToken?.balance || unstakedToken?.balance === 0n || contractCallPending}
-                        mode="stake"
-                      />
-                    </TabPanel>
-                    <TabPanel w="full">
-                      <StakeFormPanel
-                        maxAvailableValue={maxAvailableToUnstake}
-                        tokenSymbol={stakedTokenSymbol}
-                        tokenDecimals={stakedToken?.decimals || 0}
-                        maxButtonOnClick={() =>
-                          setFieldValue('amount', {
-                            value: maxAvailableToUnstake,
-                            bigintValue: stakedToken?.balance,
-                          })
-                        }
-                        buttonsDisabled={!stakedToken?.balance || stakedToken?.balance === 0n || contractCallPending}
-                        mode="unstake"
-                      />
-                    </TabPanel>
-                  </TabPanels>
-                </Tabs>
-              </form>
-            )}
+              return (
+                <form onSubmit={handleSubmit}>
+                  <Tabs
+                    variant="solid"
+                    size="md"
+                    w="full"
+                    // ensure tabs are unmounted; this is to prevent memory leaks
+                    isLazy
+                    lazyBehavior="unmount"
+                    onChange={index => {
+                      setFieldValue('mode', MODES[index]);
+                      setFieldValue('amount', { value: '', bigintValue: undefined });
+                    }}
+                  >
+                    <TabList w="fit-content">
+                      <Tab>{t('stakeTab')}</Tab>
+                      <Tab>{t('unstakeTab')}</Tab>
+                    </TabList>
+
+                    <TabPanels>
+                      <TabPanel w="full">
+                        <StakeFormPanel
+                          maxAvailableValue={maxAvailableToStake}
+                          tokenSymbol={unStakedTokenSymbol}
+                          tokenDecimals={unstakedToken?.decimals || 0}
+                          maxButtonOnClick={() =>
+                            setFieldValue('amount', {
+                              value: maxAvailableToStake,
+                              bigintValue: unstakedToken?.balance,
+                            })
+                          }
+                          buttonsDisabled={!unstakedToken?.balance || unstakedToken?.balance === 0n || contractCallPending || checkingAllowance}
+                          mode="stake"
+                          needsApproval={!!needsApproval}
+                          onApprove={() => values.amount.bigintValue && handleApprove(values.amount.bigintValue)}
+                        />
+                      </TabPanel>
+                      <TabPanel w="full">
+                        <StakeFormPanel
+                          maxAvailableValue={maxAvailableToUnstake}
+                          tokenSymbol={stakedTokenSymbol}
+                          tokenDecimals={stakedToken?.decimals || 0}
+                          maxButtonOnClick={() =>
+                            setFieldValue('amount', {
+                              value: maxAvailableToUnstake,
+                              bigintValue: stakedToken?.balance,
+                            })
+                          }
+                          buttonsDisabled={!stakedToken?.balance || stakedToken?.balance === 0n || contractCallPending}
+                          mode="unstake"
+                        />
+                      </TabPanel>
+                    </TabPanels>
+                  </Tabs>
+                </form>
+              );
+            }}
           </Formik>
         </Flex>
         <StakingAdditionalInfo />
