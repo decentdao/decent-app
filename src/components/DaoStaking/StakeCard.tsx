@@ -1,9 +1,11 @@
 import { Flex, Tab, TabList, Tabs, Text, TabPanel, TabPanels, Button } from '@chakra-ui/react';
+import { abis } from '@decentdao/decent-contracts';
 import { Formik, useFormikContext } from 'formik';
 import { useTranslation } from 'react-i18next';
-import { formatUnits } from 'viem';
+import { formatUnits, getContract } from 'viem';
 import * as Yup from 'yup';
 import { useCurrentDAOKey } from '../../hooks/DAO/useCurrentDAOKey';
+import { useNetworkWalletClient } from '../../hooks/useNetworkWalletClient';
 import { useDAOStore } from '../../providers/App/AppProvider';
 import { BigIntValuePair } from '../../types';
 import { BigIntInput } from '../ui/forms/BigIntInput';
@@ -123,23 +125,47 @@ export default function StakeCard() {
   const { t } = useTranslation('staking');
   const { daoKey } = useCurrentDAOKey();
   const {
-    governance: { stakedToken, votesToken },
+    governance: { stakedToken, votesToken, erc20Token },
   } = useDAOStore({ daoKey });
+  const unstakedToken = erc20Token ?? votesToken;
+
+  const { data: walletClient } = useNetworkWalletClient()
 
   const stakedTokenSymbol = stakedToken?.symbol || '';
-  const maxAvailableToStake = formatUnits(votesToken?.balance || 0n, votesToken?.decimals || 0);
-
-  const unStakedTokenSymbol = votesToken?.symbol || '';
   const maxAvailableToUnstake = formatUnits(stakedToken?.balance || 0n, stakedToken?.decimals || 0);
+  
+  const unStakedTokenSymbol = unstakedToken?.symbol || '';
+  const maxAvailableToStake = formatUnits(unstakedToken?.balance || 0n, unstakedToken?.decimals || 0);
 
   // Define validation schema inside component to access translation function
   const validationSchema = Yup.object({
     amount: Yup.object({
       value: Yup.string().required(),
-      bigintValue: Yup.mixed<bigint>().required(),
+      bigintValue: Yup.mixed<bigint>().required().test('is-positive', 'Amount must be positive', value => value > 0n),
     }),
     mode: Yup.string().required(),
   });
+
+  async function stakedFormHandler(values: StakeFormProps) {
+    if(!walletClient || !stakedToken?.address ) return;
+
+    const { mode, amount } = values;
+    const stakingContract = getContract({
+      address: stakedToken?.address,
+      abi: abis.deployables.VotesERC20StakedV1,
+      client: walletClient,
+    });
+
+    if(!amount.bigintValue) {
+      throw new Error('Amount is required');
+    }
+
+    if(mode === 'stake') {
+      await stakingContract.write.stake([amount.bigintValue]);
+    } else {
+      await stakingContract.write.unstake([amount.bigintValue]);
+    }
+  }
 
   return (
     <Flex
@@ -164,16 +190,11 @@ export default function StakeCard() {
               mode: MODES[0],
             }}
             validationSchema={validationSchema}
-            onSubmit={values => {
-              console.log('🚀 ~ values:', values);
-            }}
+            onSubmit={stakedFormHandler}
           >
             {({ handleSubmit, setFieldValue }) => (
               <form
-                onSubmit={e => {
-                  // TODO: going to add toast error handling here
-                  handleSubmit(e);
-                }}
+                onSubmit={handleSubmit}
               >
                 <Tabs
                   variant="solid"
@@ -197,14 +218,14 @@ export default function StakeCard() {
                       <StakeFormPanel
                         maxAvailableValue={maxAvailableToStake}
                         tokenSymbol={unStakedTokenSymbol}
-                        tokenDecimals={votesToken?.decimals || 0}
+                        tokenDecimals={unstakedToken?.decimals || 0}
                         maxButtonOnClick={() =>
                           setFieldValue('amount', {
                             value: maxAvailableToStake,
-                            bigintValue: votesToken?.balance,
+                            bigintValue: unstakedToken?.balance,
                           })
                         }
-                        buttonsDisabled={!votesToken?.balance || votesToken?.balance === 0n}
+                        buttonsDisabled={!unstakedToken?.balance || unstakedToken?.balance === 0n}
                         mode="stake"
                       />
                     </TabPanel>
