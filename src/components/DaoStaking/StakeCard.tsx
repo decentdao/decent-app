@@ -132,7 +132,6 @@ export default function StakeCard() {
   const unStakedTokenSymbol = votesToken?.symbol || '';
   const maxAvailableToUnstake = formatUnits(stakedToken?.balance || 0n, stakedToken?.decimals || 0);
 
-  // Define validation schema inside component to access translation function
   const validationSchema = Yup.object({
     amount: Yup.object({
       value: Yup.string().required(),
