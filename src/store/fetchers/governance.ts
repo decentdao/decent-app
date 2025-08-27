@@ -1092,10 +1092,13 @@ export function useGovernanceFetcher() {
                   ],
                   allowFailure: false,
                 });
-                
+
                 // Validate Trust Wallet logo URL
-                const validatedLogo = await getValidatedTrustWalletLogoUrl(tokenAddress, publicClient.chain!.id);
-                
+                const validatedLogo = await getValidatedTrustWalletLogoUrl(
+                  tokenAddress,
+                  publicClient.chain!.id,
+                );
+
                 return {
                   address: tokenAddress,
                   name: nameData,

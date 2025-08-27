@@ -46,7 +46,7 @@ export async function getValidatedTrustWalletLogoUrl(
   chainId: number,
 ): Promise<string | undefined> {
   const logoUrl = getTrustWalletLogoUrl(tokenAddress, chainId);
-  
+
   try {
     const response = await fetch(logoUrl, { method: 'HEAD' });
     if (response.ok && response.headers.get('content-type')?.startsWith('image/')) {
