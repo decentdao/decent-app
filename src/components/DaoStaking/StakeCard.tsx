@@ -2,8 +2,10 @@ import { Flex, Tab, TabList, Tabs, Text, TabPanel, TabPanels, Button } from '@ch
 import { abis } from '@decentdao/decent-contracts';
 import { Formik, useFormikContext } from 'formik';
 import { useTranslation } from 'react-i18next';
+import { toast } from 'sonner';
 import { formatUnits, getContract } from 'viem';
 import * as Yup from 'yup';
+import { logError } from '../../helpers/errorLogging';
 import { useCurrentDAOKey } from '../../hooks/DAO/useCurrentDAOKey';
 import { useNetworkWalletClient } from '../../hooks/useNetworkWalletClient';
 import { useDAOStore } from '../../providers/App/AppProvider';
@@ -141,7 +143,7 @@ export default function StakeCard() {
   const validationSchema = Yup.object({
     amount: Yup.object({
       value: Yup.string().required(),
-      bigintValue: Yup.mixed<bigint>().required().test('is-positive', 'Amount must be positive', value => value > 0n),
+      bigintValue: Yup.mixed<bigint>().required(),
     }),
     mode: Yup.string().required(),
   });
@@ -150,20 +152,68 @@ export default function StakeCard() {
     if(!walletClient || !stakedToken?.address ) return;
 
     const { mode, amount } = values;
+    
+    if(!amount.bigintValue) {
+      toast.error(t('requiredField'));
+      return;
+    }
+
+    // Balance validation with toast notifications
+    if (mode === 'stake') {
+      if (!unstakedToken?.balance || amount.bigintValue > unstakedToken.balance) {
+        toast.error(t('insufficientBalance'));
+        return;
+      }
+    } else {
+      if (!stakedToken?.balance || amount.bigintValue > stakedToken.balance) {
+        toast.error(t('insufficientBalance'));
+        return;
+      }
+    }
+
     const stakingContract = getContract({
       address: stakedToken?.address,
       abi: abis.deployables.VotesERC20StakedV1,
       client: walletClient,
     });
 
-    if(!amount.bigintValue) {
-      throw new Error('Amount is required');
-    }
+    const tokenSymbol = mode === 'stake' ? unStakedTokenSymbol : stakedTokenSymbol;
+    const formattedAmount = formatUnits(
+      amount.bigintValue, 
+      mode === 'stake' ? unstakedToken?.decimals || 0 : stakedToken?.decimals || 0
+    );
 
-    if(mode === 'stake') {
-      await stakingContract.write.stake([amount.bigintValue]);
-    } else {
-      await stakingContract.write.unstake([amount.bigintValue]);
+    // Show pending toast
+    const toastId = toast.loading(
+      mode === 'stake' 
+        ? t('stakingPending', { amount: formattedAmount, symbol: tokenSymbol })
+        : t('unstakingPending', { amount: formattedAmount, symbol: tokenSymbol }),
+      { duration: Infinity }
+    );
+
+    try {
+      if(mode === 'stake') {
+        await stakingContract.write.stake([amount.bigintValue]);
+      } else {
+        await stakingContract.write.unstake([amount.bigintValue]);
+      }
+      
+      // Show success toast
+      toast.success(
+        mode === 'stake'
+          ? t('stakingSuccess', { amount: formattedAmount, symbol: tokenSymbol })
+          : t('unstakingSuccess', { amount: formattedAmount, symbol: tokenSymbol }),
+        { id: toastId }
+      );
+    } catch (error) {
+      // Log error to Sentry
+      logError(error);
+      
+      // Show error toast
+      toast.error(
+        mode === 'stake' ? t('stakingError') : t('unstakingError'),
+        { id: toastId }
+      );
     }
   }
 
