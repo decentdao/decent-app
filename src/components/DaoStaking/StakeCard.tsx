@@ -124,8 +124,8 @@ function StakeFormPanel({
           {mode === 'stake' && needsApproval
             ? t('approveButton', { symbol: tokenSymbol })
             : mode === 'stake'
-            ? t('stakeButton', { symbol: tokenSymbol })
-            : t('unstakeButton', { symbol: tokenSymbol })}
+              ? t('stakeButton', { symbol: tokenSymbol })
+              : t('unstakeButton', { symbol: tokenSymbol })}
         </Button>
       </Flex>
     </Flex>
@@ -262,12 +262,14 @@ export default function StakeCard() {
           return stakingContract.write.unstake([amount.bigintValue!]);
         }
       },
-      pendingMessage: mode === 'stake'
-        ? t('stakingPending', { amount: formattedAmount, symbol: tokenSymbol })
-        : t('unstakingPending', { amount: formattedAmount, symbol: tokenSymbol }),
-      successMessage: mode === 'stake'
-        ? t('stakingSuccess', { amount: formattedAmount, symbol: tokenSymbol })
-        : t('unstakingSuccess', { amount: formattedAmount, symbol: tokenSymbol }),
+      pendingMessage:
+        mode === 'stake'
+          ? t('stakingPending', { amount: formattedAmount, symbol: tokenSymbol })
+          : t('unstakingPending', { amount: formattedAmount, symbol: tokenSymbol }),
+      successMessage:
+        mode === 'stake'
+          ? t('stakingSuccess', { amount: formattedAmount, symbol: tokenSymbol })
+          : t('unstakingSuccess', { amount: formattedAmount, symbol: tokenSymbol }),
       failedMessage: mode === 'stake' ? t('stakingError') : t('unstakingError'),
     });
   }
@@ -298,8 +300,9 @@ export default function StakeCard() {
             onSubmit={stakedFormHandler}
           >
             {({ handleSubmit, setFieldValue, values }) => {
-              const needsApproval = values.mode === 'stake' && 
-                values.amount.bigintValue && 
+              const needsApproval =
+                values.mode === 'stake' &&
+                values.amount.bigintValue &&
                 values.amount.bigintValue > allowance;
 
               return (
@@ -333,10 +336,17 @@ export default function StakeCard() {
                               bigintValue: unstakedToken?.balance,
                             })
                           }
-                          buttonsDisabled={!unstakedToken?.balance || unstakedToken?.balance === 0n || contractCallPending || checkingAllowance}
+                          buttonsDisabled={
+                            !unstakedToken?.balance ||
+                            unstakedToken?.balance === 0n ||
+                            contractCallPending ||
+                            checkingAllowance
+                          }
                           mode="stake"
                           needsApproval={!!needsApproval}
-                          onApprove={() => values.amount.bigintValue && handleApprove(values.amount.bigintValue)}
+                          onApprove={() =>
+                            values.amount.bigintValue && handleApprove(values.amount.bigintValue)
+                          }
                         />
                       </TabPanel>
                       <TabPanel w="full">
@@ -350,7 +360,11 @@ export default function StakeCard() {
                               bigintValue: stakedToken?.balance,
                             })
                           }
-                          buttonsDisabled={!stakedToken?.balance || stakedToken?.balance === 0n || contractCallPending}
+                          buttonsDisabled={
+                            !stakedToken?.balance ||
+                            stakedToken?.balance === 0n ||
+                            contractCallPending
+                          }
                           mode="unstake"
                         />
                       </TabPanel>
