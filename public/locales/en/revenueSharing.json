@@ -1,8 +1,8 @@
 {
   "revShareDaoSafeWarning": "Funds sent to this address will not be split",
-  "title": "Revenue Share",
-  "addSplitButton": "Add Revenue Split",
-  "defaultSplitName": "Revenue Split",
+  "title": "Distribution",
+  "addSplitButton": "Add Asset Split",
+  "defaultSplitName": "Asset Split",
   "daoSafeWallet": "DAO Safe Wallet",
   "totalError": "{{percentage}}% Total must equal 100%",
   "recipients": "Recipients",
