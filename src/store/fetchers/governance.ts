@@ -1116,7 +1116,6 @@ export function useGovernanceFetcher() {
             address: stakingAddress,
             name,
             symbol,
-            balance: null,
             decimals,
             totalSupply,
             minimumStakingPeriod,
