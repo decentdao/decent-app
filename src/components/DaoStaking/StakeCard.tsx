@@ -138,7 +138,10 @@ export default function StakeCard() {
   const {
     governance: { isAzorius, stakedToken, votesToken, erc20Token },
   } = useDAOStore({ daoKey });
-  const unstakedToken = useMemo(() => (isAzorius ? votesToken : erc20Token), [isAzorius, votesToken, erc20Token]);
+  const unstakedToken = useMemo(
+    () => (isAzorius ? votesToken : erc20Token),
+    [isAzorius, votesToken, erc20Token],
+  );
 
   const { data: walletClient } = useNetworkWalletClient();
   const [contractCall, contractCallPending] = useTransaction();
