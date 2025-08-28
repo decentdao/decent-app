@@ -62,10 +62,10 @@ export default function BalanceCard() {
   const { t } = useTranslation('staking');
   const { daoKey } = useCurrentDAOKey();
   const {
-    governance: { stakedToken, votesToken, erc20Token },
+    governance: { isAzorius, stakedToken, votesToken, erc20Token },
   } = useDAOStore({ daoKey });
 
-  const unstakedToken = erc20Token || votesToken;
+  const unstakedToken = isAzorius ? votesToken : erc20Token;
 
   const stBalance = stakedToken?.balance || 0n;
   const unStakedBalance = unstakedToken?.balance || 0n;
