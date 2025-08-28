@@ -70,6 +70,10 @@
   "labelDaysLeft_other": "Залишилося {{count}} днів",
   "labelMonthsLeft_one": "{{count}} залишився місяць",
   "labelMonthsLeft_other": "{{count}} залишилося місяців",
+  "labelWeeksAgo_one": "{{count}Тиждень тому",
+  "labelWeeksAgo_other": "{{count}кілька тижнів тому.",
+  "labelWeeksLeft_one": "{{count}Залишився тиждень.",
+  "labelWeeksLeft_other": "{{count}Залишилося кілька тижнів.",
   "labelYearsLeft_one": "{{count}} залишився рік",
   "labelYearsLeft_other": "{{count}} залишилося років",
   "toastClipboardCopy": "Скопійовано в буфер обміну",
@@ -137,5 +141,6 @@
   "calendarPlaceholder": "YYYY-MM-DD",
   "years": "Роки",
   "addressInfoTooltip": "Поки відображається DAO Name або ENS, повна адреса гаманця буде відображатися в пропозиції.",
-  "stakingPeriodMoreThanZero": "Період стейкінгу повинен бути більше нуля"
+  "stakingPeriodMoreThanZero": "Період стейкінгу повинен бути більше нуля",
+  "close": "Закрити"
 }
