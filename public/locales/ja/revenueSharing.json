@@ -8,5 +8,10 @@
   "recipients": "受賞者",
   "addRecipientButton": "受取人の追加",
   "removeSplitButtonLabel": "スプリットの削除",
-  "stakingRecipientDisplay": "トークン・ホルダー・ステーキング"
+  "stakingRecipientDisplay": "トークン・ホルダー・ステーキング",
+  "distributeButton": "Distribute",
+  "distributingTokens": "Distributing tokens...",
+  "distributeButtonTooltip": "Distribute deposited tokens to recipients.",
+  "tokensDistributed": "Tokens distributed successfully",
+  "tokenDistributionFailed": "Token distribution failed"
 }

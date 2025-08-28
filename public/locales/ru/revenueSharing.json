@@ -8,5 +8,10 @@
   "recipients": "Получатели",
   "addRecipientButton": "Добавить получателя",
   "removeSplitButtonLabel": "Удалить сплит",
-  "stakingRecipientDisplay": "Ставка держателя жетона"
+  "stakingRecipientDisplay": "Ставка держателя жетона",
+  "distributeButton": "Distribute",
+  "distributingTokens": "Distributing tokens...",
+  "distributeButtonTooltip": "Distribute deposited tokens to recipients.",
+  "tokensDistributed": "Tokens distributed successfully",
+  "tokenDistributionFailed": "Token distribution failed"
 }

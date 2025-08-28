@@ -70,6 +70,10 @@
   "labelDaysLeft_other": "{{count}} giorni rimanenti",
   "labelMonthsLeft_one": "{{count}} mese a sinistra",
   "labelMonthsLeft_other": "{{count}} mesi a sinistra",
+  "labelWeeksAgo_one": "{{count}} settimana fa",
+  "labelWeeksAgo_other": "{{count}} settimane fa",
+  "labelWeeksLeft_one": "{{count}} settimana rimanente",
+  "labelWeeksLeft_other": "{{count}} settimane rimaste",
   "labelYearsLeft_one": "{{count}} anno di sinistra",
   "labelYearsLeft_other": "{{count}} anni a sinistra",
   "toastClipboardCopy": "Copiato negli appunti",
@@ -137,5 +141,6 @@
   "calendarPlaceholder": "AAAA-MM-GG",
   "years": "Anni",
   "addressInfoTooltip": "Mentre viene visualizzato il nome DAO o ENS, l'indirizzo completo del portafoglio apparirà nella proposta.",
-  "stakingPeriodMoreThanZero": "Il periodo di staking deve essere superiore a zero"
+  "stakingPeriodMoreThanZero": "Il periodo di staking deve essere superiore a zero",
+  "close": "Chiudere"
 }

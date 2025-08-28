@@ -70,6 +70,10 @@
   "labelDaysLeft_other": "{{count}} dias restantes",
   "labelMonthsLeft_one": "{{count}} mês esquerdo",
   "labelMonthsLeft_other": "{{count}} meses restantes",
+  "labelWeeksAgo_one": "{{count}} semana atrás",
+  "labelWeeksAgo_other": "{{count}} semanas atrás",
+  "labelWeeksLeft_one": "{{count}} semana restante",
+  "labelWeeksLeft_other": "{{count}} semanas restantes",
   "labelYearsLeft_one": "{{count}} ano restante",
   "labelYearsLeft_other": "{{count}} anos restantes",
   "toastClipboardCopy": "Copiado para a área de transferência",
@@ -137,5 +141,6 @@
   "calendarPlaceholder": "AAAA-MM-DD",
   "years": "Anos",
   "addressInfoTooltip": "Enquanto o nome DAO ou ENS for apresentado, o endereço completo da carteira aparecerá na proposta.",
-  "stakingPeriodMoreThanZero": "O período de aposta deve ser superior a zero"
+  "stakingPeriodMoreThanZero": "O período de aposta deve ser superior a zero",
+  "close": "Fechar"
 }
