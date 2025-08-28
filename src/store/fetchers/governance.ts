@@ -973,7 +973,6 @@ export function useGovernanceFetcher() {
           decimals: decimalsData.result !== undefined ? decimalsData.result : 18,
           address: tokenContract.address,
           totalSupply: totalSupplyData.result !== undefined ? totalSupplyData.result : 0n,
-          balance: null,
         };
 
         return tokenData;
