@@ -8,6 +8,7 @@ import CeleryButtonWithIcon from '../utils/CeleryButtonWithIcon';
 interface AddressCopierProps extends ButtonProps {
   address: Address;
   variant?: 'primary' | 'secondary';
+  displayAs?: 'truncated' | 'displayName' | 'address';
 }
 
 /**
@@ -17,10 +18,20 @@ interface AddressCopierProps extends ButtonProps {
 export default function AddressCopier({
   address,
   variant = 'primary',
+  displayAs = 'truncated',
   ...rest
 }: AddressCopierProps) {
-  const { accountSubstring } = useGetAccountName(address);
+  const { accountSubstring, displayName } = useGetAccountName(address);
   const copyToClipboard = useCopyText();
+  const isTruncated = displayAs === 'truncated';
+  const isDisplayName = displayAs === 'displayName';
+
+  let displayedText: string | Address = address;
+  if (isTruncated) {
+    displayedText = accountSubstring || address;
+  } else if (isDisplayName) {
+    displayedText = displayName || address;
+  }
 
   return (
     <CeleryButtonWithIcon
@@ -31,7 +42,7 @@ export default function AddressCopier({
       }}
       width="fit-content"
       {...rest}
-      text={accountSubstring || address}
+      text={displayedText}
       icon={CopySimple}
       iconPosition="end"
       {...(variant === 'secondary' && {

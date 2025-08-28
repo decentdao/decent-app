@@ -70,6 +70,10 @@
   "labelDaysLeft_other": "還剩 {{count}}天",
   "labelMonthsLeft_one": "還剩{{count}}個月",
   "labelMonthsLeft_other": "還剩{{count}} 個月",
+  "labelWeeksAgo_one": "{{count}} 週前",
+  "labelWeeksAgo_other": "{{count}} 週前",
+  "labelWeeksLeft_one": "{{count}} 週左",
+  "labelWeeksLeft_other": "{{count}還剩 } 週",
   "labelYearsLeft_one": "還剩{{count}}年",
   "labelYearsLeft_other": "還剩{{count}}年",
   "toastClipboardCopy": "複製到剪貼簿",
@@ -137,5 +141,6 @@
   "calendarPlaceholder": "YYYY-MM-DD",
   "years": "年數",
   "addressInfoTooltip": "當顯示 DAO Name 或 ENS 時，完整的錢包地址會出現在提案中。",
-  "stakingPeriodMoreThanZero": "投注期必須大於零"
+  "stakingPeriodMoreThanZero": "投注期必須大於零",
+  "close": "關閉"
 }

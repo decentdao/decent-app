@@ -1,8 +1,9 @@
-import { Button, Flex, Grid, GridItem, Icon, IconButton, Text } from '@chakra-ui/react';
+import { Box, Button, Flex, Grid, GridItem, Icon, IconButton, Text } from '@chakra-ui/react';
 import { Plus, Trash } from '@phosphor-icons/react';
 import { Field, FieldProps, useFormikContext } from 'formik';
-import { useCallback, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
+import { toast } from 'sonner';
 import { Address, isAddress } from 'viem';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import { createAccountSubstring } from '../../../hooks/utils/useGetAccountName';
@@ -12,6 +13,7 @@ import {
   RevenueSharingWalletFormType,
   RevenueSharingWalletFormValues,
 } from '../../../types/revShare';
+import { DecentTooltip } from '../../ui/DecentTooltip';
 import { AccordionDropdown } from '../../ui/containers/AccordionDropdown';
 import { AddressInputInfo } from '../../ui/forms/AddressInputInfo';
 import { EditableInput } from '../../ui/forms/EditableInput';
@@ -20,6 +22,7 @@ import AddressCopier from '../../ui/links/AddressCopier';
 import { SafeSettingsEdits, SafeSettingsFormikErrors } from '../../ui/modals/SafeSettingsModal';
 import Divider from '../../ui/utils/Divider';
 import { SplitPercentageDisplay } from './SplitPercentageDisplay';
+import { useDistributeAllRevenue } from './useDistributeTokens';
 
 function RevenueSharingTableRowItem({
   colSpan,
@@ -81,6 +84,7 @@ function WalletName({
   wallet: RevenueSharingWalletFormValues;
   walletFormType: RevenueSharingWalletFormType;
 }) {
+  const { status: { readOnly } = {} } = useFormikContext<SafeSettingsEdits>();
   return (
     <Grid
       templateColumns="auto 1fr"
@@ -92,6 +96,7 @@ function WalletName({
         {({ field, form }: FieldProps<string, any>) => (
           <EditableInput
             value={field.value || wallet.name}
+            isReadOnly={readOnly}
             onClick={e => {
               e.stopPropagation();
             }}
@@ -151,6 +156,7 @@ export function RevSplitRow({
   onRemoveSplit?: () => void;
 }) {
   const { t } = useTranslation('revenueSharing');
+  const { status: { readOnly } = {} } = useFormikContext<SafeSettingsEdits>();
 
   return (
     <>
@@ -162,8 +168,8 @@ export function RevSplitRow({
               return (
                 <AddressInputInfo
                   isInvalid={!!splitFormError?.address}
-                  isReadOnly={isReadOnlyAddress}
-                  staticDisplayValue={isStakingContract ? t('stakingRecipientDisplay') : undefined}
+                  isReadOnly={isReadOnlyAddress || readOnly}
+                  displayValue={isStakingContract ? t('stakingRecipientDisplay') : undefined}
                   variant="tableStyle"
                   value={fieldValue}
                   onChange={value => {
@@ -193,7 +199,7 @@ export function RevSplitRow({
                 <NumberInputPercentage
                   variant="tableStyle"
                   precision={0}
-                  isInvalid={!!splitFormError?.percentage}
+                  isReadOnly={readOnly}
                   value={fieldValue}
                   min={0}
                   max={100}
@@ -221,7 +227,7 @@ export function RevSplitRow({
           >
             <IconButton
               aria-label={t('removeSplitButtonLabel')}
-              hidden={!onRemoveSplit}
+              hidden={!onRemoveSplit || readOnly}
               icon={<Trash />}
               color="color-error-400"
               borderColor="color-error-400"
@@ -251,7 +257,11 @@ export function RevSplitTable({
   walletIndex: number;
   walletFormType: RevenueSharingWalletFormType;
 }) {
-  const { values, setFieldValue } = useFormikContext<SafeSettingsEdits>();
+  const {
+    values,
+    setFieldValue,
+    status: { readOnly } = {},
+  } = useFormikContext<SafeSettingsEdits>();
   const { t } = useTranslation('revenueSharing');
   const { daoKey } = useCurrentDAOKey();
   const {
@@ -469,6 +479,7 @@ export function RevSplitTable({
         size="sm"
         ml="auto"
         leftIcon={<Icon as={Plus} />}
+        isDisabled={readOnly}
         onClick={() => {
           const formWalletSplits = [...(wallet.splits || [])];
 
@@ -499,23 +510,75 @@ export function RevSplitWalletAccordion({
   index: number;
   walletFormType: RevenueSharingWalletFormType;
 }) {
+  const { daoKey } = useCurrentDAOKey();
+  const { revShareWallets } = useDAOStore({ daoKey });
+  const revShareWallet = revShareWallets?.find(_wallet => _wallet.address === wallet.address);
+  const { t } = useTranslation('revenueSharing');
+  const { distribute, isPending, error } = useDistributeAllRevenue(revShareWallet);
+  const toastId = useRef<string | number | undefined>();
+
+  useEffect(() => {
+    const dismissToast = () => {
+      toast.dismiss(toastId.current);
+      toastId.current = undefined;
+    };
+    if (isPending) {
+      toastId.current = toast.loading(t('distributingTokens'));
+    } else if (toastId.current) {
+      dismissToast();
+      toast.success(t('tokensDistributed'), {
+        duration: 1000,
+      });
+    }
+    if (error) {
+      dismissToast();
+      toast.error(error);
+    }
+
+    return () => {
+      dismissToast();
+    };
+  }, [isPending, error, t]);
+
   return (
-    <AccordionDropdown
-      defaultExpandedIndices={index === 0 ? [0] : []}
-      sectionTitle={
-        <WalletName
-          index={index}
-          wallet={wallet}
-          walletFormType={walletFormType}
-        />
-      }
-      content={
-        <RevSplitTable
-          wallet={wallet}
-          walletIndex={index}
-          walletFormType={walletFormType}
-        />
-      }
-    />
+    <Box w="100%">
+      <AccordionDropdown
+        defaultExpandedIndices={index === 0 ? [0] : []}
+        sectionTitle={
+          <Flex
+            w="100%"
+            alignItems="center"
+            justifyContent="space-between"
+          >
+            <WalletName
+              index={index}
+              wallet={wallet}
+              walletFormType={walletFormType}
+            />
+            <DecentTooltip label={t('distributeButtonTooltip')}>
+              <Button
+                variant="secondaryV1"
+                size="sm"
+                hidden={!revShareWallet?.address}
+                isDisabled={!revShareWallet?.tokens?.length}
+                onClick={e => {
+                  e.stopPropagation();
+                  distribute();
+                }}
+              >
+                {t('distributeButton')}
+              </Button>
+            </DecentTooltip>
+          </Flex>
+        }
+        content={
+          <RevSplitTable
+            wallet={wallet}
+            walletIndex={index}
+            walletFormType={walletFormType}
+          />
+        }
+      />
+    </Box>
   );
 }

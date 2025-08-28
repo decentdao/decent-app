@@ -13,7 +13,6 @@ import {
 import { useAccountListeners } from './listeners/account';
 import { useGovernanceListeners } from './listeners/governance';
 import { useKeyValuePairsListener } from './listeners/keyValuePairs';
-import { useRolesStore } from './roles/useRolesStore';
 import { useGlobalStore } from './store';
 
 /**
@@ -32,11 +31,12 @@ export const useDAOStoreListener = ({ daoKey }: { daoKey: DAOKey | undefined }) 
     updateProposalState,
     setGuardAccountData,
     setGaslessVotingData,
+    setHatKeyValuePairData,
+    setStakedTokenAccountData,
   } = useGlobalStore();
 
-  const { setHatKeyValuePairData } = useRolesStore();
-
   const governance = daoKey ? getGovernance(daoKey) : undefined;
+  const stakingAddress = governance?.stakedToken?.address;
   const lockedVotesTokenAddress = governance?.lockReleaseAddress;
   const votesTokenAddress = governance?.votesTokenAddress;
   const moduleAzoriusAddress = governance?.moduleAzoriusAddress;
@@ -159,7 +159,17 @@ export const useDAOStoreListener = ({ daoKey }: { daoKey: DAOKey | undefined }) 
     [daoKey, setGovernanceLockReleaseAccountData],
   );
 
+  const onStakedTokenAccountDataLoaded = useCallback(
+    (accountData: { balance: bigint }) => {
+      if (daoKey) {
+        setStakedTokenAccountData(daoKey, accountData);
+      }
+    },
+    [daoKey, setStakedTokenAccountData],
+  );
+
   useAccountListeners({
+    stakingAddress,
     votesTokenAddress,
     azoriusGuardAddress,
     multisigGuardAddress,
@@ -174,6 +184,7 @@ export const useDAOStoreListener = ({ daoKey }: { daoKey: DAOKey | undefined }) 
     onGuardAccountDataLoaded,
     onGovernanceAccountDataLoaded,
     onGovernanceLockReleaseAccountDataLoaded,
+    onStakedTokenAccountDataLoaded,
   });
 
   const onRolesDataFetched = useCallback(
@@ -188,8 +199,7 @@ export const useDAOStoreListener = ({ daoKey }: { daoKey: DAOKey | undefined }) 
     }) => {
       // TODO: Implement setting to global store in scope of ENG-632
       if (daoKey) {
-        setHatKeyValuePairData({
-          daoKey,
+        setHatKeyValuePairData(daoKey, {
           contextChainId,
           hatsTreeId,
           streamIdsToHatIds,

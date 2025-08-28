@@ -1,7 +1,10 @@
 import { Button, Flex, Text } from '@chakra-ui/react';
+import { useTranslation } from 'react-i18next';
 import CheckDocumentIcon from './CheckDocumentIcon';
 
 export default function NoStakingDeployed({ deploy }: { deploy: () => void }) {
+  const { t } = useTranslation('staking');
+
   return (
     <Flex
       padding={6}
@@ -46,15 +49,14 @@ export default function NoStakingDeployed({ deploy }: { deploy: () => void }) {
             textAlign="center"
             textStyle="text-2xl-regular"
           >
-            Enable Staking for your DAO
+            {t('enableStakingTitle')}
           </Text>
           <Text
             color="color-content-content2-foreground"
             textAlign="center"
             textStyle="text-sm-regular"
           >
-            Staking allows you to distribute revenue and create powerful on-chain incentives for
-            long-term growth.
+            {t('enableStakingDescription')}
           </Text>
         </Flex>
 
@@ -68,7 +70,7 @@ export default function NoStakingDeployed({ deploy }: { deploy: () => void }) {
             textAlign="center"
             textStyle="text-xs-medium"
           >
-            Go to your DAO settings to configure and deploy the staking contract.
+            {t('enableStakingInstructions')}
           </Text>
           <Button
             variant="primary"
@@ -79,7 +81,7 @@ export default function NoStakingDeployed({ deploy }: { deploy: () => void }) {
             alignItems="center"
             onClick={deploy}
           >
-            Go to Settings (dev:enable)
+            {t('goToSettings')}
           </Button>
         </Flex>
       </Flex>

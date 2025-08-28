@@ -70,6 +70,10 @@
   "labelDaysLeft_other": "{{count}} días restantes",
   "labelMonthsLeft_one": "{{count}} mes izquierda",
   "labelMonthsLeft_other": "{{count}} meses restantes",
+  "labelWeeksAgo_one": "{{count}} hace una semana",
+  "labelWeeksAgo_other": "{{count}Hace } semanas",
+  "labelWeeksLeft_one": "{{count}} semana restante",
+  "labelWeeksLeft_other": "{{count}Quedan } semanas",
   "labelYearsLeft_one": "{{count}} año que queda",
   "labelYearsLeft_other": "{{count}} años restantes",
   "toastClipboardCopy": "Copiado al portapapeles",
@@ -137,5 +141,6 @@
   "calendarPlaceholder": "AAAA-MM-DD",
   "years": "Años",
   "addressInfoTooltip": "Mientras se muestra el nombre de la DAO o el ENS, la dirección completa del monedero aparecerá en la propuesta.",
-  "stakingPeriodMoreThanZero": "El periodo de estaca debe ser superior a cero"
+  "stakingPeriodMoreThanZero": "El periodo de estaca debe ser superior a cero",
+  "close": "Cerrar"
 }

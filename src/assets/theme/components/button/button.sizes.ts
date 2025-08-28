@@ -14,6 +14,11 @@ export default {
     height: '1.875rem',
     padding: '0.25rem .5rem',
   },
+  xs: {
+    apply: 'textStyles.text-xs-medium',
+    height: '1.25rem',
+    padding: '0.125rem .25rem',
+  },
   'icon-lg': {
     apply: 'textStyles.text-lg-regular',
     height: '2.25rem',

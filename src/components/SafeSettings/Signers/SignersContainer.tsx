@@ -148,7 +148,12 @@ export function SignersContainer() {
 
   const { t } = useTranslation(['common', 'breadcrumbs', 'daoEdit']);
 
-  const { setFieldValue, values, errors } = useFormikContext<SafeSettingsEdits>();
+  const {
+    setFieldValue,
+    values,
+    errors,
+    status: { readOnly } = {},
+  } = useFormikContext<SafeSettingsEdits>();
 
   const multisigEditFormikErrors = (errors as SafeSettingsFormikErrors | undefined)?.multisig;
 
@@ -280,7 +285,7 @@ export function SignersContainer() {
                   }
                 : null
             }
-            canRemove={canRemoveMoreSigners}
+            canRemove={canRemoveMoreSigners && !readOnly}
           />
         ))}
         {values.multisig?.newSigners?.map(signer => (
@@ -293,11 +298,11 @@ export function SignersContainer() {
                 values.multisig?.newSigners?.filter(s => s.key !== signer.key),
               );
             }}
-            canRemove={canRemoveMoreSigners}
+            canRemove={canRemoveMoreSigners && !readOnly}
           />
         ))}
 
-        {userIsSigner && (
+        {!readOnly && (
           <Flex
             gap="0.5rem"
             justifyContent="flex-end"
@@ -357,6 +362,7 @@ export function SignersContainer() {
           {/* stepper */}
           <Flex w="200px">
             <NumberStepperInput
+              disabled={readOnly}
               onChange={value => {
                 let updatedValue;
                 if (value !== `${safe?.threshold}`) {

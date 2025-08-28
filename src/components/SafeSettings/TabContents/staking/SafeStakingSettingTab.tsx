@@ -2,20 +2,18 @@ import { Button, Flex, ListItem, Text, UnorderedList } from '@chakra-ui/react';
 import { useFormikContext } from 'formik';
 import { useTranslation } from 'react-i18next';
 import { Address } from 'viem';
-import { SettingsContentBox } from '../../../../components/SafeSettings/SettingsContentBox';
-import DurationUnitStepperInput from '../../../../components/ui/forms/DurationUnitStepperInput';
-import { LabelComponent } from '../../../../components/ui/forms/InputComponent';
-import { DisplayAddress } from '../../../../components/ui/links/DisplayAddress';
-import { BarLoader } from '../../../../components/ui/loaders/BarLoader';
-import {
-  SafeSettingsEdits,
-  SafeSettingsFormikErrors,
-} from '../../../../components/ui/modals/SafeSettingsModal';
-import { AssetSelector } from '../../../../components/ui/utils/AssetSelector';
 import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
 import { useDAOStore } from '../../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../../providers/NetworkConfig/useNetworkConfigStore';
 import { BigIntValuePair, ERC20TokenData, GovernanceType, TokenBalance } from '../../../../types';
+import DurationUnitStepperInput from '../../../ui/forms/DurationUnitStepperInput';
+import { LabelComponent } from '../../../ui/forms/InputComponent';
+import AddressCopier from '../../../ui/links/AddressCopier';
+import { DisplayAddress } from '../../../ui/links/DisplayAddress';
+import { BarLoader } from '../../../ui/loaders/BarLoader';
+import { SafeSettingsEdits, SafeSettingsFormikErrors } from '../../../ui/modals/SafeSettingsModal';
+import { AssetSelector } from '../../../ui/utils/AssetSelector';
+import { SettingsContentBox } from '../../SettingsContentBox';
 
 function emptyTokenBalanceForAddress(
   address: Address,
@@ -46,18 +44,23 @@ function StakingForm() {
   const {
     stablecoins: { usdc },
   } = useNetworkConfigStore();
-  const { values, setFieldValue } = useFormikContext<SafeSettingsEdits>();
+  const {
+    values,
+    setFieldValue,
+    status: { readOnly } = {},
+  } = useFormikContext<SafeSettingsEdits>();
   const { errors } = useFormikContext<SafeSettingsEdits>();
   const stakingErrors = (errors as SafeSettingsFormikErrors | undefined)?.staking;
 
   const { address, minimumStakingPeriod, rewardsTokens } = stakedToken || {};
+  const rewardsTokenAddresses = rewardsTokens?.map(token => token.address) || [];
   const minPeriodValue = Number(
     values.staking?.minimumStakingPeriod?.bigintValue || minimumStakingPeriod || 0n,
   );
 
   const undistributedTokens =
     stakedToken?.assetsFungible.filter(
-      asset => asset.balance !== '0' && !rewardsTokens?.includes(asset.tokenAddress),
+      asset => asset.balance !== '0' && !rewardsTokenAddresses.includes(asset.tokenAddress),
     ) || [];
 
   // Add staking contract holdings, DAO token and USDC
@@ -85,18 +88,30 @@ function StakingForm() {
   return (
     <>
       {address ? (
-        <DisplayAddress
-          address={address}
-          color="color-charcoal-50"
-          textStyle="text-sm-underlined"
-          p={0}
+        <LabelComponent
+          label={t('stakingAddressTitle')}
+          isRequired={false}
+          gridContainerProps={{
+            mt: 2,
+            templateColumns: '1fr',
+            width: 'fit-content',
+          }}
+          errorMessage={stakingErrors?.minimumStakingPeriod}
         >
-          {address}
-        </DisplayAddress>
+          <AddressCopier
+            address={address}
+            color="color-charcoal-50"
+            textStyle="text-sm-underlined"
+            displayAs="address"
+            h={0}
+            p={4}
+          />
+        </LabelComponent>
       ) : null}
 
       <LabelComponent
-        label={t('stakingPeriod')}
+        label={t('minimumStakingPeriod')}
+        helper={t('minimumStakingPeriodHelper')}
         isRequired
         gridContainerProps={{
           mt: 2,
@@ -107,6 +122,7 @@ function StakingForm() {
         errorMessage={stakingErrors?.minimumStakingPeriod}
       >
         <DurationUnitStepperInput
+          isDisabled={readOnly}
           secondsValue={minPeriodValue}
           onSecondsValueChange={val => {
             if (val === undefined) {
@@ -162,31 +178,33 @@ function StakingForm() {
         }}
         helper={t('rewardTokensHelper')}
       >
-        <AssetSelector
-          includeNativeToken
-          canSelectMultiple
-          lockedSelections={rewardsTokens}
-          hideBalanceAndMergeTokens={mergeTokens}
-          onSelect={addresses => {
-            const rewardTokensToBeAdded = addresses.filter(
-              a => !rewardsTokens?.includes(a as Address),
-            );
-            if (rewardTokensToBeAdded.length > 0) {
-              setFieldValue(
-                'staking.newRewardTokens',
-                addresses.filter(a => !rewardsTokens?.includes(a as Address)),
-              );
-            } else {
-              setFieldValue('staking.newRewardTokens', undefined);
-            }
-          }}
-        />
+        <></>
       </LabelComponent>
+      <AssetSelector
+        includeNativeToken
+        canSelectMultiple
+        disabled={readOnly}
+        lockedSelections={rewardsTokenAddresses}
+        hideBalanceAndMergeTokens={mergeTokens}
+        onSelect={addresses => {
+          const rewardTokensToBeAdded = addresses.filter(
+            a => !rewardsTokenAddresses.includes(a as Address),
+          );
+          if (rewardTokensToBeAdded.length > 0) {
+            setFieldValue(
+              'staking.newRewardTokens',
+              addresses.filter(a => !rewardsTokenAddresses.includes(a as Address)),
+            );
+          } else {
+            setFieldValue('staking.newRewardTokens', undefined);
+          }
+        }}
+      />
     </>
   );
 }
 
-export function SafeStakingSettingsPage() {
+export function SafeStakingSettingTab() {
   const { t } = useTranslation('staking');
 
   const { daoKey } = useCurrentDAOKey();
@@ -195,7 +213,11 @@ export function SafeStakingSettingsPage() {
     governance: { stakedToken },
   } = useDAOStore({ daoKey });
 
-  const { values, setFieldValue } = useFormikContext<SafeSettingsEdits>();
+  const {
+    values,
+    setFieldValue,
+    status: { readOnly } = {},
+  } = useFormikContext<SafeSettingsEdits>();
   const deploying = values.staking?.deploying || false;
   const showForm = stakedToken?.address !== undefined || deploying;
 
@@ -213,6 +235,7 @@ export function SafeStakingSettingsPage() {
         </Text>
         <Button
           mt={1.5}
+          isDisabled={readOnly}
           width="fit-content"
           onClick={() => setFieldValue('staking.deploying', true)}
         >

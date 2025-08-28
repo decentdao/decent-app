@@ -11,7 +11,6 @@ import {
   paymentSorterByStartDate,
   paymentSorterByWithdrawAmount,
 } from '../../store/roles/rolesStoreUtils';
-import { useRolesStore } from '../../store/roles/useRolesStore';
 import { RoleDetailsDrawerProps } from '../../types/roles';
 import DraggableDrawer from '../ui/containers/DraggableDrawer';
 import Markdown from '../ui/proposal/Markdown';
@@ -29,9 +28,9 @@ export default function RolesDetailsDrawerMobile({
   const { daoKey } = useCurrentDAOKey();
   const {
     node: { safe },
+    roles: { hatsTree },
   } = useDAOStore({ daoKey });
   const { t } = useTranslation('roles');
-  const { hatsTree } = useRolesStore();
   const permissionsContainerRef = useRef<HTMLDivElement>(null);
 
   const sortedPayments = useMemo(

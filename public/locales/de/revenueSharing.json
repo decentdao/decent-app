@@ -8,5 +8,10 @@
   "recipients": "Empfänger",
   "addRecipientButton": "Empfänger hinzufügen",
   "removeSplitButtonLabel": "Split entfernen",
-  "stakingRecipientDisplay": "Abstecken von Wertmarkenhaltern"
+  "stakingRecipientDisplay": "Abstecken von Wertmarkenhaltern",
+  "distributeButton": "Verteilen Sie",
+  "distributingTokens": "Verteilen von Wertmarken...",
+  "distributeButtonTooltip": "Verteilen Sie die hinterlegten Token an die Empfänger.",
+  "tokensDistributed": "Tokens distributed successfully",
+  "tokenDistributionFailed": "Token distribution failed"
 }

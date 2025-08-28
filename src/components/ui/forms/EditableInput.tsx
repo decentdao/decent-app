@@ -4,7 +4,7 @@ import { useRef, useState } from 'react';
 import { useClickOutside } from '../../../hooks/useClickOutside';
 
 export function EditableInput(
-  props: InputProps & { onEditCancel: () => void; onEditSave: () => void },
+  props: InputProps & { onEditCancel: () => void; onEditSave: () => void; isReadOnly?: boolean },
 ) {
   const { onEditCancel, onEditSave, ...rest } = props;
   const [showInput, setShowInput] = useState(false);
@@ -37,29 +37,33 @@ export function EditableInput(
         px="1rem"
         onClick={e => {
           e.stopPropagation();
-          setShowInput(true);
+          if (!props.isReadOnly) {
+            setShowInput(true);
+          }
         }}
         borderRadius="0.75rem"
         bg={props.isInvalid ? 'color-error-950' : 'transparent'}
       >
         <Text
-          cursor="pointer"
+          cursor={props.isReadOnly ? 'default' : 'pointer'}
           textStyle="text-base-regular"
           color={props.isInvalid ? 'color-error-400' : 'color-layout-foreground'}
           whiteSpace="nowrap"
         >
           {props.value}
         </Text>
-        <IconButton
-          size="icon-sm"
-          icon={<PencilSimple />}
-          variant="ghostV1"
-          onClick={e => {
-            e.stopPropagation();
-            setShowInput(true);
-          }}
-          aria-label="Edit"
-        />
+        {!props.isReadOnly && (
+          <IconButton
+            size="icon-sm"
+            icon={<PencilSimple />}
+            variant="ghostV1"
+            onClick={e => {
+              e.stopPropagation();
+              setShowInput(true);
+            }}
+            aria-label="Edit"
+          />
+        )}
       </Flex>
     );
   }
