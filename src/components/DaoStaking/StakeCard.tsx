@@ -1,7 +1,7 @@
 import { Flex, Tab, TabList, Tabs, Text, TabPanel, TabPanels, Button } from '@chakra-ui/react';
 import { abis } from '@decentdao/decent-contracts';
 import { Formik, useFormikContext } from 'formik';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { formatUnits, getContract } from 'viem';
@@ -138,7 +138,7 @@ export default function StakeCard() {
   const {
     governance: { isAzorius, stakedToken, votesToken, erc20Token },
   } = useDAOStore({ daoKey });
-  const unstakedToken = isAzorius ? votesToken : erc20Token;
+  const unstakedToken = useMemo(() => (isAzorius ? votesToken : erc20Token), [isAzorius, votesToken, erc20Token]);
 
   const { data: walletClient } = useNetworkWalletClient();
   const [contractCall, contractCallPending] = useTransaction();
@@ -161,7 +161,6 @@ export default function StakeCard() {
         setAllowance(0n);
         return;
       }
-
       setCheckingAllowance(true);
       try {
         const tokenContract = getContract({
@@ -185,7 +184,8 @@ export default function StakeCard() {
     }
 
     checkAllowance();
-  }, [walletClient?.account?.address, unstakedToken?.address, stakedToken?.address, walletClient]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [walletClient?.account?.address, unstakedToken?.address, stakedToken?.address]);
 
   // Define validation schema inside component to access translation function
   const validationSchema = Yup.object({
