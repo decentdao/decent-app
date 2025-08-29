@@ -8,5 +8,10 @@
   "recipients": "Bénéficiaires",
   "addRecipientButton": "Ajouter un destinataire",
   "removeSplitButtonLabel": "Retirer la fente",
-  "stakingRecipientDisplay": "Jalonnement des détenteurs de jetons"
+  "stakingRecipientDisplay": "Jalonnement des détenteurs de jetons",
+  "distributeButton": "Distribute",
+  "distributingTokens": "Distributing tokens...",
+  "distributeButtonTooltip": "Distribute deposited tokens to recipients.",
+  "tokensDistributed": "Tokens distributed successfully",
+  "tokenDistributionFailed": "Token distribution failed"
 }

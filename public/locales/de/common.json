@@ -70,6 +70,10 @@
   "labelDaysLeft_other": "{{count}} verbleibende Tage",
   "labelMonthsLeft_one": "{{count}} Monat links",
   "labelMonthsLeft_other": "{{count}} Monate übrig",
+  "labelWeeksAgo_one": "{{count}} Woche vor",
+  "labelWeeksAgo_other": "{{count}} Wochen zuvor",
+  "labelWeeksLeft_one": "{{count}} Woche übrig",
+  "labelWeeksLeft_other": "{{count}} verbleibende Wochen",
   "labelYearsLeft_one": "{{count}} Jahr links",
   "labelYearsLeft_other": "{{count}} verbleibende Jahre",
   "toastClipboardCopy": "In die Zwischenablage kopiert",
@@ -137,5 +141,6 @@
   "calendarPlaceholder": "JJJJ-MM-TT",
   "years": "Jahre",
   "addressInfoTooltip": "Während der DAO-Name oder ENS angezeigt wird, erscheint die vollständige Wallet-Adresse im Vorschlag.",
-  "stakingPeriodMoreThanZero": "Die Einsatzdauer muss größer als Null sein"
+  "stakingPeriodMoreThanZero": "Die Einsatzdauer muss größer als Null sein",
+  "close": "Schließen Sie"
 }

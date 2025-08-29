@@ -8,5 +8,10 @@
   "recipients": "Recipients",
   "addRecipientButton": "Add Recipient",
   "removeSplitButtonLabel": "Remove Split",
-  "stakingRecipientDisplay": "代幣持有人定價"
+  "stakingRecipientDisplay": "代幣持有人定價",
+  "distributeButton": "Distribute",
+  "distributingTokens": "Distributing tokens...",
+  "distributeButtonTooltip": "Distribute deposited tokens to recipients.",
+  "tokensDistributed": "Tokens distributed successfully",
+  "tokenDistributionFailed": "Token distribution failed"
 }
