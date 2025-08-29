@@ -70,6 +70,10 @@
   "labelDaysLeft_other": "残り {{count}} 日",
   "labelMonthsLeft_one": "残り{{count}}月",
   "labelMonthsLeft_other": "残り {{count}} ヶ月",
+  "labelWeeksAgo_one": "{{count}週間前",
+  "labelWeeksAgo_other": "{{count}} weeks ago",
+  "labelWeeksLeft_one": "{{count}残り1週間",
+  "labelWeeksLeft_other": "{{count}残り1週間",
   "labelYearsLeft_one": "{{count}} 残り1年",
   "labelYearsLeft_other": "残り{{count}}年",
   "toastClipboardCopy": "クリップボードにコピー",
@@ -137,5 +141,6 @@
   "calendarPlaceholder": "YYYY-MM-DD",
   "years": "年",
   "addressInfoTooltip": "DAO名またはENSが表示されている間、完全なウォレットアドレスがプロポーザルに表示されます。",
-  "stakingPeriodMoreThanZero": "杭打ち期間はゼロ以上でなければならない"
+  "stakingPeriodMoreThanZero": "杭打ち期間はゼロ以上でなければならない",
+  "close": "閉じる"
 }

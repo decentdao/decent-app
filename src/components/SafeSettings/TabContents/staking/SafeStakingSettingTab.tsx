@@ -243,32 +243,35 @@ function StakingForm() {
         isRequired={false}
         gridContainerProps={{
           templateColumns: '1fr',
+          mb: -2,
           width: { base: '100%' },
         }}
         helper={t('rewardTokensHelper')}
       >
-        <AssetSelector
-          includeNativeToken
-          canSelectMultiple
-          disabled={readOnly}
-          lockedSelections={rewardsTokenAddresses}
-          hideBalanceAndMergeTokens={mergeTokens}
-          onSelect={addresses => {
-            const rewardTokensToBeAdded = addresses.filter(
-              a => !rewardsTokenAddresses.includes(a as Address),
-            );
-            if (rewardTokensToBeAdded.length > 0) {
-              setFieldValue(
-                'staking.newRewardTokens',
-                addresses.filter(a => !rewardsTokenAddresses.includes(a as Address)),
-              );
-            } else {
-              setFieldValue('staking.newRewardTokens', undefined);
-            }
-          }}
-        />
+        <></>
       </LabelComponent>
-      <Flex justifyContent="space-between">
+
+      <AssetSelector
+        includeNativeToken
+        canSelectMultiple
+        disabled={readOnly}
+        lockedSelections={rewardsTokenAddresses}
+        hideBalanceAndMergeTokens={mergeTokens}
+        onSelect={addresses => {
+          const rewardTokensToBeAdded = addresses.filter(
+            a => !rewardsTokenAddresses.includes(a as Address),
+          );
+          if (rewardTokensToBeAdded.length > 0) {
+            setFieldValue(
+              'staking.newRewardTokens',
+              addresses.filter(a => !rewardsTokenAddresses.includes(a as Address)),
+            );
+          } else {
+            setFieldValue('staking.newRewardTokens', undefined);
+          }
+        }}
+      />
+      <Flex justifyContent="space-between" mt={4}>
         <LabelComponent
           label={t('availableRewards')}
           isRequired={false}

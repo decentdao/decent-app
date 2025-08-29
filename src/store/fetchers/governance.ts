@@ -1116,7 +1116,6 @@ export function useGovernanceFetcher() {
             address: stakingAddress,
             name,
             symbol,
-            balance: null,
             decimals,
             totalSupply,
             minimumStakingPeriod,
@@ -1165,6 +1164,29 @@ export function useGovernanceFetcher() {
     [publicClient, wrongNetwork],
   );
 
+  const fetchERC20TokenAccountData = useCallback(
+    async (erc20Address: Address, account: Address) => {
+      if (wrongNetwork) {
+        return { balance: 0n, delegatee: zeroAddress };
+      }
+
+      const [balance] = await publicClient.multicall({
+        contracts: [
+          {
+            abi: erc20Abi,
+            address: erc20Address,
+            functionName: 'balanceOf',
+            args: [account],
+          },
+        ],
+        allowFailure: false,
+      });
+
+      return { balance };
+    },
+    [publicClient, wrongNetwork],
+  );
+
   return {
     fetchDAOGovernance,
     fetchDAOProposalTemplates,
@@ -1175,5 +1197,6 @@ export function useGovernanceFetcher() {
     fetchMultisigERC20Token,
     fetchStakingDAOData,
     fetchStakedTokenAccountData,
+    fetchERC20TokenAccountData,
   };
 }

@@ -11,13 +11,13 @@ import { predictSplitContractAddress } from './prediction';
 
 // decent hexed
 const DETERMINISTIC_SALT = '0x0000000000000000000000000000000000000000000000000000444543454E54';
-const DISTRIBUTION_INCENTIVE = 0;
+export const DISTRIBUTION_INCENTIVE = 0;
 /**
  * Splits contracts express percentages in parts‑per‑million (PPM):
  * 100.0000 % === 1_000_000 units.
  */
-const TOTAL_ALLOCATION_PERCENT = 1_000_000; // 100.0000 % scaled for Splits
-const TOTAL_ALLOCATION_PERCENT_BN = BigInt(TOTAL_ALLOCATION_PERCENT);
+
+export const TOTAL_ALLOCATION_PERCENT_BN = BigInt(1_000_000); // 100.0000 % scaled for Splits
 const DEFAULT_ETH_VALUE = {
   bigintValue: 0n,
   value: '0',
@@ -31,13 +31,6 @@ function percentToPpm(percent: bigint | number | string): bigint {
   if (v < 0n || v > 100n) throw new Error('Percent must be between 0 and 100');
   return v * PERCENT_SCALE; // 12  → 120 000n
 }
-
-/** PPM bigint ➜ whole-number percent (0-100) as number */
-// function ppmToPercent(ppm: bigint | number | string): number {
-//   const v = BigInt(ppm);
-//   if (v % PERCENT_SCALE !== 0n) throw new Error('PPM value is not a whole percent');
-//   return Number(v / PERCENT_SCALE); // 120 000n → 12
-// }
 
 /**
  * Merges form data with deployed data; form data takes precedence
@@ -245,7 +238,7 @@ export const handleEditRevenueShare = async ({
         splitParams: {
           recipients: recipients,
           allocations: allocations,
-          totalAllocation: BigInt(TOTAL_ALLOCATION_PERCENT),
+          totalAllocation: TOTAL_ALLOCATION_PERCENT_BN,
           distributionIncentive: DISTRIBUTION_INCENTIVE,
         },
         owner: daoAddress,

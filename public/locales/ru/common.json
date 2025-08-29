@@ -70,6 +70,10 @@
   "labelDaysLeft_other": "Осталось {{count}} дней",
   "labelMonthsLeft_one": "{{count}} месяц налево",
   "labelMonthsLeft_other": "Осталось {{count}} месяцев",
+  "labelWeeksAgo_one": "{{count}} неделю назад",
+  "labelWeeksAgo_other": "{{count}} недель назад",
+  "labelWeeksLeft_one": "{{count}Осталась неделя",
+  "labelWeeksLeft_other": "{{count}} осталось недель",
   "labelYearsLeft_one": "{{count}} год остался",
   "labelYearsLeft_other": "{{count}} лет осталось",
   "toastClipboardCopy": "Скопировано в буфер обмена",
@@ -137,5 +141,6 @@
   "calendarPlaceholder": "ГГГГ-ММ-ДД",
   "years": "Годы",
   "addressInfoTooltip": "Пока отображается DAO Name или ENS, полный адрес кошелька будет отображаться в предложении.",
-  "stakingPeriodMoreThanZero": "Ставочный период должен быть больше нуля"
+  "stakingPeriodMoreThanZero": "Ставочный период должен быть больше нуля",
+  "close": "Закрыть"
 }

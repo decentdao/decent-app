@@ -11,7 +11,7 @@ import { validateENSName } from '../../../utils/url';
 import { DecentTooltip } from '../DecentTooltip';
 import { AddressInput } from './EthAddressInput';
 
-export function AddressInputInfo(props: InputProps & { staticDisplayValue?: string }) {
+export function AddressInputInfo(props: InputProps & { displayValue?: string }) {
   const { t } = useTranslation('common');
   const { resolveENSName } = useResolveENSName();
 
@@ -93,7 +93,7 @@ export function AddressInputInfo(props: InputProps & { staticDisplayValue?: stri
           textOverflow="ellipsis"
           whiteSpace="nowrap"
         >
-          {props.staticDisplayValue ?? displayedValue}
+          {props.displayValue ?? displayedValue}
         </Text>
         {(resolvedAddress || resolvedDisplayName) && (
           <DecentTooltip label={t('addressInfoTooltip')}>

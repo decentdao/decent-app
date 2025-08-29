@@ -94,6 +94,7 @@ export type GovernancesSlice = {
   setERC20Token: (daoKey: DAOKey, erc20Token: ERC20TokenData | undefined) => void;
   setStakingData: (daoKey: DAOKey, stakedToken: StakedTokenData | undefined) => void;
   setStakedTokenAccountData: (daoKey: DAOKey, stakedTokenAccountData: { balance: bigint }) => void;
+  setERC20TokenAccountData: (daoKey: DAOKey, erc20TokenAccountData: { balance: bigint }) => void;
 };
 
 export const EMPTY_GOVERNANCE: FractalGovernance & FractalGovernanceContracts = {
@@ -433,6 +434,23 @@ export const createGovernancesSlice: StateCreator<
       'setERC20Token',
     );
   },
+  setERC20TokenAccountData: (daoKey, erc20TokenAccountData) => {
+    set(
+      state => {
+        if (
+          !state.governances[daoKey] ||
+          !state.governances[daoKey].isAzorius ||
+          !state.governances[daoKey].erc20Token
+        ) {
+          return;
+        }
+
+        state.governances[daoKey].erc20Token.balance = erc20TokenAccountData.balance;
+      },
+      false,
+      'setStakedTokenAccountData',
+    );
+  },
   setStakingData: (daoKey, stakedToken) => {
     set(
       state => {
@@ -442,6 +460,13 @@ export const createGovernancesSlice: StateCreator<
             stakedToken: stakedToken,
           };
         } else {
+          if (
+            stakedToken &&
+            stakedToken.balance === undefined &&
+            !!state.governances[daoKey].stakedToken?.balance
+          ) {
+            stakedToken.balance = state.governances[daoKey].stakedToken?.balance;
+          }
           state.governances[daoKey].stakedToken = stakedToken;
         }
       },
@@ -459,7 +484,6 @@ export const createGovernancesSlice: StateCreator<
         ) {
           return;
         }
-
         state.governances[daoKey].stakedToken.balance = stakedTokenAccountData.balance;
       },
       false,

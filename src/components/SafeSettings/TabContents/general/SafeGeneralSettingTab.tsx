@@ -114,8 +114,14 @@ export function SafeGeneralSettingTab() {
                 <InputComponent
                   isRequired={false}
                   onChange={e => {
-                    const newValue =
-                      e.target.value === existingDaoName ? undefined : e.target.value.trim();
+                    const newInputValue = e.target.value;
+                    const newValue = newInputValue === existingDaoName ? undefined : newInputValue;
+                    setFieldValue('general.name', newValue);
+                  }}
+                  onBlur={e => {
+                    // Only trim the input value on blur
+                    const newInputValue = e.target.value.trim();
+                    const newValue = newInputValue === existingDaoName ? undefined : newInputValue;
                     setFieldValue('general.name', newValue);
                   }}
                   value={formValues.general?.name ?? existingDaoName}
