@@ -11,6 +11,7 @@ export interface RevenueSharingWalletSplit<
 export interface RevenueSharingWallet {
   name: string;
   splits: RevenueSharingWalletSplit<Address, number>[];
+  tokens: Address[];
   address: Address;
 }
 

@@ -70,6 +70,10 @@
   "labelDaysLeft_other": "남은 일수 {{count}}일",
   "labelMonthsLeft_one": "남은 월 {{count}} 월",
   "labelMonthsLeft_other": "남은 기간 {{count}} 개월",
+  "labelWeeksAgo_one": "{{count}일주일 전",
+  "labelWeeksAgo_other": "{{count}몇 주 전",
+  "labelWeeksLeft_one": "{{count}남은 주",
+  "labelWeeksLeft_other": "{{count}남은 주",
   "labelYearsLeft_one": "{{count}} 남은 연도",
   "labelYearsLeft_other": "남은 기간 {{count}}년",
   "toastClipboardCopy": "클립보드에 복사",
@@ -137,5 +141,6 @@
   "calendarPlaceholder": "YYYY-MM-DD",
   "years": "년",
   "addressInfoTooltip": "DAO 이름 또는 ENS가 표시되는 동안 제안서에 전체 지갑 주소가 표시됩니다.",
-  "stakingPeriodMoreThanZero": "스테이킹 기간은 0보다 길어야 합니다."
+  "stakingPeriodMoreThanZero": "스테이킹 기간은 0보다 길어야 합니다.",
+  "close": "닫기"
 }

@@ -40,7 +40,7 @@ export function SafeProposalWithActionsCreatePage() {
 
   const defaultProposalValues = useMemo(
     () =>
-      proposalMetadata
+      proposalMetadata?.title || proposalMetadata?.description || proposalMetadata?.documentationUrl
         ? {
             ...DEFAULT_PROPOSAL,
             proposalMetadata: {
@@ -57,7 +57,12 @@ export function SafeProposalWithActionsCreatePage() {
               nonce: safe?.nextNonce,
             },
           },
-    [proposalMetadata, safe?.nextNonce],
+    [
+      proposalMetadata?.title,
+      proposalMetadata?.description,
+      proposalMetadata?.documentationUrl,
+      safe?.nextNonce,
+    ],
   );
 
   const { addressPrefix } = useNetworkConfigStore();

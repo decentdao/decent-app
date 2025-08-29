@@ -19,6 +19,7 @@ import { ADDRESS_MULTISIG_METADATA } from '../../../constants/common';
 import { buildSafeAPIPost, encodeMultiSend } from '../../../helpers';
 import { logError } from '../../../helpers/errorLogging';
 import { useDAOStore } from '../../../providers/App/AppProvider';
+import { syncAllSafeProposals } from '../../../providers/App/decentAPI';
 import useIPFSClient from '../../../providers/App/hooks/useIPFSClient';
 import { useSafeAPI } from '../../../providers/App/hooks/useSafeAPI';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
@@ -150,6 +151,7 @@ export default function useSubmitProposal({
           nonce,
         });
         await safeAPI.proposeTransaction(safeTransaction);
+        await syncAllSafeProposals(chain.id, safeAddress);
 
         const txHash = safeTransaction.safeTxHash;
         pendingProposalAdd(txHash);
@@ -269,6 +271,7 @@ export default function useSubmitProposal({
           nonce,
         });
         await safeAPI.proposeTransaction(safeTransaction);
+        await syncAllSafeProposals(chain.id, safeAddress);
 
         const txHash = safeTransaction.safeTxHash;
         pendingProposalAdd(txHash);

@@ -8,5 +8,10 @@
   "recipients": "Destinatari",
   "addRecipientButton": "Aggiungi destinatario",
   "removeSplitButtonLabel": "Rimuovere la divisione",
-  "stakingRecipientDisplay": "Picchettamento dei titolari di gettoni"
+  "stakingRecipientDisplay": "Picchettamento dei titolari di gettoni",
+  "distributeButton": "Distribute",
+  "distributingTokens": "Distributing tokens...",
+  "distributeButtonTooltip": "Distribute deposited tokens to recipients.",
+  "tokensDistributed": "Tokens distributed successfully",
+  "tokenDistributionFailed": "Token distribution failed"
 }
