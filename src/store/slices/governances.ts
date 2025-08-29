@@ -468,7 +468,6 @@ export const createGovernancesSlice: StateCreator<
             stakedToken: stakedToken,
           };
         } else {
-          console.log('🚀 ~ stakedToken:', stakedToken);
           if (
             stakedToken &&
             stakedToken.balance === undefined &&

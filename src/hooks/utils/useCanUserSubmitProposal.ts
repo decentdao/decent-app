@@ -125,7 +125,6 @@ export function useCanUserCreateProposal() {
       }
 
       const newCanCreateProposal = isDemoMode() || (await getCanUserCreateProposal());
-      console.log('🚀 ~ newCanCreateProposal:', newCanCreateProposal);
       if (newCanCreateProposal !== canUserCreateProposal) {
         setCanUserCreateProposal(newCanCreateProposal);
       }
