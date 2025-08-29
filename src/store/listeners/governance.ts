@@ -1,5 +1,5 @@
 import { legacy } from '@decentdao/decent-contracts';
-import { useCallback, useEffect } from 'react';
+import { useEffect } from 'react';
 import { Address, getContract } from 'viem';
 import { useAccount } from 'wagmi';
 import LockReleaseAbi from '../../assets/abi/LockRelease';
@@ -66,30 +66,6 @@ export function useGovernanceListeners({
   const { getAddressContractType } = useAddressContractType();
   const decode = useSafeDecoder();
 
-  const loadLockedVotesToken = useCallback(async () => {
-    if (!address || !lockedVotesTokenAddress) {
-      return;
-    }
-    const lockedVotesTokenData = await fetchLockReleaseAccountData(
-      lockedVotesTokenAddress,
-      address,
-    );
-    onLockReleaseAccountDataUpdated(lockedVotesTokenData);
-  }, [
-    address,
-    fetchLockReleaseAccountData,
-    onLockReleaseAccountDataUpdated,
-    lockedVotesTokenAddress,
-  ]);
-
-  const loadERC20TokenAccountData = useCallback(async () => {
-    if (!address || !votesTokenAddress) {
-      return;
-    }
-    const erc20TokenData = await fetchVotingTokenAccountData(votesTokenAddress, address);
-    onGovernanceAccountDataUpdated(erc20TokenData);
-  }, [address, fetchVotingTokenAccountData, onGovernanceAccountDataUpdated, votesTokenAddress]);
-
   useEffect(() => {
     /**
      * Watch locked token votes when delegation changes.
@@ -104,17 +80,30 @@ export function useGovernanceListeners({
       client: publicClient,
     });
 
+    const handleDelegateChanged = async () => {
+      if (!address || !lockedVotesTokenAddress) return;
+      try {
+        const lockedVotesTokenData = await fetchLockReleaseAccountData(
+          lockedVotesTokenAddress,
+          address,
+        );
+        onLockReleaseAccountDataUpdated(lockedVotesTokenData);
+      } catch (e) {
+        logError(e as Error);
+      }
+    };
+
     const unwatchDelegator = lockReleaseContract.watchEvent.DelegateChanged(
       { delegator: address },
-      { onLogs: loadLockedVotesToken },
+      { onLogs: handleDelegateChanged },
     );
     const unwatchFromDelegate = lockReleaseContract.watchEvent.DelegateChanged(
       { fromDelegate: address },
-      { onLogs: loadLockedVotesToken },
+      { onLogs: handleDelegateChanged },
     );
     const unwatchToDelegate = lockReleaseContract.watchEvent.DelegateChanged(
       { toDelegate: address },
-      { onLogs: loadLockedVotesToken },
+      { onLogs: handleDelegateChanged },
     );
 
     return () => {
@@ -122,7 +111,13 @@ export function useGovernanceListeners({
       unwatchToDelegate();
       unwatchFromDelegate();
     };
-  }, [address, lockedVotesTokenAddress, loadLockedVotesToken, publicClient]);
+  }, [
+    address,
+    lockedVotesTokenAddress,
+    publicClient,
+    fetchLockReleaseAccountData,
+    onLockReleaseAccountDataUpdated,
+  ]);
 
   useEffect(() => {
     /**
@@ -138,17 +133,31 @@ export function useGovernanceListeners({
       client: publicClient,
     });
 
+    const handleERC20DelegateChanged = async () => {
+      if (!address || !votesTokenAddress) return;
+      try {
+        const votingTokenAccountData = await fetchVotingTokenAccountData(
+          votesTokenAddress,
+          address,
+        );
+        onGovernanceAccountDataUpdated(votingTokenAccountData);
+      } catch (e) {
+        logError(e as Error);
+        // Silent failure - background data update, don't interrupt user workflow
+      }
+    };
+
     const unwatchDelegator = tokenContract.watchEvent.DelegateChanged(
       { delegator: address },
-      { onLogs: loadERC20TokenAccountData },
+      { onLogs: handleERC20DelegateChanged },
     );
     const unwatchFromDelegate = tokenContract.watchEvent.DelegateChanged(
       { fromDelegate: address },
-      { onLogs: loadERC20TokenAccountData },
+      { onLogs: handleERC20DelegateChanged },
     );
     const unwatchToDelegate = tokenContract.watchEvent.DelegateChanged(
       { toDelegate: address },
-      { onLogs: loadERC20TokenAccountData },
+      { onLogs: handleERC20DelegateChanged },
     );
 
     return () => {
@@ -156,7 +165,13 @@ export function useGovernanceListeners({
       unwatchFromDelegate();
       unwatchToDelegate();
     };
-  }, [address, loadERC20TokenAccountData, publicClient, votesTokenAddress]);
+  }, [
+    address,
+    publicClient,
+    votesTokenAddress,
+    fetchVotingTokenAccountData,
+    onGovernanceAccountDataUpdated,
+  ]);
 
   useEffect(() => {
     /**
@@ -172,8 +187,8 @@ export function useGovernanceListeners({
       address: moduleAzoriusAddress,
     });
 
-    const unwatchProposalCreated = azoriusContract.watchEvent.ProposalCreated({
-      onLogs: async logs => {
+    const handleProposalCreated = async (logs: any[]) => {
+      try {
         for (const log of logs) {
           if (
             !log.args.strategy ||
@@ -192,7 +207,7 @@ export function useGovernanceListeners({
           const averageBlockTime = await getAverageBlockTime(publicClient);
           await new Promise(resolve => setTimeout(resolve, averageBlockTime * 1000));
 
-          const typedTransactions = log.args.transactions.map(t => ({
+          const typedTransactions = log.args.transactions.map((t: any) => ({
             ...t,
             to: t.to,
             data: t.data,
@@ -243,10 +258,13 @@ export function useGovernanceListeners({
 
           onProposalCreated(proposal);
         }
-      },
-    });
-    const unwatchProposalExecuted = azoriusContract.watchEvent.ProposalExecuted({
-      onLogs: async logs => {
+      } catch (error) {
+        logError('Failed to handle proposal creation event', error);
+      }
+    };
+
+    const handleProposalExecuted = async (logs: any[]) => {
+      try {
         for (const log of logs) {
           if (!log.args.proposalId) {
             continue;
@@ -254,7 +272,16 @@ export function useGovernanceListeners({
 
           onProposalExecuted(log.args.proposalId.toString());
         }
-      },
+      } catch (e) {
+        logError(e as Error);
+      }
+    };
+
+    const unwatchProposalCreated = azoriusContract.watchEvent.ProposalCreated({
+      onLogs: handleProposalCreated,
+    });
+    const unwatchProposalExecuted = azoriusContract.watchEvent.ProposalExecuted({
+      onLogs: handleProposalExecuted,
     });
 
     return () => {
@@ -262,12 +289,12 @@ export function useGovernanceListeners({
       unwatchProposalExecuted();
     };
   }, [
-    getAddressContractType,
+    moduleAzoriusAddress,
     publicClient,
+    getAddressContractType,
     decode,
     onProposalCreated,
     onProposalExecuted,
-    moduleAzoriusAddress,
   ]);
 
   useEffect(() => {
@@ -284,8 +311,8 @@ export function useGovernanceListeners({
       client: publicClient,
     });
 
-    const unwatch = erc20StrategyContract.watchEvent.Voted({
-      onLogs: async logs => {
+    const handleVoted = async (logs: any[]) => {
+      try {
         for (const log of logs) {
           if (!log.args.proposalId || !log.args.voter || !log.args.voteType || !log.args.weight) {
             continue;
@@ -303,11 +330,17 @@ export function useGovernanceListeners({
             weight: log.args.weight,
           });
         }
-      },
+      } catch (e) {
+        logError(e as Error);
+      }
+    };
+
+    const unwatch = erc20StrategyContract.watchEvent.Voted({
+      onLogs: handleVoted,
     });
 
     return unwatch;
-  }, [erc20StrategyAddress, onERC20VoteCreated, getAddressContractType, publicClient, decode]);
+  }, [erc20StrategyAddress, onERC20VoteCreated, publicClient]);
 
   useEffect(() => {
     /**
@@ -323,8 +356,8 @@ export function useGovernanceListeners({
       client: publicClient,
     });
 
-    const unwatch = erc721StrategyContract.watchEvent.Voted({
-      onLogs: async logs => {
+    const handleVoted = async (logs: any[]) => {
+      try {
         for (const log of logs) {
           if (
             !log.args.proposalId ||
@@ -345,17 +378,23 @@ export function useGovernanceListeners({
           const erc721ProposalVote: ERC721ProposalVote = {
             voter: log.args.voter,
             choice: getVoteChoice(log.args.voteType),
-            tokenAddresses: log.args.tokenAddresses.map(tokenAddress => tokenAddress),
-            tokenIds: log.args.tokenIds.map(tokenId => tokenId.toString()),
+            tokenAddresses: log.args.tokenAddresses.map((tokenAddress: Address) => tokenAddress),
+            tokenIds: log.args.tokenIds.map((tokenId: bigint) => tokenId.toString()),
             // TODO: Weight is calculated down the line in the components depending on proposal state. Do we need to store it here?
             weight: 0n,
           };
 
           onERC721VoteCreated(log.args.proposalId.toString(), votesSummary, erc721ProposalVote);
         }
-      },
+      } catch (e) {
+        logError(e as Error);
+      }
+    };
+
+    const unwatch = erc721StrategyContract.watchEvent.Voted({
+      onLogs: handleVoted,
     });
 
     return unwatch;
-  }, [getAddressContractType, publicClient, decode, onERC721VoteCreated, erc721StrategyAddress]);
+  }, [erc721StrategyAddress, onERC721VoteCreated, publicClient]);
 }

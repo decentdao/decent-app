@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { Address } from 'viem';
 import { useAccount } from 'wagmi';
+import { logError } from '../../helpers/errorLogging';
 import { FreezeVotingType, GuardAccountData } from '../../types';
 import { useGovernanceFetcher } from '../fetchers/governance';
 import { useGuardFetcher } from '../fetchers/guard';
@@ -61,17 +62,22 @@ export function useAccountListeners({
         return;
       }
 
-      const votingTokenAccountData = await fetchVotingTokenAccountData(votesTokenAddress, account);
-
-      onGovernanceAccountDataLoaded(votingTokenAccountData);
-
-      if (lockReleaseAddress) {
-        const lockReleaseAccountData = await fetchLockReleaseAccountData(
-          lockReleaseAddress,
+      try {
+        const votingTokenAccountData = await fetchVotingTokenAccountData(
+          votesTokenAddress,
           account,
         );
+        onGovernanceAccountDataLoaded(votingTokenAccountData);
 
-        onGovernanceLockReleaseAccountDataLoaded(lockReleaseAccountData);
+        if (lockReleaseAddress) {
+          const lockReleaseAccountData = await fetchLockReleaseAccountData(
+            lockReleaseAddress,
+            account,
+          );
+          onGovernanceLockReleaseAccountDataLoaded(lockReleaseAccountData);
+        }
+      } catch (e) {
+        logError(e as Error);
       }
     }
 
@@ -99,28 +105,30 @@ export function useAccountListeners({
         return;
       }
 
-      const guardAccountData = await fetchGuardAccountData({
-        account,
-        azoriusGuardAddress,
-        multisigGuardAddress,
-        freezeVotingType,
-        freezeVotingAddress,
-        freezeProposalCreatedTime,
-        freezeProposalPeriod,
-        freezePeriod,
-        parentSafeAddress,
-      });
+      try {
+        const guardAccountData = await fetchGuardAccountData({
+          account,
+          azoriusGuardAddress,
+          multisigGuardAddress,
+          freezeVotingType,
+          freezeVotingAddress,
+          freezeProposalCreatedTime,
+          freezeProposalPeriod,
+          freezePeriod,
+          parentSafeAddress,
+        });
 
-      if (guardAccountData) {
-        onGuardAccountDataLoaded(guardAccountData);
+        if (guardAccountData) {
+          onGuardAccountDataLoaded(guardAccountData);
+        }
+      } catch {
+        // Silent failure - background data loading, don't interrupt user workflow
       }
     }
 
     loadGuardAccountData();
   }, [
     account,
-    fetchGuardAccountData,
-    onGuardAccountDataLoaded,
     azoriusGuardAddress,
     multisigGuardAddress,
     parentSafeAddress,
@@ -129,6 +137,8 @@ export function useAccountListeners({
     freezeProposalCreatedTime,
     freezeProposalPeriod,
     freezePeriod,
+    fetchGuardAccountData,
+    onGuardAccountDataLoaded,
   ]);
 
   useEffect(() => {
@@ -137,13 +147,16 @@ export function useAccountListeners({
         return;
       }
 
-      const stakedTokenAccountData = await fetchStakedTokenAccountData(stakingAddress, account);
-
-      onStakedTokenAccountDataLoaded(stakedTokenAccountData);
+      try {
+        const stakedTokenAccountData = await fetchStakedTokenAccountData(stakingAddress, account);
+        onStakedTokenAccountDataLoaded(stakedTokenAccountData);
+      } catch {
+        // Silent failure - background data loading, don't interrupt user workflow
+      }
     }
 
     loadStakedTokenAccountData();
-  }, [account, fetchStakedTokenAccountData, onStakedTokenAccountDataLoaded, stakingAddress]);
+  }, [account, stakingAddress, fetchStakedTokenAccountData, onStakedTokenAccountDataLoaded]);
 
   useEffect(() => {
     async function loadERC20TokenAccountData() {
@@ -151,11 +164,14 @@ export function useAccountListeners({
         return;
       }
 
-      const stakedTokenAccountData = await fetchERC20TokenAccountData(erc20TokenAddress, account);
-
-      onERC20TokenAccountDataLoaded(stakedTokenAccountData);
+      try {
+        const stakedTokenAccountData = await fetchERC20TokenAccountData(erc20TokenAddress, account);
+        onERC20TokenAccountDataLoaded(stakedTokenAccountData);
+      } catch {
+        // Silent failure - background data loading, don't interrupt user workflow
+      }
     }
 
     loadERC20TokenAccountData();
-  }, [account, fetchERC20TokenAccountData, onERC20TokenAccountDataLoaded, erc20TokenAddress]);
+  }, [account, erc20TokenAddress, fetchERC20TokenAccountData, onERC20TokenAccountDataLoaded]);
 }
