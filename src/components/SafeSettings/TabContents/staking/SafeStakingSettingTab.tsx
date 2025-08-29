@@ -271,7 +271,10 @@ function StakingForm() {
           }
         }}
       />
-      <Flex justifyContent="space-between" mt={4}>
+      <Flex
+        justifyContent="space-between"
+        mt={4}
+      >
         <LabelComponent
           label={t('availableRewards')}
           isRequired={false}
@@ -319,16 +322,22 @@ function StakingForm() {
           </>
         </LabelComponent>
         <DecentTooltip
-          label={ !hasTokensToDistribute ? t('distributeTooltipNoTokens') : !hasStakers ? t('distributeTooltipNoStakers') : t('distributeTooltip')}
+          label={
+            !hasTokensToDistribute
+              ? t('distributeTooltipNoTokens')
+              : !hasStakers
+                ? t('distributeTooltipNoStakers')
+                : t('distributeTooltip')
+          }
         >
-        <Button
-          variant="secondaryV1"
-          isDisabled={!hasTokensToDistribute || !hasStakers}
-          onClick={distributeRewards}
+          <Button
+            variant="secondaryV1"
+            isDisabled={!hasTokensToDistribute || !hasStakers}
+            onClick={distributeRewards}
           >
-          {t('distribute')}
-        </Button>
-          </DecentTooltip>
+            {t('distribute')}
+          </Button>
+        </DecentTooltip>
       </Flex>
     </>
   );
