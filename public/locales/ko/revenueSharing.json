@@ -8,5 +8,10 @@
   "recipients": "수신자",
   "addRecipientButton": "수신자 추가",
   "removeSplitButtonLabel": "분할 제거",
-  "stakingRecipientDisplay": "토큰 홀더 스테이킹"
+  "stakingRecipientDisplay": "토큰 홀더 스테이킹",
+  "distributeButton": "Distribute",
+  "distributingTokens": "Distributing tokens...",
+  "distributeButtonTooltip": "Distribute deposited tokens to recipients.",
+  "tokensDistributed": "Tokens distributed successfully",
+  "tokenDistributionFailed": "Token distribution failed"
 }

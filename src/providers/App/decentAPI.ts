@@ -62,9 +62,39 @@ export async function getDaoRevenueSharingWallets(
       data: {
         name: string;
         address: Address;
+        tokens: Address[];
         splits: { address: Address; percentage: number }[];
       }[];
     }> = await axiosClient.get(`/d/${chainId}/${daoAddress}/splits`);
+
+    if (!response.data.success) {
+      return [];
+    }
+
+    return response.data.data;
+  } catch (e) {
+    // if status is 404, return empty array
+    if (axios.isAxiosError(e) && e.response?.status === 404) {
+      return [];
+    }
+    logError(e);
+    return [];
+  }
+}
+
+export async function syncAllSafeProposals(chainId: number, daoAddress: Address) {
+  try {
+    const response: AxiosResponse<{
+      success: boolean;
+      data: {
+        daoChainId: number;
+        daoAddress: Address;
+        safeTxHash: string;
+        title: string;
+        description: string;
+        safeNonce: number;
+      }[];
+    }> = await axiosClient.post(`/d/${chainId}/${daoAddress}/safe-proposals`);
 
     if (!response.data.success) {
       return [];

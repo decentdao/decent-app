@@ -8,5 +8,10 @@
   "recipients": "Destinatarios",
   "addRecipientButton": "Añadir destinatario",
   "removeSplitButtonLabel": "Quitar Split",
-  "stakingRecipientDisplay": "Estaquillas portafichas"
+  "stakingRecipientDisplay": "Estaquillas portafichas",
+  "distributeButton": "Distribuya",
+  "distributingTokens": "Distribuir fichas...",
+  "distributeButtonTooltip": "Distribuir las fichas depositadas a los destinatarios.",
+  "tokensDistributed": "Fichas distribuidas con éxito",
+  "tokenDistributionFailed": "Fallo en la distribución de tokens"
 }

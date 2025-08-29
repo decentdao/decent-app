@@ -70,6 +70,10 @@
   "labelDaysLeft_other": "Il reste {{count}} jours",
   "labelMonthsLeft_one": "{{count}} mois à gauche",
   "labelMonthsLeft_other": "{{count}} mois restants",
+  "labelWeeksAgo_one": "{{count}} il y a une semaine",
+  "labelWeeksAgo_other": "{{count}} semaines ago",
+  "labelWeeksLeft_one": "{{count}semaine à gauche",
+  "labelWeeksLeft_other": "{{count}} semaines à gauche",
   "labelYearsLeft_one": "année à gauche",
   "labelYearsLeft_other": "{{count}} années restantes",
   "toastClipboardCopy": "Copié dans le presse-papiers",
@@ -137,5 +141,6 @@
   "calendarPlaceholder": "YYYY-MM-DD",
   "years": "Années",
   "addressInfoTooltip": "Si le nom de la DAO ou de l'ENS est affiché, l'adresse complète du portefeuille apparaîtra dans la proposition.",
-  "stakingPeriodMoreThanZero": "La période de jalonnement doit être supérieure à zéro"
+  "stakingPeriodMoreThanZero": "La période de jalonnement doit être supérieure à zéro",
+  "close": "Fermer"
 }

@@ -8,5 +8,10 @@
   "recipients": "Beneficiários",
   "addRecipientButton": "Adicionar destinatário",
   "removeSplitButtonLabel": "Remover divisão",
-  "stakingRecipientDisplay": "Estaca do titular da ficha"
+  "stakingRecipientDisplay": "Estaca do titular da ficha",
+  "distributeButton": "Distribute",
+  "distributingTokens": "Distributing tokens...",
+  "distributeButtonTooltip": "Distribute deposited tokens to recipients.",
+  "tokensDistributed": "Tokens distributed successfully",
+  "tokenDistributionFailed": "Token distribution failed"
 }
