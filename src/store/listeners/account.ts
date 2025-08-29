@@ -157,7 +157,10 @@ export function useAccountListeners({
     // Initial data load
     async function loadERC20TokenAccountData() {
       try {
-        const tokenAccountData = await fetchERC20TokenAccountData(definedErc20Address, definedAccount);
+        const tokenAccountData = await fetchERC20TokenAccountData(
+          definedErc20Address,
+          definedAccount,
+        );
         onERC20TokenAccountDataLoaded(tokenAccountData);
       } catch (e) {
         logError(e as Error);
@@ -175,7 +178,10 @@ export function useAccountListeners({
 
     const handleTransfer = async () => {
       try {
-        const tokenAccountData = await fetchERC20TokenAccountData(definedErc20Address, definedAccount);
+        const tokenAccountData = await fetchERC20TokenAccountData(
+          definedErc20Address,
+          definedAccount,
+        );
         onERC20TokenAccountDataLoaded(tokenAccountData);
       } catch (e) {
         logError(e as Error);
@@ -219,7 +225,10 @@ export function useAccountListeners({
     // Initial data load
     async function loadStakedTokenAccountData() {
       try {
-        const stakedTokenAccountData = await fetchStakedTokenAccountData(definedStakingAddress, definedAccount);
+        const stakedTokenAccountData = await fetchStakedTokenAccountData(
+          definedStakingAddress,
+          definedAccount,
+        );
         onStakedTokenAccountDataLoaded(stakedTokenAccountData);
       } catch (e) {
         logError(e as Error);
@@ -248,7 +257,10 @@ export function useAccountListeners({
 
     const handleStakingTransfer = async () => {
       try {
-        const stakedTokenAccountData = await fetchStakedTokenAccountData(definedStakingAddress, definedAccount);
+        const stakedTokenAccountData = await fetchStakedTokenAccountData(
+          definedStakingAddress,
+          definedAccount,
+        );
         onStakedTokenAccountDataLoaded(stakedTokenAccountData);
       } catch (e) {
         logError(e as Error);
