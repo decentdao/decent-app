@@ -62,18 +62,21 @@ export default function BalanceCard() {
   const { t } = useTranslation('staking');
   const { daoKey } = useCurrentDAOKey();
   const {
-    governance: { stakedToken, votesToken },
+    governance: { isAzorius, stakedToken, votesToken, erc20Token },
   } = useDAOStore({ daoKey });
 
+  const unstakedToken = isAzorius ? votesToken : erc20Token;
+
   const stBalance = stakedToken?.balance || 0n;
-  const vtBalance = votesToken?.balance || 0n;
-  const totalBalance = stBalance + vtBalance;
+  const unStakedBalance = unstakedToken?.balance || 0n;
+  const totalBalance = stBalance + unStakedBalance;
 
   const stakedBalance = formatUnits(stBalance, stakedToken?.decimals || 0);
-  const availableBalance = formatUnits(vtBalance, votesToken?.decimals || 0);
+  const availableBalance = formatUnits(unStakedBalance, unstakedToken?.decimals || 0);
 
   const stakedPercentage = totalBalance > 0n ? Number((stBalance * 100n) / totalBalance) : 0;
-  const availablePercentage = totalBalance > 0n ? Number((vtBalance * 100n) / totalBalance) : 0;
+  const availablePercentage =
+    totalBalance > 0n ? Number((unStakedBalance * 100n) / totalBalance) : 0;
 
   return (
     <Flex

@@ -33,10 +33,12 @@ export const useDAOStoreListener = ({ daoKey }: { daoKey: DAOKey | undefined }) 
     setGaslessVotingData,
     setHatKeyValuePairData,
     setStakedTokenAccountData,
+    setERC20TokenAccountData,
   } = useGlobalStore();
 
   const governance = daoKey ? getGovernance(daoKey) : undefined;
   const stakingAddress = governance?.stakedToken?.address;
+  const erc20TokenAddress = governance?.erc20Token?.address;
   const lockedVotesTokenAddress = governance?.lockReleaseAddress;
   const votesTokenAddress = governance?.votesTokenAddress;
   const moduleAzoriusAddress = governance?.moduleAzoriusAddress;
@@ -168,9 +170,19 @@ export const useDAOStoreListener = ({ daoKey }: { daoKey: DAOKey | undefined }) 
     [daoKey, setStakedTokenAccountData],
   );
 
+  const onERC20TokenAccountDataLoaded = useCallback(
+    (accountData: { balance: bigint }) => {
+      if (daoKey) {
+        setERC20TokenAccountData(daoKey, accountData);
+      }
+    },
+    [daoKey, setERC20TokenAccountData],
+  );
+
   useAccountListeners({
     stakingAddress,
     votesTokenAddress,
+    erc20TokenAddress,
     azoriusGuardAddress,
     multisigGuardAddress,
     freezeVotingType: freezeVotingType !== null ? freezeVotingType : undefined,
@@ -185,6 +197,7 @@ export const useDAOStoreListener = ({ daoKey }: { daoKey: DAOKey | undefined }) 
     onGovernanceAccountDataLoaded,
     onGovernanceLockReleaseAccountDataLoaded,
     onStakedTokenAccountDataLoaded,
+    onERC20TokenAccountDataLoaded,
   });
 
   const onRolesDataFetched = useCallback(
