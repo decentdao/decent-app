@@ -311,10 +311,7 @@ export const createGovernancesSlice: StateCreator<
     set(
       state => {
         const azoriusGovernance = state.governances[daoKey];
-        if (
-          !state.governances[daoKey] ||
-          !state.governances[daoKey].isAzorius
-        ) {
+        if (!state.governances[daoKey] || !state.governances[daoKey].isAzorius) {
           return;
         }
 
@@ -471,6 +468,7 @@ export const createGovernancesSlice: StateCreator<
             stakedToken: stakedToken,
           };
         } else {
+          console.log('🚀 ~ stakedToken:', stakedToken);
           if (
             stakedToken &&
             stakedToken.balance === undefined &&
