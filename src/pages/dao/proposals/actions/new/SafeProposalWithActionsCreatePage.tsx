@@ -11,13 +11,19 @@ import { DEFAULT_PROPOSAL } from '../../../../../components/ProposalBuilder/cons
 import { BarLoader } from '../../../../../components/ui/loaders/BarLoader';
 import { useHeaderHeight } from '../../../../../constants/common';
 import { DAO_ROUTES } from '../../../../../constants/routes';
+import useCreateProposalTemplate from '../../../../../hooks/DAO/proposal/useCreateProposalTemplate';
 import { usePrepareProposal } from '../../../../../hooks/DAO/proposal/usePrepareProposal';
 import { useCurrentDAOKey } from '../../../../../hooks/DAO/useCurrentDAOKey';
 import { analyticsEvents } from '../../../../../insights/analyticsEvents';
 import { useDAOStore } from '../../../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../../../providers/NetworkConfig/useNetworkConfigStore';
 import { useProposalActionsStore } from '../../../../../store/actions/useProposalActionsStore';
-import { CreateProposalSteps, CreateProposalTransaction } from '../../../../../types';
+import {
+  CreateProposalForm,
+  CreateProposalSteps,
+  CreateProposalTransaction,
+  ProposalActionType,
+} from '../../../../../types';
 
 export function SafeProposalWithActionsCreatePage() {
   useEffect(() => {
@@ -30,7 +36,31 @@ export function SafeProposalWithActionsCreatePage() {
   } = useDAOStore({ daoKey });
 
   const { prepareProposal } = usePrepareProposal();
+  const { prepareProposalTemplateProposal } = useCreateProposalTemplate();
   const { getTransactions, actions, proposalMetadata } = useProposalActionsStore();
+
+  const prepareProposalData = async (values: CreateProposalForm) => {
+    let createTemplateTransactions = actions
+      .filter(a => a.actionType === ProposalActionType.CREATE_TEMPLATE)
+      .flatMap(a => a.transactions);
+    const otherTransactions = actions
+      .filter(a => a.actionType !== ProposalActionType.CREATE_TEMPLATE)
+      .flatMap(a => a.transactions);
+
+    if (createTemplateTransactions.length > 0) {
+      const txn = await prepareProposalTemplateProposal({
+        proposalMetadata: values.proposalMetadata,
+        transactions: createTemplateTransactions,
+      });
+      if (txn) {
+        createTemplateTransactions = [txn];
+      }
+    }
+    return prepareProposal({
+      ...values,
+      transactions: otherTransactions.concat(createTemplateTransactions),
+    });
+  };
 
   const [transactions, setTransactions] = useState<CreateProposalTransaction[]>([]);
   useEffect(() => {
@@ -79,6 +109,17 @@ export function SafeProposalWithActionsCreatePage() {
     [defaultProposalValues, transactions],
   );
 
+  // Load potential forked template params
+  // const [searchParams] = useSearchParams();
+  // const defaultProposalTemplatesHash = useMemo(
+  //   () => searchParams?.get('templatesHash'),
+  //   [searchParams],
+  // );
+  // const defaultProposalTemplateIndex = useMemo(
+  //   () => searchParams?.get('templateIndex'),
+  //   [searchParams],
+  // );
+
   if (!type || !safe?.address || !safe) {
     return (
       <Center minH={`calc(100vh - ${HEADER_HEIGHT})`}>
@@ -120,7 +161,7 @@ export function SafeProposalWithActionsCreatePage() {
       templateDetails={null}
       streamsDetails={null}
       proposalMetadataTypeProps={DEFAULT_PROPOSAL_METADATA_TYPE_PROPS(t)}
-      prepareProposalData={prepareProposal}
+      prepareProposalData={prepareProposalData}
       mainContent={() => null}
       showActionsExperience
     />

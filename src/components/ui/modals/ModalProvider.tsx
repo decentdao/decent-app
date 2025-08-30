@@ -125,7 +125,10 @@ export type ModalPropsTypes = {
     onFallback: () => void;
   };
   [ModalType.TRANSACTION_BUILDER]: {
-    onSubmit?: (transactionBuilderData: FormikProps<CreateProposalTransaction[]>['values']) => void;
+    onSubmit?: (
+      transactionBuilderData: FormikProps<CreateProposalTransaction[]>['values'],
+    ) => Promise<void>;
+    submitButtonText?: string;
   };
   [ModalType.DAPPS_BROWSER]: {};
   [ModalType.DAPP_BROWSER]: {
@@ -403,6 +406,7 @@ const getModalData = (args: {
           isProposalMode={true}
           onSubmit={current.props.onSubmit}
           onClose={popModal}
+          submitButtonText={current.props.submitButtonText}
         />
       );
       modalSize = '2xl';

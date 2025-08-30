@@ -17,8 +17,9 @@ export interface ProposalTransactionsFormProps {
   setFieldValue: FormikProps<CreateProposalTransaction[]>['setFieldValue'];
   values: FormikProps<CreateProposalTransaction[]>['values'];
   errors?: FormikProps<CreateProposalTransaction[]>['errors'];
-  onSubmit?: (txs: CreateProposalTransaction[]) => void;
+  onSubmit?: (txs: CreateProposalTransaction[]) => Promise<void>;
   onClose?: () => void;
+  submitButtonText?: string;
 }
 
 export default function ProposalTransactionsForm(props: ProposalTransactionsFormProps) {
@@ -64,6 +65,7 @@ export function ProposalTransactionsFormModal({
   isProposalMode,
   onSubmit,
   onClose,
+  submitButtonText,
 }: ProposalTransactionsFormProps) {
   const [expandedIndecies, setExpandedIndecies] = useState<number[]>([0]);
   const { t } = useTranslation(['proposal']);
@@ -73,8 +75,8 @@ export function ProposalTransactionsFormModal({
       initialValues={[DEFAULT_PROPOSAL_TRANSACTION]}
       validateOnMount
       validationSchema={transactionValidationSchema}
-      onSubmit={values => {
-        onSubmit?.(values);
+      onSubmit={async values => {
+        await onSubmit?.(values);
         onClose?.();
       }}
     >
@@ -115,7 +117,7 @@ export function ProposalTransactionsFormModal({
               isDisabled={Object.values(errors).length > 0}
               type="submit"
             >
-              {t('labelAddTransactionsToProposal')}
+              {submitButtonText || t('labelAddTransactionsToProposal')}
             </Button>
           </form>
         );
