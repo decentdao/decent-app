@@ -90,7 +90,7 @@ export function AddActions() {
   });
 
   const { open: openTransactionBuilderModal } = useDecentModal(ModalType.TRANSACTION_BUILDER, {
-    onSubmit: transactionBuilderData => {
+    onSubmit: async transactionBuilderData => {
       const actionType = ProposalActionType.TRANSACTION_BUILDER;
 
       addAction({

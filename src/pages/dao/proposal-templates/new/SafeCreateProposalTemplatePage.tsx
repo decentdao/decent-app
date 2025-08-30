@@ -41,6 +41,7 @@ export function SafeCreateProposalTemplatePage() {
   const [initialProposalTemplate, setInitialProposalTemplate] = useState(DEFAULT_PROPOSAL);
   const { prepareProposalTemplateProposal } = useCreateProposalTemplate();
   const [searchParams] = useSearchParams();
+  // TODO fork template?
   const defaultProposalTemplatesHash = useMemo(
     () => searchParams?.get('templatesHash'),
     [searchParams],
