@@ -447,7 +447,7 @@ export const createGovernancesSlice: StateCreator<
       state => {
         if (
           !state.governances[daoKey] ||
-          !state.governances[daoKey].isAzorius ||
+          state.governances[daoKey].isAzorius ||
           !state.governances[daoKey].erc20Token
         ) {
           return;
