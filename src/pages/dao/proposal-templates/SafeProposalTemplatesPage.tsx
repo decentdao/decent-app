@@ -167,7 +167,6 @@ export function SafeProposalTemplatesPage() {
       const actionType = ProposalActionType.CREATE_TEMPLATE;
 
       resetActions();
-      // TODO mention template in action description?
       addAction({
         actionType: actionType,
         content: <></>,
@@ -176,7 +175,7 @@ export function SafeProposalTemplatesPage() {
       setProposalMetadata('title', defaultProposalMetadata.title);
       setProposalMetadata('description', defaultProposalMetadata.description);
 
-      navigate(DAO_ROUTES.proposalWithActionsNew.relative(addressPrefix, safeAddress));
+      navigate(DAO_ROUTES.proposalTemplateNew.relative(addressPrefix, safeAddress));
     },
     submitButtonText: tModals('submitProposal'),
   });
