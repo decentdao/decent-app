@@ -1,11 +1,17 @@
 import { Button, Flex, Text } from '@chakra-ui/react';
+import { abis } from '@decentdao/decent-contracts';
 import { CaretDown, CaretUp } from '@phosphor-icons/react';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { toast } from 'sonner';
+import { getContract } from 'viem';
 import { useDurationDisplay } from '../../helpers/dateTime';
+import { logError } from '../../helpers/errorLogging';
 import { useCurrentDAOKey } from '../../hooks/DAO/useCurrentDAOKey';
+import { useNetworkWalletClient } from '../../hooks/useNetworkWalletClient';
 import { useDAOStore } from '../../providers/App/AppProvider';
 import { formatUSD } from '../../utils';
+import { DecentTooltip } from '../ui/DecentTooltip';
 import Divider from '../ui/utils/Divider';
 
 function ViewTokens({ numOfTokens }: { numOfTokens: number }) {
@@ -121,9 +127,60 @@ export default function RewardsCard() {
     governance: { stakedToken },
   } = useDAOStore({ daoKey });
 
+  const { data: walletClient } = useNetworkWalletClient();
+  const [isClaimable, setIsClaimable] = useState(false);
+  const toastRef = useRef<string | number | null>(null);
+
   const totalRewards =
     stakedToken?.rewardsTokens.reduce((acc, token) => acc + token.usdValue, 0) ?? 0;
   const lockPeriod = useDurationDisplay(stakedToken?.minimumStakingPeriod);
+
+  const claimRewardTokensHandler = () => {
+    if (!walletClient || !stakedToken?.address) return;
+    toastRef.current = toast.info(t('claimRewardPending'), { duration: Infinity });
+    const stakeContract = getContract({
+      abi: abis.deployables.VotesERC20StakedV1,
+      address: stakedToken?.address,
+      client: walletClient,
+    });
+
+    stakeContract.write
+      .claimRewards([walletClient.account.address])
+      .then(() => {
+        if (toastRef.current) {
+          toast.dismiss(toastRef.current);
+        }
+        toast.success(t('claimRewardSuccess'));
+        // Update claimable rewards;
+        stakeContract.read
+          .claimableRewards([walletClient.account.address])
+          .then((claimableRewards: bigint[]) => {
+            setIsClaimable(claimableRewards.some(reward => reward > 0));
+          });
+      })
+      .catch(e => {
+        logError(e);
+        if (toastRef.current) {
+          toast.dismiss(toastRef.current);
+          toast.error(t('claimRewardError'));
+        }
+      });
+  };
+
+  useEffect(() => {
+    if (!walletClient || !stakedToken?.address) return;
+    const stakeContract = getContract({
+      abi: abis.deployables.VotesERC20StakedV1,
+      address: stakedToken?.address,
+      client: walletClient,
+    });
+    stakeContract.read
+      .claimableRewards([walletClient.account.address])
+      .then((claimableRewards: bigint[]) => {
+        setIsClaimable(claimableRewards.some(reward => reward > 0));
+      });
+  }, [walletClient, stakedToken?.address]);
+
   return (
     <Flex
       padding="14px 12px"
@@ -166,9 +223,15 @@ export default function RewardsCard() {
           >
             {formatUSD(totalRewards)}
           </Text>
-          <Button>{t('claimAll')}</Button>
+          <DecentTooltip label={t('claimAllTooltip')}>
+            <Button
+              isDisabled={!isClaimable}
+              onClick={claimRewardTokensHandler}
+            >
+              {t('claimAll')}
+            </Button>
+          </DecentTooltip>
         </Flex>
-
         <RewardsTokens />
       </Flex>
 

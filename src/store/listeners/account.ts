@@ -1,6 +1,9 @@
+import { legacy } from '@decentdao/decent-contracts';
 import { useEffect } from 'react';
-import { Address } from 'viem';
+import { Address, getContract } from 'viem';
 import { useAccount } from 'wagmi';
+import { logError } from '../../helpers/errorLogging';
+import useNetworkPublicClient from '../../hooks/useNetworkPublicClient';
 import { FreezeVotingType, GuardAccountData } from '../../types';
 import { useGovernanceFetcher } from '../fetchers/governance';
 import { useGuardFetcher } from '../fetchers/guard';
@@ -47,6 +50,7 @@ export function useAccountListeners({
   onERC20TokenAccountDataLoaded: (accountData: { balance: bigint }) => void;
 }) {
   const { address: account } = useAccount();
+  const publicClient = useNetworkPublicClient();
   const {
     fetchVotingTokenAccountData,
     fetchLockReleaseAccountData,
@@ -61,17 +65,22 @@ export function useAccountListeners({
         return;
       }
 
-      const votingTokenAccountData = await fetchVotingTokenAccountData(votesTokenAddress, account);
-
-      onGovernanceAccountDataLoaded(votingTokenAccountData);
-
-      if (lockReleaseAddress) {
-        const lockReleaseAccountData = await fetchLockReleaseAccountData(
-          lockReleaseAddress,
+      try {
+        const votingTokenAccountData = await fetchVotingTokenAccountData(
+          votesTokenAddress,
           account,
         );
+        onGovernanceAccountDataLoaded(votingTokenAccountData);
 
-        onGovernanceLockReleaseAccountDataLoaded(lockReleaseAccountData);
+        if (lockReleaseAddress) {
+          const lockReleaseAccountData = await fetchLockReleaseAccountData(
+            lockReleaseAddress,
+            account,
+          );
+          onGovernanceLockReleaseAccountDataLoaded(lockReleaseAccountData);
+        }
+      } catch (e) {
+        logError(e as Error);
       }
     }
 
@@ -99,28 +108,30 @@ export function useAccountListeners({
         return;
       }
 
-      const guardAccountData = await fetchGuardAccountData({
-        account,
-        azoriusGuardAddress,
-        multisigGuardAddress,
-        freezeVotingType,
-        freezeVotingAddress,
-        freezeProposalCreatedTime,
-        freezeProposalPeriod,
-        freezePeriod,
-        parentSafeAddress,
-      });
+      try {
+        const guardAccountData = await fetchGuardAccountData({
+          account,
+          azoriusGuardAddress,
+          multisigGuardAddress,
+          freezeVotingType,
+          freezeVotingAddress,
+          freezeProposalCreatedTime,
+          freezeProposalPeriod,
+          freezePeriod,
+          parentSafeAddress,
+        });
 
-      if (guardAccountData) {
-        onGuardAccountDataLoaded(guardAccountData);
+        if (guardAccountData) {
+          onGuardAccountDataLoaded(guardAccountData);
+        }
+      } catch {
+        // Silent failure - background data loading, don't interrupt user workflow
       }
     }
 
     loadGuardAccountData();
   }, [
     account,
-    fetchGuardAccountData,
-    onGuardAccountDataLoaded,
     azoriusGuardAddress,
     multisigGuardAddress,
     parentSafeAddress,
@@ -129,33 +140,154 @@ export function useAccountListeners({
     freezeProposalCreatedTime,
     freezeProposalPeriod,
     freezePeriod,
+    fetchGuardAccountData,
+    onGuardAccountDataLoaded,
   ]);
 
+  // Combined ERC20 token initial data loading + event listeners
   useEffect(() => {
-    async function loadStakedTokenAccountData() {
-      if (account === undefined || stakingAddress === undefined) {
-        return;
-      }
-
-      const stakedTokenAccountData = await fetchStakedTokenAccountData(stakingAddress, account);
-
-      onStakedTokenAccountDataLoaded(stakedTokenAccountData);
+    if (!account || !erc20TokenAddress) {
+      return;
     }
 
-    loadStakedTokenAccountData();
-  }, [account, fetchStakedTokenAccountData, onStakedTokenAccountDataLoaded, stakingAddress]);
+    // TypeScript now knows these are defined after the guard
+    const definedAccount = account;
+    const definedErc20Address = erc20TokenAddress;
 
-  useEffect(() => {
+    // Initial data load
     async function loadERC20TokenAccountData() {
-      if (account === undefined || erc20TokenAddress === undefined) {
-        return;
+      try {
+        const tokenAccountData = await fetchERC20TokenAccountData(
+          definedErc20Address,
+          definedAccount,
+        );
+        onERC20TokenAccountDataLoaded(tokenAccountData);
+      } catch (e) {
+        logError(e as Error);
       }
-
-      const stakedTokenAccountData = await fetchERC20TokenAccountData(erc20TokenAddress, account);
-
-      onERC20TokenAccountDataLoaded(stakedTokenAccountData);
     }
 
     loadERC20TokenAccountData();
-  }, [account, fetchERC20TokenAccountData, onERC20TokenAccountDataLoaded, erc20TokenAddress]);
+
+    // Set up event listeners
+    const erc20Contract = getContract({
+      abi: legacy.abis.VotesERC20,
+      address: definedErc20Address,
+      client: publicClient,
+    });
+
+    const handleTransfer = async () => {
+      try {
+        const tokenAccountData = await fetchERC20TokenAccountData(
+          definedErc20Address,
+          definedAccount,
+        );
+        onERC20TokenAccountDataLoaded(tokenAccountData);
+      } catch (e) {
+        logError(e as Error);
+      }
+    };
+
+    // Watch for transfers to this account
+    const unwatchTransferTo = erc20Contract.watchEvent.Transfer(
+      { to: definedAccount },
+      { onLogs: handleTransfer },
+    );
+
+    // Watch for transfers from this account
+    const unwatchTransferFrom = erc20Contract.watchEvent.Transfer(
+      { from: definedAccount },
+      { onLogs: handleTransfer },
+    );
+
+    return () => {
+      unwatchTransferTo();
+      unwatchTransferFrom();
+    };
+  }, [
+    account,
+    erc20TokenAddress,
+    publicClient,
+    fetchERC20TokenAccountData,
+    onERC20TokenAccountDataLoaded,
+  ]);
+
+  // Combined staked token initial data loading + event listeners
+  useEffect(() => {
+    if (!account || !stakingAddress) {
+      return;
+    }
+
+    // TypeScript now knows these are defined after the guard
+    const definedAccount = account;
+    const definedStakingAddress = stakingAddress;
+
+    // Initial data load
+    async function loadStakedTokenAccountData() {
+      try {
+        const stakedTokenAccountData = await fetchStakedTokenAccountData(
+          definedStakingAddress,
+          definedAccount,
+        );
+        onStakedTokenAccountDataLoaded(stakedTokenAccountData);
+      } catch (e) {
+        logError(e as Error);
+      }
+    }
+
+    loadStakedTokenAccountData();
+
+    // Set up event listeners
+    const stakingContract = getContract({
+      abi: [
+        {
+          anonymous: false,
+          inputs: [
+            { indexed: true, name: 'from', type: 'address' },
+            { indexed: true, name: 'to', type: 'address' },
+            { indexed: false, name: 'value', type: 'uint256' },
+          ],
+          name: 'Transfer',
+          type: 'event',
+        },
+      ],
+      address: definedStakingAddress,
+      client: publicClient,
+    });
+
+    const handleStakingTransfer = async () => {
+      try {
+        const stakedTokenAccountData = await fetchStakedTokenAccountData(
+          definedStakingAddress,
+          definedAccount,
+        );
+        onStakedTokenAccountDataLoaded(stakedTokenAccountData);
+      } catch (e) {
+        logError(e as Error);
+      }
+    };
+
+    // Watch for transfers to this account
+    const unwatchTransferTo = stakingContract.watchEvent.Transfer(
+      { to: definedAccount },
+      { onLogs: handleStakingTransfer },
+    );
+
+    // Watch for transfers from this account
+    const unwatchTransferFrom = stakingContract.watchEvent.Transfer(
+      { from: definedAccount },
+      { onLogs: handleStakingTransfer },
+    );
+
+    return () => {
+      unwatchTransferTo();
+      unwatchTransferFrom();
+    };
+  }, [
+    account,
+    stakingAddress,
+    publicClient,
+    fetchStakedTokenAccountData,
+    onStakedTokenAccountDataLoaded,
+  ]);
 }

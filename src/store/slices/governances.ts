@@ -311,17 +311,25 @@ export const createGovernancesSlice: StateCreator<
     set(
       state => {
         const azoriusGovernance = state.governances[daoKey];
-        // TOOD: we need to update the typing, this returns early if voteToken isn't first set? seems like a bug
-        if (
-          !state.governances[daoKey] ||
-          !state.governances[daoKey].isAzorius ||
-          !azoriusGovernance.votesToken
-        ) {
+        if (!state.governances[daoKey] || !state.governances[daoKey].isAzorius) {
           return;
         }
 
-        azoriusGovernance.votesToken.balance = governanceAccountData.balance;
-        azoriusGovernance.votesToken.delegatee = governanceAccountData.delegatee;
+        // Initialize votesToken if it doesn't exist
+        if (!azoriusGovernance.votesToken) {
+          azoriusGovernance.votesToken = {
+            balance: governanceAccountData.balance,
+            delegatee: governanceAccountData.delegatee,
+            address: '' as Address, // Will be set when token data is loaded
+            name: '',
+            symbol: '',
+            decimals: 18,
+            totalSupply: 0n,
+          };
+        } else {
+          azoriusGovernance.votesToken.balance = governanceAccountData.balance;
+          azoriusGovernance.votesToken.delegatee = governanceAccountData.delegatee;
+        }
       },
       false,
       'setGovernanceAccountData',
