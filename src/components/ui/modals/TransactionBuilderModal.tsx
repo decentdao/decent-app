@@ -34,7 +34,7 @@ export function TransactionBuilderModal({
       initialValues={[DEFAULT_PROPOSAL_TRANSACTION]}
       validateOnMount
       validationSchema={transactionValidationSchema}
-      onSubmit={async values => {
+      onSubmit={values => {
         onSubmit?.(values);
         onClose?.();
       }}
