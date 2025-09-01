@@ -17,7 +17,7 @@ export interface ProposalTransactionsFormProps {
   setFieldValue: FormikProps<CreateProposalTransaction[]>['setFieldValue'];
   values: FormikProps<CreateProposalTransaction[]>['values'];
   errors?: FormikProps<CreateProposalTransaction[]>['errors'];
-  onSubmit?: (txs: CreateProposalTransaction[]) => Promise<void>;
+  onSubmit?: (txs: CreateProposalTransaction[]) => void;
   onClose?: () => void;
   submitButtonText?: string;
 }
@@ -76,7 +76,7 @@ export function ProposalTransactionsFormModal({
       validateOnMount
       validationSchema={transactionValidationSchema}
       onSubmit={async values => {
-        await onSubmit?.(values);
+        onSubmit?.(values);
         onClose?.();
       }}
     >

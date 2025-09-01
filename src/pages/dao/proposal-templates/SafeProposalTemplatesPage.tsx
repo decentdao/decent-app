@@ -157,7 +157,7 @@ export function SafeProposalTemplatesPage() {
   ]);
 
   const { open: openTransactionBuilderModal } = useDecentModal(ModalType.TRANSACTION_BUILDER, {
-    onSubmit: async transactionBuilderData => {
+    onSubmit: transactionBuilderData => {
       if (!safeAddress) return;
 
       const defaultProposalMetadata = {

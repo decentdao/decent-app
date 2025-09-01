@@ -125,9 +125,7 @@ export type ModalPropsTypes = {
     onFallback: () => void;
   };
   [ModalType.TRANSACTION_BUILDER]: {
-    onSubmit?: (
-      transactionBuilderData: FormikProps<CreateProposalTransaction[]>['values'],
-    ) => Promise<void>;
+    onSubmit?: (transactionBuilderData: FormikProps<CreateProposalTransaction[]>['values']) => void;
     submitButtonText?: string;
   };
   [ModalType.DAPPS_BROWSER]: {};
