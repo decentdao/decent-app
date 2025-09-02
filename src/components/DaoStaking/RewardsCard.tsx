@@ -51,13 +51,14 @@ function RewardsTokens() {
     if (!stakedToken?.rewardsTokens || !userClaimableRewards?.length) {
       return [];
     }
-    
+
     return stakedToken.rewardsTokens.map((token, index) => {
       const claimableAmount = userClaimableRewards[index] || 0n;
-      const formattedClaimable = claimableAmount > 0n 
-        ? (Number(claimableAmount) / Math.pow(10, token.decimals)).toFixed(4)
-        : '0';
-      
+      const formattedClaimable =
+        claimableAmount > 0n
+          ? (Number(claimableAmount) / Math.pow(10, token.decimals)).toFixed(4)
+          : '0';
+
       return {
         ...token,
         claimableAmount,
@@ -160,14 +161,14 @@ export default function RewardsCard() {
     if (!stakedToken?.rewardsTokens || !userClaimableRewards?.length) {
       return 0;
     }
-    
+
     return stakedToken.rewardsTokens.reduce((acc, token, index) => {
       const claimableAmount = userClaimableRewards[index] || 0n;
       if (claimableAmount > 0n) {
         const tokenAmount = Number(claimableAmount) / Math.pow(10, token.decimals);
         // Estimate USD value based on proportion of claimable vs total balance
         const proportion = token.balance ? tokenAmount / parseFloat(token.balance) : 0;
-        return acc + (token.usdValue * proportion);
+        return acc + token.usdValue * proportion;
       }
       return acc;
     }, 0);
@@ -200,7 +201,6 @@ export default function RewardsCard() {
         }
       });
   };
-
 
   return (
     <Flex
