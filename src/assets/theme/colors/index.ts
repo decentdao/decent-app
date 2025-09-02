@@ -162,7 +162,7 @@ export const semanticColors = {
   'color-warning-700': 'color-yellow-700',
   'color-warning-800': 'color-yellow-800',
   'color-warning-900': 'color-yellow-900',
-  'color-warning-950': 'color-yellow-950',
+  'color-warning-950': '#27250E',
 
   // Info colors
   'color-information-50': 'color-blue-50',
