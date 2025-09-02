@@ -34,7 +34,6 @@ export const useDAOStoreListener = ({ daoKey }: { daoKey: DAOKey | undefined }) 
     setHatKeyValuePairData,
     setStakedTokenAccountData,
     setERC20TokenAccountData,
-    setUserClaimableRewards,
   } = useGlobalStore();
 
   const governance = daoKey ? getGovernance(daoKey) : undefined;
@@ -180,15 +179,6 @@ export const useDAOStoreListener = ({ daoKey }: { daoKey: DAOKey | undefined }) 
     [daoKey, setERC20TokenAccountData],
   );
 
-  const onClaimableRewardsLoaded = useCallback(
-    (claimableRewards: bigint[]) => {
-      if (daoKey) {
-        setUserClaimableRewards(daoKey, claimableRewards);
-      }
-    },
-    [daoKey, setUserClaimableRewards],
-  );
-
   useAccountListeners({
     stakingAddress,
     votesTokenAddress,
@@ -208,7 +198,6 @@ export const useDAOStoreListener = ({ daoKey }: { daoKey: DAOKey | undefined }) 
     onGovernanceLockReleaseAccountDataLoaded,
     onStakedTokenAccountDataLoaded,
     onERC20TokenAccountDataLoaded,
-    onClaimableRewardsLoaded,
   });
 
   const onRolesDataFetched = useCallback(

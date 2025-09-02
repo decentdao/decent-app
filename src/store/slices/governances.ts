@@ -98,7 +98,6 @@ export type GovernancesSlice = {
     daoKey: DAOKey,
     erc20TokenAccountData: { balance: bigint; allowance: bigint },
   ) => void;
-  setUserClaimableRewards: (daoKey: DAOKey, claimableRewards: bigint[]) => void;
 };
 
 export const EMPTY_GOVERNANCE: FractalGovernance & FractalGovernanceContracts = {
@@ -507,18 +506,6 @@ export const createGovernancesSlice: StateCreator<
       },
       false,
       'setStakedTokenAccountData',
-    );
-  },
-  setUserClaimableRewards: (daoKey, claimableRewards) => {
-    set(
-      state => {
-        if (!state.governances[daoKey]) {
-          state.governances[daoKey] = { ...EMPTY_GOVERNANCE };
-        }
-        state.governances[daoKey].userClaimableRewards = claimableRewards;
-      },
-      false,
-      'setUserClaimableRewards',
     );
   },
   getGovernance: daoKey => {

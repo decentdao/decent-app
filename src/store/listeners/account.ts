@@ -26,7 +26,6 @@ export function useAccountListeners({
   onGuardAccountDataLoaded,
   onStakedTokenAccountDataLoaded,
   onERC20TokenAccountDataLoaded,
-  onClaimableRewardsLoaded,
 }: {
   stakingAddress?: Address;
   votesTokenAddress?: Address;
@@ -51,9 +50,12 @@ export function useAccountListeners({
     delegatee: Address;
   }) => void;
   onGuardAccountDataLoaded: (accountData: GuardAccountData) => void;
-  onStakedTokenAccountDataLoaded: (accountData: { balance: bigint }) => void;
+  onStakedTokenAccountDataLoaded: (accountData: {
+    balance: bigint;
+    stakerData: { stakedAmount: bigint; lastStakeTimestamp: bigint };
+    claimableRewards: bigint[];
+  }) => void;
   onERC20TokenAccountDataLoaded: (accountData: { balance: bigint; allowance: bigint }) => void;
-  onClaimableRewardsLoaded: (claimableRewards: bigint[]) => void;
 }) {
   const { address: account } = useAccount();
   const publicClient = useNetworkPublicClient();
@@ -62,7 +64,6 @@ export function useAccountListeners({
     fetchLockReleaseAccountData,
     fetchStakedTokenAccountData,
     fetchERC20TokenAccountData,
-    fetchClaimableRewards,
   } = useGovernanceFetcher();
   const { fetchGuardAccountData } = useGuardFetcher();
 
@@ -323,7 +324,6 @@ export function useAccountListeners({
     onStakedTokenAccountDataLoaded,
   ]);
 
-  // Combined claimable rewards initial data loading + RewardsClaimed event listener
   useEffect(() => {
     if (!account || !stakingAddress) {
       return;
@@ -332,18 +332,6 @@ export function useAccountListeners({
     // TypeScript now knows these are defined after the guard
     const definedAccount = account;
     const definedStakingAddress = stakingAddress;
-
-    // Initial claimable rewards data load
-    async function loadClaimableRewards() {
-      try {
-        const claimableRewards = await fetchClaimableRewards(definedStakingAddress, definedAccount);
-        onClaimableRewardsLoaded(claimableRewards);
-      } catch (e) {
-        logError(e as Error);
-      }
-    }
-
-    loadClaimableRewards();
 
     // Set up RewardsClaimed event listener
     const stakingContract = getContract({
@@ -354,8 +342,11 @@ export function useAccountListeners({
 
     const handleRewardsClaimed = async () => {
       try {
-        const claimableRewards = await fetchClaimableRewards(definedStakingAddress, definedAccount);
-        onClaimableRewardsLoaded(claimableRewards);
+        const claimableRewards = await fetchERC20TokenAccountData(
+          definedStakingAddress,
+          definedAccount,
+        );
+        onERC20TokenAccountDataLoaded(claimableRewards);
       } catch (e) {
         logError(e as Error);
       }
@@ -370,5 +361,11 @@ export function useAccountListeners({
     return () => {
       unwatchRewardsClaimed();
     };
-  }, [account, stakingAddress, publicClient, fetchClaimableRewards, onClaimableRewardsLoaded]);
+  }, [
+    account,
+    stakingAddress,
+    publicClient,
+    fetchERC20TokenAccountData,
+    onERC20TokenAccountDataLoaded,
+  ]);
 }

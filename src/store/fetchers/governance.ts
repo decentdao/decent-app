@@ -1172,10 +1172,14 @@ export function useGovernanceFetcher() {
   const fetchStakedTokenAccountData = useCallback(
     async (stakingAddress: Address, account: Address) => {
       if (wrongNetwork) {
-        return { balance: 0n, delegatee: zeroAddress };
+        return {
+          balance: 0n,
+          claimableRewards: [],
+          stakerData: { stakedAmount: 0n, lastStakeTimestamp: 0n },
+        };
       }
 
-      const [balance] = await publicClient.multicall({
+      const [balance, claimableRewards, stakerData] = await publicClient.multicall({
         contracts: [
           {
             abi: abis.deployables.VotesERC20StakedV1,
@@ -1183,11 +1187,31 @@ export function useGovernanceFetcher() {
             functionName: 'balanceOf',
             args: [account],
           },
+          {
+            abi: abis.deployables.VotesERC20StakedV1,
+            address: stakingAddress,
+            functionName: 'claimableRewards',
+            args: [account],
+          },
+          {
+            abi: abis.deployables.VotesERC20StakedV1,
+            address: stakingAddress,
+            functionName: 'stakerData',
+            args: [account],
+          },
         ],
         allowFailure: false,
       });
 
-      return { balance };
+      const [stakedAmount, lastStakeTimestamp] = stakerData;
+      return {
+        balance,
+        claimableRewards: claimableRewards as bigint[],
+        stakerData: {
+          stakedAmount: stakedAmount as bigint,
+          lastStakeTimestamp: lastStakeTimestamp as bigint,
+        },
+      };
     },
     [publicClient, wrongNetwork],
   );
@@ -1232,29 +1256,6 @@ export function useGovernanceFetcher() {
     [publicClient, wrongNetwork],
   );
 
-  const fetchClaimableRewards = useCallback(
-    async (stakingAddress: Address, account: Address) => {
-      if (wrongNetwork) {
-        return [];
-      }
-
-      const [claimableRewards] = await publicClient.multicall({
-        contracts: [
-          {
-            abi: abis.deployables.VotesERC20StakedV1,
-            address: stakingAddress,
-            functionName: 'claimableRewards',
-            args: [account],
-          },
-        ],
-        allowFailure: false,
-      });
-
-      return claimableRewards as bigint[];
-    },
-    [publicClient, wrongNetwork],
-  );
-
   return {
     fetchDAOGovernance,
     fetchDAOProposalTemplates,
@@ -1266,6 +1267,5 @@ export function useGovernanceFetcher() {
     fetchStakingDAOData,
     fetchStakedTokenAccountData,
     fetchERC20TokenAccountData,
-    fetchClaimableRewards,
   };
 }
