@@ -7,11 +7,9 @@ import { useDAOStore } from '../../providers/App/AppProvider';
 
 function AdditionalInfoBanner({
   isWarning,
-  title,
   description,
 }: {
   isWarning?: boolean;
-  title: string;
   description: string;
 }) {
   const cardBackgroundColor = isWarning ? 'color-warning-950' : 'color-information-950';
@@ -29,7 +27,6 @@ function AdditionalInfoBanner({
       <Flex
         alignItems="flex-start"
         gap="16px"
-        pr="1rem"
         flex="1 0 0"
         color="color-base-information-foreground"
       >
@@ -40,18 +37,11 @@ function AdditionalInfoBanner({
           weight="fill"
           color={`var(--colors-${iconAndTextColor})`}
         />
-
         <Flex
           direction="column"
           alignItems="flex-start"
           flex="1 0 0"
         >
-          <Text
-            color={iconAndTextColor}
-            textStyle="text-sm-medium"
-          >
-            {title}
-          </Text>
           <Text
             color={iconAndTextColor}
             textStyle="text-sm-regular"
@@ -107,7 +97,6 @@ export function StakingAdditionalInfo() {
         </Flex>
       </Flex>
       <AdditionalInfoBanner
-        title={t('stakingInformationTitle')}
         description={t('stakingInformationDescription')}
         isWarning={false}
       />
@@ -125,7 +114,6 @@ export function UnstakeAdditionalInfo() {
       alignSelf="stretch"
     >
       <AdditionalInfoBanner
-        title={t('unstakingInformationTitle')}
         description={t('unstakingInformationDescription')}
         isWarning={true}
       />
