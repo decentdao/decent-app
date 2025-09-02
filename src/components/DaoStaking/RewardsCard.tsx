@@ -51,19 +51,21 @@ function RewardsTokens() {
       return [];
     }
 
-    return stakedToken.rewardsTokens.map((token, index) => {
-      const claimableAmount = userClaimableRewards[index] || 0n;
-      const formattedClaimable =
-        claimableAmount > 0n
-          ? (Number(claimableAmount) / Math.pow(10, token.decimals)).toFixed(4)
-          : '0';
+    return stakedToken.rewardsTokens
+      .map((token, index) => {
+        const claimableAmount = userClaimableRewards[index] || 0n;
+        const formattedClaimable =
+          claimableAmount > 0n
+            ? (Number(claimableAmount) / Math.pow(10, token.decimals)).toFixed(4)
+            : '0';
 
-      return {
-        ...token,
-        claimableAmount,
-        formattedClaimable,
-      };
-    }).filter(token => token.claimableAmount > 0n);
+        return {
+          ...token,
+          claimableAmount,
+          formattedClaimable,
+        };
+      })
+      .filter(token => token.claimableAmount > 0n);
   }, [stakedToken?.rewardsTokens, userClaimableRewards]);
 
   const isMenuDisabled = rewardsTokensWithClaimableBalances.length === 0;

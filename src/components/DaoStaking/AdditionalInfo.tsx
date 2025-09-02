@@ -23,7 +23,7 @@ function AdditionalInfoBanner({
       borderRadius="12px"
       border="1px solid var(--colors-color-layout-border)"
       background={cardBackgroundColor}
-      >
+    >
       <Flex
         alignItems="flex-start"
         gap="16px"
