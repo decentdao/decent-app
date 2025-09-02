@@ -1,7 +1,7 @@
 import { Button, Flex, Text } from '@chakra-ui/react';
 import { abis } from '@decentdao/decent-contracts';
 import { CaretDown, CaretUp } from '@phosphor-icons/react';
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { getContract } from 'viem';
@@ -42,9 +42,29 @@ function ViewTokens({ numOfTokens }: { numOfTokens: number }) {
 function RewardsTokens() {
   const { daoKey } = useCurrentDAOKey();
   const {
-    governance: { stakedToken },
+    governance: { stakedToken, userClaimableRewards },
   } = useDAOStore({ daoKey });
   const [expanded, setExpanded] = useState(false);
+
+  // Create rewards tokens with claimable amounts
+  const rewardsTokensWithClaimable = useMemo(() => {
+    if (!stakedToken?.rewardsTokens || !userClaimableRewards?.length) {
+      return [];
+    }
+    
+    return stakedToken.rewardsTokens.map((token, index) => {
+      const claimableAmount = userClaimableRewards[index] || 0n;
+      const formattedClaimable = claimableAmount > 0n 
+        ? (Number(claimableAmount) / Math.pow(10, token.decimals)).toFixed(4)
+        : '0';
+      
+      return {
+        ...token,
+        claimableAmount,
+        formattedClaimable,
+      };
+    });
+  }, [stakedToken?.rewardsTokens, userClaimableRewards]);
 
   return (
     <Flex
@@ -67,7 +87,7 @@ function RewardsTokens() {
           alignItems="center"
           alignSelf="stretch"
         >
-          <ViewTokens numOfTokens={stakedToken?.rewardsTokens.length ?? 0} />
+          <ViewTokens numOfTokens={rewardsTokensWithClaimable.length} />
           <CaretDown />
         </Flex>
       ) : (
@@ -78,10 +98,10 @@ function RewardsTokens() {
             alignItems="center"
             alignSelf="stretch"
           >
-            <ViewTokens numOfTokens={stakedToken?.rewardsTokens.length ?? 0} />
+            <ViewTokens numOfTokens={rewardsTokensWithClaimable.length} />
             <CaretUp />
           </Flex>
-          {stakedToken?.rewardsTokens.map((token, index, arr) => (
+          {rewardsTokensWithClaimable.map((token, index, arr) => (
             <Flex
               key={index}
               direction="column"
@@ -103,7 +123,7 @@ function RewardsTokens() {
                   textStyle="text-xs-regular"
                   color="color-content-muted"
                 >
-                  {token.formattedBalance}
+                  {token.formattedClaimable}
                 </Text>
               </Flex>
               {index !== arr.length - 1 && index !== 1 && (
@@ -124,15 +144,34 @@ export default function RewardsCard() {
   const { t } = useTranslation('staking');
   const { daoKey } = useCurrentDAOKey();
   const {
-    governance: { stakedToken },
+    governance: { stakedToken, userClaimableRewards },
   } = useDAOStore({ daoKey });
 
   const { data: walletClient } = useNetworkWalletClient();
-  const [isClaimable, setIsClaimable] = useState(false);
   const toastRef = useRef<string | number | null>(null);
 
-  const totalRewards =
-    stakedToken?.rewardsTokens.reduce((acc, token) => acc + token.usdValue, 0) ?? 0;
+  // Calculate if rewards are claimable from global state
+  const isClaimable = useMemo(() => {
+    return userClaimableRewards?.some(reward => reward > 0n) ?? false;
+  }, [userClaimableRewards]);
+
+  // Calculate total claimable rewards value
+  const totalRewards = useMemo(() => {
+    if (!stakedToken?.rewardsTokens || !userClaimableRewards?.length) {
+      return 0;
+    }
+    
+    return stakedToken.rewardsTokens.reduce((acc, token, index) => {
+      const claimableAmount = userClaimableRewards[index] || 0n;
+      if (claimableAmount > 0n) {
+        const tokenAmount = Number(claimableAmount) / Math.pow(10, token.decimals);
+        // Estimate USD value based on proportion of claimable vs total balance
+        const proportion = token.balance ? tokenAmount / parseFloat(token.balance) : 0;
+        return acc + (token.usdValue * proportion);
+      }
+      return acc;
+    }, 0);
+  }, [stakedToken?.rewardsTokens, userClaimableRewards]);
   const lockPeriod = useDurationDisplay(stakedToken?.minimumStakingPeriod);
 
   const claimRewardTokensHandler = () => {
@@ -151,12 +190,7 @@ export default function RewardsCard() {
           toast.dismiss(toastRef.current);
         }
         toast.success(t('claimRewardSuccess'));
-        // Update claimable rewards;
-        stakeContract.read
-          .claimableRewards([walletClient.account.address])
-          .then((claimableRewards: bigint[]) => {
-            setIsClaimable(claimableRewards.some(reward => reward > 0));
-          });
+        // Note: Claimable rewards will be updated automatically via the RewardsClaimed event listener
       })
       .catch(e => {
         logError(e);
@@ -167,19 +201,6 @@ export default function RewardsCard() {
       });
   };
 
-  useEffect(() => {
-    if (!walletClient || !stakedToken?.address) return;
-    const stakeContract = getContract({
-      abi: abis.deployables.VotesERC20StakedV1,
-      address: stakedToken?.address,
-      client: walletClient,
-    });
-    stakeContract.read
-      .claimableRewards([walletClient.account.address])
-      .then((claimableRewards: bigint[]) => {
-        setIsClaimable(claimableRewards.some(reward => reward > 0));
-      });
-  }, [walletClient, stakedToken?.address]);
 
   return (
     <Flex
