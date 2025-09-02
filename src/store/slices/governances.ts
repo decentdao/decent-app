@@ -435,6 +435,13 @@ export const createGovernancesSlice: StateCreator<
             erc20Token: erc20Token,
           };
         } else {
+          if (
+            erc20Token &&
+            erc20Token.balance === undefined &&
+            !!state.governances[daoKey].erc20Token?.balance
+          ) {
+            erc20Token.balance = state.governances[daoKey].erc20Token?.balance;
+          }
           state.governances[daoKey].erc20Token = erc20Token;
         }
       },
@@ -447,7 +454,7 @@ export const createGovernancesSlice: StateCreator<
       state => {
         if (
           !state.governances[daoKey] ||
-          !state.governances[daoKey].isAzorius ||
+          state.governances[daoKey].isAzorius ||
           !state.governances[daoKey].erc20Token
         ) {
           return;
@@ -485,11 +492,7 @@ export const createGovernancesSlice: StateCreator<
   setStakedTokenAccountData: (daoKey, stakedTokenAccountData) => {
     set(
       state => {
-        if (
-          !state.governances[daoKey] ||
-          !state.governances[daoKey].isAzorius ||
-          !state.governances[daoKey].stakedToken
-        ) {
+        if (!state.governances[daoKey] || !state.governances[daoKey].stakedToken) {
           return;
         }
         state.governances[daoKey].stakedToken.balance = stakedTokenAccountData.balance;
