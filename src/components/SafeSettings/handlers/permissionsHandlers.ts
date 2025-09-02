@@ -37,10 +37,10 @@ interface PermissionsHandlerDependencies {
   linearVotingErc721Address: Address | undefined;
   linearVotingErc20WithHatsWhitelistingAddress: Address | undefined;
   linearVotingErc721WithHatsWhitelistingAddress: Address | undefined;
-  linearVotingErc20MasterCopy: Address;
-  linearVotingErc721MasterCopy: Address;
-  linearVotingErc20V1MasterCopy: Address;
-  linearVotingErc721V1MasterCopy: Address;
+  linearVotingErc20HatsWhitelistingMasterCopy: Address;
+  linearVotingErc721HatsWhitelistingMasterCopy: Address;
+  linearVotingErc20HatsWhitelistingV1MasterCopy: Address;
+  linearVotingErc721HatsWhitelistingV1MasterCopy: Address;
   zodiacModuleProxyFactory: Address;
   hatsProtocol: Address;
   accountAbstraction:
@@ -64,10 +64,10 @@ export const handleEditPermissions = async (
     linearVotingErc721Address,
     linearVotingErc20WithHatsWhitelistingAddress,
     linearVotingErc721WithHatsWhitelistingAddress,
-    linearVotingErc20MasterCopy,
-    linearVotingErc721MasterCopy,
-    linearVotingErc20V1MasterCopy,
-    linearVotingErc721V1MasterCopy,
+    linearVotingErc20HatsWhitelistingMasterCopy,
+    linearVotingErc721HatsWhitelistingMasterCopy,
+    linearVotingErc20HatsWhitelistingV1MasterCopy,
+    linearVotingErc721HatsWhitelistingV1MasterCopy,
     zodiacModuleProxyFactory,
     hatsProtocol,
     accountAbstraction,
@@ -138,7 +138,7 @@ export const handleEditPermissions = async (
     const strategyNonce = getRandomBytes();
     const linearERC20VotingMasterCopyContract = getContract({
       abi: legacy.abis.LinearERC20Voting,
-      address: linearVotingErc20MasterCopy,
+      address: linearVotingErc20WithHatsWhitelistingAddress,
       client: publicClient,
     });
 
@@ -183,8 +183,8 @@ export const handleEditPermissions = async (
     });
 
     const masterCopy = gaslessVotingFeatureEnabled
-      ? linearVotingErc20V1MasterCopy
-      : linearVotingErc20MasterCopy;
+      ? linearVotingErc20HatsWhitelistingV1MasterCopy
+      : linearVotingErc20HatsWhitelistingMasterCopy;
 
     const strategyByteCodeLinear = generateContractByteCodeLinear(masterCopy);
 
@@ -267,8 +267,8 @@ export const handleEditPermissions = async (
     });
 
     const masterCopy = gaslessVotingFeatureEnabled
-      ? linearVotingErc721V1MasterCopy
-      : linearVotingErc721MasterCopy;
+      ? linearVotingErc721HatsWhitelistingV1MasterCopy
+      : linearVotingErc721HatsWhitelistingMasterCopy;
 
     const strategyByteCodeLinear = generateContractByteCodeLinear(masterCopy);
 
