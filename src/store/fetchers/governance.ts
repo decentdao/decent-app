@@ -1232,6 +1232,29 @@ export function useGovernanceFetcher() {
     [publicClient, wrongNetwork],
   );
 
+  const fetchClaimableRewards = useCallback(
+    async (stakingAddress: Address, account: Address) => {
+      if (wrongNetwork) {
+        return [];
+      }
+
+      const [claimableRewards] = await publicClient.multicall({
+        contracts: [
+          {
+            abi: abis.deployables.VotesERC20StakedV1,
+            address: stakingAddress,
+            functionName: 'claimableRewards',
+            args: [account],
+          },
+        ],
+        allowFailure: false,
+      });
+
+      return claimableRewards as bigint[];
+    },
+    [publicClient, wrongNetwork],
+  );
+
   return {
     fetchDAOGovernance,
     fetchDAOProposalTemplates,
@@ -1243,5 +1266,6 @@ export function useGovernanceFetcher() {
     fetchStakingDAOData,
     fetchStakedTokenAccountData,
     fetchERC20TokenAccountData,
+    fetchClaimableRewards,
   };
 }
