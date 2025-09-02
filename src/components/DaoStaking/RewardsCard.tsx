@@ -46,7 +46,7 @@ function RewardsTokens() {
   const [expanded, setExpanded] = useState(false);
 
   // Create rewards tokens with claimable amounts
-  const rewardsTokensWithClaimable = useMemo(() => {
+  const rewardsTokensWithClaimableBalances = useMemo(() => {
     if (!stakedToken?.rewardsTokens || !userClaimableRewards?.length) {
       return [];
     }
@@ -63,9 +63,10 @@ function RewardsTokens() {
         claimableAmount,
         formattedClaimable,
       };
-    });
+    }).filter(token => token.claimableAmount > 0n);
   }, [stakedToken?.rewardsTokens, userClaimableRewards]);
 
+  const isMenuDisabled = rewardsTokensWithClaimableBalances.length === 0;
   return (
     <Flex
       minHeight="40px"
@@ -77,8 +78,9 @@ function RewardsTokens() {
       borderRadius="12px"
       border="1px solid var(--colors-color-layout-border)"
       background="color-alpha-black-950"
-      onClick={() => setExpanded(!expanded)}
-      aria-label="View 3 Tokens"
+      cursor={isMenuDisabled ? 'not-allowed' : 'pointer'}
+      onClick={() => !isMenuDisabled && setExpanded(!expanded)}
+      aria-label="View Rewards"
     >
       {!expanded ? (
         <Flex
@@ -87,7 +89,7 @@ function RewardsTokens() {
           alignItems="center"
           alignSelf="stretch"
         >
-          <ViewTokens numOfTokens={rewardsTokensWithClaimable.length} />
+          <ViewTokens numOfTokens={rewardsTokensWithClaimableBalances.length} />
           <CaretDown />
         </Flex>
       ) : (
@@ -98,10 +100,10 @@ function RewardsTokens() {
             alignItems="center"
             alignSelf="stretch"
           >
-            <ViewTokens numOfTokens={rewardsTokensWithClaimable.length} />
+            <ViewTokens numOfTokens={rewardsTokensWithClaimableBalances.length} />
             <CaretUp />
           </Flex>
-          {rewardsTokensWithClaimable.map((token, index, arr) => (
+          {rewardsTokensWithClaimableBalances.map((token, index, arr) => (
             <Flex
               key={index}
               direction="column"
