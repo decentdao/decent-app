@@ -15,6 +15,7 @@ export interface ERC20TokenData extends BaseTokenData {
   decimals: number;
   totalSupply: bigint;
   balance?: bigint;
+  allowance?: bigint;
 }
 
 export interface StakedTokenData extends ERC20TokenData {
