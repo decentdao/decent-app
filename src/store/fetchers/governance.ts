@@ -821,10 +821,10 @@ export function useGovernanceFetcher() {
 
       const [balance, delegatee, allowance] = results;
 
-      return { 
-        balance: balance as bigint, 
-        delegatee: delegatee as Address, 
-        allowance: stakingAddress ? (allowance as bigint) : 0n 
+      return {
+        balance: balance as bigint,
+        delegatee: delegatee as Address,
+        allowance: stakingAddress ? (allowance as bigint) : 0n,
       };
     },
     [publicClient, wrongNetwork],
@@ -1224,9 +1224,9 @@ export function useGovernanceFetcher() {
 
       const [balance, allowance] = results;
 
-      return { 
-        balance: balance as bigint, 
-        allowance: stakingAddress ? (allowance as bigint) : 0n 
+      return {
+        balance: balance as bigint,
+        allowance: stakingAddress ? (allowance as bigint) : 0n,
       };
     },
     [publicClient, wrongNetwork],

@@ -40,7 +40,11 @@ export function useAccountListeners({
   freezeProposalCreatedTime?: bigint;
   freezeProposalPeriod?: bigint;
   freezePeriod?: bigint;
-  onGovernanceAccountDataLoaded: (accountData: { balance: bigint; delegatee: Address; allowance: bigint }) => void;
+  onGovernanceAccountDataLoaded: (accountData: {
+    balance: bigint;
+    delegatee: Address;
+    allowance: bigint;
+  }) => void;
   onGovernanceLockReleaseAccountDataLoaded: (accountData: {
     balance: bigint;
     delegatee: Address;

@@ -94,7 +94,10 @@ export type GovernancesSlice = {
   setERC20Token: (daoKey: DAOKey, erc20Token: ERC20TokenData | undefined) => void;
   setStakingData: (daoKey: DAOKey, stakedToken: StakedTokenData | undefined) => void;
   setStakedTokenAccountData: (daoKey: DAOKey, stakedTokenAccountData: { balance: bigint }) => void;
-  setERC20TokenAccountData: (daoKey: DAOKey, erc20TokenAccountData: { balance: bigint; allowance: bigint }) => void;
+  setERC20TokenAccountData: (
+    daoKey: DAOKey,
+    erc20TokenAccountData: { balance: bigint; allowance: bigint },
+  ) => void;
 };
 
 export const EMPTY_GOVERNANCE: FractalGovernance & FractalGovernanceContracts = {
