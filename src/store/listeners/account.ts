@@ -244,7 +244,6 @@ export function useAccountListeners({
     fetchERC20TokenAccountData,
     onERC20TokenAccountDataLoaded,
   ]);
-
   // Combined staked token initial data loading + event listeners
   useEffect(() => {
     if (!account || !stakingAddress) {
@@ -272,23 +271,42 @@ export function useAccountListeners({
 
     // Set up event listeners
     const stakingContract = getContract({
-      abi: [
-        {
-          anonymous: false,
-          inputs: [
-            { indexed: true, name: 'from', type: 'address' },
-            { indexed: true, name: 'to', type: 'address' },
-            { indexed: false, name: 'value', type: 'uint256' },
-          ],
-          name: 'Transfer',
-          type: 'event',
-        },
-      ],
+      abi: abis.deployables.VotesERC20StakedV1,
       address: definedStakingAddress,
       client: publicClient,
     });
 
-    const handleStakingTransfer = async () => {
+    // uses contract instance to create type for event logs
+    type EventLogsType =
+      | Parameters<Parameters<typeof stakingContract.watchEvent.Transfer>[1]['onLogs']>['0']
+      | Parameters<Parameters<typeof stakingContract.watchEvent.RewardsClaimed>[1]['onLogs']>['0']
+      | Parameters<Parameters<typeof stakingContract.watchEvent.Staked>[1]['onLogs']>['0']
+      | Parameters<Parameters<typeof stakingContract.watchEvent.Unstaked>[1]['onLogs']>['0'];
+
+    const handleStakingUpdate = async ([, , log]: EventLogsType) => {
+      // Check if the event is relevant to the account
+      switch (log.eventName) {
+        case 'Transfer':
+          if (log.args.to !== definedAccount) {
+            return;
+          }
+          break;
+        case 'Staked':
+          if (log.args.staker !== definedAccount) {
+            return;
+          }
+          break;
+        case 'Unstaked':
+          if (log.args.staker !== definedAccount) {
+            return;
+          }
+          break;
+        case 'RewardsClaimed':
+          if (log.args.staker !== definedAccount) {
+            return;
+          }
+          break;
+      }
       try {
         const stakedTokenAccountData = await fetchStakedTokenAccountData(
           definedStakingAddress,
@@ -303,18 +321,36 @@ export function useAccountListeners({
     // Watch for transfers to this account
     const unwatchTransferTo = stakingContract.watchEvent.Transfer(
       { to: definedAccount },
-      { onLogs: handleStakingTransfer },
+      { onLogs: handleStakingUpdate },
     );
 
     // Watch for transfers from this account
     const unwatchTransferFrom = stakingContract.watchEvent.Transfer(
       { from: definedAccount },
-      { onLogs: handleStakingTransfer },
+      { onLogs: handleStakingUpdate },
+    );
+    // Watch for RewardsClaimed events for this account
+    const unwatchRewardsClaimed = stakingContract.watchEvent.RewardsClaimed(
+      { staker: definedAccount },
+      { onLogs: handleStakingUpdate },
+    );
+
+    const unwatchStake = stakingContract.watchEvent.Staked(
+      { staker: definedAccount },
+      { onLogs: handleStakingUpdate },
+    );
+
+    const unwatchUnStake = stakingContract.watchEvent.Unstaked(
+      { staker: definedAccount },
+      { onLogs: handleStakingUpdate },
     );
 
     return () => {
       unwatchTransferTo();
       unwatchTransferFrom();
+      unwatchRewardsClaimed();
+      unwatchStake();
+      unwatchUnStake();
     };
   }, [
     account,
@@ -322,50 +358,5 @@ export function useAccountListeners({
     publicClient,
     fetchStakedTokenAccountData,
     onStakedTokenAccountDataLoaded,
-  ]);
-
-  useEffect(() => {
-    if (!account || !stakingAddress) {
-      return;
-    }
-
-    // TypeScript now knows these are defined after the guard
-    const definedAccount = account;
-    const definedStakingAddress = stakingAddress;
-
-    // Set up RewardsClaimed event listener
-    const stakingContract = getContract({
-      abi: abis.deployables.VotesERC20StakedV1,
-      address: definedStakingAddress,
-      client: publicClient,
-    });
-
-    const handleRewardsClaimed = async () => {
-      try {
-        const claimableRewards = await fetchERC20TokenAccountData(
-          definedStakingAddress,
-          definedAccount,
-        );
-        onERC20TokenAccountDataLoaded(claimableRewards);
-      } catch (e) {
-        logError(e as Error);
-      }
-    };
-
-    // Watch for RewardsClaimed events for this account
-    const unwatchRewardsClaimed = stakingContract.watchEvent.RewardsClaimed(
-      { staker: definedAccount },
-      { onLogs: handleRewardsClaimed },
-    );
-
-    return () => {
-      unwatchRewardsClaimed();
-    };
-  }, [
-    account,
-    stakingAddress,
-    publicClient,
-    fetchERC20TokenAccountData,
-    onERC20TokenAccountDataLoaded,
   ]);
 }
