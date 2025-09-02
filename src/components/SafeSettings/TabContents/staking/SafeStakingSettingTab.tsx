@@ -4,7 +4,7 @@ import { useFormikContext } from 'formik';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
-import { Address, getContract } from 'viem';
+import { Address, formatUnits, getContract } from 'viem';
 import { logError } from '../../../../helpers/errorLogging';
 import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
 import useNetworkPublicClient from '../../../../hooks/useNetworkPublicClient';
@@ -49,6 +49,7 @@ function StakingForm() {
   const {
     governance: { stakedToken, votesToken, erc20Token, type },
   } = useDAOStore({ daoKey });
+  console.log('🚀 ~ stakedToken:', stakedToken);
   const {
     stablecoins: { usdc },
   } = useNetworkConfigStore();
@@ -73,7 +74,7 @@ function StakingForm() {
       asset => asset.balance !== '0' && !rewardsTokenAddresses.includes(asset.tokenAddress),
     ) || [];
 
-  const [hasTokensToDistribute, setHasTokensToDistribute] = useState(false);
+  const [distributableRewardsBalances, setDistributableRewardsBalances] = useState<bigint[]>([]);
   const [hasStakers, setHasStakers] = useState(false);
   useEffect(() => {
     try {
@@ -100,7 +101,7 @@ function StakingForm() {
           const [rewardsResult, totalStakedResult] = results;
 
           if (rewardsResult.status === 'success' && totalStakedResult.status === 'success') {
-            setHasTokensToDistribute(rewardsResult.result.some(reward => reward > 0n));
+            setDistributableRewardsBalances(rewardsResult.result.map(reward => reward));
             setHasStakers(totalStakedResult.result > 0n);
           }
         });
@@ -154,6 +155,15 @@ function StakingForm() {
     );
   }
 
+  const distributableTokensWithBalances = stakedToken?.rewardsTokens.map((token, index) => {
+    return {
+      ...token,
+      balance: distributableRewardsBalances[index] || 0n,
+      formattedBalance: formatUnits(distributableRewardsBalances[index] || 0n, token.decimals),
+    };
+  });
+
+  const hasTokensToDistribute = distributableTokensWithBalances?.some(token => token.balance > 0n);
   return (
     <>
       {address ? (
@@ -284,8 +294,8 @@ function StakingForm() {
           }}
         >
           <>
-            {stakedToken?.rewardsTokens
-              .filter(token => token.balance !== '0')
+            {distributableTokensWithBalances
+              ?.filter(token => token.balance !== 0n)
               .map((token, index, arr) => (
                 <Flex
                   key={index}
