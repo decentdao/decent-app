@@ -5,7 +5,6 @@ import { useRef, useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { getContract } from 'viem';
-import { useDurationDisplay } from '../../helpers/dateTime';
 import { logError } from '../../helpers/errorLogging';
 import { useCurrentDAOKey } from '../../hooks/DAO/useCurrentDAOKey';
 import { useNetworkWalletClient } from '../../hooks/useNetworkWalletClient';
@@ -173,7 +172,6 @@ export default function RewardsCard() {
       return acc;
     }, 0);
   }, [stakedToken?.rewardsTokens, userClaimableRewards]);
-  const lockPeriod = useDurationDisplay(stakedToken?.minimumStakingPeriod);
 
   const claimRewardTokensHandler = () => {
     if (!walletClient || !stakedToken?.address) return;
@@ -254,32 +252,6 @@ export default function RewardsCard() {
           </DecentTooltip>
         </Flex>
         <RewardsTokens />
-      </Flex>
-
-      <Flex
-        direction="column"
-        alignItems="flex-start"
-        gap="8px"
-        alignSelf="stretch"
-      >
-        <Flex
-          justifyContent="space-between"
-          alignItems="flex-start"
-          alignSelf="stretch"
-        >
-          <Text
-            color="color-content-content1-foreground"
-            textStyle="text-sm-regular"
-          >
-            {t('lockPeriod')}
-          </Text>
-          <Text
-            color="color-content-content4-foreground"
-            textStyle="text-sm-regular"
-          >
-            {lockPeriod}
-          </Text>
-        </Flex>
       </Flex>
     </Flex>
   );
