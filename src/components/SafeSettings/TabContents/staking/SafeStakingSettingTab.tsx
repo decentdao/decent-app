@@ -49,7 +49,6 @@ function StakingForm() {
   const {
     governance: { stakedToken, votesToken, erc20Token, type },
   } = useDAOStore({ daoKey });
-  console.log('🚀 ~ stakedToken:', stakedToken);
   const {
     stablecoins: { usdc },
   } = useNetworkConfigStore();
