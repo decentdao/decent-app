@@ -293,8 +293,9 @@ function StakingForm() {
                   alignSelf="stretch"
                 >
                   <Flex
-                    gap="4px"
+                    gap="16px"
                     justifyContent="space-between"
+                    alignItems="center"
                     alignSelf="stretch"
                     mb="8px"
                   >
