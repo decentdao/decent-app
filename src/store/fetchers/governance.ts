@@ -784,30 +784,48 @@ export function useGovernanceFetcher() {
   );
 
   const fetchVotingTokenAccountData = useCallback(
-    async (votingTokenAddress: Address, account: Address) => {
+    async (votingTokenAddress: Address, account: Address, stakingAddress?: Address) => {
       if (wrongNetwork) {
-        return { balance: 0n, delegatee: zeroAddress };
+        return { balance: 0n, delegatee: zeroAddress, allowance: 0n };
       }
 
-      const [balance, delegatee] = await publicClient.multicall({
-        contracts: [
-          {
-            abi: legacy.abis.VotesERC20,
-            address: votingTokenAddress,
-            functionName: 'balanceOf',
-            args: [account],
-          },
-          {
-            abi: legacy.abis.VotesERC20,
-            address: votingTokenAddress,
-            functionName: 'delegates',
-            args: [account],
-          },
-        ],
+      const contracts = [
+        {
+          abi: legacy.abis.VotesERC20,
+          address: votingTokenAddress,
+          functionName: 'balanceOf',
+          args: [account],
+        },
+        {
+          abi: legacy.abis.VotesERC20,
+          address: votingTokenAddress,
+          functionName: 'delegates',
+          args: [account],
+        },
+      ];
+
+      // Add allowance call if stakingAddress is provided
+      if (stakingAddress) {
+        contracts.push({
+          abi: legacy.abis.VotesERC20,
+          address: votingTokenAddress,
+          functionName: 'allowance',
+          args: [account, stakingAddress],
+        });
+      }
+
+      const results = await publicClient.multicall({
+        contracts,
         allowFailure: false,
       });
 
-      return { balance, delegatee };
+      const [balance, delegatee, allowance] = results;
+
+      return { 
+        balance: balance as bigint, 
+        delegatee: delegatee as Address, 
+        allowance: stakingAddress ? (allowance as bigint) : 0n 
+      };
     },
     [publicClient, wrongNetwork],
   );
@@ -1175,24 +1193,41 @@ export function useGovernanceFetcher() {
   );
 
   const fetchERC20TokenAccountData = useCallback(
-    async (erc20Address: Address, account: Address) => {
+    async (erc20Address: Address, account: Address, stakingAddress?: Address) => {
       if (wrongNetwork) {
-        return { balance: 0n, delegatee: zeroAddress };
+        return { balance: 0n, allowance: 0n };
       }
 
-      const [balance] = await publicClient.multicall({
-        contracts: [
-          {
-            abi: erc20Abi,
-            address: erc20Address,
-            functionName: 'balanceOf',
-            args: [account],
-          },
-        ],
+      const contracts = [
+        {
+          abi: erc20Abi,
+          address: erc20Address,
+          functionName: 'balanceOf',
+          args: [account],
+        },
+      ];
+
+      // Add allowance call if stakingAddress is provided
+      if (stakingAddress) {
+        contracts.push({
+          abi: erc20Abi,
+          address: erc20Address,
+          functionName: 'allowance',
+          args: [account, stakingAddress],
+        });
+      }
+
+      const results = await publicClient.multicall({
+        contracts,
         allowFailure: false,
       });
 
-      return { balance };
+      const [balance, allowance] = results;
+
+      return { 
+        balance: balance as bigint, 
+        allowance: stakingAddress ? (allowance as bigint) : 0n 
+      };
     },
     [publicClient, wrongNetwork],
   );

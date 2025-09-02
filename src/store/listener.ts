@@ -87,7 +87,7 @@ export const useDAOStoreListener = ({ daoKey }: { daoKey: DAOKey | undefined }) 
   const onGovernanceAccountDataUpdated = useCallback(
     (governanceAccountData: { balance: bigint; delegatee: Address }) => {
       if (daoKey) {
-        setGovernanceAccountData(daoKey, governanceAccountData);
+        setGovernanceAccountData(daoKey, { ...governanceAccountData, allowance: 0n });
       }
     },
     [daoKey, setGovernanceAccountData],
@@ -144,7 +144,7 @@ export const useDAOStoreListener = ({ daoKey }: { daoKey: DAOKey | undefined }) 
   );
 
   const onGovernanceAccountDataLoaded = useCallback(
-    (accountData: { balance: bigint; delegatee: Address }) => {
+    (accountData: { balance: bigint; delegatee: Address; allowance: bigint }) => {
       if (daoKey) {
         setGovernanceAccountData(daoKey, accountData);
       }
@@ -171,7 +171,7 @@ export const useDAOStoreListener = ({ daoKey }: { daoKey: DAOKey | undefined }) 
   );
 
   const onERC20TokenAccountDataLoaded = useCallback(
-    (accountData: { balance: bigint }) => {
+    (accountData: { balance: bigint; allowance: bigint }) => {
       if (daoKey) {
         setERC20TokenAccountData(daoKey, accountData);
       }

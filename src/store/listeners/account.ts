@@ -40,14 +40,14 @@ export function useAccountListeners({
   freezeProposalCreatedTime?: bigint;
   freezeProposalPeriod?: bigint;
   freezePeriod?: bigint;
-  onGovernanceAccountDataLoaded: (accountData: { balance: bigint; delegatee: Address }) => void;
+  onGovernanceAccountDataLoaded: (accountData: { balance: bigint; delegatee: Address; allowance: bigint }) => void;
   onGovernanceLockReleaseAccountDataLoaded: (accountData: {
     balance: bigint;
     delegatee: Address;
   }) => void;
   onGuardAccountDataLoaded: (accountData: GuardAccountData) => void;
   onStakedTokenAccountDataLoaded: (accountData: { balance: bigint }) => void;
-  onERC20TokenAccountDataLoaded: (accountData: { balance: bigint }) => void;
+  onERC20TokenAccountDataLoaded: (accountData: { balance: bigint; allowance: bigint }) => void;
 }) {
   const { address: account } = useAccount();
   const publicClient = useNetworkPublicClient();
@@ -69,6 +69,7 @@ export function useAccountListeners({
         const votingTokenAccountData = await fetchVotingTokenAccountData(
           votesTokenAddress,
           account,
+          stakingAddress,
         );
         onGovernanceAccountDataLoaded(votingTokenAccountData);
 
@@ -88,6 +89,7 @@ export function useAccountListeners({
   }, [
     votesTokenAddress,
     lockReleaseAddress,
+    stakingAddress,
     account,
     fetchVotingTokenAccountData,
     fetchLockReleaseAccountData,
@@ -160,6 +162,7 @@ export function useAccountListeners({
         const tokenAccountData = await fetchERC20TokenAccountData(
           definedErc20Address,
           definedAccount,
+          stakingAddress,
         );
         onERC20TokenAccountDataLoaded(tokenAccountData);
       } catch (e) {
@@ -181,6 +184,7 @@ export function useAccountListeners({
         const tokenAccountData = await fetchERC20TokenAccountData(
           definedErc20Address,
           definedAccount,
+          stakingAddress,
         );
         onERC20TokenAccountDataLoaded(tokenAccountData);
       } catch (e) {
@@ -200,13 +204,34 @@ export function useAccountListeners({
       { onLogs: handleTransfer },
     );
 
+    // Watch for approval events (allowance changes)
+    const handleApproval = async () => {
+      try {
+        const tokenAccountData = await fetchERC20TokenAccountData(
+          definedErc20Address,
+          definedAccount,
+          stakingAddress,
+        );
+        onERC20TokenAccountDataLoaded(tokenAccountData);
+      } catch (e) {
+        logError(e as Error);
+      }
+    };
+
+    const unwatchApproval = erc20Contract.watchEvent.Approval(
+      { owner: definedAccount },
+      { onLogs: handleApproval },
+    );
+
     return () => {
       unwatchTransferTo();
       unwatchTransferFrom();
+      unwatchApproval();
     };
   }, [
     account,
     erc20TokenAddress,
+    stakingAddress,
     publicClient,
     fetchERC20TokenAccountData,
     onERC20TokenAccountDataLoaded,
