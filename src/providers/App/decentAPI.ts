@@ -5,14 +5,23 @@ import { Address } from 'viem';
 import { logError } from '../../helpers/errorLogging';
 import { RevenueSharingWallet } from '../../types/revShare';
 
-const DECENT_API_BASE_URL = 'https://api.decent.build';
+const DECENT_API_URL = import.meta.env.VITE_APP_DECENT_API_URL;
 
-const axiosClient = axios.create({ baseURL: DECENT_API_BASE_URL });
+const axiosClient = axios.create({ baseURL: DECENT_API_URL });
+
+interface GovernanceModule {
+  address: Address;
+  type: 'AZORIUS' | 'FRACTAL';
+}
 
 interface DAOBasic {
   name: string;
   address: Address;
   chainId: number;
+  snapshotENS: string | null;
+  parentAddress: Address | null;
+  proposalTemplatesCID: string;
+  governanceModules: GovernanceModule[];
 }
 
 interface Token {
@@ -46,7 +55,14 @@ export async function getDaoData(chainId: number, daoAddress: Address) {
   );
 
   if (!response.data.success) {
-    return null;
+    return {
+      parentAddress: null,
+      childAddresses: [],
+      name: null,
+      snapshotENS: null,
+      proposalTemplatesCID: null,
+      governanceModules: [],
+    };
   }
 
   return response.data.data;

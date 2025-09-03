@@ -83,7 +83,8 @@ export const useDAOStoreFetcher = ({
           safeAddress,
           chainId: chain.id,
         });
-
+        console.log('DAO INFO ===');
+        console.log(daoInfo, modules, safe);
         setDaoNode(daoKey, {
           safe,
           daoInfo,
