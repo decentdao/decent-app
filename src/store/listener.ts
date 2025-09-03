@@ -66,6 +66,8 @@ export const useDAOStoreListener = ({ daoKey }: { daoKey: DAOKey | undefined }) 
   const freezeProposalPeriod = guard?.freezeProposalPeriod;
   const freezePeriod = guard?.freezePeriod;
 
+  const stakedTokenAddress = governance?.stakedToken?.address;
+
   const onProposalCreated = useCallback(
     (proposal: AzoriusProposal) => {
       if (daoKey) {
@@ -120,7 +122,17 @@ export const useDAOStoreListener = ({ daoKey }: { daoKey: DAOKey | undefined }) 
     [daoKey, setProposalVote],
   );
 
+  const onStakedTokenDataUpdated = useCallback(
+    (stakedTokenData: any) => {
+      if (daoKey) {
+        setStakedTokenAccountData(daoKey, stakedTokenData);
+      }
+    },
+    [daoKey, setStakedTokenAccountData],
+  );
+
   useGovernanceListeners({
+    stakedTokenAddress,
     lockedVotesTokenAddress,
     votesTokenAddress,
     moduleAzoriusAddress,
@@ -132,6 +144,7 @@ export const useDAOStoreListener = ({ daoKey }: { daoKey: DAOKey | undefined }) 
     onLockReleaseAccountDataUpdated,
     onERC20VoteCreated,
     onERC721VoteCreated,
+    onStakedTokenDataUpdated,
   });
 
   const onGuardAccountDataLoaded = useCallback(

@@ -1,4 +1,4 @@
-import { legacy } from '@decentdao/decent-contracts';
+import { abis, legacy } from '@decentdao/decent-contracts';
 import { useEffect } from 'react';
 import { Address, getContract } from 'viem';
 import { useAccount } from 'wagmi';
@@ -22,6 +22,7 @@ import { getAverageBlockTime } from '../../utils/contract';
 import { useGovernanceFetcher } from '../fetchers/governance';
 
 export function useGovernanceListeners({
+  stakedTokenAddress,
   lockedVotesTokenAddress,
   votesTokenAddress,
   moduleAzoriusAddress,
@@ -33,7 +34,9 @@ export function useGovernanceListeners({
   onLockReleaseAccountDataUpdated,
   onERC20VoteCreated,
   onERC721VoteCreated,
+  onStakedTokenDataUpdated,
 }: {
+  stakedTokenAddress?: Address;
   votesTokenAddress?: Address;
   lockedVotesTokenAddress?: Address;
   moduleAzoriusAddress?: Address;
@@ -59,8 +62,10 @@ export function useGovernanceListeners({
     votesSummary: ProposalVotesSummary,
     vote: ERC721ProposalVote,
   ) => void;
+  onStakedTokenDataUpdated: (stakedTokenData: any) => void;
 }) {
-  const { fetchVotingTokenAccountData, fetchLockReleaseAccountData } = useGovernanceFetcher();
+  const { fetchVotingTokenAccountData, fetchLockReleaseAccountData, fetchStakingDAOData } =
+    useGovernanceFetcher();
   const { address } = useAccount();
   const publicClient = useNetworkPublicClient();
   const { getAddressContractType } = useAddressContractType();
@@ -397,4 +402,55 @@ export function useGovernanceListeners({
 
     return unwatch;
   }, [erc721StrategyAddress, onERC721VoteCreated, publicClient]);
+
+  // handle staking events
+  useEffect(() => {
+    if (!stakedTokenAddress) {
+      return;
+    }
+
+    const stakedTokenContract = getContract({
+      abi: abis.deployables.VotesERC20StakedV1,
+      address: stakedTokenAddress,
+      client: publicClient,
+    });
+
+    const handleStakedTokenChanged = async () => {
+      if (!stakedTokenAddress) return;
+      try {
+        const stakedTokenData = await fetchStakingDAOData(stakedTokenAddress);
+        onStakedTokenDataUpdated(stakedTokenData);
+      } catch (e) {
+        logError(e as Error);
+        // Silent failure - background data update, don't interrupt user workflow
+      }
+    };
+
+    const unWatchRewardsDistributed = stakedTokenContract.watchEvent.RewardsDistributed(
+      // left empty as args are not needed
+      {},
+      {
+        onLogs: handleStakedTokenChanged,
+      },
+    );
+
+    const unWatchRewardsTokenAdded = stakedTokenContract.watchEvent.RewardsTokenAdded(
+      // left empty as args are not needed
+      {},
+      {
+        onLogs: handleStakedTokenChanged,
+      },
+    );
+
+    const unWatchMinimumStakingPeriodUpdated =
+      stakedTokenContract.watchEvent.MinimumStakingPeriodUpdated({
+        onLogs: handleStakedTokenChanged,
+      });
+
+    return () => {
+      unWatchRewardsTokenAdded();
+      unWatchRewardsDistributed();
+      unWatchMinimumStakingPeriodUpdated();
+    };
+  }, [stakedTokenAddress, publicClient, onStakedTokenDataUpdated, fetchStakingDAOData]);
 }

@@ -1049,36 +1049,52 @@ export function useGovernanceFetcher() {
           });
 
           // Execute multicall
-          const [name, symbol, decimals, totalSupply, minimumStakingPeriod, rewardsTokens] =
-            await publicClient.multicall({
-              contracts: [
-                {
-                  ...tokenContract,
-                  functionName: 'name',
-                },
-                {
-                  ...tokenContract,
-                  functionName: 'symbol',
-                },
-                {
-                  ...tokenContract,
-                  functionName: 'decimals',
-                },
-                {
-                  ...tokenContract,
-                  functionName: 'totalSupply',
-                },
-                {
-                  ...tokenContract,
-                  functionName: 'minimumStakingPeriod',
-                },
-                {
-                  ...tokenContract,
-                  functionName: 'rewardsTokens',
-                },
-              ],
-              allowFailure: false,
-            });
+          const [
+            name,
+            symbol,
+            decimals,
+            totalSupply,
+            minimumStakingPeriod,
+            rewardsTokens,
+            distributableRewards,
+            totalStaked,
+          ] = await publicClient.multicall({
+            contracts: [
+              {
+                ...tokenContract,
+                functionName: 'name',
+              },
+              {
+                ...tokenContract,
+                functionName: 'symbol',
+              },
+              {
+                ...tokenContract,
+                functionName: 'decimals',
+              },
+              {
+                ...tokenContract,
+                functionName: 'totalSupply',
+              },
+              {
+                ...tokenContract,
+                functionName: 'minimumStakingPeriod',
+              },
+              {
+                ...tokenContract,
+                functionName: 'rewardsTokens',
+              },
+              {
+                ...tokenContract,
+                functionName: 'distributableRewards',
+              },
+              {
+                ...tokenContract,
+                functionName: 'totalStaked',
+              },
+            ],
+            allowFailure: false,
+          });
 
           const { data: tokenBalances } = await getTokenBalances(stakingAddress);
           // try to get reward token data from tokenBalances
@@ -1149,6 +1165,8 @@ export function useGovernanceFetcher() {
             minimumStakingPeriod,
             rewardsTokens: rewardsTokensData,
             assetsFungible: tokenBalances || [],
+            distributableRewards: [...distributableRewards],
+            totalStaked: totalStaked as bigint,
           };
         } catch (e) {
           logError({

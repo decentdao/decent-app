@@ -31,6 +31,8 @@ export interface StakedTokenData extends ERC20TokenData {
     usdValue: number;
   }[];
   assetsFungible: TokenBalance[];
+  distributableRewards: bigint[];
+  totalStaked: bigint;
 }
 
 export interface ERC721TokenData extends BaseTokenData {
