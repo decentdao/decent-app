@@ -119,7 +119,6 @@ export const EMPTY_GOVERNANCE: FractalGovernance & FractalGovernanceContracts = 
   paymasterAddress: null,
   erc20Token: undefined,
   stakedToken: undefined,
-  userClaimableRewards: [],
 };
 
 const filterPendingTxHashes = (
