@@ -81,7 +81,7 @@ function StakeFormPanel({
         >
           <Text
             color="color-content-content1-foreground"
-            textStyle="text-xs-regular"
+            textStyle="text-sm-regular"
           >
             {t('availableBalance')}
             <Text
