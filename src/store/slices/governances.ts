@@ -83,7 +83,7 @@ export type GovernancesSlice = {
   getGovernance: (daoKey: DAOKey) => FractalGovernance & FractalGovernanceContracts;
   setGovernanceAccountData: (
     daoKey: DAOKey,
-    governanceAccountData: { balance: bigint; delegatee: Address },
+    governanceAccountData: { balance: bigint; delegatee: Address; allowance: bigint },
   ) => void;
   setGovernanceLockReleaseAccountData: (
     daoKey: DAOKey,
@@ -94,7 +94,11 @@ export type GovernancesSlice = {
   setERC20Token: (daoKey: DAOKey, erc20Token: ERC20TokenData | undefined) => void;
   setStakingData: (daoKey: DAOKey, stakedToken: StakedTokenData | undefined) => void;
   setStakedTokenAccountData: (daoKey: DAOKey, stakedTokenAccountData: { balance: bigint }) => void;
-  setERC20TokenAccountData: (daoKey: DAOKey, erc20TokenAccountData: { balance: bigint }) => void;
+  setERC20TokenAccountData: (
+    daoKey: DAOKey,
+    erc20TokenAccountData: { balance: bigint; allowance: bigint },
+  ) => void;
+  setUserClaimableRewards: (daoKey: DAOKey, claimableRewards: bigint[]) => void;
 };
 
 export const EMPTY_GOVERNANCE: FractalGovernance & FractalGovernanceContracts = {
@@ -109,6 +113,7 @@ export const EMPTY_GOVERNANCE: FractalGovernance & FractalGovernanceContracts = 
   paymasterAddress: null,
   erc20Token: undefined,
   stakedToken: undefined,
+  userClaimableRewards: [],
 };
 
 const filterPendingTxHashes = (
@@ -320,6 +325,7 @@ export const createGovernancesSlice: StateCreator<
           azoriusGovernance.votesToken = {
             balance: governanceAccountData.balance,
             delegatee: governanceAccountData.delegatee,
+            allowance: governanceAccountData.allowance,
             address: '' as Address, // Will be set when token data is loaded
             name: '',
             symbol: '',
@@ -329,6 +335,7 @@ export const createGovernancesSlice: StateCreator<
         } else {
           azoriusGovernance.votesToken.balance = governanceAccountData.balance;
           azoriusGovernance.votesToken.delegatee = governanceAccountData.delegatee;
+          azoriusGovernance.votesToken.allowance = governanceAccountData.allowance;
         }
       },
       false,
@@ -435,6 +442,13 @@ export const createGovernancesSlice: StateCreator<
             erc20Token: erc20Token,
           };
         } else {
+          if (
+            erc20Token &&
+            erc20Token.balance === undefined &&
+            !!state.governances[daoKey].erc20Token?.balance
+          ) {
+            erc20Token.balance = state.governances[daoKey].erc20Token?.balance;
+          }
           state.governances[daoKey].erc20Token = erc20Token;
         }
       },
@@ -447,13 +461,14 @@ export const createGovernancesSlice: StateCreator<
       state => {
         if (
           !state.governances[daoKey] ||
-          !state.governances[daoKey].isAzorius ||
+          state.governances[daoKey].isAzorius ||
           !state.governances[daoKey].erc20Token
         ) {
           return;
         }
 
         state.governances[daoKey].erc20Token.balance = erc20TokenAccountData.balance;
+        state.governances[daoKey].erc20Token.allowance = erc20TokenAccountData.allowance;
       },
       false,
       'setStakedTokenAccountData',
@@ -485,17 +500,25 @@ export const createGovernancesSlice: StateCreator<
   setStakedTokenAccountData: (daoKey, stakedTokenAccountData) => {
     set(
       state => {
-        if (
-          !state.governances[daoKey] ||
-          !state.governances[daoKey].isAzorius ||
-          !state.governances[daoKey].stakedToken
-        ) {
+        if (!state.governances[daoKey] || !state.governances[daoKey].stakedToken) {
           return;
         }
         state.governances[daoKey].stakedToken.balance = stakedTokenAccountData.balance;
       },
       false,
       'setStakedTokenAccountData',
+    );
+  },
+  setUserClaimableRewards: (daoKey, claimableRewards) => {
+    set(
+      state => {
+        if (!state.governances[daoKey]) {
+          state.governances[daoKey] = { ...EMPTY_GOVERNANCE };
+        }
+        state.governances[daoKey].userClaimableRewards = claimableRewards;
+      },
+      false,
+      'setUserClaimableRewards',
     );
   },
   getGovernance: daoKey => {

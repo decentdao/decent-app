@@ -1,7 +1,7 @@
 import { Flex, Tab, TabList, Tabs, Text, TabPanel, TabPanels, Button } from '@chakra-ui/react';
 import { abis } from '@decentdao/decent-contracts';
 import { Formik, useFormikContext } from 'formik';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { formatUnits, getContract } from 'viem';
@@ -145,8 +145,6 @@ export default function StakeCard() {
 
   const { data: walletClient } = useNetworkWalletClient();
   const [contractCall, contractCallPending] = useTransaction();
-  const [allowance, setAllowance] = useState<bigint>(0n);
-  const [checkingAllowance, setCheckingAllowance] = useState(false);
 
   const stakedTokenSymbol = stakedToken?.symbol || '';
   const maxAvailableToUnstake = formatUnits(stakedToken?.balance || 0n, stakedToken?.decimals || 0);
@@ -157,38 +155,8 @@ export default function StakeCard() {
     unstakedToken?.decimals || 0,
   );
 
-  // Check allowance on component mount and when tokens change
-  useEffect(() => {
-    async function checkAllowance() {
-      if (!walletClient?.account?.address || !unstakedToken?.address || !stakedToken?.address) {
-        setAllowance(0n);
-        return;
-      }
-      setCheckingAllowance(true);
-      try {
-        const tokenContract = getContract({
-          address: unstakedToken.address,
-          abi: abis.deployables.VotesERC20V1,
-          client: walletClient,
-        });
-
-        const currentAllowance = await tokenContract.read.allowance([
-          walletClient.account.address,
-          stakedToken.address,
-        ]);
-
-        setAllowance(currentAllowance as bigint);
-      } catch (error) {
-        console.error('Error checking allowance:', error);
-        setAllowance(0n);
-      } finally {
-        setCheckingAllowance(false);
-      }
-    }
-
-    checkAllowance();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [walletClient?.account?.address, unstakedToken?.address, stakedToken?.address]);
+  // Get allowance from store
+  const allowance = unstakedToken?.allowance || 0n;
 
   // Define validation schema inside component to access translation function
   const validationSchema = Yup.object({
@@ -216,8 +184,7 @@ export default function StakeCard() {
       successMessage: t('approveSuccess', { amount: formattedAmount, symbol: unStakedTokenSymbol }),
       failedMessage: t('approveError'),
       successCallback: () => {
-        // Update allowance after successful approval
-        setAllowance(amount);
+        // Allowance will be updated automatically via event listeners
       },
     });
   }
@@ -342,8 +309,7 @@ export default function StakeCard() {
                           buttonsDisabled={
                             !unstakedToken?.balance ||
                             unstakedToken?.balance === 0n ||
-                            contractCallPending ||
-                            checkingAllowance
+                            contractCallPending
                           }
                           mode="stake"
                           needsApproval={!!needsApproval}
