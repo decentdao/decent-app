@@ -1,4 +1,4 @@
-import { Button, Flex, Text } from '@chakra-ui/react';
+import { Button, Flex, Icon, Text } from '@chakra-ui/react';
 import { abis } from '@decentdao/decent-contracts';
 import { CaretDown, CaretUp } from '@phosphor-icons/react';
 import { useRef, useState, useMemo } from 'react';
@@ -16,6 +16,7 @@ import Divider from '../ui/utils/Divider';
 function ViewTokens({ numOfTokens }: { numOfTokens: number }) {
   const { t } = useTranslation('staking');
 
+  const isMenuDisabled = numOfTokens === 0;
   return (
     <Flex
       direction="column"
@@ -25,7 +26,7 @@ function ViewTokens({ numOfTokens }: { numOfTokens: number }) {
     >
       <Text
         alignSelf="stretch"
-        color="color-content-content1-foreground"
+        color={isMenuDisabled ? 'color-content-muted' : 'color-content-content1-foreground'}
         textStyle="text-sm-regular"
       >
         {numOfTokens === 1
@@ -78,7 +79,8 @@ function RewardsTokens() {
       alignItems="flex-start"
       alignSelf="stretch"
       borderRadius="12px"
-      border="1px solid var(--colors-color-layout-border)"
+      border="1px solid"
+      borderColor={!isMenuDisabled ? 'color-layout-border' : 'color-layout-border-10'}
       background="color-alpha-black-950"
       cursor={isMenuDisabled ? 'not-allowed' : 'pointer'}
       onClick={() => !isMenuDisabled && setExpanded(!expanded)}
@@ -92,7 +94,7 @@ function RewardsTokens() {
           alignSelf="stretch"
         >
           <ViewTokens numOfTokens={rewardsTokensWithClaimableBalances.length} />
-          <CaretDown />
+          <Icon as={CaretDown} color={isMenuDisabled ? 'color-content-muted' : 'color-content-content1-foreground'} />
         </Flex>
       ) : (
         <>
@@ -103,7 +105,7 @@ function RewardsTokens() {
             alignSelf="stretch"
           >
             <ViewTokens numOfTokens={rewardsTokensWithClaimableBalances.length} />
-            <CaretUp />
+            <Icon as={CaretUp} color={isMenuDisabled ? 'color-content-muted' : 'color-content-content1-foreground'} />
           </Flex>
           {rewardsTokensWithClaimableBalances.map((token, index, arr) => (
             <Flex
