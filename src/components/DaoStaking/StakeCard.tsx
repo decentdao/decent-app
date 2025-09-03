@@ -1,6 +1,6 @@
 import { Flex, Tab, TabList, Tabs, Text, TabPanel, TabPanels, Button } from '@chakra-ui/react';
 import { abis } from '@decentdao/decent-contracts';
-import { Formik, useFormikContext } from 'formik';
+import { Formik, FormikHelpers, useFormikContext } from 'formik';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
@@ -28,8 +28,6 @@ function StakeFormPanel({
   maxButtonOnClick,
   buttonsDisabled,
   mode,
-  needsApproval,
-  onApprove,
 }: {
   maxAvailableValue: string;
   tokenSymbol: string;
@@ -37,8 +35,6 @@ function StakeFormPanel({
   maxButtonOnClick: () => void;
   buttonsDisabled: boolean;
   mode: Mode;
-  needsApproval?: boolean;
-  onApprove?: () => void;
 }) {
   const { t } = useTranslation('staking');
   const { values, setFieldValue } = useFormikContext<StakeFormProps>();
@@ -117,15 +113,12 @@ function StakeFormPanel({
         <Button
           size="lg"
           w="full"
-          type={mode === 'stake' && needsApproval ? 'button' : 'submit'}
+          type="submit"
           isDisabled={buttonsDisabled}
-          onClick={mode === 'stake' && needsApproval ? onApprove : undefined}
         >
-          {mode === 'stake' && needsApproval
-            ? t('approveButton', { symbol: tokenSymbol })
-            : mode === 'stake'
-              ? t('stakeButton', { symbol: tokenSymbol })
-              : t('unstakeButton', { symbol: tokenSymbol })}
+          {mode === 'stake'
+            ? t('stakeButton', { symbol: tokenSymbol })
+            : t('unstakeButton', { symbol: tokenSymbol })}
         </Button>
       </Flex>
     </Flex>
@@ -167,29 +160,7 @@ export default function StakeCard() {
     mode: Yup.string().required(),
   });
 
-  async function handleApprove(amount: bigint) {
-    if (!walletClient || !unstakedToken?.address || !stakedToken?.address) return;
-
-    const tokenContract = getContract({
-      address: unstakedToken.address,
-      abi: abis.deployables.VotesERC20V1,
-      client: walletClient,
-    });
-
-    const formattedAmount = formatUnits(amount, unstakedToken.decimals || 0);
-
-    contractCall({
-      contractFn: () => tokenContract.write.approve([stakedToken.address, amount]),
-      pendingMessage: t('approvePending', { amount: formattedAmount, symbol: unStakedTokenSymbol }),
-      successMessage: t('approveSuccess', { amount: formattedAmount, symbol: unStakedTokenSymbol }),
-      failedMessage: t('approveError'),
-      successCallback: () => {
-        // Allowance will be updated automatically via event listeners
-      },
-    });
-  }
-
-  async function stakedFormHandler(values: StakeFormProps) {
+  async function stakedFormHandler(values: StakeFormProps, formikHelpers: FormikHelpers<StakeFormProps>) {
     if (!walletClient || !stakedToken?.address) return;
 
     const { mode, amount } = values;
@@ -224,24 +195,61 @@ export default function StakeCard() {
       mode === 'stake' ? unstakedToken?.decimals || 0 : stakedToken?.decimals || 0,
     );
 
-    contractCall({
-      contractFn: () => {
-        if (mode === 'stake') {
-          return stakingContract.write.stake([amount.bigintValue!]);
-        } else {
-          return stakingContract.write.unstake([amount.bigintValue!]);
-        }
-      },
-      pendingMessage:
-        mode === 'stake'
-          ? t('stakingPending', { amount: formattedAmount, symbol: tokenSymbol })
-          : t('unstakingPending', { amount: formattedAmount, symbol: tokenSymbol }),
-      successMessage:
-        mode === 'stake'
-          ? t('stakingSuccess', { amount: formattedAmount, symbol: tokenSymbol })
-          : t('unstakingSuccess', { amount: formattedAmount, symbol: tokenSymbol }),
-      failedMessage: mode === 'stake' ? t('stakingError') : t('unstakingError'),
-    });
+    // For staking, check if approval is needed and use multicall if necessary
+    if (mode === 'stake' && unstakedToken?.address) {
+      const needsApproval = amount.bigintValue > allowance;
+
+      if (needsApproval) {
+        const tokenContract = getContract({
+          address: unstakedToken.address,
+          abi: abis.deployables.VotesERC20V1,
+          client: walletClient,
+        });
+        // Use multicall to approve and stake in single transaction
+        contractCall({
+          contractFn: () => tokenContract.write.approve([stakedToken.address, amount.bigintValue!]),
+          pendingMessage: t('approvePending', { amount: formattedAmount, symbol: tokenSymbol }),
+          successMessage: t('approveSuccess', { amount: formattedAmount, symbol: tokenSymbol }),
+          failedMessage: t('approveError'),
+          // Approve and stake in single transaction
+          successCallback: async () => {
+            setTimeout(() => {
+              contractCall({
+                contractFn: () => stakingContract.write.stake([amount.bigintValue!]),
+                pendingMessage: t('stakingPending', { amount: formattedAmount, symbol: tokenSymbol }),
+                successMessage: t('stakingSuccess', { amount: formattedAmount, symbol: tokenSymbol }),
+                failedMessage: t('stakingError'),
+                successCallback: () => {
+                  formikHelpers.resetForm();
+                },
+              });
+            }, 2300);
+          }
+        });
+      } else {
+        // Just stake without approval
+        contractCall({
+          contractFn: () => stakingContract.write.stake([amount.bigintValue!]),
+          pendingMessage: t('stakingPending', { amount: formattedAmount, symbol: tokenSymbol }),
+          successMessage: t('stakingSuccess', { amount: formattedAmount, symbol: tokenSymbol }),
+          failedMessage: t('stakingError'),
+          successCallback: () => {
+            formikHelpers.resetForm();
+          },
+        });
+      }
+    } else {
+      // Unstaking
+      contractCall({
+        contractFn: () => stakingContract.write.unstake([amount.bigintValue!]),
+        pendingMessage: t('unstakingPending', { amount: formattedAmount, symbol: tokenSymbol }),
+        successMessage: t('unstakingSuccess', { amount: formattedAmount, symbol: tokenSymbol }),
+        failedMessage: t('unstakingError'),
+        successCallback: () => {
+          formikHelpers.resetForm();
+        },
+      });
+    }
   }
 
   return (
@@ -258,18 +266,13 @@ export default function StakeCard() {
       >
         <Formik<StakeFormProps>
           initialValues={{
-            amount: { value: '', bigintValue: undefined },
             mode: MODES[0],
+            amount: { value: '', bigintValue: undefined },
           }}
           validationSchema={validationSchema}
           onSubmit={stakedFormHandler}
         >
-          {({ handleSubmit, setFieldValue, values }) => {
-            const needsApproval =
-              values.mode === 'stake' &&
-              values.amount.bigintValue &&
-              values.amount.bigintValue > allowance;
-
+          {({ handleSubmit, setFieldValue }) => {
             return (
               <form onSubmit={handleSubmit}>
                 <Tabs
@@ -307,10 +310,6 @@ export default function StakeCard() {
                           contractCallPending
                         }
                         mode="stake"
-                        needsApproval={!!needsApproval}
-                        onApprove={() =>
-                          values.amount.bigintValue && handleApprove(values.amount.bigintValue)
-                        }
                       />
                       <StakingAdditionalInfo />
                     </TabPanel>

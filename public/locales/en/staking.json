@@ -49,7 +49,6 @@
   "unstakingSuccess": "Successfully unstaked {{amount}} {{symbol}}",
   "stakingError": "Failed to stake tokens",
   "unstakingError": "Failed to unstake tokens",
-  "approveButton": "Approve {{symbol}}",
   "approvePending": "Approving {{amount}} {{symbol}}...",
   "approveSuccess": "Successfully approved {{amount}} {{symbol}}",
   "approveError": "Failed to approve tokens",
