@@ -94,7 +94,10 @@ function RewardsTokens() {
           alignSelf="stretch"
         >
           <ViewTokens numOfTokens={rewardsTokensWithClaimableBalances.length} />
-          <Icon as={CaretDown} color={isMenuDisabled ? 'color-content-muted' : 'color-content-content1-foreground'} />
+          <Icon
+            as={CaretDown}
+            color={isMenuDisabled ? 'color-content-muted' : 'color-content-content1-foreground'}
+          />
         </Flex>
       ) : (
         <>
@@ -105,7 +108,10 @@ function RewardsTokens() {
             alignSelf="stretch"
           >
             <ViewTokens numOfTokens={rewardsTokensWithClaimableBalances.length} />
-            <Icon as={CaretUp} color={isMenuDisabled ? 'color-content-muted' : 'color-content-content1-foreground'} />
+            <Icon
+              as={CaretUp}
+              color={isMenuDisabled ? 'color-content-muted' : 'color-content-content1-foreground'}
+            />
           </Flex>
           {rewardsTokensWithClaimableBalances.map((token, index, arr) => (
             <Flex
