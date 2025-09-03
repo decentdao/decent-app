@@ -52,8 +52,8 @@ function RewardsTokens() {
     }
 
     return stakedToken.rewardsTokens
-    .map((token, index) => {
-      const claimableAmount = stakedToken.userClaimableRewards[index] || 0n;
+      .map((token, index) => {
+        const claimableAmount = stakedToken.userClaimableRewards[index] || 0n;
         const formattedClaimable =
           claimableAmount > 0n
             ? (Number(claimableAmount) / Math.pow(10, token.decimals)).toFixed(4)
