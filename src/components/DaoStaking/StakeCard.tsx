@@ -160,7 +160,10 @@ export default function StakeCard() {
     mode: Yup.string().required(),
   });
 
-  async function stakedFormHandler(values: StakeFormProps, formikHelpers: FormikHelpers<StakeFormProps>) {
+  async function stakedFormHandler(
+    values: StakeFormProps,
+    formikHelpers: FormikHelpers<StakeFormProps>,
+  ) {
     if (!walletClient || !stakedToken?.address) return;
 
     const { mode, amount } = values;
@@ -216,15 +219,21 @@ export default function StakeCard() {
             setTimeout(() => {
               contractCall({
                 contractFn: () => stakingContract.write.stake([amount.bigintValue!]),
-                pendingMessage: t('stakingPending', { amount: formattedAmount, symbol: tokenSymbol }),
-                successMessage: t('stakingSuccess', { amount: formattedAmount, symbol: tokenSymbol }),
+                pendingMessage: t('stakingPending', {
+                  amount: formattedAmount,
+                  symbol: tokenSymbol,
+                }),
+                successMessage: t('stakingSuccess', {
+                  amount: formattedAmount,
+                  symbol: tokenSymbol,
+                }),
                 failedMessage: t('stakingError'),
                 successCallback: () => {
                   formikHelpers.resetForm();
                 },
               });
             }, 2300);
-          }
+          },
         });
       } else {
         // Just stake without approval
