@@ -52,8 +52,8 @@ export function SafeStakingPage() {
             direction="column"
             gap="16px"
           >
-            <RewardsCard />
             <BalanceCard />
+            <RewardsCard />
           </Flex>
         </Grid>
       ) : (
