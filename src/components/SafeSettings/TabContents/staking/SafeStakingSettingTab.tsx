@@ -61,7 +61,8 @@ function StakingForm() {
   const { errors } = useFormikContext<SafeSettingsEdits>();
   const stakingErrors = (errors as SafeSettingsFormikErrors | undefined)?.staking;
 
-  const { address, minimumStakingPeriod, rewardsTokens, distributableRewards, totalStaked } = stakedToken || {};
+  const { address, minimumStakingPeriod, rewardsTokens, distributableRewards, totalStaked } =
+    stakedToken || {};
   const rewardsTokenAddresses = rewardsTokens?.map(token => token.address) || [];
   const minPeriodValue = Number(
     values.staking?.minimumStakingPeriod?.bigintValue || minimumStakingPeriod || 0n,
@@ -71,7 +72,6 @@ function StakingForm() {
     stakedToken?.assetsFungible.filter(
       asset => asset.balance !== '0' && !rewardsTokenAddresses.includes(asset.tokenAddress),
     ) || [];
-
 
   const distributeRewards = async () => {
     if (!stakedToken?.address || !walletClient) {
