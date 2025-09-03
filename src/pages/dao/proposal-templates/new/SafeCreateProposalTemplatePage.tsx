@@ -70,6 +70,7 @@ export function SafeCreateProposalTemplatePage() {
                 ...DEFAULT_PROPOSAL.proposalMetadata,
                 title: initialTemplate.title,
                 description: initialTemplate.description || '',
+                nonce: safe?.nextNonce,
               },
               transactions: initialTemplate.transactions.map(tx => ({
                 ...tx,
@@ -90,7 +91,13 @@ export function SafeCreateProposalTemplatePage() {
       }
     };
     loadInitialTemplate();
-  }, [defaultProposalTemplatesHash, defaultProposalTemplateIndex, ipfsClient, isForking]);
+  }, [
+    defaultProposalTemplatesHash,
+    defaultProposalTemplateIndex,
+    ipfsClient,
+    isForking,
+    safe?.nextNonce,
+  ]);
 
   const formInitialValues = useMemo(
     () =>
@@ -98,10 +105,13 @@ export function SafeCreateProposalTemplatePage() {
         ? initialProposalTemplate
         : {
             ...DEFAULT_PROPOSAL,
-            proposalMetadata: proposalMetadata || DEFAULT_PROPOSAL.proposalMetadata,
+            proposalMetadata: {
+              ...(proposalMetadata || DEFAULT_PROPOSAL.proposalMetadata),
+              nonce: safe?.nextNonce,
+            },
             transactions: getTransactions(),
           },
-    [getTransactions, initialProposalTemplate, isForking, proposalMetadata],
+    [getTransactions, initialProposalTemplate, isForking, proposalMetadata, safe?.nextNonce],
   );
 
   const prepareProposalData = useCallback(
