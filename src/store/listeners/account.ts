@@ -276,37 +276,7 @@ export function useAccountListeners({
       client: publicClient,
     });
 
-    // uses contract instance to create type for event logs
-    type EventLogsType =
-      | Parameters<Parameters<typeof stakingContract.watchEvent.Transfer>[1]['onLogs']>['0']
-      | Parameters<Parameters<typeof stakingContract.watchEvent.RewardsClaimed>[1]['onLogs']>['0']
-      | Parameters<Parameters<typeof stakingContract.watchEvent.Staked>[1]['onLogs']>['0']
-      | Parameters<Parameters<typeof stakingContract.watchEvent.Unstaked>[1]['onLogs']>['0'];
-
-    const handleStakingUpdate = async ([, , log]: EventLogsType) => {
-      // Check if the event is relevant to the account
-      switch (log.eventName) {
-        case 'Transfer':
-          if (log.args.to !== definedAccount) {
-            return;
-          }
-          break;
-        case 'Staked':
-          if (log.args.staker !== definedAccount) {
-            return;
-          }
-          break;
-        case 'Unstaked':
-          if (log.args.staker !== definedAccount) {
-            return;
-          }
-          break;
-        case 'RewardsClaimed':
-          if (log.args.staker !== definedAccount) {
-            return;
-          }
-          break;
-      }
+    const handleStakingUpdate = async () => {
       try {
         const stakedTokenAccountData = await fetchStakedTokenAccountData(
           definedStakingAddress,
