@@ -25,6 +25,7 @@ export interface StakedTokenData extends ERC20TokenData {
     symbol: string;
     decimals: number;
     address: Address;
+    // stake contract's total balances
     balance: string;
     formattedBalance: string;
     usdValue: number;
