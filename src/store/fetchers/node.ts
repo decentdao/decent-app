@@ -2,10 +2,12 @@ import { useCallback } from 'react';
 import { Address, getAddress, isAddress } from 'viem';
 import { createDecentSubgraphClient } from '../../graphql';
 import { DAOQuery, DAOQueryResponse } from '../../graphql/DAOQueries';
+import useFeatureFlag from '../../helpers/environmentFeatureFlags';
 import { useDecentModules } from '../../hooks/DAO/loaders/useDecentModules';
+import { getDaoData } from '../../providers/App/decentAPI';
 import { useSafeAPI } from '../../providers/App/hooks/useSafeAPI';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
-import { DAOSubgraph } from '../../types';
+import { DAOSubgraph, DecentModule, FractalModuleType } from '../../types';
 
 /**
  * `useNodeFetcher` is used as an abstraction layer over logic of fetching DAO node data
@@ -13,11 +15,43 @@ import { DAOSubgraph } from '../../types';
  * In the future it will be extended to support other sources of data
  */
 export function useNodeFetcher() {
+  const USE_API = useFeatureFlag('flag_api');
   const lookupModules = useDecentModules();
   const safeApi = useSafeAPI();
   const { getConfigByChainId } = useNetworkConfigStore();
 
-  const fetchDAONode = useCallback(
+  const fetchDAONodeFromAPI = useCallback(
+    async ({ safeAddress, chainId }: { safeAddress: Address; chainId: number }) => {
+      const safe = await safeApi.getSafeData(safeAddress); // @TODO: get from API
+
+      const daoData = await getDaoData(chainId, safeAddress);
+      const daoInfo = {
+        parentAddress: daoData.parentAddress,
+        childAddresses: [], // @TODO: update API to return this field
+        daoName: daoData.name,
+        daoSnapshotENS: daoData.snapshotENS,
+        proposalTemplatesHash: daoData.proposalTemplatesCID,
+      };
+
+      const modules =
+        daoData.governanceModules.map(
+          module =>
+            ({
+              moduleAddress: module.address,
+              moduleType: FractalModuleType[module.type],
+            }) as DecentModule,
+        ) || [];
+
+      return {
+        safe,
+        daoInfo,
+        modules,
+      };
+    },
+    [safeApi],
+  );
+
+  const fetchDAONodeFromApp = useCallback(
     async ({ safeAddress, chainId }: { safeAddress: Address; chainId: number }) => {
       const safe = await safeApi.getSafeData(safeAddress);
       const modules = await lookupModules(safe.modules);
@@ -58,6 +92,6 @@ export function useNodeFetcher() {
     },
     [lookupModules, safeApi, getConfigByChainId],
   );
-
+  const fetchDAONode = USE_API ? fetchDAONodeFromAPI : fetchDAONodeFromApp;
   return { fetchDAONode };
 }

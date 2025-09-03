@@ -30,24 +30,24 @@ const devToolsMiddlewareConfig = {
   serialize: localStorageSerializer,
 };
 
-const persistMiddlewareConfig = {
-  name: 'global-store',
-  storage: createJSONStorage(() => localStorage, localStorageSerializer),
-};
+// const persistMiddlewareConfig = {
+//   name: 'global-store',
+//   storage: createJSONStorage(() => localStorage, localStorageSerializer),
+// };
 
 export const useGlobalStore = create<GlobalStore>()(
-  persist(
-    devtools(
-      immer((...params) => ({
-        ...createNodesSlice(...params),
-        ...createTreasuriesSlice(...params),
-        ...createGovernancesSlice(...params),
-        ...createGuardSlice(...params),
-        ...createRevShareSlice(...params),
-        ...createRolesSlice(...params),
-      })),
-      devToolsMiddlewareConfig,
-    ),
-    persistMiddlewareConfig,
+  // persist(
+  devtools(
+    immer((...params) => ({
+      ...createNodesSlice(...params),
+      ...createTreasuriesSlice(...params),
+      ...createGovernancesSlice(...params),
+      ...createGuardSlice(...params),
+      ...createRevShareSlice(...params),
+      ...createRolesSlice(...params),
+    })),
+    devToolsMiddlewareConfig,
   ),
+  //   persistMiddlewareConfig,
+  // ),
 );
