@@ -1,5 +1,5 @@
 import * as amplitude from '@amplitude/analytics-browser';
-import { Box, Divider, Flex, Grid } from '@chakra-ui/react';
+import { Box, Flex, Grid } from '@chakra-ui/react';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import BalanceCard from '../../../components/DaoStaking/BalanceCard';
