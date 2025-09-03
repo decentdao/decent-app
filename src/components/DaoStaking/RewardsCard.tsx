@@ -44,7 +44,7 @@ function RewardsTokens() {
     governance: { stakedToken },
   } = useDAOStore({ daoKey });
   const [expanded, setExpanded] = useState(false);
-  
+
   // Create rewards tokens with claimable amounts
   const rewardsTokensWithClaimableBalances = useMemo(() => {
     if (!stakedToken?.rewardsTokens || !stakedToken?.userClaimableRewards?.length) {

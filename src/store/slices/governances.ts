@@ -491,30 +491,38 @@ export const createGovernancesSlice: StateCreator<
         } else {
           if (stakedToken) {
             const existingStakedToken = state.governances[daoKey].stakedToken;
-            
+
             // Preserve existing balance if new data doesn't have it
             if (stakedToken.balance === undefined && !!existingStakedToken?.balance) {
               stakedToken.balance = existingStakedToken.balance;
             }
-            
+
             // Preserve existing account data if it exists and new data appears to be default/uninitialized
             if (existingStakedToken) {
               // Preserve userClaimableRewards if existing has data and new is empty array
-              if (existingStakedToken.userClaimableRewards.length > 0 && stakedToken.userClaimableRewards.length === 0) {
+              if (
+                existingStakedToken.userClaimableRewards.length > 0 &&
+                stakedToken.userClaimableRewards.length === 0
+              ) {
                 stakedToken.userClaimableRewards = existingStakedToken.userClaimableRewards;
               }
-              
+
               // Preserve userStakedAmount if existing has value and new is undefined/0
-              if (existingStakedToken.userStakedAmount !== undefined && 
-                  existingStakedToken.userStakedAmount > 0n && 
-                  (stakedToken.userStakedAmount === undefined || stakedToken.userStakedAmount === 0n)) {
+              if (
+                existingStakedToken.userStakedAmount !== undefined &&
+                existingStakedToken.userStakedAmount > 0n &&
+                (stakedToken.userStakedAmount === undefined || stakedToken.userStakedAmount === 0n)
+              ) {
                 stakedToken.userStakedAmount = existingStakedToken.userStakedAmount;
               }
-              
+
               // Preserve userLastStakeTimestamp if existing has value and new is undefined/0
-              if (existingStakedToken.userLastStakeTimestamp !== undefined && 
-                  existingStakedToken.userLastStakeTimestamp > 0n && 
-                  (stakedToken.userLastStakeTimestamp === undefined || stakedToken.userLastStakeTimestamp === 0n)) {
+              if (
+                existingStakedToken.userLastStakeTimestamp !== undefined &&
+                existingStakedToken.userLastStakeTimestamp > 0n &&
+                (stakedToken.userLastStakeTimestamp === undefined ||
+                  stakedToken.userLastStakeTimestamp === 0n)
+              ) {
                 stakedToken.userLastStakeTimestamp = existingStakedToken.userLastStakeTimestamp;
               }
             }
@@ -532,14 +540,15 @@ export const createGovernancesSlice: StateCreator<
         if (!state.governances[daoKey] || !state.governances[daoKey].stakedToken) {
           return;
         }
-        
+
         const existingStakedToken = state.governances[daoKey].stakedToken;
-        
+
         // Always update account data fields - this function is called with real user data
         existingStakedToken.balance = stakedTokenAccountData.balance;
         existingStakedToken.userClaimableRewards = stakedTokenAccountData.claimableRewards;
         existingStakedToken.userStakedAmount = stakedTokenAccountData.stakerData.stakedAmount;
-        existingStakedToken.userLastStakeTimestamp = stakedTokenAccountData.stakerData.lastStakeTimestamp;
+        existingStakedToken.userLastStakeTimestamp =
+          stakedTokenAccountData.stakerData.lastStakeTimestamp;
       },
       false,
       'setStakedTokenAccountData',
