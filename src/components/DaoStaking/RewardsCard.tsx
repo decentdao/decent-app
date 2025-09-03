@@ -5,7 +5,6 @@ import { useRef, useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { getContract } from 'viem';
-import { useDurationDisplay } from '../../helpers/dateTime';
 import { logError } from '../../helpers/errorLogging';
 import { useCurrentDAOKey } from '../../hooks/DAO/useCurrentDAOKey';
 import { useNetworkWalletClient } from '../../hooks/useNetworkWalletClient';
@@ -47,26 +46,29 @@ function RewardsTokens() {
   const [expanded, setExpanded] = useState(false);
 
   // Create rewards tokens with claimable amounts
-  const rewardsTokensWithClaimable = useMemo(() => {
+  const rewardsTokensWithClaimableBalances = useMemo(() => {
     if (!stakedToken?.rewardsTokens || !userClaimableRewards?.length) {
       return [];
     }
 
-    return stakedToken.rewardsTokens.map((token, index) => {
-      const claimableAmount = userClaimableRewards[index] || 0n;
-      const formattedClaimable =
-        claimableAmount > 0n
-          ? (Number(claimableAmount) / Math.pow(10, token.decimals)).toFixed(4)
-          : '0';
+    return stakedToken.rewardsTokens
+      .map((token, index) => {
+        const claimableAmount = userClaimableRewards[index] || 0n;
+        const formattedClaimable =
+          claimableAmount > 0n
+            ? (Number(claimableAmount) / Math.pow(10, token.decimals)).toFixed(4)
+            : '0';
 
-      return {
-        ...token,
-        claimableAmount,
-        formattedClaimable,
-      };
-    });
+        return {
+          ...token,
+          claimableAmount,
+          formattedClaimable,
+        };
+      })
+      .filter(token => token.claimableAmount > 0n);
   }, [stakedToken?.rewardsTokens, userClaimableRewards]);
 
+  const isMenuDisabled = rewardsTokensWithClaimableBalances.length === 0;
   return (
     <Flex
       minHeight="40px"
@@ -78,8 +80,9 @@ function RewardsTokens() {
       borderRadius="12px"
       border="1px solid var(--colors-color-layout-border)"
       background="color-alpha-black-950"
-      onClick={() => setExpanded(!expanded)}
-      aria-label="View 3 Tokens"
+      cursor={isMenuDisabled ? 'not-allowed' : 'pointer'}
+      onClick={() => !isMenuDisabled && setExpanded(!expanded)}
+      aria-label="View Rewards"
     >
       {!expanded ? (
         <Flex
@@ -88,7 +91,7 @@ function RewardsTokens() {
           alignItems="center"
           alignSelf="stretch"
         >
-          <ViewTokens numOfTokens={rewardsTokensWithClaimable.length} />
+          <ViewTokens numOfTokens={rewardsTokensWithClaimableBalances.length} />
           <CaretDown />
         </Flex>
       ) : (
@@ -99,10 +102,10 @@ function RewardsTokens() {
             alignItems="center"
             alignSelf="stretch"
           >
-            <ViewTokens numOfTokens={rewardsTokensWithClaimable.length} />
+            <ViewTokens numOfTokens={rewardsTokensWithClaimableBalances.length} />
             <CaretUp />
           </Flex>
-          {rewardsTokensWithClaimable.map((token, index, arr) => (
+          {rewardsTokensWithClaimableBalances.map((token, index, arr) => (
             <Flex
               key={index}
               direction="column"
@@ -173,7 +176,6 @@ export default function RewardsCard() {
       return acc;
     }, 0);
   }, [stakedToken?.rewardsTokens, userClaimableRewards]);
-  const lockPeriod = useDurationDisplay(stakedToken?.minimumStakingPeriod);
 
   const claimRewardTokensHandler = () => {
     if (!walletClient || !stakedToken?.address) return;
@@ -254,32 +256,6 @@ export default function RewardsCard() {
           </DecentTooltip>
         </Flex>
         <RewardsTokens />
-      </Flex>
-
-      <Flex
-        direction="column"
-        alignItems="flex-start"
-        gap="8px"
-        alignSelf="stretch"
-      >
-        <Flex
-          justifyContent="space-between"
-          alignItems="flex-start"
-          alignSelf="stretch"
-        >
-          <Text
-            color="color-content-content1-foreground"
-            textStyle="text-sm-regular"
-          >
-            {t('lockPeriod')}
-          </Text>
-          <Text
-            color="color-content-content4-foreground"
-            textStyle="text-sm-regular"
-          >
-            {lockPeriod}
-          </Text>
-        </Flex>
       </Flex>
     </Flex>
   );

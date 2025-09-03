@@ -12,7 +12,7 @@ import { useTransaction } from '../../hooks/utils/useTransaction';
 import { useDAOStore } from '../../providers/App/AppProvider';
 import { BigIntValuePair } from '../../types';
 import { BigIntInput } from '../ui/forms/BigIntInput';
-import { StakingAdditionalInfo } from './StakingAdditionalInfo';
+import { StakingAdditionalInfo, UnstakeAdditionalInfo } from './AdditionalInfo';
 
 const MODES = ['stake', 'unstake'] as const;
 type Mode = (typeof MODES)[number];
@@ -317,6 +317,7 @@ export default function StakeCard() {
                             values.amount.bigintValue && handleApprove(values.amount.bigintValue)
                           }
                         />
+                        <StakingAdditionalInfo />
                       </TabPanel>
                       <TabPanel w="full">
                         <StakeFormPanel
@@ -336,6 +337,7 @@ export default function StakeCard() {
                           }
                           mode="unstake"
                         />
+                        <UnstakeAdditionalInfo />
                       </TabPanel>
                     </TabPanels>
                   </Tabs>
@@ -344,7 +346,6 @@ export default function StakeCard() {
             }}
           </Formik>
         </Flex>
-        <StakingAdditionalInfo />
       </Flex>
     </Flex>
   );
