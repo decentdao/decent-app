@@ -297,7 +297,6 @@ export type Governance = {
   isAzorius: boolean;
   erc20Token: ERC20TokenData | undefined;
   stakedToken: StakedTokenData | undefined;
-  userClaimableRewards: bigint[];
 } & DAOOwnedEntities;
 
 export interface VotingStrategyAzorius extends VotingStrategy {

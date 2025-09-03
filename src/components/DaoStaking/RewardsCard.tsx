@@ -41,19 +41,19 @@ function ViewTokens({ numOfTokens }: { numOfTokens: number }) {
 function RewardsTokens() {
   const { daoKey } = useCurrentDAOKey();
   const {
-    governance: { stakedToken, userClaimableRewards },
+    governance: { stakedToken },
   } = useDAOStore({ daoKey });
   const [expanded, setExpanded] = useState(false);
 
   // Create rewards tokens with claimable amounts
   const rewardsTokensWithClaimableBalances = useMemo(() => {
-    if (!stakedToken?.rewardsTokens || !userClaimableRewards?.length) {
+    if (!stakedToken?.rewardsTokens || !stakedToken?.userClaimableRewards?.length) {
       return [];
     }
 
     return stakedToken.rewardsTokens
       .map((token, index) => {
-        const claimableAmount = userClaimableRewards[index] || 0n;
+        const claimableAmount = stakedToken.userClaimableRewards[index] || 0n;
         const formattedClaimable =
           claimableAmount > 0n
             ? (Number(claimableAmount) / Math.pow(10, token.decimals)).toFixed(4)
@@ -66,7 +66,7 @@ function RewardsTokens() {
         };
       })
       .filter(token => token.claimableAmount > 0n);
-  }, [stakedToken?.rewardsTokens, userClaimableRewards]);
+  }, [stakedToken?.rewardsTokens, stakedToken?.userClaimableRewards]);
 
   const isMenuDisabled = rewardsTokensWithClaimableBalances.length === 0;
   return (
@@ -148,7 +148,7 @@ export default function RewardsCard() {
   const { t } = useTranslation('staking');
   const { daoKey } = useCurrentDAOKey();
   const {
-    governance: { stakedToken, userClaimableRewards },
+    governance: { stakedToken },
   } = useDAOStore({ daoKey });
 
   const { data: walletClient } = useNetworkWalletClient();
@@ -156,17 +156,17 @@ export default function RewardsCard() {
 
   // Calculate if rewards are claimable from global state
   const isClaimable = useMemo(() => {
-    return userClaimableRewards?.some(reward => reward > 0n) ?? false;
-  }, [userClaimableRewards]);
+    return stakedToken?.userClaimableRewards?.some(reward => reward > 0n) ?? false;
+  }, [stakedToken?.userClaimableRewards]);
 
   // Calculate total claimable rewards value
   const totalRewards = useMemo(() => {
-    if (!stakedToken?.rewardsTokens || !userClaimableRewards?.length) {
+    if (!stakedToken?.rewardsTokens || !stakedToken?.userClaimableRewards?.length) {
       return 0;
     }
 
     return stakedToken.rewardsTokens.reduce((acc, token, index) => {
-      const claimableAmount = userClaimableRewards[index] || 0n;
+      const claimableAmount = stakedToken.userClaimableRewards[index] || 0n;
       if (claimableAmount > 0n) {
         const tokenAmount = Number(claimableAmount) / Math.pow(10, token.decimals);
         // Estimate USD value based on proportion of claimable vs total balance
@@ -175,7 +175,7 @@ export default function RewardsCard() {
       }
       return acc;
     }, 0);
-  }, [stakedToken?.rewardsTokens, userClaimableRewards]);
+  }, [stakedToken?.rewardsTokens, stakedToken?.userClaimableRewards]);
 
   const claimRewardTokensHandler = () => {
     if (!walletClient || !stakedToken?.address) return;

@@ -1152,6 +1152,8 @@ export function useGovernanceFetcher() {
                 balance: foundToken.balance,
                 formattedBalance: foundToken.balanceFormatted,
                 usdValue: foundToken.usdValue || 0,
+                userClaimableRewards: [],
+                distributableRewards: [],
               };
             }),
           );
@@ -1167,6 +1169,7 @@ export function useGovernanceFetcher() {
             assetsFungible: tokenBalances || [],
             distributableRewards: [...distributableRewards],
             totalStaked: totalStaked as bigint,
+            userClaimableRewards: [],
           };
         } catch (e) {
           logError({

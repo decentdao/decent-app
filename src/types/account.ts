@@ -31,6 +31,9 @@ export interface StakedTokenData extends ERC20TokenData {
     usdValue: number;
   }[];
   assetsFungible: TokenBalance[];
+  userClaimableRewards: bigint[];
+  userStakedAmount?: bigint;
+  userLastStakeTimestamp?: bigint;
   distributableRewards: bigint[];
   totalStaked: bigint;
 }
