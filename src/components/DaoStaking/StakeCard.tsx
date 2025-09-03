@@ -245,11 +245,7 @@ export default function StakeCard() {
   }
 
   return (
-    <Flex
-      direction="column"
-      alignItems="flex-start"
-      gap="16px"
-    >
+
       <Flex
         direction="column"
         alignItems="flex-start"
@@ -347,6 +343,5 @@ export default function StakeCard() {
           </Formik>
         </Flex>
       </Flex>
-    </Flex>
   );
 }
