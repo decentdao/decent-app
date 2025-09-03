@@ -12,10 +12,8 @@ import {
   PublicClient,
 } from 'viem';
 import {
-  linearERC20VotingWithWhitelistSetupParams,
-  linearERC721VotingWithWhitelistSetupParams,
-  linearERC721VotingWithWhitelistV1SetupParams,
-  linearERC20VotingWithWhitelistV1SetupParams,
+  linearERC20VotingSetupParams,
+  linearERC721VotingSetupParams,
 } from '../../../constants/params';
 import { getRandomBytes } from '../../../helpers';
 import { generateContractByteCodeLinear } from '../../../models/helpers/utils';
@@ -24,6 +22,7 @@ import {
   CreateProposalAction,
   CreateProposalTransaction,
   FractalGovernance,
+  GovernanceType,
   ProposalActionType,
 } from '../../../types';
 import { SafePermissionsStrategyAction } from '../SafePermissionsStrategyAction';
@@ -37,17 +36,9 @@ interface PermissionsHandlerDependencies {
   linearVotingErc721Address: Address | undefined;
   linearVotingErc20WithHatsWhitelistingAddress: Address | undefined;
   linearVotingErc721WithHatsWhitelistingAddress: Address | undefined;
-  linearVotingErc20HatsWhitelistingMasterCopy: Address;
-  linearVotingErc721HatsWhitelistingMasterCopy: Address;
-  linearVotingErc20HatsWhitelistingV1MasterCopy: Address;
-  linearVotingErc721HatsWhitelistingV1MasterCopy: Address;
+  linearVotingErc20MasterCopy: Address;
+  linearVotingErc721MasterCopy: Address;
   zodiacModuleProxyFactory: Address;
-  hatsProtocol: Address;
-  accountAbstraction:
-    | {
-        lightAccountFactory: Address;
-      }
-    | undefined;
   gaslessVotingFeatureEnabled: boolean;
   publicClient: PublicClient;
 }
@@ -62,16 +53,9 @@ export const handleEditPermissions = async (
     moduleAzoriusAddress,
     linearVotingErc20Address,
     linearVotingErc721Address,
-    linearVotingErc20WithHatsWhitelistingAddress,
-    linearVotingErc721WithHatsWhitelistingAddress,
-    linearVotingErc20HatsWhitelistingMasterCopy,
-    linearVotingErc721HatsWhitelistingMasterCopy,
-    linearVotingErc20HatsWhitelistingV1MasterCopy,
-    linearVotingErc721HatsWhitelistingV1MasterCopy,
+    linearVotingErc20MasterCopy,
+    linearVotingErc721MasterCopy,
     zodiacModuleProxyFactory,
-    hatsProtocol,
-    accountAbstraction,
-    gaslessVotingFeatureEnabled,
     publicClient,
   } = deps;
 
@@ -132,13 +116,13 @@ export const handleEditPermissions = async (
         ],
       },
     ];
-  } else if (linearVotingErc20WithHatsWhitelistingAddress) {
+  } else if (azoriusGovernance.type === GovernanceType.AZORIUS_ERC20) {
     // @todo - definitely could be more DRY here and with useCreateRoles
     actionType = ProposalActionType.ADD;
     const strategyNonce = getRandomBytes();
     const linearERC20VotingMasterCopyContract = getContract({
       abi: legacy.abis.LinearERC20Voting,
-      address: linearVotingErc20WithHatsWhitelistingAddress,
+      address: linearVotingErc20MasterCopy,
       client: publicClient,
     });
 
@@ -150,41 +134,27 @@ export const handleEditPermissions = async (
 
     const quorumDenominator = await linearERC20VotingMasterCopyContract.read.QUORUM_DENOMINATOR();
 
-    const encodedStrategyInitParams =
-      gaslessVotingFeatureEnabled && accountAbstraction
-        ? encodeAbiParameters(parseAbiParameters(linearERC20VotingWithWhitelistV1SetupParams), [
-            safe.address, // owner
-            votesToken.address, // governance token
-            moduleAzoriusAddress, // Azorius module
-            Number(votingStrategy.votingPeriod.value),
-            (votingStrategy.quorumPercentage.value * quorumDenominator) / 100n,
-            500000n,
-            hatsProtocol, // hats protocol
-            [], // whitelisted hat ids
-            accountAbstraction.lightAccountFactory, // light account factory
-          ])
-        : encodeAbiParameters(parseAbiParameters(linearERC20VotingWithWhitelistSetupParams), [
-            safe.address, // owner
-            votesToken.address, // governance token
-            moduleAzoriusAddress, // Azorius module
-            Number(votingStrategy.votingPeriod.value),
-            (votingStrategy.quorumPercentage.value * quorumDenominator) / 100n,
-            500000n,
-            hatsProtocol, // hats protocol
-            [], // whitelisted hat ids
-          ]);
+    const encodedStrategyInitParams = encodeAbiParameters(
+      parseAbiParameters(linearERC20VotingSetupParams),
+      [
+        safe.address, // owner
+        votesToken.address, // governance token
+        moduleAzoriusAddress, // Azorius module
+        Number(votingStrategy.votingPeriod.value),
+        proposerThreshold.bigintValue, // proposer weight, how much is needed to create a proposal.
+        (votingStrategy.quorumPercentage.value * quorumDenominator) / 100n,
+        500000n,
+      ],
+    );
 
     const encodedStrategySetupData = encodeFunctionData({
-      abi: gaslessVotingFeatureEnabled
-        ? legacy.abis.LinearERC20VotingWithHatsProposalCreationV1
-        : legacy.abis.LinearERC20VotingWithHatsProposalCreation,
+      abi: legacy.abis.LinearERC20Voting,
       functionName: 'setUp',
       args: [encodedStrategyInitParams],
     });
 
-    const masterCopy = gaslessVotingFeatureEnabled
-      ? linearVotingErc20HatsWhitelistingV1MasterCopy
-      : linearVotingErc20HatsWhitelistingMasterCopy;
+    // FIXME use v1 when gaslessVotingFeatureEnabled && accountAbstraction?
+    const masterCopy = linearVotingErc20MasterCopy;
 
     const strategyByteCodeLinear = generateContractByteCodeLinear(masterCopy);
 
@@ -222,7 +192,7 @@ export const handleEditPermissions = async (
         parameters: [{ signature: 'address', value: predictedStrategyAddress }],
       },
     ];
-  } else if (linearVotingErc721WithHatsWhitelistingAddress) {
+  } else if (azoriusGovernance.type === GovernanceType.AZORIUS_ERC721) {
     actionType = ProposalActionType.ADD;
     const strategyNonce = getRandomBytes();
 
@@ -232,43 +202,28 @@ export const handleEditPermissions = async (
       throw new Error('Voting strategy or NFT votes tokens not found');
     }
 
-    const encodedStrategyInitParams =
-      gaslessVotingFeatureEnabled && accountAbstraction
-        ? encodeAbiParameters(parseAbiParameters(linearERC721VotingWithWhitelistV1SetupParams), [
-            safe.address, // owner
-            erc721Tokens.map(token => token.address), // governance token
-            erc721Tokens.map(token => token.votingWeight),
-            moduleAzoriusAddress,
-            Number(votingStrategy.votingPeriod.value),
-            proposerThreshold.bigintValue,
-            500000n,
-            hatsProtocol, // hats protocol
-            [], // whitelisted hat ids
-            accountAbstraction.lightAccountFactory, // light account factory
-          ])
-        : encodeAbiParameters(parseAbiParameters(linearERC721VotingWithWhitelistSetupParams), [
-            safe.address, // owner
-            erc721Tokens.map(token => token.address), // governance token
-            erc721Tokens.map(token => token.votingWeight),
-            moduleAzoriusAddress,
-            Number(votingStrategy.votingPeriod.value),
-            proposerThreshold.bigintValue,
-            500000n,
-            hatsProtocol, // hats protocol
-            [], // whitelisted hat ids
-          ]);
+    const encodedStrategyInitParams = encodeAbiParameters(
+      parseAbiParameters(linearERC721VotingSetupParams),
+      [
+        safe.address, // owner
+        erc721Tokens.map(token => token.address), // governance token
+        erc721Tokens.map(token => token.votingWeight),
+        moduleAzoriusAddress,
+        Number(votingStrategy.votingPeriod.value),
+        votingStrategy.quorumThreshold.value,
+        proposerThreshold.bigintValue,
+        500000n,
+      ],
+    );
 
     const encodedStrategySetupData = encodeFunctionData({
-      abi: gaslessVotingFeatureEnabled
-        ? legacy.abis.LinearERC20VotingWithHatsProposalCreationV1
-        : legacy.abis.LinearERC20VotingWithHatsProposalCreation,
+      abi: legacy.abis.LinearERC721Voting,
       functionName: 'setUp',
       args: [encodedStrategyInitParams],
     });
 
-    const masterCopy = gaslessVotingFeatureEnabled
-      ? linearVotingErc721HatsWhitelistingV1MasterCopy
-      : linearVotingErc721HatsWhitelistingMasterCopy;
+    // FIXME use v1?
+    const masterCopy = linearVotingErc721MasterCopy;
 
     const strategyByteCodeLinear = generateContractByteCodeLinear(masterCopy);
 
