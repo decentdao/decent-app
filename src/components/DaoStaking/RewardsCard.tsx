@@ -41,19 +41,19 @@ function ViewTokens({ numOfTokens }: { numOfTokens: number }) {
 function RewardsTokens() {
   const { daoKey } = useCurrentDAOKey();
   const {
-    governance: { stakedToken, userClaimableRewards },
+    governance: { stakedToken },
   } = useDAOStore({ daoKey });
   const [expanded, setExpanded] = useState(false);
-
+  
   // Create rewards tokens with claimable amounts
   const rewardsTokensWithClaimableBalances = useMemo(() => {
-    if (!stakedToken?.rewardsTokens || !userClaimableRewards?.length) {
+    if (!stakedToken?.rewardsTokens || !stakedToken?.userClaimableRewards?.length) {
       return [];
     }
 
     return stakedToken.rewardsTokens
       .map((token, index) => {
-        const claimableAmount = userClaimableRewards[index] || 0n;
+        const claimableAmount = stakedToken.userClaimableRewards[index] || 0n;
         const formattedClaimable =
           claimableAmount > 0n
             ? (Number(claimableAmount) / Math.pow(10, token.decimals)).toFixed(4)
@@ -66,7 +66,7 @@ function RewardsTokens() {
         };
       })
       .filter(token => token.claimableAmount > 0n);
-  }, [stakedToken?.rewardsTokens, userClaimableRewards]);
+  }, [stakedToken?.rewardsTokens, stakedToken?.userClaimableRewards]);
 
   const isMenuDisabled = rewardsTokensWithClaimableBalances.length === 0;
   return (

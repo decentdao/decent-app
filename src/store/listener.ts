@@ -175,7 +175,11 @@ export const useDAOStoreListener = ({ daoKey }: { daoKey: DAOKey | undefined }) 
   );
 
   const onStakedTokenAccountDataLoaded = useCallback(
-    (accountData: { balance: bigint }) => {
+    (accountData: {
+      balance: bigint;
+      stakerData: { stakedAmount: bigint; lastStakeTimestamp: bigint };
+      claimableRewards: bigint[];
+    }) => {
       if (daoKey) {
         setStakedTokenAccountData(daoKey, accountData);
       }
