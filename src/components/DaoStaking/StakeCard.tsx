@@ -137,7 +137,9 @@ export default function StakeCard() {
   );
 
   const { data: walletClient } = useNetworkWalletClient();
-  const [contractCall, contractCallPending] = useTransaction();
+  const [approveCall, approveCallPending] = useTransaction();
+  const [stakeCall, stakeCallPending] = useTransaction();
+  const [unstakeCall, unstakeCallPending] = useTransaction();
 
   const stakedTokenSymbol = stakedToken?.symbol || '';
   const maxAvailableToUnstake = formatUnits(stakedToken?.balance || 0n, stakedToken?.decimals || 0);
@@ -209,7 +211,7 @@ export default function StakeCard() {
           client: walletClient,
         });
         // Use multicall to approve and stake in single transaction
-        contractCall({
+        approveCall({
           contractFn: () => tokenContract.write.approve([stakedToken.address, amount.bigintValue!]),
           pendingMessage: t('approvePending', { amount: formattedAmount, symbol: tokenSymbol }),
           successMessage: t('approveSuccess', { amount: formattedAmount, symbol: tokenSymbol }),
@@ -217,7 +219,7 @@ export default function StakeCard() {
           // Approve and stake in single transaction
           successCallback: async () => {
             setTimeout(() => {
-              contractCall({
+              stakeCall({
                 contractFn: () => stakingContract.write.stake([amount.bigintValue!]),
                 pendingMessage: t('stakingPending', {
                   amount: formattedAmount,
@@ -237,7 +239,7 @@ export default function StakeCard() {
         });
       } else {
         // Just stake without approval
-        contractCall({
+        stakeCall({
           contractFn: () => stakingContract.write.stake([amount.bigintValue!]),
           pendingMessage: t('stakingPending', { amount: formattedAmount, symbol: tokenSymbol }),
           successMessage: t('stakingSuccess', { amount: formattedAmount, symbol: tokenSymbol }),
@@ -249,7 +251,7 @@ export default function StakeCard() {
       }
     } else {
       // Unstaking
-      contractCall({
+      unstakeCall({
         contractFn: () => stakingContract.write.unstake([amount.bigintValue!]),
         pendingMessage: t('unstakingPending', { amount: formattedAmount, symbol: tokenSymbol }),
         successMessage: t('unstakingSuccess', { amount: formattedAmount, symbol: tokenSymbol }),
@@ -261,6 +263,7 @@ export default function StakeCard() {
     }
   }
 
+  const pending = approveCallPending || stakeCallPending || unstakeCallPending;
   return (
     <Flex
       direction="column"
@@ -314,9 +317,7 @@ export default function StakeCard() {
                           })
                         }
                         buttonsDisabled={
-                          !unstakedToken?.balance ||
-                          unstakedToken?.balance === 0n ||
-                          contractCallPending
+                          !unstakedToken?.balance || unstakedToken?.balance === 0n || pending
                         }
                         mode="stake"
                       />
@@ -334,9 +335,7 @@ export default function StakeCard() {
                           })
                         }
                         buttonsDisabled={
-                          !stakedToken?.balance ||
-                          stakedToken?.balance === 0n ||
-                          contractCallPending
+                          !stakedToken?.balance || stakedToken?.balance === 0n || pending
                         }
                         mode="unstake"
                       />
