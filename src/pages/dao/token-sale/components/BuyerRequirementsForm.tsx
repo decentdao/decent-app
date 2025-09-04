@@ -20,6 +20,9 @@ export function BuyerRequirementsForm({ values, setFieldValue }: BuyerRequiremen
         <LabelComponent
           label="Minimum Purchase"
           isRequired={true}
+          gridContainerProps={{
+            templateColumns: '1fr',
+          }}
         >
           <NumberInput
             value={values.minPurchase}
@@ -33,6 +36,9 @@ export function BuyerRequirementsForm({ values, setFieldValue }: BuyerRequiremen
         <LabelComponent
           label="Maximum Purchase"
           isRequired={true}
+          gridContainerProps={{
+            templateColumns: '1fr',
+          }}
         >
           <NumberInput
             value={values.maxPurchase}
@@ -50,6 +56,9 @@ export function BuyerRequirementsForm({ values, setFieldValue }: BuyerRequiremen
           onChange={(e) => setFieldValue('whitelistAddress', e.target.value)}
           testId="whitelist-address"
           placeholder="Enter whitelist contract address"
+          gridContainerProps={{
+            templateColumns: '1fr',
+          }}
         />
         
         <InputComponent
@@ -59,6 +68,9 @@ export function BuyerRequirementsForm({ values, setFieldValue }: BuyerRequiremen
           onChange={(e) => setFieldValue('kycProvider', e.target.value)}
           testId="kyc-provider"
           placeholder="Enter KYC provider details"
+          gridContainerProps={{
+            templateColumns: '1fr',
+          }}
         />
       </VStack>
     </VStack>
