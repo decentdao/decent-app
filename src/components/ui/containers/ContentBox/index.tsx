@@ -58,4 +58,25 @@ export function SectionContentBox({
   );
 }
 
+export function ContentBoxTight({
+  children,
+  containerBoxProps,
+}: {
+  children: ReactNode;
+  containerBoxProps?: BoxProps;
+}) {
+  return (
+    <ContentBox
+      containerBoxProps={{
+        py: 2,
+        px: 4,
+        my: 2,
+        ...containerBoxProps,
+      }}
+    >
+      {children}
+    </ContentBox>
+  );
+}
+
 export default ContentBox;
