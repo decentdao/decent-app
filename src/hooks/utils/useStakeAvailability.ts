@@ -57,12 +57,15 @@ export function useStakeAvailability(
 
     // Calculate time remaining
     const secondsRemainingNumber = Number(secondsRemaining);
-    const days = Math.floor(secondsRemainingNumber / (24 * 60 * 60));
+    const years = Math.floor(secondsRemainingNumber / (365 * 24 * 60 * 60));
+    const days = Math.floor((secondsRemainingNumber % (365 * 24 * 60 * 60)) / (24 * 60 * 60));
     const hours = Math.floor((secondsRemainingNumber % (24 * 60 * 60)) / (60 * 60));
     const minutes = Math.floor((secondsRemainingNumber % (60 * 60)) / 60);
 
     let timeString: string;
-    if (days > 0) {
+    if (years > 0) {
+      timeString = years === 1 ? `${years} year` : `${years} years`;
+    } else if (days > 0) {
       timeString = days === 1 ? `${days} day` : `${days} days`;
     } else if (hours > 0) {
       timeString = hours === 1 ? `${hours} hour` : `${hours} hours`;
