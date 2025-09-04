@@ -1,3 +1,5 @@
+import { BigIntValuePair } from '../../../types';
+
 export interface TokenSaleFormValues {
   // Project Overview
   projectName: string;
@@ -8,16 +10,25 @@ export interface TokenSaleFormValues {
   telegramGroup: string;
   discordServer: string;
 
-  // Sale Terms
+  // Token Details
+  tokenName: string;
+  tokenSymbol: string;
+  maxTokenSupply: BigIntValuePair;
+  tokenPrice: number;
+
+  // Sale Pricing & Terms
+  minimumFundraise: number;
+  fundraisingCap: number;
+  valuation: number;
   startDate: Date | null;
+  acceptedToken: string[];
+  minPurchase: number;
+  maxPurchase: number;
+
+  // Legacy fields (keeping for compatibility)
   endDate: Date | null;
   totalSupply: string;
   salePrice: string;
-  acceptedToken: string[];
-
-  // Buyer Requirements
-  minPurchase: string;
-  maxPurchase: string;
   whitelistAddress: string;
   kycProvider: string;
 }
@@ -30,13 +41,26 @@ export const initialValues: TokenSaleFormValues = {
   githubLink: '',
   telegramGroup: '',
   discordServer: '',
+
+  // Token Details
+  tokenName: '',
+  tokenSymbol: '',
+  maxTokenSupply: { value: '', bigintValue: undefined },
+  tokenPrice: 0,
+
+  // Sale Pricing & Terms
+  minimumFundraise: 0,
+  fundraisingCap: 0,
+  valuation: 0,
   startDate: null,
+  acceptedToken: [],
+  minPurchase: 0,
+  maxPurchase: 0,
+
+  // Legacy fields
   endDate: null,
   totalSupply: '',
   salePrice: '',
-  acceptedToken: [],
-  minPurchase: '',
-  maxPurchase: '',
   whitelistAddress: '',
   kycProvider: '',
 };
