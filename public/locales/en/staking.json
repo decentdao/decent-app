@@ -28,8 +28,8 @@
   "lockPeriod": "Lock Period",
   "viewToken": "View Token",
   "viewTokens": "View {{count}} Tokens",
-  "noRewardTokens": "No Reward tokens",
-  "stakingInformationDescription": " • Each time tokens are staked, the lock \n   period for all staked tokens is reset \n • Staked tokens cannot be transferred",
+  "noRewardTokens": "No available rewards",
+  "stakingInformationDescription": " • Each time tokens are staked, the lock period for all staked tokens is reset \n • Staked tokens cannot be transferred",
   "stakeTab": "Stake",
   "unstakeTab": "Unstake",
   "requiredField": "Required",
@@ -52,5 +52,5 @@
   "approvePending": "Approving {{amount}} {{symbol}}...",
   "approveSuccess": "Successfully approved {{amount}} {{symbol}}",
   "approveError": "Failed to approve tokens",
-  "unstakingInformationDescription": "Unstaking will forfeit any pending rewards for the \n current period."
+  "unstakingInformationDescription": "Unstaking will reduce your share of any future rewards."
 }
