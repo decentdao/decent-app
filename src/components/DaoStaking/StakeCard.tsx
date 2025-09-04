@@ -210,14 +210,14 @@ export default function StakeCard() {
           abi: abis.deployables.VotesERC20V1,
           client: walletClient,
         });
-        // Use multicall to approve and stake in single transaction
+        // Approve token transfer to staking contract
         approveCall({
           contractFn: () => tokenContract.write.approve([stakedToken.address, amount.bigintValue!]),
           pendingMessage: t('approvePending', { amount: formattedAmount, symbol: tokenSymbol }),
           successMessage: t('approveSuccess', { amount: formattedAmount, symbol: tokenSymbol }),
           failedMessage: t('approveError'),
-          // Approve and stake in single transaction
           successCallback: async () => {
+            // Stake after approval is successful
             stakeCall({
               contractFn: () => stakingContract.write.stake([amount.bigintValue!]),
               pendingMessage: t('stakingPending', {
