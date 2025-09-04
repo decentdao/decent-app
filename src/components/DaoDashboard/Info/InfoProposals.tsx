@@ -63,8 +63,7 @@ const totalProposalsCount = (
       }, 0);
       // Then, return the highest Azorius proposal ID
       // plus the number of Snapshot proposals.
-      const tpc = highestNonSnapshotProposalId + proposals.length - nonSnapshot.length;
-      return Math.round(tpc);
+      return highestNonSnapshotProposalId + proposals.length - nonSnapshot.length;
     }
     default: {
       return 0;
