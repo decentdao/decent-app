@@ -52,5 +52,7 @@
   "approvePending": "Approving {{amount}} {{symbol}}...",
   "approveSuccess": "Successfully approved {{amount}} {{symbol}}",
   "approveError": "Failed to approve tokens",
-  "unstakingInformationDescription": "Unstaking will forfeit any pending rewards for the \n current period."
+  "unstakingInformationDescription": "Unstaking will forfeit any pending rewards for the \n current period.",
+  "tokensAvailable": "Unlocked",
+  "tokensAvailableIn": "Tokens available in {{time}}"
 }
