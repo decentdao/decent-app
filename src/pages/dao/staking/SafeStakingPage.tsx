@@ -44,7 +44,7 @@ export function SafeStakingPage() {
           borderTop="1px solid rgba(255, 255, 255, 0.10)"
           background="color-content-content1"
           boxShadow="0px 0px 0px 1px var(--colors-color-alpha-white-950)"
-          templateColumns="40% 60%"
+          templateColumns="50% 50%"
           gap="16px"
         >
           <StakeCard />
