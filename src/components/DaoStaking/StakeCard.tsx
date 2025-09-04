@@ -168,7 +168,6 @@ export default function StakeCard() {
   );
 
   const stakeAvailability = useStakeAvailability(stakedToken, isConnected);
-  console.log('🚀 ~ stakeAvailability:', stakeAvailability);
 
   // Get allowance from store
   const allowance = unstakedToken?.allowance || 0n;

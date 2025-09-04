@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { StakedTokenData } from '../../types/account';
 
@@ -13,14 +13,16 @@ export function useStakeAvailability(
   isConnected: boolean,
 ): StakeAvailabilityResult {
   const { t } = useTranslation(['staking', 'common']);
+  const [currentTime, setCurrentTime] = useState(() => Math.floor(Date.now() / 1000));
 
-  return useMemo(() => {
+  const calculateAvailability = useMemo(() => {
     // Don't show anything if user is not connected
     if (!isConnected) {
       return {
         isAvailable: false,
         timeRemaining: null,
         displayText: null,
+        secondsRemaining: 0,
       };
     }
 
@@ -35,10 +37,11 @@ export function useStakeAvailability(
         isAvailable: false,
         timeRemaining: null,
         displayText: null,
+        secondsRemaining: 0,
       };
     }
 
-    const now = BigInt(Math.floor(Date.now() / 1000)); // Current timestamp in seconds
+    const now = BigInt(currentTime);
     const unlockTime = stakedToken.userLastStakeTimestamp + stakedToken.minimumStakingPeriod;
     const secondsRemaining = unlockTime - now;
 
@@ -48,6 +51,7 @@ export function useStakeAvailability(
         isAvailable: true,
         timeRemaining: null,
         displayText: t('staking:tokensAvailable'),
+        secondsRemaining: 0,
       };
     }
 
@@ -71,12 +75,50 @@ export function useStakeAvailability(
       isAvailable: false,
       timeRemaining: timeString,
       displayText: t('staking:tokensAvailableIn', { time: timeString }),
+      secondsRemaining: secondsRemainingNumber,
     };
   }, [
     stakedToken?.minimumStakingPeriod,
     stakedToken?.userLastStakeTimestamp,
     stakedToken?.userStakedAmount,
     isConnected,
+    currentTime,
     t,
   ]);
+
+  // Set up intelligent timer based on time remaining
+  useEffect(() => {
+    if (!calculateAvailability.secondsRemaining || calculateAvailability.isAvailable) {
+      return;
+    }
+
+    const secondsRemaining = calculateAvailability.secondsRemaining;
+    let interval: number;
+
+    // If more than 2 hours left, update every hour
+    if (secondsRemaining > 2 * 60 * 60) {
+      interval = 60 * 60 * 1000; // 1 hour in milliseconds
+    } 
+    // If less than 1 hour left, update every minute
+    else if (secondsRemaining < 60 * 60) {
+      interval = 60 * 1000; // 1 minute in milliseconds
+    }
+    // Between 1-2 hours, update every hour
+    else {
+      interval = 60 * 60 * 1000; // 1 hour in milliseconds
+    }
+
+    const timer = setInterval(() => {
+      setCurrentTime(Math.floor(Date.now() / 1000));
+    }, interval);
+
+    return () => clearInterval(timer);
+  }, [calculateAvailability.secondsRemaining, calculateAvailability.isAvailable]);
+
+  // Return result without the internal secondsRemaining property
+  return {
+    isAvailable: calculateAvailability.isAvailable,
+    timeRemaining: calculateAvailability.timeRemaining,
+    displayText: calculateAvailability.displayText,
+  };
 }
