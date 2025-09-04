@@ -64,14 +64,14 @@ export function useStakeAvailability(
 
     let timeString: string;
     if (years > 0) {
-      timeString = years === 1 ? `${years} year` : `${years} years`;
+      timeString = years === 1 ? `${years} ${t('common:year')}` : `${years} ${t('common:years').toLowerCase()}`;
     } else if (days > 0) {
-      timeString = days === 1 ? `${days} day` : `${days} days`;
+      timeString = days === 1 ? `${days} ${t('common:day')}` : `${days} ${t('common:days').toLowerCase()}`;
     } else if (hours > 0) {
-      timeString = hours === 1 ? `${hours} hour` : `${hours} hours`;
+      timeString = hours === 1 ? `${hours} ${t('common:hour')}` : `${hours} ${t('common:hours').toLowerCase()}`;
     } else {
       const mins = Math.max(1, minutes);
-      timeString = mins === 1 ? `${mins} minute` : `${mins} minutes`;
+      timeString = mins === 1 ? `${mins} ${t('common:minute')}` : `${mins} ${t('common:minutes').toLowerCase()}`;
     }
 
     return {
