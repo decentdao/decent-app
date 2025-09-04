@@ -1,5 +1,5 @@
 import * as amplitude from '@amplitude/analytics-browser';
-import { Box, Divider, Flex } from '@chakra-ui/react';
+import { Box, Flex, Grid } from '@chakra-ui/react';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import BalanceCard from '../../../components/DaoStaking/BalanceCard';
@@ -38,42 +38,24 @@ export function SafeStakingPage() {
       />
 
       {!!stakedToken ? (
-        <Flex
+        <Grid
           padding="24px"
-          direction="column"
-          alignItems="flex-start"
-          gap="16px"
-          alignSelf="stretch"
           borderRadius="12px"
           borderTop="1px solid rgba(255, 255, 255, 0.10)"
           background="color-content-content1"
           boxShadow="0px 0px 0px 1px var(--colors-color-alpha-white-950)"
+          templateColumns="40% 60%"
+          gap="16px"
         >
+          <StakeCard />
           <Flex
             direction="column"
-            alignItems="flex-start"
-            gap="8px"
-            alignSelf="stretch"
+            gap="16px"
           >
-            <Flex
-              alignItems="flex-start"
-              gap="8px"
-              alignSelf="stretch"
-            >
-              <StakeCard />
-              <Flex
-                direction="column"
-                alignItems="flex-start"
-                gap="8px"
-                flex="1 0 0"
-              >
-                <BalanceCard />
-                <RewardsCard />
-              </Flex>
-            </Flex>
+            <BalanceCard />
+            <RewardsCard />
           </Flex>
-          <Divider color="color-layout-divider" />
-        </Flex>
+        </Grid>
       ) : (
         <NoStakingDeployed deploy={openSettingsModal} />
       )}
