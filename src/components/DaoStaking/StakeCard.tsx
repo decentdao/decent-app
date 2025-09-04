@@ -218,23 +218,21 @@ export default function StakeCard() {
           failedMessage: t('approveError'),
           // Approve and stake in single transaction
           successCallback: async () => {
-            setTimeout(() => {
-              stakeCall({
-                contractFn: () => stakingContract.write.stake([amount.bigintValue!]),
-                pendingMessage: t('stakingPending', {
-                  amount: formattedAmount,
-                  symbol: tokenSymbol,
-                }),
-                successMessage: t('stakingSuccess', {
-                  amount: formattedAmount,
-                  symbol: tokenSymbol,
-                }),
-                failedMessage: t('stakingError'),
-                successCallback: () => {
-                  formikHelpers.resetForm();
-                },
-              });
-            }, 2300);
+            stakeCall({
+              contractFn: () => stakingContract.write.stake([amount.bigintValue!]),
+              pendingMessage: t('stakingPending', {
+                amount: formattedAmount,
+                symbol: tokenSymbol,
+              }),
+              successMessage: t('stakingSuccess', {
+                amount: formattedAmount,
+                symbol: tokenSymbol,
+              }),
+              failedMessage: t('stakingError'),
+              successCallback: () => {
+                formikHelpers.resetForm();
+              },
+            });
           },
         });
       } else {
