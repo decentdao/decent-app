@@ -1,8 +1,9 @@
-import { Input, VStack, Grid, Text, NumberInput, NumberInputField, InputGroup, InputLeftElement } from '@chakra-ui/react';
+import { Input, VStack, Grid, Text } from '@chakra-ui/react';
 import { ContentBoxTight } from '../../../../components/ui/containers/ContentBox';
 import { BigIntInput } from '../../../../components/ui/forms/BigIntInput';
 import { DatePicker } from '../../../../components/ui/forms/DatePicker';
 import { LabelComponent } from '../../../../components/ui/forms/InputComponent';
+import { NumberInputWithAddon } from '../../../../components/ui/forms/InputWithAddon';
 import { SectionHeader } from '../../../../components/ui/forms/SectionHeader';
 import { AssetSelector } from '../../../../components/ui/utils/AssetSelector';
 import { TokenSaleFormValues } from '../types';
@@ -14,10 +15,7 @@ interface SaleTermsFormProps {
 
 export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
   return (
-    <VStack
-      align="stretch"
-      spacing={6}
-    >
+    <VStack align="stretch">
       {/* Token Details Section */}
       <ContentBoxTight>
         <SectionHeader
@@ -85,18 +83,15 @@ export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
               templateColumns: '1fr',
             }}
           >
-            <NumberInput
+            <NumberInputWithAddon
               value={values.tokenPrice}
               onChange={val => setFieldValue('tokenPrice', parseFloat(val) || 0)}
               min={0}
-            >
-              <InputGroup>
-                <InputLeftElement pointerEvents="none">
-                  <Text color="gray.500">$</Text>
-                </InputLeftElement>
-                <NumberInputField placeholder="100" paddingLeft="2rem" />
-              </InputGroup>
-            </NumberInput>
+              precision={2}
+              step={0.01}
+              placeholder="100"
+              leftAddon={<Text color="gray.500">$</Text>}
+            />
           </LabelComponent>
         </Grid>
       </ContentBoxTight>
@@ -119,18 +114,15 @@ export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
               templateColumns: '1fr',
             }}
           >
-            <NumberInput
+            <NumberInputWithAddon
               value={values.minimumFundraise}
               onChange={val => setFieldValue('minimumFundraise', parseFloat(val) || 0)}
               min={0}
-            >
-              <InputGroup>
-                <InputLeftElement pointerEvents="none">
-                  <Text color="gray.500">$</Text>
-                </InputLeftElement>
-                <NumberInputField placeholder="500,000" paddingLeft="2rem" />
-              </InputGroup>
-            </NumberInput>
+              precision={2}
+              step={0.01}
+              placeholder="500,000"
+              leftAddon={<Text color="gray.500">$</Text>}
+            />
           </LabelComponent>
 
           <LabelComponent
@@ -140,18 +132,15 @@ export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
               templateColumns: '1fr',
             }}
           >
-            <NumberInput
+            <NumberInputWithAddon
               value={values.fundraisingCap}
               onChange={val => setFieldValue('fundraisingCap', parseFloat(val) || 0)}
               min={0}
-            >
-              <InputGroup>
-                <InputLeftElement pointerEvents="none">
-                  <Text color="gray.500">$</Text>
-                </InputLeftElement>
-                <NumberInputField placeholder="10,000,000" paddingLeft="2rem" />
-              </InputGroup>
-            </NumberInput>
+              precision={2}
+              step={0.01}
+              placeholder="10,000,000"
+              leftAddon={<Text color="gray.500">$</Text>}
+            />
           </LabelComponent>
         </Grid>
 
@@ -167,18 +156,15 @@ export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
               templateRows: '1fr',
             }}
           >
-            <NumberInput
+            <NumberInputWithAddon
               value={values.valuation}
               onChange={val => setFieldValue('valuation', parseFloat(val) || 0)}
               min={0}
-            >
-              <InputGroup>
-                <InputLeftElement pointerEvents="none">
-                  <Text color="gray.500">$</Text>
-                </InputLeftElement>
-                <NumberInputField placeholder="5,000,000" paddingLeft="2rem" />
-              </InputGroup>
-            </NumberInput>
+              precision={2}
+              step={0.01}
+              placeholder="5,000,000"
+              leftAddon={<Text color="gray.500">$</Text>}
+            />
           </LabelComponent>
 
           <LabelComponent
@@ -215,31 +201,22 @@ export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
         >
           <LabelComponent
             label="Minimum Purchase (USD)"
-            helper="Leave blank for no purchase limits"
+            subLabel="Leave blank for no purchase limits"
             isRequired={false}
             gridContainerProps={{
               templateColumns: '1fr',
             }}
           >
-            <NumberInput
+            <NumberInputWithAddon
               value={values.minPurchase}
               onChange={val => setFieldValue('minPurchase', parseFloat(val) || 0)}
               min={0}
-            >
-              <InputGroup>
-                <InputLeftElement pointerEvents="none">
-                  <Text color="gray.500">$</Text>
-                </InputLeftElement>
-                <NumberInputField placeholder="100" paddingLeft="2rem" />
-              </InputGroup>
-            </NumberInput>
-            <Text
-              fontSize="sm"
-              color="gray.500"
-              mt={1}
-            >
-              min
-            </Text>
+              precision={2}
+              step={0.01}
+              placeholder="100"
+              leftAddon={<Text color="gray.500">$</Text>}
+              rightAddon={<Text>min</Text>}
+            />
           </LabelComponent>
 
           <LabelComponent
@@ -249,25 +226,16 @@ export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
               templateColumns: '1fr',
             }}
           >
-            <NumberInput
+            <NumberInputWithAddon
               value={values.maxPurchase}
               onChange={val => setFieldValue('maxPurchase', parseFloat(val) || 0)}
               min={0}
-            >
-              <InputGroup>
-                <InputLeftElement pointerEvents="none">
-                  <Text color="gray.500">$</Text>
-                </InputLeftElement>
-                <NumberInputField placeholder="10,000" paddingLeft="2rem" />
-              </InputGroup>
-            </NumberInput>
-            <Text
-              fontSize="sm"
-              color="gray.500"
-              mt={1}
-            >
-              max
-            </Text>
+              precision={2}
+              step={0.01}
+              placeholder="10,000"
+              leftAddon={<Text color="gray.500">$</Text>}
+              rightAddon={<Text>max</Text>}
+            />
           </LabelComponent>
         </Grid>
       </ContentBoxTight>
