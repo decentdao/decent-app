@@ -33,18 +33,36 @@ export function SafeTokenSalePage() {
   const renderCurrentStage = (values: TokenSaleFormValues, setFieldValue: any) => {
     switch (currentStage) {
       case 0:
-        return <ProjectOverviewForm values={values} setFieldValue={setFieldValue} />;
+        return (
+          <ProjectOverviewForm
+            values={values}
+            setFieldValue={setFieldValue}
+          />
+        );
       case 1:
-        return <SaleTermsForm values={values} setFieldValue={setFieldValue} />;
+        return (
+          <SaleTermsForm
+            values={values}
+            setFieldValue={setFieldValue}
+          />
+        );
       case 2:
-        return <BuyerRequirementsForm values={values} setFieldValue={setFieldValue} />;
+        return (
+          <BuyerRequirementsForm
+            values={values}
+            setFieldValue={setFieldValue}
+          />
+        );
       default:
         return null;
     }
   };
 
   return (
-    <Box maxW={CONTENT_MAXW} mx="auto">
+    <Box
+      maxW={CONTENT_MAXW}
+      mx="auto"
+    >
       <PageHeader
         breadcrumbs={[
           {
@@ -53,17 +71,23 @@ export function SafeTokenSalePage() {
           },
         ]}
       />
-      
+
       <Formik
         initialValues={initialValues}
         onSubmit={handleSubmit}
       >
         {({ values, setFieldValue }) => (
           <Form>
-            <VStack spacing={8} align="stretch">
+            <VStack
+              spacing={8}
+              align="stretch"
+            >
               {renderCurrentStage(values, setFieldValue)}
-              
-              <Flex justify="space-between" pt={6}>
+
+              <Flex
+                justify="space-between"
+                pt={6}
+              >
                 <Button
                   variant="secondary"
                   onClick={handlePrevious}
@@ -71,7 +95,7 @@ export function SafeTokenSalePage() {
                 >
                   Previous
                 </Button>
-                
+
                 <Button
                   variant="primary"
                   onClick={currentStage === stages.length - 1 ? undefined : handleNext}

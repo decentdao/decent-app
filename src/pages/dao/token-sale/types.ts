@@ -7,14 +7,14 @@ export interface TokenSaleFormValues {
   githubLink: string;
   telegramGroup: string;
   discordServer: string;
-  
+
   // Sale Terms
   startDate: Date | null;
   endDate: Date | null;
   totalSupply: string;
   salePrice: string;
   acceptedToken: string[];
-  
+
   // Buyer Requirements
   minPurchase: string;
   maxPurchase: string;

@@ -10,13 +10,19 @@ interface BuyerRequirementsFormProps {
 
 export function BuyerRequirementsForm({ values, setFieldValue }: BuyerRequirementsFormProps) {
   return (
-    <VStack spacing={8} align="stretch">
+    <VStack
+      spacing={8}
+      align="stretch"
+    >
       <SectionHeader
         title="Buyer Requirements"
         description="Set purchase limits and optional verification requirements for your token sale."
       />
-      
-      <VStack spacing={6} align="stretch">
+
+      <VStack
+        spacing={6}
+        align="stretch"
+      >
         <LabelComponent
           label="Minimum Purchase"
           isRequired={true}
@@ -26,13 +32,13 @@ export function BuyerRequirementsForm({ values, setFieldValue }: BuyerRequiremen
         >
           <NumberInput
             value={values.minPurchase}
-            onChange={(val) => setFieldValue('minPurchase', val)}
+            onChange={val => setFieldValue('minPurchase', val)}
             min={0}
           >
             <NumberInputField placeholder="Enter minimum purchase amount" />
           </NumberInput>
         </LabelComponent>
-        
+
         <LabelComponent
           label="Maximum Purchase"
           isRequired={true}
@@ -42,30 +48,30 @@ export function BuyerRequirementsForm({ values, setFieldValue }: BuyerRequiremen
         >
           <NumberInput
             value={values.maxPurchase}
-            onChange={(val) => setFieldValue('maxPurchase', val)}
+            onChange={val => setFieldValue('maxPurchase', val)}
             min={0}
           >
             <NumberInputField placeholder="Enter maximum purchase amount" />
           </NumberInput>
         </LabelComponent>
-        
+
         <InputComponent
           label="Whitelist Address (Optional)"
           isRequired={false}
           value={values.whitelistAddress}
-          onChange={(e) => setFieldValue('whitelistAddress', e.target.value)}
+          onChange={e => setFieldValue('whitelistAddress', e.target.value)}
           testId="whitelist-address"
           placeholder="Enter whitelist contract address"
           gridContainerProps={{
             templateColumns: '1fr',
           }}
         />
-        
+
         <InputComponent
           label="KYC Provider (Optional)"
           isRequired={false}
           value={values.kycProvider}
-          onChange={(e) => setFieldValue('kycProvider', e.target.value)}
+          onChange={e => setFieldValue('kycProvider', e.target.value)}
           testId="kyc-provider"
           placeholder="Enter KYC provider details"
           gridContainerProps={{
