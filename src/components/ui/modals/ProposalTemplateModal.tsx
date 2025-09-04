@@ -189,6 +189,7 @@ export default function ProposalTemplateModal({
                 helper={t('helperEthValue', { ns: 'proposal' })}
                 isRequired={false}
                 errorMessage={undefined}
+                parentFormikValue={transaction.ethValue}
                 value={transaction.ethValue.bigintValue || 0n}
                 onChange={value => {
                   handleEthValueChange({ transactionIndex, value });

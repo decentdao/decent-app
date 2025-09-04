@@ -134,6 +134,7 @@ export function AzoriusTokenAllocations(props: ICreationStepProps) {
                                   setFieldValue('erc20Token.parentAllocationAmount', valuePair)
                                 }
                                 isInvalid={!!allocationErrorMessage}
+                                parentFormikValue={values.erc20Token.parentAllocationAmount}
                               />
                             </LabelWrapper>
                           </LabelComponent>
