@@ -3,7 +3,7 @@ import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
-import { Address, encodeFunctionData, getContract, isHex } from 'viem';
+import { Address, encodeFunctionData, getContract, Hex, isHex, zeroAddress } from 'viem';
 import GnosisSafeL2Abi from '../../assets/abi/GnosisSafeL2';
 import MultiSendCallOnlyAbi from '../../assets/abi/MultiSendCallOnly';
 import { SENTINEL_ADDRESS } from '../../constants/common';
@@ -27,6 +27,7 @@ import { DecentModule } from './../../types/fractal';
 import { useDecentModules } from './loaders/useDecentModules';
 import useSubmitProposal from './proposal/useSubmitProposal';
 import { useCurrentDAOKey } from './useCurrentDAOKey';
+import { useGetSubDAOData } from './useGetSubDAOData';
 
 const useDeployAzorius = () => {
   const navigate = useNavigate();
@@ -65,6 +66,8 @@ const useDeployAzorius = () => {
 
   const publicClient = useNetworkPublicClient();
   const safeApi = useSafeAPI();
+  const { getSubDAOData } = useGetSubDAOData();
+
   const lookupModules = useDecentModules();
 
   const getParentDAOModules = useCallback(
@@ -102,8 +105,13 @@ const useDeployAzorius = () => {
       let parentStrategyType: VotingStrategyType | undefined;
       let attachFractalModule = false;
       let parentModules: DecentModule[];
+      let deployDaoData = { ...daoData };
 
       if (subgraphInfo?.parentAddress) {
+        if (safe.guard) {
+          const subDAOData = await getSubDAOData(safe.guard);
+          deployDaoData = { ...deployDaoData, ...subDAOData };
+        }
         const loadedParentModule = await getParentDAOModules(subgraphInfo.parentAddress);
         if (!loadedParentModule) {
           toast.error(t('errorLoadingParentNode'));
@@ -145,7 +153,7 @@ const useDeployAzorius = () => {
       const txBuilderFactory = new TxBuilderFactory(
         publicClient,
         true,
-        daoData,
+        deployDaoData,
         compatibilityFallbackHandler,
         votesErc20MasterCopy,
         keyValuePairs,
@@ -183,26 +191,52 @@ const useDeployAzorius = () => {
         throw new Error('Encoded safeTx is not a hex string');
       }
 
-      const encodedAddOwnerWithThreshold = encodeFunctionData({
-        abi: GnosisSafeL2Abi,
-        functionName: 'addOwnerWithThreshold',
-        args: [multiSendCallOnly, 1n],
+      const transactions: {
+        to: Address;
+        value: bigint;
+        data: Hex;
+      }[] = [];
+
+      // If a subDAO is being upgraded, the first transaction removes the existing guard.
+      // This is necessary to allow the new Azorius module to be added as an owner.
+      if (safe.guard) {
+        transactions.push({
+          to: safeAddress,
+          value: 0n,
+          data: encodeFunctionData({
+            abi: GnosisSafeL2Abi,
+            functionName: 'setGuard',
+            args: [zeroAddress],
+          }),
+        });
+      }
+
+      // TRANSACTION 2: Add the MultiSend contract as a temporary owner.
+      transactions.push({
+        to: safeAddress,
+        value: 0n,
+        data: encodeFunctionData({
+          abi: GnosisSafeL2Abi,
+          functionName: 'addOwnerWithThreshold',
+          args: [multiSendCallOnly, 1n],
+        }),
       });
 
-      const encodedMultisend = encodeFunctionData({
-        abi: MultiSendCallOnlyAbi,
-        functionName: 'multiSend',
-        args: [safeTx],
+      // TRANSACTION 3: Execute the main Azorius setup via the MultiSend contract.
+      transactions.push({
+        to: multiSendCallOnly,
+        value: 0n,
+        data: encodeFunctionData({
+          abi: MultiSendCallOnlyAbi,
+          functionName: 'multiSend',
+          args: [safeTx],
+        }),
       });
-
-      // @todo - If Safe has subDAOs - we'll need to also swap Guard contracts there.
-      // However, it will be possible only if FractalModule is attached
-      // Otherwise - we need to provide some UI / UX that will inform user about the impact of modifying governance without ability to swap Guard contracts.
 
       const proposalData: ProposalExecuteData = {
-        targets: [safeAddress, multiSendCallOnly],
-        values: [0n, 0n],
-        calldatas: [encodedAddOwnerWithThreshold, encodedMultisend],
+        targets: transactions.map(tx => tx.to),
+        values: transactions.map(tx => tx.value),
+        calldatas: transactions.map(tx => tx.data),
         metaData: {
           title: '',
           description: '',
@@ -246,6 +280,7 @@ const useDeployAzorius = () => {
       t,
       getParentDAOModules,
       getAddressContractType,
+      getSubDAOData,
       navigate,
       addressPrefix,
     ],
