@@ -9,38 +9,93 @@ const DECENT_API_URL = import.meta.env.VITE_APP_DECENT_API_URL;
 
 const axiosClient = axios.create({ baseURL: DECENT_API_URL });
 
-interface GovernanceModule {
+type SubDaoInfo = {
   address: Address;
-  type: 'AZORIUS' | 'FRACTAL';
-}
+  name: string | null;
+  isAzorius: boolean;
+  subDaos: SubDaoInfo[];
+};
 
-interface DAOBasic {
+type DAOBasic = {
   name: string;
   address: Address;
+  safe: {
+    nonce: number;
+    threshold: number;
+    owners: Address[];
+  }
   chainId: number;
   snapshotENS: string | null;
   parentAddress: Address | null;
   proposalTemplatesCID: string;
-  governanceModules: GovernanceModule[];
+  governanceModules: {
+    address: Address;
+    type: 'AZORIUS' | 'FRACTAL';
+    executionPeriod: number | null;
+    timelockPeriod: number | null;
+    strategies: {
+      address: Address;
+      version: number;
+      requiredProposerWeight: number | null;
+      votingPeriod: number | null;
+      basisNumerator: number | null;
+      quorumNumerator: number | null;
+      votingTokens: {
+        address: Address;
+        type: 'ERC20' | 'ERC721';
+        weight: number | undefined;
+      }[];
+    }[];
+  }[];
+  governanceGuard: {
+    address: Address;
+    executionPeriod: number | null;
+    timelockPeriod: number | null;
+    freezeVotingStrategy: {
+      address: Address;
+      freezePeriod: number | null;
+      freezeProposalPeriod: number | null;
+      freezeVotesThreshold: number | null;
+      freezeVoteType: string | null;
+    } | null;
+  } | null;
+  roles: {
+    terms: {
+      active: boolean;
+      wearerAddress: Address | null;
+      eligibility: Address;
+      termEnd: number;
+    }[] | undefined;
+    daoChainId: number;
+    daoAddress: Address;
+    hatId: string;
+    detailsCID: string | null;
+    wearerAddress: Address | null;
+    eligibility: Address | null;
+  }[];
+  creatorAddress: Address | null;
+  createdAt: number;
+  updatedAt: number | null;
+  subDaos: SubDaoInfo[];
 }
 
-interface Token {
+type Token = {
   address: Address;
   symbol: string;
   name: string;
   balance: string;
   decimals: number;
-}
+};
 
-interface DAOWithTokens extends DAOBasic {
+type DAOWithTokens = DAOBasic & {
   token: Token;
   stakedToken?: Token;
-}
+};
 
-interface DAOQueryResponse {
+type DAOQueryResponse = {
   success: boolean;
   data: DAOBasic[];
-}
+};
 
 export async function queryDaosByName(name: string) {
   const response: AxiosResponse<DAOQueryResponse> = await axiosClient.get('/d', {
@@ -55,14 +110,7 @@ export async function getDaoData(chainId: number, daoAddress: Address) {
   );
 
   if (!response.data.success) {
-    return {
-      parentAddress: null,
-      childAddresses: [],
-      name: null,
-      snapshotENS: null,
-      proposalTemplatesCID: null,
-      governanceModules: [],
-    };
+    return null;
   }
 
   return response.data.data;
@@ -93,6 +141,43 @@ export async function getDaoRevenueSharingWallets(
     if (axios.isAxiosError(e) && e.response?.status === 404) {
       return [];
     }
+    logError(e);
+    return [];
+  }
+}
+
+type ProposalTransaction = {
+  to: Address;
+  value: string;
+  data: string;
+  operation: number;
+};
+
+type DAOProposal = {
+  id: number;
+  title: string;
+  description: string;
+  proposer: Address;
+  votingStrategyAddress: Address;
+  transactions: ProposalTransaction[];
+  proposedTxHash: string;
+  executedTxHash: string | null;
+  createdAt: number;
+};
+
+export async function getDaoProposals(chainId: number, daoAddress: Address) {
+  try {
+    const response: AxiosResponse<{
+      success: boolean;
+      data: DAOProposal[];
+    }> = await axiosClient.get(`/d/${chainId}/${daoAddress}/proposals`);
+
+    if (!response.data.success) {
+      return [];
+    }
+
+    return response.data.data;
+  } catch (e) {
     logError(e);
     return [];
   }
