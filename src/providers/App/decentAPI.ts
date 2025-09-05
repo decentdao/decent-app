@@ -1,7 +1,7 @@
 // @todo this file, and the types defined here, should be replaced with decent-sdk package once it's ready
 
 import axios, { AxiosResponse } from 'axios';
-import { Address } from 'viem';
+import { Address, Hex } from 'viem';
 import { logError } from '../../helpers/errorLogging';
 import { RevenueSharingWallet } from '../../types/revShare';
 
@@ -149,7 +149,7 @@ export async function getDaoRevenueSharingWallets(
 type ProposalTransaction = {
   to: Address;
   value: string;
-  data: string;
+  data: Hex;
   operation: number;
 };
 

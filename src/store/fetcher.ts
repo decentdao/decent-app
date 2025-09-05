@@ -11,6 +11,7 @@ import {
   DAOKey,
   DAOSubgraph,
   DecentModule,
+  DecodedTransaction,
   FractalModuleType,
   FractalProposal,
   FractalProposalState,
@@ -174,6 +175,7 @@ export const useDAOStoreFetcher = ({
                 value: BigInt(votingPeriodSeconds), 
                 formatted: getTimeDuration(votingPeriodSeconds)
               } : undefined,
+              // @TODO: why is it double??
               quorumPercentage: strategy.quorumNumerator !== null && strategy.quorumNumerator !== undefined && strategy.basisNumerator ? (() => {
                 // Convert basis points to percentage (e.g., 1000/10000 = 0.1 = 10%)
                 const percentage = (strategy.quorumNumerator * 100) / strategy.basisNumerator;
@@ -207,13 +209,23 @@ export const useDAOStoreFetcher = ({
           
           // Fetch and set proposals
           const apiProposals = await getDaoProposals(chain.id, safeAddress);
-          if (apiProposals && apiProposals.length > 0) {
+          if (apiProposals) {
             // Transform API proposals to AzoriusProposal format
             const transformedProposals: AzoriusProposal[] = apiProposals.map(p => ({
               proposalId: p.id.toString(),
               proposer: p.proposer,
               transactionHash: p.proposedTxHash,
-              title: p.title,
+              data: {
+                metaData: {
+                  title: p.title,
+                  description: p.description
+                },
+                transactions: p.transactions.map(tx => ({
+                  ...tx,
+                  value: BigInt(tx.value)
+                })),
+                decodedTransactions: []
+              },
               description: p.description,
               // Required by GovernanceActivity
               eventDate: new Date(p.createdAt * 1000),
