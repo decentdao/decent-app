@@ -20,10 +20,9 @@ export function SafeStakingPage() {
 
   const { daoKey } = useCurrentDAOKey();
   const {
-    governance: { stakedToken, erc20Token },
+    governance: { stakedToken },
   } = useDAOStore({ daoKey });
   const { t } = useTranslation('staking');
-  console.log('🚀 ~ erc20Token:', erc20Token);
   const { open: openSettingsModal } = useDecentModal(ModalType.SAFE_SETTINGS);
 
   return (
