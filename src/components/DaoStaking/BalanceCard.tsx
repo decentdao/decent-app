@@ -1,4 +1,5 @@
 import { Flex, Progress, Text } from '@chakra-ui/react';
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { formatUnits } from 'viem';
 import { useCurrentDAOKey } from '../../hooks/DAO/useCurrentDAOKey';
@@ -65,7 +66,18 @@ export default function BalanceCard() {
     governance: { isAzorius, stakedToken, votesToken, erc20Token },
   } = useDAOStore({ daoKey });
 
-  const unstakedToken = isAzorius ? votesToken : erc20Token;
+  const unstakedToken = useMemo(
+    () =>
+      !isAzorius
+        ? // if not azorius, return erc20 token as unstaked token
+          erc20Token
+        : stakedToken?.address === votesToken?.address
+          ? // if staked token is the same as votes token, return erc20 token as unstaked token
+            erc20Token
+          : // else return votes token as unstaked token
+            votesToken,
+    [isAzorius, votesToken, erc20Token, stakedToken?.address],
+  );
 
   const stBalance = stakedToken?.balance || 0n;
   const unStakedBalance = unstakedToken?.balance || 0n;

@@ -464,11 +464,7 @@ export const createGovernancesSlice: StateCreator<
   setERC20TokenAccountData: (daoKey, erc20TokenAccountData) => {
     set(
       state => {
-        if (
-          !state.governances[daoKey] ||
-          state.governances[daoKey].isAzorius ||
-          !state.governances[daoKey].erc20Token
-        ) {
+        if (!state.governances[daoKey] || !state.governances[daoKey].erc20Token) {
           return;
         }
 

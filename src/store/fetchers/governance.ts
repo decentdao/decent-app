@@ -1020,7 +1020,7 @@ export function useGovernanceFetcher() {
 
       let daoErc20Token;
       if (governance.type === GovernanceType.AZORIUS_ERC20) {
-        daoErc20Token = governance.votesToken;
+        daoErc20Token = governance.erc20Token ? governance.erc20Token : governance.votesToken;
       } else if (governance.type === GovernanceType.MULTISIG) {
         daoErc20Token = governance.erc20Token;
       }
