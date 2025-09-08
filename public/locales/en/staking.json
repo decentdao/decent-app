@@ -52,5 +52,7 @@
   "approvePending": "Approving {{amount}} {{symbol}}...",
   "approveSuccess": "Successfully approved {{amount}} {{symbol}}",
   "approveError": "Failed to approve tokens",
+  "tokensAvailable": "Unlocked",
+  "tokensAvailableIn": "Tokens available in {{time}}",
   "unstakingInformationDescription": "Unstaking will reduce your share of any future rewards."
 }

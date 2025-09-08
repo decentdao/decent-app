@@ -5,9 +5,11 @@ import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { formatUnits, getContract } from 'viem';
+import { useAccount } from 'wagmi';
 import * as Yup from 'yup';
 import { useCurrentDAOKey } from '../../hooks/DAO/useCurrentDAOKey';
 import { useNetworkWalletClient } from '../../hooks/useNetworkWalletClient';
+import { useStakeAvailability } from '../../hooks/utils/useStakeAvailability';
 import { useTransaction } from '../../hooks/utils/useTransaction';
 import { useDAOStore } from '../../providers/App/AppProvider';
 import { BigIntValuePair } from '../../types';
@@ -28,6 +30,8 @@ function StakeFormPanel({
   maxButtonOnClick,
   buttonsDisabled,
   mode,
+  availabilityText,
+  isAvailable,
 }: {
   maxAvailableValue: string;
   tokenSymbol: string;
@@ -35,6 +39,8 @@ function StakeFormPanel({
   maxButtonOnClick: () => void;
   buttonsDisabled: boolean;
   mode: Mode;
+  availabilityText?: string | null;
+  isAvailable?: boolean;
 }) {
   const { t } = useTranslation('staking');
   const { values, setFieldValue } = useFormikContext<StakeFormProps>();
@@ -44,6 +50,7 @@ function StakeFormPanel({
       alignItems="flex-start"
       gap={2}
       alignSelf="stretch"
+      mt={4}
     >
       <Flex
         direction="column"
@@ -52,15 +59,25 @@ function StakeFormPanel({
         alignSelf="stretch"
       >
         <Flex
-          alignItems="flex-start"
+          alignItems="center"
+          justifyContent="space-between"
           alignSelf="stretch"
         >
           <Text
             color="color-content-muted"
-            textStyle="text-xs-regular"
+            textStyle="text-sm-regular"
           >
             {mode === 'stake' ? t('amountToStake') : t('amountToUnstake')}
           </Text>
+          {availabilityText && (
+            <Text
+              color={isAvailable ? 'color-success-400' : 'color-warning-200'}
+              textStyle="text-sm-regular"
+              textAlign="right"
+            >
+              {availabilityText}
+            </Text>
+          )}
         </Flex>
 
         <BigIntInput
@@ -128,6 +145,7 @@ function StakeFormPanel({
 export default function StakeCard() {
   const { t } = useTranslation('staking');
   const { daoKey } = useCurrentDAOKey();
+  const { isConnected } = useAccount();
   const {
     governance: { isAzorius, stakedToken, votesToken, erc20Token },
   } = useDAOStore({ daoKey });
@@ -143,12 +161,13 @@ export default function StakeCard() {
 
   const stakedTokenSymbol = stakedToken?.symbol || '';
   const maxAvailableToUnstake = formatUnits(stakedToken?.balance || 0n, stakedToken?.decimals || 0);
-
   const unStakedTokenSymbol = unstakedToken?.symbol || '';
   const maxAvailableToStake = formatUnits(
     unstakedToken?.balance || 0n,
     unstakedToken?.decimals || 0,
   );
+
+  const stakeAvailability = useStakeAvailability(stakedToken, isConnected);
 
   // Get allowance from store
   const allowance = unstakedToken?.allowance || 0n;
@@ -336,6 +355,8 @@ export default function StakeCard() {
                           !stakedToken?.balance || stakedToken?.balance === 0n || pending
                         }
                         mode="unstake"
+                        availabilityText={stakeAvailability.displayText}
+                        isAvailable={stakeAvailability.isAvailable}
                       />
                       <UnstakeAdditionalInfo />
                     </TabPanel>
