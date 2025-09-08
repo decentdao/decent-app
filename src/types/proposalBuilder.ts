@@ -70,6 +70,7 @@ export enum ProposalActionType {
   DAPP_INTEGRATION = 'dapp_integration',
   TRANSACTION_BUILDER = 'transaction_builder',
   UPDATE_REVENUE_SHARE_SPLITS = 'update_revenue_share_splits',
+  CREATE_TEMPLATE = 'create_template',
 }
 
 export type CreateProposalActionData<T = BigIntValuePair> = {

@@ -31,7 +31,7 @@ export function SafeStakingPage() {
         title={t('stakingTitle')}
         breadcrumbs={[
           {
-            terminus: t('staking'),
+            terminus: t('stakingTitle'),
             path: '',
           },
         ]}
