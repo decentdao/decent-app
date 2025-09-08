@@ -59,6 +59,7 @@ export function VotesTokenNew(props: ICreationStepProps) {
           data-testid="tokenVoting-tokenSupplyInput"
           onKeyDown={restrictChars}
           placeholder="100,000,000"
+          parentFormikValue={values.erc20Token.tokenSupply}
         />
       </LabelComponent>
     </Flex>
