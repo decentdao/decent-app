@@ -6,7 +6,6 @@ import { Address } from 'viem';
 import { NEUTRAL_2_50_TRANSPARENT } from '../../../constants/common';
 import { AirdropData, CreateProposalTransaction, ProposalTemplate } from '../../../types';
 import { SendAssetsData } from '../../../utils/dao/prepareSendAssetsActionData';
-import { ProposalTransactionsFormModal } from '../../ProposalBuilder/ProposalTransactionsForm';
 import AddSignerModal from '../../SafeSettings/Signers/modals/AddSignerModal';
 import RemoveSignerModal from '../../SafeSettings/Signers/modals/RemoveSignerModal';
 import DraggableDrawer from '../containers/DraggableDrawer';
@@ -32,6 +31,7 @@ import { SafeProposalDappDetailModal } from './SafeDapp/SafeProposalDappDetailMo
 import { SafeProposalDappsModal } from './SafeDapp/SafeProposalDappsModal';
 import { SafeSettingsModal } from './SafeSettingsModal';
 import { SendAssetsModal } from './SendAssetsModal';
+import { TransactionBuilderModal } from './TransactionBuilderModal';
 import { UnsavedChangesWarningContent } from './UnsavedChangesWarningContent';
 
 export enum ModalType {
@@ -126,6 +126,7 @@ export type ModalPropsTypes = {
   };
   [ModalType.TRANSACTION_BUILDER]: {
     onSubmit?: (transactionBuilderData: FormikProps<CreateProposalTransaction[]>['values']) => void;
+    submitButtonText?: string;
   };
   [ModalType.DAPPS_BROWSER]: {};
   [ModalType.DAPP_BROWSER]: {
@@ -395,14 +396,12 @@ const getModalData = (args: {
     case ModalType.TRANSACTION_BUILDER:
       modalTitle = t('transactionBuilderTitle');
       modalContent = (
-        <ProposalTransactionsFormModal
+        <TransactionBuilderModal
           pendingTransaction={false}
-          values={[]}
-          errors={undefined}
-          setFieldValue={() => {}}
           isProposalMode={true}
           onSubmit={current.props.onSubmit}
           onClose={popModal}
+          submitButtonText={current.props.submitButtonText}
         />
       );
       modalSize = '2xl';
