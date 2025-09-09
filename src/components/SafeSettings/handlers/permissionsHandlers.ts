@@ -13,7 +13,9 @@ import {
 } from 'viem';
 import {
   linearERC20VotingSetupParams,
+  linearERC20VotingV1SetupParams,
   linearERC721VotingSetupParams,
+  linearERC721VotingV1SetupParams,
 } from '../../../constants/params';
 import { getRandomBytes } from '../../../helpers';
 import { generateContractByteCodeLinear } from '../../../models/helpers/utils';
@@ -34,11 +36,18 @@ interface PermissionsHandlerDependencies {
   moduleAzoriusAddress: Address | undefined;
   linearVotingErc20Address: Address | undefined;
   linearVotingErc721Address: Address | undefined;
+  linearVotingErc20V1MasterCopy: Address;
+  linearVotingErc721V1MasterCopy: Address;
   linearVotingErc20WithHatsWhitelistingAddress: Address | undefined;
   linearVotingErc721WithHatsWhitelistingAddress: Address | undefined;
   linearVotingErc20MasterCopy: Address;
   linearVotingErc721MasterCopy: Address;
   zodiacModuleProxyFactory: Address;
+  accountAbstraction:
+    | {
+        lightAccountFactory: Address;
+      }
+    | undefined;
   gaslessVotingFeatureEnabled: boolean;
   publicClient: PublicClient;
 }
@@ -55,7 +64,11 @@ export const handleEditPermissions = async (
     linearVotingErc721Address,
     linearVotingErc20MasterCopy,
     linearVotingErc721MasterCopy,
+    linearVotingErc20V1MasterCopy,
+    linearVotingErc721V1MasterCopy,
     zodiacModuleProxyFactory,
+    accountAbstraction,
+    gaslessVotingFeatureEnabled,
     publicClient,
   } = deps;
 
@@ -134,18 +147,27 @@ export const handleEditPermissions = async (
 
     const quorumDenominator = await linearERC20VotingMasterCopyContract.read.QUORUM_DENOMINATOR();
 
-    const encodedStrategyInitParams = encodeAbiParameters(
-      parseAbiParameters(linearERC20VotingSetupParams),
-      [
-        safe.address, // owner
-        votesToken.address, // governance token
-        moduleAzoriusAddress, // Azorius module
-        Number(votingStrategy.votingPeriod.value),
-        proposerThreshold.bigintValue, // proposer weight, how much is needed to create a proposal.
-        (votingStrategy.quorumPercentage.value * quorumDenominator) / 100n,
-        500000n,
-      ],
-    );
+    const encodedStrategyInitParams =
+      gaslessVotingFeatureEnabled && accountAbstraction
+        ? encodeAbiParameters(parseAbiParameters(linearERC20VotingV1SetupParams), [
+            safe.address, // owner
+            votesToken.address, // governance token
+            moduleAzoriusAddress, // Azorius module
+            Number(votingStrategy.votingPeriod.value),
+            proposerThreshold.bigintValue, // proposer weight, how much is needed to create a proposal.
+            (votingStrategy.quorumPercentage.value * quorumDenominator) / 100n,
+            500000n,
+            accountAbstraction.lightAccountFactory,
+          ])
+        : encodeAbiParameters(parseAbiParameters(linearERC20VotingSetupParams), [
+            safe.address, // owner
+            votesToken.address, // governance token
+            moduleAzoriusAddress, // Azorius module
+            Number(votingStrategy.votingPeriod.value),
+            proposerThreshold.bigintValue, // proposer weight, how much is needed to create a proposal.
+            (votingStrategy.quorumPercentage.value * quorumDenominator) / 100n,
+            500000n,
+          ]);
 
     const encodedStrategySetupData = encodeFunctionData({
       abi: legacy.abis.LinearERC20Voting,
@@ -153,8 +175,9 @@ export const handleEditPermissions = async (
       args: [encodedStrategyInitParams],
     });
 
-    // FIXME use v1 when gaslessVotingFeatureEnabled && accountAbstraction?
-    const masterCopy = linearVotingErc20MasterCopy;
+    const masterCopy = gaslessVotingFeatureEnabled
+      ? linearVotingErc20V1MasterCopy
+      : linearVotingErc20MasterCopy;
 
     const strategyByteCodeLinear = generateContractByteCodeLinear(masterCopy);
 
@@ -202,19 +225,29 @@ export const handleEditPermissions = async (
       throw new Error('Voting strategy or NFT votes tokens not found');
     }
 
-    const encodedStrategyInitParams = encodeAbiParameters(
-      parseAbiParameters(linearERC721VotingSetupParams),
-      [
-        safe.address, // owner
-        erc721Tokens.map(token => token.address), // governance token
-        erc721Tokens.map(token => token.votingWeight),
-        moduleAzoriusAddress,
-        Number(votingStrategy.votingPeriod.value),
-        votingStrategy.quorumThreshold.value,
-        proposerThreshold.bigintValue,
-        500000n,
-      ],
-    );
+    const encodedStrategyInitParams =
+      gaslessVotingFeatureEnabled && accountAbstraction
+        ? encodeAbiParameters(parseAbiParameters(linearERC721VotingV1SetupParams), [
+            safe.address, // owner
+            erc721Tokens.map(token => token.address), // governance token
+            erc721Tokens.map(token => token.votingWeight),
+            moduleAzoriusAddress,
+            Number(votingStrategy.votingPeriod.value),
+            votingStrategy.quorumThreshold.value,
+            proposerThreshold.bigintValue,
+            500000n,
+            accountAbstraction.lightAccountFactory,
+          ])
+        : encodeAbiParameters(parseAbiParameters(linearERC721VotingSetupParams), [
+            safe.address, // owner
+            erc721Tokens.map(token => token.address), // governance token
+            erc721Tokens.map(token => token.votingWeight),
+            moduleAzoriusAddress,
+            Number(votingStrategy.votingPeriod.value),
+            votingStrategy.quorumThreshold.value,
+            proposerThreshold.bigintValue,
+            500000n,
+          ]);
 
     const encodedStrategySetupData = encodeFunctionData({
       abi: legacy.abis.LinearERC721Voting,
@@ -222,8 +255,9 @@ export const handleEditPermissions = async (
       args: [encodedStrategyInitParams],
     });
 
-    // FIXME use v1?
-    const masterCopy = linearVotingErc721MasterCopy;
+    const masterCopy = gaslessVotingFeatureEnabled
+      ? linearVotingErc721V1MasterCopy
+      : linearVotingErc721MasterCopy;
 
     const strategyByteCodeLinear = generateContractByteCodeLinear(masterCopy);
 
