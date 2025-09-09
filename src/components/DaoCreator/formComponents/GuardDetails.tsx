@@ -111,7 +111,6 @@ function GuardDetails(props: ICreationStepProps) {
                     onChange={valuePair => setFieldValue('freeze.timelockPeriod', valuePair)}
                     decimalPlaces={0}
                     min="1"
-                    parentFormikValue={values.freeze.timelockPeriod}
                     data-testid="guardConfig-executionDetails"
                   />
                   <InputRightElement mr="4">{minutes}</InputRightElement>
@@ -128,7 +127,6 @@ function GuardDetails(props: ICreationStepProps) {
                     onChange={valuePair => setFieldValue('freeze.executionPeriod', valuePair)}
                     decimalPlaces={0}
                     min="1"
-                    parentFormikValue={values.freeze.executionPeriod}
                     data-testid="guardConfig-executionDetails"
                   />
                   <InputRightElement mr="4">{minutes}</InputRightElement>
@@ -171,7 +169,6 @@ function GuardDetails(props: ICreationStepProps) {
                 onChange={valuePair => setFieldValue('freeze.freezeProposalPeriod', valuePair)}
                 decimalPlaces={0}
                 min="1"
-                parentFormikValue={values.freeze.freezeProposalPeriod}
                 data-testid="guardConfig-freezeProposalDuration"
               />
               <InputRightElement mr="4">{minutes}</InputRightElement>
@@ -195,7 +192,6 @@ function GuardDetails(props: ICreationStepProps) {
                 onChange={valuePair => setFieldValue('freeze.freezePeriod', valuePair)}
                 decimalPlaces={0}
                 min="1"
-                parentFormikValue={values.freeze.freezePeriod}
                 data-testid="guardConfig-freezeDuration"
               />
 

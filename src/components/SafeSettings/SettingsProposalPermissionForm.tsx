@@ -89,7 +89,6 @@ export function SettingsProposalPermissionForm() {
         labelColor="color-neutral-300"
       >
         <BigIntInput
-          parentFormikValue={values.permissions?.proposerThreshold}
           onChange={val => {
             const newBigIntValue = val.bigintValue;
             const contractValue = contractProposerThreshold.bigintValue;

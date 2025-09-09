@@ -113,7 +113,6 @@ export function AzoriusGovernance(props: ICreationStepProps) {
                   max="100"
                   decimalPlaces={0}
                   data-testid="govConfig-quorumPercentage"
-                  parentFormikValue={values.azorius.quorumPercentage}
                 />
                 <InputRightElement>%</InputRightElement>
               </InputGroup>
@@ -130,7 +129,6 @@ export function AzoriusGovernance(props: ICreationStepProps) {
                 decimalPlaces={0}
                 min="1"
                 data-testid="govConfig-quorumThreshold"
-                parentFormikValue={values.erc721Token.quorumThreshold}
               />
             </LabelComponent>
           )}
@@ -149,7 +147,6 @@ export function AzoriusGovernance(props: ICreationStepProps) {
                 }
                 decimalPlaces={18}
                 data-testid="govConfig-proposalPermission"
-                parentFormikValue={values.erc20Token.requiredProposerWeight}
               />
             </LabelComponent>
           ) : (
@@ -163,7 +160,6 @@ export function AzoriusGovernance(props: ICreationStepProps) {
                 onChange={valuePair => setFieldValue('erc721Token.proposerThreshold', valuePair)}
                 decimalPlaces={0}
                 data-testid="govConfig-proposalPermission"
-                parentFormikValue={values.erc721Token.proposerThreshold}
               />
             </LabelComponent>
           )}

@@ -148,10 +148,6 @@ export function GovernanceParams() {
             >
               <InputGroup>
                 <BigIntInput
-                  parentFormikValue={{
-                    bigintValue: existingQuorumPercentage ?? undefined,
-                    value: existingQuorumPercentage?.toString() ?? '0',
-                  }}
                   isDisabled={readOnly}
                   value={
                     values.azorius?.quorumPercentage !== undefined
@@ -202,10 +198,6 @@ export function GovernanceParams() {
               gridContainerProps={inputGridContainerProps}
             >
               <BigIntInput
-                parentFormikValue={{
-                  bigintValue: existingQuorumThreshold ?? undefined,
-                  value: existingQuorumThreshold?.toString() ?? '0',
-                }}
                 isDisabled={readOnly}
                 value={
                   values.azorius?.quorumThreshold !== undefined

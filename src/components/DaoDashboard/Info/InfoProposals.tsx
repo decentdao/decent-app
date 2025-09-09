@@ -8,7 +8,6 @@ import {
   FractalProposalState,
   GovernanceType,
   SnapshotProposal,
-  MultisigProposal,
 } from '../../../types';
 import { BarLoader } from '../../ui/loaders/BarLoader';
 
@@ -17,19 +16,12 @@ const isSnapshotProposal = (proposal: FractalProposal) => {
   return !!snapshotProposal.snapshotProposalId;
 };
 
-const isMultisigProposal = (proposal: FractalProposal) => {
-  const multisigProposal = proposal as MultisigProposal;
-  return multisigProposal.nonce !== undefined;
-};
-
 const snapshotProposals = (proposals: FractalProposal[]) => {
   return proposals.filter(proposal => isSnapshotProposal(proposal));
 };
 
 const nonSnapshotProposals = (proposals: FractalProposal[]) => {
-  return proposals.filter(
-    proposal => !isSnapshotProposal(proposal) && !isMultisigProposal(proposal),
-  );
+  return proposals.filter(proposal => !isSnapshotProposal(proposal));
 };
 
 const totalProposalsCount = (
@@ -50,7 +42,6 @@ const totalProposalsCount = (
     case GovernanceType.AZORIUS_ERC721: {
       // First, we want to first filter out all of the Snapshot proposals...
       const nonSnapshot = nonSnapshotProposals(proposals);
-      // Then, we want to filter out all of the Multisig proposals...
 
       // Then, find the highest ID from the Azorius proposals...
       const highestNonSnapshotProposalId = nonSnapshot.reduce((p, c) => {
@@ -61,6 +52,7 @@ const totalProposalsCount = (
         }
         return p;
       }, 0);
+
       // Then, return the highest Azorius proposal ID
       // plus the number of Snapshot proposals.
       return highestNonSnapshotProposalId + proposals.length - nonSnapshot.length;

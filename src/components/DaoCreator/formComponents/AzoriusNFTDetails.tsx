@@ -148,7 +148,6 @@ export default function AzoriusNFTDetails(props: ICreationStepProps) {
                           min="1"
                           placeholder="1"
                           isInvalid={!!weightErrorMessage}
-                          parentFormikValue={nft.tokenWeight}
                         />
                         {values.erc721Token.nfts.length > 1 && (
                           <IconButton

@@ -409,7 +409,6 @@ export default function ProposalTransaction({
             helper={t('helperEthValue')}
             isRequired={false}
             disabled={transactionPending}
-            parentFormikValue={transaction.ethValue}
             subLabel={
               <VStack
                 align="start"
