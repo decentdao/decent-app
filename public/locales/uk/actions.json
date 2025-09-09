@@ -6,5 +6,7 @@
   "comingSoon": "Незабаром ...",
   "comingSoonSub": "Більше дій на шляху.",
   "transactionBuilderActionCard_single": "Конструктор транзакцій: Виконайте {{ functionName }} на {{ targetAddress }}",
-  "transactionBuilderActionCard_multiple": "Конструктор транзакцій: Пакетні {{ numOfTransactions }} транзакції"
+  "transactionBuilderActionCard_multiple": "Конструктор транзакцій: Пакетні {{ numOfTransactions }} транзакції",
+  "createTemplateActionCard_single": "Create Template: Execute {{ functionName }} at {{ targetAddress }}",
+  "createTemplateActionCard_multiple": "Create Template: Batch {{ numOfTransactions }} transactions"
 }

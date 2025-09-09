@@ -4,6 +4,8 @@
   "clawbackDescription": "Transfiera todos los fondos de la caja fuerte del niño a la caja fuerte de los padres.",
   "createProposalTemplateTitle": "Crear plantilla de propuesta",
   "createProposalTemplateDescription": "La ejecución de esta propuesta creará un nuevo modelo de propuesta, adjunto a esta Caja Fuerte.",
+  "createProposalTemplateTitlePrefix": "Create Proposal Template: ",
+  "createProposalTemplateDescriptionPrefix": "> Execution of this proposal will create a new proposal template, attached to this Safe.",
   "removeProposalTemplateTitle": "Eliminar plantilla de propuesta",
   "removeProposalTemplateDescription": "La ejecución de esta propuesta eliminará el modelo de propuesta adjunto a esta Caja Fuerte.",
   "updatesSafeName": "Actualizar nombre seguro",
