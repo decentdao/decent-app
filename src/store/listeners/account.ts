@@ -69,7 +69,15 @@ export function useAccountListeners({
 
   useEffect(() => {
     async function loadAccountData() {
-      if (!account || !votesTokenAddress) {
+      if (!votesTokenAddress) {
+        return;
+      }
+      if (!account) {
+        onGovernanceAccountDataLoaded({
+          balance: 0n,
+          delegatee: '0x0000000000000000000000000000000000000000',
+          allowance: 0n,
+        });
         return;
       }
 
@@ -108,13 +116,19 @@ export function useAccountListeners({
   useEffect(() => {
     async function loadGuardAccountData() {
       if (
-        account === undefined ||
         freezeVotingType === undefined ||
         freezeVotingAddress === undefined ||
         freezeProposalCreatedTime === undefined ||
         freezeProposalPeriod === undefined ||
         freezePeriod === undefined
       ) {
+        return;
+      }
+      if (!account) {
+        onGuardAccountDataLoaded({
+          userHasFreezeVoted: false,
+          userHasVotes: false,
+        });
         return;
       }
 
@@ -156,7 +170,11 @@ export function useAccountListeners({
 
   // Combined ERC20 token initial data loading + event listeners
   useEffect(() => {
-    if (!account || !erc20TokenAddress) {
+    if (!erc20TokenAddress) {
+      return;
+    }
+    if (!account) {
+      onERC20TokenAccountDataLoaded({ balance: 0n, allowance: 0n });
       return;
     }
 
@@ -246,7 +264,15 @@ export function useAccountListeners({
   ]);
   // Combined staked token initial data loading + event listeners
   useEffect(() => {
-    if (!account || !stakingAddress) {
+    if (!stakingAddress) {
+      return;
+    }
+    if (!account) {
+      onStakedTokenAccountDataLoaded({
+        balance: 0n,
+        stakerData: { stakedAmount: 0n, lastStakeTimestamp: 0n },
+        claimableRewards: [],
+      });
       return;
     }
 
