@@ -138,14 +138,14 @@ export default function AzoriusNFTDetails(props: ICreationStepProps) {
                     >
                       <Flex>
                         <BigIntInput
-                          value={nft.tokenWeight.bigintValue}
-                          onChange={valuePair =>
+                          value={nft.tokenWeight}
+                          onChange={(valuePair: BigIntValuePair) =>
                             setFieldValue(`erc721Token.nfts.${i}.tokenWeight`, valuePair)
                           }
                           data-testid={`erc721Token.nfts.${i}.tokenWeightInput`}
-                          decimalPlaces={0}
+                          decimals={0}
                           isRequired
-                          min="1"
+                          min={1n}
                           placeholder="1"
                           isInvalid={!!weightErrorMessage}
                         />

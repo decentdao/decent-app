@@ -1,13 +1,12 @@
 import { legacy } from '@decentdao/decent-contracts';
 import { useCallback } from 'react';
-import { useTranslation } from 'react-i18next';
 import { encodeFunctionData } from 'viem';
 import { normalize } from 'viem/ens';
 import { useDAOStore } from '../../../providers/App/AppProvider';
 import useIPFSClient from '../../../providers/App/hooks/useIPFSClient';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
-import { ProposalExecuteData } from '../../../types';
-import { CreateProposalForm } from '../../../types/proposalBuilder';
+import { BigIntValuePair } from '../../../types';
+import { CreateProposalForm, CreateProposalTransaction } from '../../../types/proposalBuilder';
 import { bigintSerializer } from '../../../utils/bigintSerializer';
 import { validateENSName } from '../../../utils/url';
 import { useNetworkEnsAddressAsync } from '../../useNetworkEnsAddress';
@@ -25,17 +24,9 @@ export default function useCreateProposalTemplate() {
     contracts: { keyValuePairs },
   } = useNetworkConfigStore();
 
-  const { t } = useTranslation('proposalMetadata');
-
   const prepareProposalTemplateProposal = useCallback(
     async (values: CreateProposalForm) => {
       if (proposalTemplates) {
-        const proposalMetadata = {
-          title: t('createProposalTemplateTitle'),
-          description: t('createProposalTemplateDescription'),
-          documentationUrl: '',
-        };
-
         const proposalTemplateData = {
           title: values.proposalMetadata.title.trim(),
           description: values.proposalMetadata.description.trim(),
@@ -69,17 +60,29 @@ export default function useCreateProposalTemplate() {
           args: [['proposalTemplates'], [Hash]],
         });
 
-        const proposal: ProposalExecuteData = {
-          metaData: proposalMetadata,
-          targets: [keyValuePairs],
-          values: [0n],
-          calldatas: [encodedUpdateValues],
-        };
-
-        return proposal;
+        return {
+          targetAddress: keyValuePairs,
+          functionName: 'updateValues',
+          calldata: encodedUpdateValues,
+          ethValue: {
+            bigintValue: 0n,
+            value: '0',
+          },
+          // parameters are passed for display purposes
+          parameters: [
+            {
+              signature: 'string[]',
+              valueArray: ['proposalTemplates'],
+            },
+            {
+              signature: 'string[]',
+              valueArray: [Hash],
+            },
+          ],
+        } as CreateProposalTransaction<BigIntValuePair>;
       }
     },
-    [client, getEnsAddress, keyValuePairs, proposalTemplates, t],
+    [client, getEnsAddress, keyValuePairs, proposalTemplates],
   );
 
   return { prepareProposalTemplateProposal };

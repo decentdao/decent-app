@@ -162,7 +162,7 @@ export const semanticColors = {
   'color-warning-700': 'color-yellow-700',
   'color-warning-800': 'color-yellow-800',
   'color-warning-900': 'color-yellow-900',
-  'color-warning-950': 'color-yellow-950',
+  'color-warning-950': '#27250E',
 
   // Info colors
   'color-information-50': 'color-blue-50',
@@ -232,6 +232,7 @@ export const semanticColors = {
   'color-layout-focus-destructive': '#8f262d80',
   'color-layout-focus-background': 'color-alpha-white-990',
   'color-layout-border': 'color-alpha-white-900',
+  'color-layout-border-10': '#ffffff1a',
   'color-layout-border-primary': 'color-alpha-white-600',
   'color-layout-border-destructive': 'color-error-300',
 
@@ -244,7 +245,7 @@ export const semanticColors = {
   'color-content-content2-foreground': 'color-neutral-100',
   'color-content-content3-foreground': 'color-neutral-200',
   'color-content-content4-foreground': 'color-neutral-300',
-  'color-content-muted': 'color-neutral-400',
+  'color-content-muted': 'color-charcoal-400',
   'color-content-information-muted': 'color-information-900',
   'color-content-success-muted': 'color-success-900',
   'color-content-primary-muted': 'color-primary-900',

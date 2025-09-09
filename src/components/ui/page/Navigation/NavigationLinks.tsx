@@ -6,6 +6,7 @@ import {
   HandCoins,
   House,
   Question,
+  ShoppingCart,
   UsersThree,
 } from '@phosphor-icons/react';
 import { DAO_ROUTES } from '../../../../constants/routes';
@@ -55,6 +56,7 @@ function ExternalLinks({ closeDrawer }: { closeDrawer?: () => void }) {
 function InternalLinks({ closeDrawer }: { closeDrawer?: () => void }) {
   const { safeAddress, addressPrefix } = useCurrentDAOKey();
   const isRevShareEnabled = useFeatureFlag('flag_revenue_sharing');
+  const isTokenSaleEnabled = useFeatureFlag('flag_token_sale');
 
   if (!safeAddress) {
     return null;
@@ -117,6 +119,16 @@ function InternalLinks({ closeDrawer }: { closeDrawer?: () => void }) {
             labelKey="staking"
             testId="navigation-stakingLink"
             NavigationIcon={HandCoins}
+            scope="internal"
+            closeDrawer={closeDrawer}
+          />
+        )}
+        {isTokenSaleEnabled && (
+          <NavigationLink
+            href={DAO_ROUTES.tokenSale.relative(addressPrefix, safeAddress)}
+            labelKey="tokenSale"
+            testId="navigation-tokenSaleLink"
+            NavigationIcon={ShoppingCart}
             scope="internal"
             closeDrawer={closeDrawer}
           />

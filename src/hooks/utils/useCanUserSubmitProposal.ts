@@ -14,7 +14,7 @@ import useVotingStrategiesAddresses from './useVotingStrategiesAddresses';
 export function useCanUserCreateProposal() {
   const { daoKey, addressPrefix } = useCurrentDAOKey();
   const {
-    governance: { type },
+    governance: { type, isAzorius, votesToken },
     governanceContracts: {
       linearVotingErc20Address,
       linearVotingErc20WithHatsWhitelistingAddress,
@@ -37,7 +37,7 @@ export function useCanUserCreateProposal() {
    * @returns {Promise<boolean>} - whether or not user has rights to create proposal either in global scope either for provided `safeAddress`.
    */
   const getCanUserCreateProposal = useCallback(
-    async (safeAddress?: Address): Promise<boolean | undefined> => {
+    async (safeAddressParam?: Address): Promise<boolean | undefined> => {
       if (!user.address || !safeAPI) {
         return;
       }
@@ -46,8 +46,8 @@ export function useCanUserCreateProposal() {
         return !!owners?.includes(user.address || '');
       };
 
-      if (safeAddress) {
-        const votingStrategies = await getVotingStrategies(safeAddress);
+      if (safeAddressParam) {
+        const votingStrategies = await getVotingStrategies(safeAddressParam);
         if (votingStrategies) {
           let isProposer = false;
           await Promise.all(
@@ -64,17 +64,11 @@ export function useCanUserCreateProposal() {
           );
           return isProposer;
         } else {
-          const safeInfo = await safeAPI.getSafeInfo(safeAddress);
+          const safeInfo = await safeAPI.getSafeInfo(safeAddressParam);
           return checkIsMultisigOwner(safeInfo.owners);
         }
       } else {
-        if (type === GovernanceType.MULTISIG) {
-          const { owners } = safe || {};
-          return checkIsMultisigOwner(owners);
-        } else if (
-          type === GovernanceType.AZORIUS_ERC20 ||
-          type === GovernanceType.AZORIUS_ERC721
-        ) {
+        if (isAzorius && votesToken?.delegatee === user.address) {
           const isProposerPerStrategy = await Promise.all(
             [
               linearVotingErc20Address,
@@ -99,30 +93,37 @@ export function useCanUserCreateProposal() {
           );
           const isProposer = isProposerPerStrategy.some(strategy => strategy?.isProposer);
           return isProposer;
+        } else if (type === GovernanceType.MULTISIG) {
+          const { owners } = safe || {};
+          return checkIsMultisigOwner(owners);
         } else {
           return;
         }
       }
     },
     [
-      linearVotingErc721Address,
-      linearVotingErc721WithHatsWhitelistingAddress,
+      user.address,
+      safeAPI,
       getVotingStrategies,
+      publicClient,
+      isAzorius,
+      type,
       linearVotingErc20Address,
       linearVotingErc20WithHatsWhitelistingAddress,
-      publicClient,
+      linearVotingErc721Address,
+      linearVotingErc721WithHatsWhitelistingAddress,
       safe,
-      safeAPI,
-      type,
-      user.address,
+      votesToken?.delegatee,
     ],
   );
+
   useEffect(() => {
     const loadCanUserCreateProposal = async () => {
       // This prevents unnecessary calls to getCanUserCreateProposal when the user refreshes the page on a different chain from mainnet
       if (addressPrefix && getChainIdFromPrefix(addressPrefix) !== publicClient.chain.id) {
         return;
       }
+
       const newCanCreateProposal = isDemoMode() || (await getCanUserCreateProposal());
       if (newCanCreateProposal !== canUserCreateProposal) {
         setCanUserCreateProposal(newCanCreateProposal);

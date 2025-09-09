@@ -152,7 +152,7 @@ export function AssetSelector({
                   >
                     {selectedItems.map((item, idx) => (
                       <Image
-                        key={item.value}
+                        key={`${item.value}-${idx}`}
                         src={item.icon}
                         fallbackSrc="/images/coin-icon-default.svg"
                         boxSize="1.5rem"

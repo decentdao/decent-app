@@ -1,7 +1,6 @@
 import * as amplitude from '@amplitude/analytics-browser';
 import { Center } from '@chakra-ui/react';
-import { FormikErrors } from 'formik';
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { ProposalBuilder } from '../../../../components/ProposalBuilder/ProposalBuilder';
@@ -10,24 +9,24 @@ import {
   TransactionsDetails,
 } from '../../../../components/ProposalBuilder/ProposalDetails';
 import { TEMPLATE_PROPOSAL_METADATA_TYPE_PROPS } from '../../../../components/ProposalBuilder/ProposalMetadata';
-import ProposalTransactionsForm from '../../../../components/ProposalBuilder/ProposalTransactionsForm';
-import { GoToTransactionsStepButton } from '../../../../components/ProposalBuilder/StepButtons';
+import { CreateProposalButton } from '../../../../components/ProposalBuilder/StepButtons';
 import { DEFAULT_PROPOSAL } from '../../../../components/ProposalBuilder/constants';
 import { BarLoader } from '../../../../components/ui/loaders/BarLoader';
 import { useHeaderHeight } from '../../../../constants/common';
 import { DAO_ROUTES } from '../../../../constants/routes';
 import { logError } from '../../../../helpers/errorLogging';
 import useCreateProposalTemplate from '../../../../hooks/DAO/proposal/useCreateProposalTemplate';
+import { usePrepareProposal } from '../../../../hooks/DAO/proposal/usePrepareProposal';
 import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
 import { analyticsEvents } from '../../../../insights/analyticsEvents';
 import { useDAOStore } from '../../../../providers/App/AppProvider';
 import useIPFSClient from '../../../../providers/App/hooks/useIPFSClient';
 import { useNetworkConfigStore } from '../../../../providers/NetworkConfig/useNetworkConfigStore';
 import { useProposalActionsStore } from '../../../../store/actions/useProposalActionsStore';
-import { BigIntValuePair } from '../../../../types';
 import {
+  CreateProposalForm,
   CreateProposalSteps,
-  CreateProposalTransaction,
+  ProposalActionType,
   ProposalTemplate,
 } from '../../../../types/proposalBuilder';
 
@@ -37,8 +36,9 @@ export function SafeCreateProposalTemplatePage() {
   }, []);
 
   const ipfsClient = useIPFSClient();
-  const { proposalMetadata } = useProposalActionsStore();
+  const { proposalMetadata, actions, getTransactions } = useProposalActionsStore();
   const [initialProposalTemplate, setInitialProposalTemplate] = useState(DEFAULT_PROPOSAL);
+  const { prepareProposal } = usePrepareProposal();
   const { prepareProposalTemplateProposal } = useCreateProposalTemplate();
   const [searchParams] = useSearchParams();
   const defaultProposalTemplatesHash = useMemo(
@@ -54,10 +54,12 @@ export function SafeCreateProposalTemplatePage() {
     node: { safe },
   } = useDAOStore({ daoKey });
   const { addressPrefix } = useNetworkConfigStore();
+  const { t } = useTranslation('proposalTemplate');
 
+  const isForking = defaultProposalTemplatesHash !== null && defaultProposalTemplateIndex !== null;
   useEffect(() => {
     const loadInitialTemplate = async () => {
-      if (defaultProposalTemplatesHash && defaultProposalTemplateIndex) {
+      if (isForking) {
         try {
           const proposalTemplates = await ipfsClient.cat(defaultProposalTemplatesHash);
           const initialTemplate: ProposalTemplate = proposalTemplates[defaultProposalTemplateIndex];
@@ -68,6 +70,7 @@ export function SafeCreateProposalTemplatePage() {
                 ...DEFAULT_PROPOSAL.proposalMetadata,
                 title: initialTemplate.title,
                 description: initialTemplate.description || '',
+                nonce: safe?.nextNonce,
               },
               transactions: initialTemplate.transactions.map(tx => ({
                 ...tx,
@@ -88,10 +91,64 @@ export function SafeCreateProposalTemplatePage() {
       }
     };
     loadInitialTemplate();
-  }, [defaultProposalTemplatesHash, defaultProposalTemplateIndex, ipfsClient]);
+  }, [
+    defaultProposalTemplatesHash,
+    defaultProposalTemplateIndex,
+    ipfsClient,
+    isForking,
+    safe?.nextNonce,
+  ]);
+
+  const formInitialValues = useMemo(
+    () =>
+      isForking
+        ? initialProposalTemplate
+        : {
+            ...DEFAULT_PROPOSAL,
+            proposalMetadata: {
+              ...(proposalMetadata || DEFAULT_PROPOSAL.proposalMetadata),
+              nonce: safe?.nextNonce,
+            },
+            transactions: getTransactions(),
+          },
+    [getTransactions, initialProposalTemplate, isForking, proposalMetadata, safe?.nextNonce],
+  );
+
+  const prepareProposalData = useCallback(
+    async (values: CreateProposalForm) => {
+      let createTemplateTransactions = isForking
+        ? values.transactions
+        : actions
+            .filter(a => a.actionType === ProposalActionType.CREATE_TEMPLATE)
+            .flatMap(a => a.transactions);
+
+      if (createTemplateTransactions.length > 0) {
+        const txn = await prepareProposalTemplateProposal({
+          proposalMetadata: values.proposalMetadata,
+          transactions: createTemplateTransactions,
+        });
+        if (txn) {
+          createTemplateTransactions = [txn];
+        }
+      }
+      return prepareProposal({
+        proposalMetadata: {
+          ...values.proposalMetadata,
+          title:
+            t('createProposalTemplateTitlePrefix', { ns: 'proposalMetadata' }) +
+            values.proposalMetadata.title,
+          description:
+            t('createProposalTemplateDescriptionPrefix', { ns: 'proposalMetadata' }) +
+            '\n\n\n' +
+            values.proposalMetadata.description,
+        },
+        transactions: createTemplateTransactions,
+      });
+    },
+    [actions, isForking, prepareProposal, prepareProposalTemplateProposal, t],
+  );
 
   const HEADER_HEIGHT = useHeaderHeight();
-  const { t } = useTranslation('proposalTemplate');
   const navigate = useNavigate();
 
   if (!safe || !safe?.address) {
@@ -118,18 +175,12 @@ export function SafeCreateProposalTemplatePage() {
   };
 
   const stepButtons = ({
-    formErrors,
-    onStepChange,
+    createProposalBlocked,
   }: {
     formErrors: boolean;
     createProposalBlocked: boolean;
     onStepChange: (step: CreateProposalSteps) => void;
-  }) => (
-    <GoToTransactionsStepButton
-      isDisabled={formErrors}
-      onStepChange={onStepChange}
-    />
-  );
+  }) => <CreateProposalButton isDisabled={createProposalBlocked} />;
 
   return (
     <ProposalBuilder
@@ -141,31 +192,10 @@ export function SafeCreateProposalTemplatePage() {
       transactionsDetails={transactions => <TransactionsDetails transactions={transactions} />}
       templateDetails={title => <TemplateDetails title={title} />}
       streamsDetails={null}
+      initialValues={formInitialValues}
       key={initialProposalTemplate.proposalMetadata.title}
-      initialValues={{
-        ...initialProposalTemplate,
-        proposalMetadata: {
-          ...initialProposalTemplate.proposalMetadata,
-          ...(proposalMetadata && { ...proposalMetadata }),
-          nonce: safe.nextNonce,
-        },
-      }}
-      prepareProposalData={prepareProposalTemplateProposal}
-      mainContent={(formikProps, pendingCreateTx, _nonce, currentStep) => {
-        if (currentStep !== CreateProposalSteps.TRANSACTIONS) return null;
-        const { setFieldValue, errors, values } = formikProps;
-        return (
-          <ProposalTransactionsForm
-            pendingTransaction={pendingCreateTx}
-            isProposalMode={true}
-            values={values.transactions}
-            setFieldValue={setFieldValue}
-            errors={
-              errors?.transactions as FormikErrors<CreateProposalTransaction<BigIntValuePair>>[]
-            }
-          />
-        );
-      }}
+      prepareProposalData={prepareProposalData}
+      mainContent={() => null}
     />
   );
 }

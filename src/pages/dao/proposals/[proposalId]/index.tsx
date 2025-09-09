@@ -16,7 +16,7 @@ import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
 import { analyticsEvents } from '../../../../insights/analyticsEvents';
 import { useDAOStore } from '../../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../../providers/NetworkConfig/useNetworkConfigStore';
-import { AzoriusProposal, SnapshotProposal } from '../../../../types';
+import { AzoriusProposal, MultisigProposal, SnapshotProposal } from '../../../../types';
 
 export function SafeProposalDetailsPage() {
   useEffect(() => {
@@ -92,7 +92,7 @@ export function SafeProposalDetailsPage() {
         />
       ) : snapshotProposal !== null ? (
         <SnapshotProposalDetails proposal={snapshotProposal} />
-      ) : isAzorius ? (
+      ) : isAzorius && !(contextProposal as MultisigProposal)?.nonce ? (
         <AzoriusProposalDetails proposal={contextProposal as AzoriusProposal} />
       ) : (
         <MultisigProposalDetails proposal={contextProposal} />

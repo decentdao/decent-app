@@ -1,10 +1,11 @@
 import { Box } from '@chakra-ui/react';
 import { Editor } from '@toast-ui/react-editor';
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 import useIPFSClient, { GATEWAY_URL } from '../../providers/App/hooks/useIPFSClient';
 
 interface MarkdownEditorProps {
   height: string;
+  editorRef: React.RefObject<Editor>;
   onChange?: (markdown: string) => void;
   onBlur?: (markdown: string) => void;
   placeholder?: string;
@@ -13,12 +14,12 @@ interface MarkdownEditorProps {
 
 export function MarkdownEditor({
   height,
+  editorRef,
   onChange,
   onBlur,
   placeholder = '',
   initialValue = '',
 }: MarkdownEditorProps) {
-  const editorRef = useRef<Editor>(null);
   const [uploadedPercent, setUploadedPercent] = useState(0);
   const { add } = useIPFSClient();
 

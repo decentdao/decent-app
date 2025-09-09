@@ -1,4 +1,5 @@
 import { Flex, Progress, Text } from '@chakra-ui/react';
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { formatUnits } from 'viem';
 import { useCurrentDAOKey } from '../../hooks/DAO/useCurrentDAOKey';
@@ -62,18 +63,32 @@ export default function BalanceCard() {
   const { t } = useTranslation('staking');
   const { daoKey } = useCurrentDAOKey();
   const {
-    governance: { stakedToken, votesToken },
+    governance: { isAzorius, stakedToken, votesToken, erc20Token },
   } = useDAOStore({ daoKey });
 
+  const unstakedToken = useMemo(
+    () =>
+      !isAzorius
+        ? // if not azorius, return erc20 token as unstaked token
+          erc20Token
+        : stakedToken?.address === votesToken?.address
+          ? // if staked token is the same as votes token, return erc20 token as unstaked token
+            erc20Token
+          : // else return votes token as unstaked token
+            votesToken,
+    [isAzorius, votesToken, erc20Token, stakedToken?.address],
+  );
+
   const stBalance = stakedToken?.balance || 0n;
-  const vtBalance = votesToken?.balance || 0n;
-  const totalBalance = stBalance + vtBalance;
+  const unStakedBalance = unstakedToken?.balance || 0n;
+  const totalBalance = stBalance + unStakedBalance;
 
   const stakedBalance = formatUnits(stBalance, stakedToken?.decimals || 0);
-  const availableBalance = formatUnits(vtBalance, votesToken?.decimals || 0);
+  const availableBalance = formatUnits(unStakedBalance, unstakedToken?.decimals || 0);
 
   const stakedPercentage = totalBalance > 0n ? Number((stBalance * 100n) / totalBalance) : 0;
-  const availablePercentage = totalBalance > 0n ? Number((vtBalance * 100n) / totalBalance) : 0;
+  const availablePercentage =
+    totalBalance > 0n ? Number((unStakedBalance * 100n) / totalBalance) : 0;
 
   return (
     <Flex

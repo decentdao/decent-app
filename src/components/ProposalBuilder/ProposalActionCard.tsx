@@ -1,5 +1,5 @@
 import { Button, Flex, Icon, IconButton, Text } from '@chakra-ui/react';
-import { ArrowsDownUp, CheckSquare, CraneTower, Trash } from '@phosphor-icons/react';
+import { ArrowsDownUp, CheckSquare, CraneTower, FilePlus, Trash } from '@phosphor-icons/react';
 import { useTranslation } from 'react-i18next';
 import { formatUnits, getAddress, isAddress } from 'viem';
 import PencilWithLineIcon from '../../assets/theme/custom/icons/PencilWithLineIcon';
@@ -183,6 +183,52 @@ function TransactionBuilderAction({
   );
 }
 
+function CreateTemplateAction({
+  action,
+  onRemove,
+}: {
+  action: CreateProposalAction;
+  onRemove: () => void;
+}) {
+  const { t } = useTranslation('actions');
+
+  return (
+    <Card my="0.5rem">
+      <Flex justifyContent="space-between">
+        <Flex
+          alignItems="center"
+          gap="0.5rem"
+        >
+          <Icon
+            as={FilePlus}
+            w="1.5rem"
+            h="1.5rem"
+            color="color-lilac-100"
+          />
+          <Text>
+            {action.transactions.length === 1
+              ? t('createTemplateActionCard_single', {
+                  functionName: action.transactions[0].functionName,
+                  targetAddress: createAccountSubstring(action.transactions[0].targetAddress),
+                })
+              : t('createTemplateActionCard_multiple', {
+                  numOfTransactions: action.transactions.length,
+                })}
+          </Text>
+        </Flex>
+        <Button
+          color="color-error-500"
+          variant="tertiary"
+          size="sm"
+          onClick={onRemove}
+        >
+          <Icon as={Trash} />
+        </Button>
+      </Flex>
+    </Card>
+  );
+}
+
 export function ProposalActionCard({
   action,
   removeAction,
@@ -219,6 +265,13 @@ export function ProposalActionCard({
   } else if (action.actionType === ProposalActionType.TRANSACTION_BUILDER) {
     return (
       <TransactionBuilderAction
+        action={action}
+        onRemove={() => removeAction(index)}
+      />
+    );
+  } else if (action.actionType === ProposalActionType.CREATE_TEMPLATE) {
+    return (
+      <CreateTemplateAction
         action={action}
         onRemove={() => removeAction(index)}
       />

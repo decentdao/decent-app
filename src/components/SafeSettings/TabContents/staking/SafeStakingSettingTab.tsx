@@ -1,11 +1,17 @@
 import { Button, Flex, ListItem, Text, UnorderedList } from '@chakra-ui/react';
+import { abis } from '@decentdao/decent-contracts';
 import { useFormikContext } from 'formik';
 import { useTranslation } from 'react-i18next';
-import { Address } from 'viem';
+import { toast } from 'sonner';
+import { Address, formatUnits, getContract } from 'viem';
+import { logError } from '../../../../helpers/errorLogging';
 import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
+import useNetworkPublicClient from '../../../../hooks/useNetworkPublicClient';
+import { useNetworkWalletClient } from '../../../../hooks/useNetworkWalletClient';
 import { useDAOStore } from '../../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../../providers/NetworkConfig/useNetworkConfigStore';
 import { BigIntValuePair, ERC20TokenData, GovernanceType, TokenBalance } from '../../../../types';
+import { DecentTooltip } from '../../../ui/DecentTooltip';
 import DurationUnitStepperInput from '../../../ui/forms/DurationUnitStepperInput';
 import { LabelComponent } from '../../../ui/forms/InputComponent';
 import AddressCopier from '../../../ui/links/AddressCopier';
@@ -13,6 +19,7 @@ import { DisplayAddress } from '../../../ui/links/DisplayAddress';
 import { BarLoader } from '../../../ui/loaders/BarLoader';
 import { SafeSettingsEdits, SafeSettingsFormikErrors } from '../../../ui/modals/SafeSettingsModal';
 import { AssetSelector } from '../../../ui/utils/AssetSelector';
+import Divider from '../../../ui/utils/Divider';
 import { SettingsContentBox } from '../../SettingsContentBox';
 
 function emptyTokenBalanceForAddress(
@@ -44,6 +51,8 @@ function StakingForm() {
   const {
     stablecoins: { usdc },
   } = useNetworkConfigStore();
+  const { data: walletClient } = useNetworkWalletClient();
+  const publicClient = useNetworkPublicClient();
   const {
     values,
     setFieldValue,
@@ -52,7 +61,8 @@ function StakingForm() {
   const { errors } = useFormikContext<SafeSettingsEdits>();
   const stakingErrors = (errors as SafeSettingsFormikErrors | undefined)?.staking;
 
-  const { address, minimumStakingPeriod, rewardsTokens } = stakedToken || {};
+  const { address, minimumStakingPeriod, rewardsTokens, distributableRewards, totalStaked } =
+    stakedToken || {};
   const rewardsTokenAddresses = rewardsTokens?.map(token => token.address) || [];
   const minPeriodValue = Number(
     values.staking?.minimumStakingPeriod?.bigintValue || minimumStakingPeriod || 0n,
@@ -62,6 +72,29 @@ function StakingForm() {
     stakedToken?.assetsFungible.filter(
       asset => asset.balance !== '0' && !rewardsTokenAddresses.includes(asset.tokenAddress),
     ) || [];
+
+  const distributeRewards = async () => {
+    if (!stakedToken?.address || !walletClient) {
+      return;
+    }
+    const toastId = toast.loading('Distributing rewards...');
+    try {
+      const stakingContract = getContract({
+        address: stakedToken?.address,
+        abi: abis.deployables.VotesERC20StakedV1,
+        client: walletClient,
+      });
+
+      const tx = await stakingContract.write.distributeRewards();
+      await publicClient.waitForTransactionReceipt({ hash: tx });
+      toast.dismiss(toastId);
+      toast.success('Rewards distributed successfully');
+    } catch (error) {
+      logError(error);
+      toast.dismiss(toastId);
+      toast.error('Failed to distribute rewards');
+    }
+  };
 
   // Add staking contract holdings, DAO token and USDC
   const mergeTokens: TokenBalance[] = [
@@ -85,6 +118,17 @@ function StakingForm() {
     );
   }
 
+  const hasStakers = (totalStaked || 0n) > 0n;
+
+  const distributableTokensWithBalances = stakedToken?.rewardsTokens.map((token, index) => {
+    return {
+      ...token,
+      balance: distributableRewards?.[index] || 0n,
+      formattedBalance: formatUnits(distributableRewards?.[index] || 0n, token.decimals),
+    };
+  });
+
+  const hasTokensToDistribute = distributableTokensWithBalances?.some(token => token.balance > 0n);
   return (
     <>
       {address ? (
@@ -174,12 +218,14 @@ function StakingForm() {
         isRequired={false}
         gridContainerProps={{
           templateColumns: '1fr',
+          mb: -2,
           width: { base: '100%' },
         }}
         helper={t('rewardTokensHelper')}
       >
         <></>
       </LabelComponent>
+
       <AssetSelector
         includeNativeToken
         canSelectMultiple
@@ -200,6 +246,75 @@ function StakingForm() {
           }
         }}
       />
+      <Flex
+        justifyContent="space-between"
+        mt={4}
+      >
+        <LabelComponent
+          label={t('availableRewards')}
+          isRequired={false}
+          gridContainerProps={{
+            templateColumns: '1fr',
+            width: { base: 'fit-content' },
+          }}
+        >
+          <>
+            {distributableTokensWithBalances
+              ?.filter(token => token.balance !== 0n)
+              .map((token, index, arr) => (
+                <Flex
+                  key={index}
+                  direction="column"
+                  alignSelf="stretch"
+                >
+                  <Flex
+                    gap="16px"
+                    justifyContent="space-between"
+                    alignItems="center"
+                    alignSelf="stretch"
+                    mb="8px"
+                  >
+                    <Text
+                      textStyle="text-sm-regular"
+                      color="color-layout-foreground"
+                    >
+                      {token.symbol}
+                    </Text>
+                    <Text
+                      textStyle="text-xs-regular"
+                      color="color-content-muted"
+                    >
+                      {token.formattedBalance}
+                    </Text>
+                  </Flex>
+                  {index !== arr.length - 1 && index !== 1 && (
+                    <Divider
+                      variant="darker"
+                      mb="8px"
+                    />
+                  )}
+                </Flex>
+              ))}
+          </>
+        </LabelComponent>
+        <DecentTooltip
+          label={
+            !hasTokensToDistribute
+              ? t('distributeTooltipNoTokens')
+              : !hasStakers
+                ? t('distributeTooltipNoStakers')
+                : t('distributeTooltip')
+          }
+        >
+          <Button
+            variant="secondaryV1"
+            isDisabled={!hasTokensToDistribute || !hasStakers}
+            onClick={distributeRewards}
+          >
+            {t('distribute')}
+          </Button>
+        </DecentTooltip>
+      </Flex>
     </>
   );
 }
@@ -251,6 +366,7 @@ export function SafeStakingSettingTab() {
         <SettingsContentBox
           px={12}
           py={6}
+          className="scroll-dark"
         >
           <Text
             textStyle="text-lg-regular"

@@ -99,9 +99,6 @@ export function ProposalBuilder({
     onDiscardChanges: () => {
       resetActions();
       pushNavigation.current = false;
-
-      // Small delay to ensure that the proposal is created and actions are reset
-      setTimeout(() => navigate(DAO_ROUTES.dao.relative(addressPrefix, safeAddress!)), 0);
     },
   });
   const successCallback = () => {

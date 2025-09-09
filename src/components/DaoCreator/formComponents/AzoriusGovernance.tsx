@@ -108,10 +108,12 @@ export function AzoriusGovernance(props: ICreationStepProps) {
             >
               <InputGroup>
                 <BigIntInput
-                  value={values.azorius.quorumPercentage.bigintValue}
-                  onChange={valuePair => setFieldValue('azorius.quorumPercentage', valuePair)}
-                  max="100"
-                  decimalPlaces={0}
+                  value={values.azorius.quorumPercentage}
+                  onChange={(valuePair: BigIntValuePair) =>
+                    setFieldValue('azorius.quorumPercentage', valuePair)
+                  }
+                  max={100n}
+                  decimals={0}
                   data-testid="govConfig-quorumPercentage"
                 />
                 <InputRightElement>%</InputRightElement>
@@ -124,10 +126,12 @@ export function AzoriusGovernance(props: ICreationStepProps) {
               isRequired
             >
               <BigIntInput
-                value={values.erc721Token.quorumThreshold.bigintValue}
-                onChange={valuePair => setFieldValue('erc721Token.quorumThreshold', valuePair)}
-                decimalPlaces={0}
-                min="1"
+                value={values.erc721Token.quorumThreshold}
+                onChange={(valuePair: BigIntValuePair) =>
+                  setFieldValue('erc721Token.quorumThreshold', valuePair)
+                }
+                decimals={0}
+                min={1n}
                 data-testid="govConfig-quorumThreshold"
               />
             </LabelComponent>
@@ -141,11 +145,11 @@ export function AzoriusGovernance(props: ICreationStepProps) {
               isRequired
             >
               <BigIntInput
-                value={values.erc20Token.requiredProposerWeight.bigintValue}
-                onChange={valuePair =>
+                value={values.erc20Token.requiredProposerWeight}
+                onChange={(valuePair: BigIntValuePair) =>
                   setFieldValue('erc20Token.requiredProposerWeight', valuePair)
                 }
-                decimalPlaces={18}
+                decimals={18}
                 data-testid="govConfig-proposalPermission"
               />
             </LabelComponent>
@@ -156,9 +160,11 @@ export function AzoriusGovernance(props: ICreationStepProps) {
               isRequired
             >
               <BigIntInput
-                value={values.erc721Token.proposerThreshold.bigintValue}
-                onChange={valuePair => setFieldValue('erc721Token.proposerThreshold', valuePair)}
-                decimalPlaces={0}
+                value={values.erc721Token.proposerThreshold}
+                onChange={(valuePair: BigIntValuePair) =>
+                  setFieldValue('erc721Token.proposerThreshold', valuePair)
+                }
+                decimals={0}
                 data-testid="govConfig-proposalPermission"
               />
             </LabelComponent>

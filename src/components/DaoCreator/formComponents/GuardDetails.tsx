@@ -9,7 +9,6 @@ import {
   Text,
 } from '@chakra-ui/react';
 import { Info } from '@phosphor-icons/react';
-import { Field, FieldAttributes, FieldProps } from 'formik';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
@@ -107,10 +106,12 @@ function GuardDetails(props: ICreationStepProps) {
               >
                 <InputGroup>
                   <BigIntInput
-                    value={values.freeze.timelockPeriod.bigintValue}
-                    onChange={valuePair => setFieldValue('freeze.timelockPeriod', valuePair)}
-                    decimalPlaces={0}
-                    min="1"
+                    value={values.freeze.timelockPeriod}
+                    onChange={(valuePair: BigIntValuePair) =>
+                      setFieldValue('freeze.timelockPeriod', valuePair)
+                    }
+                    decimals={0}
+                    min={1n}
                     data-testid="guardConfig-executionDetails"
                   />
                   <InputRightElement mr="4">{minutes}</InputRightElement>
@@ -123,10 +124,12 @@ function GuardDetails(props: ICreationStepProps) {
               >
                 <InputGroup>
                   <BigIntInput
-                    value={values.freeze.executionPeriod.bigintValue}
-                    onChange={valuePair => setFieldValue('freeze.executionPeriod', valuePair)}
-                    decimalPlaces={0}
-                    min="1"
+                    value={values.freeze.executionPeriod}
+                    onChange={(valuePair: BigIntValuePair) =>
+                      setFieldValue('freeze.executionPeriod', valuePair)
+                    }
+                    decimals={0}
+                    min={1n}
                     data-testid="guardConfig-executionDetails"
                   />
                   <InputRightElement mr="4">{minutes}</InputRightElement>
@@ -136,27 +139,22 @@ function GuardDetails(props: ICreationStepProps) {
           )}
           <ContentBoxTitle>{t('titleFreezeParams')}</ContentBoxTitle>
 
-          <Field name="freeze.freezeVotesThreshold">
-            {({ field }: FieldAttributes<FieldProps<BigIntValuePair | undefined>>) => (
-              <LabelComponent
-                label={t('labelFreezeVotesThreshold')}
-                helper={freezeHelper || ''}
-                isRequired
-                errorMessage={errors?.freeze?.freezeVotesThreshold?.bigintValue}
-              >
-                <BigIntInput
-                  isInvalid={!!errors?.freeze?.freezeVotesThreshold?.bigintValue}
-                  value={field.value?.bigintValue}
-                  parentFormikValue={values.freeze.freezeVotesThreshold}
-                  onChange={valuePair => {
-                    setFieldValue('freeze.freezeVotesThreshold', valuePair);
-                  }}
-                  decimalPlaces={0}
-                  data-testid="guardConfig-freezeVotesThreshold"
-                />
-              </LabelComponent>
-            )}
-          </Field>
+          <LabelComponent
+            label={t('labelFreezeVotesThreshold')}
+            helper={freezeHelper || ''}
+            isRequired
+            errorMessage={errors?.freeze?.freezeVotesThreshold?.bigintValue}
+          >
+            <BigIntInput
+              isInvalid={!!errors?.freeze?.freezeVotesThreshold?.bigintValue}
+              value={values.freeze.freezeVotesThreshold}
+              onChange={(valuePair: BigIntValuePair) => {
+                setFieldValue('freeze.freezeVotesThreshold', valuePair);
+              }}
+              decimals={0}
+              data-testid="guardConfig-freezeVotesThreshold"
+            />
+          </LabelComponent>
 
           <LabelComponent
             label={t('labelFreezeProposalPeriod')}
@@ -165,10 +163,12 @@ function GuardDetails(props: ICreationStepProps) {
           >
             <InputGroup>
               <BigIntInput
-                value={values.freeze.freezeProposalPeriod.bigintValue}
-                onChange={valuePair => setFieldValue('freeze.freezeProposalPeriod', valuePair)}
-                decimalPlaces={0}
-                min="1"
+                value={values.freeze.freezeProposalPeriod}
+                onChange={(valuePair: BigIntValuePair) =>
+                  setFieldValue('freeze.freezeProposalPeriod', valuePair)
+                }
+                decimals={0}
+                min={1n}
                 data-testid="guardConfig-freezeProposalDuration"
               />
               <InputRightElement mr="4">{minutes}</InputRightElement>
@@ -188,10 +188,12 @@ function GuardDetails(props: ICreationStepProps) {
           >
             <InputGroup>
               <BigIntInput
-                value={values.freeze.freezePeriod.bigintValue}
-                onChange={valuePair => setFieldValue('freeze.freezePeriod', valuePair)}
-                decimalPlaces={0}
-                min="1"
+                value={values.freeze.freezePeriod}
+                onChange={(valuePair: BigIntValuePair) =>
+                  setFieldValue('freeze.freezePeriod', valuePair)
+                }
+                decimals={0}
+                min={1n}
                 data-testid="guardConfig-freezeDuration"
               />
 

@@ -3,7 +3,7 @@ import { Box, Button, Flex, Grid, Show, Text } from '@chakra-ui/react';
 import { ArrowsDownUp, HourglassMedium, Parachute } from '@phosphor-icons/react';
 import { useCallback, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { AddPlus } from '../../../assets/theme/custom/icons/AddPlus';
 import ExampleTemplateCard from '../../../components/ProposalTemplates/ExampleTemplateCard';
@@ -34,6 +34,7 @@ export function SafeProposalTemplatesPage() {
   const { t: tProposalTemplate } = useTranslation('proposalTemplate');
   const { t: tCommon } = useTranslation('common');
   const { t: tBreadcrumbs } = useTranslation('breadcrumbs');
+  const { t: tProposalMetadata } = useTranslation('proposalMetadata');
 
   const { daoKey } = useCurrentDAOKey();
   const {
@@ -47,7 +48,7 @@ export function SafeProposalTemplatesPage() {
     contracts: { disperse },
   } = useNetworkConfigStore();
   const navigate = useNavigate();
-  const { addAction, resetActions } = useProposalActionsStore();
+  const { addAction, resetActions, setProposalMetadata } = useProposalActionsStore();
 
   const safeAddress = safe?.address;
   const { openSendAssetsModal } = useSendAssetsActionModal();
@@ -155,6 +156,30 @@ export function SafeProposalTemplatesPage() {
     addressPrefix,
   ]);
 
+  const { open: openTransactionBuilderModal } = useDecentModal(ModalType.TRANSACTION_BUILDER, {
+    onSubmit: transactionBuilderData => {
+      if (!safeAddress) return;
+
+      const defaultProposalMetadata = {
+        title: tProposalMetadata('createProposalTemplateTitle'),
+        description: tProposalMetadata('createProposalTemplateDescription'),
+      };
+      const actionType = ProposalActionType.CREATE_TEMPLATE;
+
+      resetActions();
+      addAction({
+        actionType: actionType,
+        content: <></>,
+        transactions: transactionBuilderData,
+      });
+      setProposalMetadata('title', defaultProposalMetadata.title);
+      setProposalMetadata('description', defaultProposalMetadata.description);
+
+      navigate(DAO_ROUTES.proposalTemplateNew.relative(addressPrefix, safeAddress));
+    },
+    submitButtonText: tModals('submitProposal'),
+  });
+
   return (
     <div>
       <PageHeader
@@ -167,15 +192,14 @@ export function SafeProposalTemplatesPage() {
         ]}
       >
         {canUserCreateProposal && safeAddress && (
-          <Link
-            to={DAO_ROUTES.proposalTemplateNew.relative(addressPrefix, safeAddress)}
+          <Button
+            onClick={openTransactionBuilderModal}
             data-testid="proposalTemplates-create"
+            minW={0}
           >
-            <Button minW={0}>
-              <AddPlus />
-              <Show above="sm">{tCommon('create')}</Show>
-            </Button>
-          </Link>
+            <AddPlus />
+            <Show above="sm">{tCommon('create')}</Show>
+          </Button>
         )}
       </PageHeader>
       <Flex

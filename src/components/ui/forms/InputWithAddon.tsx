@@ -4,6 +4,7 @@ import {
   InputGroup,
   InputProps,
   InputRightElement,
+  InputLeftElement,
   NumberInput,
   NumberInputField,
   NumberInputProps,
@@ -41,37 +42,53 @@ export function InputWithAddon({ addonContent, ...props }: InputWithAddonProps) 
 }
 
 interface NumberInputWithAddonProps extends NumberInputProps {
-  addonContent: React.ReactNode;
+  leftAddon?: React.ReactNode;
+  rightAddon?: React.ReactNode;
 }
 
-export function NumberInputWithAddon({ addonContent, ...props }: NumberInputWithAddonProps) {
+export function NumberInputWithAddon({
+  leftAddon,
+  rightAddon,
+  ...props
+}: NumberInputWithAddonProps) {
+  const hasLeftAddon = !!leftAddon;
+  const hasRightAddon = !!rightAddon;
+
   return (
     <InputGroup>
+      {hasLeftAddon && (
+        <InputLeftElement pointerEvents="none">
+          <Flex
+            align="center"
+            h="100%"
+            pr={3}
+            mb="-1px"
+          >
+            {leftAddon}
+          </Flex>
+        </InputLeftElement>
+      )}
       <NumberInput
         w="full"
         {...props}
       >
         <NumberInputField
-          pr="6.5rem"
+          pl={hasLeftAddon ? '1.5rem' : undefined}
+          pr={hasRightAddon ? '6.5rem' : undefined}
           placeholder={props.placeholder}
         />
       </NumberInput>
-      <InputRightElement
-        width="auto"
-        pr={3}
-        pointerEvents="none"
-        borderLeft="1px solid"
-        mt="-4px"
-        borderLeftColor="white-alpha-16"
-      >
-        <Flex
-          align="center"
-          h="100%"
-          pl={3}
+      {hasRightAddon && (
+        <InputRightElement
+          width="auto"
+          p={3}
+          pointerEvents="none"
+          borderLeft="1px solid"
+          borderLeftColor="white-alpha-16"
         >
-          {addonContent}
-        </Flex>
-      </InputRightElement>
+          {rightAddon}
+        </InputRightElement>
+      )}
     </InputGroup>
   );
 }

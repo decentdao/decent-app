@@ -189,11 +189,11 @@ export default function ProposalTemplateModal({
                 helper={t('helperEthValue', { ns: 'proposal' })}
                 isRequired={false}
                 errorMessage={undefined}
-                value={transaction.ethValue.bigintValue || 0n}
+                value={transaction.ethValue}
                 onChange={value => {
                   handleEthValueChange({ transactionIndex, value });
                 }}
-                decimalPlaces={18}
+                decimals={18}
               />
             </Flex>
           )}

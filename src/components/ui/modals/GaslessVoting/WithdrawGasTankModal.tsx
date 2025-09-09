@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { usePaymasterDepositInfo } from '../../../../hooks/DAO/accountAbstraction/usePaymasterDepositInfo';
 import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
 import { useDAOStore } from '../../../../providers/App/AppProvider';
+import { BigIntValuePair } from '../../../../types';
 import { formatCoinUnits } from '../../../../utils/numberFormats';
 import { BigIntInput } from '../../forms/BigIntInput';
 import { AddressInput } from '../../forms/EthAddressInput';
@@ -78,10 +79,10 @@ export function WithdrawGasTankModal({ close }: { close: () => void }) {
         >
           <LabelWrapper errorMessage={paymasterGasTankErrors.withdraw?.amount}>
             <BigIntInput
-              onChange={inputValue => {
+              onChange={(inputValue: BigIntValuePair) => {
                 setFieldValue('paymasterGasTank.withdraw.amount', inputValue);
               }}
-              parentFormikValue={withdrawValues.amount}
+              value={withdrawValues.amount}
               placeholder="0"
               isInvalid={paymasterGasTankErrors.withdraw?.amount !== undefined}
               errorBorderColor="color-error-500"

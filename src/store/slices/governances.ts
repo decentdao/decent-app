@@ -83,7 +83,7 @@ export type GovernancesSlice = {
   getGovernance: (daoKey: DAOKey) => FractalGovernance & FractalGovernanceContracts;
   setGovernanceAccountData: (
     daoKey: DAOKey,
-    governanceAccountData: { balance: bigint; delegatee: Address },
+    governanceAccountData: { balance: bigint; delegatee: Address; allowance: bigint },
   ) => void;
   setGovernanceLockReleaseAccountData: (
     daoKey: DAOKey,
@@ -93,7 +93,18 @@ export type GovernancesSlice = {
   setVotesTokenAddress: (daoKey: DAOKey, votesTokenAddress: Address) => void;
   setERC20Token: (daoKey: DAOKey, erc20Token: ERC20TokenData | undefined) => void;
   setStakingData: (daoKey: DAOKey, stakedToken: StakedTokenData | undefined) => void;
-  setStakedTokenAccountData: (daoKey: DAOKey, stakedTokenAccountData: { balance: bigint }) => void;
+  setStakedTokenAccountData: (
+    daoKey: DAOKey,
+    stakedTokenAccountData: {
+      balance: bigint;
+      stakerData: { stakedAmount: bigint; lastStakeTimestamp: bigint };
+      claimableRewards: bigint[];
+    },
+  ) => void;
+  setERC20TokenAccountData: (
+    daoKey: DAOKey,
+    erc20TokenAccountData: { balance: bigint; allowance: bigint },
+  ) => void;
 };
 
 export const EMPTY_GOVERNANCE: FractalGovernance & FractalGovernanceContracts = {
@@ -310,17 +321,27 @@ export const createGovernancesSlice: StateCreator<
     set(
       state => {
         const azoriusGovernance = state.governances[daoKey];
-        // TOOD: we need to update the typing, this returns early if voteToken isn't first set? seems like a bug
-        if (
-          !state.governances[daoKey] ||
-          !state.governances[daoKey].isAzorius ||
-          !azoriusGovernance.votesToken
-        ) {
+        if (!state.governances[daoKey] || !state.governances[daoKey].isAzorius) {
           return;
         }
 
-        azoriusGovernance.votesToken.balance = governanceAccountData.balance;
-        azoriusGovernance.votesToken.delegatee = governanceAccountData.delegatee;
+        // Initialize votesToken if it doesn't exist
+        if (!azoriusGovernance.votesToken) {
+          azoriusGovernance.votesToken = {
+            balance: governanceAccountData.balance,
+            delegatee: governanceAccountData.delegatee,
+            allowance: governanceAccountData.allowance,
+            address: '' as Address, // Will be set when token data is loaded
+            name: '',
+            symbol: '',
+            decimals: 18,
+            totalSupply: 0n,
+          };
+        } else {
+          azoriusGovernance.votesToken.balance = governanceAccountData.balance;
+          azoriusGovernance.votesToken.delegatee = governanceAccountData.delegatee;
+          azoriusGovernance.votesToken.allowance = governanceAccountData.allowance;
+        }
       },
       false,
       'setGovernanceAccountData',
@@ -426,11 +447,32 @@ export const createGovernancesSlice: StateCreator<
             erc20Token: erc20Token,
           };
         } else {
+          if (
+            erc20Token &&
+            erc20Token.balance === undefined &&
+            !!state.governances[daoKey].erc20Token?.balance
+          ) {
+            erc20Token.balance = state.governances[daoKey].erc20Token?.balance;
+          }
           state.governances[daoKey].erc20Token = erc20Token;
         }
       },
       false,
       'setERC20Token',
+    );
+  },
+  setERC20TokenAccountData: (daoKey, erc20TokenAccountData) => {
+    set(
+      state => {
+        if (!state.governances[daoKey] || !state.governances[daoKey].erc20Token) {
+          return;
+        }
+
+        state.governances[daoKey].erc20Token.balance = erc20TokenAccountData.balance;
+        state.governances[daoKey].erc20Token.allowance = erc20TokenAccountData.allowance;
+      },
+      false,
+      'setStakedTokenAccountData',
     );
   },
   setStakingData: (daoKey, stakedToken) => {
@@ -442,6 +484,44 @@ export const createGovernancesSlice: StateCreator<
             stakedToken: stakedToken,
           };
         } else {
+          if (stakedToken) {
+            const existingStakedToken = state.governances[daoKey].stakedToken;
+
+            // Preserve existing balance if new data doesn't have it
+            if (stakedToken.balance === undefined && !!existingStakedToken?.balance) {
+              stakedToken.balance = existingStakedToken.balance;
+            }
+
+            // Preserve existing account data if it exists and new data appears to be default/uninitialized
+            if (existingStakedToken) {
+              // Preserve userClaimableRewards if existing has data and new is empty array
+              if (
+                existingStakedToken.userClaimableRewards.length > 0 &&
+                stakedToken.userClaimableRewards.length === 0
+              ) {
+                stakedToken.userClaimableRewards = existingStakedToken.userClaimableRewards;
+              }
+
+              // Preserve userStakedAmount if existing has value and new is undefined/0
+              if (
+                existingStakedToken.userStakedAmount !== undefined &&
+                existingStakedToken.userStakedAmount > 0n &&
+                (stakedToken.userStakedAmount === undefined || stakedToken.userStakedAmount === 0n)
+              ) {
+                stakedToken.userStakedAmount = existingStakedToken.userStakedAmount;
+              }
+
+              // Preserve userLastStakeTimestamp if existing has value and new is undefined/0
+              if (
+                existingStakedToken.userLastStakeTimestamp !== undefined &&
+                existingStakedToken.userLastStakeTimestamp > 0n &&
+                (stakedToken.userLastStakeTimestamp === undefined ||
+                  stakedToken.userLastStakeTimestamp === 0n)
+              ) {
+                stakedToken.userLastStakeTimestamp = existingStakedToken.userLastStakeTimestamp;
+              }
+            }
+          }
           state.governances[daoKey].stakedToken = stakedToken;
         }
       },
@@ -452,15 +532,18 @@ export const createGovernancesSlice: StateCreator<
   setStakedTokenAccountData: (daoKey, stakedTokenAccountData) => {
     set(
       state => {
-        if (
-          !state.governances[daoKey] ||
-          !state.governances[daoKey].isAzorius ||
-          !state.governances[daoKey].stakedToken
-        ) {
+        if (!state.governances[daoKey] || !state.governances[daoKey].stakedToken) {
           return;
         }
 
-        state.governances[daoKey].stakedToken.balance = stakedTokenAccountData.balance;
+        const existingStakedToken = state.governances[daoKey].stakedToken;
+
+        // Always update account data fields - this function is called with real user data
+        existingStakedToken.balance = stakedTokenAccountData.balance;
+        existingStakedToken.userClaimableRewards = stakedTokenAccountData.claimableRewards;
+        existingStakedToken.userStakedAmount = stakedTokenAccountData.stakerData.stakedAmount;
+        existingStakedToken.userLastStakeTimestamp =
+          stakedTokenAccountData.stakerData.lastStakeTimestamp;
       },
       false,
       'setStakedTokenAccountData',

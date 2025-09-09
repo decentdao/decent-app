@@ -16,11 +16,10 @@ export function useUnsavedChangesBlocker({
 
   const { open: openModal } = useDecentModal(ModalType.WARN_UNSAVED_CHANGES, {
     discardChanges: () => {
+      onDiscardChanges();
       if (blocker.state === 'blocked' && blocker.proceed) {
         blocker.proceed();
-        blocker.reset();
       }
-      onDiscardChanges();
     },
     keepEditing: () => {
       if (blocker.state === 'blocked' && blocker.reset) {

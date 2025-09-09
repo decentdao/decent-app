@@ -115,6 +115,10 @@ export const handleEditStaking = async (
       functionName: 'initialize2',
       parameters: [
         {
+          signature: 'bool',
+          value: 'false',
+        },
+        {
           signature: 'uint256',
           value: stakingValues.minimumStakingPeriod.bigintValue?.toString(),
         },

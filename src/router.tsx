@@ -24,6 +24,7 @@ import { SafeRolesEditPage } from './pages/dao/roles/edit/SafeRolesEditPage';
 import { SafeRoleEditDetailsPage } from './pages/dao/roles/edit/details/SafeRoleEditDetailsPage';
 import { SafeRolesEditProposalSummaryPage } from './pages/dao/roles/edit/summary/SafeRolesEditProposalSummaryPage';
 import { SafeStakingPage } from './pages/dao/staking/SafeStakingPage';
+import { SafeTokenSalePage } from './pages/dao/token-sale/SafeTokenSalePage';
 import { SafeTreasuryPage } from './pages/dao/treasury/SafeTreasuryPage';
 import HomePage from './pages/home/HomePage';
 
@@ -97,6 +98,10 @@ export const router = (addressPrefix: string, daoAddress: string | undefined) =>
             {
               path: DAO_ROUTES.staking.path,
               element: <SafeStakingPage />,
+            },
+            {
+              path: DAO_ROUTES.tokenSale.path,
+              element: <SafeTokenSalePage />,
             },
             {
               path: DAO_ROUTES.roles.path,

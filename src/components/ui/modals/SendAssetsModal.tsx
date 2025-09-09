@@ -171,12 +171,11 @@ export function SendAssetsModal({
                       <LabelWrapper label={t('amountLabel')}>
                         <BigIntInput
                           {...field}
-                          value={field.value?.bigintValue}
-                          onChange={value => {
+                          value={values.inputAmount}
+                          onChange={(value: BigIntValuePair) => {
                             setFieldValue('inputAmount', value);
                           }}
-                          parentFormikValue={values.inputAmount}
-                          decimalPlaces={values.selectedAsset.decimals}
+                          decimals={values.selectedAsset.decimals}
                           placeholder="0"
                           maxValue={BigInt(values.selectedAsset.balance)}
                           isInvalid={overDraft}
