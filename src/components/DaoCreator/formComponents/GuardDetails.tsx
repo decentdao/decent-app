@@ -9,7 +9,6 @@ import {
   Text,
 } from '@chakra-ui/react';
 import { Info } from '@phosphor-icons/react';
-import { Field } from 'formik';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
@@ -140,24 +139,22 @@ function GuardDetails(props: ICreationStepProps) {
           )}
           <ContentBoxTitle>{t('titleFreezeParams')}</ContentBoxTitle>
 
-          <Field name="freeze.freezeVotesThreshold">
-            <LabelComponent
-              label={t('labelFreezeVotesThreshold')}
-              helper={freezeHelper || ''}
-              isRequired
-              errorMessage={errors?.freeze?.freezeVotesThreshold?.bigintValue}
-            >
-              <BigIntInput
-                isInvalid={!!errors?.freeze?.freezeVotesThreshold?.bigintValue}
-                value={values.freeze.freezeVotesThreshold}
-                onChange={(valuePair: BigIntValuePair) => {
-                  setFieldValue('freeze.freezeVotesThreshold', valuePair);
-                }}
-                decimals={0}
-                data-testid="guardConfig-freezeVotesThreshold"
-              />
-            </LabelComponent>
-          </Field>
+          <LabelComponent
+            label={t('labelFreezeVotesThreshold')}
+            helper={freezeHelper || ''}
+            isRequired
+            errorMessage={errors?.freeze?.freezeVotesThreshold?.bigintValue}
+          >
+            <BigIntInput
+              isInvalid={!!errors?.freeze?.freezeVotesThreshold?.bigintValue}
+              value={values.freeze.freezeVotesThreshold}
+              onChange={(valuePair: BigIntValuePair) => {
+                setFieldValue('freeze.freezeVotesThreshold', valuePair);
+              }}
+              decimals={0}
+              data-testid="guardConfig-freezeVotesThreshold"
+            />
+          </LabelComponent>
 
           <LabelComponent
             label={t('labelFreezeProposalPeriod')}
