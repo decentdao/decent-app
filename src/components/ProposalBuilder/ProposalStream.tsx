@@ -315,9 +315,8 @@ export function ProposalStream({
                               >
                                 <BigIntInput
                                   isRequired
-                                  value={tranche.amount.bigintValue}
-                                  parentFormikValue={tranche.amount}
-                                  decimalPlaces={tokenDecimals}
+                                  value={tranche.amount}
+                                  decimals={tokenDecimals}
                                   placeholder="1000"
                                   maxValue={
                                     rawTokenBalance -

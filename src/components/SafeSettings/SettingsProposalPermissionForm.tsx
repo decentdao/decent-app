@@ -89,7 +89,6 @@ export function SettingsProposalPermissionForm() {
         labelColor="color-neutral-300"
       >
         <BigIntInput
-          parentFormikValue={values.permissions?.proposerThreshold}
           onChange={val => {
             const newBigIntValue = val.bigintValue;
             const contractValue = contractProposerThreshold.bigintValue;
@@ -110,11 +109,8 @@ export function SettingsProposalPermissionForm() {
               }
             }
           }}
-          decimalPlaces={votesToken ? votesToken.decimals : 0}
-          value={
-            values.permissions?.proposerThreshold?.bigintValue ||
-            contractProposerThreshold?.bigintValue
-          }
+          decimals={votesToken ? votesToken.decimals : 0}
+          value={values.permissions?.proposerThreshold || contractProposerThreshold}
         />
       </LabelWrapper>
     </Flex>

@@ -245,9 +245,8 @@ export function AirdropModal({
                           subLabel={t('airdropAmountSublabel')}
                         >
                           <BigIntInput
-                            {...field}
-                            value={recipient.amount.bigintValue}
-                            onChange={value => {
+                            value={recipient.amount}
+                            onChange={(value: BigIntValuePair) => {
                               if (value === null) {
                                 console.error('Invalid value');
                               }
@@ -261,8 +260,7 @@ export function AirdropModal({
                                 }),
                               );
                             }}
-                            parentFormikValue={recipient.amount}
-                            decimalPlaces={values.selectedAsset.decimals}
+                            decimals={values.selectedAsset.decimals}
                             placeholder="0"
                             maxValue={
                               BigInt(values.selectedAsset.balance) -

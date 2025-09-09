@@ -11,7 +11,7 @@ import { useTranslation } from 'react-i18next';
 import { parseUnits, formatUnits } from 'viem';
 import { BigIntValuePair } from '../../../types';
 
-export interface BigIntInputV2Props
+export interface BigIntInputProps
   extends Omit<InputProps, 'value' | 'onChange' | 'type' | 'min' | 'max'>,
     FormControlOptions {
   value?: BigIntValuePair;
@@ -40,7 +40,7 @@ export function BigIntInput({
   max,
   maxValue,
   ...rest
-}: BigIntInputV2Props) {
+}: BigIntInputProps) {
   const { t } = useTranslation('common');
   const inputRef = useRef<HTMLInputElement>(null);
 
