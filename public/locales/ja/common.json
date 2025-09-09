@@ -140,6 +140,10 @@
   "daoNameRequired": "DAO名は必須",
   "calendarPlaceholder": "YYYY-MM-DD",
   "years": "年",
+  "year": "year",
+  "day": "day",
+  "hour": "hour",
+  "minute": "minute",
   "addressInfoTooltip": "DAO名またはENSが表示されている間、完全なウォレットアドレスがプロポーザルに表示されます。",
   "stakingPeriodMoreThanZero": "杭打ち期間はゼロ以上でなければならない",
   "close": "閉じる"

@@ -140,6 +140,10 @@
   "daoNameRequired": "Имя DAO является обязательным",
   "calendarPlaceholder": "ГГГГ-ММ-ДД",
   "years": "Годы",
+  "year": "year",
+  "day": "day",
+  "hour": "hour",
+  "minute": "minute",
   "addressInfoTooltip": "Пока отображается DAO Name или ENS, полный адрес кошелька будет отображаться в предложении.",
   "stakingPeriodMoreThanZero": "Ставочный период должен быть больше нуля",
   "close": "Закрыть"

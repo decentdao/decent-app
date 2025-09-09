@@ -140,6 +140,10 @@
   "daoNameRequired": "O nome do DAO é obrigatório",
   "calendarPlaceholder": "AAAA-MM-DD",
   "years": "Anos",
+  "year": "year",
+  "day": "day",
+  "hour": "hour",
+  "minute": "minute",
   "addressInfoTooltip": "Enquanto o nome DAO ou ENS for apresentado, o endereço completo da carteira aparecerá na proposta.",
   "stakingPeriodMoreThanZero": "O período de aposta deve ser superior a zero",
   "close": "Fechar"

@@ -140,6 +140,10 @@
   "daoNameRequired": "DAO 名称为必填项",
   "calendarPlaceholder": "年月日",
   "years": "年数",
+  "year": "year",
+  "day": "day",
+  "hour": "hour",
+  "minute": "minute",
   "addressInfoTooltip": "在显示 DAO 名称或 ENS 的同时，完整的钱包地址将出现在建议中。",
   "stakingPeriodMoreThanZero": "投注期必须大于零",
   "close": "关闭"

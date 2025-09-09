@@ -140,6 +140,10 @@
   "daoNameRequired": "Обов'язкова назва DAO",
   "calendarPlaceholder": "YYYY-MM-DD",
   "years": "Роки",
+  "year": "year",
+  "day": "day",
+  "hour": "hour",
+  "minute": "minute",
   "addressInfoTooltip": "Поки відображається DAO Name або ENS, повна адреса гаманця буде відображатися в пропозиції.",
   "stakingPeriodMoreThanZero": "Період стейкінгу повинен бути більше нуля",
   "close": "Закрити"

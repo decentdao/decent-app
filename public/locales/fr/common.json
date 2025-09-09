@@ -140,6 +140,10 @@
   "daoNameRequired": "Le nom du DAO est obligatoire",
   "calendarPlaceholder": "YYYY-MM-DD",
   "years": "Années",
+  "year": "year",
+  "day": "day",
+  "hour": "hour",
+  "minute": "minute",
   "addressInfoTooltip": "Si le nom de la DAO ou de l'ENS est affiché, l'adresse complète du portefeuille apparaîtra dans la proposition.",
   "stakingPeriodMoreThanZero": "La période de jalonnement doit être supérieure à zéro",
   "close": "Fermer"

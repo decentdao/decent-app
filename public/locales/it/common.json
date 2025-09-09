@@ -140,6 +140,10 @@
   "daoNameRequired": "Il nome del DAO è obbligatorio",
   "calendarPlaceholder": "AAAA-MM-GG",
   "years": "Anni",
+  "year": "year",
+  "day": "day",
+  "hour": "hour",
+  "minute": "minute",
   "addressInfoTooltip": "Mentre viene visualizzato il nome DAO o ENS, l'indirizzo completo del portafoglio apparirà nella proposta.",
   "stakingPeriodMoreThanZero": "Il periodo di staking deve essere superiore a zero",
   "close": "Chiudere"

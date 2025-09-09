@@ -4,6 +4,8 @@
   "clawbackDescription": "將所有資金從目標兒童Safe轉移到父母Safe",
   "createProposalTemplateTitle": "建立提案範本",
   "createProposalTemplateDescription": "執行此提案將建立一個新的提案範本，附在此Safe之後。",
+  "createProposalTemplateTitlePrefix": "Create Proposal Template: ",
+  "createProposalTemplateDescriptionPrefix": "> Execution of this proposal will create a new proposal template, attached to this Safe.",
   "removeProposalTemplateTitle": "移除提案範本",
   "removeProposalTemplateDescription": "本提案的執行將刪除本Safe所附的提案範本。",
   "updatesSafeName": "更新保險箱名稱",

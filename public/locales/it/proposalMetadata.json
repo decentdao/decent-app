@@ -4,6 +4,8 @@
   "clawbackDescription": "Trasferire tutti i fondi dalla cassaforte del bambino alla cassaforte del genitore.",
   "createProposalTemplateTitle": "Creare un modello di proposta",
   "createProposalTemplateDescription": "L'esecuzione di questa proposta creerà un nuovo modello di proposta, allegato a questo Safe.",
+  "createProposalTemplateTitlePrefix": "Create Proposal Template: ",
+  "createProposalTemplateDescriptionPrefix": "> Execution of this proposal will create a new proposal template, attached to this Safe.",
   "removeProposalTemplateTitle": "Rimuovere il modello di proposta",
   "removeProposalTemplateDescription": "L'esecuzione di questa proposta eliminerà il modello di proposta allegato a questo Safe.",
   "updatesSafeName": "Aggiornare il nome della cassaforte",

@@ -4,6 +4,8 @@
   "clawbackDescription": "Transferir todos os fundos do cofre da criança para o cofre do pai",
   "createProposalTemplateTitle": "Criar modelo de proposta",
   "createProposalTemplateDescription": "A execução da presente proposta criará um novo modelo de proposta, anexado ao presente Cofre.",
+  "createProposalTemplateTitlePrefix": "Create Proposal Template: ",
+  "createProposalTemplateDescriptionPrefix": "> Execution of this proposal will create a new proposal template, attached to this Safe.",
   "removeProposalTemplateTitle": "Remover modelo de proposta",
   "removeProposalTemplateDescription": "A execução da presente proposta eliminará o modelo de proposta anexo ao presente Cofre.",
   "updatesSafeName": "Atualizar o nome do cofre",
