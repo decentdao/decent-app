@@ -4,6 +4,8 @@
   "clawbackDescription": "Transférer tous les fonds du coffre-fort de l'enfant ciblé vers le coffre-fort du parent",
   "createProposalTemplateTitle": "Créer un modèle de proposition",
   "createProposalTemplateDescription": "L'exécution de cette proposition créera un nouveau modèle de proposition, joint à ce Safe.",
+  "createProposalTemplateTitlePrefix": "Create Proposal Template: ",
+  "createProposalTemplateDescriptionPrefix": "> Execution of this proposal will create a new proposal template, attached to this Safe.",
   "removeProposalTemplateTitle": "Supprimer le modèle de proposition",
   "removeProposalTemplateDescription": "L'exécution de cette proposition supprimera le modèle de proposition joint à ce Safe.",
   "updatesSafeName": "Mise à jour du nom du coffre-fort",

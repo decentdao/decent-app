@@ -6,5 +6,7 @@
   "comingSoon": "Em breve...",
   "comingSoonSub": "Mais ações a caminho.",
   "transactionBuilderActionCard_single": "Criador de transacções: Executar {{ functionName }} em {{ targetAddress }}",
-  "transactionBuilderActionCard_multiple": "Transaction Builder: Lote {{ numOfTransactions }} transacções"
+  "transactionBuilderActionCard_multiple": "Transaction Builder: Lote {{ numOfTransactions }} transacções",
+  "createTemplateActionCard_single": "Create Template: Execute {{ functionName }} at {{ targetAddress }}",
+  "createTemplateActionCard_multiple": "Create Template: Batch {{ numOfTransactions }} transactions"
 }

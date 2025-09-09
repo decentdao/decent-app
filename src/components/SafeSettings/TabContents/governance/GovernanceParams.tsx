@@ -5,7 +5,6 @@ import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { getContract } from 'viem';
-import { BigIntInput } from '../../../../components/ui/forms/BigIntInput';
 import DurationUnitStepperInput from '../../../../components/ui/forms/DurationUnitStepperInput';
 import { LabelComponent } from '../../../../components/ui/forms/InputComponent';
 import { BarLoader } from '../../../../components/ui/loaders/BarLoader';
@@ -17,6 +16,7 @@ import { useTimeHelpers } from '../../../../hooks/utils/useTimeHelpers';
 import { useDAOStore } from '../../../../providers/App/AppProvider';
 import { AzoriusGovernance, FreezeGuardType } from '../../../../types';
 import { blocksToSeconds } from '../../../../utils/contract';
+import { BigIntInput } from '../../../ui/forms/BigIntInput';
 
 export function GovernanceParams() {
   const { t } = useTranslation(['dashboard', 'daoCreate', 'common']);
@@ -149,17 +149,22 @@ export function GovernanceParams() {
               <InputGroup>
                 <BigIntInput
                   isDisabled={readOnly}
-                  value={
-                    values.azorius?.quorumPercentage !== undefined
-                      ? values.azorius?.quorumPercentage
-                      : existingQuorumPercentage
-                  }
+                  value={{
+                    bigintValue:
+                      values.azorius?.quorumPercentage !== undefined
+                        ? values.azorius?.quorumPercentage
+                        : existingQuorumPercentage,
+                    value:
+                      values.azorius?.quorumPercentage !== undefined
+                        ? values.azorius?.quorumPercentage?.toString()
+                        : (existingQuorumPercentage?.toString() ?? '0'),
+                  }}
                   color={
                     values.azorius?.quorumPercentage === undefined
                       ? 'color-neutral-300'
                       : 'color-white'
                   }
-                  decimalPlaces={0}
+                  decimals={0}
                   onChange={e =>
                     handleInputChange(
                       'azorius.quorumPercentage',
@@ -199,13 +204,18 @@ export function GovernanceParams() {
             >
               <BigIntInput
                 isDisabled={readOnly}
-                value={
-                  values.azorius?.quorumThreshold !== undefined
-                    ? values.azorius?.quorumThreshold
-                    : existingQuorumThreshold
-                }
+                value={{
+                  bigintValue:
+                    values.azorius?.quorumThreshold !== undefined
+                      ? values.azorius?.quorumThreshold
+                      : existingQuorumThreshold,
+                  value:
+                    values.azorius?.quorumThreshold !== undefined
+                      ? values.azorius?.quorumThreshold?.toString()
+                      : (existingQuorumThreshold?.toString() ?? '0'),
+                }}
                 minWidth="100%"
-                decimalPlaces={0}
+                decimals={0}
                 color={
                   values.azorius?.quorumThreshold === undefined
                     ? 'color-neutral-300'

@@ -56,6 +56,7 @@ import {
 import { blocksToSeconds } from '../../utils/contract';
 import { getPaymasterAddress } from '../../utils/gaslessVoting';
 import { getStakingContractAddress } from '../../utils/stakingContractUtils';
+import { getValidatedTrustWalletLogoUrl } from '../../utils/trustWallet';
 import { SetAzoriusGovernancePayload } from '../slices/governances';
 import { useGlobalStore } from '../store';
 
@@ -783,30 +784,48 @@ export function useGovernanceFetcher() {
   );
 
   const fetchVotingTokenAccountData = useCallback(
-    async (votingTokenAddress: Address, account: Address) => {
+    async (votingTokenAddress: Address, account: Address, stakingAddress?: Address) => {
       if (wrongNetwork) {
-        return { balance: 0n, delegatee: zeroAddress };
+        return { balance: 0n, delegatee: zeroAddress, allowance: 0n };
       }
 
-      const [balance, delegatee] = await publicClient.multicall({
-        contracts: [
-          {
-            abi: legacy.abis.VotesERC20,
-            address: votingTokenAddress,
-            functionName: 'balanceOf',
-            args: [account],
-          },
-          {
-            abi: legacy.abis.VotesERC20,
-            address: votingTokenAddress,
-            functionName: 'delegates',
-            args: [account],
-          },
-        ],
+      const contracts = [
+        {
+          abi: legacy.abis.VotesERC20,
+          address: votingTokenAddress,
+          functionName: 'balanceOf',
+          args: [account],
+        },
+        {
+          abi: legacy.abis.VotesERC20,
+          address: votingTokenAddress,
+          functionName: 'delegates',
+          args: [account],
+        },
+      ];
+
+      // Add allowance call if stakingAddress is provided
+      if (stakingAddress) {
+        contracts.push({
+          abi: legacy.abis.VotesERC20,
+          address: votingTokenAddress,
+          functionName: 'allowance',
+          args: [account, stakingAddress],
+        });
+      }
+
+      const results = await publicClient.multicall({
+        contracts,
         allowFailure: false,
       });
 
-      return { balance, delegatee };
+      const [balance, delegatee, allowance] = results;
+
+      return {
+        balance: balance as bigint,
+        delegatee: delegatee as Address,
+        allowance: stakingAddress ? (allowance as bigint) : 0n,
+      };
     },
     [publicClient, wrongNetwork],
   );
@@ -1001,7 +1020,7 @@ export function useGovernanceFetcher() {
 
       let daoErc20Token;
       if (governance.type === GovernanceType.AZORIUS_ERC20) {
-        daoErc20Token = governance.votesToken;
+        daoErc20Token = governance.erc20Token ? governance.erc20Token : governance.votesToken;
       } else if (governance.type === GovernanceType.MULTISIG) {
         daoErc20Token = governance.erc20Token;
       }
@@ -1030,36 +1049,52 @@ export function useGovernanceFetcher() {
           });
 
           // Execute multicall
-          const [name, symbol, decimals, totalSupply, minimumStakingPeriod, rewardsTokens] =
-            await publicClient.multicall({
-              contracts: [
-                {
-                  ...tokenContract,
-                  functionName: 'name',
-                },
-                {
-                  ...tokenContract,
-                  functionName: 'symbol',
-                },
-                {
-                  ...tokenContract,
-                  functionName: 'decimals',
-                },
-                {
-                  ...tokenContract,
-                  functionName: 'totalSupply',
-                },
-                {
-                  ...tokenContract,
-                  functionName: 'minimumStakingPeriod',
-                },
-                {
-                  ...tokenContract,
-                  functionName: 'rewardsTokens',
-                },
-              ],
-              allowFailure: false,
-            });
+          const [
+            name,
+            symbol,
+            decimals,
+            totalSupply,
+            minimumStakingPeriod,
+            rewardsTokens,
+            distributableRewards,
+            totalStaked,
+          ] = await publicClient.multicall({
+            contracts: [
+              {
+                ...tokenContract,
+                functionName: 'name',
+              },
+              {
+                ...tokenContract,
+                functionName: 'symbol',
+              },
+              {
+                ...tokenContract,
+                functionName: 'decimals',
+              },
+              {
+                ...tokenContract,
+                functionName: 'totalSupply',
+              },
+              {
+                ...tokenContract,
+                functionName: 'minimumStakingPeriod',
+              },
+              {
+                ...tokenContract,
+                functionName: 'rewardsTokens',
+              },
+              {
+                ...tokenContract,
+                functionName: 'distributableRewards',
+              },
+              {
+                ...tokenContract,
+                functionName: 'totalStaked',
+              },
+            ],
+            allowFailure: false,
+          });
 
           const { data: tokenBalances } = await getTokenBalances(stakingAddress);
           // try to get reward token data from tokenBalances
@@ -1090,6 +1125,13 @@ export function useGovernanceFetcher() {
                   ],
                   allowFailure: false,
                 });
+
+                // Validate Trust Wallet logo URL
+                const validatedLogo = await getValidatedTrustWalletLogoUrl(
+                  tokenAddress,
+                  publicClient.chain!.id,
+                );
+
                 return {
                   address: tokenAddress,
                   name: nameData,
@@ -1097,6 +1139,7 @@ export function useGovernanceFetcher() {
                   decimals: decimalsData,
                   balance: '0',
                   formattedBalance: '0',
+                  logo: validatedLogo,
                   usdValue: 0,
                 };
               }
@@ -1105,9 +1148,12 @@ export function useGovernanceFetcher() {
                 name: foundToken.name,
                 symbol: foundToken.symbol,
                 decimals: foundToken.decimals,
+                logo: foundToken.logo,
                 balance: foundToken.balance,
                 formattedBalance: foundToken.balanceFormatted,
                 usdValue: foundToken.usdValue || 0,
+                userClaimableRewards: [],
+                distributableRewards: [],
               };
             }),
           );
@@ -1116,12 +1162,14 @@ export function useGovernanceFetcher() {
             address: stakingAddress,
             name,
             symbol,
-            balance: null,
             decimals,
             totalSupply,
             minimumStakingPeriod,
             rewardsTokens: rewardsTokensData,
             assetsFungible: tokenBalances || [],
+            distributableRewards: [...distributableRewards],
+            totalStaked: totalStaked as bigint,
+            userClaimableRewards: [],
           };
         } catch (e) {
           logError({
@@ -1145,10 +1193,14 @@ export function useGovernanceFetcher() {
   const fetchStakedTokenAccountData = useCallback(
     async (stakingAddress: Address, account: Address) => {
       if (wrongNetwork) {
-        return { balance: 0n, delegatee: zeroAddress };
+        return {
+          balance: 0n,
+          claimableRewards: [],
+          stakerData: { stakedAmount: 0n, lastStakeTimestamp: 0n },
+        };
       }
 
-      const [balance] = await publicClient.multicall({
+      const [balance, claimableRewards, stakerData] = await publicClient.multicall({
         contracts: [
           {
             abi: abis.deployables.VotesERC20StakedV1,
@@ -1156,11 +1208,71 @@ export function useGovernanceFetcher() {
             functionName: 'balanceOf',
             args: [account],
           },
+          {
+            abi: abis.deployables.VotesERC20StakedV1,
+            address: stakingAddress,
+            functionName: 'claimableRewards',
+            args: [account],
+          },
+          {
+            abi: abis.deployables.VotesERC20StakedV1,
+            address: stakingAddress,
+            functionName: 'stakerData',
+            args: [account],
+          },
         ],
         allowFailure: false,
       });
 
-      return { balance };
+      const [stakedAmount, lastStakeTimestamp] = stakerData;
+      return {
+        balance,
+        claimableRewards: claimableRewards as bigint[],
+        stakerData: {
+          stakedAmount: stakedAmount as bigint,
+          lastStakeTimestamp: lastStakeTimestamp as bigint,
+        },
+      };
+    },
+    [publicClient, wrongNetwork],
+  );
+
+  const fetchERC20TokenAccountData = useCallback(
+    async (erc20Address: Address, account: Address, stakingAddress?: Address) => {
+      if (wrongNetwork) {
+        return { balance: 0n, allowance: 0n };
+      }
+
+      const contracts = [
+        {
+          abi: erc20Abi,
+          address: erc20Address,
+          functionName: 'balanceOf',
+          args: [account],
+        },
+      ];
+
+      // Add allowance call if stakingAddress is provided
+      if (stakingAddress) {
+        contracts.push({
+          abi: erc20Abi,
+          address: erc20Address,
+          functionName: 'allowance',
+          args: [account, stakingAddress],
+        });
+      }
+
+      const results = await publicClient.multicall({
+        contracts,
+        allowFailure: false,
+      });
+
+      const [balance, allowance] = results;
+
+      return {
+        balance: balance as bigint,
+        allowance: stakingAddress ? (allowance as bigint) : 0n,
+      };
     },
     [publicClient, wrongNetwork],
   );
@@ -1175,5 +1287,6 @@ export function useGovernanceFetcher() {
     fetchMultisigERC20Token,
     fetchStakingDAOData,
     fetchStakedTokenAccountData,
+    fetchERC20TokenAccountData,
   };
 }

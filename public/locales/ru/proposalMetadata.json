@@ -4,6 +4,8 @@
   "clawbackDescription": "Переведите все средства из целевого детского сейфа в родительский сейф",
   "createProposalTemplateTitle": "Создать шаблон предложения",
   "createProposalTemplateDescription": "В результате выполнения данного предложения будет создан новый шаблон предложения, прилагаемый к данному сейфу.",
+  "createProposalTemplateTitlePrefix": "Create Proposal Template: ",
+  "createProposalTemplateDescriptionPrefix": "> Execution of this proposal will create a new proposal template, attached to this Safe.",
   "removeProposalTemplateTitle": "Удалить шаблон предложения",
   "removeProposalTemplateDescription": "В результате выполнения данного предложения шаблон предложения, приложенный к настоящему Сейфу, будет удален.",
   "updatesSafeName": "Обновление безопасного имени",

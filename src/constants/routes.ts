@@ -112,4 +112,9 @@ export const DAO_ROUTES = {
       `/proposal-templates/new${getDaoQueryParam(addressPrefix, safeAddress)}`,
     path: 'proposal-templates/new',
   },
+  tokenSale: {
+    relative: (addressPrefix: string, safeAddress: string) =>
+      `/token-sale${getDaoQueryParam(addressPrefix, safeAddress)}`,
+    path: 'token-sale',
+  },
 };

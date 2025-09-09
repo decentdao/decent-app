@@ -1,16 +1,22 @@
-import { Button, Flex, Text } from '@chakra-ui/react';
+import { Button, Flex, Icon, Text } from '@chakra-ui/react';
+import { abis } from '@decentdao/decent-contracts';
 import { CaretDown, CaretUp } from '@phosphor-icons/react';
-import { useState } from 'react';
+import { useRef, useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useDurationDisplay } from '../../helpers/dateTime';
+import { toast } from 'sonner';
+import { getContract } from 'viem';
+import { logError } from '../../helpers/errorLogging';
 import { useCurrentDAOKey } from '../../hooks/DAO/useCurrentDAOKey';
+import { useNetworkWalletClient } from '../../hooks/useNetworkWalletClient';
 import { useDAOStore } from '../../providers/App/AppProvider';
 import { formatUSD } from '../../utils';
+import { DecentTooltip } from '../ui/DecentTooltip';
 import Divider from '../ui/utils/Divider';
 
 function ViewTokens({ numOfTokens }: { numOfTokens: number }) {
   const { t } = useTranslation('staking');
 
+  const isMenuDisabled = numOfTokens === 0;
   return (
     <Flex
       direction="column"
@@ -20,7 +26,7 @@ function ViewTokens({ numOfTokens }: { numOfTokens: number }) {
     >
       <Text
         alignSelf="stretch"
-        color="color-content-content1-foreground"
+        color={isMenuDisabled ? 'color-content-muted' : 'color-content-content1-foreground'}
         textStyle="text-sm-regular"
       >
         {numOfTokens === 1
@@ -40,6 +46,30 @@ function RewardsTokens() {
   } = useDAOStore({ daoKey });
   const [expanded, setExpanded] = useState(false);
 
+  // Create rewards tokens with claimable amounts
+  const rewardsTokensWithClaimableBalances = useMemo(() => {
+    if (!stakedToken?.rewardsTokens || !stakedToken?.userClaimableRewards?.length) {
+      return [];
+    }
+
+    return stakedToken.rewardsTokens
+      .map((token, index) => {
+        const claimableAmount = stakedToken.userClaimableRewards[index] || 0n;
+        const formattedClaimable =
+          claimableAmount > 0n
+            ? (Number(claimableAmount) / Math.pow(10, token.decimals)).toFixed(4)
+            : '0';
+
+        return {
+          ...token,
+          claimableAmount,
+          formattedClaimable,
+        };
+      })
+      .filter(token => token.claimableAmount > 0n);
+  }, [stakedToken?.rewardsTokens, stakedToken?.userClaimableRewards]);
+
+  const isMenuDisabled = rewardsTokensWithClaimableBalances.length === 0;
   return (
     <Flex
       minHeight="40px"
@@ -49,10 +79,12 @@ function RewardsTokens() {
       alignItems="flex-start"
       alignSelf="stretch"
       borderRadius="12px"
-      border="1px solid var(--colors-color-layout-border)"
+      border="1px solid"
+      borderColor={!isMenuDisabled ? 'color-layout-border' : 'color-layout-border-10'}
       background="color-alpha-black-950"
-      onClick={() => setExpanded(!expanded)}
-      aria-label="View 3 Tokens"
+      cursor={isMenuDisabled ? 'not-allowed' : 'pointer'}
+      onClick={() => !isMenuDisabled && setExpanded(!expanded)}
+      aria-label="View Rewards"
     >
       {!expanded ? (
         <Flex
@@ -61,8 +93,11 @@ function RewardsTokens() {
           alignItems="center"
           alignSelf="stretch"
         >
-          <ViewTokens numOfTokens={stakedToken?.rewardsTokens.length ?? 0} />
-          <CaretDown />
+          <ViewTokens numOfTokens={rewardsTokensWithClaimableBalances.length} />
+          <Icon
+            as={CaretDown}
+            color={isMenuDisabled ? 'color-content-muted' : 'color-content-content1-foreground'}
+          />
         </Flex>
       ) : (
         <>
@@ -72,10 +107,13 @@ function RewardsTokens() {
             alignItems="center"
             alignSelf="stretch"
           >
-            <ViewTokens numOfTokens={stakedToken?.rewardsTokens.length ?? 0} />
-            <CaretUp />
+            <ViewTokens numOfTokens={rewardsTokensWithClaimableBalances.length} />
+            <Icon
+              as={CaretUp}
+              color={isMenuDisabled ? 'color-content-muted' : 'color-content-content1-foreground'}
+            />
           </Flex>
-          {stakedToken?.rewardsTokens.map((token, index, arr) => (
+          {rewardsTokensWithClaimableBalances.map((token, index, arr) => (
             <Flex
               key={index}
               direction="column"
@@ -97,7 +135,7 @@ function RewardsTokens() {
                   textStyle="text-xs-regular"
                   color="color-content-muted"
                 >
-                  {token.formattedBalance}
+                  {token.formattedClaimable}
                 </Text>
               </Flex>
               {index !== arr.length - 1 && index !== 1 && (
@@ -121,9 +159,59 @@ export default function RewardsCard() {
     governance: { stakedToken },
   } = useDAOStore({ daoKey });
 
-  const totalRewards =
-    stakedToken?.rewardsTokens.reduce((acc, token) => acc + token.usdValue, 0) ?? 0;
-  const lockPeriod = useDurationDisplay(stakedToken?.minimumStakingPeriod);
+  const { data: walletClient } = useNetworkWalletClient();
+  const toastRef = useRef<string | number | null>(null);
+
+  // Calculate if rewards are claimable from global state
+  const isClaimable = useMemo(() => {
+    return stakedToken?.userClaimableRewards?.some(reward => reward > 0n) ?? false;
+  }, [stakedToken?.userClaimableRewards]);
+
+  // Calculate total claimable rewards value
+  const totalRewards = useMemo(() => {
+    if (!stakedToken?.rewardsTokens || !stakedToken?.userClaimableRewards?.length) {
+      return 0;
+    }
+
+    return stakedToken.rewardsTokens.reduce((acc, token, index) => {
+      const claimableAmount = stakedToken.userClaimableRewards[index] || 0n;
+      if (claimableAmount > 0n) {
+        const tokenAmount = Number(claimableAmount) / Math.pow(10, token.decimals);
+        // Estimate USD value based on proportion of claimable vs total balance
+        const proportion = token.balance ? tokenAmount / parseFloat(token.balance) : 0;
+        return acc + token.usdValue * proportion;
+      }
+      return acc;
+    }, 0);
+  }, [stakedToken?.rewardsTokens, stakedToken?.userClaimableRewards]);
+
+  const claimRewardTokensHandler = () => {
+    if (!walletClient || !stakedToken?.address) return;
+    toastRef.current = toast.info(t('claimRewardPending'), { duration: Infinity });
+    const stakeContract = getContract({
+      abi: abis.deployables.VotesERC20StakedV1,
+      address: stakedToken?.address,
+      client: walletClient,
+    });
+
+    stakeContract.write
+      .claimRewards([walletClient.account.address])
+      .then(() => {
+        if (toastRef.current) {
+          toast.dismiss(toastRef.current);
+        }
+        toast.success(t('claimRewardSuccess'));
+        // Note: Claimable rewards will be updated automatically via the RewardsClaimed event listener
+      })
+      .catch(e => {
+        logError(e);
+        if (toastRef.current) {
+          toast.dismiss(toastRef.current);
+          toast.error(t('claimRewardError'));
+        }
+      });
+  };
+
   return (
     <Flex
       padding="14px 12px"
@@ -166,36 +254,16 @@ export default function RewardsCard() {
           >
             {formatUSD(totalRewards)}
           </Text>
-          <Button>{t('claimAll')}</Button>
+          <DecentTooltip label={t('claimAllTooltip')}>
+            <Button
+              isDisabled={!isClaimable}
+              onClick={claimRewardTokensHandler}
+            >
+              {t('claimAll')}
+            </Button>
+          </DecentTooltip>
         </Flex>
-
         <RewardsTokens />
-      </Flex>
-
-      <Flex
-        direction="column"
-        alignItems="flex-start"
-        gap="8px"
-        alignSelf="stretch"
-      >
-        <Flex
-          justifyContent="space-between"
-          alignItems="flex-start"
-          alignSelf="stretch"
-        >
-          <Text
-            color="color-content-content1-foreground"
-            textStyle="text-sm-regular"
-          >
-            {t('lockPeriod')}
-          </Text>
-          <Text
-            color="color-content-content4-foreground"
-            textStyle="text-sm-regular"
-          >
-            {lockPeriod}
-          </Text>
-        </Flex>
       </Flex>
     </Flex>
   );

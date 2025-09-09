@@ -178,12 +178,11 @@ export function AssetSelector({ formIndex, disabled }: { formIndex: number; disa
               >
                 <BigIntInput
                   isDisabled={inputDisabled}
-                  value={field.value?.bigintValue}
-                  parentFormikValue={values?.roleEditing?.payments?.[formIndex]?.amount}
+                  value={field.value}
                   onChange={valuePair => {
                     setFieldValue(`roleEditing.payments.${formIndex}.amount`, valuePair, true);
                   }}
-                  decimalPlaces={selectedAsset?.decimals}
+                  decimals={selectedAsset?.decimals}
                   onBlur={() => {
                     setFieldTouched(`roleEditing.payments.${formIndex}.amount`, true);
                   }}

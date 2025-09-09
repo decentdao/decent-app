@@ -140,6 +140,10 @@
   "daoNameRequired": "El nombre de la DAO es obligatorio",
   "calendarPlaceholder": "AAAA-MM-DD",
   "years": "Años",
+  "year": "year",
+  "day": "day",
+  "hour": "hour",
+  "minute": "minute",
   "addressInfoTooltip": "Mientras se muestra el nombre de la DAO o el ENS, la dirección completa del monedero aparecerá en la propuesta.",
   "stakingPeriodMoreThanZero": "El periodo de estaca debe ser superior a cero",
   "close": "Cerrar"

@@ -140,6 +140,10 @@
   "daoNameRequired": "DAO-Name ist erforderlich",
   "calendarPlaceholder": "JJJJ-MM-TT",
   "years": "Jahre",
+  "year": "year",
+  "day": "day",
+  "hour": "hour",
+  "minute": "minute",
   "addressInfoTooltip": "Während der DAO-Name oder ENS angezeigt wird, erscheint die vollständige Wallet-Adresse im Vorschlag.",
   "stakingPeriodMoreThanZero": "Die Einsatzdauer muss größer als Null sein",
   "close": "Schließen Sie"

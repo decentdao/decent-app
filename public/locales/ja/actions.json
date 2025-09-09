@@ -6,5 +6,7 @@
   "comingSoon": "近日公開...",
   "comingSoonSub": "途中でより多くのアクション。",
   "transactionBuilderActionCard_single": "トランザクションビルダExecute{{ functionName }} at{{ targetAddress }}.",
-  "transactionBuilderActionCard_multiple": "トランザクション・ビルダーバッチ{{ numOfTransactions }} トランザクション"
+  "transactionBuilderActionCard_multiple": "トランザクション・ビルダーバッチ{{ numOfTransactions }} トランザクション",
+  "createTemplateActionCard_single": "Create Template: Execute {{ functionName }} at {{ targetAddress }}",
+  "createTemplateActionCard_multiple": "Create Template: Batch {{ numOfTransactions }} transactions"
 }

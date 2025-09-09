@@ -3,7 +3,6 @@ import { TokenBalance } from './daoTreasury';
 
 export interface VotesTokenData extends VotesData, ERC20TokenData {}
 export interface VotesData {
-  balance: bigint | null;
   delegatee: Address | null;
 }
 
@@ -15,6 +14,8 @@ export interface BaseTokenData {
 export interface ERC20TokenData extends BaseTokenData {
   decimals: number;
   totalSupply: bigint;
+  balance?: bigint;
+  allowance?: bigint;
 }
 
 export interface StakedTokenData extends ERC20TokenData {
@@ -24,12 +25,17 @@ export interface StakedTokenData extends ERC20TokenData {
     symbol: string;
     decimals: number;
     address: Address;
+    // stake contract's total balances
     balance: string;
     formattedBalance: string;
     usdValue: number;
   }[];
   assetsFungible: TokenBalance[];
-  balance: bigint | null;
+  userClaimableRewards: bigint[];
+  userStakedAmount?: bigint;
+  userLastStakeTimestamp?: bigint;
+  distributableRewards: bigint[];
+  totalStaked: bigint;
 }
 
 export interface ERC721TokenData extends BaseTokenData {

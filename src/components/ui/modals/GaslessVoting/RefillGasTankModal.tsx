@@ -9,6 +9,7 @@ import { useNetworkWalletClient } from '../../../../hooks/useNetworkWalletClient
 import { useCanUserCreateProposal } from '../../../../hooks/utils/useCanUserSubmitProposal';
 import { useDAOStore } from '../../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../../providers/NetworkConfig/useNetworkConfigStore';
+import { BigIntValuePair } from '../../../../types';
 import { formatCoinUnits } from '../../../../utils/numberFormats';
 import { BigIntInput } from '../../forms/BigIntInput';
 import { CustomNonceInput } from '../../forms/CustomNonceInput';
@@ -121,12 +122,11 @@ export function RefillGasTankModal({
           errorMessage={paymasterGasTankErrors.deposit?.amount}
         >
           <BigIntInput
-            value={values.amount?.bigintValue}
-            onChange={inputValue => {
+            value={values.amount}
+            onChange={(inputValue: BigIntValuePair) => {
               setFieldValue('paymasterGasTank.deposit.amount', inputValue);
             }}
-            parentFormikValue={values.amount}
-            decimalPlaces={balance?.decimals || 0}
+            decimals={balance?.decimals || 0}
             placeholder="0"
             isInvalid={overDraft || paymasterGasTankErrors.deposit?.amount !== undefined}
             errorBorderColor="color-error-500"

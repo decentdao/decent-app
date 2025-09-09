@@ -86,8 +86,8 @@ export function SettingsPermissionsStrategyForm({
       >
         <BigIntInput
           onChange={setProposerThreshold}
-          decimalPlaces={votesToken ? votesToken.decimals : 0}
-          value={proposerThreshold.bigintValue}
+          decimals={votesToken ? votesToken.decimals : 0}
+          value={proposerThreshold}
         />
       </LabelWrapper>
     </Flex>

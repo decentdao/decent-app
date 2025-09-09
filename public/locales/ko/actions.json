@@ -6,5 +6,7 @@
   "comingSoon": "곧 올다 ...",
   "comingSoonSub": "도중에 더 많은 행동.",
   "transactionBuilderActionCard_single": "트랜잭션 빌더: {{ targetAddress } }에서 {{ functionName }} 실행",
-  "transactionBuilderActionCard_multiple": "트랜잭션 빌더: 배치 {{ numOfTransactions }} 트랜잭션"
+  "transactionBuilderActionCard_multiple": "트랜잭션 빌더: 배치 {{ numOfTransactions }} 트랜잭션",
+  "createTemplateActionCard_single": "Create Template: Execute {{ functionName }} at {{ targetAddress }}",
+  "createTemplateActionCard_multiple": "Create Template: Batch {{ numOfTransactions }} transactions"
 }
