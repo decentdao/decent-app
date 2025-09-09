@@ -1,6 +1,8 @@
 import { Container, Input, VStack } from '@chakra-ui/react';
+import { Editor } from '@toast-ui/react-editor';
 import { FormikProps } from 'formik';
 import { TFunction } from 'i18next';
+import { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import useFeatureFlag from '../../helpers/environmentFeatureFlags';
 import { useProposalActionsStore } from '../../store/actions/useProposalActionsStore';
@@ -106,6 +108,9 @@ function MarkdownProposalMetadata({
   const { t } = useTranslation(['proposal']);
   const { setProposalMetadata } = useProposalActionsStore();
 
+  const titleRef = useRef(null);
+  const editorRef = useRef<Editor>(null);
+
   return (
     <VStack
       align="left"
@@ -120,6 +125,14 @@ function MarkdownProposalMetadata({
         onBlur={e => setProposalMetadata('title', e.target.value)}
         data-testid="metadata.title"
         maxLength={50}
+        ref={titleRef}
+        onKeyDown={e => {
+          if (e.key === 'Tab') {
+            // Prevent tabbing through toolbar buttons and move focus directly to the editor content
+            e.preventDefault();
+            editorRef.current?.getInstance().focus();
+          }
+        }}
       />
       <Container
         margin={0}
@@ -127,6 +140,7 @@ function MarkdownProposalMetadata({
         maxW={{ base: '350px', sm: '440px', md: '768px', lg: '1100px', xl: '1200px' }}
       >
         <MarkdownEditor
+          editorRef={editorRef}
           initialValue={proposalMetadata.description}
           placeholder={typeProps.descriptionHelper}
           onChange={value => setFieldValue('proposalMetadata.description', value)}
