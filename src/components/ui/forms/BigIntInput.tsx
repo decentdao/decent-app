@@ -6,197 +6,207 @@ import {
   Button,
   InputProps,
 } from '@chakra-ui/react';
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { parseUnits, formatUnits, maxUint256 } from 'viem';
+import { parseUnits, formatUnits } from 'viem';
 import { BigIntValuePair } from '../../../types';
-export interface BigIntInputProps
-  extends Omit<InputProps, 'value' | 'onChange'>,
+
+export interface BigIntInputV2Props
+  extends Omit<InputProps, 'value' | 'onChange' | 'type' | 'min' | 'max'>,
     FormControlOptions {
-  value?: bigint;
+  value?: BigIntValuePair;
   onChange: (value: BigIntValuePair) => void;
-  decimalPlaces?: number;
-  min?: string;
-  max?: string;
+  decimals?: number;
+  min?: bigint;
+  max?: bigint;
   maxValue?: bigint;
-  parentFormikValue?: BigIntValuePair;
 }
+
 /**
- * This component will add a chakra Input component that accepts and sets a bigint
+ * A properly functioning BigInt input component that handles decimal token amounts.
  *
- * @param value input value to the control as a bigint. If undefined is set then the component will be blank.
- * @param onChange event is raised whenever the component changes. Sends back a resulting `BigIntValuePair` from the new input.
- * @param decimalPlaces number of decimal places to be used to parse the value to set the bigint
- * @param min Setting a minimum value will reset the Input value to min when the component's focus is lost. Can set decimal number for minimum, but must respect the decimalPlaces value.
- * @param max Setting this will cause the value of the Input control to be reset to the maximum when a number larger than it is inputted.
- * @param maxValue The maximum value that can be inputted. This is used to set the max value of the Input control.
- * @param parentFormikValue This needs to be set to `values.yourFormValue` if the value of the Input control is changed outside of the component, for example via `setFieldValue`. This will update the value of the underlying Input control.
- * @param ...rest component accepts all properties for Input and FormControl
- * @returns
+ * Key improvements over the original:
+ * - Single source of truth for state (value prop)
+ * - No cursor position manipulation
+ * - Proper text input with decimal validation
+ * - Cleaner min/max handling
+ * - Simplified API
  */
 export function BigIntInput({
-  // @todo `value` can most likely either be removed, or be used for what `parentFormikValue` is currently being used for. Currently it works as nothing more than an initial value.
-  // https://linear.app/decent-labs/issue/ENG-1158/remove-bigintinputvalue-not-being-used
-  value,
+  value = { value: '', bigintValue: undefined },
   onChange,
-  decimalPlaces = 18,
+  decimals = 18,
   min,
   max,
   maxValue,
-  parentFormikValue = { value: '', bigintValue: undefined },
   ...rest
-}: BigIntInputProps) {
+}: BigIntInputV2Props) {
   const { t } = useTranslation('common');
-  const [inputValue, setInputValue] = useState<string>(
-    value && value !== 0n ? formatUnits(value, decimalPlaces) : '',
-  );
+  const inputRef = useRef<HTMLInputElement>(null);
 
-  // this will insure the caret in the input component does not shift to the end of the input when the value is changed
-  const resetCaretPositionForInput = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const caret = event.target.selectionStart;
-    const element = event.target;
-    window.requestAnimationFrame(() => {
-      element.selectionStart = caret && caret - 1;
-      element.selectionEnd = caret && caret - 1;
-    });
-  };
+  // Track if we're in the middle of editing to prevent external updates from interfering
+  const [isEditing, setIsEditing] = useState(false);
 
-  const removeOnlyDecimalPoint = (input: string) => (!input || input === '.' ? '0' : input);
+  // Internal display value - only used during editing
+  const [displayValue, setDisplayValue] = useState(value.value);
 
-  const truncateDecimalPlaces = useCallback(
-    (eventValue: string) => {
-      if (eventValue.includes('.')) {
-        const [leftDigits, rightDigits] = eventValue.split('.');
-        //trunc right side of number if more than max decimal places
-        if (rightDigits && rightDigits.length > decimalPlaces) {
-          const maxLength = leftDigits.length + decimalPlaces + 1;
-          return eventValue.slice(0, maxLength);
-        }
+  // Update display value when external value changes (but not during editing)
+  useEffect(() => {
+    if (!isEditing) {
+      setDisplayValue(value.value);
+    }
+  }, [value.value, isEditing]);
+
+  const validateAndFormatInput = useCallback(
+    (input: string): string => {
+      // Allow empty input
+      if (input === '') return '';
+
+      // Remove any non-numeric characters except decimal point
+      let cleaned = input.replace(/[^0-9.]/g, '');
+
+      // Handle multiple decimal points - keep only the first one
+      const decimalIndex = cleaned.indexOf('.');
+      if (decimalIndex !== -1) {
+        const beforeDecimal = cleaned.substring(0, decimalIndex);
+        const afterDecimal = cleaned.substring(decimalIndex + 1).replace(/\./g, '');
+        cleaned = beforeDecimal + '.' + afterDecimal;
       }
-      return eventValue;
+
+      // Limit decimal places
+      if (decimals === 0) {
+        cleaned = cleaned.replace('.', '');
+      } else if (cleaned.includes('.')) {
+        const [whole, decimal] = cleaned.split('.');
+        cleaned = whole + '.' + decimal.substring(0, decimals);
+      }
+
+      // Remove leading zeros (except for "0." case)
+      if (cleaned.length > 1 && cleaned[0] === '0' && cleaned[1] !== '.') {
+        cleaned = cleaned.substring(1);
+      }
+
+      return cleaned;
     },
-    [decimalPlaces],
+    [decimals],
   );
 
-  const processValue = useCallback(
-    (event?: React.ChangeEvent<HTMLInputElement>, _value = '') => {
-      let stringValue = _value;
-      if (event) {
-        stringValue = event.target.value;
+  const convertToBigInt = useCallback(
+    (input: string): bigint | undefined => {
+      if (!input || input === '.' || input === '') return undefined;
+
+      try {
+        // Handle the case where input ends with decimal point
+        const normalizedInput = input.endsWith('.') ? input.slice(0, -1) : input;
+        if (!normalizedInput) return undefined;
+
+        return parseUnits(normalizedInput, decimals);
+      } catch {
+        return undefined;
       }
-      if (stringValue === '') {
+    },
+    [decimals],
+  );
+
+  const applyConstraints = useCallback(
+    (bigintValue: bigint | undefined): bigint | undefined => {
+      if (bigintValue === undefined) return undefined;
+
+      // Apply min constraint
+      if (min !== undefined && bigintValue < min) {
+        return min;
+      }
+
+      // Apply max constraint
+      if (max !== undefined && bigintValue > max) {
+        return max;
+      }
+
+      return bigintValue;
+    },
+    [min, max],
+  );
+
+  const handleInputChange = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      const rawValue = event.target.value;
+      const validatedValue = validateAndFormatInput(rawValue);
+
+      setDisplayValue(validatedValue);
+
+      const bigintValue = convertToBigInt(validatedValue);
+      const constrainedBigintValue = applyConstraints(bigintValue);
+
+      // If constraints were applied, update display value to match
+      if (constrainedBigintValue !== bigintValue && constrainedBigintValue !== undefined) {
+        const constrainedDisplayValue = formatUnits(constrainedBigintValue, decimals);
+        setDisplayValue(constrainedDisplayValue);
         onChange({
-          value: stringValue,
-          bigintValue: undefined,
+          value: constrainedDisplayValue,
+          bigintValue: constrainedBigintValue,
         });
-        setInputValue('');
-        return;
+      } else {
+        onChange({
+          value: validatedValue,
+          bigintValue: constrainedBigintValue,
+        });
       }
+    },
+    [validateAndFormatInput, convertToBigInt, applyConstraints, onChange, decimals],
+  );
 
-      const numberMask =
-        decimalPlaces === 0 ? new RegExp('^\\d*$') : new RegExp('^\\d*(\\.\\d*)?$');
+  const handleFocus = useCallback(() => {
+    setIsEditing(true);
+  }, []);
 
-      if (!numberMask.test(stringValue)) {
-        if (event) {
-          resetCaretPositionForInput(event);
-          event.preventDefault();
-        }
-        return;
-      }
+  const handleBlur = useCallback(() => {
+    setIsEditing(false);
 
-      let newValue = truncateDecimalPlaces(stringValue);
-
-      let bigintValue = parseUnits(removeOnlyDecimalPoint(newValue), decimalPlaces);
-
-      //set value to max if greater than max
-      const maxBigint = max ? parseUnits(max, decimalPlaces) : maxUint256;
-      if (bigintValue > maxBigint) {
-        newValue = formatUnits(maxBigint, decimalPlaces);
-        bigintValue = maxBigint;
-      }
-
+    // Apply min constraint on blur if value is too small
+    const currentBigint = convertToBigInt(displayValue);
+    if (min !== undefined && currentBigint !== undefined && currentBigint < min) {
+      const minDisplayValue = formatUnits(min, decimals);
+      setDisplayValue(minDisplayValue);
       onChange({
-        value: removeOnlyDecimalPoint(newValue),
-        bigintValue: bigintValue,
+        value: minDisplayValue,
+        bigintValue: min,
       });
-      if (event && newValue !== event.target.value) {
-        resetCaretPositionForInput(event);
-      }
-      setInputValue(newValue);
-    },
-    [decimalPlaces, max, onChange, truncateDecimalPlaces],
-  );
-
-  //set value to min if less than min, when focus is lost
-  const onBlur = useCallback(
-    (event: React.FocusEvent<HTMLInputElement>) => {
-      if (min) {
-        const eventValue = event.target.value;
-        const hasValidValue = eventValue && eventValue !== '.';
-        const bigintValue = hasValidValue ? parseUnits(eventValue, decimalPlaces) : 0n;
-        const minBigint = hasValidValue ? parseUnits(min, decimalPlaces) : 0n;
-        if (bigintValue <= minBigint) {
-          onChange({
-            value: min,
-            bigintValue: minBigint,
-          });
-          setInputValue(min);
-        }
-      }
-    },
-    [decimalPlaces, min, onChange],
-  );
-
-  // if the parent Formik value prop changes, need to update the value
-  useEffect(() => {
-    // If parentFormikValue is set to undefined, then the input should be blank
-    if (parentFormikValue === undefined) {
-      setInputValue('');
-      return;
     }
+  }, [displayValue, convertToBigInt, min, decimals, onChange]);
 
-    // If parentFormikValue is the same as the input value, nothing needs to happen.
-    if (inputValue === parentFormikValue.value) return;
+  const handleMaxClick = useCallback(() => {
+    if (maxValue === undefined) return;
 
-    // If parentFormikValue does not match the input value (likely because it was set outside of the input's onChange handler),
-    // then update the underlying input value so that the change is visible on the UI.
-    if (parentFormikValue.value !== inputValue) {
-      setInputValue(parentFormikValue.value);
+    const maxDisplayValue = formatUnits(maxValue, decimals);
+    setDisplayValue(maxDisplayValue);
+    onChange({
+      value: maxDisplayValue,
+      bigintValue: maxValue,
+    });
+
+    // Focus the input after setting max value
+    if (inputRef.current) {
+      inputRef.current.focus();
     }
-  }, [parentFormikValue, inputValue]);
-
-  // if the decimalPlaces change, need to update the value
-  useEffect(() => {
-    if (!inputValue) return;
-    processValue(undefined, inputValue);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [decimalPlaces]);
+  }, [maxValue, decimals, onChange]);
 
   return (
     <InputGroup>
       <Input
-        value={inputValue}
-        onChange={processValue}
-        onBlur={onBlur}
-        onWheel={e => {
-          e.preventDefault();
-          e.currentTarget.blur();
-        }}
-        type="number"
+        ref={inputRef}
+        value={displayValue}
+        onChange={handleInputChange}
+        onFocus={handleFocus}
+        onBlur={handleBlur}
+        type="text"
+        inputMode="decimal"
         {...rest}
       />
       {maxValue !== undefined && (
         <InputRightElement width="4.5rem">
           <Button
             h="1.75rem"
-            onClick={() => {
-              const newValue = {
-                value: truncateDecimalPlaces(formatUnits(maxValue, decimalPlaces)),
-                bigintValue: maxValue,
-              };
-              setInputValue(newValue.value);
-              onChange(newValue);
-            }}
+            onClick={handleMaxClick}
             variant="text"
             size="md"
           >
