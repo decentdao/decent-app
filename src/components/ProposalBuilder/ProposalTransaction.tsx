@@ -15,6 +15,7 @@ import { CaretDown, CaretRight, MinusCircle, Plus } from '@phosphor-icons/react'
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ABIElement } from '../../hooks/utils/useABI';
+import { BigIntValuePair } from '../../types';
 import { CreateProposalTransaction } from '../../types/proposalBuilder';
 import { scrollToBottom } from '../../utils/ui';
 import ABISelector from '../ui/forms/ABISelector';
@@ -409,7 +410,6 @@ export default function ProposalTransaction({
             helper={t('helperEthValue')}
             isRequired={false}
             disabled={transactionPending}
-            parentFormikValue={transaction.ethValue}
             subLabel={
               <VStack
                 align="start"
@@ -425,11 +425,11 @@ export default function ProposalTransaction({
               </VStack>
             }
             errorMessage={undefined}
-            value={transaction.ethValue.bigintValue}
-            onChange={e => {
+            value={transaction.ethValue}
+            onChange={(e: BigIntValuePair) => {
               setFieldValue(`${transactionIndex}.ethValue`, e);
             }}
-            decimalPlaces={18}
+            decimals={18}
           />
         </Box>
       </Box>

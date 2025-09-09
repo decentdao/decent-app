@@ -83,10 +83,9 @@ function StakeFormPanel({
         <BigIntInput
           size="xl"
           placeholder="0.00"
-          value={values.amount?.bigintValue}
-          decimalPlaces={tokenDecimals}
-          parentFormikValue={values.amount}
-          onChange={value => {
+          value={values.amount}
+          decimals={tokenDecimals}
+          onChange={(value: BigIntValuePair) => {
             setFieldValue('amount', value);
           }}
         />

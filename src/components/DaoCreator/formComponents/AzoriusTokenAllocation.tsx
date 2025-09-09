@@ -14,7 +14,6 @@ interface ITokenAllocations {
   setFieldValue: (field: string, value: any) => void;
   addressErrorMessage: string | null;
   amountErrorMessage: string | null;
-  amountInputValue?: bigint;
   allocationLength: number;
 }
 
@@ -22,7 +21,6 @@ export function AzoriusTokenAllocation({
   index,
   addressErrorMessage,
   amountErrorMessage,
-  amountInputValue,
   remove,
   setFieldValue,
   allocationLength,
@@ -33,7 +31,8 @@ export function AzoriusTokenAllocation({
   const { values, touched, setTouched } = useFormikContext<CreatorFormState>();
 
   const isTokenAllocationTouched = touched.erc20Token?.tokenAllocations?.[index]?.amount?.value;
-  const isAllocationInputEmptyInError = !amountInputValue && isTokenAllocationTouched;
+  const isAllocationInputEmptyInError =
+    !values.erc20Token.tokenAllocations[index].amount.value && isTokenAllocationTouched;
   const allocationInputErrorMsg = isAllocationInputEmptyInError
     ? t('errorNoAllocation')
     : isTokenAllocationTouched
@@ -57,7 +56,7 @@ export function AzoriusTokenAllocation({
       <LabelWrapper errorMessage={allocationInputErrorMsg}>
         <BigIntInput
           marginTop="-0.25rem" // Freaking LabelWrapper
-          value={amountInputValue}
+          value={values.erc20Token.tokenAllocations[index].amount}
           onChange={valuePair => {
             setFieldValue(`erc20Token.tokenAllocations.${index}.amount`, valuePair);
             setTouched({
@@ -91,8 +90,9 @@ export function AzoriusTokenAllocation({
           data-testid={'tokenVoting-tokenAllocationAmountInput-' + index}
           onKeyDown={restrictChars}
           placeholder="100,000"
-          isInvalid={!!amountInputValue && !!amountErrorMessage}
-          parentFormikValue={values.erc20Token.tokenAllocations[index].amount}
+          isInvalid={
+            !!values.erc20Token.tokenAllocations[index].amount.value && !!amountErrorMessage
+          }
         />
       </LabelWrapper>
       {allocationLength > 1 ? (

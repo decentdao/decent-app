@@ -68,11 +68,10 @@ export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
             }}
           >
             <BigIntInput
-              value={values.maxTokenSupply.bigintValue}
+              value={values.maxTokenSupply}
               onChange={valuePair => setFieldValue('maxTokenSupply', valuePair)}
-              parentFormikValue={values.maxTokenSupply}
               placeholder="1000000000"
-              decimalPlaces={0}
+              decimals={0}
             />
           </LabelComponent>
 
