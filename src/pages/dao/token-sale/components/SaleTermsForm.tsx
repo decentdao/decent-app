@@ -1,7 +1,9 @@
-import { NumberInput, NumberInputField, VStack } from '@chakra-ui/react';
+import { Input, VStack, Grid, Text } from '@chakra-ui/react';
 import { ContentBoxTight } from '../../../../components/ui/containers/ContentBox';
+import { BigIntInput } from '../../../../components/ui/forms/BigIntInput';
 import { DatePicker } from '../../../../components/ui/forms/DatePicker';
 import { LabelComponent } from '../../../../components/ui/forms/InputComponent';
+import { NumberInputWithAddon } from '../../../../components/ui/forms/InputWithAddon';
 import { SectionHeader } from '../../../../components/ui/forms/SectionHeader';
 import { AssetSelector } from '../../../../components/ui/utils/AssetSelector';
 import { TokenSaleFormValues } from '../types';
@@ -14,71 +16,171 @@ interface SaleTermsFormProps {
 export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
   return (
     <VStack align="stretch">
+      {/* Token Details Section */}
       <ContentBoxTight>
         <SectionHeader
-          title="Sale Terms"
-          description="Configure the timing, pricing, and payment options for your token sale."
+          title="Token Details"
+          description="Configure your token name, ticker, and supply."
         />
 
-        <LabelComponent
-          label="Sale Start Date"
-          isRequired={true}
-          gridContainerProps={{
-            templateColumns: '1fr',
-          }}
+        <Grid
+          templateColumns="1fr 1fr"
+          gap={4}
         >
-          <DatePicker
-            selectedDate={values.startDate || undefined}
-            onChange={date => setFieldValue('startDate', date)}
-            minDate={new Date()}
-          />
-        </LabelComponent>
-
-        <LabelComponent
-          label="Sale End Date"
-          isRequired={true}
-          gridContainerProps={{
-            templateColumns: '1fr',
-          }}
-        >
-          <DatePicker
-            selectedDate={values.endDate || undefined}
-            onChange={date => setFieldValue('endDate', date)}
-            minDate={values.startDate || new Date()}
-          />
-        </LabelComponent>
-
-        <LabelComponent
-          label="Total Supply"
-          isRequired={true}
-          gridContainerProps={{
-            templateColumns: '1fr',
-          }}
-        >
-          <NumberInput
-            value={values.totalSupply}
-            onChange={val => setFieldValue('totalSupply', val)}
-            min={0}
+          <LabelComponent
+            label="Token Name"
+            isRequired={true}
+            gridContainerProps={{
+              templateColumns: '1fr',
+            }}
           >
-            <NumberInputField placeholder="Enter total supply" />
-          </NumberInput>
-        </LabelComponent>
+            <Input
+              placeholder="e.g. Decent"
+              value={values.tokenName}
+              onChange={e => setFieldValue('tokenName', e.target.value)}
+            />
+          </LabelComponent>
 
-        <LabelComponent
-          label="Sale Price"
-          isRequired={true}
-          gridContainerProps={{
-            templateColumns: '1fr',
-          }}
-        >
-          <NumberInput
-            value={values.salePrice}
-            onChange={val => setFieldValue('salePrice', val)}
-            min={0}
+          <LabelComponent
+            label="Token Symbol"
+            isRequired={true}
+            gridContainerProps={{
+              templateColumns: '1fr',
+            }}
           >
-            <NumberInputField placeholder="Enter price per token" />
-          </NumberInput>
-        </LabelComponent>
+            <Input
+              placeholder="e.g. DCNT"
+              value={values.tokenSymbol}
+              onChange={e => setFieldValue('tokenSymbol', e.target.value)}
+            />
+          </LabelComponent>
+        </Grid>
+
+        <Grid
+          templateColumns="1fr 1fr"
+          gap={4}
+        >
+          <LabelComponent
+            label="Max Token Supply"
+            isRequired={true}
+            gridContainerProps={{
+              templateColumns: '1fr',
+            }}
+          >
+            <BigIntInput
+              value={values.maxTokenSupply.bigintValue}
+              onChange={valuePair => setFieldValue('maxTokenSupply', valuePair)}
+              parentFormikValue={values.maxTokenSupply}
+              placeholder="1000000000"
+              decimalPlaces={0}
+            />
+          </LabelComponent>
+
+          <LabelComponent
+            label="Token Price"
+            isRequired={true}
+            gridContainerProps={{
+              templateColumns: '1fr',
+            }}
+          >
+            <NumberInputWithAddon
+              value={values.tokenPrice}
+              onChange={val => setFieldValue('tokenPrice', parseFloat(val) || 0)}
+              min={0}
+              precision={2}
+              step={0.01}
+              placeholder="100"
+              leftAddon={<Text color="gray.500">$</Text>}
+            />
+          </LabelComponent>
+        </Grid>
+      </ContentBoxTight>
+
+      {/* Sale Pricing & Terms Section */}
+      <ContentBoxTight>
+        <SectionHeader
+          title="Sale Pricing & Terms"
+          description="Configure your token price, fundraising cap, sale dates, and purchase limits."
+        />
+
+        <Grid
+          templateColumns="1fr 1fr"
+          gap={4}
+        >
+          <LabelComponent
+            label="Minimum Fundraise"
+            isRequired={true}
+            gridContainerProps={{
+              templateColumns: '1fr',
+            }}
+          >
+            <NumberInputWithAddon
+              value={values.minimumFundraise}
+              onChange={val => setFieldValue('minimumFundraise', parseFloat(val) || 0)}
+              min={0}
+              precision={2}
+              step={0.01}
+              placeholder="500,000"
+              leftAddon={<Text color="gray.500">$</Text>}
+            />
+          </LabelComponent>
+
+          <LabelComponent
+            label="Fundraising Cap"
+            isRequired={true}
+            gridContainerProps={{
+              templateColumns: '1fr',
+            }}
+          >
+            <NumberInputWithAddon
+              value={values.fundraisingCap}
+              onChange={val => setFieldValue('fundraisingCap', parseFloat(val) || 0)}
+              min={0}
+              precision={2}
+              step={0.01}
+              placeholder="10,000,000"
+              leftAddon={<Text color="gray.500">$</Text>}
+            />
+          </LabelComponent>
+        </Grid>
+
+        <Grid
+          templateColumns="1fr 1fr"
+          gap={4}
+        >
+          <LabelComponent
+            label="Valuation"
+            isRequired={true}
+            gridContainerProps={{
+              templateColumns: '1fr',
+              templateRows: '1fr',
+            }}
+          >
+            <NumberInputWithAddon
+              value={values.valuation}
+              onChange={val => setFieldValue('valuation', parseFloat(val) || 0)}
+              min={0}
+              precision={2}
+              step={0.01}
+              placeholder="5,000,000"
+              leftAddon={<Text color="gray.500">$</Text>}
+            />
+          </LabelComponent>
+
+          <LabelComponent
+            label="Sale Start Date"
+            isRequired={true}
+            gridContainerProps={{
+              templateColumns: '1fr',
+            }}
+          >
+            <DatePicker
+              selectedDate={values.startDate || undefined}
+              onChange={date => setFieldValue('startDate', date)}
+              minDate={new Date()}
+            />
+          </LabelComponent>
+        </Grid>
 
         <LabelComponent
           label="Accepted Payment Token"
@@ -92,6 +194,50 @@ export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
             onSelect={addresses => setFieldValue('acceptedToken', addresses)}
           />
         </LabelComponent>
+
+        <Grid
+          templateColumns="1fr 1fr"
+          gap={4}
+        >
+          <LabelComponent
+            label="Minimum Purchase (USD)"
+            subLabel="Leave blank for no purchase limits"
+            isRequired={false}
+            gridContainerProps={{
+              templateColumns: '1fr',
+            }}
+          >
+            <NumberInputWithAddon
+              value={values.minPurchase}
+              onChange={val => setFieldValue('minPurchase', parseFloat(val) || 0)}
+              min={0}
+              precision={2}
+              step={0.01}
+              placeholder="100"
+              leftAddon={<Text color="gray.500">$</Text>}
+              rightAddon={<Text>min</Text>}
+            />
+          </LabelComponent>
+
+          <LabelComponent
+            isRequired={false}
+            label="Maximum Purchase (USD)"
+            gridContainerProps={{
+              templateColumns: '1fr',
+            }}
+          >
+            <NumberInputWithAddon
+              value={values.maxPurchase}
+              onChange={val => setFieldValue('maxPurchase', parseFloat(val) || 0)}
+              min={0}
+              precision={2}
+              step={0.01}
+              placeholder="10,000"
+              leftAddon={<Text color="gray.500">$</Text>}
+              rightAddon={<Text>max</Text>}
+            />
+          </LabelComponent>
+        </Grid>
       </ContentBoxTight>
     </VStack>
   );
