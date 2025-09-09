@@ -38,8 +38,6 @@ interface PermissionsHandlerDependencies {
   linearVotingErc721Address: Address | undefined;
   linearVotingErc20V1MasterCopy: Address;
   linearVotingErc721V1MasterCopy: Address;
-  linearVotingErc20WithHatsWhitelistingAddress: Address | undefined;
-  linearVotingErc721WithHatsWhitelistingAddress: Address | undefined;
   linearVotingErc20MasterCopy: Address;
   linearVotingErc721MasterCopy: Address;
   zodiacModuleProxyFactory: Address;

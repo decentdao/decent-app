@@ -118,8 +118,6 @@ export function SafeSettingsModal({
       moduleAzoriusAddress,
       linearVotingErc20Address,
       linearVotingErc721Address,
-      linearVotingErc20WithHatsWhitelistingAddress,
-      linearVotingErc721WithHatsWhitelistingAddress,
     },
     revShareWallets,
   } = useDAOStore({ daoKey });
@@ -306,8 +304,6 @@ export function SafeSettingsModal({
         moduleAzoriusAddress,
         linearVotingErc20Address,
         linearVotingErc721Address,
-        linearVotingErc20WithHatsWhitelistingAddress,
-        linearVotingErc721WithHatsWhitelistingAddress,
         linearVotingErc20MasterCopy,
         linearVotingErc721MasterCopy,
         linearVotingErc20V1MasterCopy,
