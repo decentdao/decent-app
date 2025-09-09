@@ -1,18 +1,20 @@
 import { Flex, Tab, TabList, Tabs, Text, TabPanel, TabPanels, Button } from '@chakra-ui/react';
 import { abis } from '@decentdao/decent-contracts';
-import { Formik, useFormikContext } from 'formik';
+import { Formik, FormikHelpers, useFormikContext } from 'formik';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { formatUnits, getContract } from 'viem';
+import { useAccount } from 'wagmi';
 import * as Yup from 'yup';
 import { useCurrentDAOKey } from '../../hooks/DAO/useCurrentDAOKey';
 import { useNetworkWalletClient } from '../../hooks/useNetworkWalletClient';
+import { useStakeAvailability } from '../../hooks/utils/useStakeAvailability';
 import { useTransaction } from '../../hooks/utils/useTransaction';
 import { useDAOStore } from '../../providers/App/AppProvider';
 import { BigIntValuePair } from '../../types';
 import { BigIntInput } from '../ui/forms/BigIntInput';
-import { StakingAdditionalInfo } from './StakingAdditionalInfo';
+import { StakingAdditionalInfo, UnstakeAdditionalInfo } from './AdditionalInfo';
 
 const MODES = ['stake', 'unstake'] as const;
 type Mode = (typeof MODES)[number];
@@ -28,8 +30,8 @@ function StakeFormPanel({
   maxButtonOnClick,
   buttonsDisabled,
   mode,
-  needsApproval,
-  onApprove,
+  availabilityText,
+  isAvailable,
 }: {
   maxAvailableValue: string;
   tokenSymbol: string;
@@ -37,8 +39,8 @@ function StakeFormPanel({
   maxButtonOnClick: () => void;
   buttonsDisabled: boolean;
   mode: Mode;
-  needsApproval?: boolean;
-  onApprove?: () => void;
+  availabilityText?: string | null;
+  isAvailable?: boolean;
 }) {
   const { t } = useTranslation('staking');
   const { values, setFieldValue } = useFormikContext<StakeFormProps>();
@@ -48,6 +50,7 @@ function StakeFormPanel({
       alignItems="flex-start"
       gap={2}
       alignSelf="stretch"
+      mt={4}
     >
       <Flex
         direction="column"
@@ -56,15 +59,25 @@ function StakeFormPanel({
         alignSelf="stretch"
       >
         <Flex
-          alignItems="flex-start"
+          alignItems="center"
+          justifyContent="space-between"
           alignSelf="stretch"
         >
           <Text
             color="color-content-muted"
-            textStyle="text-xs-regular"
+            textStyle="text-sm-regular"
           >
             {mode === 'stake' ? t('amountToStake') : t('amountToUnstake')}
           </Text>
+          {availabilityText && (
+            <Text
+              color={isAvailable ? 'color-success-400' : 'color-warning-200'}
+              textStyle="text-sm-regular"
+              textAlign="right"
+            >
+              {availabilityText}
+            </Text>
+          )}
         </Flex>
 
         <BigIntInput
@@ -85,7 +98,7 @@ function StakeFormPanel({
         >
           <Text
             color="color-content-content1-foreground"
-            textStyle="text-xs-regular"
+            textStyle="text-sm-regular"
           >
             {t('availableBalance')}
             <Text
@@ -117,15 +130,12 @@ function StakeFormPanel({
         <Button
           size="lg"
           w="full"
-          type={mode === 'stake' && needsApproval ? 'button' : 'submit'}
+          type="submit"
           isDisabled={buttonsDisabled}
-          onClick={mode === 'stake' && needsApproval ? onApprove : undefined}
         >
-          {mode === 'stake' && needsApproval
-            ? t('approveButton', { symbol: tokenSymbol })
-            : mode === 'stake'
-              ? t('stakeButton', { symbol: tokenSymbol })
-              : t('unstakeButton', { symbol: tokenSymbol })}
+          {mode === 'stake'
+            ? t('stakeButton', { symbol: tokenSymbol })
+            : t('unstakeButton', { symbol: tokenSymbol })}
         </Button>
       </Flex>
     </Flex>
@@ -135,25 +145,38 @@ function StakeFormPanel({
 export default function StakeCard() {
   const { t } = useTranslation('staking');
   const { daoKey } = useCurrentDAOKey();
+  const { isConnected } = useAccount();
   const {
     governance: { isAzorius, stakedToken, votesToken, erc20Token },
   } = useDAOStore({ daoKey });
+
   const unstakedToken = useMemo(
-    () => (isAzorius ? votesToken : erc20Token),
-    [isAzorius, votesToken, erc20Token],
+    () =>
+      !isAzorius
+        ? // if not azorius, return erc20 token as unstaked token
+          erc20Token
+        : stakedToken?.address === votesToken?.address
+          ? // if staked token is the same as votes token, return erc20 token as unstaked token
+            erc20Token
+          : // else return votes token as unstaked token
+            votesToken,
+    [isAzorius, votesToken, erc20Token, stakedToken?.address],
   );
 
   const { data: walletClient } = useNetworkWalletClient();
-  const [contractCall, contractCallPending] = useTransaction();
+  const [approveCall, approveCallPending] = useTransaction();
+  const [stakeCall, stakeCallPending] = useTransaction();
+  const [unstakeCall, unstakeCallPending] = useTransaction();
 
   const stakedTokenSymbol = stakedToken?.symbol || '';
   const maxAvailableToUnstake = formatUnits(stakedToken?.balance || 0n, stakedToken?.decimals || 0);
-
   const unStakedTokenSymbol = unstakedToken?.symbol || '';
   const maxAvailableToStake = formatUnits(
     unstakedToken?.balance || 0n,
     unstakedToken?.decimals || 0,
   );
+
+  const stakeAvailability = useStakeAvailability(stakedToken, isConnected);
 
   // Get allowance from store
   const allowance = unstakedToken?.allowance || 0n;
@@ -167,29 +190,10 @@ export default function StakeCard() {
     mode: Yup.string().required(),
   });
 
-  async function handleApprove(amount: bigint) {
-    if (!walletClient || !unstakedToken?.address || !stakedToken?.address) return;
-
-    const tokenContract = getContract({
-      address: unstakedToken.address,
-      abi: abis.deployables.VotesERC20V1,
-      client: walletClient,
-    });
-
-    const formattedAmount = formatUnits(amount, unstakedToken.decimals || 0);
-
-    contractCall({
-      contractFn: () => tokenContract.write.approve([stakedToken.address, amount]),
-      pendingMessage: t('approvePending', { amount: formattedAmount, symbol: unStakedTokenSymbol }),
-      successMessage: t('approveSuccess', { amount: formattedAmount, symbol: unStakedTokenSymbol }),
-      failedMessage: t('approveError'),
-      successCallback: () => {
-        // Allowance will be updated automatically via event listeners
-      },
-    });
-  }
-
-  async function stakedFormHandler(values: StakeFormProps) {
+  async function stakedFormHandler(
+    values: StakeFormProps,
+    formikHelpers: FormikHelpers<StakeFormProps>,
+  ) {
     if (!walletClient || !stakedToken?.address) return;
 
     const { mode, amount } = values;
@@ -224,26 +228,68 @@ export default function StakeCard() {
       mode === 'stake' ? unstakedToken?.decimals || 0 : stakedToken?.decimals || 0,
     );
 
-    contractCall({
-      contractFn: () => {
-        if (mode === 'stake') {
-          return stakingContract.write.stake([amount.bigintValue!]);
-        } else {
-          return stakingContract.write.unstake([amount.bigintValue!]);
-        }
-      },
-      pendingMessage:
-        mode === 'stake'
-          ? t('stakingPending', { amount: formattedAmount, symbol: tokenSymbol })
-          : t('unstakingPending', { amount: formattedAmount, symbol: tokenSymbol }),
-      successMessage:
-        mode === 'stake'
-          ? t('stakingSuccess', { amount: formattedAmount, symbol: tokenSymbol })
-          : t('unstakingSuccess', { amount: formattedAmount, symbol: tokenSymbol }),
-      failedMessage: mode === 'stake' ? t('stakingError') : t('unstakingError'),
-    });
+    // For staking, check if approval is needed and use multicall if necessary
+    if (mode === 'stake' && unstakedToken?.address) {
+      const needsApproval = amount.bigintValue > allowance;
+
+      if (needsApproval) {
+        const tokenContract = getContract({
+          address: unstakedToken.address,
+          abi: abis.deployables.VotesERC20V1,
+          client: walletClient,
+        });
+        // Approve token transfer to staking contract
+        approveCall({
+          contractFn: () => tokenContract.write.approve([stakedToken.address, amount.bigintValue!]),
+          pendingMessage: t('approvePending', { amount: formattedAmount, symbol: tokenSymbol }),
+          successMessage: t('approveSuccess', { amount: formattedAmount, symbol: tokenSymbol }),
+          failedMessage: t('approveError'),
+          successCallback: async () => {
+            // Stake after approval is successful
+            stakeCall({
+              contractFn: () => stakingContract.write.stake([amount.bigintValue!]),
+              pendingMessage: t('stakingPending', {
+                amount: formattedAmount,
+                symbol: tokenSymbol,
+              }),
+              successMessage: t('stakingSuccess', {
+                amount: formattedAmount,
+                symbol: tokenSymbol,
+              }),
+              failedMessage: t('stakingError'),
+              successCallback: () => {
+                formikHelpers.resetForm();
+              },
+            });
+          },
+        });
+      } else {
+        // Just stake without approval
+        stakeCall({
+          contractFn: () => stakingContract.write.stake([amount.bigintValue!]),
+          pendingMessage: t('stakingPending', { amount: formattedAmount, symbol: tokenSymbol }),
+          successMessage: t('stakingSuccess', { amount: formattedAmount, symbol: tokenSymbol }),
+          failedMessage: t('stakingError'),
+          successCallback: () => {
+            formikHelpers.resetForm();
+          },
+        });
+      }
+    } else {
+      // Unstaking
+      unstakeCall({
+        contractFn: () => stakingContract.write.unstake([amount.bigintValue!]),
+        pendingMessage: t('unstakingPending', { amount: formattedAmount, symbol: tokenSymbol }),
+        successMessage: t('unstakingSuccess', { amount: formattedAmount, symbol: tokenSymbol }),
+        failedMessage: t('unstakingError'),
+        successCallback: () => {
+          formikHelpers.resetForm();
+        },
+      });
+    }
   }
 
+  const pending = approveCallPending || stakeCallPending || unstakeCallPending;
   return (
     <Flex
       direction="column"
@@ -251,100 +297,84 @@ export default function StakeCard() {
       gap="16px"
     >
       <Flex
-        direction="column"
         alignItems="flex-start"
-        gap="16px"
+        gap={3}
+        alignSelf="stretch"
+        sx={{ '& form': { width: 'full' } }}
       >
-        <Flex
-          alignItems="flex-start"
-          gap={3}
-          alignSelf="stretch"
-          sx={{ '& form': { width: 'full' } }}
+        <Formik<StakeFormProps>
+          initialValues={{
+            mode: MODES[0],
+            amount: { value: '', bigintValue: undefined },
+          }}
+          validationSchema={validationSchema}
+          onSubmit={stakedFormHandler}
         >
-          <Formik<StakeFormProps>
-            initialValues={{
-              amount: { value: '', bigintValue: undefined },
-              mode: MODES[0],
-            }}
-            validationSchema={validationSchema}
-            onSubmit={stakedFormHandler}
-          >
-            {({ handleSubmit, setFieldValue, values }) => {
-              const needsApproval =
-                values.mode === 'stake' &&
-                values.amount.bigintValue &&
-                values.amount.bigintValue > allowance;
+          {({ handleSubmit, setFieldValue }) => {
+            return (
+              <form onSubmit={handleSubmit}>
+                <Tabs
+                  variant="solid"
+                  size="md"
+                  w="full"
+                  // ensure tabs are unmounted; this is to prevent memory leaks
+                  isLazy
+                  lazyBehavior="unmount"
+                  onChange={index => {
+                    setFieldValue('mode', MODES[index]);
+                    setFieldValue('amount', { value: '', bigintValue: undefined });
+                  }}
+                >
+                  <TabList w="fit-content">
+                    <Tab>{t('stakeTab')}</Tab>
+                    <Tab>{t('unstakeTab')}</Tab>
+                  </TabList>
 
-              return (
-                <form onSubmit={handleSubmit}>
-                  <Tabs
-                    variant="solid"
-                    size="md"
-                    w="full"
-                    // ensure tabs are unmounted; this is to prevent memory leaks
-                    isLazy
-                    lazyBehavior="unmount"
-                    onChange={index => {
-                      setFieldValue('mode', MODES[index]);
-                      setFieldValue('amount', { value: '', bigintValue: undefined });
-                    }}
-                  >
-                    <TabList w="fit-content">
-                      <Tab>{t('stakeTab')}</Tab>
-                      <Tab>{t('unstakeTab')}</Tab>
-                    </TabList>
-
-                    <TabPanels>
-                      <TabPanel w="full">
-                        <StakeFormPanel
-                          maxAvailableValue={maxAvailableToStake}
-                          tokenSymbol={unStakedTokenSymbol}
-                          tokenDecimals={unstakedToken?.decimals || 0}
-                          maxButtonOnClick={() =>
-                            setFieldValue('amount', {
-                              value: maxAvailableToStake,
-                              bigintValue: unstakedToken?.balance,
-                            })
-                          }
-                          buttonsDisabled={
-                            !unstakedToken?.balance ||
-                            unstakedToken?.balance === 0n ||
-                            contractCallPending
-                          }
-                          mode="stake"
-                          needsApproval={!!needsApproval}
-                          onApprove={() =>
-                            values.amount.bigintValue && handleApprove(values.amount.bigintValue)
-                          }
-                        />
-                      </TabPanel>
-                      <TabPanel w="full">
-                        <StakeFormPanel
-                          maxAvailableValue={maxAvailableToUnstake}
-                          tokenSymbol={stakedTokenSymbol}
-                          tokenDecimals={stakedToken?.decimals || 0}
-                          maxButtonOnClick={() =>
-                            setFieldValue('amount', {
-                              value: maxAvailableToUnstake,
-                              bigintValue: stakedToken?.balance,
-                            })
-                          }
-                          buttonsDisabled={
-                            !stakedToken?.balance ||
-                            stakedToken?.balance === 0n ||
-                            contractCallPending
-                          }
-                          mode="unstake"
-                        />
-                      </TabPanel>
-                    </TabPanels>
-                  </Tabs>
-                </form>
-              );
-            }}
-          </Formik>
-        </Flex>
-        <StakingAdditionalInfo />
+                  <TabPanels>
+                    <TabPanel w="full">
+                      <StakeFormPanel
+                        maxAvailableValue={maxAvailableToStake}
+                        tokenSymbol={unStakedTokenSymbol}
+                        tokenDecimals={unstakedToken?.decimals || 0}
+                        maxButtonOnClick={() =>
+                          setFieldValue('amount', {
+                            value: maxAvailableToStake,
+                            bigintValue: unstakedToken?.balance,
+                          })
+                        }
+                        buttonsDisabled={
+                          !unstakedToken?.balance || unstakedToken?.balance === 0n || pending
+                        }
+                        mode="stake"
+                      />
+                      <StakingAdditionalInfo />
+                    </TabPanel>
+                    <TabPanel w="full">
+                      <StakeFormPanel
+                        maxAvailableValue={maxAvailableToUnstake}
+                        tokenSymbol={stakedTokenSymbol}
+                        tokenDecimals={stakedToken?.decimals || 0}
+                        maxButtonOnClick={() =>
+                          setFieldValue('amount', {
+                            value: maxAvailableToUnstake,
+                            bigintValue: stakedToken?.balance,
+                          })
+                        }
+                        buttonsDisabled={
+                          !stakedToken?.balance || stakedToken?.balance === 0n || pending
+                        }
+                        mode="unstake"
+                        availabilityText={stakeAvailability.displayText}
+                        isAvailable={stakeAvailability.isAvailable}
+                      />
+                      <UnstakeAdditionalInfo />
+                    </TabPanel>
+                  </TabPanels>
+                </Tabs>
+              </form>
+            );
+          }}
+        </Formik>
       </Flex>
     </Flex>
   );

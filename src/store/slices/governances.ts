@@ -93,12 +93,18 @@ export type GovernancesSlice = {
   setVotesTokenAddress: (daoKey: DAOKey, votesTokenAddress: Address) => void;
   setERC20Token: (daoKey: DAOKey, erc20Token: ERC20TokenData | undefined) => void;
   setStakingData: (daoKey: DAOKey, stakedToken: StakedTokenData | undefined) => void;
-  setStakedTokenAccountData: (daoKey: DAOKey, stakedTokenAccountData: { balance: bigint }) => void;
+  setStakedTokenAccountData: (
+    daoKey: DAOKey,
+    stakedTokenAccountData: {
+      balance: bigint;
+      stakerData: { stakedAmount: bigint; lastStakeTimestamp: bigint };
+      claimableRewards: bigint[];
+    },
+  ) => void;
   setERC20TokenAccountData: (
     daoKey: DAOKey,
     erc20TokenAccountData: { balance: bigint; allowance: bigint },
   ) => void;
-  setUserClaimableRewards: (daoKey: DAOKey, claimableRewards: bigint[]) => void;
 };
 
 export const EMPTY_GOVERNANCE: FractalGovernance & FractalGovernanceContracts = {
@@ -113,7 +119,6 @@ export const EMPTY_GOVERNANCE: FractalGovernance & FractalGovernanceContracts = 
   paymasterAddress: null,
   erc20Token: undefined,
   stakedToken: undefined,
-  userClaimableRewards: [],
 };
 
 const filterPendingTxHashes = (
@@ -459,11 +464,7 @@ export const createGovernancesSlice: StateCreator<
   setERC20TokenAccountData: (daoKey, erc20TokenAccountData) => {
     set(
       state => {
-        if (
-          !state.governances[daoKey] ||
-          state.governances[daoKey].isAzorius ||
-          !state.governances[daoKey].erc20Token
-        ) {
+        if (!state.governances[daoKey] || !state.governances[daoKey].erc20Token) {
           return;
         }
 
@@ -483,12 +484,43 @@ export const createGovernancesSlice: StateCreator<
             stakedToken: stakedToken,
           };
         } else {
-          if (
-            stakedToken &&
-            stakedToken.balance === undefined &&
-            !!state.governances[daoKey].stakedToken?.balance
-          ) {
-            stakedToken.balance = state.governances[daoKey].stakedToken?.balance;
+          if (stakedToken) {
+            const existingStakedToken = state.governances[daoKey].stakedToken;
+
+            // Preserve existing balance if new data doesn't have it
+            if (stakedToken.balance === undefined && !!existingStakedToken?.balance) {
+              stakedToken.balance = existingStakedToken.balance;
+            }
+
+            // Preserve existing account data if it exists and new data appears to be default/uninitialized
+            if (existingStakedToken) {
+              // Preserve userClaimableRewards if existing has data and new is empty array
+              if (
+                existingStakedToken.userClaimableRewards.length > 0 &&
+                stakedToken.userClaimableRewards.length === 0
+              ) {
+                stakedToken.userClaimableRewards = existingStakedToken.userClaimableRewards;
+              }
+
+              // Preserve userStakedAmount if existing has value and new is undefined/0
+              if (
+                existingStakedToken.userStakedAmount !== undefined &&
+                existingStakedToken.userStakedAmount > 0n &&
+                (stakedToken.userStakedAmount === undefined || stakedToken.userStakedAmount === 0n)
+              ) {
+                stakedToken.userStakedAmount = existingStakedToken.userStakedAmount;
+              }
+
+              // Preserve userLastStakeTimestamp if existing has value and new is undefined/0
+              if (
+                existingStakedToken.userLastStakeTimestamp !== undefined &&
+                existingStakedToken.userLastStakeTimestamp > 0n &&
+                (stakedToken.userLastStakeTimestamp === undefined ||
+                  stakedToken.userLastStakeTimestamp === 0n)
+              ) {
+                stakedToken.userLastStakeTimestamp = existingStakedToken.userLastStakeTimestamp;
+              }
+            }
           }
           state.governances[daoKey].stakedToken = stakedToken;
         }
@@ -503,22 +535,18 @@ export const createGovernancesSlice: StateCreator<
         if (!state.governances[daoKey] || !state.governances[daoKey].stakedToken) {
           return;
         }
-        state.governances[daoKey].stakedToken.balance = stakedTokenAccountData.balance;
+
+        const existingStakedToken = state.governances[daoKey].stakedToken;
+
+        // Always update account data fields - this function is called with real user data
+        existingStakedToken.balance = stakedTokenAccountData.balance;
+        existingStakedToken.userClaimableRewards = stakedTokenAccountData.claimableRewards;
+        existingStakedToken.userStakedAmount = stakedTokenAccountData.stakerData.stakedAmount;
+        existingStakedToken.userLastStakeTimestamp =
+          stakedTokenAccountData.stakerData.lastStakeTimestamp;
       },
       false,
       'setStakedTokenAccountData',
-    );
-  },
-  setUserClaimableRewards: (daoKey, claimableRewards) => {
-    set(
-      state => {
-        if (!state.governances[daoKey]) {
-          state.governances[daoKey] = { ...EMPTY_GOVERNANCE };
-        }
-        state.governances[daoKey].userClaimableRewards = claimableRewards;
-      },
-      false,
-      'setUserClaimableRewards',
     );
   },
   getGovernance: daoKey => {

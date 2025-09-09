@@ -10,6 +10,7 @@ import { useValidationAddress } from '../../../hooks/schemas/common/useValidatio
 import { useCanUserCreateProposal } from '../../../hooks/utils/useCanUserSubmitProposal';
 import { useDAOStore } from '../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
+import { useProposalActionsStore } from '../../../store/actions/useProposalActionsStore';
 import { ProposalTemplate } from '../../../types/proposalBuilder';
 import { InputComponent } from '../forms/InputComponent';
 import Divider from '../utils/Divider';
@@ -40,6 +41,7 @@ export default function ForkProposalTemplateModal({
 
   const { isSafe, isSafeLoading } = useIsSafe(targetDAOAddress);
   const { getCanUserCreateProposal } = useCanUserCreateProposal();
+  const { resetActions } = useProposalActionsStore();
 
   const handleAddressChange: ChangeEventHandler<HTMLInputElement> = e => {
     setInputValue(e.target.value);
@@ -80,6 +82,7 @@ export default function ForkProposalTemplateModal({
     if (!subgraphInfo?.proposalTemplatesHash) {
       throw new Error('No proposal templates hash found');
     }
+    resetActions();
     navigate(
       `${DAO_ROUTES.proposalTemplateNew.relative(
         addressPrefix,

@@ -26,7 +26,6 @@ export function useAccountListeners({
   onGuardAccountDataLoaded,
   onStakedTokenAccountDataLoaded,
   onERC20TokenAccountDataLoaded,
-  onClaimableRewardsLoaded,
 }: {
   stakingAddress?: Address;
   votesTokenAddress?: Address;
@@ -51,9 +50,12 @@ export function useAccountListeners({
     delegatee: Address;
   }) => void;
   onGuardAccountDataLoaded: (accountData: GuardAccountData) => void;
-  onStakedTokenAccountDataLoaded: (accountData: { balance: bigint }) => void;
+  onStakedTokenAccountDataLoaded: (accountData: {
+    balance: bigint;
+    stakerData: { stakedAmount: bigint; lastStakeTimestamp: bigint };
+    claimableRewards: bigint[];
+  }) => void;
   onERC20TokenAccountDataLoaded: (accountData: { balance: bigint; allowance: bigint }) => void;
-  onClaimableRewardsLoaded: (claimableRewards: bigint[]) => void;
 }) {
   const { address: account } = useAccount();
   const publicClient = useNetworkPublicClient();
@@ -62,7 +64,6 @@ export function useAccountListeners({
     fetchLockReleaseAccountData,
     fetchStakedTokenAccountData,
     fetchERC20TokenAccountData,
-    fetchClaimableRewards,
   } = useGovernanceFetcher();
   const { fetchGuardAccountData } = useGuardFetcher();
 
@@ -243,7 +244,6 @@ export function useAccountListeners({
     fetchERC20TokenAccountData,
     onERC20TokenAccountDataLoaded,
   ]);
-
   // Combined staked token initial data loading + event listeners
   useEffect(() => {
     if (!account || !stakingAddress) {
@@ -271,23 +271,12 @@ export function useAccountListeners({
 
     // Set up event listeners
     const stakingContract = getContract({
-      abi: [
-        {
-          anonymous: false,
-          inputs: [
-            { indexed: true, name: 'from', type: 'address' },
-            { indexed: true, name: 'to', type: 'address' },
-            { indexed: false, name: 'value', type: 'uint256' },
-          ],
-          name: 'Transfer',
-          type: 'event',
-        },
-      ],
+      abi: abis.deployables.VotesERC20StakedV1,
       address: definedStakingAddress,
       client: publicClient,
     });
 
-    const handleStakingTransfer = async () => {
+    const handleStakingUpdate = async () => {
       try {
         const stakedTokenAccountData = await fetchStakedTokenAccountData(
           definedStakingAddress,
@@ -302,18 +291,36 @@ export function useAccountListeners({
     // Watch for transfers to this account
     const unwatchTransferTo = stakingContract.watchEvent.Transfer(
       { to: definedAccount },
-      { onLogs: handleStakingTransfer },
+      { onLogs: handleStakingUpdate },
     );
 
     // Watch for transfers from this account
     const unwatchTransferFrom = stakingContract.watchEvent.Transfer(
       { from: definedAccount },
-      { onLogs: handleStakingTransfer },
+      { onLogs: handleStakingUpdate },
+    );
+    // Watch for RewardsClaimed events for this account
+    const unwatchRewardsClaimed = stakingContract.watchEvent.RewardsClaimed(
+      { staker: definedAccount },
+      { onLogs: handleStakingUpdate },
+    );
+
+    const unwatchStake = stakingContract.watchEvent.Staked(
+      { staker: definedAccount },
+      { onLogs: handleStakingUpdate },
+    );
+
+    const unwatchUnStake = stakingContract.watchEvent.Unstaked(
+      { staker: definedAccount },
+      { onLogs: handleStakingUpdate },
     );
 
     return () => {
       unwatchTransferTo();
       unwatchTransferFrom();
+      unwatchRewardsClaimed();
+      unwatchStake();
+      unwatchUnStake();
     };
   }, [
     account,
@@ -322,53 +329,4 @@ export function useAccountListeners({
     fetchStakedTokenAccountData,
     onStakedTokenAccountDataLoaded,
   ]);
-
-  // Combined claimable rewards initial data loading + RewardsClaimed event listener
-  useEffect(() => {
-    if (!account || !stakingAddress) {
-      return;
-    }
-
-    // TypeScript now knows these are defined after the guard
-    const definedAccount = account;
-    const definedStakingAddress = stakingAddress;
-
-    // Initial claimable rewards data load
-    async function loadClaimableRewards() {
-      try {
-        const claimableRewards = await fetchClaimableRewards(definedStakingAddress, definedAccount);
-        onClaimableRewardsLoaded(claimableRewards);
-      } catch (e) {
-        logError(e as Error);
-      }
-    }
-
-    loadClaimableRewards();
-
-    // Set up RewardsClaimed event listener
-    const stakingContract = getContract({
-      abi: abis.deployables.VotesERC20StakedV1,
-      address: definedStakingAddress,
-      client: publicClient,
-    });
-
-    const handleRewardsClaimed = async () => {
-      try {
-        const claimableRewards = await fetchClaimableRewards(definedStakingAddress, definedAccount);
-        onClaimableRewardsLoaded(claimableRewards);
-      } catch (e) {
-        logError(e as Error);
-      }
-    };
-
-    // Watch for RewardsClaimed events for this account
-    const unwatchRewardsClaimed = stakingContract.watchEvent.RewardsClaimed(
-      { staker: definedAccount },
-      { onLogs: handleRewardsClaimed },
-    );
-
-    return () => {
-      unwatchRewardsClaimed();
-    };
-  }, [account, stakingAddress, publicClient, fetchClaimableRewards, onClaimableRewardsLoaded]);
 }

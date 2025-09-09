@@ -160,9 +160,8 @@ export function BigIntInput({
 
     // If parentFormikValue does not match the input value (likely because it was set outside of the input's onChange handler),
     // then update the underlying input value so that the change is visible on the UI.
-    // But if parentFormikValue.value is false-y, default to whatever is in the input.
     if (parentFormikValue.value !== inputValue) {
-      setInputValue(parentFormikValue?.value || inputValue);
+      setInputValue(parentFormikValue.value);
     }
   }, [parentFormikValue, inputValue]);
 

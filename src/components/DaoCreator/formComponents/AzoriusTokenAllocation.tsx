@@ -92,6 +92,7 @@ export function AzoriusTokenAllocation({
           onKeyDown={restrictChars}
           placeholder="100,000"
           isInvalid={!!amountInputValue && !!amountErrorMessage}
+          parentFormikValue={values.erc20Token.tokenAllocations[index].amount}
         />
       </LabelWrapper>
       {allocationLength > 1 ? (
