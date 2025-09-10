@@ -8,7 +8,10 @@ interface KycKybRequirementProps {
 
 export function KycKybRequirement({ requireKYC, setRequireKYC }: KycKybRequirementProps) {
   return (
-    <VStack spacing={6} align="stretch">
+    <VStack
+      spacing={6}
+      align="stretch"
+    >
       <LabelComponent
         label="Require KYC/KYB"
         helper="Lorem Ipsum"
@@ -21,7 +24,6 @@ export function KycKybRequirement({ requireKYC, setRequireKYC }: KycKybRequireme
         <Switch
           isChecked={requireKYC}
           onChange={e => setRequireKYC(e.target.checked)}
-          colorScheme="purple"
           size="md"
         />
       </LabelComponent>
