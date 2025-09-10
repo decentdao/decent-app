@@ -8,6 +8,7 @@ import {
   Flex,
   Select,
   useDisclosure,
+  Icon,
 } from '@chakra-ui/react';
 import { Plus, CheckCircle } from '@phosphor-icons/react';
 import { useState } from 'react';
@@ -75,7 +76,6 @@ export function BuyerRequirementsForm({}: BuyerRequirementsFormProps) {
             <Switch
               isChecked={requireKYC}
               onChange={e => setRequireKYC(e.target.checked)}
-              colorScheme="purple"
               size="md"
             />
           </LabelComponent>
@@ -120,10 +120,10 @@ export function BuyerRequirementsForm({}: BuyerRequirementsFormProps) {
                   borderBottomColor="color-neutral-800"
                 >
                   <HStack spacing={3}>
-                    <CheckCircle
-                      size={16}
-                      color="#5bc89c"
-                      weight="fill"
+                    <Icon
+                      as={CheckCircle}
+                      boxSize="1.5rem"
+                      color="color-base-success"
                     />
                     <Text
                       color="color-white"
