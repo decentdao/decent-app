@@ -11,7 +11,10 @@ export function RequirementsList({ requirements, onOpen }: RequirementsListProps
   const hasOpenAccess = requirements.length === 0;
 
   return (
-    <VStack spacing={3} align="stretch">
+    <VStack
+      spacing={3}
+      align="stretch"
+    >
       <Box
         bg="color-neutral-900"
         borderRadius="lg"
@@ -29,8 +32,16 @@ export function RequirementsList({ requirements, onOpen }: RequirementsListProps
             borderBottomColor="color-neutral-800"
           >
             <HStack spacing={3}>
-              <Icon as={CheckCircle} boxSize="1.5rem" color="color-base-success" />
-              <Text color="color-white" fontSize="sm" fontWeight="medium">
+              <Icon
+                as={CheckCircle}
+                boxSize="1.5rem"
+                color="color-base-success"
+              />
+              <Text
+                color="color-white"
+                fontSize="sm"
+                fontWeight="medium"
+              >
                 Open Access
               </Text>
             </HStack>
@@ -48,12 +59,26 @@ export function RequirementsList({ requirements, onOpen }: RequirementsListProps
             _last={{ borderBottom: 'none' }}
           >
             <HStack spacing={3}>
-              <CheckCircle size={16} color="#5bc89c" weight="fill" />
-              <VStack align="start" spacing={0}>
-                <Text color="color-white" fontSize="sm" fontWeight="medium">
+              <CheckCircle
+                size={16}
+                color="#5bc89c"
+                weight="fill"
+              />
+              <VStack
+                align="start"
+                spacing={0}
+              >
+                <Text
+                  color="color-white"
+                  fontSize="sm"
+                  fontWeight="medium"
+                >
                   {requirement.name}
                 </Text>
-                <Text color="color-neutral-400" fontSize="xs">
+                <Text
+                  color="color-neutral-400"
+                  fontSize="xs"
+                >
                   {requirement.description}
                 </Text>
               </VStack>
@@ -63,15 +88,14 @@ export function RequirementsList({ requirements, onOpen }: RequirementsListProps
 
         <Button
           variant="ghost"
-          leftIcon={<Plus size={16} />}
+          leftIcon={<Plus size="1.5rem" />}
           onClick={onOpen}
           w="full"
           justifyContent="flex-start"
           p={4}
           h="auto"
           color="color-white"
-          fontSize="sm"
-          fontWeight="normal"
+          borderTopRadius="0"
           _hover={{ bg: 'color-neutral-800' }}
         >
           Add Requirement
