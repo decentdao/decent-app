@@ -1,17 +1,11 @@
-import {
-  VStack,
-  HStack,
-  Text,
-  Box,
-  Select,
-  useDisclosure,
-} from '@chakra-ui/react';
+import { VStack, Box, useDisclosure } from '@chakra-ui/react';
 import { useState } from 'react';
 import { ContentBoxTight } from '../../../../components/ui/containers/ContentBox';
 import { LabelComponent } from '../../../../components/ui/forms/InputComponent';
 import { TokenSaleFormValues } from '../types';
 import { AddRequirementModal } from './buyer-requirements/AddRequirementModal';
 import { KycKybRequirement } from './buyer-requirements/KycKybRequirement';
+import { RequirementsFooter } from './buyer-requirements/RequirementsFooter';
 import { RequirementsList } from './buyer-requirements/RequirementsList';
 import { BuyerRequirement } from './buyer-requirements/types';
 
@@ -70,41 +64,11 @@ export function BuyerRequirementsForm({}: BuyerRequirementsFormProps) {
 
           <RequirementsList requirements={requirements} onOpen={onOpen} />
 
-            {/* Requirements Footer */}
-            <HStack
-              spacing={2}
-              justify="center"
-            >
-              <Text
-                color="color-white"
-                fontSize="sm"
-              >
-                Should meet
-              </Text>
-              <Select
-                value={requirementMode}
-                onChange={e => setRequirementMode(e.target.value as 'all' | 'any')}
-                size="sm"
-                w="auto"
-                minW="80px"
-                bg="color-neutral-900"
-                border="1px solid"
-                borderColor="color-neutral-800"
-                color="color-neutral-400"
-                fontSize="sm"
-                isDisabled={requirements.length === 0}
-                opacity={requirements.length === 0 ? 0.5 : 1}
-              >
-                <option value="all">All</option>
-                <option value="any">Any</option>
-              </Select>
-              <Text
-                color="color-white"
-                fontSize="sm"
-              >
-                requirements out of {Math.max(1, requirements.length)}
-              </Text>
-            </HStack>
+          <RequirementsFooter
+            requirementMode={requirementMode}
+            setRequirementMode={setRequirementMode}
+            requirementsCount={requirements.length}
+          />
         </VStack>
 
         <AddRequirementModal isOpen={isOpen} onClose={onClose} onAddRequirement={handleAddRequirement} />
