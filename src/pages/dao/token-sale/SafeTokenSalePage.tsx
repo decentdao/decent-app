@@ -112,14 +112,21 @@ export function SafeTokenSalePage() {
                 >
                   Previous
                 </Button>
-
-                <Button
-                  variant="primary"
-                  onClick={currentStage === stages.length - 1 ? undefined : handleNext}
-                  type={currentStage === stages.length - 1 ? 'submit' : 'button'}
-                >
-                  {currentStage === stages.length - 1 ? 'Create Token Sale' : 'Continue'}
-                </Button>
+                {currentStage !== stages.length - 1 ? (
+                  <Button
+                    onClick={handleNext}
+                    type="button"
+                  >
+                    Continue
+                  </Button>
+                ) : (
+                  <Button
+                    variant="primary"
+                    type="submit"
+                  >
+                    Create Token Sale
+                  </Button>
+                )}
               </Flex>
             </VStack>
           </Form>
