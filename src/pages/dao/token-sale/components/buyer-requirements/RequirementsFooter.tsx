@@ -6,10 +6,20 @@ interface RequirementsFooterProps {
   requirementsCount: number;
 }
 
-export function RequirementsFooter({ requirementMode, setRequirementMode, requirementsCount }: RequirementsFooterProps) {
+export function RequirementsFooter({
+  requirementMode,
+  setRequirementMode,
+  requirementsCount,
+}: RequirementsFooterProps) {
   return (
-    <HStack spacing={2} justify="center">
-      <Text color="color-white" fontSize="sm">
+    <HStack
+      spacing={2}
+      justify="center"
+    >
+      <Text
+        color="color-white"
+        fontSize="sm"
+      >
         Should meet
       </Text>
       <Select
@@ -29,7 +39,10 @@ export function RequirementsFooter({ requirementMode, setRequirementMode, requir
         <option value="all">All</option>
         <option value="any">Any</option>
       </Select>
-      <Text color="color-white" fontSize="sm">
+      <Text
+        color="color-white"
+        fontSize="sm"
+      >
         requirements out of {Math.max(1, requirementsCount)}
       </Text>
     </HStack>

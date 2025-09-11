@@ -9,24 +9,36 @@ interface AddRequirementModalProps {
   onAddRequirement: (type: 'token' | 'nft' | 'whitelist') => void;
 }
 
-export function AddRequirementModal({ isOpen, onClose, onAddRequirement }: AddRequirementModalProps) {
+export function AddRequirementModal({
+  isOpen,
+  onClose,
+  onAddRequirement,
+}: AddRequirementModalProps) {
   return (
-    <ModalBase isOpen={isOpen} onClose={onClose} title="Add Requirement" size="md">
-      <VStack spacing={2} align="stretch">
+    <ModalBase
+      isOpen={isOpen}
+      onClose={onClose}
+      title="Add Requirement"
+      size="md"
+    >
+      <VStack
+        spacing={2}
+        align="stretch"
+      >
         <RequirementOption
           icon={Coins}
           title="Token"
           description="Set an ERC-20 threshold"
           onClick={() => onAddRequirement('token')}
         />
-        
+
         <RequirementOption
           icon={ImageSquare}
           title="NFT"
           description="Set an ERC-721 or ERC-1155 threshold"
           onClick={() => onAddRequirement('nft')}
         />
-        
+
         <RequirementOption
           icon={ListChecks}
           title="Whitelist"

@@ -20,16 +20,22 @@ export function RequirementOption({ icon, title, description, onClick }: Require
       border="1px solid"
       borderColor="color-neutral-800"
       borderRadius="lg"
-      _hover={{ bg: "rgba(255, 255, 255, 0.1)" }}
+      _hover={{ bg: 'rgba(255, 255, 255, 0.1)' }}
       w="full"
     >
-      <HStack spacing={3} align="center">
+      <HStack
+        spacing={3}
+        align="center"
+      >
         <Icon
           as={icon}
           boxSize={6}
           color="color-lilac-100"
         />
-        <VStack align="start" spacing={0}>
+        <VStack
+          align="start"
+          spacing={0}
+        >
           <Text
             color="color-white"
             textStyle="text-sm-leading-none-medium"

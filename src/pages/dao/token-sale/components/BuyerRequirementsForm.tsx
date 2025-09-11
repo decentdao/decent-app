@@ -9,7 +9,6 @@ import { RequirementsFooter } from './buyer-requirements/RequirementsFooter';
 import { RequirementsList } from './buyer-requirements/RequirementsList';
 import { BuyerRequirement } from './buyer-requirements/types';
 
-
 interface BuyerRequirementsFormProps {
   values: TokenSaleFormValues;
   setFieldValue: (field: string, value: any) => void;
@@ -37,14 +36,16 @@ export function BuyerRequirementsForm({}: BuyerRequirementsFormProps) {
     onClose();
   };
 
-
   return (
     <ContentBoxTight>
       <VStack
         spacing={8}
         align="stretch"
       >
-        <KycKybRequirement requireKYC={requireKYC} setRequireKYC={setRequireKYC} />
+        <KycKybRequirement
+          requireKYC={requireKYC}
+          setRequireKYC={setRequireKYC}
+        />
 
         {/* Buyer Requirements Section */}
         <VStack
@@ -62,7 +63,10 @@ export function BuyerRequirementsForm({}: BuyerRequirementsFormProps) {
             <Box />
           </LabelComponent>
 
-          <RequirementsList requirements={requirements} onOpen={onOpen} />
+          <RequirementsList
+            requirements={requirements}
+            onOpen={onOpen}
+          />
 
           <RequirementsFooter
             requirementMode={requirementMode}
@@ -71,7 +75,11 @@ export function BuyerRequirementsForm({}: BuyerRequirementsFormProps) {
           />
         </VStack>
 
-        <AddRequirementModal isOpen={isOpen} onClose={onClose} onAddRequirement={handleAddRequirement} />
+        <AddRequirementModal
+          isOpen={isOpen}
+          onClose={onClose}
+          onAddRequirement={handleAddRequirement}
+        />
       </VStack>
     </ContentBoxTight>
   );
