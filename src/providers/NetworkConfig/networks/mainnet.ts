@@ -134,6 +134,9 @@ export const mainnetConfig: NetworkConfig = {
       entryPointv07: '0x0000000071727De22E5E9d8BAf0edAc6f37da032',
       lightAccountFactory: '0x0000000000400CdFef5E2714E63d8040b700BC24',
     },
+
+    tokenSaleV1MasterCopy: addresses.deployables.TokenSaleV1,
+    decentVerifierV1: addresses.services.VerifierV1,
   },
 
   moralis: {
