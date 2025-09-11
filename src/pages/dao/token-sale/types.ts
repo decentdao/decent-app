@@ -2,13 +2,7 @@ import { BigIntValuePair } from '../../../types';
 
 export interface TokenSaleFormValues {
   // Project Overview
-  projectName: string;
-  projectDescription: string;
-  websiteUrl: string;
-  xHandle: string;
-  githubLink: string;
-  telegramGroup: string;
-  discordServer: string;
+  saleName: string;
 
   // Token Details
   tokenName: string;
@@ -34,13 +28,7 @@ export interface TokenSaleFormValues {
 }
 
 export const initialValues: TokenSaleFormValues = {
-  projectName: '',
-  projectDescription: '',
-  websiteUrl: '',
-  xHandle: '',
-  githubLink: '',
-  telegramGroup: '',
-  discordServer: '',
+  saleName: '',
 
   // Token Details
   tokenName: '',

@@ -18,9 +18,25 @@ export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
     <VStack align="stretch">
       {/* Token Details Section */}
       <ContentBoxTight>
+        <LabelComponent
+          label="Sale Name"
+          isRequired={true}
+          gridContainerProps={{
+            templateColumns: '1fr',
+            mb: '2rem',
+          }}
+        >
+          <Input
+            placeholder="e.g. Series A"
+            value={values.saleName}
+            onChange={e => setFieldValue('saleName', e.target.value)}
+          />
+        </LabelComponent>
+
         <SectionHeader
           title="Token Details"
           description="Configure your token name, ticker, and supply."
+          tooltip="Lorem Ipsum"
         />
 
         <Grid
@@ -99,6 +115,7 @@ export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
       <ContentBoxTight>
         <SectionHeader
           title="Sale Pricing & Terms"
+          tooltip="Lorem Ipsum"
           description="Configure your token price, fundraising cap, sale dates, and purchase limits."
         />
 
