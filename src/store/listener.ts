@@ -14,6 +14,7 @@ import { useTokenSalesFetcher } from './fetchers/tokenSales';
 import { useAccountListeners } from './listeners/account';
 import { useGovernanceListeners } from './listeners/governance';
 import { useKeyValuePairsListener } from './listeners/keyValuePairs';
+import { useTokenSaleListeners } from './listeners/tokenSales';
 import { useGlobalStore } from './store';
 
 /**
@@ -33,12 +34,14 @@ export const useDAOStoreListener = ({ daoKey }: { daoKey: DAOKey | undefined }) 
     setGuardAccountData,
     setGaslessVotingData,
     setHatKeyValuePairData,
+    setTokenSale,
     setTokenSales,
+    getTokenSales,
     setStakedTokenAccountData,
     setERC20TokenAccountData,
   } = useGlobalStore();
 
-  const { fetchMultipleTokenSales } = useTokenSalesFetcher();
+  const { fetchTokenSaleData, fetchMultipleTokenSales } = useTokenSalesFetcher();
 
   const governance = daoKey ? getGovernance(daoKey) : undefined;
   const stakingAddress = governance?.stakedToken?.address;
@@ -255,12 +258,35 @@ export const useDAOStoreListener = ({ daoKey }: { daoKey: DAOKey | undefined }) 
   const onTokenSalesDataFetched = useCallback(
     async (tokenSaleAddresses: string[]) => {
       if (!daoKey) return;
-      
+
       const tokenSalesData = await fetchMultipleTokenSales(tokenSaleAddresses as Address[]);
       setTokenSales(daoKey, tokenSalesData);
     },
     [daoKey, fetchMultipleTokenSales, setTokenSales],
   );
+
+  const onTokenSaleUpdated = useCallback(
+    async (tokenSaleAddress: Address) => {
+      if (!daoKey) return;
+
+      // Fetch only the updated token sale for efficiency
+      const updatedTokenSaleData = await fetchTokenSaleData(tokenSaleAddress);
+      if (updatedTokenSaleData) {
+        setTokenSale(daoKey, updatedTokenSaleData);
+      }
+    },
+    [daoKey, fetchTokenSaleData, setTokenSale],
+  );
+
+  // Get current token sale addresses for event listening
+  const currentTokenSales = daoKey ? getTokenSales(daoKey) : [];
+  const tokenSaleAddresses = currentTokenSales.map(sale => sale.address);
+
+  // Set up token sale event listeners
+  useTokenSaleListeners({
+    tokenSaleAddresses,
+    onTokenSaleUpdated,
+  });
 
   useKeyValuePairsListener({
     safeAddress: node?.safe?.address,

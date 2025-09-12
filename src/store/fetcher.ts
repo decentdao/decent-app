@@ -181,7 +181,7 @@ export const useDAOStoreFetcher = ({
           if (tokenSaleMetadata.length > 0) {
             const addresses = tokenSaleMetadata.map(meta => meta.address as Address);
             const tokenSalesData = await fetchMultipleTokenSales(addresses);
-            
+
             // Merge contract data with metadata names
             const enrichedTokenSales = tokenSalesData.map(sale => {
               const metadata = tokenSaleMetadata.find(meta => meta.address === sale.address);
@@ -190,7 +190,7 @@ export const useDAOStoreFetcher = ({
                 name: metadata?.name || sale.name, // Use metadata name if available, fallback to contract name
               };
             });
-            
+
             setTokenSales(daoKey, enrichedTokenSales);
           }
 
