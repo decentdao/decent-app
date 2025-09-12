@@ -19,7 +19,9 @@ export function SafeTokenSalePage() {
   const { daoKey } = useCurrentDAOKey();
   const {
     node: { safe },
+    tokenSales,
   } = useDAOStore({ daoKey });
+  console.log('🚀 ~ tokenSales:', tokenSales);
   const navigate = useNavigate();
   const { addressPrefix } = useNetworkConfigStore();
 

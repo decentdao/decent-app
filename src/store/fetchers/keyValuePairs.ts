@@ -130,5 +130,53 @@ export function useKeyValuePairsFetcher() {
     [getHatsTreeId, getStreamIdsToHatIds, keyValuePairs, publicClient],
   );
 
-  return { getHatsTreeId, getStreamIdsToHatIds, fetchKeyValuePairsData };
+  const getTokenSaleAddresses = useCallback(
+    ({
+      events,
+      chainId,
+    }: {
+      events: GetContractEventsReturnType<typeof legacy.abis.KeyValuePairs> | undefined;
+      chainId: number;
+    }) => {
+      if (!events) {
+        return [];
+      }
+
+      // get all events where `newtokensale` was set
+      const tokenSaleEvents = events.filter(
+        event => event.args.key && event.args.key === 'newtokensale',
+      );
+
+      const tokenSaleMetadata: Array<{ address: string; name?: string }> = [];
+
+      tokenSaleEvents.forEach(event => {
+        if (event.args.value) {
+          try {
+            const metadata = JSON.parse(event.args.value);
+            if (metadata.address) {
+              tokenSaleMetadata.push({
+                address: metadata.address,
+                name: metadata.name || metadata.title, // Support both 'name' and 'title' fields
+              });
+            }
+          } catch (error) {
+            logError({
+              message: 'Failed to parse token sale metadata from KVPairs event',
+              network: chainId,
+              args: {
+                transactionHash: event.transactionHash,
+                logIndex: event.logIndex,
+                value: event.args.value,
+              },
+            });
+          }
+        }
+      });
+
+      return tokenSaleMetadata;
+    },
+    [],
+  );
+
+  return { getHatsTreeId, getStreamIdsToHatIds, getTokenSaleAddresses, fetchKeyValuePairsData };
 }
