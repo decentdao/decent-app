@@ -14,6 +14,12 @@ interface BuyerRequirementsFormProps {
   setFieldValue: (field: string, value: any) => void;
 }
 
+const labels = {
+  token: { name: 'Token', description: 'Set an ERC-20 threshold' },
+  nft: { name: 'NFT', description: 'Set an ERC-721 or ERC-1155 threshold' },
+  whitelist: { name: 'Whitelist', description: 'Specify a list of addresses' },
+};
+
 export function BuyerRequirementsForm({}: BuyerRequirementsFormProps) {
   const [requireKYC, setRequireKYC] = useState(false);
   const [requirements, setRequirements] = useState<BuyerRequirement[]>([]);
@@ -24,13 +30,8 @@ export function BuyerRequirementsForm({}: BuyerRequirementsFormProps) {
     const newRequirement: BuyerRequirement = {
       id: Date.now().toString(),
       type,
-      name: type === 'token' ? 'Token' : type === 'nft' ? 'NFT' : 'Whitelist',
-      description:
-        type === 'token'
-          ? 'Set an ERC-20 threshold'
-          : type === 'nft'
-            ? 'Set an ERC-721 or ERC-1155 threshold'
-            : 'Specify a list of addresses',
+      name: labels[type].name,
+      description: labels[type].description,
     };
     setRequirements([...requirements, newRequirement]);
     onClose();
@@ -65,7 +66,7 @@ export function BuyerRequirementsForm({}: BuyerRequirementsFormProps) {
 
           <RequirementsList
             requirements={requirements}
-            onOpen={onOpen}
+            onAddRequirement={onOpen}
           />
 
           <RequirementsFooter

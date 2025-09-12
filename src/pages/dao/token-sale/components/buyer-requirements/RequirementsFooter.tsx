@@ -43,7 +43,7 @@ export function RequirementsFooter({
         color="color-white"
         fontSize="sm"
       >
-        requirements out of {Math.max(1, requirementsCount)}
+        requirements out of {requirementsCount}
       </Text>
     </HStack>
   );
