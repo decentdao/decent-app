@@ -4,10 +4,10 @@ import { BuyerRequirement } from './types';
 
 interface RequirementsListProps {
   requirements: BuyerRequirement[];
-  onOpen: () => void;
+  onAddRequirement: () => void;
 }
 
-export function RequirementsList({ requirements, onOpen }: RequirementsListProps) {
+export function RequirementsList({ requirements, onAddRequirement }: RequirementsListProps) {
   const hasOpenAccess = requirements.length === 0;
 
   return (
@@ -89,7 +89,7 @@ export function RequirementsList({ requirements, onOpen }: RequirementsListProps
         <Button
           variant="ghost"
           leftIcon={<Plus size="1.5rem" />}
-          onClick={onOpen}
+          onClick={onAddRequirement}
           w="full"
           justifyContent="flex-start"
           p={4}

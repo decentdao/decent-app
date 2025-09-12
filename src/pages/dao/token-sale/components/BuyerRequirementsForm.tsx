@@ -65,7 +65,7 @@ export function BuyerRequirementsForm({}: BuyerRequirementsFormProps) {
 
           <RequirementsList
             requirements={requirements}
-            onOpen={onOpen}
+            onAddRequirement={onOpen}
           />
 
           <RequirementsFooter
