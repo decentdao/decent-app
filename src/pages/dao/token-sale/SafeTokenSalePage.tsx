@@ -4,11 +4,10 @@ import { useState } from 'react';
 import PageHeader from '../../../components/ui/page/Header/PageHeader';
 import { CONTENT_MAXW } from '../../../constants/common';
 import { BuyerRequirementsForm } from './components/BuyerRequirementsForm';
-import { ProjectOverviewForm } from './components/ProjectOverviewForm';
 import { SaleTermsForm } from './components/SaleTermsForm';
 import { TokenSaleFormValues, initialValues } from './types';
 
-const stages = ['Project Overview', 'Sale Terms', 'Buyer Requirements'];
+const stages = ['Sale Terms', 'Buyer Requirements'];
 
 export function SafeTokenSalePage() {
   const [currentStage, setCurrentStage] = useState(0);
@@ -34,19 +33,12 @@ export function SafeTokenSalePage() {
     switch (currentStage) {
       case 0:
         return (
-          <ProjectOverviewForm
-            values={values}
-            setFieldValue={setFieldValue}
-          />
-        );
-      case 1:
-        return (
           <SaleTermsForm
             values={values}
             setFieldValue={setFieldValue}
           />
         );
-      case 2:
+      case 1:
         return (
           <BuyerRequirementsForm
             values={values}
