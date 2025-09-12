@@ -111,7 +111,7 @@ function GuardDetails(props: ICreationStepProps) {
                       setFieldValue('freeze.timelockPeriod', valuePair)
                     }
                     decimals={0}
-                    min={1n}
+                    min={0n}
                     data-testid="guardConfig-executionDetails"
                   />
                   <InputRightElement mr="4">{minutes}</InputRightElement>
