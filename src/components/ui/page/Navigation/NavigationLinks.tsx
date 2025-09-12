@@ -1,12 +1,12 @@
 import { Box, Flex, Hide } from '@chakra-ui/react';
 import {
   BookOpen,
+  ChartDonut,
   Coins,
   GitFork,
   HandCoins,
   House,
   Question,
-  ShoppingCart,
   UsersThree,
 } from '@phosphor-icons/react';
 import { DAO_ROUTES } from '../../../../constants/routes';
@@ -128,7 +128,7 @@ function InternalLinks({ closeDrawer }: { closeDrawer?: () => void }) {
             href={DAO_ROUTES.tokenSale.relative(addressPrefix, safeAddress)}
             labelKey="tokenSale"
             testId="navigation-tokenSaleLink"
-            NavigationIcon={ShoppingCart}
+            NavigationIcon={ChartDonut}
             scope="internal"
             closeDrawer={closeDrawer}
           />
