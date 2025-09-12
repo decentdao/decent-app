@@ -1,6 +1,8 @@
 import { Box, Button, Grid, GridItem, Text, VStack } from '@chakra-ui/react';
 import { TrendUp, Play, CurrencyDollar } from '@phosphor-icons/react';
+import { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { formatUnits } from 'viem';
 import PageHeader from '../../../components/ui/page/Header/PageHeader';
 import { CONTENT_MAXW } from '../../../constants/common';
 import { DAO_ROUTES } from '../../../constants/routes';
@@ -8,22 +10,44 @@ import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import { useDAOStore } from '../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
 
-// Mock data for the dashboard stats
-const mockStats = {
-  totalSales: 0,
-  activeSales: 0,
-  totalRaised: '$0',
-};
-
 export function SafeTokenSalePage() {
   const { daoKey } = useCurrentDAOKey();
   const {
     node: { safe },
     tokenSales,
   } = useDAOStore({ daoKey });
-  console.log('🚀 ~ tokenSales:', tokenSales);
   const navigate = useNavigate();
   const { addressPrefix } = useNetworkConfigStore();
+
+  // Calculate live stats from token sales data
+  const stats = useMemo(() => {
+    if (!tokenSales || tokenSales.length === 0) {
+      return {
+        totalSales: 0,
+        activeSales: 0,
+        totalRaised: '$0',
+      };
+    }
+
+    const activeSales = tokenSales.filter(sale => sale.isActive).length;
+
+    // Calculate total raised across all sales
+    const totalRaisedWei = tokenSales.reduce((total, sale) => {
+      return total + sale.totalCommitments;
+    }, 0n);
+
+    // Format total raised (assuming commitment token is typically USDC with 6 decimals)
+    // TODO: This should ideally use the actual commitment token decimals from each sale
+    const totalRaisedFormatted =
+      totalRaisedWei > 0n
+        ? `$${parseFloat(formatUnits(totalRaisedWei, 6)).toLocaleString('en-US', { maximumFractionDigits: 0 })}`
+        : '$0';
+    return {
+      totalSales: tokenSales.length,
+      activeSales,
+      totalRaised: totalRaisedFormatted,
+    };
+  }, [tokenSales]);
 
   const handleCreateSale = () => {
     if (!safe?.address) return;
@@ -139,11 +163,21 @@ export function SafeTokenSalePage() {
             path: '',
           },
         ]}
+        buttonProps={
+          stats.totalSales > 0
+            ? {
+                onClick: handleCreateSale,
+                children: 'Create Token Sale',
+                'data-testid': 'create-token-sale-button',
+              }
+            : undefined
+        }
       />
 
       <VStack
         spacing={8}
         align="stretch"
+        mt={6}
       >
         {/* Stats Grid */}
         <Grid
@@ -154,27 +188,27 @@ export function SafeTokenSalePage() {
             <StatCard
               icon={<TrendUp size={20} />}
               label="Total Sales"
-              value={mockStats.totalSales.toString()}
+              value={stats.totalSales.toString()}
             />
           </GridItem>
           <GridItem>
             <StatCard
               icon={<Play size={20} />}
               label="Active Sales"
-              value={mockStats.activeSales.toString()}
+              value={stats.activeSales.toString()}
             />
           </GridItem>
           <GridItem>
             <StatCard
               icon={<CurrencyDollar size={20} />}
               label="Total Raised"
-              value={mockStats.totalRaised}
+              value={stats.totalRaised}
             />
           </GridItem>
         </Grid>
 
-        {/* Empty State */}
-        <EmptyState />
+        {/* Show empty state only when no token sales exist */}
+        {stats.totalSales === 0 && <EmptyState />}
       </VStack>
     </Box>
   );
