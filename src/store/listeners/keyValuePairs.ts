@@ -12,6 +12,7 @@ export function useKeyValuePairsListener({
   safeAddress,
   onRolesDataFetched,
   onGaslessVotingDataFetched,
+  onTokenSalesDataFetched,
 }: {
   safeAddress?: Address;
   onRolesDataFetched: (rolesData: {
@@ -20,8 +21,9 @@ export function useKeyValuePairsListener({
     streamIdsToHatIds: { hatId: bigint; streamId: string }[];
   }) => void;
   onGaslessVotingDataFetched: (gasslesVotingData: GaslessVotingDaoData) => void;
+  onTokenSalesDataFetched: (tokenSaleAddresses: string[]) => void;
 }) {
-  const { getStreamIdsToHatIds, getHatsTreeId } = useKeyValuePairsFetcher();
+  const { getStreamIdsToHatIds, getHatsTreeId, getTokenSaleAddresses } = useKeyValuePairsFetcher();
   const { fetchGaslessVotingDAOData } = useGovernanceFetcher();
   const publicClient = useNetworkPublicClient();
   const {
@@ -61,6 +63,16 @@ export function useKeyValuePairsListener({
         if (gaslessVotingDaoData) {
           onGaslessVotingDataFetched(gaslessVotingDaoData);
         }
+
+        const tokenSaleMetadata = getTokenSaleAddresses({
+          events: logs,
+          chainId: publicClient.chain.id,
+        });
+
+        if (tokenSaleMetadata.length > 0) {
+          const addresses = tokenSaleMetadata.map(meta => meta.address);
+          onTokenSalesDataFetched(addresses);
+        }
       } catch (e) {
         logError(e as Error);
       }
@@ -85,7 +97,9 @@ export function useKeyValuePairsListener({
     fetchGaslessVotingDAOData,
     getHatsTreeId,
     getStreamIdsToHatIds,
+    getTokenSaleAddresses,
     onGaslessVotingDataFetched,
     onRolesDataFetched,
+    onTokenSalesDataFetched,
   ]);
 }

@@ -15,6 +15,7 @@ import { useGuardFetcher } from './fetchers/guard';
 import { useKeyValuePairsFetcher } from './fetchers/keyValuePairs';
 import { useNodeFetcher } from './fetchers/node';
 import { useRolesFetcher } from './fetchers/roles';
+import { useTokenSalesFetcher } from './fetchers/tokenSales';
 import { useTreasuryFetcher } from './fetchers/treasury';
 import { SetAzoriusGovernancePayload } from './slices/governances';
 import { useGlobalStore } from './store';
@@ -54,6 +55,7 @@ export const useDAOStoreFetcher = ({
     setVotesTokenAddress,
     setStakingData,
     setRevShareWallets,
+    setTokenSales,
   } = useGlobalStore();
   const { chain } = useNetworkConfigStore();
 
@@ -68,8 +70,9 @@ export const useDAOStoreFetcher = ({
     fetchStakingDAOData,
   } = useGovernanceFetcher();
   const { fetchDAOGuard } = useGuardFetcher();
-  const { fetchKeyValuePairsData } = useKeyValuePairsFetcher();
+  const { fetchKeyValuePairsData, getTokenSaleAddresses } = useKeyValuePairsFetcher();
   const { fetchDAORoles } = useRolesFetcher();
+  const { fetchMultipleTokenSales } = useTokenSalesFetcher();
   const { setHatKeyValuePairData } = useGlobalStore();
 
   useEffect(() => {
@@ -167,6 +170,29 @@ export const useDAOStoreFetcher = ({
             hatsTreeId: keyValuePairsData.hatsTreeId,
             streamIdsToHatIds: keyValuePairsData.streamIdsToHatIds,
           });
+
+          // Fetch token sale data from KeyValuePairs events
+          const tokenSaleMetadata = getTokenSaleAddresses({
+            events: keyValuePairsData.events,
+            chainId: chain.id,
+          });
+          console.log('🚀 ~ tokenSaleMetadata:', tokenSaleMetadata);
+
+          if (tokenSaleMetadata.length > 0) {
+            const addresses = tokenSaleMetadata.map(meta => meta.address as Address);
+            const tokenSalesData = await fetchMultipleTokenSales(addresses);
+            
+            // Merge contract data with metadata names
+            const enrichedTokenSales = tokenSalesData.map(sale => {
+              const metadata = tokenSaleMetadata.find(meta => meta.address === sale.address);
+              return {
+                ...sale,
+                name: metadata?.name || sale.name, // Use metadata name if available, fallback to contract name
+              };
+            });
+            
+            setTokenSales(daoKey, enrichedTokenSales);
+          }
 
           const whitelistingVotingStrategy =
             linearVotingErc20WithHatsWhitelistingAddress ||

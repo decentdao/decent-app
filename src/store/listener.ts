@@ -10,6 +10,7 @@ import {
   ProposalVote,
   ProposalVotesSummary,
 } from '../types';
+import { useTokenSalesFetcher } from './fetchers/tokenSales';
 import { useAccountListeners } from './listeners/account';
 import { useGovernanceListeners } from './listeners/governance';
 import { useKeyValuePairsListener } from './listeners/keyValuePairs';
@@ -32,9 +33,12 @@ export const useDAOStoreListener = ({ daoKey }: { daoKey: DAOKey | undefined }) 
     setGuardAccountData,
     setGaslessVotingData,
     setHatKeyValuePairData,
+    setTokenSales,
     setStakedTokenAccountData,
     setERC20TokenAccountData,
   } = useGlobalStore();
+
+  const { fetchMultipleTokenSales } = useTokenSalesFetcher();
 
   const governance = daoKey ? getGovernance(daoKey) : undefined;
   const stakingAddress = governance?.stakedToken?.address;
@@ -248,9 +252,20 @@ export const useDAOStoreListener = ({ daoKey }: { daoKey: DAOKey | undefined }) 
     [daoKey, setGaslessVotingData],
   );
 
+  const onTokenSalesDataFetched = useCallback(
+    async (tokenSaleAddresses: string[]) => {
+      if (!daoKey) return;
+      
+      const tokenSalesData = await fetchMultipleTokenSales(tokenSaleAddresses as Address[]);
+      setTokenSales(daoKey, tokenSalesData);
+    },
+    [daoKey, fetchMultipleTokenSales, setTokenSales],
+  );
+
   useKeyValuePairsListener({
     safeAddress: node?.safe?.address,
     onRolesDataFetched,
     onGaslessVotingDataFetched,
+    onTokenSalesDataFetched,
   });
 };
