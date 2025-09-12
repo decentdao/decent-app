@@ -8,14 +8,20 @@ export type TokenSalesSlice = {
   setTokenSales: (daoKey: DAOKey, tokenSales: TokenSaleData[]) => void;
   getTokenSales: (daoKey: DAOKey) => TokenSaleData[];
   addTokenSale: (daoKey: DAOKey, tokenSale: TokenSaleData) => void;
-  updateTokenSale: (daoKey: DAOKey, tokenSaleAddress: string, updates: Partial<TokenSaleData>) => void;
+  updateTokenSale: (
+    daoKey: DAOKey,
+    tokenSaleAddress: string,
+    updates: Partial<TokenSaleData>,
+  ) => void;
   setTokenSale: (daoKey: DAOKey, tokenSale: TokenSaleData) => void;
 };
 
-export const createTokenSalesSlice: StateCreator<GlobalStore, StoreMiddleware, [], TokenSalesSlice> = (
-  set,
-  get,
-) => ({
+export const createTokenSalesSlice: StateCreator<
+  GlobalStore,
+  StoreMiddleware,
+  [],
+  TokenSalesSlice
+> = (set, get) => ({
   tokenSales: {},
   setTokenSales: (daoKey, tokenSales) => {
     set(
@@ -47,7 +53,9 @@ export const createTokenSalesSlice: StateCreator<GlobalStore, StoreMiddleware, [
     set(
       state => {
         const existing = state.tokenSales[daoKey] || [];
-        const index = existing.findIndex((sale: TokenSaleData) => sale.address === tokenSaleAddress);
+        const index = existing.findIndex(
+          (sale: TokenSaleData) => sale.address === tokenSaleAddress,
+        );
         if (index !== -1) {
           state.tokenSales[daoKey] = existing.map((sale: TokenSaleData, i: number) =>
             i === index ? { ...sale, ...updates } : sale,
@@ -62,7 +70,9 @@ export const createTokenSalesSlice: StateCreator<GlobalStore, StoreMiddleware, [
     set(
       state => {
         const existing = state.tokenSales[daoKey] || [];
-        const index = existing.findIndex((sale: TokenSaleData) => sale.address === tokenSale.address);
+        const index = existing.findIndex(
+          (sale: TokenSaleData) => sale.address === tokenSale.address,
+        );
         if (index !== -1) {
           // Update existing token sale
           state.tokenSales[daoKey] = existing.map((sale: TokenSaleData, i: number) =>

@@ -85,7 +85,9 @@ export function useTokenSalesFetcher() {
 
         const saleToken = saleTokenData.result as Address;
         if (!saleToken) {
-          logError(new Error(`Failed to fetch sale token address for token sale ${tokenSaleAddress}`));
+          logError(
+            new Error(`Failed to fetch sale token address for token sale ${tokenSaleAddress}`),
+          );
           return null;
         }
 
@@ -124,7 +126,8 @@ export function useTokenSalesFetcher() {
           address: tokenSaleAddress,
           name: '', // Will be set from metadata in the fetcher orchestrator
           saleToken,
-          commitmentToken: (commitmentTokenData.result as Address) || '0x0000000000000000000000000000000000000000',
+          commitmentToken:
+            (commitmentTokenData.result as Address) || '0x0000000000000000000000000000000000000000',
           tokenName: (tokenNameData.result as string) || '',
           tokenSymbol: (tokenSymbolData.result as string) || '',
           tokenDecimals: (tokenDecimalsData.result as number) || 18,
@@ -136,7 +139,8 @@ export function useTokenSalesFetcher() {
           minimumCommitment: (minCommitmentData.result as bigint) || 0n,
           maximumCommitment: (maxCommitmentData.result as bigint) || 0n,
           saleState: saleStateValue,
-          saleProceedsReceiver: (ownerData.result as Address) || '0x0000000000000000000000000000000000000000',
+          saleProceedsReceiver:
+            (ownerData.result as Address) || '0x0000000000000000000000000000000000000000',
           // Computed field: sale is active if state is 1 (ACTIVE)
           isActive: saleStateValue === 1,
         };
