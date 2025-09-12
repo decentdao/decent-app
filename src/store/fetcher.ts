@@ -176,7 +176,6 @@ export const useDAOStoreFetcher = ({
             events: keyValuePairsData.events,
             chainId: chain.id,
           });
-          console.log('🚀 ~ tokenSaleMetadata:', tokenSaleMetadata);
 
           if (tokenSaleMetadata.length > 0) {
             const addresses = tokenSaleMetadata.map(meta => meta.address as Address);
