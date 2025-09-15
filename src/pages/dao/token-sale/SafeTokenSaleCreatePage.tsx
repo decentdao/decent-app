@@ -43,7 +43,7 @@ const initialValues: TokenSaleFormValues = {
   minPurchase: 1, // $1 minimum purchase
   maxPurchase: 50, // $50 maximum purchase
 
-  // @TODO hardcoded to USDC of selected network
+  // TODO hardcoded to a sepolia token (SUSDC) for testing
   commitmentToken: '0x0A7ECA73Bfecbc20fc73FE9Af480D12306d39e34', // Will be set based on acceptedToken
   verifier: null, // Will be set from network config
   saleProceedsReceiver: null, // Will be set to DAO address
