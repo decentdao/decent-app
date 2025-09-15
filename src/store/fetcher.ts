@@ -11,7 +11,6 @@ import {
   DAOKey,
   DAOSubgraph,
   DecentModule,
-  DecodedTransaction,
   FractalModuleType,
   FractalProposal,
   FractalProposalState,
@@ -29,6 +28,9 @@ import { useRolesFetcher } from './fetchers/roles';
 import { useTreasuryFetcher } from './fetchers/treasury';
 import { SetAzoriusGovernancePayload } from './slices/governances';
 import { useGlobalStore } from './store';
+
+// hardcoded in https://github.com/decentdao/decent-contracts/blob/v1.6.0/contracts/azorius/BaseQuorumPercent.sol#L16
+const QUORUM_DENOMINATOR = 1_000_000;
 
 /**
  * useDAOStoreFetcher orchestrates fetching all the necessary data for the DAO and updating the Global store.
@@ -175,15 +177,8 @@ export const useDAOStoreFetcher = ({
                 value: BigInt(votingPeriodSeconds), 
                 formatted: getTimeDuration(votingPeriodSeconds)
               } : undefined,
-              // @TODO: why is it double??
-              quorumPercentage: strategy.quorumNumerator !== null && strategy.quorumNumerator !== undefined && strategy.basisNumerator ? (() => {
-                // Convert basis points to percentage (e.g., 1000/10000 = 0.1 = 10%)
-                const percentage = (strategy.quorumNumerator * 100) / strategy.basisNumerator;
-                console.log('Quorum calculation:', { 
-                  quorumNumerator: strategy.quorumNumerator, 
-                  basisNumerator: strategy.basisNumerator, 
-                  percentage 
-                });
+              quorumPercentage: !!strategy.quorumNumerator ? (() => {
+                const percentage = (strategy.quorumNumerator * 100) / QUORUM_DENOMINATOR;
                 return {
                   value: BigInt(Math.floor(percentage)),
                   formatted: percentage.toString()
