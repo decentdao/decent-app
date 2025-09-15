@@ -47,14 +47,13 @@ export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
       setFieldValue('selectedToken', selectedToken);
       setFieldValue('tokenName', selectedToken.name);
       setFieldValue('tokenSymbol', selectedToken.symbol);
-      // Set a fixed supply of 1 billion tokens as shown in design
       setFieldValue('maxTokenSupply', {
-        value: '1000000000',
-        bigintValue: BigInt('1000000000') * BigInt(10) ** BigInt(selectedToken.decimals),
+        value: selectedToken.totalSupply || '0',
+        bigintValue: selectedToken.totalSupply ? BigInt(selectedToken.totalSupply) : BigInt(0),
       });
       // Calculate token price based on USD value if available
       if (selectedToken.usdPrice) {
-        // @TODO this needs to be calculated based on PRD
+        // TODO this needs to be calculated based on PRD
         setFieldValue('tokenPrice', selectedToken.usdPrice);
       }
     }
@@ -168,11 +167,11 @@ export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
             }}
           >
             <Input
-              value="1,000,000,000"
+              value={values.maxTokenSupply.value || 'Select a token first'}
               isDisabled={true}
               bg="color-neutral-900"
               opacity={0.5}
-              placeholder="1,000,000,000"
+              placeholder="Token supply will be set when token is selected"
             />
           </LabelComponent>
 
@@ -295,6 +294,7 @@ export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
         >
           <AssetSelector
             includeNativeToken={true}
+            canSelectMultiple={true}
             onSelect={addresses => setFieldValue('acceptedToken', addresses)}
           />
         </LabelComponent>
