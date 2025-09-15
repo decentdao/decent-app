@@ -15,6 +15,7 @@ export interface ERC20TokenData extends BaseTokenData {
   decimals: number;
   totalSupply: bigint;
   balance?: bigint;
+  allowance?: bigint;
 }
 
 export interface StakedTokenData extends ERC20TokenData {
@@ -24,11 +25,17 @@ export interface StakedTokenData extends ERC20TokenData {
     symbol: string;
     decimals: number;
     address: Address;
+    // stake contract's total balances
     balance: string;
     formattedBalance: string;
     usdValue: number;
   }[];
   assetsFungible: TokenBalance[];
+  userClaimableRewards: bigint[];
+  userStakedAmount?: bigint;
+  userLastStakeTimestamp?: bigint;
+  distributableRewards: bigint[];
+  totalStaked: bigint;
 }
 
 export interface ERC721TokenData extends BaseTokenData {

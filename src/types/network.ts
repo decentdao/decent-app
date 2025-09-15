@@ -66,6 +66,9 @@ type ContractsBase = {
   sablierV2LockupTranched: Address;
   sablierV2LockupLinear: Address;
   disperse: Address;
+
+  tokenSaleV1MasterCopy: Address;
+  decentVerifierV1: Address;
 };
 
 // Base type containing properties common to all network configs

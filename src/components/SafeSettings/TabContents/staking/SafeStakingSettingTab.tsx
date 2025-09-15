@@ -1,10 +1,9 @@
 import { Button, Flex, ListItem, Text, UnorderedList } from '@chakra-ui/react';
 import { abis } from '@decentdao/decent-contracts';
 import { useFormikContext } from 'formik';
-import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
-import { Address, getContract } from 'viem';
+import { Address, formatUnits, getContract } from 'viem';
 import { logError } from '../../../../helpers/errorLogging';
 import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
 import useNetworkPublicClient from '../../../../hooks/useNetworkPublicClient';
@@ -62,7 +61,8 @@ function StakingForm() {
   const { errors } = useFormikContext<SafeSettingsEdits>();
   const stakingErrors = (errors as SafeSettingsFormikErrors | undefined)?.staking;
 
-  const { address, minimumStakingPeriod, rewardsTokens } = stakedToken || {};
+  const { address, minimumStakingPeriod, rewardsTokens, distributableRewards, totalStaked } =
+    stakedToken || {};
   const rewardsTokenAddresses = rewardsTokens?.map(token => token.address) || [];
   const minPeriodValue = Number(
     values.staking?.minimumStakingPeriod?.bigintValue || minimumStakingPeriod || 0n,
@@ -72,42 +72,6 @@ function StakingForm() {
     stakedToken?.assetsFungible.filter(
       asset => asset.balance !== '0' && !rewardsTokenAddresses.includes(asset.tokenAddress),
     ) || [];
-
-  const [hasTokensToDistribute, setHasTokensToDistribute] = useState(false);
-  const [hasStakers, setHasStakers] = useState(false);
-  useEffect(() => {
-    try {
-      if (!stakedToken?.address || !publicClient) {
-        return;
-      }
-
-      publicClient
-        .multicall({
-          contracts: [
-            {
-              address: stakedToken.address,
-              abi: abis.deployables.VotesERC20StakedV1,
-              functionName: 'distributableRewards',
-            },
-            {
-              address: stakedToken.address,
-              abi: abis.deployables.VotesERC20StakedV1,
-              functionName: 'totalStaked',
-            },
-          ],
-        })
-        .then(results => {
-          const [rewardsResult, totalStakedResult] = results;
-
-          if (rewardsResult.status === 'success' && totalStakedResult.status === 'success') {
-            setHasTokensToDistribute(rewardsResult.result.some(reward => reward > 0n));
-            setHasStakers(totalStakedResult.result > 0n);
-          }
-        });
-    } catch (error) {
-      logError(error);
-    }
-  }, [publicClient, stakedToken?.address]);
 
   const distributeRewards = async () => {
     if (!stakedToken?.address || !walletClient) {
@@ -154,6 +118,17 @@ function StakingForm() {
     );
   }
 
+  const hasStakers = (totalStaked || 0n) > 0n;
+
+  const distributableTokensWithBalances = stakedToken?.rewardsTokens.map((token, index) => {
+    return {
+      ...token,
+      balance: distributableRewards?.[index] || 0n,
+      formattedBalance: formatUnits(distributableRewards?.[index] || 0n, token.decimals),
+    };
+  });
+
+  const hasTokensToDistribute = distributableTokensWithBalances?.some(token => token.balance > 0n);
   return (
     <>
       {address ? (
@@ -284,8 +259,8 @@ function StakingForm() {
           }}
         >
           <>
-            {stakedToken?.rewardsTokens
-              .filter(token => token.balance !== '0')
+            {distributableTokensWithBalances
+              ?.filter(token => token.balance !== 0n)
               .map((token, index, arr) => (
                 <Flex
                   key={index}
@@ -293,8 +268,9 @@ function StakingForm() {
                   alignSelf="stretch"
                 >
                   <Flex
-                    gap="4px"
+                    gap="16px"
                     justifyContent="space-between"
+                    alignItems="center"
                     alignSelf="stretch"
                     mb="8px"
                   >

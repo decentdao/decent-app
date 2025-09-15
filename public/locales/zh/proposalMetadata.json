@@ -4,6 +4,8 @@
   "clawbackDescription": "将所有资金从目标儿童保险箱转入父母保险箱",
   "createProposalTemplateTitle": "创建提案书模板",
   "createProposalTemplateDescription": "执行本提案将创建一个新的提案模板，附在本Safe中。",
+  "createProposalTemplateTitlePrefix": "Create Proposal Template: ",
+  "createProposalTemplateDescriptionPrefix": "> Execution of this proposal will create a new proposal template, attached to this Safe.",
   "removeProposalTemplateTitle": "删除提案书模板",
   "removeProposalTemplateDescription": "执行本提案将删除本Safe所附的提案模板。",
   "updatesSafeName": "更新保险箱名称",

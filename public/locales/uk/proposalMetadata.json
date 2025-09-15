@@ -4,6 +4,8 @@
   "clawbackDescription": "Перекажіть усі кошти з цільового дитячого Сейфу на батьківський Сейф",
   "createProposalTemplateTitle": "Створіть шаблон пропозиції",
   "createProposalTemplateDescription": "Виконання цієї пропозиції створить новий шаблон пропозиції, прикріплений до цього Сейфу.",
+  "createProposalTemplateTitlePrefix": "Create Proposal Template: ",
+  "createProposalTemplateDescriptionPrefix": "> Execution of this proposal will create a new proposal template, attached to this Safe.",
   "removeProposalTemplateTitle": "Видалити шаблон пропозиції",
   "removeProposalTemplateDescription": "Виконання цієї пропозиції видалить шаблон пропозиції, прикріплений до цього Сейфу.",
   "updatesSafeName": "Оновити безпечне ім'я",

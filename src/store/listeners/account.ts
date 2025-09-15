@@ -1,4 +1,4 @@
-import { legacy } from '@decentdao/decent-contracts';
+import { abis, legacy } from '@decentdao/decent-contracts';
 import { useEffect } from 'react';
 import { Address, getContract } from 'viem';
 import { useAccount } from 'wagmi';
@@ -40,14 +40,22 @@ export function useAccountListeners({
   freezeProposalCreatedTime?: bigint;
   freezeProposalPeriod?: bigint;
   freezePeriod?: bigint;
-  onGovernanceAccountDataLoaded: (accountData: { balance: bigint; delegatee: Address }) => void;
+  onGovernanceAccountDataLoaded: (accountData: {
+    balance: bigint;
+    delegatee: Address;
+    allowance: bigint;
+  }) => void;
   onGovernanceLockReleaseAccountDataLoaded: (accountData: {
     balance: bigint;
     delegatee: Address;
   }) => void;
   onGuardAccountDataLoaded: (accountData: GuardAccountData) => void;
-  onStakedTokenAccountDataLoaded: (accountData: { balance: bigint }) => void;
-  onERC20TokenAccountDataLoaded: (accountData: { balance: bigint }) => void;
+  onStakedTokenAccountDataLoaded: (accountData: {
+    balance: bigint;
+    stakerData: { stakedAmount: bigint; lastStakeTimestamp: bigint };
+    claimableRewards: bigint[];
+  }) => void;
+  onERC20TokenAccountDataLoaded: (accountData: { balance: bigint; allowance: bigint }) => void;
 }) {
   const { address: account } = useAccount();
   const publicClient = useNetworkPublicClient();
@@ -61,7 +69,15 @@ export function useAccountListeners({
 
   useEffect(() => {
     async function loadAccountData() {
-      if (!account || !votesTokenAddress) {
+      if (!votesTokenAddress) {
+        return;
+      }
+      if (!account) {
+        onGovernanceAccountDataLoaded({
+          balance: 0n,
+          delegatee: '0x0000000000000000000000000000000000000000',
+          allowance: 0n,
+        });
         return;
       }
 
@@ -69,6 +85,7 @@ export function useAccountListeners({
         const votingTokenAccountData = await fetchVotingTokenAccountData(
           votesTokenAddress,
           account,
+          stakingAddress,
         );
         onGovernanceAccountDataLoaded(votingTokenAccountData);
 
@@ -88,6 +105,7 @@ export function useAccountListeners({
   }, [
     votesTokenAddress,
     lockReleaseAddress,
+    stakingAddress,
     account,
     fetchVotingTokenAccountData,
     fetchLockReleaseAccountData,
@@ -98,13 +116,19 @@ export function useAccountListeners({
   useEffect(() => {
     async function loadGuardAccountData() {
       if (
-        account === undefined ||
         freezeVotingType === undefined ||
         freezeVotingAddress === undefined ||
         freezeProposalCreatedTime === undefined ||
         freezeProposalPeriod === undefined ||
         freezePeriod === undefined
       ) {
+        return;
+      }
+      if (!account) {
+        onGuardAccountDataLoaded({
+          userHasFreezeVoted: false,
+          userHasVotes: false,
+        });
         return;
       }
 
@@ -146,7 +170,11 @@ export function useAccountListeners({
 
   // Combined ERC20 token initial data loading + event listeners
   useEffect(() => {
-    if (!account || !erc20TokenAddress) {
+    if (!erc20TokenAddress) {
+      return;
+    }
+    if (!account) {
+      onERC20TokenAccountDataLoaded({ balance: 0n, allowance: 0n });
       return;
     }
 
@@ -160,6 +188,7 @@ export function useAccountListeners({
         const tokenAccountData = await fetchERC20TokenAccountData(
           definedErc20Address,
           definedAccount,
+          stakingAddress,
         );
         onERC20TokenAccountDataLoaded(tokenAccountData);
       } catch (e) {
@@ -181,6 +210,7 @@ export function useAccountListeners({
         const tokenAccountData = await fetchERC20TokenAccountData(
           definedErc20Address,
           definedAccount,
+          stakingAddress,
         );
         onERC20TokenAccountDataLoaded(tokenAccountData);
       } catch (e) {
@@ -200,21 +230,49 @@ export function useAccountListeners({
       { onLogs: handleTransfer },
     );
 
+    // Watch for approval events (allowance changes)
+    const handleApproval = async () => {
+      try {
+        const tokenAccountData = await fetchERC20TokenAccountData(
+          definedErc20Address,
+          definedAccount,
+          stakingAddress,
+        );
+        onERC20TokenAccountDataLoaded(tokenAccountData);
+      } catch (e) {
+        logError(e as Error);
+      }
+    };
+
+    const unwatchApproval = erc20Contract.watchEvent.Approval(
+      { owner: definedAccount },
+      { onLogs: handleApproval },
+    );
+
     return () => {
       unwatchTransferTo();
       unwatchTransferFrom();
+      unwatchApproval();
     };
   }, [
     account,
     erc20TokenAddress,
+    stakingAddress,
     publicClient,
     fetchERC20TokenAccountData,
     onERC20TokenAccountDataLoaded,
   ]);
-
   // Combined staked token initial data loading + event listeners
   useEffect(() => {
-    if (!account || !stakingAddress) {
+    if (!stakingAddress) {
+      return;
+    }
+    if (!account) {
+      onStakedTokenAccountDataLoaded({
+        balance: 0n,
+        stakerData: { stakedAmount: 0n, lastStakeTimestamp: 0n },
+        claimableRewards: [],
+      });
       return;
     }
 
@@ -239,23 +297,12 @@ export function useAccountListeners({
 
     // Set up event listeners
     const stakingContract = getContract({
-      abi: [
-        {
-          anonymous: false,
-          inputs: [
-            { indexed: true, name: 'from', type: 'address' },
-            { indexed: true, name: 'to', type: 'address' },
-            { indexed: false, name: 'value', type: 'uint256' },
-          ],
-          name: 'Transfer',
-          type: 'event',
-        },
-      ],
+      abi: abis.deployables.VotesERC20StakedV1,
       address: definedStakingAddress,
       client: publicClient,
     });
 
-    const handleStakingTransfer = async () => {
+    const handleStakingUpdate = async () => {
       try {
         const stakedTokenAccountData = await fetchStakedTokenAccountData(
           definedStakingAddress,
@@ -270,18 +317,36 @@ export function useAccountListeners({
     // Watch for transfers to this account
     const unwatchTransferTo = stakingContract.watchEvent.Transfer(
       { to: definedAccount },
-      { onLogs: handleStakingTransfer },
+      { onLogs: handleStakingUpdate },
     );
 
     // Watch for transfers from this account
     const unwatchTransferFrom = stakingContract.watchEvent.Transfer(
       { from: definedAccount },
-      { onLogs: handleStakingTransfer },
+      { onLogs: handleStakingUpdate },
+    );
+    // Watch for RewardsClaimed events for this account
+    const unwatchRewardsClaimed = stakingContract.watchEvent.RewardsClaimed(
+      { staker: definedAccount },
+      { onLogs: handleStakingUpdate },
+    );
+
+    const unwatchStake = stakingContract.watchEvent.Staked(
+      { staker: definedAccount },
+      { onLogs: handleStakingUpdate },
+    );
+
+    const unwatchUnStake = stakingContract.watchEvent.Unstaked(
+      { staker: definedAccount },
+      { onLogs: handleStakingUpdate },
     );
 
     return () => {
       unwatchTransferTo();
       unwatchTransferFrom();
+      unwatchRewardsClaimed();
+      unwatchStake();
+      unwatchUnStake();
     };
   }, [
     account,

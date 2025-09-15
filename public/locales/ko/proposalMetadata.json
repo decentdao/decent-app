@@ -4,6 +4,8 @@
   "clawbackDescription": "대상 자식 금고에서 부모 금고로 모든 자금을 이체합니다.",
   "createProposalTemplateTitle": "제안서 템플릿 만들기",
   "createProposalTemplateDescription": "이 제안서를 실행하면 이 금고에 첨부된 새 제안서 템플릿이 생성됩니다.",
+  "createProposalTemplateTitlePrefix": "Create Proposal Template: ",
+  "createProposalTemplateDescriptionPrefix": "> Execution of this proposal will create a new proposal template, attached to this Safe.",
   "removeProposalTemplateTitle": "제안서 템플릿 제거",
   "removeProposalTemplateDescription": "이 제안서를 실행하면 이 금고에 첨부된 제안서 템플릿이 제거됩니다.",
   "updatesSafeName": "안전한 이름 업데이트",

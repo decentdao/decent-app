@@ -10,7 +10,7 @@ import {
   ResponsiveValue,
   TextareaProps as ChakraTextareaProps,
 } from '@chakra-ui/react';
-import { BigIntInput, BigIntInputProps } from './BigIntInput';
+import { BigIntInputProps, BigIntInput } from './BigIntInput';
 import LabelWrapper from './LabelWrapper';
 
 interface BaseProps {
@@ -176,7 +176,7 @@ export function TextareaComponent(props: TextareaProps) {
 }
 
 export function BigIntComponent(props: BigIntProps) {
-  const { id, value, disabled, onChange, decimalPlaces } = props;
+  const { id, value, disabled, onChange, decimals } = props;
   return (
     <LabelComponent
       {...props}
@@ -186,7 +186,7 @@ export function BigIntComponent(props: BigIntProps) {
         value={value}
         id={id}
         onChange={onChange}
-        decimalPlaces={decimalPlaces}
+        decimals={decimals}
         placeholder="0.0"
         isDisabled={disabled}
       />
