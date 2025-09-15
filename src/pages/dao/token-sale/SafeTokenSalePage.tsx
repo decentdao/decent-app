@@ -3,6 +3,7 @@ import { TrendUp, Play, CurrencyDollar } from '@phosphor-icons/react';
 import { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { formatUnits } from 'viem';
+import { TokenSalesTable } from '../../../components/TokenSales/TokenSalesTable';
 import PageHeader from '../../../components/ui/page/Header/PageHeader';
 import { CONTENT_MAXW } from '../../../constants/common';
 import { DAO_ROUTES } from '../../../constants/routes';
@@ -16,6 +17,7 @@ export function SafeTokenSalePage() {
     node: { safe },
     tokenSales,
   } = useDAOStore({ daoKey });
+  console.log('🚀 ~ tokenSales:', tokenSales);
   const navigate = useNavigate();
   const { addressPrefix } = useNetworkConfigStore();
 
@@ -179,7 +181,7 @@ export function SafeTokenSalePage() {
         align="stretch"
         mt={6}
       >
-        {/* Stats Grid */}
+        {/* Stats Grid - Always shown */}
         <Grid
           templateColumns="repeat(3, 1fr)"
           gap={6}
@@ -207,8 +209,12 @@ export function SafeTokenSalePage() {
           </GridItem>
         </Grid>
 
-        {/* Show empty state only when no token sales exist */}
-        {stats.totalSales === 0 && <EmptyState />}
+        {/* Show table when sales exist, empty state when no sales */}
+        {stats.totalSales === 0 ? (
+          <EmptyState />
+        ) : (
+          <TokenSalesTable tokenSales={tokenSales || []} />
+        )}
       </VStack>
     </Box>
   );

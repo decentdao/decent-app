@@ -10,5 +10,7 @@
   "optionRemoveTemplate": "Remove Template",
   "optionForkTemplate": "Fork Template",
   "optionModifyGovernance": "Modify Governance",
-  "optionSettings": "Settings"
+  "optionSettings": "Settings",
+  "viewDetails": "View Details",
+  "claimFunds": "Claim Funds"
 }
