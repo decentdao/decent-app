@@ -1,10 +1,12 @@
 import { BigIntValuePair } from '../../../types';
+import { TokenBalance } from '../../../types/daoTreasury';
 
 export interface TokenSaleFormValues {
   // Project Overview
   saleName: string;
 
   // Token Details
+  selectedToken: TokenBalance | null;
   tokenName: string;
   tokenSymbol: string;
   maxTokenSupply: BigIntValuePair;

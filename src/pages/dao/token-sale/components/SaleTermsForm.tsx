@@ -1,11 +1,14 @@
-import { Input, VStack, Grid, Text } from '@chakra-ui/react';
+import { Input, VStack, Grid, Text, Image, Flex } from '@chakra-ui/react';
+import { useMemo } from 'react';
 import { ContentBoxTight } from '../../../../components/ui/containers/ContentBox';
-import { BigIntInput } from '../../../../components/ui/forms/BigIntInput';
 import { DatePicker } from '../../../../components/ui/forms/DatePicker';
 import { LabelComponent } from '../../../../components/ui/forms/InputComponent';
 import { NumberInputWithAddon } from '../../../../components/ui/forms/InputWithAddon';
 import { SectionHeader } from '../../../../components/ui/forms/SectionHeader';
+import { DropdownMenu } from '../../../../components/ui/menus/DropdownMenu';
 import { AssetSelector } from '../../../../components/ui/utils/AssetSelector';
+import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
+import { useDAOStore } from '../../../../providers/App/AppProvider';
 import { TokenSaleFormValues } from '../types';
 
 interface SaleTermsFormProps {
@@ -14,6 +17,49 @@ interface SaleTermsFormProps {
 }
 
 export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
+  const daoKeyResult = useCurrentDAOKey();
+  const daoKey =
+    daoKeyResult.invalidQuery || daoKeyResult.wrongNetwork ? undefined : daoKeyResult.daoKey;
+  const { treasury } = useDAOStore({ daoKey });
+
+  // Filter fungible assets with balance > 0
+  const availableTokens = useMemo(() => {
+    return treasury.assetsFungible.filter(
+      token => parseFloat(token.balance) > 0 && !token.possibleSpam,
+    );
+  }, [treasury.assetsFungible]);
+
+  // Convert tokens to dropdown items
+  const tokenDropdownItems = useMemo(() => {
+    return availableTokens.map(token => ({
+      value: token.tokenAddress,
+      label: `${token.name} (${token.symbol})`,
+      icon: token.logo || '/images/coin-icon-default.svg',
+      selected: values.selectedToken?.tokenAddress === token.tokenAddress,
+      ...token, // Include all token properties
+    }));
+  }, [availableTokens, values.selectedToken]);
+
+  // Handle token selection
+  const handleTokenSelect = (item: any) => {
+    const selectedToken = availableTokens.find(token => token.tokenAddress === item.value);
+    if (selectedToken) {
+      setFieldValue('selectedToken', selectedToken);
+      setFieldValue('tokenName', selectedToken.name);
+      setFieldValue('tokenSymbol', selectedToken.symbol);
+      // Set a fixed supply of 1 billion tokens as shown in design
+      setFieldValue('maxTokenSupply', {
+        value: '1000000000',
+        bigintValue: BigInt('1000000000') * BigInt(10) ** BigInt(selectedToken.decimals),
+      });
+      // Calculate token price based on USD value if available
+      if (selectedToken.usdPrice) {
+        // @TODO this needs to be calculated based on PRD
+        setFieldValue('tokenPrice', selectedToken.usdPrice);
+      }
+    }
+  };
+
   return (
     <VStack align="stretch">
       {/* Token Details Section */}
@@ -44,16 +90,52 @@ export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
           gap={4}
         >
           <LabelComponent
-            label="Token Name"
+            label="Sale Token"
             isRequired={true}
             gridContainerProps={{
               templateColumns: '1fr',
             }}
           >
-            <Input
-              placeholder="e.g. Decent"
-              value={values.tokenName}
-              onChange={e => setFieldValue('tokenName', e.target.value)}
+            <DropdownMenu
+              items={tokenDropdownItems}
+              selectedItem={tokenDropdownItems.find(item => item.selected)}
+              onSelect={handleTokenSelect}
+              selectPlaceholder="Select Token"
+              emptyMessage="No tokens available in treasury"
+              variant="bordered"
+              renderItem={item => (
+                <Flex
+                  alignItems="center"
+                  gap="1rem"
+                  w="full"
+                >
+                  {item.icon && (
+                    <Image
+                      src={item.icon}
+                      fallbackSrc="/images/coin-icon-default.svg"
+                      boxSize="2rem"
+                    />
+                  )}
+                  <Flex
+                    flexDirection="column"
+                    alignItems="flex-start"
+                    flex="1"
+                  >
+                    <Text
+                      textStyle="text-sm-medium"
+                      color="color-white"
+                    >
+                      {item.name}
+                    </Text>
+                    <Text
+                      textStyle="text-xs-regular"
+                      color="color-neutral-300"
+                    >
+                      {item.symbol} • Balance: {parseFloat(item.balanceFormatted).toFixed(4)}
+                    </Text>
+                  </Flex>
+                </Flex>
+              )}
             />
           </LabelComponent>
 
@@ -67,7 +149,9 @@ export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
             <Input
               placeholder="e.g. DCNT"
               value={values.tokenSymbol}
-              onChange={e => setFieldValue('tokenSymbol', e.target.value)}
+              isDisabled={true}
+              bg="color-neutral-900"
+              opacity={0.5}
             />
           </LabelComponent>
         </Grid>
@@ -78,34 +162,38 @@ export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
         >
           <LabelComponent
             label="Max Token Supply"
-            isRequired={true}
+            isRequired={false}
             gridContainerProps={{
               templateColumns: '1fr',
             }}
           >
-            <BigIntInput
-              value={values.maxTokenSupply}
-              onChange={valuePair => setFieldValue('maxTokenSupply', valuePair)}
-              placeholder="1000000000"
-              decimals={0}
+            <Input
+              value="1,000,000,000"
+              isDisabled={true}
+              bg="color-neutral-900"
+              opacity={0.5}
+              placeholder="1,000,000,000"
             />
           </LabelComponent>
 
           <LabelComponent
             label="Token Price"
-            isRequired={true}
+            isRequired={false}
             gridContainerProps={{
               templateColumns: '1fr',
             }}
           >
             <NumberInputWithAddon
               value={values.tokenPrice}
-              onChange={val => setFieldValue('tokenPrice', parseFloat(val) || 0)}
+              onChange={() => {}} // No-op since it's disabled
               min={0}
               precision={2}
               step={0.01}
-              placeholder="100"
+              placeholder="1.00"
               leftAddon={<Text color="gray.500">$</Text>}
+              isDisabled={true}
+              bg="color-neutral-900"
+              opacity={0.5}
             />
           </LabelComponent>
         </Grid>

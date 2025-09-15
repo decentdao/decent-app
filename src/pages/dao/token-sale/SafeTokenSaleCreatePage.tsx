@@ -24,6 +24,7 @@ const initialValues: TokenSaleFormValues = {
   saleName: '',
 
   // Token Details
+  selectedToken: null,
   tokenName: '',
   tokenSymbol: '',
   maxTokenSupply: { value: '', bigintValue: undefined },
