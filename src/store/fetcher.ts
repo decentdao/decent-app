@@ -4,7 +4,11 @@ import useFeatureFlag from '../helpers/environmentFeatureFlags';
 import { logError } from '../helpers/errorLogging';
 import useNetworkPublicClient from '../hooks/useNetworkPublicClient';
 import { useTimeHelpers } from '../hooks/utils/useTimeHelpers';
-import { getDaoData, getDaoRevenueSharingWallets, getDaoProposals } from '../providers/App/decentAPI';
+import {
+  getDaoData,
+  getDaoRevenueSharingWallets,
+  getDaoProposals,
+} from '../providers/App/decentAPI';
 import { useNetworkConfigStore } from '../providers/NetworkConfig/useNetworkConfigStore';
 import {
   AzoriusProposal,
@@ -106,8 +110,8 @@ export const useDAOStoreFetcher = ({
           singleton: 'unused',
           fallbackHandler: 'unused',
           guard: daoData.governanceGuard?.address || zeroAddress,
-          version: 'unused'
-        }
+          version: 'unused',
+        };
 
         const childAddresses = daoData.subDaos.map(sub => sub.address);
         const daoInfo: DAOSubgraph = {
@@ -120,8 +124,8 @@ export const useDAOStoreFetcher = ({
 
         const modules: DecentModule[] = daoData.governanceModules.map(mod => ({
           moduleAddress: mod.address,
-          moduleType: FractalModuleType[mod.type]
-        }))
+          moduleType: FractalModuleType[mod.type],
+        }));
 
         setDaoNode(daoKey, {
           safe,
@@ -136,29 +140,31 @@ export const useDAOStoreFetcher = ({
 
         const stakingData = await fetchStakingDAOData(safeAddress);
         setStakingData(daoKey, stakingData);
-        
+
         const azoriusModule = daoData.governanceModules.find(mod => mod.type === 'AZORIUS');
         if (azoriusModule) {
           const strategy = azoriusModule.strategies[0];
           const isErc20 = strategy?.votingTokens[0]?.type === 'ERC20';
-          
+
           // Convert blocks to seconds
           console.log('Azorius module data:', {
             timelockPeriod: azoriusModule.timelockPeriod,
             executionPeriod: azoriusModule.executionPeriod,
-            votingPeriod: strategy?.votingPeriod
+            votingPeriod: strategy?.votingPeriod,
           });
-          
-          const votingPeriodSeconds = strategy?.votingPeriod 
+
+          const votingPeriodSeconds = strategy?.votingPeriod
             ? await blocksToSeconds(strategy.votingPeriod, publicClient)
             : undefined;
-          const timelockPeriodSeconds = azoriusModule.timelockPeriod !== null && azoriusModule.timelockPeriod !== undefined
-            ? await blocksToSeconds(azoriusModule.timelockPeriod, publicClient)
-            : undefined;
-          const executionPeriodSeconds = azoriusModule.executionPeriod !== null && azoriusModule.executionPeriod !== undefined
-            ? await blocksToSeconds(azoriusModule.executionPeriod, publicClient)
-            : undefined;
-          
+          const timelockPeriodSeconds =
+            azoriusModule.timelockPeriod !== null && azoriusModule.timelockPeriod !== undefined
+              ? await blocksToSeconds(azoriusModule.timelockPeriod, publicClient)
+              : undefined;
+          const executionPeriodSeconds =
+            azoriusModule.executionPeriod !== null && azoriusModule.executionPeriod !== undefined
+              ? await blocksToSeconds(azoriusModule.executionPeriod, publicClient)
+              : undefined;
+
           const governance: SetAzoriusGovernancePayload = {
             moduleAzoriusAddress: azoriusModule.address,
             votesToken: undefined,
@@ -168,40 +174,54 @@ export const useDAOStoreFetcher = ({
             isLoaded: true,
             strategies: azoriusModule.strategies.map(s => ({
               address: s.address,
-              type: s.votingTokens[0]?.type === 'ERC20' ? FractalTokenType.erc20 : FractalTokenType.erc721,
+              type:
+                s.votingTokens[0]?.type === 'ERC20'
+                  ? FractalTokenType.erc20
+                  : FractalTokenType.erc721,
               withWhitelist: false,
               version: s.version,
             })),
             votingStrategy: {
-              votingPeriod: votingPeriodSeconds ? { 
-                value: BigInt(votingPeriodSeconds), 
-                formatted: getTimeDuration(votingPeriodSeconds)
-              } : undefined,
-              quorumPercentage: !!strategy.quorumNumerator ? (() => {
-                const percentage = (strategy.quorumNumerator * 100) / QUORUM_DENOMINATOR;
-                return {
-                  value: BigInt(Math.floor(percentage)),
-                  formatted: percentage.toString()
-                };
-              })() : undefined,
-              timeLockPeriod: (timelockPeriodSeconds && timelockPeriodSeconds >= 0) ? { 
-                value: BigInt(timelockPeriodSeconds), 
-                formatted: getTimeDuration(timelockPeriodSeconds)
-              } : undefined,
-              executionPeriod: executionPeriodSeconds ? { 
-                value: BigInt(executionPeriodSeconds), 
-                formatted: getTimeDuration(executionPeriodSeconds)
-              } : undefined,
-              proposerThreshold: strategy.requiredProposerWeight ? { 
-                value: BigInt(strategy.requiredProposerWeight), 
-                formatted: strategy.requiredProposerWeight.toString() 
-              } : undefined,
+              votingPeriod: votingPeriodSeconds
+                ? {
+                    value: BigInt(votingPeriodSeconds),
+                    formatted: getTimeDuration(votingPeriodSeconds),
+                  }
+                : undefined,
+              quorumPercentage: !!strategy.quorumNumerator
+                ? (() => {
+                    const percentage = (strategy.quorumNumerator * 100) / QUORUM_DENOMINATOR;
+                    return {
+                      value: BigInt(Math.floor(percentage)),
+                      formatted: percentage.toString(),
+                    };
+                  })()
+                : undefined,
+              timeLockPeriod:
+                timelockPeriodSeconds && timelockPeriodSeconds >= 0
+                  ? {
+                      value: BigInt(timelockPeriodSeconds),
+                      formatted: getTimeDuration(timelockPeriodSeconds),
+                    }
+                  : undefined,
+              executionPeriod: executionPeriodSeconds
+                ? {
+                    value: BigInt(executionPeriodSeconds),
+                    formatted: getTimeDuration(executionPeriodSeconds),
+                  }
+                : undefined,
+              proposerThreshold: strategy.requiredProposerWeight
+                ? {
+                    value: BigInt(strategy.requiredProposerWeight),
+                    formatted: strategy.requiredProposerWeight.toString(),
+                  }
+                : undefined,
             },
             isAzorius: true,
             type: isErc20 ? GovernanceType.AZORIUS_ERC20 : GovernanceType.AZORIUS_ERC721,
           };
           setAzoriusGovernance(daoKey, governance);
-          
+
           // Fetch and set proposals
           const apiProposals = await getDaoProposals(chain.id, safeAddress);
           if (apiProposals) {
@@ -213,13 +233,13 @@ export const useDAOStoreFetcher = ({
               data: {
                 metaData: {
                   title: p.title,
-                  description: p.description
+                  description: p.description,
                 },
                 transactions: p.transactions.map(tx => ({
                   ...tx,
-                  value: BigInt(tx.value)
+                  value: BigInt(tx.value),
                 })),
-                decodedTransactions: []
+                decodedTransactions: [],
               },
               description: p.description,
               // Required by GovernanceActivity
@@ -231,7 +251,7 @@ export const useDAOStoreFetcher = ({
                 target: tx.to,
                 value: tx.value,
                 data: tx.data,
-                operation: tx.operation.toString()
+                operation: tx.operation.toString(),
               })),
               startBlock: BigInt(0), // Not available in API
               endBlock: BigInt(0), // Not available in API
@@ -242,11 +262,11 @@ export const useDAOStoreFetcher = ({
                 yes: BigInt(0),
                 no: BigInt(0),
                 abstain: BigInt(0),
-                quorum: BigInt(0)
+                quorum: BigInt(0),
               },
               votes: [],
               deadlineMs: 0, // Not available in API
-              decodedTransactions: [] // Will need to decode if needed
+              decodedTransactions: [], // Will need to decode if needed
             }));
             setProposals(daoKey, transformedProposals);
             setAllProposalsLoaded(daoKey, true);
@@ -256,10 +276,10 @@ export const useDAOStoreFetcher = ({
         }
       } catch (e) {
         console.error('ERROR fetching from API');
-        console.error(e)
+        console.error(e);
       }
     }
-    
+
     async function loadDAOData() {
       if (!daoKey || !safeAddress || invalidQuery || wrongNetwork) return;
       try {

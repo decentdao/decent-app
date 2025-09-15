@@ -23,7 +23,7 @@ type DAOBasic = {
     nonce: number;
     threshold: number;
     owners: Address[];
-  }
+  };
   chainId: number;
   snapshotENS: string | null;
   parentAddress: Address | null;
@@ -60,12 +60,14 @@ type DAOBasic = {
     } | null;
   } | null;
   roles: {
-    terms: {
-      active: boolean;
-      wearerAddress: Address | null;
-      eligibility: Address;
-      termEnd: number;
-    }[] | undefined;
+    terms:
+      | {
+          active: boolean;
+          wearerAddress: Address | null;
+          eligibility: Address;
+          termEnd: number;
+        }[]
+      | undefined;
     daoChainId: number;
     daoAddress: Address;
     hatId: string;
@@ -77,7 +79,7 @@ type DAOBasic = {
   createdAt: number;
   updatedAt: number | null;
   subDaos: SubDaoInfo[];
-}
+};
 
 type Token = {
   address: Address;
