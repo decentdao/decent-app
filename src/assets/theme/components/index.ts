@@ -6,6 +6,7 @@ import Input from './input';
 import NumberInput from './numberInput';
 import Progress from './progress';
 import Switch from './switch';
+import Table from './table';
 import Tabs from './tabs';
 import Textarea from './textarea';
 
@@ -18,6 +19,7 @@ export default {
   NumberInput,
   Progress,
   Switch,
+  Table,
   Tabs,
   Checkbox,
 };
