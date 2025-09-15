@@ -47,7 +47,7 @@ export function useTokenSaleFormPreparation() {
         throw new Error('DAO address is not available');
       }
 
-      if (!values.selectedToken) {
+      if (!values.tokenAddress) {
         throw new Error('No token selected');
       }
 
@@ -71,7 +71,7 @@ export function useTokenSaleFormPreparation() {
         saleStartTimestamp,
         saleEndTimestamp,
         commitmentToken,
-        saleToken: values.selectedToken.tokenAddress,
+        saleToken: values.tokenAddress as Address,
         verifier: decentVerifierV1,
         saleProceedsReceiver: safe.address,
         protocolFeeReceiver: values.protocolFeeReceiver || safe.address,

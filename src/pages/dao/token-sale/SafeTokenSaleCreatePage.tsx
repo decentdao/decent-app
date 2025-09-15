@@ -26,7 +26,7 @@ const initialValues: TokenSaleFormValues = {
   saleName: 'DecentDAO Token Sale',
 
   // Token Details
-  selectedToken: null,
+  tokenAddress: '',
   tokenName: '',
   tokenSymbol: '',
   maxTokenSupply: { value: '', bigintValue: undefined },
@@ -40,7 +40,6 @@ const initialValues: TokenSaleFormValues = {
   minimumFundraise: 5, // $5 minimum
   fundraisingCap: 9500, // $9,500 maximum
   valuation: 0,
-  acceptedToken: [], // Will be set based on form selection - user must select at least one token
   minPurchase: 1, // $1 minimum purchase
   maxPurchase: 50, // $50 maximum purchase
 
@@ -48,6 +47,7 @@ const initialValues: TokenSaleFormValues = {
   commitmentToken: '0x0A7ECA73Bfecbc20fc73FE9Af480D12306d39e34', // Will be set based on acceptedToken
   verifier: null, // Will be set from network config
   saleProceedsReceiver: null, // Will be set to DAO address
+  // TODO this need to be set to specific address for base, sepolia, ethereum mainnet
   protocolFeeReceiver: '0x629750317d320B8bB4d48D345A6d699Cc855c4a6' as Address,
   minimumCommitment: { value: '1', bigintValue: BigInt('1000000') }, // $1 USDC (6 decimals)
   maximumCommitment: { value: '50', bigintValue: BigInt('50000000') }, // $50 USDC
@@ -66,7 +66,6 @@ const initialValues: TokenSaleFormValues = {
   hedgeyLockupPeriod: { value: '0', bigintValue: 0n },
   hedgeyVotingTokenLockupPlans: '0x0000000000000000000000000000000000000000' as Address,
 
-  // Legacy fields
   totalSupply: '',
   salePrice: '',
   whitelistAddress: '',

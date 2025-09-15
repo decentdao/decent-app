@@ -35,16 +35,16 @@ export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
       value: token.tokenAddress,
       label: `${token.name} (${token.symbol})`,
       icon: token.logo || '/images/coin-icon-default.svg',
-      selected: values.selectedToken?.tokenAddress === token.tokenAddress,
+      selected: values?.tokenAddress === token.tokenAddress,
       ...token, // Include all token properties
     }));
-  }, [availableTokens, values.selectedToken]);
+  }, [availableTokens, values.tokenAddress]);
 
   // Handle token selection
   const handleTokenSelect = (item: any) => {
     const selectedToken = availableTokens.find(token => token.tokenAddress === item.value);
     if (selectedToken) {
-      setFieldValue('selectedToken', selectedToken);
+      setFieldValue('tokenAddress', selectedToken.tokenAddress);
       setFieldValue('tokenName', selectedToken.name);
       setFieldValue('tokenSymbol', selectedToken.symbol);
       setFieldValue('maxTokenSupply', {

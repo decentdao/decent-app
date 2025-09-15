@@ -1,13 +1,12 @@
 import { Address } from 'viem';
 import { BigIntValuePair } from '../../../types';
-import { TokenBalance } from '../../../types/daoTreasury';
 
 export interface TokenSaleFormValues {
   // Project Overview
   saleName: string;
 
   // Token Details
-  selectedToken: TokenBalance | null;
+  tokenAddress: string;
   tokenName: string;
   tokenSymbol: string;
   maxTokenSupply: BigIntValuePair;
@@ -21,7 +20,6 @@ export interface TokenSaleFormValues {
   minimumFundraise: number;
   fundraisingCap: number;
   valuation: number;
-  acceptedToken: string[];
   minPurchase: number;
   maxPurchase: number;
 
