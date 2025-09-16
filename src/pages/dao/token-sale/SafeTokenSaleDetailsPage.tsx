@@ -3,11 +3,13 @@ import { CheckCircle } from '@phosphor-icons/react';
 import { useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import { formatUnits } from 'viem';
+import { TokenSaleBanner } from '../../../components/TokenSales/TokenSaleBanner';
 import { TokenSaleCountdown } from '../../../components/TokenSales/TokenSaleCountdown';
 import { TokenSaleInfoCard } from '../../../components/TokenSales/TokenSaleInfoCard';
 import { TokenSaleProgressCard } from '../../../components/TokenSales/TokenSaleProgressCard';
 import PageHeader from '../../../components/ui/page/Header/PageHeader';
 import { CONTENT_MAXW } from '../../../constants/common';
+import { useTokenSaleClaimFunds } from '../../../hooks/DAO/proposal/useTokenSaleClaimFunds';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import { useDAOStore } from '../../../providers/App/AppProvider';
 
@@ -15,6 +17,7 @@ export function SafeTokenSaleDetailsPage() {
   const { saleId } = useParams<{ saleId: string }>();
   const { daoKey } = useCurrentDAOKey();
   const { tokenSales } = useDAOStore({ daoKey });
+  const { claimFunds, pending } = useTokenSaleClaimFunds();
 
   const tokenSale = useMemo(() => {
     if (!saleId || !tokenSales) return null;
@@ -109,6 +112,36 @@ export function SafeTokenSaleDetailsPage() {
             minimum={tokenSale.maximumTotalCommitment / 2n} // Assuming minimum is half of max
             commitmentTokenDecimals={6} // Assuming USDC
           />
+
+          {/* Fundraising Goal Not Met Banner */}
+          {tokenSale.saleState === 3 &&
+            tokenSale.totalCommitments < tokenSale.maximumTotalCommitment / 2n && (
+              <TokenSaleBanner
+                title="You did not meet your minimum fundraising goal."
+                description={`You only raised ${formatCurrency(tokenSale.totalCommitments)}. Reclaim your sale tokens to return funds.`}
+                buttonText="Reclaim Tokens"
+                onButtonClick={() => {
+                  claimFunds(tokenSale.address, tokenSale.name);
+                }}
+                variant="fundraisingBanner"
+                buttonDisabled={pending}
+              />
+            )}
+
+          {/* Successful Sale Banner */}
+          {tokenSale.saleState === 2 &&
+            tokenSale.totalCommitments >= tokenSale.maximumTotalCommitment / 2n && (
+              <TokenSaleBanner
+                title="Congratulations, your sale was successful!"
+                description={`You raised ${formatCurrency(tokenSale.totalCommitments)}. Your funds are ready to be claimed.`}
+                buttonText="Claim Funds"
+                onButtonClick={() => {
+                  claimFunds(tokenSale.address, tokenSale.name);
+                }}
+                variant="successBanner"
+                buttonDisabled={pending}
+              />
+            )}
         </VStack>
 
         {/* Sale Configuration */}
