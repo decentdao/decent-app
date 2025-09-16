@@ -10,6 +10,7 @@ import { createGuardSlice, GuardSlice } from './slices/guards';
 import { createNodesSlice, NodesSlice } from './slices/nodes';
 import { createRevShareSlice, RevShareSlice } from './slices/revShare';
 import { createRolesSlice, RolesSlice } from './slices/roles';
+import { createTokenSalesSlice, TokenSalesSlice } from './slices/tokenSales';
 import { createTreasuriesSlice, TreasuriesSlice } from './slices/treasuries';
 
 export type StoreSlice<T> = { [daoKey: DAOKey]: T };
@@ -19,7 +20,8 @@ export type GlobalStore = NodesSlice &
   GovernancesSlice &
   GuardSlice &
   RevShareSlice &
-  RolesSlice;
+  RolesSlice &
+  TokenSalesSlice;
 export type StoreMiddleware = [['zustand/immer', never], ['zustand/devtools', never]];
 
 FeatureFlags.instance = new EnvironmentFeatureFlags(FEATURE_FLAGS);
@@ -51,6 +53,7 @@ export const useGlobalStore = apiFlag
           ...createGuardSlice(...params),
           ...createRevShareSlice(...params),
           ...createRolesSlice(...params),
+          ...createTokenSalesSlice(...params),
         })),
         devToolsMiddlewareConfig,
       ),
@@ -65,6 +68,7 @@ export const useGlobalStore = apiFlag
             ...createGuardSlice(...params),
             ...createRevShareSlice(...params),
             ...createRolesSlice(...params),
+            ...createTokenSalesSlice(...params),
           })),
           devToolsMiddlewareConfig,
         ),
