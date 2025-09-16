@@ -92,8 +92,8 @@ export function OptionMenu({
           onClick={(event: MouseEvent<HTMLButtonElement>) => {
             event.stopPropagation();
           }}
-          {...buttonProps}
           borderRadius="0.75rem"
+          {...buttonProps}
         >
           {trigger}
         </MenuButton>
