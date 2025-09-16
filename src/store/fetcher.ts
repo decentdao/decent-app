@@ -145,14 +145,6 @@ export const useDAOStoreFetcher = ({
         if (azoriusModule) {
           const strategy = azoriusModule.strategies[0];
           const isErc20 = strategy?.votingTokens[0]?.type === 'ERC20';
-
-          // Convert blocks to seconds
-          console.log('Azorius module data:', {
-            timelockPeriod: azoriusModule.timelockPeriod,
-            executionPeriod: azoriusModule.executionPeriod,
-            votingPeriod: strategy?.votingPeriod,
-          });
-
           const votingPeriodSeconds = strategy?.votingPeriod
             ? await blocksToSeconds(strategy.votingPeriod, publicClient)
             : undefined;
