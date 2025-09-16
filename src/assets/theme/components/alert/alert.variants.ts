@@ -25,9 +25,9 @@ const fundraisingBanner = definePartsStyle({
     h: 'fit-content',
   },
   container: {
-    bg: '#0e1d28',
+    bg: 'color-information-950',
     border: '1px solid',
-    borderColor: 'rgba(255, 255, 255, 0.1)',
+    borderColor: 'color-layout-border',
     borderRadius: '12px',
     p: '12px',
     display: 'flex',
@@ -54,9 +54,9 @@ const successBanner = definePartsStyle({
     h: 'fit-content',
   },
   container: {
-    bg: '#0c2517',
+    bg: 'color-success-950',
     border: '1px solid',
-    borderColor: 'rgba(255, 255, 255, 0.1)',
+    borderColor: 'color-layout-border',
     borderRadius: '12px',
     p: '12px',
     display: 'flex',
