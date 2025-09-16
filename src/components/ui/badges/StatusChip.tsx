@@ -20,7 +20,7 @@ export function StatusChip({ status, type }: StatusChipProps) {
               : 'color-content-content2'
       }
       borderRadius="8px"
-      px={1}
+      px={2}
       py={0.5}
       display="inline-flex"
       alignItems="center"
