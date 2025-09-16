@@ -122,4 +122,9 @@ export const DAO_ROUTES = {
       `/token-sale/new${getDaoQueryParam(addressPrefix, safeAddress)}`,
     path: 'token-sale/new',
   },
+  tokenSaleDetails: {
+    relative: (addressPrefix: string, safeAddress: string, saleId: string) =>
+      `/token-sale/${saleId}${getDaoQueryParam(addressPrefix, safeAddress)}`,
+    path: 'token-sale/:saleId',
+  },
 };

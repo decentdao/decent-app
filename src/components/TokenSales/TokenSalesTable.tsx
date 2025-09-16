@@ -13,6 +13,10 @@ import {
 } from '@chakra-ui/react';
 import { CaretUpDown, DotsThree } from '@phosphor-icons/react';
 import { useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { DAO_ROUTES } from '../../constants/routes';
+import { useCurrentDAOKey } from '../../hooks/DAO/useCurrentDAOKey';
+import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
 import { TokenSaleData } from '../../types/tokenSale';
 import {
   formatSaleDate,
@@ -28,6 +32,10 @@ interface TokenSalesTableProps {
 }
 
 export function TokenSalesTable({ tokenSales }: TokenSalesTableProps) {
+  const navigate = useNavigate();
+  const { safeAddress } = useCurrentDAOKey();
+  const { addressPrefix } = useNetworkConfigStore();
+
   const sortedSales = useMemo(() => {
     // Sort by active status first, then by end date
     return [...tokenSales].sort((a, b) => {
@@ -63,8 +71,9 @@ export function TokenSalesTable({ tokenSales }: TokenSalesTableProps) {
     {
       optionKey: 'viewDetails',
       onClick: () => {
-        // TODO: Navigate to sale details
-        console.log('View details for:', sale.name);
+        if (safeAddress) {
+          navigate(DAO_ROUTES.tokenSaleDetails.relative(addressPrefix, safeAddress, sale.address));
+        }
       },
     },
     ...(sale.isActive
