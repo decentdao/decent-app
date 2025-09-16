@@ -3,6 +3,7 @@ import { CheckCircle } from '@phosphor-icons/react';
 import { useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import { formatUnits } from 'viem';
+import { TokenSaleBanner } from '../../../components/TokenSales/TokenSaleBanner';
 import { TokenSaleCountdown } from '../../../components/TokenSales/TokenSaleCountdown';
 import { TokenSaleInfoCard } from '../../../components/TokenSales/TokenSaleInfoCard';
 import { TokenSaleProgressCard } from '../../../components/TokenSales/TokenSaleProgressCard';
@@ -109,6 +110,34 @@ export function SafeTokenSaleDetailsPage() {
             minimum={tokenSale.maximumTotalCommitment / 2n} // Assuming minimum is half of max
             commitmentTokenDecimals={6} // Assuming USDC
           />
+
+          {/* Fundraising Goal Not Met Banner */}
+          {tokenSale.totalCommitments < tokenSale.maximumTotalCommitment / 2n && (
+            <TokenSaleBanner
+              title="You did not meet your minimum fundraising goal."
+              description={`You only raised ${formatCurrency(tokenSale.totalCommitments)}. Reclaim your sale tokens to return funds.`}
+              buttonText="Reclaim Tokens"
+              onButtonClick={() => {
+                // TODO: Implement reclaim tokens functionality
+                console.log('Reclaim tokens clicked');
+              }}
+              variant="fundraisingBanner"
+            />
+          )}
+
+          {/* Successful Sale Banner */}
+          {tokenSale.totalCommitments <= tokenSale.maximumTotalCommitment / 2n && (
+            <TokenSaleBanner
+              title="Congratulations, your sale was successful!"
+              description={`You raised ${formatCurrency(tokenSale.totalCommitments)}. Your funds are ready to be claimed.`}
+              buttonText="Claim Funds"
+              onButtonClick={() => {
+                // TODO: Implement claim funds functionality
+                console.log('Claim funds clicked');
+              }}
+              variant="successBanner"
+            />
+          )}
         </VStack>
 
         {/* Sale Configuration */}
