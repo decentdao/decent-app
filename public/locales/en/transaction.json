@@ -11,7 +11,7 @@
   "pendingRejectionExecution": "Rejecting transaction",
   "successRejectionExecution": "Rejection Executed.",
   "errorTransactionUnknown": "An unknown error occurred and the transaction did not succeed. Please try again later.",
-  "pendingDeploySafe": "Deploying your Safe",
+  "pendingDeploySafe": "Deploying your project",
   "failedDeploySafe": "Deployment failed",
   "successDeploySafe": "Deployment successful",
   "failedIndexSafe": "Your DAO was deployed but is not yet available to view. It has been added to your favorited list of 'My DAOs'.",

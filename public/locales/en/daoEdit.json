@@ -1,5 +1,5 @@
 {
-  "cannotModifyGovernance": "You do not have permissions to modify this Safe's governance.",
+  "cannotModifyGovernance": "You do not have permissions to modify this project's governance.",
   "launchToken": "Get Started",
   "launchTokenTitle": "READY FOR TOKENIZED GOVERNANCE?",
   "launchTokenDescription": "Pass proposals through token voting! Use your DAO's existing token or setup a new one."
