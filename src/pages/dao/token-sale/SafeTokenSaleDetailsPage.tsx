@@ -114,7 +114,7 @@ export function SafeTokenSaleDetailsPage() {
           />
 
           {/* Fundraising Goal Not Met Banner */}
-          {!tokenSale.isActive &&
+          {tokenSale.saleState > 3 &&
             tokenSale.totalCommitments < tokenSale.maximumTotalCommitment / 2n && (
               <TokenSaleBanner
                 title="You did not meet your minimum fundraising goal."
@@ -129,7 +129,7 @@ export function SafeTokenSaleDetailsPage() {
             )}
 
           {/* Successful Sale Banner */}
-          {!tokenSale.isActive &&
+          {tokenSale.saleState === 2 &&
             tokenSale.totalCommitments >= tokenSale.maximumTotalCommitment / 2n && (
               <TokenSaleBanner
                 title="Congratulations, your sale was successful!"
