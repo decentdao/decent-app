@@ -15,6 +15,7 @@ export interface TokenSaleData {
   saleEndTimestamp: bigint;
   minimumCommitment: bigint;
   maximumCommitment: bigint;
+  // TODO create enum
   saleState: number; // 0: NOT_STARTED, 1: ACTIVE, 2: SUCCEEDED, 3: FAILED
   saleProceedsReceiver: Address;
   // Computed fields for compatibility

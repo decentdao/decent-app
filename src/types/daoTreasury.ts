@@ -28,6 +28,7 @@ export type TokenBalance = {
   usdValue?: number;
   nativeToken: boolean;
   portfolioPercentage: number;
+  totalSupply: string | null;
 };
 
 // All these props are coming from *all available DeFi protocols*

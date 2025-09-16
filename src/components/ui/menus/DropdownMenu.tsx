@@ -37,6 +37,12 @@ interface DropdownMenuProps<T = {}> {
   renderItem?: (item: DropdownItem<T>, isSelected: boolean) => React.ReactNode;
   renderButton?: () => React.ReactNode;
   closeOnSelect?: boolean;
+  /**
+   * Variant for different styling approaches
+   * - 'default': Original rounded pill style with border
+   * - 'bordered': Input field style to match form inputs with border and shadow
+   */
+  variant?: 'default' | 'bordered';
 }
 
 export function DropdownMenu<T>({
@@ -50,6 +56,7 @@ export function DropdownMenu<T>({
   renderItem,
   renderButton,
   closeOnSelect = true,
+  variant = 'default',
 }: DropdownMenuProps<T>) {
   return (
     <Menu
@@ -69,6 +76,7 @@ export function DropdownMenu<T>({
               isDisabled={isDisabled}
               cursor={isDisabled ? 'not-allowed' : 'pointer'}
               p={0}
+              w="full"
               sx={{
                 '&:disabled': {
                   '.payment-menu-asset *': {
@@ -78,40 +86,77 @@ export function DropdownMenu<T>({
                 },
               }}
             >
-              <Flex
-                gap={2}
-                alignItems="center"
-                border="1px solid"
-                borderColor="color-neutral-800"
-                borderRadius="9999px"
-                w="fit-content"
-                className="payment-menu-asset"
-                p="0.5rem"
-              >
-                {selectedItem?.icon && (
-                  <Image
-                    src={selectedItem.icon}
-                    fallbackSrc="/images/coin-icon-default.svg"
-                    boxSize="1.5rem"
-                  />
-                )}
+              {variant === 'bordered' ? (
                 <Flex
                   alignItems="center"
-                  gap="0.75rem"
+                  justifyContent="space-between"
+                  bg="color-black"
+                  borderRadius="0.5rem"
+                  boxShadow="0px 1px 0px 0px rgba(255, 255, 255, 0.16), 0px 0px 0px 1px rgba(0, 0, 0, 0.68)"
+                  minH="9"
+                  w="full"
+                  px="3"
+                  py="0"
+                  className="payment-menu-asset"
                 >
-                  <Text
-                    textStyle="text-lg-regular"
-                    color="color-white"
+                  <Flex
+                    alignItems="center"
+                    gap="2"
+                    flex="1"
+                    py="1.5"
                   >
-                    {selectedItem?.label ?? selectPlaceholder}
-                  </Text>
+                    <Text
+                      textStyle="text-sm-regular"
+                      color={selectedItem ? 'color-white' : 'color-neutral-300'}
+                      overflow="hidden"
+                      textOverflow="ellipsis"
+                      whiteSpace="nowrap"
+                    >
+                      {selectedItem?.label ?? selectPlaceholder}
+                    </Text>
+                  </Flex>
                   <Icon
-                    color="color-neutral-400"
+                    color="color-neutral-300"
                     as={CaretDown}
-                    boxSize="1.5rem"
+                    boxSize="4"
                   />
                 </Flex>
-              </Flex>
+              ) : (
+                <Flex
+                  gap={2}
+                  alignItems="center"
+                  border="1px solid"
+                  borderColor="color-neutral-800"
+                  borderRadius="9999px"
+                  w="fit-content"
+                  className="payment-menu-asset"
+                  p="0.5rem"
+                >
+                  {selectedItem?.icon && (
+                    <Image
+                      src={selectedItem.icon}
+                      fallbackSrc="/images/coin-icon-default.svg"
+                      boxSize="1.5rem"
+                    />
+                  )}
+                  <Flex
+                    alignItems="center"
+                    gap="0.75rem"
+                  >
+                    <Text
+                      textStyle="text-lg-regular"
+                      color="color-white"
+                    >
+                      {selectedItem?.label ?? selectPlaceholder}
+                    </Text>
+                    <Icon
+                      color="color-neutral-400"
+                      as={CaretDown}
+                      boxSize="1.5rem"
+                    />
+                  </Flex>
+                </Flex>
+              )}
             </MenuButton>
           )}
 

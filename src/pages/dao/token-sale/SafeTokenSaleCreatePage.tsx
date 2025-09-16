@@ -17,29 +17,55 @@ import { useProposalActionsStore } from '../../../store/actions/useProposalActio
 import { CreateProposalTransaction, ProposalActionType } from '../../../types';
 import { BuyerRequirementsForm } from './components/BuyerRequirementsForm';
 import { SaleTermsForm } from './components/SaleTermsForm';
+import { useTokenSaleFormPreparation } from './hooks/useTokenSaleFormPreparation';
 import { TokenSaleFormValues } from './types';
 
 const stages = ['Sale Terms', 'Buyer Requirements'];
 const initialValues: TokenSaleFormValues = {
-  saleName: '',
+  // Project Overview
+  saleName: 'DecentDAO Token Sale',
 
   // Token Details
+  tokenAddress: '',
   tokenName: '',
   tokenSymbol: '',
   maxTokenSupply: { value: '', bigintValue: undefined },
   tokenPrice: 0,
 
-  // Sale Pricing & Terms
-  minimumFundraise: 0,
-  fundraisingCap: 0,
-  valuation: 0,
-  startDate: null,
-  acceptedToken: [],
-  minPurchase: 0,
-  maxPurchase: 0,
+  // Sale Timing
+  startDate: new Date(Date.now() + 86400 * 1000), // Start in 24 hours
+  endDate: new Date(Date.now() + 86400 * 30 * 1000), // End in 30 days
 
-  // Legacy fields
-  endDate: null,
+  // Sale Pricing & Terms
+  minimumFundraise: 5, // $5 minimum
+  fundraisingCap: 9500, // $9,500 maximum
+  valuation: 0,
+  minPurchase: 1, // $1 minimum purchase
+  maxPurchase: 50, // $50 maximum purchase
+
+  // TODO hardcoded to a sepolia token (SUSDC) for testing
+  commitmentToken: '0x0A7ECA73Bfecbc20fc73FE9Af480D12306d39e34', // Will be set based on acceptedToken
+  verifier: null, // Will be set from network config
+  saleProceedsReceiver: null, // Will be set to DAO address
+  // TODO this need to be set to specific address for base, sepolia, ethereum mainnet
+  protocolFeeReceiver: '0x629750317d320B8bB4d48D345A6d699Cc855c4a6' as Address,
+  minimumCommitment: { value: '1', bigintValue: BigInt('1000000') }, // $1 USDC (6 decimals)
+  maximumCommitment: { value: '50', bigintValue: BigInt('50000000') }, // $50 USDC
+  minimumTotalCommitment: { value: '5', bigintValue: BigInt('5000000') }, // $5 USDC
+  maximumTotalCommitment: { value: '9500', bigintValue: BigInt('9500000000') }, // $9,500 USDC
+  saleTokenPrice: { value: '1.00', bigintValue: BigInt('1000000') }, // $1.00 per token (USDC 6 decimals)
+  commitmentTokenProtocolFee: { value: '5', bigintValue: BigInt('50000000000000000') }, // 5% (18 decimal precision)
+  saleTokenProtocolFee: { value: '5', bigintValue: BigInt('50000000000000000') }, // 5%
+  saleTokenHolder: null, // Will be set to DAO address
+
+  // Hedgey Lockup Configuration (disabled by default)
+  hedgeyLockupEnabled: false,
+  hedgeyLockupStart: { value: '0', bigintValue: 0n },
+  hedgeyLockupCliff: { value: '0', bigintValue: 0n },
+  hedgeyLockupRatePercentage: { value: '0', bigintValue: 0n },
+  hedgeyLockupPeriod: { value: '0', bigintValue: 0n },
+  hedgeyVotingTokenLockupPlans: '0x0000000000000000000000000000000000000000' as Address,
+
   totalSupply: '',
   salePrice: '',
   whitelistAddress: '',
@@ -59,6 +85,7 @@ export function SafeTokenSaleCreatePage() {
   const { addAction, resetActions } = useProposalActionsStore();
   const navigate = useNavigate();
   const { addressPrefix } = useNetworkConfigStore();
+  const { prepareFormData } = useTokenSaleFormPreparation();
 
   const handleNext = () => {
     if (currentStage < stages.length - 1) {
@@ -87,46 +114,26 @@ export function SafeTokenSaleCreatePage() {
       return;
     }
 
-    // Mock data for token sale deployment
-    const mockTokenSaleData = {
-      saleName: 'DecentDAO Token Sale',
-      saleStartTimestamp: Math.floor(Date.now() / 1000) + 86400, // Start in 24 hours
-      saleEndTimestamp: Math.floor(Date.now() / 1000) + 86400 * 30, // End in 30 days
-      commitmentToken: '0x0A7ECA73Bfecbc20fc73FE9Af480D12306d39e34' as Address, // USDC on mainnet
-      saleToken: '0x0A7ECA73Bfecbc20fc73FE9Af480D12306d39e34' as Address, // Will be set to actual token address
-      verifier: decentVerifierV1,
-      saleProceedsReceiver: safe.address, // DAO address
-      protocolFeeReceiver: '0x629750317d320B8bB4d48D345A6d699Cc855c4a6' as Address, // Protocol fee receiver
-      minimumCommitment: BigInt('1000000'), // $1 USDC (6 decimals)
-      maximumCommitment: BigInt('50000000'), // $50 USDC
-      minimumTotalCommitment: BigInt('5000000'), // $5 USDC
-      maximumTotalCommitment: BigInt('9500000000'), // $9,500 USDC (will need ~9,975 tokens to escrow)
-      saleTokenPrice: BigInt('1000000'), // $1.00 per token (USDC has 6 decimals, so 1.0 * 10^6)
-      commitmentTokenProtocolFee: BigInt('50000000000000000'), // 5% (18 decimal precision)
-      saleTokenProtocolFee: BigInt('50000000000000000'), // 5%
-      saleTokenHolder: safe.address, // DAO address - must hold the sale tokens
-      hedgeyLockupParams: {
-        enabled: false,
-        start: 0n,
-        cliff: 0n,
-        ratePercentage: 0n,
-        period: 0n,
-        votingTokenLockupPlans: '0x0000000000000000000000000000000000000000' as Address,
-      },
-    };
+    // Prepare form data for submission
+    let tokenSaleData;
+    try {
+      tokenSaleData = prepareFormData(values);
+      if (!tokenSaleData) {
+        throw new Error('Failed to prepare form data');
+      }
+    } catch (error) {
+      console.error('Error preparing form data:', error);
+      return;
+    }
 
     const txs: CreateProposalTransaction[] = [];
 
     try {
       // Debug: Log the escrow calculation
       const escrowAmount =
-        (mockTokenSaleData.maximumTotalCommitment *
-          (BigInt('1000000000000000000') + mockTokenSaleData.saleTokenProtocolFee)) /
-        mockTokenSaleData.saleTokenPrice;
-      console.log('Escrow amount needed:', escrowAmount.toString(), 'tokens');
-      console.log('Sale token holder:', mockTokenSaleData.saleTokenHolder);
-      console.log('Sale token address:', mockTokenSaleData.saleToken);
-
+        (tokenSaleData.maximumTotalCommitment *
+          (BigInt('1000000000000000000') + tokenSaleData.saleTokenProtocolFee)) /
+        tokenSaleData.saleTokenPrice;
       // 1. Generate nonce for deployment
       const tokenSaleNonce = getRandomBytes();
 
@@ -136,22 +143,22 @@ export function SafeTokenSaleCreatePage() {
         functionName: 'initialize',
         args: [
           {
-            saleStartTimestamp: mockTokenSaleData.saleStartTimestamp,
-            saleEndTimestamp: mockTokenSaleData.saleEndTimestamp,
-            commitmentToken: mockTokenSaleData.commitmentToken,
-            saleToken: mockTokenSaleData.saleToken,
-            verifier: mockTokenSaleData.verifier,
-            saleProceedsReceiver: mockTokenSaleData.saleProceedsReceiver,
-            protocolFeeReceiver: mockTokenSaleData.protocolFeeReceiver,
-            minimumCommitment: mockTokenSaleData.minimumCommitment,
-            maximumCommitment: mockTokenSaleData.maximumCommitment,
-            minimumTotalCommitment: mockTokenSaleData.minimumTotalCommitment,
-            maximumTotalCommitment: mockTokenSaleData.maximumTotalCommitment,
-            saleTokenPrice: mockTokenSaleData.saleTokenPrice,
-            commitmentTokenProtocolFee: mockTokenSaleData.commitmentTokenProtocolFee,
-            saleTokenProtocolFee: mockTokenSaleData.saleTokenProtocolFee,
-            saleTokenHolder: mockTokenSaleData.saleTokenHolder,
-            hedgeyLockupParams: mockTokenSaleData.hedgeyLockupParams,
+            saleStartTimestamp: tokenSaleData.saleStartTimestamp,
+            saleEndTimestamp: tokenSaleData.saleEndTimestamp,
+            commitmentToken: tokenSaleData.commitmentToken,
+            saleToken: tokenSaleData.saleToken,
+            verifier: tokenSaleData.verifier,
+            saleProceedsReceiver: tokenSaleData.saleProceedsReceiver,
+            protocolFeeReceiver: tokenSaleData.protocolFeeReceiver,
+            minimumCommitment: tokenSaleData.minimumCommitment,
+            maximumCommitment: tokenSaleData.maximumCommitment,
+            minimumTotalCommitment: tokenSaleData.minimumTotalCommitment,
+            maximumTotalCommitment: tokenSaleData.maximumTotalCommitment,
+            saleTokenPrice: tokenSaleData.saleTokenPrice,
+            commitmentTokenProtocolFee: tokenSaleData.commitmentTokenProtocolFee,
+            saleTokenProtocolFee: tokenSaleData.saleTokenProtocolFee,
+            saleTokenHolder: tokenSaleData.saleTokenHolder,
+            hedgeyLockupParams: tokenSaleData.hedgeyLockupParams,
           },
         ],
       });
@@ -167,7 +174,7 @@ export function SafeTokenSaleCreatePage() {
 
       // 4. Add approval transaction for the predicted TokenSale contract
       txs.push({
-        targetAddress: mockTokenSaleData.saleToken,
+        targetAddress: tokenSaleData.saleToken,
         ethValue: {
           bigintValue: 0n,
           value: '0',
@@ -223,7 +230,7 @@ export function SafeTokenSaleCreatePage() {
       // 2. Update KeyValuePairs with new token sale info
       const tokenSaleMetadata = {
         address: predictedTokenSaleAddress,
-        name: mockTokenSaleData.saleName,
+        name: tokenSaleData.saleName,
       };
 
       const updateValuesCalldata = encodeFunctionData({

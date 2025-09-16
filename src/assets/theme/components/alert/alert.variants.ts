@@ -18,8 +18,68 @@ const info = definePartsStyle({
   spinner: {},
 });
 
+const fundraisingBanner = definePartsStyle({
+  title: {
+    textStyle: 'text-sm-medium',
+    color: 'color-base-information-foreground',
+    h: 'fit-content',
+  },
+  container: {
+    bg: 'color-information-950',
+    border: '1px solid',
+    borderColor: 'color-layout-border',
+    borderRadius: '12px',
+    p: '12px',
+    display: 'flex',
+    alignItems: 'center',
+  },
+  description: {
+    h: 'fit-content',
+    textStyle: 'text-sm-regular',
+    color: 'color-base-information-foreground',
+  },
+  icon: {
+    color: 'color-base-information-foreground',
+    '& > svg': {
+      boxSize: '24px',
+    },
+  },
+  spinner: {},
+});
+
+const successBanner = definePartsStyle({
+  title: {
+    textStyle: 'text-sm-medium',
+    color: 'color-base-success',
+    h: 'fit-content',
+  },
+  container: {
+    bg: 'color-success-950',
+    border: '1px solid',
+    borderColor: 'color-layout-border',
+    borderRadius: '12px',
+    p: '12px',
+    display: 'flex',
+    alignItems: 'center',
+  },
+  description: {
+    textStyle: 'text-sm-regular',
+    color: 'color-base-success',
+    h: 'fit-content',
+  },
+  icon: {
+    color: 'color-base-success',
+    '& > svg': {
+      boxSize: '24px',
+    },
+  },
+  spinner: {},
+});
+
 const alertVariants = {
   info,
+  fundraisingBanner,
+  successBanner,
 };
 
 export default alertVariants;
