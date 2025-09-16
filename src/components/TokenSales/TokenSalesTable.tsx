@@ -15,6 +15,7 @@ import { CaretUpDown, DotsThree } from '@phosphor-icons/react';
 import { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { DAO_ROUTES } from '../../constants/routes';
+import { useTokenSaleClaimFunds } from '../../hooks/DAO/proposal/useTokenSaleClaimFunds';
 import { useCurrentDAOKey } from '../../hooks/DAO/useCurrentDAOKey';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
 import { TokenSaleData } from '../../types/tokenSale';
@@ -35,6 +36,7 @@ export function TokenSalesTable({ tokenSales }: TokenSalesTableProps) {
   const navigate = useNavigate();
   const { safeAddress } = useCurrentDAOKey();
   const { addressPrefix } = useNetworkConfigStore();
+  const { claimFunds, pending } = useTokenSaleClaimFunds();
 
   const sortedSales = useMemo(() => {
     // Sort by active status first, then by end date
@@ -81,8 +83,7 @@ export function TokenSalesTable({ tokenSales }: TokenSalesTableProps) {
           {
             optionKey: 'claimFunds',
             onClick: () => {
-              // TODO: Navigate to claim funds
-              console.log('Claim funds for:', sale.name);
+              claimFunds(sale.address, sale.name);
             },
           },
         ]
@@ -208,6 +209,7 @@ export function TokenSalesTable({ tokenSales }: TokenSalesTableProps) {
                       p: '4px',
                       border: '1px solid',
                       borderColor: 'color-layout-border-10',
+                      isDisabled: pending,
                       _hover: {
                         bg: 'color-content-content2',
                       },

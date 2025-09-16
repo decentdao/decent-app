@@ -7,6 +7,7 @@ interface TokenSaleBannerProps {
   buttonText?: string;
   onButtonClick?: () => void;
   variant?: 'fundraisingBanner' | 'successBanner';
+  buttonDisabled?: boolean;
 }
 
 export function TokenSaleBanner({
@@ -15,6 +16,7 @@ export function TokenSaleBanner({
   buttonText,
   onButtonClick,
   variant = 'fundraisingBanner',
+  buttonDisabled = false,
 }: TokenSaleBannerProps) {
   const iconComponent = variant === 'successBanner' ? CheckCircle : Info;
   const color =
@@ -45,6 +47,7 @@ export function TokenSaleBanner({
           h="32px"
           borderRadius="8px"
           onClick={onButtonClick}
+          isDisabled={buttonDisabled}
           _hover={{
             bg: 'rgba(255, 255, 255, 0.1)',
           }}
