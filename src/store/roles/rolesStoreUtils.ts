@@ -300,9 +300,14 @@ const getPaymentStreams = async (
           tokenAddress: getAddress(lockupLinearStream.asset.address),
         })?.logoUri || '';
 
+      const contractAddress =
+        typeof lockupLinearStream.contract === 'string'
+          ? lockupLinearStream.contract
+          : lockupLinearStream.contract.address;
+
       return {
         streamId: lockupLinearStream.id,
-        contractAddress: lockupLinearStream.contract,
+        contractAddress,
         recipient: getAddress(lockupLinearStream.recipient),
         asset: {
           address: getAddress(lockupLinearStream.asset.address),
