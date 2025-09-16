@@ -56,13 +56,20 @@ export const isSaleActive = (
  * Gets status text and type for a token sale
  */
 export const getSaleStatus = (
-  startTimestamp: number | bigint,
-  endTimestamp: number | bigint,
   saleState: number,
-): { status: 'Active' | 'Closed'; type: 'active' | 'closed' } => {
-  const isActive = isSaleActive(startTimestamp, endTimestamp, saleState);
-  return {
-    status: isActive ? 'Active' : 'Closed',
-    type: isActive ? 'active' : 'closed',
-  };
+): {
+  status: 'Active' | 'Closed' | 'Not Started';
+  type: 'active' | 'closed' | 'Not Started';
+} => {
+  switch (saleState) {
+    case 0:
+      return { status: 'Not Started', type: 'Not Started' };
+    case 1:
+      return { status: 'Active', type: 'active' };
+    // for failed and successful sales
+    case 2:
+    case 3:
+    default:
+      return { status: 'Closed', type: 'closed' };
+  }
 };

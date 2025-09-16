@@ -113,11 +113,7 @@ export function TokenSalesTable({ tokenSales }: TokenSalesTableProps) {
         </Thead>
         <Tbody>
           {sortedSales.map(sale => {
-            const { status, type } = getSaleStatus(
-              sale.saleStartTimestamp,
-              sale.saleEndTimestamp,
-              sale.saleState,
-            );
+            const { status, type } = getSaleStatus(sale.saleState);
             const progress = calculateSaleProgress(
               sale.totalCommitments,
               sale.maximumTotalCommitment,
