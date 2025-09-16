@@ -133,14 +133,6 @@ export const useDAOStoreFetcher = ({
           modules,
         });
 
-        const revShareWallets = await getDaoRevenueSharingWallets(chain.id, safeAddress);
-        if (revShareWallets) {
-          setRevShareWallets(daoKey, revShareWallets);
-        }
-
-        const stakingData = await fetchStakingDAOData(safeAddress);
-        setStakingData(daoKey, stakingData);
-
         const azoriusModule = daoData.governanceModules.find(mod => mod.type === 'AZORIUS');
         if (azoriusModule) {
           const strategy = azoriusModule.strategies[0];
@@ -213,6 +205,14 @@ export const useDAOStoreFetcher = ({
             type: isErc20 ? GovernanceType.AZORIUS_ERC20 : GovernanceType.AZORIUS_ERC721,
           };
           setAzoriusGovernance(daoKey, governance);
+
+          const revShareWallets = await getDaoRevenueSharingWallets(chain.id, safeAddress);
+          if (revShareWallets) {
+            setRevShareWallets(daoKey, revShareWallets);
+          }
+
+          const stakingData = await fetchStakingDAOData(safeAddress);
+          setStakingData(daoKey, stakingData);
 
           // Fetch and set proposals
           const apiProposals = await getDaoProposals(chain.id, safeAddress);
