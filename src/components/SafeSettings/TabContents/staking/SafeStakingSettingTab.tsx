@@ -38,6 +38,7 @@ function emptyTokenBalanceForAddress(
     nativeToken: false,
     balanceFormatted: '0',
     portfolioPercentage: 0,
+    totalSupply: null,
   };
   return result;
 }
