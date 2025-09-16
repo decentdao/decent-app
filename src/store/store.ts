@@ -1,6 +1,8 @@
 import { create } from 'zustand';
 import { createJSONStorage, devtools, persist } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
+import { EnvironmentFeatureFlags } from '../helpers/environmentFeatureFlags';
+import { FEATURE_FLAGS, FeatureFlags } from '../helpers/featureFlags';
 import { localStorageReplacer, localStorageReviver } from '../hooks/utils/cache/useLocalStorage';
 import { DAOKey } from '../types';
 import { createGovernancesSlice, GovernancesSlice } from './slices/governances';
@@ -20,6 +22,9 @@ export type GlobalStore = NodesSlice &
   RolesSlice;
 export type StoreMiddleware = [['zustand/immer', never], ['zustand/devtools', never]];
 
+FeatureFlags.instance = new EnvironmentFeatureFlags(FEATURE_FLAGS);
+const apiFlag = FeatureFlags.instance?.isFeatureEnabled('flag_api');
+
 const localStorageSerializer = {
   replacer: localStorageReplacer,
   reviver: localStorageReviver,
@@ -35,19 +40,34 @@ const persistMiddlewareConfig = {
   storage: createJSONStorage(() => localStorage, localStorageSerializer),
 };
 
-export const useGlobalStore = create<GlobalStore>()(
-  persist(
-    devtools(
-      immer((...params) => ({
-        ...createNodesSlice(...params),
-        ...createTreasuriesSlice(...params),
-        ...createGovernancesSlice(...params),
-        ...createGuardSlice(...params),
-        ...createRevShareSlice(...params),
-        ...createRolesSlice(...params),
-      })),
-      devToolsMiddlewareConfig,
-    ),
-    persistMiddlewareConfig,
-  ),
-);
+// do not persist to local storage if we are loading from the api
+export const useGlobalStore = apiFlag
+  ? create<GlobalStore>()(
+      devtools(
+        immer((...params) => ({
+          ...createNodesSlice(...params),
+          ...createTreasuriesSlice(...params),
+          ...createGovernancesSlice(...params),
+          ...createGuardSlice(...params),
+          ...createRevShareSlice(...params),
+          ...createRolesSlice(...params),
+        })),
+        devToolsMiddlewareConfig,
+      ),
+    )
+  : create<GlobalStore>()(
+      persist(
+        devtools(
+          immer((...params) => ({
+            ...createNodesSlice(...params),
+            ...createTreasuriesSlice(...params),
+            ...createGovernancesSlice(...params),
+            ...createGuardSlice(...params),
+            ...createRevShareSlice(...params),
+            ...createRolesSlice(...params),
+          })),
+          devToolsMiddlewareConfig,
+        ),
+        persistMiddlewareConfig,
+      ),
+    );

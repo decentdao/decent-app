@@ -1,15 +1,29 @@
 import { useEffect, useState } from 'react';
-import { Address, getAddress } from 'viem';
+import { Address, getAddress, zeroAddress } from 'viem';
+import useFeatureFlag from '../helpers/environmentFeatureFlags';
 import { logError } from '../helpers/errorLogging';
-import { getDaoRevenueSharingWallets } from '../providers/App/decentAPI';
+import useNetworkPublicClient from '../hooks/useNetworkPublicClient';
+import { useTimeHelpers } from '../hooks/utils/useTimeHelpers';
+import {
+  getDaoData,
+  getDaoRevenueSharingWallets,
+  getDaoProposals,
+} from '../providers/App/decentAPI';
 import { useNetworkConfigStore } from '../providers/NetworkConfig/useNetworkConfigStore';
 import {
   AzoriusProposal,
   DAOKey,
+  DAOSubgraph,
+  DecentModule,
   FractalModuleType,
   FractalProposal,
+  FractalProposalState,
+  FractalTokenType,
+  GovernanceType,
   ProposalTemplate,
+  SafeWithNextNonce,
 } from '../types';
+import { blocksToSeconds } from '../utils/contract';
 import { useGovernanceFetcher } from './fetchers/governance';
 import { useGuardFetcher } from './fetchers/guard';
 import { useKeyValuePairsFetcher } from './fetchers/keyValuePairs';
@@ -18,6 +32,9 @@ import { useRolesFetcher } from './fetchers/roles';
 import { useTreasuryFetcher } from './fetchers/treasury';
 import { SetAzoriusGovernancePayload } from './slices/governances';
 import { useGlobalStore } from './store';
+
+// hardcoded in https://github.com/decentdao/decent-contracts/blob/v1.6.0/contracts/azorius/BaseQuorumPercent.sol#L16
+const QUORUM_DENOMINATOR = 1_000_000;
 
 /**
  * useDAOStoreFetcher orchestrates fetching all the necessary data for the DAO and updating the Global store.
@@ -55,6 +72,8 @@ export const useDAOStoreFetcher = ({
     setStakingData,
     setRevShareWallets,
   } = useGlobalStore();
+  const { getTimeDuration } = useTimeHelpers();
+  const publicClient = useNetworkPublicClient();
   const { chain } = useNetworkConfigStore();
 
   const { fetchDAONode } = useNodeFetcher();
@@ -71,8 +90,188 @@ export const useDAOStoreFetcher = ({
   const { fetchKeyValuePairsData } = useKeyValuePairsFetcher();
   const { fetchDAORoles } = useRolesFetcher();
   const { setHatKeyValuePairData } = useGlobalStore();
+  const USE_API = useFeatureFlag('flag_api');
 
   useEffect(() => {
+    async function loadDAODataFromAPI() {
+      if (!daoKey || !safeAddress || invalidQuery || wrongNetwork) return;
+      try {
+        const chainId = chain.id;
+        const daoData = await getDaoData(chainId, safeAddress);
+        if (!daoData) throw new Error('No info from API');
+        const moduleAddresses = daoData.governanceModules.map(mod => mod.address);
+        const safe: SafeWithNextNonce = {
+          address: getAddress(safeAddress),
+          nonce: daoData.safe.nonce,
+          nextNonce: daoData.safe.nonce + 1,
+          owners: daoData.safe.owners,
+          threshold: daoData.safe.threshold,
+          modules: moduleAddresses,
+          singleton: 'unused',
+          fallbackHandler: 'unused',
+          guard: daoData.governanceGuard?.address || zeroAddress,
+          version: 'unused',
+        };
+
+        const childAddresses = daoData.subDaos.map(sub => sub.address);
+        const daoInfo: DAOSubgraph = {
+          daoName: daoData.name,
+          parentAddress: daoData.parentAddress,
+          childAddresses,
+          daoSnapshotENS: daoData.snapshotENS,
+          proposalTemplatesHash: daoData.proposalTemplatesCID,
+        };
+
+        const modules: DecentModule[] = daoData.governanceModules.map(mod => ({
+          moduleAddress: mod.address,
+          moduleType: FractalModuleType[mod.type],
+        }));
+
+        setDaoNode(daoKey, {
+          safe,
+          daoInfo,
+          modules,
+        });
+
+        const revShareWallets = await getDaoRevenueSharingWallets(chain.id, safeAddress);
+        if (revShareWallets) {
+          setRevShareWallets(daoKey, revShareWallets);
+        }
+
+        const stakingData = await fetchStakingDAOData(safeAddress);
+        setStakingData(daoKey, stakingData);
+
+        const azoriusModule = daoData.governanceModules.find(mod => mod.type === 'AZORIUS');
+        if (azoriusModule) {
+          const strategy = azoriusModule.strategies[0];
+          const isErc20 = strategy?.votingTokens[0]?.type === 'ERC20';
+          const votingPeriodSeconds = strategy?.votingPeriod
+            ? await blocksToSeconds(strategy.votingPeriod, publicClient)
+            : undefined;
+          const timelockPeriodSeconds =
+            azoriusModule.timelockPeriod !== null && azoriusModule.timelockPeriod !== undefined
+              ? await blocksToSeconds(azoriusModule.timelockPeriod, publicClient)
+              : undefined;
+          const executionPeriodSeconds =
+            azoriusModule.executionPeriod !== null && azoriusModule.executionPeriod !== undefined
+              ? await blocksToSeconds(azoriusModule.executionPeriod, publicClient)
+              : undefined;
+
+          const governance: SetAzoriusGovernancePayload = {
+            moduleAzoriusAddress: azoriusModule.address,
+            votesToken: undefined,
+            erc721Tokens: undefined,
+            linearVotingErc20Address: isErc20 ? strategy?.address : undefined,
+            linearVotingErc721Address: !isErc20 ? strategy?.address : undefined,
+            isLoaded: true,
+            strategies: azoriusModule.strategies.map(s => ({
+              address: s.address,
+              type:
+                s.votingTokens[0]?.type === 'ERC20'
+                  ? FractalTokenType.erc20
+                  : FractalTokenType.erc721,
+              withWhitelist: false,
+              version: s.version,
+            })),
+            votingStrategy: {
+              votingPeriod: votingPeriodSeconds
+                ? {
+                    value: BigInt(votingPeriodSeconds),
+                    formatted: getTimeDuration(votingPeriodSeconds),
+                  }
+                : undefined,
+              quorumPercentage: !!strategy.quorumNumerator
+                ? (() => {
+                    const percentage = (strategy.quorumNumerator * 100) / QUORUM_DENOMINATOR;
+                    return {
+                      value: BigInt(Math.floor(percentage)),
+                      formatted: percentage.toString(),
+                    };
+                  })()
+                : undefined,
+              timeLockPeriod:
+                timelockPeriodSeconds && timelockPeriodSeconds >= 0
+                  ? {
+                      value: BigInt(timelockPeriodSeconds),
+                      formatted: getTimeDuration(timelockPeriodSeconds),
+                    }
+                  : undefined,
+              executionPeriod: executionPeriodSeconds
+                ? {
+                    value: BigInt(executionPeriodSeconds),
+                    formatted: getTimeDuration(executionPeriodSeconds),
+                  }
+                : undefined,
+              proposerThreshold: strategy.requiredProposerWeight
+                ? {
+                    value: BigInt(strategy.requiredProposerWeight),
+                    formatted: strategy.requiredProposerWeight.toString(),
+                  }
+                : undefined,
+            },
+            isAzorius: true,
+            type: isErc20 ? GovernanceType.AZORIUS_ERC20 : GovernanceType.AZORIUS_ERC721,
+          };
+          setAzoriusGovernance(daoKey, governance);
+
+          // Fetch and set proposals
+          const apiProposals = await getDaoProposals(chain.id, safeAddress);
+          if (apiProposals) {
+            // Transform API proposals to AzoriusProposal format
+            const transformedProposals: AzoriusProposal[] = apiProposals.map(p => ({
+              proposalId: p.id.toString(),
+              proposer: p.proposer,
+              transactionHash: p.proposedTxHash,
+              data: {
+                metaData: {
+                  title: p.title,
+                  description: p.description,
+                },
+                transactions: p.transactions.map(tx => ({
+                  ...tx,
+                  value: BigInt(tx.value),
+                })),
+                decodedTransactions: [],
+              },
+              description: p.description,
+              // Required by GovernanceActivity
+              eventDate: new Date(p.createdAt * 1000),
+              targets: p.transactions.map(tx => tx.to),
+              // Required by AzoriusProposal
+              votingStrategy: p.votingStrategyAddress,
+              transactions: p.transactions.map(tx => ({
+                target: tx.to,
+                value: tx.value,
+                data: tx.data,
+                operation: tx.operation.toString(),
+              })),
+              startBlock: BigInt(0), // Not available in API
+              endBlock: BigInt(0), // Not available in API
+              startTime: BigInt(p.createdAt),
+              // @todo: Add proper state mapping based on executedTxHash
+              state: p.executedTxHash ? FractalProposalState.EXECUTED : FractalProposalState.ACTIVE,
+              votesSummary: {
+                yes: BigInt(0),
+                no: BigInt(0),
+                abstain: BigInt(0),
+                quorum: BigInt(0),
+              },
+              votes: [],
+              deadlineMs: 0, // Not available in API
+              decodedTransactions: [], // Will need to decode if needed
+            }));
+            setProposals(daoKey, transformedProposals);
+            setAllProposalsLoaded(daoKey, true);
+          }
+        } else {
+          setMultisigGovernance(daoKey);
+        }
+      } catch (e) {
+        console.error('ERROR fetching from API');
+        console.error(e);
+      }
+    }
+
     async function loadDAOData() {
       if (!daoKey || !safeAddress || invalidQuery || wrongNetwork) return;
       try {
@@ -83,7 +282,6 @@ export const useDAOStoreFetcher = ({
           safeAddress,
           chainId: chain.id,
         });
-
         setDaoNode(daoKey, {
           safe,
           daoInfo,
@@ -209,8 +407,8 @@ export const useDAOStoreFetcher = ({
         setErrorLoading(true);
       }
     }
-
-    loadDAOData();
+    const fetcher = USE_API ? loadDAODataFromAPI : loadDAOData;
+    fetcher();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [safeAddress, daoKey, chain, invalidQuery, wrongNetwork]);
 
