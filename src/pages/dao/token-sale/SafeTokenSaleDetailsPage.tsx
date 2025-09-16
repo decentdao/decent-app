@@ -126,7 +126,7 @@ export function SafeTokenSaleDetailsPage() {
           )}
 
           {/* Successful Sale Banner */}
-          {tokenSale.totalCommitments <= tokenSale.maximumTotalCommitment / 2n && (
+          {tokenSale.totalCommitments >= tokenSale.maximumTotalCommitment / 2n && (
             <TokenSaleBanner
               title="Congratulations, your sale was successful!"
               description={`You raised ${formatCurrency(tokenSale.totalCommitments)}. Your funds are ready to be claimed.`}
