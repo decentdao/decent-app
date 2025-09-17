@@ -71,7 +71,8 @@ export function NFTRequirementForm({
     onSubmit(requirement);
   };
 
-  const isValid = contractAddress && nftInfo && minimumBalance.bigintValue && minimumBalance.bigintValue > 0n;
+  const isValid =
+    contractAddress && nftInfo && minimumBalance.bigintValue && minimumBalance.bigintValue > 0n;
 
   return (
     <VStack
@@ -104,7 +105,7 @@ export function NFTRequirementForm({
             setContractAddress(e.target.value);
             setError('');
           }}
-          onNFTInfo={(info) => {
+          onNFTInfo={info => {
             setNFTInfo(info);
             setError('');
           }}

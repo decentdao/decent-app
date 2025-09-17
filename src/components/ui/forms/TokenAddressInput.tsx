@@ -79,7 +79,7 @@ export function TokenAddressInput(
           symbol: symbolResult.result as string,
           decimals: decimalsResult.result as number,
         };
-        
+
         setTokenInfo(info);
         props.onTokenInfo?.(info);
       } catch (error) {
