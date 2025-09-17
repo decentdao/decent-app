@@ -18,12 +18,7 @@ interface TokenInfo {
   decimals: number;
 }
 
-export function TokenRequirementForm({
-  onSubmit,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  onCancel,
-  initialData,
-}: TokenRequirementFormProps) {
+export function TokenRequirementForm({ onSubmit, initialData }: TokenRequirementFormProps) {
   const [tokenAddress, setTokenAddress] = useState<string>(initialData?.tokenAddress || '');
   const [tokenInfo, setTokenInfo] = useState<TokenInfo | null>(
     initialData

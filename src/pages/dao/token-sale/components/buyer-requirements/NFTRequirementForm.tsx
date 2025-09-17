@@ -8,7 +8,6 @@ import { NFTBuyerRequirement } from '../../../../../types/tokenSale';
 
 interface NFTRequirementFormProps {
   onSubmit: (requirement: NFTBuyerRequirement) => void;
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   onCancel: () => void;
   initialData?: NFTBuyerRequirement;
 }
@@ -19,12 +18,7 @@ interface NFTInfo {
   standard: 'ERC721' | 'ERC1155';
 }
 
-export function NFTRequirementForm({
-  onSubmit,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  onCancel,
-  initialData,
-}: NFTRequirementFormProps) {
+export function NFTRequirementForm({ onSubmit, initialData }: NFTRequirementFormProps) {
   const [contractAddress, setContractAddress] = useState<string>(
     initialData?.contractAddress || '',
   );
