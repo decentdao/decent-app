@@ -3,7 +3,7 @@ import { Address } from 'viem';
 import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
 import { useDAOStore } from '../../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../../providers/NetworkConfig/useNetworkConfigStore';
-import { TokenSaleFormValues } from '../types';
+import { TokenSaleFormValues } from '../../../../types/tokenSale';
 
 export interface PreparedTokenSaleData {
   saleName: string;

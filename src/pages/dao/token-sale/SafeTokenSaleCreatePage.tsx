@@ -15,10 +15,10 @@ import { useDAOStore } from '../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
 import { useProposalActionsStore } from '../../../store/actions/useProposalActionsStore';
 import { CreateProposalTransaction, ProposalActionType } from '../../../types';
+import { TokenSaleFormValues } from '../../../types/tokenSale';
 import { BuyerRequirementsForm } from './components/BuyerRequirementsForm';
 import { SaleTermsForm } from './components/SaleTermsForm';
 import { useTokenSaleFormPreparation } from './hooks/useTokenSaleFormPreparation';
-import { TokenSaleFormValues } from './types';
 
 const stages = ['Sale Terms', 'Buyer Requirements'];
 const initialValues: TokenSaleFormValues = {
@@ -65,6 +65,9 @@ const initialValues: TokenSaleFormValues = {
   hedgeyLockupRatePercentage: { value: '0', bigintValue: 0n },
   hedgeyLockupPeriod: { value: '0', bigintValue: 0n },
   hedgeyVotingTokenLockupPlans: '0x0000000000000000000000000000000000000000' as Address,
+
+  // Buyer Requirements
+  buyerRequirements: [],
 
   totalSupply: '',
   salePrice: '',
@@ -231,6 +234,7 @@ export function SafeTokenSaleCreatePage() {
       const tokenSaleMetadata = {
         address: predictedTokenSaleAddress,
         name: tokenSaleData.saleName,
+        buyerRequirements: values.buyerRequirements,
       };
 
       const updateValuesCalldata = encodeFunctionData({

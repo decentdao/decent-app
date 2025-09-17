@@ -1,11 +1,34 @@
 import { VStack, Box, Flex, HStack, Text, Button, Icon } from '@chakra-ui/react';
 import { CheckCircle, Plus } from '@phosphor-icons/react';
-import { BuyerRequirement } from './types';
+import { BuyerRequirement } from '../../../../../types/tokenSale';
 
 interface RequirementsListProps {
   requirements: BuyerRequirement[];
   onAddRequirement: () => void;
 }
+
+const getRequirementDisplay = (requirement: BuyerRequirement, index: number) => {
+  switch (requirement.type) {
+    case 'token':
+      return {
+        id: `token-${index}`,
+        name: requirement.tokenName || `Token ${requirement.tokenAddress.slice(0, 6)}...`,
+        description: `Minimum balance: ${requirement.minimumBalance.toString()}`,
+      };
+    case 'nft':
+      return {
+        id: `nft-${index}`,
+        name: requirement.collectionName || `${requirement.tokenStandard} Collection`,
+        description: `Minimum balance: ${requirement.minimumBalance.toString()}`,
+      };
+    case 'whitelist':
+      return {
+        id: `whitelist-${index}`,
+        name: requirement.name,
+        description: `${requirement.addresses.length} addresses`,
+      };
+  }
+};
 
 export function RequirementsList({ requirements, onAddRequirement }: RequirementsListProps) {
   const hasOpenAccess = requirements.length === 0;
@@ -48,43 +71,46 @@ export function RequirementsList({ requirements, onAddRequirement }: Requirement
           </Flex>
         )}
 
-        {requirements.map(requirement => (
-          <Flex
-            key={requirement.id}
-            align="center"
-            justify="space-between"
-            p={4}
-            borderBottom="1px solid"
-            borderBottomColor="color-neutral-800"
-            _last={{ borderBottom: 'none' }}
-          >
-            <HStack spacing={3}>
-              <CheckCircle
-                size={16}
-                color="#5bc89c"
-                weight="fill"
-              />
-              <VStack
-                align="start"
-                spacing={0}
-              >
-                <Text
-                  color="color-white"
-                  fontSize="sm"
-                  fontWeight="medium"
+        {requirements.map((requirement, index) => {
+          const display = getRequirementDisplay(requirement, index);
+          return (
+            <Flex
+              key={display.id}
+              align="center"
+              justify="space-between"
+              p={4}
+              borderBottom="1px solid"
+              borderBottomColor="color-neutral-800"
+              _last={{ borderBottom: 'none' }}
+            >
+              <HStack spacing={3}>
+                <CheckCircle
+                  size={16}
+                  color="#5bc89c"
+                  weight="fill"
+                />
+                <VStack
+                  align="start"
+                  spacing={0}
                 >
-                  {requirement.name}
-                </Text>
-                <Text
-                  color="color-neutral-400"
-                  fontSize="xs"
-                >
-                  {requirement.description}
-                </Text>
-              </VStack>
-            </HStack>
-          </Flex>
-        ))}
+                  <Text
+                    color="color-white"
+                    fontSize="sm"
+                    fontWeight="medium"
+                  >
+                    {display.name}
+                  </Text>
+                  <Text
+                    color="color-neutral-400"
+                    fontSize="xs"
+                  >
+                    {display.description}
+                  </Text>
+                </VStack>
+              </HStack>
+            </Flex>
+          );
+        })}
 
         <Button
           variant="ghost"

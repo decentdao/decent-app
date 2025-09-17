@@ -2,38 +2,53 @@ import { VStack, Box, useDisclosure } from '@chakra-ui/react';
 import { useState } from 'react';
 import { ContentBoxTight } from '../../../../components/ui/containers/ContentBox';
 import { LabelComponent } from '../../../../components/ui/forms/InputComponent';
-import { TokenSaleFormValues } from '../types';
+import { BuyerRequirement, TokenSaleFormValues } from '../../../../types/tokenSale';
 import { AddRequirementModal } from './buyer-requirements/AddRequirementModal';
 import { KycKybRequirement } from './buyer-requirements/KycKybRequirement';
 import { RequirementsFooter } from './buyer-requirements/RequirementsFooter';
 import { RequirementsList } from './buyer-requirements/RequirementsList';
-import { BuyerRequirement } from './buyer-requirements/types';
 
 interface BuyerRequirementsFormProps {
   values: TokenSaleFormValues;
   setFieldValue: (field: string, value: any) => void;
 }
 
-const labels = {
-  token: { name: 'Token', description: 'Set an ERC-20 threshold' },
-  nft: { name: 'NFT', description: 'Set an ERC-721 or ERC-1155 threshold' },
-  whitelist: { name: 'Whitelist', description: 'Specify a list of addresses' },
-};
-
-export function BuyerRequirementsForm({}: BuyerRequirementsFormProps) {
+export function BuyerRequirementsForm({ values, setFieldValue }: BuyerRequirementsFormProps) {
   const [requireKYC, setRequireKYC] = useState(false);
-  const [requirements, setRequirements] = useState<BuyerRequirement[]>([]);
   const [requirementMode, setRequirementMode] = useState<'all' | 'any'>('all');
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const handleAddRequirement = (type: 'token' | 'nft' | 'whitelist') => {
-    const newRequirement: BuyerRequirement = {
-      id: Date.now().toString(),
-      type,
-      name: labels[type].name,
-      description: labels[type].description,
-    };
-    setRequirements([...requirements, newRequirement]);
+    // Create a placeholder requirement - this will be enhanced when forms are added
+    let newRequirement: BuyerRequirement;
+
+    switch (type) {
+      case 'token':
+        newRequirement = {
+          type: 'token',
+          tokenAddress: '0x' as any, // Placeholder
+          minimumBalance: BigInt(0),
+        };
+        break;
+      case 'nft':
+        newRequirement = {
+          type: 'nft',
+          contractAddress: '0x' as any, // Placeholder
+          tokenStandard: 'ERC721',
+          minimumBalance: BigInt(1),
+        };
+        break;
+      case 'whitelist':
+        newRequirement = {
+          type: 'whitelist',
+          name: 'New Whitelist',
+          addresses: [],
+        };
+        break;
+    }
+
+    const updatedRequirements = [...values.buyerRequirements, newRequirement];
+    setFieldValue('buyerRequirements', updatedRequirements);
     onClose();
   };
 
@@ -65,14 +80,14 @@ export function BuyerRequirementsForm({}: BuyerRequirementsFormProps) {
           </LabelComponent>
 
           <RequirementsList
-            requirements={requirements}
+            requirements={values.buyerRequirements}
             onAddRequirement={onOpen}
           />
 
           <RequirementsFooter
             requirementMode={requirementMode}
             setRequirementMode={setRequirementMode}
-            requirementsCount={requirements.length}
+            requirementsCount={values.buyerRequirements.length}
           />
         </VStack>
 
