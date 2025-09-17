@@ -8,16 +8,11 @@ import { WhitelistDropzone } from './WhitelistDropzone';
 
 interface WhitelistRequirementFormProps {
   onSubmit: (requirement: WhitelistBuyerRequirement) => void;
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   onCancel: () => void;
   initialData?: WhitelistBuyerRequirement;
 }
 
-export function WhitelistRequirementForm({
-  onSubmit,
-  onCancel: _,
-  initialData,
-}: WhitelistRequirementFormProps) {
+export function WhitelistRequirementForm({ onSubmit, initialData }: WhitelistRequirementFormProps) {
   const [addresses, setAddresses] = useState<Address[]>(initialData?.addresses || []);
   const [newAddress, setNewAddress] = useState<string>('');
   const [error, setError] = useState<string>('');
