@@ -2,7 +2,7 @@ import { Text, InputProps, Flex, Icon } from '@chakra-ui/react';
 import { SealWarning } from '@phosphor-icons/react';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Address, isAddress, getContract, erc20Abi } from 'viem';
+import { Address, isAddress, erc20Abi } from 'viem';
 import useNetworkPublicClient from '../../../hooks/useNetworkPublicClient';
 import { createAccountSubstring } from '../../../hooks/utils/useGetAccountName';
 import { DecentTooltip } from '../DecentTooltip';
@@ -38,19 +38,48 @@ export function TokenAddressInput(
     const fetchTokenInfo = async () => {
       setIsLoading(true);
       try {
-        const tokenContract = getContract({
-          abi: erc20Abi,
-          address: propValue as Address,
-          client: publicClient,
+        const contractAddress = propValue as Address;
+
+        // Use multicall for efficient batch calls
+        const multicallCalls = [
+          {
+            address: contractAddress,
+            abi: erc20Abi,
+            functionName: 'name',
+          },
+          {
+            address: contractAddress,
+            abi: erc20Abi,
+            functionName: 'symbol',
+          },
+          {
+            address: contractAddress,
+            abi: erc20Abi,
+            functionName: 'decimals',
+          },
+        ];
+
+        const results = await publicClient.multicall({
+          contracts: multicallCalls,
+          allowFailure: true,
         });
 
-        const [name, symbol, decimals] = await Promise.all([
-          tokenContract.read.name(),
-          tokenContract.read.symbol(),
-          tokenContract.read.decimals(),
-        ]);
+        const [nameResult, symbolResult, decimalsResult] = results;
 
-        const info = { name, symbol, decimals };
+        // All three functions must succeed for a valid ERC20 token
+        if (nameResult.error || symbolResult.error || decimalsResult.error) {
+          console.log('Contract missing required ERC20 functions');
+          setTokenInfo(null);
+          props.onTokenInfo?.(null);
+          return;
+        }
+
+        const info: TokenInfo = {
+          name: nameResult.result as string,
+          symbol: symbolResult.result as string,
+          decimals: decimalsResult.result as number,
+        };
+        
         setTokenInfo(info);
         props.onTokenInfo?.(info);
       } catch (error) {

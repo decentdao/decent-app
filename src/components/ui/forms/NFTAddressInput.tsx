@@ -2,29 +2,12 @@ import { Text, InputProps, Flex, Icon } from '@chakra-ui/react';
 import { SealWarning } from '@phosphor-icons/react';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Address, isAddress, getContract } from 'viem';
+import { Address, isAddress, erc721Abi } from 'viem';
+import { erc1155Abi } from '../../../assets/abi/erc1155Abi';
 import useNetworkPublicClient from '../../../hooks/useNetworkPublicClient';
 import { createAccountSubstring } from '../../../hooks/utils/useGetAccountName';
 import { DecentTooltip } from '../DecentTooltip';
 import { AddressInput } from './EthAddressInput';
-
-// ERC-721 ABI for name() function
-const erc721Abi = [
-  {
-    inputs: [],
-    name: 'name',
-    outputs: [{ internalType: 'string', name: '', type: 'string' }],
-    stateMutability: 'view',
-    type: 'function',
-  },
-  {
-    inputs: [],
-    name: 'symbol',
-    outputs: [{ internalType: 'string', name: '', type: 'string' }],
-    stateMutability: 'view',
-    type: 'function',
-  },
-] as const;
 
 interface NFTInfo {
   name: string;
@@ -35,6 +18,7 @@ interface NFTInfo {
 export function NFTAddressInput(
   props: InputProps & { displayValue?: string; onNFTInfo?: (info: NFTInfo | null) => void },
 ) {
+  const { onNFTInfo, ...inputProps } = props;
   const { t } = useTranslation('common');
   const publicClient = useNetworkPublicClient();
 
@@ -49,43 +33,120 @@ export function NFTAddressInput(
   useEffect(() => {
     if (!propValue || !isPropValueAddress) {
       setNFTInfo(null);
-      props.onNFTInfo?.(null);
+      onNFTInfo?.(null);
+      setIsLoading(false);
       return;
     }
 
-    const fetchNFTInfo = async () => {
-      setIsLoading(true);
-      try {
-        const nftContract = getContract({
-          abi: erc721Abi,
-          address: propValue as Address,
-          client: publicClient,
-        });
+    // Debounce the API call to prevent continuous loading
+    const timeoutId = setTimeout(() => {
+      const fetchNFTInfo = async () => {
+        setIsLoading(true);
+        try {
+          const contractAddress = propValue as Address;
 
-        const [name, symbol] = await Promise.all([
-          nftContract.read.name(),
-          nftContract.read.symbol(),
-        ]);
+          // Test for both ERC721 and ERC1155 functions
+          const multicallCalls = [
+            // ERC721 functions
+            {
+              address: contractAddress,
+              abi: erc721Abi,
+              functionName: 'name',
+            },
+            {
+              address: contractAddress,
+              abi: erc721Abi,
+              functionName: 'symbol',
+            },
+            {
+              address: contractAddress,
+              abi: erc721Abi,
+              functionName: 'ownerOf',
+              args: [BigInt(1)],
+            },
+            {
+              address: contractAddress,
+              abi: erc721Abi,
+              functionName: 'tokenURI',
+              args: [BigInt(1)],
+            },
+            // ERC1155 functions
+            {
+              address: contractAddress,
+              abi: erc1155Abi,
+              functionName: 'balanceOf',
+              args: [contractAddress, BigInt(1)], // Use contract address as dummy account
+            },
+            {
+              address: contractAddress,
+              abi: erc1155Abi,
+              functionName: 'uri',
+              args: [BigInt(1)],
+            },
+          ];
 
-        // For simplicity, we'll assume ERC721 for now
-        // In a real implementation, you might want to check for ERC165 support
-        const info = { name, symbol, standard: 'ERC721' as const };
-        setNFTInfo(info);
-        props.onNFTInfo?.(info);
-      } catch (error) {
-        console.error('Failed to fetch NFT info:', error);
-        setNFTInfo(null);
-        props.onNFTInfo?.(null);
-      } finally {
-        setIsLoading(false);
-      }
-    };
+          const results = await publicClient.multicall({
+            contracts: multicallCalls,
+            allowFailure: true,
+          });
 
-    fetchNFTInfo();
+          const [
+            nameResult,
+            symbolResult,
+            ownerOfResult,
+            tokenURIResult,
+            balanceOfResult,
+            uriResult,
+          ] = results;
+
+          // Check if it has ERC721 functions
+          const hasERC721Functions = !ownerOfResult.error || !tokenURIResult.error;
+
+          // Check if it has ERC1155 functions
+          const hasERC1155Functions = !balanceOfResult.error || !uriResult.error;
+
+          // Must have either ERC721 or ERC1155 functions to be considered an NFT
+          if (!hasERC721Functions && !hasERC1155Functions) {
+            console.log('Contract does not have NFT-specific functions');
+            setNFTInfo(null);
+            onNFTInfo?.(null);
+            return;
+          }
+
+          // Determine the standard
+          const standard: 'ERC721' | 'ERC1155' = hasERC721Functions ? 'ERC721' : 'ERC1155';
+
+          // Name and symbol can be blank for NFTs, so provide fallbacks
+          const name =
+            !nameResult.error && nameResult.result ? (nameResult.result as string) : 'Unknown NFT';
+          const symbol =
+            !symbolResult.error && symbolResult.result ? (symbolResult.result as string) : 'NFT';
+
+          const info: NFTInfo = {
+            name,
+            symbol,
+            standard,
+          };
+
+          setNFTInfo(info);
+          onNFTInfo?.(info);
+        } catch (error) {
+          console.error('Failed to fetch NFT info:', error);
+          setNFTInfo(null);
+          onNFTInfo?.(null);
+        } finally {
+          setIsLoading(false);
+        }
+      };
+
+      fetchNFTInfo();
+    }, 300); // 300ms debounce
+
+    return () => clearTimeout(timeoutId);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isPropValueAddress, propValue, publicClient, props.onNFTInfo]);
+  }, [isPropValueAddress, propValue, publicClient]);
 
-  if ((!showInput && propValue) || props.isReadOnly) {
+  if ((!showInput && propValue) || inputProps.isReadOnly) {
     let displayedValue = propValue;
 
     if (nftInfo) {
@@ -106,9 +167,9 @@ export function NFTAddressInput(
         border="1px solid"
         borderColor="color-neutral-800"
         borderRadius="8px"
-        cursor={props.isReadOnly ? 'default' : 'pointer'}
+        cursor={inputProps.isReadOnly ? 'default' : 'pointer'}
         onClick={() => {
-          if (!props.isReadOnly) {
+          if (!inputProps.isReadOnly) {
             setShowInput(true);
           }
         }}
@@ -116,26 +177,26 @@ export function NFTAddressInput(
           setShowInput(false);
         }}
         _hover={{
-          borderColor: props.isReadOnly
+          borderColor: inputProps.isReadOnly
             ? 'color-neutral-800'
-            : props.isInvalid
+            : inputProps.isInvalid
               ? 'color-error-400'
               : 'color-neutral-700',
         }}
         _focus={{
-          borderColor: props.isInvalid ? 'color-error-400' : 'color-primary-500',
+          borderColor: inputProps.isInvalid ? 'color-error-400' : 'color-primary-500',
           boxShadow: 'none',
         }}
       >
         <Text
           textStyle="text-sm-regular"
-          color={props.isInvalid ? 'color-error-400' : 'color-layout-foreground'}
+          color={inputProps.isInvalid ? 'color-error-400' : 'color-layout-foreground'}
           overflow="hidden"
           textOverflow="ellipsis"
           whiteSpace="nowrap"
           flex={1}
         >
-          {props.displayValue ?? (isLoading ? 'Loading...' : displayedValue)}
+          {inputProps.displayValue ?? (isLoading ? 'Loading...' : displayedValue)}
         </Text>
         {nftInfo && (
           <DecentTooltip label={t('nftInfoTooltip', 'NFT contract verified')}>
@@ -152,7 +213,7 @@ export function NFTAddressInput(
 
   return (
     <AddressInput
-      {...props}
+      {...inputProps}
       onBlur={() => {
         // delay to allow the input's debounce to finish
         setTimeout(() => {

@@ -50,6 +50,11 @@ export function NFTRequirementForm({
       return;
     }
 
+    if (!nftInfo) {
+      setError('Please enter a valid NFT contract address (ERC721 or ERC1155)');
+      return;
+    }
+
     if (!minimumBalance.bigintValue || minimumBalance.bigintValue <= 0n) {
       setError('Minimum amount must be greater than 0');
       return;
@@ -58,15 +63,15 @@ export function NFTRequirementForm({
     const requirement: NFTBuyerRequirement = {
       type: 'nft',
       contractAddress: contractAddress as Address,
-      collectionName: nftInfo?.name,
-      tokenStandard: nftInfo?.standard || 'ERC721',
+      collectionName: nftInfo.name,
+      tokenStandard: nftInfo.standard,
       minimumBalance: minimumBalance.bigintValue,
     };
 
     onSubmit(requirement);
   };
 
-  const isValid = contractAddress && minimumBalance.bigintValue && minimumBalance.bigintValue > 0n;
+  const isValid = contractAddress && nftInfo && minimumBalance.bigintValue && minimumBalance.bigintValue > 0n;
 
   return (
     <VStack
@@ -99,9 +104,12 @@ export function NFTRequirementForm({
             setContractAddress(e.target.value);
             setError('');
           }}
-          onNFTInfo={setNFTInfo}
+          onNFTInfo={(info) => {
+            setNFTInfo(info);
+            setError('');
+          }}
           placeholder="Paste NFT contract address"
-          isInvalid={!!error && error.includes('address')}
+          isInvalid={!!error && (error.includes('address') || error.includes('valid NFT'))}
         />
       </VStack>
 
