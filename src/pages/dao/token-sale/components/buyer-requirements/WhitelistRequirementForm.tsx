@@ -2,7 +2,7 @@ import { VStack, Flex, Text, Button, Box, IconButton, Icon } from '@chakra-ui/re
 import { Plus, Trash } from '@phosphor-icons/react';
 import { useState } from 'react';
 import { Address, isAddress } from 'viem';
-import { AddressInputInfo } from '../../../../../components/ui/forms/AddressInputInfo';
+import { AddressInputInfoTable } from '../../../../../components/ui/forms/AddressInputInfoTable';
 import { WhitelistBuyerRequirement } from '../../../../../types/tokenSale';
 import { WhitelistDropzone } from './WhitelistDropzone';
 
@@ -68,8 +68,6 @@ export function WhitelistRequirementForm({ onSubmit, initialData }: WhitelistReq
     onSubmit(requirement);
   };
 
-  const isValid = addresses.length > 0;
-
   return (
     <VStack
       spacing={4}
@@ -128,12 +126,13 @@ export function WhitelistRequirementForm({ onSubmit, initialData }: WhitelistReq
             borderBottom="1px solid"
             borderBottomColor="color-layout-divider"
             align="center"
+            h="40px"
           >
             <Box
               flex={1}
-              p={0.5}
+              h="full"
             >
-              <AddressInputInfo
+              <AddressInputInfoTable
                 value={address}
                 isReadOnly={true}
               />
@@ -168,12 +167,13 @@ export function WhitelistRequirementForm({ onSubmit, initialData }: WhitelistReq
           borderBottom="1px solid"
           borderBottomColor="color-layout-divider"
           align="center"
+          h="40px"
         >
           <Box
             flex={1}
-            p={0.5}
+            h="full"
           >
-            <AddressInputInfo
+            <AddressInputInfoTable
               value={newAddress}
               onChange={e => {
                 setNewAddress(e.target.value);
@@ -190,7 +190,7 @@ export function WhitelistRequirementForm({ onSubmit, initialData }: WhitelistReq
             justifyContent="center"
           >
             <IconButton
-              aria-label="Add address"
+              aria-label="Remove address"
               icon={
                 <Icon
                   as={Trash}
@@ -199,10 +199,10 @@ export function WhitelistRequirementForm({ onSubmit, initialData }: WhitelistReq
               }
               variant="ghost"
               size="sm"
-              onClick={handleAddAddress}
+              onClick={() => handleRemoveAddress(addresses.length)}
               color="color-error-400"
               _hover={{ bg: 'color-error-950' }}
-              opacity={0}
+              visibility={newAddress ? 'visible' : 'hidden'}
             />
           </Box>
         </Flex>
@@ -260,7 +260,6 @@ export function WhitelistRequirementForm({ onSubmit, initialData }: WhitelistReq
         <Button
           variant="primary"
           onClick={handleSubmit}
-          isDisabled={!isValid}
         >
           Add Requirement
         </Button>
