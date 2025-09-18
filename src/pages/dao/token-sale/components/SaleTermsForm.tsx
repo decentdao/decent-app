@@ -288,7 +288,7 @@ export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
                   ? t('calculatedFromFdv')
                   : t('enterFdvAndSelectToken')
               }
-              leftAddon={<Text color="gray.500">$</Text>}
+              leftAddon={<Text color="color-content-muted-foreground">$</Text>}
               isDisabled={true}
               bg="color-neutral-900"
               opacity={0.5}
@@ -328,7 +328,7 @@ export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
               precision={2}
               step={0.01}
               placeholder={t('minimumFundraisePlaceholder')}
-              leftAddon={<Text color="gray.500">$</Text>}
+              leftAddon={<Text color="color-content-muted-foreground">$</Text>}
             />
           </LabelComponent>
 
@@ -349,7 +349,7 @@ export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
               precision={2}
               step={0.01}
               placeholder={t('fundraisingCapPlaceholder')}
-              leftAddon={<Text color="gray.500">$</Text>}
+              leftAddon={<Text color="color-content-muted-foreground">$</Text>}
             />
           </LabelComponent>
         </Grid>
@@ -378,7 +378,7 @@ export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
               precision={2}
               step={0.01}
               placeholder={t('valuationPlaceholder')}
-              leftAddon={<Text color="gray.500">$</Text>}
+              leftAddon={<Text color="color-content-muted-foreground">$</Text>}
             />
           </LabelComponent>
 
@@ -452,7 +452,7 @@ export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
               precision={2}
               step={0.01}
               placeholder={t('minimumPurchasePlaceholder')}
-              leftAddon={<Text color="gray.500">$</Text>}
+              leftAddon={<Text color="color-content-muted-foreground">$</Text>}
               rightAddon={<Text>{t('minimumPurchaseSuffix')}</Text>}
             />
           </LabelComponent>
@@ -474,7 +474,7 @@ export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
               precision={2}
               step={0.01}
               placeholder={t('maximumPurchasePlaceholder')}
-              leftAddon={<Text color="gray.500">$</Text>}
+              leftAddon={<Text color="color-content-muted-foreground">$</Text>}
               rightAddon={<Text>{t('maximumPurchaseSuffix')}</Text>}
             />
           </LabelComponent>
