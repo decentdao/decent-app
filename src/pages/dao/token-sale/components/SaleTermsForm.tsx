@@ -222,7 +222,8 @@ export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
                       textStyle="text-xs-regular"
                       color="color-neutral-300"
                     >
-                      {item.symbol} • Balance: {parseFloat(item.balanceFormatted).toFixed(4)}
+                      {item.symbol} • {t('balanceLabel')}{' '}
+                      {parseFloat(item.balanceFormatted).toFixed(4)}
                     </Text>
                   </Flex>
                 </Flex>
@@ -262,7 +263,7 @@ export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
               value={
                 values.maxTokenSupply.value
                   ? parseFloat(values.maxTokenSupply.value).toLocaleString()
-                  : 'Select a token first'
+                  : t('selectTokenFirst')
               }
               isDisabled={true}
               bg="color-neutral-900"
@@ -284,8 +285,8 @@ export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
               min={0}
               placeholder={
                 values.valuation > 0 && values.tokenAddress
-                  ? 'Calculated from FDV'
-                  : 'Enter FDV and select token'
+                  ? t('calculatedFromFdv')
+                  : t('enterFdvAndSelectToken')
               }
               leftAddon={<Text color="gray.500">$</Text>}
               isDisabled={true}
