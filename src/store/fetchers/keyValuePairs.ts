@@ -5,6 +5,7 @@ import { Address, GetContractEventsReturnType, getContract } from 'viem';
 import { logError } from '../../helpers/errorLogging';
 import useNetworkPublicClient from '../../hooks/useNetworkPublicClient';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
+import { BuyerRequirement } from '../../types/tokenSale';
 
 export function useKeyValuePairsFetcher() {
   const publicClient = useNetworkPublicClient();
@@ -147,7 +148,11 @@ export function useKeyValuePairsFetcher() {
         event => event.args.key && event.args.key === 'newtokensale',
       );
 
-      const tokenSaleMetadata: Array<{ address: string; name?: string }> = [];
+      const tokenSaleMetadata: Array<{
+        address: string;
+        name?: string;
+        buyerRequirements?: BuyerRequirement[];
+      }> = [];
 
       tokenSaleEvents.forEach(event => {
         if (event.args.value) {
@@ -157,6 +162,7 @@ export function useKeyValuePairsFetcher() {
               tokenSaleMetadata.push({
                 address: metadata.address,
                 name: metadata.name || metadata.title, // Support both 'name' and 'title' fields
+                buyerRequirements: metadata.buyerRequirements || [],
               });
             }
           } catch (error) {

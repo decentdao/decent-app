@@ -256,11 +256,29 @@ export const useDAOStoreListener = ({ daoKey }: { daoKey: DAOKey | undefined }) 
   );
 
   const onTokenSalesDataFetched = useCallback(
-    async (tokenSaleAddresses: string[]) => {
+    async (
+      tokenSaleAddresses: string[],
+      tokenSaleMetadata?: Array<{ address: string; name?: string; buyerRequirements?: any[] }>,
+    ) => {
       if (!daoKey) return;
 
       const tokenSalesData = await fetchMultipleTokenSales(tokenSaleAddresses as Address[]);
-      setTokenSales(daoKey, tokenSalesData);
+
+      // If we have metadata, merge it with the fetched token sales data
+      if (tokenSaleMetadata) {
+        const enrichedTokenSalesData = tokenSalesData.map(tokenSale => {
+          const metadata = tokenSaleMetadata.find(
+            meta => meta.address.toLowerCase() === tokenSale.address.toLowerCase(),
+          );
+          return {
+            ...tokenSale,
+            buyerRequirements: metadata?.buyerRequirements || [],
+          };
+        });
+        setTokenSales(daoKey, enrichedTokenSalesData);
+      } else {
+        setTokenSales(daoKey, tokenSalesData);
+      }
     },
     [daoKey, fetchMultipleTokenSales, setTokenSales],
   );

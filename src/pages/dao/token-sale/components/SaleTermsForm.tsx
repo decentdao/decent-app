@@ -9,7 +9,7 @@ import { DropdownMenu } from '../../../../components/ui/menus/DropdownMenu';
 import { AssetSelector } from '../../../../components/ui/utils/AssetSelector';
 import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
 import { useDAOStore } from '../../../../providers/App/AppProvider';
-import { TokenSaleFormValues } from '../types';
+import { TokenSaleFormValues } from '../../../../types/tokenSale';
 
 interface SaleTermsFormProps {
   values: TokenSaleFormValues;

@@ -2,39 +2,25 @@ import { VStack, Box, useDisclosure } from '@chakra-ui/react';
 import { useState } from 'react';
 import { ContentBoxTight } from '../../../../components/ui/containers/ContentBox';
 import { LabelComponent } from '../../../../components/ui/forms/InputComponent';
-import { TokenSaleFormValues } from '../types';
+import { BuyerRequirement, TokenSaleFormValues } from '../../../../types/tokenSale';
 import { AddRequirementModal } from './buyer-requirements/AddRequirementModal';
 import { KycKybRequirement } from './buyer-requirements/KycKybRequirement';
 import { RequirementsFooter } from './buyer-requirements/RequirementsFooter';
 import { RequirementsList } from './buyer-requirements/RequirementsList';
-import { BuyerRequirement } from './buyer-requirements/types';
 
 interface BuyerRequirementsFormProps {
   values: TokenSaleFormValues;
   setFieldValue: (field: string, value: any) => void;
 }
 
-const labels = {
-  token: { name: 'Token', description: 'Set an ERC-20 threshold' },
-  nft: { name: 'NFT', description: 'Set an ERC-721 or ERC-1155 threshold' },
-  whitelist: { name: 'Whitelist', description: 'Specify a list of addresses' },
-};
-
-export function BuyerRequirementsForm({}: BuyerRequirementsFormProps) {
+export function BuyerRequirementsForm({ values, setFieldValue }: BuyerRequirementsFormProps) {
   const [requireKYC, setRequireKYC] = useState(false);
-  const [requirements, setRequirements] = useState<BuyerRequirement[]>([]);
   const [requirementMode, setRequirementMode] = useState<'all' | 'any'>('all');
   const { isOpen, onOpen, onClose } = useDisclosure();
 
-  const handleAddRequirement = (type: 'token' | 'nft' | 'whitelist') => {
-    const newRequirement: BuyerRequirement = {
-      id: Date.now().toString(),
-      type,
-      name: labels[type].name,
-      description: labels[type].description,
-    };
-    setRequirements([...requirements, newRequirement]);
-    onClose();
+  const handleAddRequirement = (requirement: BuyerRequirement) => {
+    const updatedRequirements = [...values.buyerRequirements, requirement];
+    setFieldValue('buyerRequirements', updatedRequirements);
   };
 
   return (
@@ -65,14 +51,14 @@ export function BuyerRequirementsForm({}: BuyerRequirementsFormProps) {
           </LabelComponent>
 
           <RequirementsList
-            requirements={requirements}
+            requirements={values.buyerRequirements}
             onAddRequirement={onOpen}
           />
 
           <RequirementsFooter
             requirementMode={requirementMode}
             setRequirementMode={setRequirementMode}
-            requirementsCount={requirements.length}
+            requirementsCount={values.buyerRequirements.length}
           />
         </VStack>
 
