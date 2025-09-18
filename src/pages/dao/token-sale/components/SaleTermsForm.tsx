@@ -43,23 +43,20 @@ export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
     }));
   }, [availableTokens, values.tokenAddress]);
 
-  // Default total supply constant (1 billion tokens)
-  const DEFAULT_TOTAL_SUPPLY = '1000000000';
-
   // Calculate token price based on FDV and total supply
   const calculateTokenPrice = (fdv: number, totalSupply: string, tokenDecimals: number = 18) => {
     if (!fdv || !totalSupply || fdv <= 0 || parseFloat(totalSupply) <= 0) {
       return 0;
     }
-    
+
     try {
       // Convert total supply to proper decimal format
       const totalSupplyBigInt = parseUnits(totalSupply, tokenDecimals);
       const fdvBigInt = parseUnits(fdv.toString(), 6); // Assuming USD has 6 decimals (like USDC)
-      
+
       // Price = FDV / Total Supply
       const priceBigInt = (fdvBigInt * BigInt(10 ** tokenDecimals)) / totalSupplyBigInt;
-      
+
       // Convert back to human readable format
       return parseFloat(formatUnits(priceBigInt, 6)); // Price in USD with 6 decimals
     } catch (error) {
@@ -77,20 +74,32 @@ export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
 
   // Reactive price calculation when FDV or total supply changes
   useEffect(() => {
-    const totalSupply = values.maxTokenSupply.value || DEFAULT_TOTAL_SUPPLY;
+    const totalSupply = values.maxTokenSupply.value;
     const fdv = values.valuation;
-    
-    if (fdv > 0 && totalSupply) {
+
+    // Only calculate if we have both FDV and actual token total supply (no defaults)
+    if (fdv > 0 && totalSupply && values.tokenAddress) {
       const calculatedPrice = calculateTokenPrice(fdv, totalSupply, tokenDecimals);
-      
       // Update saleTokenPrice BigIntValuePair for contract interaction
-      const priceBigInt = parseUnits(calculatedPrice.toString(), 6); // USDC has 6 decimals
+      const priceBigInt = parseUnits(calculatedPrice.toString(), tokenDecimals);
       setFieldValue('saleTokenPrice', {
-        value: calculatedPrice.toFixed(6),
+        value: calculatedPrice.toFixed(8),
         bigintValue: priceBigInt,
       });
+    } else {
+      // Clear the price if conditions aren't met
+      setFieldValue('saleTokenPrice', {
+        value: '',
+        bigintValue: undefined,
+      });
     }
-  }, [values.valuation, values.maxTokenSupply.value, tokenDecimals, setFieldValue]);
+  }, [
+    values.valuation,
+    values.maxTokenSupply.value,
+    values.tokenAddress,
+    tokenDecimals,
+    setFieldValue,
+  ]);
 
   // Handle token selection
   const handleTokenSelect = (item: any) => {
@@ -99,22 +108,38 @@ export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
       setFieldValue('tokenAddress', tokenToSelect.tokenAddress);
       setFieldValue('tokenName', tokenToSelect.name);
       setFieldValue('tokenSymbol', tokenToSelect.symbol);
-      
-      // Use actual total supply or default to 1 billion
-      const totalSupply = tokenToSelect.totalSupply || DEFAULT_TOTAL_SUPPLY;
-      setFieldValue('maxTokenSupply', {
-        value: totalSupply,
-        bigintValue: BigInt(totalSupply),
-      });
-      
-      // Recalculate price with new token's total supply
-      if (values.valuation > 0) {
-        const calculatedPrice = calculateTokenPrice(values.valuation, totalSupply, tokenToSelect.decimals || 18);
-        
-        const priceBigInt = parseUnits(calculatedPrice.toString(), 6);
+
+      // Use the actual token's total supply (no defaults)
+      if (tokenToSelect.totalSupply) {
+        setFieldValue('maxTokenSupply', {
+          value: tokenToSelect.totalSupply,
+          bigintValue: BigInt(tokenToSelect.totalSupply),
+        });
+
+        // Recalculate price with the selected token's actual total supply
+        if (values.valuation > 0) {
+          const calculatedPrice = calculateTokenPrice(
+            values.valuation,
+            tokenToSelect.totalSupply,
+            tokenToSelect.decimals || 18,
+          );
+
+          const priceBigInt = parseUnits(calculatedPrice.toString(), tokenToSelect.decimals || 18);
+          setFieldValue('saleTokenPrice', {
+            value: calculatedPrice.toFixed(8),
+            bigintValue: priceBigInt,
+          });
+        }
+      } else {
+        // Clear the total supply if token doesn't have it
+        setFieldValue('maxTokenSupply', {
+          value: '',
+          bigintValue: undefined,
+        });
+        // Clear the calculated price as well
         setFieldValue('saleTokenPrice', {
-          value: calculatedPrice.toFixed(6),
-          bigintValue: priceBigInt,
+          value: '',
+          bigintValue: undefined,
         });
       }
     }
@@ -229,9 +254,9 @@ export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
           >
             <Input
               value={
-                values.maxTokenSupply.value 
-                  ? `${parseFloat(values.maxTokenSupply.value).toLocaleString()} tokens`
-                  : `${parseFloat(DEFAULT_TOTAL_SUPPLY).toLocaleString()} tokens (default)`
+                values.maxTokenSupply.value
+                  ? parseFloat(values.maxTokenSupply.value).toLocaleString()
+                  : 'Select a token first'
               }
               isDisabled={true}
               bg="color-neutral-900"
@@ -248,12 +273,14 @@ export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
             }}
           >
             <NumberInputWithAddon
-              value={parseFloat(values.saleTokenPrice.value || '0')}
+              value={values.saleTokenPrice.value ? parseFloat(values.saleTokenPrice.value) : ''}
               onChange={() => {}} // No-op since it's calculated automatically
               min={0}
-              precision={6}
-              step={0.000001}
-              placeholder={values.valuation > 0 ? 'Calculated from FDV' : 'Enter FDV to calculate'}
+              placeholder={
+                values.valuation > 0 && values.tokenAddress
+                  ? 'Calculated from FDV'
+                  : 'Enter FDV and select token'
+              }
               leftAddon={<Text color="gray.500">$</Text>}
               isDisabled={true}
               bg="color-neutral-900"
@@ -317,7 +344,7 @@ export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
           gap={4}
         >
           <LabelComponent
-            label={t('valuationLabel') + ' (FDV)'}
+            label={t('valuationLabel')}
             isRequired={true}
             gridContainerProps={{
               templateColumns: '1fr',
