@@ -1,4 +1,5 @@
 import { Input, VStack, Grid, Text, Image, Flex } from '@chakra-ui/react';
+import { useFormikContext } from 'formik';
 import { useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { formatUnits, parseUnits } from 'viem';
@@ -20,6 +21,7 @@ interface SaleTermsFormProps {
 
 export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
   const { t } = useTranslation('tokenSale');
+  const { errors, touched } = useFormikContext<TokenSaleFormValues>();
   const daoKeyResult = useCurrentDAOKey();
   const daoKey =
     daoKeyResult.invalidQuery || daoKeyResult.wrongNetwork ? undefined : daoKeyResult.daoKey;
@@ -152,6 +154,7 @@ export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
         <LabelComponent
           label={t('saleNameLabel')}
           isRequired={true}
+          errorMessage={touched.saleName && errors.saleName ? errors.saleName : undefined}
           gridContainerProps={{
             templateColumns: '1fr',
             mb: '2rem',
@@ -161,6 +164,7 @@ export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
             placeholder={t('saleNamePlaceholder')}
             value={values.saleName}
             onChange={e => setFieldValue('saleName', e.target.value)}
+            isInvalid={touched.saleName && !!errors.saleName}
           />
         </LabelComponent>
 
@@ -177,6 +181,9 @@ export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
           <LabelComponent
             label={t('saleTokenLabel')}
             isRequired={true}
+            errorMessage={
+              touched.tokenAddress && errors.tokenAddress ? errors.tokenAddress : undefined
+            }
             gridContainerProps={{
               templateColumns: '1fr',
             }}
@@ -305,6 +312,11 @@ export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
           <LabelComponent
             label={t('minimumFundraiseLabel')}
             isRequired={true}
+            errorMessage={
+              touched.minimumFundraise && errors.minimumFundraise
+                ? errors.minimumFundraise
+                : undefined
+            }
             gridContainerProps={{
               templateColumns: '1fr',
             }}
@@ -323,6 +335,9 @@ export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
           <LabelComponent
             label={t('fundraisingCapLabel')}
             isRequired={true}
+            errorMessage={
+              touched.fundraisingCap && errors.fundraisingCap ? errors.fundraisingCap : undefined
+            }
             gridContainerProps={{
               templateColumns: '1fr',
             }}
@@ -346,6 +361,7 @@ export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
           <LabelComponent
             label={t('valuationLabel')}
             isRequired={true}
+            errorMessage={touched.valuation && errors.valuation ? errors.valuation : undefined}
             gridContainerProps={{
               templateColumns: '1fr',
               templateRows: '1fr',
@@ -369,6 +385,7 @@ export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
           <LabelComponent
             label={t('saleStartDateLabel')}
             isRequired={true}
+            errorMessage={touched.startDate && errors.startDate ? errors.startDate : undefined}
             gridContainerProps={{
               templateColumns: '1fr',
             }}
@@ -403,6 +420,9 @@ export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
             label={t('minimumPurchaseLabel')}
             subLabel={t('minimumPurchaseSubLabel')}
             isRequired={false}
+            errorMessage={
+              touched.minPurchase && errors.minPurchase ? errors.minPurchase : undefined
+            }
             gridContainerProps={{
               templateColumns: '1fr',
             }}
@@ -422,6 +442,9 @@ export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
           <LabelComponent
             isRequired={false}
             label={t('maximumPurchaseLabel')}
+            errorMessage={
+              touched.maxPurchase && errors.maxPurchase ? errors.maxPurchase : undefined
+            }
             gridContainerProps={{
               templateColumns: '1fr',
             }}

@@ -11,6 +11,7 @@ import { CONTENT_MAXW } from '../../../constants/common';
 import { DAO_ROUTES } from '../../../constants/routes';
 import { getRandomBytes } from '../../../helpers';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
+import { useTokenSaleSchema } from '../../../hooks/schemas/useTokenSaleSchema';
 import { generateContractByteCodeLinear, generateSalt } from '../../../models/helpers/utils';
 import { useDAOStore } from '../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
@@ -69,12 +70,6 @@ const initialValues: TokenSaleFormValues = {
 
   // Buyer Requirements
   buyerRequirements: [],
-
-  totalSupply: '',
-  salePrice: '',
-  whitelistAddress: '',
-
-  kycProvider: '',
 };
 
 export function SafeTokenSaleCreatePage() {
@@ -92,9 +87,14 @@ export function SafeTokenSaleCreatePage() {
   const navigate = useNavigate();
   const { addressPrefix } = useNetworkConfigStore();
   const { prepareFormData } = useTokenSaleFormPreparation();
+  const { tokenSaleValidationSchema } = useTokenSaleSchema();
 
-  const handleNext = () => {
-    if (currentStage < stages.length - 1) {
+  const handleNext = async (validateForm: () => Promise<any>) => {
+    // Validate current stage before proceeding
+    const errors = await validateForm();
+    const hasErrors = Object.keys(errors).length > 0;
+
+    if (!hasErrors && currentStage < stages.length - 1) {
       setCurrentStage(currentStage + 1);
     }
   };
@@ -325,9 +325,10 @@ export function SafeTokenSaleCreatePage() {
 
       <Formik
         initialValues={initialValues}
+        validationSchema={tokenSaleValidationSchema}
         onSubmit={handleSubmit}
       >
-        {({ values, setFieldValue }) => (
+        {({ values, setFieldValue, validateForm }) => (
           <Form>
             <VStack
               spacing={8}
@@ -350,7 +351,7 @@ export function SafeTokenSaleCreatePage() {
                   <Button
                     onClick={e => {
                       e.preventDefault();
-                      handleNext();
+                      handleNext(validateForm);
                     }}
                     type="button"
                   >
