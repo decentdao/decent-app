@@ -1,6 +1,7 @@
 import { VStack, Flex, Text, Button, Box, IconButton, Icon } from '@chakra-ui/react';
 import { Plus, Trash } from '@phosphor-icons/react';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Address, isAddress } from 'viem';
 import { AddressInputInfoTable } from '../../../../../components/ui/forms/AddressInputInfoTable';
 import { WhitelistBuyerRequirement } from '../../../../../types/tokenSale';
@@ -13,6 +14,7 @@ interface WhitelistRequirementFormProps {
 }
 
 export function WhitelistRequirementForm({ onSubmit, initialData }: WhitelistRequirementFormProps) {
+  const { t } = useTranslation('tokenSale');
   const [addresses, setAddresses] = useState<Address[]>(initialData?.addresses || []);
   const [newAddress, setNewAddress] = useState<string>('');
   const [error, setError] = useState<string>('');
@@ -32,15 +34,16 @@ export function WhitelistRequirementForm({ onSubmit, initialData }: WhitelistReq
     if (!newAddress.trim()) {
       return;
     }
+    // todo remove during validation update
 
     if (!isAddress(newAddress.trim())) {
-      setError('Invalid address format');
+      setError(t('whitelistInvalidAddressError'));
       return;
     }
 
     const address = newAddress.trim() as Address;
     if (addresses.some(existing => existing.toLowerCase() === address.toLowerCase())) {
-      setError('Address already exists in the list');
+      setError(t('whitelistAddressExistsError'));
       return;
     }
 
@@ -55,7 +58,7 @@ export function WhitelistRequirementForm({ onSubmit, initialData }: WhitelistReq
 
   const handleSubmit = () => {
     if (addresses.length === 0) {
-      setError('At least one address is required');
+      setError(t('whitelistMinOneAddressError'));
       return;
     }
 
@@ -100,7 +103,7 @@ export function WhitelistRequirementForm({ onSubmit, initialData }: WhitelistReq
               fontWeight="medium"
               color="color-content-content2-foreground"
             >
-              Wallet Address
+              {t('walletAddressTableHeader')}
             </Text>
           </Box>
           <Box
@@ -113,7 +116,7 @@ export function WhitelistRequirementForm({ onSubmit, initialData }: WhitelistReq
               fontWeight="medium"
               color="color-content-content2-foreground"
             >
-              Actions
+              {t('actionsTableHeader')}
             </Text>
           </Box>
         </Flex>
@@ -144,7 +147,7 @@ export function WhitelistRequirementForm({ onSubmit, initialData }: WhitelistReq
               justifyContent="center"
             >
               <IconButton
-                aria-label="Remove address"
+                aria-label={t('removeAddressAriaLabel')}
                 icon={
                   <Icon
                     as={Trash}
@@ -179,7 +182,7 @@ export function WhitelistRequirementForm({ onSubmit, initialData }: WhitelistReq
                 setNewAddress(e.target.value);
                 setError('');
               }}
-              placeholder="Enter address or ENS"
+              placeholder={t('whitelistAddressPlaceholder')}
               isInvalid={!!error}
             />
           </Box>
@@ -190,7 +193,7 @@ export function WhitelistRequirementForm({ onSubmit, initialData }: WhitelistReq
             justifyContent="center"
           >
             <IconButton
-              aria-label="Remove address"
+              aria-label={t('removeAddressAriaLabel')}
               icon={
                 <Icon
                   as={Trash}
@@ -235,7 +238,7 @@ export function WhitelistRequirementForm({ onSubmit, initialData }: WhitelistReq
                 color="color-base-secondary-foreground"
                 fontWeight="regular"
               >
-                Add Address
+                {t('addAddressText')}
               </Text>
             </Flex>
           </Box>
@@ -261,7 +264,7 @@ export function WhitelistRequirementForm({ onSubmit, initialData }: WhitelistReq
           variant="primary"
           onClick={handleSubmit}
         >
-          Add Requirement
+          {t('addRequirementButton')}
         </Button>
       </Flex>
     </VStack>

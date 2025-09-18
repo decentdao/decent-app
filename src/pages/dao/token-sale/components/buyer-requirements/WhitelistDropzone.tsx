@@ -2,6 +2,7 @@ import { Box, Flex, Text, Button, Icon } from '@chakra-ui/react';
 import { UploadSimple } from '@phosphor-icons/react';
 import { useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
+import { useTranslation } from 'react-i18next';
 import { isAddress, Address } from 'viem';
 
 interface WhitelistDropzoneProps {
@@ -28,6 +29,7 @@ const parseAddressesFromText = (text: string): Address[] => {
 };
 
 export function WhitelistDropzone({ onAddresses }: WhitelistDropzoneProps) {
+  const { t } = useTranslation('tokenSale');
   const onDrop = useCallback(
     (acceptedFiles: File[]) => {
       const file = acceptedFiles[0];
@@ -87,7 +89,7 @@ export function WhitelistDropzone({ onAddresses }: WhitelistDropzoneProps) {
           px={3}
           _hover={{ bg: 'color-content-content2' }}
         >
-          Upload
+          {t('whitelistUploadButtonText')}
         </Button>
         <Box>
           <Text
@@ -96,14 +98,14 @@ export function WhitelistDropzone({ onAddresses }: WhitelistDropzoneProps) {
             color="color-base-secondary-foreground"
             lineHeight="20px"
           >
-            Click to upload or drag a .CSV file here
+            {t('whitelistDropzoneText')}
           </Text>
           <Text
             fontSize="xs"
             color="color-content-muted-foreground"
             lineHeight="16px"
           >
-            address, one per row
+            {t('whitelistDropzoneSubtext')}
           </Text>
         </Box>
       </Flex>

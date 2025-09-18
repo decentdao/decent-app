@@ -74,6 +74,7 @@ i18n
       'roles',
       'settings',
       'stake',
+      'tokenSale',
       'transaction',
       'treasury',
       'revenueSharing',

@@ -2,6 +2,7 @@ import { Box, Button, Flex, VStack } from '@chakra-ui/react';
 import { abis, legacy } from '@decentdao/decent-contracts';
 import { Formik, Form } from 'formik';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { Address, encodeFunctionData, encodePacked, getCreate2Address, keccak256 } from 'viem';
 import { ZodiacModuleProxyFactoryAbi } from '../../../assets/abi/ZodiacModuleProxyFactoryAbi';
@@ -76,6 +77,7 @@ const initialValues: TokenSaleFormValues = {
 };
 
 export function SafeTokenSaleCreatePage() {
+  const { t } = useTranslation('tokenSale');
   const [currentStage, setCurrentStage] = useState(0);
   const {
     contracts: { tokenSaleV1MasterCopy, keyValuePairs, zodiacModuleProxyFactory, decentVerifierV1 },
@@ -310,11 +312,11 @@ export function SafeTokenSaleCreatePage() {
       <PageHeader
         breadcrumbs={[
           {
-            terminus: 'Token Sale',
+            terminus: t('tokenSaleBreadcrumb'),
             path: DAO_ROUTES.tokenSale.relative(addressPrefix, safe?.address || ''),
           },
           {
-            terminus: 'Create New Sale',
+            terminus: t('createNewSaleBreadcrumb'),
             path: '',
           },
         ]}
@@ -341,7 +343,7 @@ export function SafeTokenSaleCreatePage() {
                   onClick={handlePrevious}
                   isDisabled={currentStage === 0}
                 >
-                  Previous
+                  {t('previousButton')}
                 </Button>
                 {currentStage !== stages.length - 1 ? (
                   <Button
@@ -351,14 +353,14 @@ export function SafeTokenSaleCreatePage() {
                     }}
                     type="button"
                   >
-                    Continue
+                    {t('continueButton')}
                   </Button>
                 ) : (
                   <Button
                     variant="primary"
                     type="submit"
                   >
-                    Create Token Sale
+                    {t('createTokenSaleButton')}
                   </Button>
                 )}
               </Flex>

@@ -1,6 +1,7 @@
 import { VStack } from '@chakra-ui/react';
 import { Coins, ImageSquare, ListChecks } from '@phosphor-icons/react';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { ModalBase } from '../../../../../components/ui/modals/ModalBase';
 import { BuyerRequirement } from '../../../../../types/tokenSale';
 import { NFTRequirementForm } from './NFTRequirementForm';
@@ -21,6 +22,7 @@ export function AddRequirementModal({
   onClose,
   onAddRequirement,
 }: AddRequirementModalProps) {
+  const { t } = useTranslation('tokenSale');
   const [currentStep, setCurrentStep] = useState<RequirementStep>('selection');
 
   const handleClose = () => {
@@ -68,22 +70,22 @@ export function AddRequirementModal({
           >
             <RequirementOption
               icon={Coins}
-              title="Token"
-              description="Set an ERC-20 threshold"
+              title={t('tokenRequirementTitle')}
+              description={t('tokenRequirementDescription')}
               onClick={() => setCurrentStep('token')}
             />
 
             <RequirementOption
               icon={ImageSquare}
-              title="NFT"
-              description="Set an ERC-721 or ERC-1155 threshold"
+              title={t('nftRequirementTitle')}
+              description={t('nftRequirementDescription')}
               onClick={() => setCurrentStep('nft')}
             />
 
             <RequirementOption
               icon={ListChecks}
-              title="Whitelist"
-              description="Specify a list of addresses"
+              title={t('whitelistRequirementTitle')}
+              description={t('whitelistRequirementDescription')}
               onClick={() => setCurrentStep('whitelist')}
             />
           </VStack>
@@ -96,9 +98,9 @@ export function AddRequirementModal({
       case 'token':
       case 'nft':
       case 'whitelist':
-        return 'Add Requirement';
+        return t('addRequirementModalTitle');
       default:
-        return 'Add Requirement';
+        return t('addRequirementModalTitle');
     }
   };
 
