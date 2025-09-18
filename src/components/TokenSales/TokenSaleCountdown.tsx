@@ -1,5 +1,6 @@
 import { Box, Text } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 interface TokenSaleCountdownProps {
   endTimestamp: bigint;
@@ -8,6 +9,7 @@ interface TokenSaleCountdownProps {
 const zeroPad = (num: number) => String(num).padStart(2, '0');
 
 export function TokenSaleCountdown({ endTimestamp }: TokenSaleCountdownProps) {
+  const { t } = useTranslation('tokenSale');
   const [timeLeft, setTimeLeft] = useState<number>(0);
 
   useEffect(() => {
@@ -42,7 +44,7 @@ export function TokenSaleCountdown({ endTimestamp }: TokenSaleCountdownProps) {
           textStyle="text-xs-medium"
           color="color-content-content1-foreground"
         >
-          Ended
+          {t('endedLabel')}
         </Text>
       </Box>
     );

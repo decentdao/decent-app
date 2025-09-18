@@ -13,6 +13,7 @@ import {
 } from '@chakra-ui/react';
 import { CaretUpDown, DotsThree } from '@phosphor-icons/react';
 import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { DAO_ROUTES } from '../../constants/routes';
 import { useTokenSaleClaimFunds } from '../../hooks/DAO/proposal/useTokenSaleClaimFunds';
@@ -33,6 +34,7 @@ interface TokenSalesTableProps {
 }
 
 export function TokenSalesTable({ tokenSales }: TokenSalesTableProps) {
+  const { t } = useTranslation('tokenSale');
   const navigate = useNavigate();
   const { safeAddress } = useCurrentDAOKey();
   const { addressPrefix } = useNetworkConfigStore();
@@ -100,23 +102,23 @@ export function TokenSalesTable({ tokenSales }: TokenSalesTableProps) {
                 textStyle="text-sm-medium"
                 color="color-content-muted"
               >
-                Name
+                {t('nameColumnLabel')}
               </Text>
             </Th>
             <Th>
-              <SortableHeader>Closing Date</SortableHeader>
+              <SortableHeader>{t('closingDateColumnLabel')}</SortableHeader>
             </Th>
             <Th>
-              <SortableHeader>Status</SortableHeader>
+              <SortableHeader>{t('statusColumnLabel')}</SortableHeader>
             </Th>
             <Th>
-              <SortableHeader>Raised</SortableHeader>
+              <SortableHeader>{t('raisedColumnLabel')}</SortableHeader>
             </Th>
             <Th>
-              <SortableHeader>Target Raise</SortableHeader>
+              <SortableHeader>{t('targetRaiseColumnLabel')}</SortableHeader>
             </Th>
             <Th>
-              <SortableHeader>Progress</SortableHeader>
+              <SortableHeader>{t('progressColumnLabel')}</SortableHeader>
             </Th>
             <Th></Th>
           </Tr>
@@ -226,21 +228,7 @@ export function TokenSalesTable({ tokenSales }: TokenSalesTableProps) {
           fontSize="12px"
           lineHeight="16px"
         >
-          Showing{' '}
-          <Text
-            as="span"
-            fontWeight="semibold"
-          >
-            1-{tokenSales.length}
-          </Text>{' '}
-          of{' '}
-          <Text
-            as="span"
-            fontWeight="semibold"
-          >
-            {tokenSales.length}
-          </Text>{' '}
-          sales
+          {t('showingSalesText', { start: 1, end: tokenSales.length, total: tokenSales.length })}
         </Text>
       </Box>
     </Box>
