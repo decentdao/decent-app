@@ -23,14 +23,14 @@ import { SaleTermsForm } from './components/SaleTermsForm';
 import { useTokenSaleFormPreparation } from './hooks/useTokenSaleFormPreparation';
 
 const stages = ['Sale Terms', 'Buyer Requirements'];
-const initialValues: TokenSaleFormValues = {
+
+const getInitialValues = (usdcAddress?: Address): TokenSaleFormValues => ({
   // @dev these values are calculated in the form
   saleTokenHolder: null, // Will be set to DAO address
   saleTokenPrice: { value: '', bigintValue: undefined }, // Will be calculated from FDV and token supply
   // TODO this need to be set to specific address for base, sepolia, ethereum mainnet
   protocolFeeReceiver: '0x629750317d320B8bB4d48D345A6d699Cc855c4a6' as Address,
-  // TODO hardcoded to a sepolia token (SUSDC) for testing
-  commitmentToken: '0x0A7ECA73Bfecbc20fc73FE9Af480D12306d39e34', // Will be set based on acceptedToken
+  commitmentToken: usdcAddress || null, // Set to current network's USDC
 
   saleName: 'DecentDAO Token Sale',
 
@@ -70,13 +70,14 @@ const initialValues: TokenSaleFormValues = {
 
   // Buyer Requirements
   buyerRequirements: [],
-};
+});
 
 export function SafeTokenSaleCreatePage() {
   const { t } = useTranslation('tokenSale');
   const [currentStage, setCurrentStage] = useState(0);
   const {
     contracts: { tokenSaleV1MasterCopy, keyValuePairs, zodiacModuleProxyFactory, decentVerifierV1 },
+    stablecoins,
   } = useNetworkConfigStore();
 
   const { daoKey } = useCurrentDAOKey();
@@ -324,7 +325,7 @@ export function SafeTokenSaleCreatePage() {
       />
 
       <Formik
-        initialValues={initialValues}
+        initialValues={getInitialValues(stablecoins.usdc)}
         validationSchema={tokenSaleValidationSchema}
         onSubmit={handleSubmit}
       >

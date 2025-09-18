@@ -84,7 +84,7 @@ export interface TokenSaleFormValues {
   maxPurchase: number;
 
   // Sale Configuration
-  commitmentToken: Address | null; // Will be set based on acceptedToken selection
+  commitmentToken: Address | null; // Will be set based on commitmentToken selection
   verifier: Address | null; // Will be set from network config
   saleProceedsReceiver: Address | null; // Will be set to DAO address
   protocolFeeReceiver: Address | null; // Will be set from network config
