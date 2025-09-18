@@ -9,7 +9,6 @@ import { LabelComponent } from '../../../../components/ui/forms/InputComponent';
 import { NumberInputWithAddon } from '../../../../components/ui/forms/InputWithAddon';
 import { SectionHeader } from '../../../../components/ui/forms/SectionHeader';
 import { DropdownMenu } from '../../../../components/ui/menus/DropdownMenu';
-import { AssetSelector } from '../../../../components/ui/utils/AssetSelector';
 import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
 import { useDAOStore } from '../../../../providers/App/AppProvider';
 import { TokenSaleFormValues } from '../../../../types/tokenSale';
@@ -405,11 +404,29 @@ export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
             templateColumns: '1fr',
           }}
         >
-          <AssetSelector
-            includeNativeToken={true}
-            canSelectMultiple={true}
-            onSelect={addresses => setFieldValue('acceptedToken', addresses)}
-          />
+          <Flex
+            alignItems="center"
+            gap={2}
+            px={1}
+            py={1}
+            border="1px solid"
+            borderColor="color-neutral-600"
+            borderRadius="md"
+            bg="color-neutral-800"
+            w="fit-content"
+          >
+            <Image
+              src="/images/coin-icon-usdc.svg"
+              alt="USDC"
+              boxSize="1rem"
+            />
+            <Text
+              textStyle="text-xs-medium"
+              color="color-white"
+            >
+              USDC
+            </Text>
+          </Flex>
         </LabelComponent>
 
         <Grid
