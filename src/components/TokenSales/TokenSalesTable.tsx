@@ -56,8 +56,7 @@ export function TokenSalesTable({ tokenSales }: TokenSalesTableProps) {
         size="sm"
         rightIcon={<CaretUpDown size={16} />}
         color="color-content-muted"
-        fontWeight="medium"
-        fontSize="sm"
+        textStyle="text-sm-medium"
         h="36px"
         px={0}
         py={0}
@@ -71,6 +70,10 @@ export function TokenSalesTable({ tokenSales }: TokenSalesTableProps) {
     );
   }
 
+  // todo should also account for if there are any unclaimed funds
+  const canClaimFunds = (sale: TokenSaleData) =>
+    sale.saleState === 2 && sale.totalCommitments >= sale.maximumTotalCommitment / 2n;
+
   const getRowActions = (sale: TokenSaleData) => [
     {
       optionKey: 'viewDetails',
@@ -80,7 +83,7 @@ export function TokenSalesTable({ tokenSales }: TokenSalesTableProps) {
         }
       },
     },
-    ...(sale.isActive
+    ...(canClaimFunds(sale)
       ? [
           {
             optionKey: 'claimFunds',
