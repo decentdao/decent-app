@@ -1,6 +1,7 @@
 import { Input, VStack, Grid, Text, Image, Flex } from '@chakra-ui/react';
-import { useMemo } from 'react';
+import { useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { formatUnits, parseUnits } from 'viem';
 import { ContentBoxTight } from '../../../../components/ui/containers/ContentBox';
 import { DatePicker } from '../../../../components/ui/forms/DatePicker';
 import { LabelComponent } from '../../../../components/ui/forms/InputComponent';
@@ -42,21 +43,104 @@ export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
     }));
   }, [availableTokens, values.tokenAddress]);
 
+  // Calculate token price based on FDV and total supply
+  const calculateTokenPrice = (fdv: number, totalSupply: string, tokenDecimals: number = 18) => {
+    if (!fdv || !totalSupply || fdv <= 0 || parseFloat(totalSupply) <= 0) {
+      return 0;
+    }
+
+    try {
+      // Convert total supply to proper decimal format
+      const totalSupplyBigInt = parseUnits(totalSupply, tokenDecimals);
+      const fdvBigInt = parseUnits(fdv.toString(), 6); // Assuming USD has 6 decimals (like USDC)
+
+      // Price = FDV / Total Supply
+      const priceBigInt = (fdvBigInt * BigInt(10 ** tokenDecimals)) / totalSupplyBigInt;
+
+      // Convert back to human readable format
+      return parseFloat(formatUnits(priceBigInt, 6)); // Price in USD with 6 decimals
+    } catch (error) {
+      console.error('Error calculating token price:', error);
+      return 0;
+    }
+  };
+
+  // Get selected token details for decimals
+  const selectedToken = useMemo(() => {
+    return availableTokens.find(token => token.tokenAddress === values.tokenAddress);
+  }, [availableTokens, values.tokenAddress]);
+
+  const tokenDecimals = selectedToken?.decimals || 18;
+
+  // Reactive price calculation when FDV or total supply changes
+  useEffect(() => {
+    const totalSupply = values.maxTokenSupply.value;
+    const fdv = values.valuation;
+
+    // Only calculate if we have both FDV and actual token total supply (no defaults)
+    if (fdv > 0 && totalSupply && values.tokenAddress) {
+      const calculatedPrice = calculateTokenPrice(fdv, totalSupply, tokenDecimals);
+      // Update saleTokenPrice BigIntValuePair for contract interaction
+      const priceBigInt = parseUnits(calculatedPrice.toString(), tokenDecimals);
+      setFieldValue('saleTokenPrice', {
+        value: calculatedPrice.toFixed(8),
+        bigintValue: priceBigInt,
+      });
+    } else {
+      // Clear the price if conditions aren't met
+      setFieldValue('saleTokenPrice', {
+        value: '',
+        bigintValue: undefined,
+      });
+    }
+  }, [
+    values.valuation,
+    values.maxTokenSupply.value,
+    values.tokenAddress,
+    tokenDecimals,
+    setFieldValue,
+  ]);
+
   // Handle token selection
   const handleTokenSelect = (item: any) => {
-    const selectedToken = availableTokens.find(token => token.tokenAddress === item.value);
-    if (selectedToken) {
-      setFieldValue('tokenAddress', selectedToken.tokenAddress);
-      setFieldValue('tokenName', selectedToken.name);
-      setFieldValue('tokenSymbol', selectedToken.symbol);
-      setFieldValue('maxTokenSupply', {
-        value: selectedToken.totalSupply || '0',
-        bigintValue: selectedToken.totalSupply ? BigInt(selectedToken.totalSupply) : BigInt(0),
-      });
-      // Calculate token price based on USD value if available
-      if (selectedToken.usdPrice) {
-        // TODO this needs to be calculated based on PRD
-        setFieldValue('tokenPrice', selectedToken.usdPrice);
+    const tokenToSelect = availableTokens.find(token => token.tokenAddress === item.value);
+    if (tokenToSelect) {
+      setFieldValue('tokenAddress', tokenToSelect.tokenAddress);
+      setFieldValue('tokenName', tokenToSelect.name);
+      setFieldValue('tokenSymbol', tokenToSelect.symbol);
+
+      // Use the actual token's total supply (no defaults)
+      if (tokenToSelect.totalSupply) {
+        setFieldValue('maxTokenSupply', {
+          value: tokenToSelect.totalSupply,
+          bigintValue: BigInt(tokenToSelect.totalSupply),
+        });
+
+        // Recalculate price with the selected token's actual total supply
+        if (values.valuation > 0) {
+          const calculatedPrice = calculateTokenPrice(
+            values.valuation,
+            tokenToSelect.totalSupply,
+            tokenToSelect.decimals || 18,
+          );
+
+          const priceBigInt = parseUnits(calculatedPrice.toString(), tokenToSelect.decimals || 18);
+          setFieldValue('saleTokenPrice', {
+            value: calculatedPrice.toFixed(8),
+            bigintValue: priceBigInt,
+          });
+        }
+      } else {
+        // Clear the total supply if token doesn't have it
+        setFieldValue('maxTokenSupply', {
+          value: '',
+          bigintValue: undefined,
+        });
+        // Clear the calculated price as well
+        setFieldValue('saleTokenPrice', {
+          value: '',
+          bigintValue: undefined,
+        });
       }
     }
   };
@@ -169,7 +253,11 @@ export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
             }}
           >
             <Input
-              value={values.maxTokenSupply.value || 'Select a token first'}
+              value={
+                values.maxTokenSupply.value
+                  ? parseFloat(values.maxTokenSupply.value).toLocaleString()
+                  : 'Select a token first'
+              }
               isDisabled={true}
               bg="color-neutral-900"
               opacity={0.5}
@@ -185,12 +273,14 @@ export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
             }}
           >
             <NumberInputWithAddon
-              value={values.tokenPrice}
-              onChange={() => {}} // No-op since it's disabled
+              value={values.saleTokenPrice.value ? parseFloat(values.saleTokenPrice.value) : ''}
+              onChange={() => {}} // No-op since it's calculated automatically
               min={0}
-              precision={2}
-              step={0.01}
-              placeholder={t('tokenPricePlaceholder')}
+              placeholder={
+                values.valuation > 0 && values.tokenAddress
+                  ? 'Calculated from FDV'
+                  : 'Enter FDV and select token'
+              }
               leftAddon={<Text color="gray.500">$</Text>}
               isDisabled={true}
               bg="color-neutral-900"
@@ -263,7 +353,11 @@ export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
           >
             <NumberInputWithAddon
               value={values.valuation}
-              onChange={val => setFieldValue('valuation', parseFloat(val) || 0)}
+              onChange={val => {
+                const fdvValue = parseFloat(val) || 0;
+                setFieldValue('valuation', fdvValue);
+                // Price calculation will be handled by useEffect
+              }}
               min={0}
               precision={2}
               step={0.01}

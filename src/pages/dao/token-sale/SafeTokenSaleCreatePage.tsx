@@ -23,7 +23,14 @@ import { useTokenSaleFormPreparation } from './hooks/useTokenSaleFormPreparation
 
 const stages = ['Sale Terms', 'Buyer Requirements'];
 const initialValues: TokenSaleFormValues = {
-  // Project Overview
+  // @dev these values are calculated in the form
+  saleTokenHolder: null, // Will be set to DAO address
+  saleTokenPrice: { value: '', bigintValue: undefined }, // Will be calculated from FDV and token supply
+  // TODO this need to be set to specific address for base, sepolia, ethereum mainnet
+  protocolFeeReceiver: '0x629750317d320B8bB4d48D345A6d699Cc855c4a6' as Address,
+  // TODO hardcoded to a sepolia token (SUSDC) for testing
+  commitmentToken: '0x0A7ECA73Bfecbc20fc73FE9Af480D12306d39e34', // Will be set based on acceptedToken
+
   saleName: 'DecentDAO Token Sale',
 
   // Token Details
@@ -31,7 +38,6 @@ const initialValues: TokenSaleFormValues = {
   tokenName: '',
   tokenSymbol: '',
   maxTokenSupply: { value: '', bigintValue: undefined },
-  tokenPrice: 0,
 
   // Sale Timing
   startDate: new Date(Date.now() + 86400 * 1000), // Start in 24 hours
@@ -40,24 +46,18 @@ const initialValues: TokenSaleFormValues = {
   // Sale Pricing & Terms
   minimumFundraise: 5, // $5 minimum
   fundraisingCap: 9500, // $9,500 maximum
-  valuation: 0,
+  valuation: 1000000,
   minPurchase: 1, // $1 minimum purchase
   maxPurchase: 50, // $50 maximum purchase
 
-  // TODO hardcoded to a sepolia token (SUSDC) for testing
-  commitmentToken: '0x0A7ECA73Bfecbc20fc73FE9Af480D12306d39e34', // Will be set based on acceptedToken
   verifier: null, // Will be set from network config
   saleProceedsReceiver: null, // Will be set to DAO address
-  // TODO this need to be set to specific address for base, sepolia, ethereum mainnet
-  protocolFeeReceiver: '0x629750317d320B8bB4d48D345A6d699Cc855c4a6' as Address,
   minimumCommitment: { value: '1', bigintValue: BigInt('1000000') }, // $1 USDC (6 decimals)
   maximumCommitment: { value: '50', bigintValue: BigInt('50000000') }, // $50 USDC
   minimumTotalCommitment: { value: '5', bigintValue: BigInt('5000000') }, // $5 USDC
   maximumTotalCommitment: { value: '9500', bigintValue: BigInt('9500000000') }, // $9,500 USDC
-  saleTokenPrice: { value: '1.00', bigintValue: BigInt('1000000') }, // $1.00 per token (USDC 6 decimals)
   commitmentTokenProtocolFee: { value: '5', bigintValue: BigInt('50000000000000000') }, // 5% (18 decimal precision)
   saleTokenProtocolFee: { value: '5', bigintValue: BigInt('50000000000000000') }, // 5%
-  saleTokenHolder: null, // Will be set to DAO address
 
   // Hedgey Lockup Configuration (disabled by default)
   hedgeyLockupEnabled: false,
@@ -73,6 +73,7 @@ const initialValues: TokenSaleFormValues = {
   totalSupply: '',
   salePrice: '',
   whitelistAddress: '',
+
   kycProvider: '',
 };
 
