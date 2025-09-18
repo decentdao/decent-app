@@ -222,7 +222,8 @@ export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
                       textStyle="text-xs-regular"
                       color="color-neutral-300"
                     >
-                      {item.symbol} • {t('balanceLabel')} {parseFloat(item.balanceFormatted).toFixed(4)}
+                      {item.symbol} • {t('balanceLabel')}{' '}
+                      {parseFloat(item.balanceFormatted).toFixed(4)}
                     </Text>
                   </Flex>
                 </Flex>
