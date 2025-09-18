@@ -3,7 +3,7 @@
   "title": "Distribution",
   "addSplitButton": "Add Asset Split",
   "defaultSplitName": "Asset Split",
-  "daoSafeWallet": "DAO Safe Wallet",
+  "daoSafeWallet": "Project Treasury",
   "totalError": "{{percentage}}% Total must equal 100%",
   "recipients": "Recipients",
   "addRecipientButton": "Add Recipient",

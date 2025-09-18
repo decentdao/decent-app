@@ -65,7 +65,7 @@
   "payments": "Payments",
   "payment": "Payment",
   "withdraw": "Withdraw",
-  "withdrawToDao": "Withdraw to DAO",
+  "withdrawToDao": "Withdraw to Treasury",
   "available": "Available",
   "withdrawPendingMessage": "Withdrawing your payment, hang tight",
   "withdrawSuccessMessage": "Payment successfully withdrawn. Check your wallet :)",
@@ -98,7 +98,7 @@
   "addTermLengths": "Add Term Lengths",
   "addTermLengthSubTitle": "This action will permanently add term elections to this role.",
   "noPaymentsTitle": "This Role has no active payments.",
-  "noPaymentsSubTitle": "Payment streams for contributor compensation or token vesting can be assigned to Roles. The streams are transferrable, protecting DAO funds in the event a Role is reassigned.",
+  "noPaymentsSubTitle": "Payment streams for contributor compensation or token vesting can be assigned to Roles. The streams are transferrable, protecting project funds in the event a Role is reassigned.",
   "addTermLengthTitle": "Add a term length to this role?",
   "termNumber": "Term {{number}}",
   "currentTerm": "Current Term",
@@ -136,5 +136,5 @@
   "startTermFailureToastMessage": "Failed to start term",
   "invalidHatsTreeIdMessage": "Hats Tree ID is not valid",
   "savePayment": "Add Payment",
-  "withdrawPayment": "Withdraw {{amount}} from {{roleName}} to the DAO"
+  "withdrawPayment": "Withdraw {{amount}} from {{roleName}} to the Treasury"
 }
