@@ -1,5 +1,5 @@
 {
-  "createNewDAO": "Create New DAO",
+  "createNewDAO": "Create New Project",
   "createSubDAO": "Create SubDAO",
   "headerTitle": "{{daoName}} {{subject}}",
   "proposals": "All Proposals",
@@ -13,7 +13,7 @@
   "proposalTemplate": "{{proposalTemplateTitle}}",
   "proposalTemplateNew": "Create Proposal Template",
   "deployToken": "Deploy Token",
-  "editDAO": "Edit DAO",
-  "parentLink": "Parent DAO",
+  "editDAO": "Edit Project",
+  "parentLink": "Parent Project",
   "settings": "Settings"
 }
