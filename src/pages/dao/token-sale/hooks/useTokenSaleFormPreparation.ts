@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { Address } from 'viem';
+import { Address, zeroAddress } from 'viem';
 import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
 import { useDAOStore } from '../../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../../providers/NetworkConfig/useNetworkConfigStore';
@@ -51,8 +51,22 @@ export function useTokenSaleFormPreparation() {
         throw new Error('No token selected');
       }
 
-      if (!values.startDate || !values.endDate) {
-        throw new Error('Sale dates are required');
+      if (
+        !values.startDate ||
+        !values.endDate ||
+        !values.saleTokenPrice.bigintValue ||
+        !values.saleTokenPrice.value ||
+        !values.saleTokenPrice.value ||
+        !values.saleTokenPrice.value ||
+        !values.protocolFeeReceiver ||
+        !values.saleTokenProtocolFee.bigintValue ||
+        !values.minimumCommitment.bigintValue ||
+        !values.maximumCommitment.bigintValue ||
+        !values.minimumTotalCommitment.bigintValue ||
+        !values.maximumTotalCommitment.bigintValue ||
+        !values.commitmentTokenProtocolFee.bigintValue
+      ) {
+        throw new Error('Sale Form not ready');
       }
 
       if (!decentVerifierV1) {
@@ -74,27 +88,25 @@ export function useTokenSaleFormPreparation() {
         saleToken: values.tokenAddress as Address,
         verifier: decentVerifierV1,
         saleProceedsReceiver: safe.address,
-        protocolFeeReceiver: values.protocolFeeReceiver || safe.address,
-        minimumCommitment: values.minimumCommitment.bigintValue || BigInt('1000000'),
-        maximumCommitment: values.maximumCommitment.bigintValue || BigInt('50000000'),
-        minimumTotalCommitment: values.minimumTotalCommitment.bigintValue || BigInt('5000000'),
-        maximumTotalCommitment: values.maximumTotalCommitment.bigintValue || BigInt('9500000000'),
+        protocolFeeReceiver: values.protocolFeeReceiver,
+        minimumCommitment: values.minimumCommitment.bigintValue,
+        maximumCommitment: values.maximumCommitment.bigintValue,
+        minimumTotalCommitment: values.minimumTotalCommitment.bigintValue,
+        maximumTotalCommitment: values.maximumTotalCommitment.bigintValue,
         // Use calculated token price from form
-        saleTokenPrice: values.saleTokenPrice.bigintValue || BigInt('1000000'), // Fallback to $1.00 per token (USDC has 6 decimals)
-        commitmentTokenProtocolFee:
-          values.commitmentTokenProtocolFee.bigintValue || BigInt('50000000000000000'),
-        saleTokenProtocolFee:
-          values.saleTokenProtocolFee.bigintValue || BigInt('50000000000000000'),
+        saleTokenPrice: values.saleTokenPrice.bigintValue,
+        commitmentTokenProtocolFee: values.commitmentTokenProtocolFee.bigintValue,
+        saleTokenProtocolFee: values.saleTokenProtocolFee.bigintValue,
         saleTokenHolder: safe.address,
+
+        // TODO: if hedgeyLockupEnabled is true, don't default to 0n for the other values
         hedgeyLockupParams: {
           enabled: values.hedgeyLockupEnabled,
           start: values.hedgeyLockupStart.bigintValue || 0n,
           cliff: values.hedgeyLockupCliff.bigintValue || 0n,
           ratePercentage: values.hedgeyLockupRatePercentage.bigintValue || 0n,
           period: values.hedgeyLockupPeriod.bigintValue || 0n,
-          votingTokenLockupPlans:
-            values.hedgeyVotingTokenLockupPlans ||
-            ('0x0000000000000000000000000000000000000000' as Address),
+          votingTokenLockupPlans: values.hedgeyVotingTokenLockupPlans || zeroAddress,
         },
       };
 
