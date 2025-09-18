@@ -1,6 +1,7 @@
 import { Box, Flex, Text, VStack, Icon } from '@chakra-ui/react';
 import { CheckCircle } from '@phosphor-icons/react';
 import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 import { formatUnits } from 'viem';
 import { TokenSaleBanner } from '../../../components/TokenSales/TokenSaleBanner';
@@ -14,6 +15,7 @@ import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import { useDAOStore } from '../../../providers/App/AppProvider';
 
 export function SafeTokenSaleDetailsPage() {
+  const { t } = useTranslation('tokenSale');
   const { saleId } = useParams<{ saleId: string }>();
   const { daoKey } = useCurrentDAOKey();
   const { tokenSales } = useDAOStore({ daoKey });
@@ -117,9 +119,11 @@ export function SafeTokenSaleDetailsPage() {
           {tokenSale.saleState === 3 &&
             tokenSale.totalCommitments < tokenSale.maximumTotalCommitment / 2n && (
               <TokenSaleBanner
-                title="You did not meet your minimum fundraising goal."
-                description={`You only raised ${formatCurrency(tokenSale.totalCommitments)}. Reclaim your sale tokens to return funds.`}
-                buttonText="Reclaim Tokens"
+                title={t('fundraisingGoalNotMetTitle')}
+                description={t('fundraisingGoalNotMetDescription', {
+                  amount: formatCurrency(tokenSale.totalCommitments),
+                })}
+                buttonText={t('reclaimTokensButton')}
                 onButtonClick={() => {
                   claimFunds(tokenSale.address, tokenSale.name);
                 }}
@@ -132,9 +136,11 @@ export function SafeTokenSaleDetailsPage() {
           {tokenSale.saleState === 2 &&
             tokenSale.totalCommitments >= tokenSale.maximumTotalCommitment / 2n && (
               <TokenSaleBanner
-                title="Congratulations, your sale was successful!"
-                description={`You raised ${formatCurrency(tokenSale.totalCommitments)}. Your funds are ready to be claimed.`}
-                buttonText="Claim Funds"
+                title={t('successfulSaleTitle')}
+                description={t('successfulSaleDescription', {
+                  amount: formatCurrency(tokenSale.totalCommitments),
+                })}
+                buttonText={t('claimFundsButton')}
                 onButtonClick={() => {
                   claimFunds(tokenSale.address, tokenSale.name);
                 }}
@@ -145,18 +151,18 @@ export function SafeTokenSaleDetailsPage() {
         </VStack>
 
         {/* Sale Configuration */}
-        <TokenSaleInfoCard title="Sale Configuration">
+        <TokenSaleInfoCard title={t('saleConfigurationTitle')}>
           <TokenSaleInfoCard.Section>
             <TokenSaleInfoCard.Item
-              label="Token:"
+              label={t('tokenInfoLabel')}
               value={tokenSale.tokenSymbol}
             />
             <TokenSaleInfoCard.Item
-              label="Total Supply:"
+              label={t('totalSupplyInfoLabel')}
               value={totalSupply}
             />
             <TokenSaleInfoCard.Item
-              label="Price:"
+              label={t('priceInfoLabel')}
               value={`$${tokenPrice}`}
             />
           </TokenSaleInfoCard.Section>
@@ -165,19 +171,19 @@ export function SafeTokenSaleDetailsPage() {
 
           <TokenSaleInfoCard.Section>
             <TokenSaleInfoCard.Item
-              label="Closing Date:"
+              label={t('closingDateInfoLabel')}
               value={formatDate(tokenSale.saleEndTimestamp)}
             />
             <TokenSaleInfoCard.Item
-              label="Minimum Raise:"
+              label={t('minimumRaiseInfoLabel')}
               value={formatCurrency(tokenSale.maximumTotalCommitment / 2n)} // Assuming minimum is half
             />
             <TokenSaleInfoCard.Item
-              label="Fundraising Cap:"
+              label={t('fundraisingCapInfoLabel')}
               value={formatCurrency(tokenSale.maximumTotalCommitment)}
             />
             <TokenSaleInfoCard.Item
-              label="Valuation:"
+              label={t('valuationInfoLabel')}
               value={`$${valuation.toLocaleString('en-US', { maximumFractionDigits: 0 })}`}
             />
           </TokenSaleInfoCard.Section>
@@ -186,21 +192,21 @@ export function SafeTokenSaleDetailsPage() {
 
           <TokenSaleInfoCard.Section>
             <TokenSaleInfoCard.Item
-              label="Min Purchase:"
+              label={t('minPurchaseInfoLabel')}
               value={formatCurrency(tokenSale.minimumCommitment)}
             />
             <TokenSaleInfoCard.Item
-              label="Max Purchase:"
+              label={t('maxPurchaseInfoLabel')}
               value={formatCurrency(tokenSale.maximumCommitment)}
             />
           </TokenSaleInfoCard.Section>
         </TokenSaleInfoCard>
         {/* TODO this needs to be live data */}
         {/* Buyer Requirements */}
-        <TokenSaleInfoCard title="Buyer Requirements">
+        <TokenSaleInfoCard title={t('buyerRequirementsTitle')}>
           <TokenSaleInfoCard.Section>
             <TokenSaleInfoCard.Item
-              label="Requires KYC/KYB"
+              label={t('requiresKycKybLabel')}
               value="Yes"
             />
           </TokenSaleInfoCard.Section>
@@ -221,7 +227,7 @@ export function SafeTokenSaleDetailsPage() {
               textStyle="text-sm-regular"
               color="color-content-content1-foreground"
             >
-              Buyer must meet 2 out of 3 requirements:
+              {t('buyerRequirementsDescription', { count: 2, total: 3 })}
             </Text>
 
             <Flex
@@ -232,7 +238,7 @@ export function SafeTokenSaleDetailsPage() {
                 textStyle="text-sm-regular"
                 color="color-content-muted"
               >
-                Must hold at least 1,000 USDC
+                {t('usdcRequirement')}
               </Text>
               <Icon
                 as={CheckCircle}
@@ -249,7 +255,7 @@ export function SafeTokenSaleDetailsPage() {
                 textStyle="text-sm-regular"
                 color="color-content-muted"
               >
-                Must hold at least 1 Founder&apos;s Club NFT
+                {t('foundersClubRequirement')}
               </Text>
               <Icon
                 as={CheckCircle}
@@ -266,7 +272,7 @@ export function SafeTokenSaleDetailsPage() {
                 textStyle="text-sm-regular"
                 color="color-content-muted"
               >
-                Must be whitelisted
+                {t('whitelistedRequirement')}
               </Text>
               <Icon
                 as={CheckCircle}

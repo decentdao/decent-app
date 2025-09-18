@@ -1,6 +1,7 @@
 import { Box, Button, Grid, GridItem, Text, VStack } from '@chakra-ui/react';
 import { TrendUp, Play, CurrencyDollar } from '@phosphor-icons/react';
 import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { formatUnits } from 'viem';
 import { TokenSalesTable } from '../../../components/TokenSales/TokenSalesTable';
@@ -12,6 +13,7 @@ import { useDAOStore } from '../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
 
 export function SafeTokenSalePage() {
+  const { t } = useTranslation('tokenSale');
   const { daoKey } = useCurrentDAOKey();
   const {
     node: { safe },
@@ -118,7 +120,7 @@ export function SafeTokenSalePage() {
         >
           <img
             src="/images/decentsquare.png"
-            alt="Token Sale Icon"
+            alt={t('tokenSaleIconAltText')}
             width="96"
             height="96"
             style={{ width: '100%', height: '100%' }}
@@ -136,18 +138,17 @@ export function SafeTokenSalePage() {
               textStyle="text-2xl-regular"
               color="color-content-content1-foreground"
             >
-              No sales yet
+              {t('noSalesYetTitle')}
             </Text>
             <Text
               textStyle="text-sm-regular"
               color="color-content-content2-foreground"
               maxW="464px"
             >
-              Get started by creating your first token sale. Our guided setup will help you
-              configure everything properly.
+              {t('noSalesYetDescription')}
             </Text>
           </VStack>
-          <Button onClick={handleCreateSale}>Create Your First Sale</Button>
+          <Button onClick={handleCreateSale}>{t('createYourFirstSaleButton')}</Button>
         </VStack>
       </Box>
     );
@@ -161,7 +162,7 @@ export function SafeTokenSalePage() {
       <PageHeader
         breadcrumbs={[
           {
-            terminus: 'Token Sales',
+            terminus: t('tokenSalesBreadcrumb'),
             path: '',
           },
         ]}
@@ -169,7 +170,7 @@ export function SafeTokenSalePage() {
           stats.totalSales > 0
             ? {
                 onClick: handleCreateSale,
-                children: 'Create Token Sale',
+                children: t('createTokenSaleButtonLabel'),
                 'data-testid': 'create-token-sale-button',
               }
             : undefined
@@ -189,21 +190,21 @@ export function SafeTokenSalePage() {
           <GridItem>
             <StatCard
               icon={<TrendUp size={20} />}
-              label="Total Sales"
+              label={t('totalSalesLabel')}
               value={stats.totalSales.toString()}
             />
           </GridItem>
           <GridItem>
             <StatCard
               icon={<Play size={20} />}
-              label="Active Sales"
+              label={t('activeSalesLabel')}
               value={stats.activeSales.toString()}
             />
           </GridItem>
           <GridItem>
             <StatCard
               icon={<CurrencyDollar size={20} />}
-              label="Total Raised"
+              label={t('totalRaisedLabel')}
               value={stats.totalRaised}
             />
           </GridItem>
