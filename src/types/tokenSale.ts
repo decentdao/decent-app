@@ -71,7 +71,6 @@ export interface TokenSaleFormValues {
   tokenName: string;
   tokenSymbol: string;
   maxTokenSupply: BigIntValuePair;
-  tokenPrice: number;
 
   // Sale Timing
   startDate: Date | null;

@@ -79,8 +79,8 @@ export function useTokenSaleFormPreparation() {
         maximumCommitment: values.maximumCommitment.bigintValue || BigInt('50000000'),
         minimumTotalCommitment: values.minimumTotalCommitment.bigintValue || BigInt('5000000'),
         maximumTotalCommitment: values.maximumTotalCommitment.bigintValue || BigInt('9500000000'),
-        // Keep token price mocked as requested
-        saleTokenPrice: BigInt('1000000'), // $1.00 per token (USDC has 6 decimals)
+        // Use calculated token price from form
+        saleTokenPrice: values.saleTokenPrice.bigintValue || BigInt('1000000'), // Fallback to $1.00 per token (USDC has 6 decimals)
         commitmentTokenProtocolFee:
           values.commitmentTokenProtocolFee.bigintValue || BigInt('50000000000000000'),
         saleTokenProtocolFee:

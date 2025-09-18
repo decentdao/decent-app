@@ -31,7 +31,6 @@ const initialValues: TokenSaleFormValues = {
   tokenName: '',
   tokenSymbol: '',
   maxTokenSupply: { value: '', bigintValue: undefined },
-  tokenPrice: 0,
 
   // Sale Timing
   startDate: new Date(Date.now() + 86400 * 1000), // Start in 24 hours
