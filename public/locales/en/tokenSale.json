@@ -139,5 +139,9 @@
   "fundraisingCapGreaterThanMinimumError": "Fundraising cap must be greater than minimum fundraise",
   "minPurchasePositiveError": "Minimum purchase must be a positive number",
   "maxPurchasePositiveError": "Maximum purchase must be a positive number",
-  "maxPurchaseGreaterThanMinError": "Maximum purchase must be greater than minimum purchase"
+  "maxPurchaseGreaterThanMinError": "Maximum purchase must be greater than minimum purchase",
+  "selectTokenFirst": "Select a token first",
+  "balanceLabel": "Balance:",
+  "calculatedFromFdv": "Calculated from FDV",
+  "enterFdvAndSelectToken": "Enter FDV and select token"
 }
