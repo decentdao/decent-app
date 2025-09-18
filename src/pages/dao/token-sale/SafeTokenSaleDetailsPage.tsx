@@ -8,17 +8,24 @@ import { TokenSaleBanner } from '../../../components/TokenSales/TokenSaleBanner'
 import { TokenSaleCountdown } from '../../../components/TokenSales/TokenSaleCountdown';
 import { TokenSaleInfoCard } from '../../../components/TokenSales/TokenSaleInfoCard';
 import { TokenSaleProgressCard } from '../../../components/TokenSales/TokenSaleProgressCard';
+import { InfoBoxLoader } from '../../../components/ui/loaders/InfoBoxLoader';
 import PageHeader from '../../../components/ui/page/Header/PageHeader';
 import { CONTENT_MAXW } from '../../../constants/common';
+import { DAO_ROUTES } from '../../../constants/routes';
 import { useTokenSaleClaimFunds } from '../../../hooks/DAO/proposal/useTokenSaleClaimFunds';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import { useDAOStore } from '../../../providers/App/AppProvider';
+import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
 
 export function SafeTokenSaleDetailsPage() {
   const { t } = useTranslation('tokenSale');
   const { saleId } = useParams<{ saleId: string }>();
   const { daoKey } = useCurrentDAOKey();
-  const { tokenSales } = useDAOStore({ daoKey });
+  const { addressPrefix } = useNetworkConfigStore();
+  const {
+    tokenSales,
+    node: { safe },
+  } = useDAOStore({ daoKey });
   const { claimFunds, pending } = useTokenSaleClaimFunds();
 
   const tokenSale = useMemo(() => {
@@ -27,14 +34,7 @@ export function SafeTokenSaleDetailsPage() {
   }, [saleId, tokenSales]);
 
   if (!tokenSale) {
-    return (
-      <Box
-        maxW={CONTENT_MAXW}
-        mx="auto"
-      >
-        <Text>Token sale not found</Text>
-      </Box>
-    );
+    return <InfoBoxLoader />;
   }
 
   const formatCurrency = (value: bigint, decimals: number = 6) => {
@@ -63,6 +63,10 @@ export function SafeTokenSaleDetailsPage() {
   );
   const valuation = parseFloat(formatUnits(tokenSale.maximumTotalCommitment, 6)) * 1.6; // Assuming 1.6x multiple for valuation
 
+  if (!safe?.address) {
+    return <InfoBoxLoader />;
+  }
+
   return (
     <Box
       maxW={CONTENT_MAXW}
@@ -71,12 +75,8 @@ export function SafeTokenSaleDetailsPage() {
       <PageHeader
         breadcrumbs={[
           {
-            terminus: 'My DAO',
-            path: '',
-          },
-          {
             terminus: 'Token Sales',
-            path: '',
+            path: DAO_ROUTES.tokenSale.relative(addressPrefix, safe?.address),
           },
           {
             terminus: tokenSale.name,

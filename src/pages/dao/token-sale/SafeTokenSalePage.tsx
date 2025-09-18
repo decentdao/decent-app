@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { formatUnits } from 'viem';
 import { TokenSalesTable } from '../../../components/TokenSales/TokenSalesTable';
+import { InfoBoxLoader } from '../../../components/ui/loaders/InfoBoxLoader';
 import PageHeader from '../../../components/ui/page/Header/PageHeader';
 import { CONTENT_MAXW } from '../../../constants/common';
 import { DAO_ROUTES } from '../../../constants/routes';
@@ -19,7 +20,6 @@ export function SafeTokenSalePage() {
     node: { safe },
     tokenSales,
   } = useDAOStore({ daoKey });
-  console.log('🚀 ~ tokenSales:', tokenSales);
   const navigate = useNavigate();
   const { addressPrefix } = useNetworkConfigStore();
 
@@ -152,6 +152,10 @@ export function SafeTokenSalePage() {
         </VStack>
       </Box>
     );
+  }
+
+  if (!safe?.address) {
+    return <InfoBoxLoader />;
   }
 
   return (

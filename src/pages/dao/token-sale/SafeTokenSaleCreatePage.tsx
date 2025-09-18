@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { Address, encodeFunctionData, encodePacked, getCreate2Address, keccak256 } from 'viem';
 import { ZodiacModuleProxyFactoryAbi } from '../../../assets/abi/ZodiacModuleProxyFactoryAbi';
+import { InfoBoxLoader } from '../../../components/ui/loaders/InfoBoxLoader';
 import PageHeader from '../../../components/ui/page/Header/PageHeader';
 import { CONTENT_MAXW } from '../../../constants/common';
 import { DAO_ROUTES } from '../../../constants/routes';
@@ -236,9 +237,10 @@ export function SafeTokenSaleCreatePage() {
 
       // 2. Update KeyValuePairs with new token sale info
       const tokenSaleMetadata = {
-        address: predictedTokenSaleAddress,
-        name: tokenSaleData.saleName,
+        tokenSaleAddress: predictedTokenSaleAddress,
+        saleName: tokenSaleData.saleName,
         buyerRequirements: values.buyerRequirements,
+        kyc: null,
       };
 
       const updateValuesCalldata = encodeFunctionData({
@@ -306,6 +308,10 @@ export function SafeTokenSaleCreatePage() {
     }
   };
 
+  if (!safe?.address) {
+    return <InfoBoxLoader />;
+  }
+
   return (
     <Box
       maxW={CONTENT_MAXW}
@@ -315,7 +321,7 @@ export function SafeTokenSaleCreatePage() {
         breadcrumbs={[
           {
             terminus: t('tokenSaleBreadcrumb'),
-            path: DAO_ROUTES.tokenSale.relative(addressPrefix, safe?.address || ''),
+            path: DAO_ROUTES.tokenSale.relative(addressPrefix, safe.address),
           },
           {
             terminus: t('createNewSaleBreadcrumb'),
