@@ -3,7 +3,7 @@
   "role": "Role",
   "member": "Member",
   "noRoles": "You haven't added any Roles yet. Create one above.",
-  "noRolesNotProposer": "This Safe doesn't have any Roles yet.",
+  "noRolesNotProposer": "This project doesn't have any roles yet.",
   "description": "Description",
   "unassigned": "Unassigned",
   "wearerPending": "(Pending)",
