@@ -1,4 +1,4 @@
-import { Box, Button, Grid, GridItem, Text, VStack } from '@chakra-ui/react';
+import { Box, Grid, GridItem, VStack } from '@chakra-ui/react';
 import { TrendUp, Play, CurrencyDollar } from '@phosphor-icons/react';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -12,6 +12,8 @@ import { DAO_ROUTES } from '../../../constants/routes';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import { useDAOStore } from '../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
+import { EmptyState } from './components/EmptyState';
+import { StatCard } from './components/StatCard';
 
 export function SafeTokenSalePage() {
   const { t } = useTranslation('tokenSale');
@@ -57,102 +59,6 @@ export function SafeTokenSalePage() {
     if (!safe?.address) return;
     navigate(DAO_ROUTES.tokenSaleNew.relative(addressPrefix, safe.address));
   };
-
-  function StatCard({
-    icon,
-    label,
-    value,
-  }: {
-    icon: React.ReactNode;
-    label: string;
-    value: string;
-  }) {
-    return (
-      <Box
-        bg="transparent"
-        borderRadius="12px"
-        p={6}
-        border="1px solid"
-        borderColor="color-layout-border-10"
-        position="relative"
-      >
-        <Box
-          position="absolute"
-          top={6}
-          right={6}
-          color="color-content-muted"
-        >
-          {icon}
-        </Box>
-        <Text
-          textStyle="text-sm-medium"
-          color="color-content-content1-foreground"
-          mb={2}
-        >
-          {label}
-        </Text>
-        <Text
-          textStyle="text-2xl-semibold"
-          color="color-content-content1-foreground"
-        >
-          {value}
-        </Text>
-      </Box>
-    );
-  }
-
-  function EmptyState() {
-    return (
-      <Box
-        bg="transparent"
-        borderRadius="12px"
-        p={6}
-        textAlign="center"
-        border="1px solid"
-        borderColor="color-layout-border-10"
-        position="relative"
-      >
-        <Box
-          w={24}
-          h={24}
-          mx="auto"
-          mb={4}
-        >
-          <img
-            src="/images/decentsquare.png"
-            alt={t('tokenSaleIconAltText')}
-            width="96"
-            height="96"
-            style={{ width: '100%', height: '100%' }}
-          />
-        </Box>
-        <VStack
-          spacing={6}
-          align="center"
-        >
-          <VStack
-            spacing={1}
-            align="center"
-          >
-            <Text
-              textStyle="text-2xl-regular"
-              color="color-content-content1-foreground"
-            >
-              {t('noSalesYetTitle')}
-            </Text>
-            <Text
-              textStyle="text-sm-regular"
-              color="color-content-content2-foreground"
-              maxW="464px"
-            >
-              {t('noSalesYetDescription')}
-            </Text>
-          </VStack>
-          <Button onClick={handleCreateSale}>{t('createYourFirstSaleButton')}</Button>
-        </VStack>
-      </Box>
-    );
-  }
 
   if (!safe?.address) {
     return <InfoBoxLoader />;
@@ -216,7 +122,7 @@ export function SafeTokenSalePage() {
 
         {/* Show table when sales exist, empty state when no sales */}
         {stats.totalSales === 0 ? (
-          <EmptyState />
+          <EmptyState handleCreateSale={handleCreateSale} />
         ) : (
           <TokenSalesTable tokenSales={tokenSales || []} />
         )}
