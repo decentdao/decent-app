@@ -107,10 +107,4 @@ export interface TokenSaleFormValues {
 
   // Buyer Requirements
   buyerRequirements: BuyerRequirement[];
-
-  // Legacy fields (keeping for compatibility)
-  totalSupply: string;
-  salePrice: string;
-  whitelistAddress: string;
-  kycProvider: string;
 }
