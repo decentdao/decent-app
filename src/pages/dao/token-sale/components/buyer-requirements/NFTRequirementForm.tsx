@@ -1,5 +1,6 @@
 import { VStack, HStack, Text, Button, Flex } from '@chakra-ui/react';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Address } from 'viem';
 import { BigIntInput } from '../../../../../components/ui/forms/BigIntInput';
 import { NFTAddressInput } from '../../../../../components/ui/forms/NFTAddressInput';
@@ -19,6 +20,7 @@ interface NFTInfo {
 }
 
 export function NFTRequirementForm({ onSubmit, initialData }: NFTRequirementFormProps) {
+  const { t } = useTranslation('tokenSale');
   const [contractAddress, setContractAddress] = useState<string>(
     initialData?.contractAddress || '',
   );
@@ -40,17 +42,17 @@ export function NFTRequirementForm({ onSubmit, initialData }: NFTRequirementForm
 
   const handleSubmit = () => {
     if (!contractAddress) {
-      setError('NFT contract address is required');
+      setError(t('nftAddressRequiredError'));
       return;
     }
 
     if (!nftInfo) {
-      setError('Please enter a valid NFT contract address (ERC721 or ERC1155)');
+      setError(t('nftAddressInvalidError'));
       return;
     }
 
     if (!minimumBalance.bigintValue || minimumBalance.bigintValue <= 0n) {
-      setError('Minimum amount must be greater than 0');
+      setError(t('minimumAmountGreaterThanZeroError'));
       return;
     }
 
@@ -84,7 +86,7 @@ export function NFTRequirementForm({ onSubmit, initialData }: NFTRequirementForm
             fontWeight="medium"
             color="color-white"
           >
-            NFT
+            {t('nftFieldLabel')}
           </Text>
           <Text
             fontSize="sm"
@@ -103,7 +105,7 @@ export function NFTRequirementForm({ onSubmit, initialData }: NFTRequirementForm
             setNFTInfo(info);
             setError('');
           }}
-          placeholder="Paste NFT contract address"
+          placeholder={t('nftAddressPlaceholder')}
           isInvalid={!!error && (error.includes('address') || error.includes('valid NFT'))}
         />
       </VStack>
@@ -118,7 +120,7 @@ export function NFTRequirementForm({ onSubmit, initialData }: NFTRequirementForm
           fontWeight="medium"
           color="color-white"
         >
-          Minimum Amount
+          {t('minimumAmountLabel')}
         </Text>
         <BigIntInput
           value={minimumBalance}
@@ -148,7 +150,7 @@ export function NFTRequirementForm({ onSubmit, initialData }: NFTRequirementForm
           onClick={handleSubmit}
           isDisabled={!isValid}
         >
-          Add Requirement
+          {t('addRequirementButton')}
         </Button>
       </Flex>
     </VStack>

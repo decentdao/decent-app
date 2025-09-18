@@ -1,4 +1,5 @@
 import { VStack, Switch } from '@chakra-ui/react';
+import { useTranslation } from 'react-i18next';
 import { LabelComponent } from '../../../../../components/ui/forms/InputComponent';
 
 interface KycKybRequirementProps {
@@ -7,13 +8,14 @@ interface KycKybRequirementProps {
 }
 
 export function KycKybRequirement({ requireKYC, setRequireKYC }: KycKybRequirementProps) {
+  const { t } = useTranslation('tokenSale');
   return (
     <VStack
       spacing={6}
       align="stretch"
     >
       <LabelComponent
-        label="Require KYC/KYB"
+        label={t('requireKycKybLabel')}
         helper="Lorem Ipsum"
         isRequired={false}
         gridContainerProps={{

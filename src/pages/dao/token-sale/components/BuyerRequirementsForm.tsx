@@ -1,5 +1,6 @@
 import { VStack, Box, useDisclosure } from '@chakra-ui/react';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { ContentBoxTight } from '../../../../components/ui/containers/ContentBox';
 import { LabelComponent } from '../../../../components/ui/forms/InputComponent';
 import { BuyerRequirement, TokenSaleFormValues } from '../../../../types/tokenSale';
@@ -14,6 +15,7 @@ interface BuyerRequirementsFormProps {
 }
 
 export function BuyerRequirementsForm({ values, setFieldValue }: BuyerRequirementsFormProps) {
+  const { t } = useTranslation('tokenSale');
   const [requireKYC, setRequireKYC] = useState(false);
   const [requirementMode, setRequirementMode] = useState<'all' | 'any'>('all');
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -40,8 +42,8 @@ export function BuyerRequirementsForm({ values, setFieldValue }: BuyerRequiremen
           align="stretch"
         >
           <LabelComponent
-            label="Buyer Requirements"
-            helper="Curate your available buyers by setting up a whitelist, KYC/KYB, ERC-20, or ERC-721 eligibility requirements for your sale."
+            label={t('buyerRequirementsLabel')}
+            helper={t('buyerRequirementsHelper')}
             isRequired={false}
             gridContainerProps={{
               templateColumns: '1fr',

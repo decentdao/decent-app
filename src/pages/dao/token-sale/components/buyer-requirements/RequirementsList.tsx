@@ -1,5 +1,6 @@
 import { VStack, Box, Flex, HStack, Text, Button, Icon } from '@chakra-ui/react';
 import { CheckCircle, Plus } from '@phosphor-icons/react';
+import { useTranslation } from 'react-i18next';
 import { BuyerRequirement } from '../../../../../types/tokenSale';
 
 interface RequirementsListProps {
@@ -31,6 +32,7 @@ const getRequirementDisplay = (requirement: BuyerRequirement, index: number) => 
 };
 
 export function RequirementsList({ requirements, onAddRequirement }: RequirementsListProps) {
+  const { t } = useTranslation('tokenSale');
   const hasOpenAccess = requirements.length === 0;
 
   return (
@@ -65,7 +67,7 @@ export function RequirementsList({ requirements, onAddRequirement }: Requirement
                 fontSize="sm"
                 fontWeight="medium"
               >
-                Open Access
+                {t('openAccess')}
               </Text>
             </HStack>
           </Flex>
@@ -124,7 +126,7 @@ export function RequirementsList({ requirements, onAddRequirement }: Requirement
           borderTopRadius="0"
           _hover={{ bg: 'color-neutral-800' }}
         >
-          Add Requirement
+          {t('addRequirementButton')}
         </Button>
       </Box>
     </VStack>

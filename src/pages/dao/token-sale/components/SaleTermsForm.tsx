@@ -1,5 +1,6 @@
 import { Input, VStack, Grid, Text, Image, Flex } from '@chakra-ui/react';
 import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { ContentBoxTight } from '../../../../components/ui/containers/ContentBox';
 import { DatePicker } from '../../../../components/ui/forms/DatePicker';
 import { LabelComponent } from '../../../../components/ui/forms/InputComponent';
@@ -17,6 +18,7 @@ interface SaleTermsFormProps {
 }
 
 export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
+  const { t } = useTranslation('tokenSale');
   const daoKeyResult = useCurrentDAOKey();
   const daoKey =
     daoKeyResult.invalidQuery || daoKeyResult.wrongNetwork ? undefined : daoKeyResult.daoKey;
@@ -64,7 +66,7 @@ export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
       {/* Token Details Section */}
       <ContentBoxTight>
         <LabelComponent
-          label="Sale Name"
+          label={t('saleNameLabel')}
           isRequired={true}
           gridContainerProps={{
             templateColumns: '1fr',
@@ -72,15 +74,15 @@ export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
           }}
         >
           <Input
-            placeholder="e.g. Series A"
+            placeholder={t('saleNamePlaceholder')}
             value={values.saleName}
             onChange={e => setFieldValue('saleName', e.target.value)}
           />
         </LabelComponent>
 
         <SectionHeader
-          title="Token Details"
-          description="Configure your token name, ticker, and supply."
+          title={t('tokenDetailsTitle')}
+          description={t('tokenDetailsDescription')}
           tooltip="Lorem Ipsum"
         />
 
@@ -89,7 +91,7 @@ export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
           gap={4}
         >
           <LabelComponent
-            label="Sale Token"
+            label={t('saleTokenLabel')}
             isRequired={true}
             gridContainerProps={{
               templateColumns: '1fr',
@@ -99,8 +101,8 @@ export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
               items={tokenDropdownItems}
               selectedItem={tokenDropdownItems.find(item => item.selected)}
               onSelect={handleTokenSelect}
-              selectPlaceholder="Select Token"
-              emptyMessage="No tokens available in treasury"
+              selectPlaceholder={t('selectTokenPlaceholder')}
+              emptyMessage={t('noTokensAvailable')}
               variant="bordered"
               renderItem={item => (
                 <Flex
@@ -139,14 +141,14 @@ export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
           </LabelComponent>
 
           <LabelComponent
-            label="Token Symbol"
+            label={t('tokenSymbolLabel')}
             isRequired={true}
             gridContainerProps={{
               templateColumns: '1fr',
             }}
           >
             <Input
-              placeholder="e.g. DCNT"
+              placeholder={t('tokenSymbolPlaceholder')}
               value={values.tokenSymbol}
               isDisabled={true}
               bg="color-neutral-900"
@@ -160,7 +162,7 @@ export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
           gap={4}
         >
           <LabelComponent
-            label="Max Token Supply"
+            label={t('maxTokenSupplyLabel')}
             isRequired={false}
             gridContainerProps={{
               templateColumns: '1fr',
@@ -171,12 +173,12 @@ export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
               isDisabled={true}
               bg="color-neutral-900"
               opacity={0.5}
-              placeholder="Token supply will be set when token is selected"
+              placeholder={t('maxTokenSupplyPlaceholder')}
             />
           </LabelComponent>
 
           <LabelComponent
-            label="Token Price"
+            label={t('tokenPriceLabel')}
             isRequired={false}
             gridContainerProps={{
               templateColumns: '1fr',
@@ -188,7 +190,7 @@ export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
               min={0}
               precision={2}
               step={0.01}
-              placeholder="1.00"
+              placeholder={t('tokenPricePlaceholder')}
               leftAddon={<Text color="gray.500">$</Text>}
               isDisabled={true}
               bg="color-neutral-900"
@@ -201,9 +203,9 @@ export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
       {/* Sale Pricing & Terms Section */}
       <ContentBoxTight>
         <SectionHeader
-          title="Sale Pricing & Terms"
+          title={t('salePricingTitle')}
           tooltip="Lorem Ipsum"
-          description="Configure your token price, fundraising cap, sale dates, and purchase limits."
+          description={t('salePricingDescription')}
         />
 
         <Grid
@@ -211,7 +213,7 @@ export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
           gap={4}
         >
           <LabelComponent
-            label="Minimum Fundraise"
+            label={t('minimumFundraiseLabel')}
             isRequired={true}
             gridContainerProps={{
               templateColumns: '1fr',
@@ -223,13 +225,13 @@ export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
               min={0}
               precision={2}
               step={0.01}
-              placeholder="500,000"
+              placeholder={t('minimumFundraisePlaceholder')}
               leftAddon={<Text color="gray.500">$</Text>}
             />
           </LabelComponent>
 
           <LabelComponent
-            label="Fundraising Cap"
+            label={t('fundraisingCapLabel')}
             isRequired={true}
             gridContainerProps={{
               templateColumns: '1fr',
@@ -241,7 +243,7 @@ export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
               min={0}
               precision={2}
               step={0.01}
-              placeholder="10,000,000"
+              placeholder={t('fundraisingCapPlaceholder')}
               leftAddon={<Text color="gray.500">$</Text>}
             />
           </LabelComponent>
@@ -252,7 +254,7 @@ export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
           gap={4}
         >
           <LabelComponent
-            label="Valuation"
+            label={t('valuationLabel')}
             isRequired={true}
             gridContainerProps={{
               templateColumns: '1fr',
@@ -265,13 +267,13 @@ export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
               min={0}
               precision={2}
               step={0.01}
-              placeholder="5,000,000"
+              placeholder={t('valuationPlaceholder')}
               leftAddon={<Text color="gray.500">$</Text>}
             />
           </LabelComponent>
 
           <LabelComponent
-            label="Sale Start Date"
+            label={t('saleStartDateLabel')}
             isRequired={true}
             gridContainerProps={{
               templateColumns: '1fr',
@@ -286,7 +288,7 @@ export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
         </Grid>
 
         <LabelComponent
-          label="Accepted Payment Token"
+          label={t('acceptedPaymentTokenLabel')}
           isRequired={true}
           gridContainerProps={{
             templateColumns: '1fr',
@@ -304,8 +306,8 @@ export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
           gap={4}
         >
           <LabelComponent
-            label="Minimum Purchase (USD)"
-            subLabel="Leave blank for no purchase limits"
+            label={t('minimumPurchaseLabel')}
+            subLabel={t('minimumPurchaseSubLabel')}
             isRequired={false}
             gridContainerProps={{
               templateColumns: '1fr',
@@ -317,15 +319,15 @@ export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
               min={0}
               precision={2}
               step={0.01}
-              placeholder="100"
+              placeholder={t('minimumPurchasePlaceholder')}
               leftAddon={<Text color="gray.500">$</Text>}
-              rightAddon={<Text>min</Text>}
+              rightAddon={<Text>{t('minimumPurchaseSuffix')}</Text>}
             />
           </LabelComponent>
 
           <LabelComponent
             isRequired={false}
-            label="Maximum Purchase (USD)"
+            label={t('maximumPurchaseLabel')}
             gridContainerProps={{
               templateColumns: '1fr',
             }}
@@ -336,9 +338,9 @@ export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
               min={0}
               precision={2}
               step={0.01}
-              placeholder="10,000"
+              placeholder={t('maximumPurchasePlaceholder')}
               leftAddon={<Text color="gray.500">$</Text>}
-              rightAddon={<Text>max</Text>}
+              rightAddon={<Text>{t('maximumPurchaseSuffix')}</Text>}
             />
           </LabelComponent>
         </Grid>

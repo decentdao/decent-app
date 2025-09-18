@@ -1,4 +1,5 @@
 import { HStack, Text, Select } from '@chakra-ui/react';
+import { useTranslation } from 'react-i18next';
 
 interface RequirementsFooterProps {
   requirementMode: 'all' | 'any';
@@ -11,6 +12,7 @@ export function RequirementsFooter({
   setRequirementMode,
   requirementsCount,
 }: RequirementsFooterProps) {
+  const { t } = useTranslation('tokenSale');
   return (
     <HStack
       spacing={2}
@@ -20,7 +22,7 @@ export function RequirementsFooter({
         color="color-white"
         fontSize="sm"
       >
-        Should meet
+        {t('requirementShouldMeet')}
       </Text>
       <Select
         value={requirementMode}
@@ -36,14 +38,14 @@ export function RequirementsFooter({
         isDisabled={requirementsCount === 0}
         opacity={requirementsCount === 0 ? 0.5 : 1}
       >
-        <option value="all">All</option>
-        <option value="any">Any</option>
+        <option value="all">{t('requirementAllOption')}</option>
+        <option value="any">{t('requirementAnyOption')}</option>
       </Select>
       <Text
         color="color-white"
         fontSize="sm"
       >
-        requirements out of {requirementsCount}
+        {t('requirementOutOfText')} {requirementsCount}
       </Text>
     </HStack>
   );

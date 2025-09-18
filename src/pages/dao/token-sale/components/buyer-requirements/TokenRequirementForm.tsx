@@ -1,5 +1,6 @@
 import { VStack, HStack, Text, Button, Flex } from '@chakra-ui/react';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Address } from 'viem';
 import { BigIntInput } from '../../../../../components/ui/forms/BigIntInput';
 import { TokenAddressInput } from '../../../../../components/ui/forms/TokenAddressInput';
@@ -19,6 +20,7 @@ interface TokenInfo {
 }
 
 export function TokenRequirementForm({ onSubmit, initialData }: TokenRequirementFormProps) {
+  const { t } = useTranslation('tokenSale');
   const [tokenAddress, setTokenAddress] = useState<string>(initialData?.tokenAddress || '');
   const [tokenInfo, setTokenInfo] = useState<TokenInfo | null>(
     initialData
@@ -37,18 +39,19 @@ export function TokenRequirementForm({ onSubmit, initialData }: TokenRequirement
   const [error, setError] = useState<string>('');
 
   const handleSubmit = () => {
+    // todo remove during validation update
     if (!tokenAddress) {
-      setError('Token address is required');
+      setError(t('tokenAddressRequiredError'));
       return;
     }
 
     if (!tokenInfo) {
-      setError('Invalid token address');
+      setError(t('tokenAddressInvalidError'));
       return;
     }
 
     if (!minimumBalance.bigintValue || minimumBalance.bigintValue <= 0n) {
-      setError('Minimum balance must be greater than 0');
+      setError(t('minimumBalanceGreaterThanZeroError'));
       return;
     }
 
@@ -83,7 +86,7 @@ export function TokenRequirementForm({ onSubmit, initialData }: TokenRequirement
             fontWeight="medium"
             color="color-white"
           >
-            Token
+            {t('tokenFieldLabel')}
           </Text>
           <Text
             fontSize="sm"
@@ -99,7 +102,7 @@ export function TokenRequirementForm({ onSubmit, initialData }: TokenRequirement
             setError('');
           }}
           onTokenInfo={setTokenInfo}
-          placeholder="Select Token"
+          placeholder={t('tokenAddressPlaceholder')}
           isInvalid={!!error && error.includes('address')}
         />
       </VStack>
@@ -114,7 +117,7 @@ export function TokenRequirementForm({ onSubmit, initialData }: TokenRequirement
           fontWeight="medium"
           color="color-white"
         >
-          Minimum Amount
+          {t('minimumAmountLabel')}
         </Text>
         <BigIntInput
           value={minimumBalance}
@@ -144,7 +147,7 @@ export function TokenRequirementForm({ onSubmit, initialData }: TokenRequirement
           onClick={handleSubmit}
           isDisabled={!isValid}
         >
-          Add Requirement
+          {t('addRequirementButton')}
         </Button>
       </Flex>
     </VStack>
