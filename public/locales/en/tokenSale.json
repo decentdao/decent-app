@@ -52,6 +52,8 @@
   "tokenAddressRequiredError": "Token address is required",
   "minimumAmountLabel": "Minimum Amount",
   "minimumBalanceGreaterThanZeroError": "Minimum balance must be greater than 0",
+  "tokenIdLabel": "Token ID",
+  "tokenIdRequiredError": "Token ID is required for ERC-1155 tokens",
   "nftRequirementModalTitle": "Add Requirement",
   "nftFieldLabel": "NFT",
   "nftAddressPlaceholder": "Paste NFT contract address",
@@ -147,6 +149,7 @@
   "enterFdvAndSelectToken": "Enter FDV and select token",
   "holdAtLeastToken": "Hold at least {{amount}} {{symbol}}",
   "holdAtLeastNft": "Hold at least {{amount}} {{name}}",
+  "holdAtLeastNftWithTokenId": "Hold at least {{amount}} {{name}} (Token ID: {{tokenId}})",
   "beIncludedInWhitelist": "Be included in the whitelist",
   "editRequirement": "Edit requirement",
   "removeRequirement": "Remove requirement"

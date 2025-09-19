@@ -167,6 +167,18 @@ export const useTokenSaleSchema = () => {
                   .required(t('nftAddressRequiredError', { ns: 'tokenSale' }))
                   .test(addressValidationTestSimple),
             }),
+            // Token ID validation for ERC1155
+            tokenId: Yup.mixed().when(['type', 'tokenStandard'], {
+              is: (type: string, standard: string) => type === 'nft' && standard === 'ERC1155',
+              then: schema =>
+                schema.test(
+                  'token-id-required',
+                  t('tokenIdRequiredError', { ns: 'tokenSale' }),
+                  function (value: any) {
+                    return value !== undefined && typeof value === 'bigint' && value >= 0n;
+                  },
+                ),
+            }),
           }),
         ),
 
