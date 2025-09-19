@@ -75,7 +75,7 @@ export function useTokenSaleFormPreparation() {
       }
       let maxCommitment = values.maximumCommitment.bigintValue;
       if (maxCommitment === undefined) {
-        maxCommitment = 1000000000000000000n;
+        maxCommitment = PRECISION;
       }
 
       // Convert dates to timestamps
@@ -84,11 +84,13 @@ export function useTokenSaleFormPreparation() {
 
       const commitmentToken = values.commitmentToken as Address;
       const saleToken = values.tokenAddress as Address;
-      const maximumTotalCommitment = 1000000000000000000n; // hardcoded to max value
+      const maximumTotalCommitment = PRECISION; // hardcoded to max value
 
       // Calculate escrow amount - matches TokenSaleV1 contract logic
       // This is the maximum amount of sale tokens that can be sold plus the sale token protocol fee
-      const saleTokenEscrowAmount = (maximumTotalCommitment * (PRECISION + values.saleTokenProtocolFee.bigintValue)) / values.saleTokenPrice.bigintValue;
+      const saleTokenEscrowAmount =
+        (maximumTotalCommitment * (PRECISION + values.saleTokenProtocolFee.bigintValue)) /
+        values.saleTokenPrice.bigintValue;
 
       // Prepare the data structure expected by the contract
       const preparedData: PreparedTokenSaleData = {
