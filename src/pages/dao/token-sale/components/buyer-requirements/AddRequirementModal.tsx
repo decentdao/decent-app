@@ -1,6 +1,6 @@
 import { VStack } from '@chakra-ui/react';
 import { Coins, ImageSquare, ListChecks } from '@phosphor-icons/react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ModalBase } from '../../../../../components/ui/modals/ModalBase';
 import { BuyerRequirement } from '../../../../../types/tokenSale';
@@ -13,6 +13,7 @@ interface AddRequirementModalProps {
   isOpen: boolean;
   onClose: () => void;
   onAddRequirement: (requirement: BuyerRequirement) => void;
+  editingRequirement?: BuyerRequirement;
 }
 
 type RequirementStep = 'selection' | 'token' | 'nft' | 'whitelist';
@@ -21,9 +22,19 @@ export function AddRequirementModal({
   isOpen,
   onClose,
   onAddRequirement,
+  editingRequirement,
 }: AddRequirementModalProps) {
   const { t } = useTranslation('tokenSale');
   const [currentStep, setCurrentStep] = useState<RequirementStep>('selection');
+
+  // Set the step based on editing requirement when modal opens
+  useEffect(() => {
+    if (editingRequirement && isOpen) {
+      setCurrentStep(editingRequirement.type);
+    } else if (!isOpen) {
+      setCurrentStep('selection');
+    }
+  }, [editingRequirement, isOpen]);
 
   const handleClose = () => {
     setCurrentStep('selection');
@@ -46,6 +57,7 @@ export function AddRequirementModal({
           <TokenRequirementForm
             onSubmit={handleSubmitRequirement}
             onCancel={handleBack}
+            initialData={editingRequirement?.type === 'token' ? editingRequirement : undefined}
           />
         );
       case 'nft':
@@ -53,6 +65,7 @@ export function AddRequirementModal({
           <NFTRequirementForm
             onSubmit={handleSubmitRequirement}
             onCancel={handleBack}
+            initialData={editingRequirement?.type === 'nft' ? editingRequirement : undefined}
           />
         );
       case 'whitelist':
@@ -60,6 +73,7 @@ export function AddRequirementModal({
           <WhitelistRequirementForm
             onSubmit={handleSubmitRequirement}
             onCancel={handleBack}
+            initialData={editingRequirement?.type === 'whitelist' ? editingRequirement : undefined}
           />
         );
       default:

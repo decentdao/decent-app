@@ -18,11 +18,36 @@ export function BuyerRequirementsForm({ values, setFieldValue }: BuyerRequiremen
   const { t } = useTranslation('tokenSale');
   const [requireKYC, setRequireKYC] = useState(false);
   const [requirementMode, setRequirementMode] = useState<'all' | 'any'>('all');
+  const [editingRequirement, setEditingRequirement] = useState<{ requirement: BuyerRequirement; index: number } | null>(null);
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const handleAddRequirement = (requirement: BuyerRequirement) => {
-    const updatedRequirements = [...values.buyerRequirements, requirement];
+    if (editingRequirement !== null) {
+      // Update existing requirement
+      const updatedRequirements = [...values.buyerRequirements];
+      updatedRequirements[editingRequirement.index] = requirement;
+      setFieldValue('buyerRequirements', updatedRequirements);
+      setEditingRequirement(null);
+    } else {
+      // Add new requirement
+      const updatedRequirements = [...values.buyerRequirements, requirement];
+      setFieldValue('buyerRequirements', updatedRequirements);
+    }
+  };
+
+  const handleEditRequirement = (requirement: BuyerRequirement, index: number) => {
+    setEditingRequirement({ requirement, index });
+    onOpen();
+  };
+
+  const handleRemoveRequirement = (index: number) => {
+    const updatedRequirements = values.buyerRequirements.filter((_, i) => i !== index);
     setFieldValue('buyerRequirements', updatedRequirements);
+  };
+
+  const handleCloseModal = () => {
+    setEditingRequirement(null);
+    onClose();
   };
 
   return (
@@ -55,6 +80,8 @@ export function BuyerRequirementsForm({ values, setFieldValue }: BuyerRequiremen
           <RequirementsList
             requirements={values.buyerRequirements}
             onAddRequirement={onOpen}
+            onEditRequirement={handleEditRequirement}
+            onRemoveRequirement={handleRemoveRequirement}
           />
 
           <RequirementsFooter
@@ -66,8 +93,9 @@ export function BuyerRequirementsForm({ values, setFieldValue }: BuyerRequiremen
 
         <AddRequirementModal
           isOpen={isOpen}
-          onClose={onClose}
+          onClose={handleCloseModal}
           onAddRequirement={handleAddRequirement}
+          editingRequirement={editingRequirement?.requirement}
         />
       </VStack>
     </ContentBoxTight>
