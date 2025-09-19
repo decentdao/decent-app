@@ -2,13 +2,14 @@ import { Input, VStack, Grid, Text, Image, Flex } from '@chakra-ui/react';
 import { useFormikContext } from 'formik';
 import { useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { formatUnits, parseUnits } from 'viem';
+import { formatUnits, parseUnits, isAddress } from 'viem';
 import { ContentBoxTight } from '../../../../components/ui/containers/ContentBox';
 import { DatePicker } from '../../../../components/ui/forms/DatePicker';
 import { LabelComponent } from '../../../../components/ui/forms/InputComponent';
 import { NumberInputWithAddon } from '../../../../components/ui/forms/InputWithAddon';
 import { SectionHeader } from '../../../../components/ui/forms/SectionHeader';
 import { DropdownMenu } from '../../../../components/ui/menus/DropdownMenu';
+import useFeatureFlag from '../../../../helpers/environmentFeatureFlags';
 import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
 import { useDAOStore } from '../../../../providers/App/AppProvider';
 import { TokenSaleFormValues } from '../../../../types/tokenSale';
@@ -21,6 +22,7 @@ interface SaleTermsFormProps {
 export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
   const { t } = useTranslation('tokenSale');
   const { errors, touched } = useFormikContext<TokenSaleFormValues>();
+  const devFeatureEnabled = useFeatureFlag('flag_dev');
   const daoKeyResult = useCurrentDAOKey();
   const daoKey =
     daoKeyResult.invalidQuery || daoKeyResult.wrongNetwork ? undefined : daoKeyResult.daoKey;
@@ -443,6 +445,31 @@ export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
             </Text>
           </Flex>
         </LabelComponent>
+
+        {/* Dev Mode: Commitment Token Address Override */}
+        {devFeatureEnabled && (
+          <LabelComponent
+            label="Commitment Token Address (Dev)"
+            helper="Override the default USDC commitment token address"
+            isRequired={false}
+            gridContainerProps={{
+              templateColumns: '1fr',
+            }}
+          >
+            <Input
+              placeholder="0x..."
+              value={values.commitmentToken || ''}
+              onChange={e => {
+                const address = e.target.value.trim();
+                setFieldValue('commitmentToken', address || null);
+              }}
+              isInvalid={!!(values.commitmentToken && !isAddress(values.commitmentToken))}
+              bg="color-neutral-900"
+              borderColor="color-warning-400"
+              _focus={{ borderColor: 'color-warning-400' }}
+            />
+          </LabelComponent>
+        )}
 
         <Grid
           templateColumns="1fr 1fr"
