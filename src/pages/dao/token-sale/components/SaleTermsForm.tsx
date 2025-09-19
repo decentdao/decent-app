@@ -265,9 +265,16 @@ export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
           >
             <Input
               value={
-                values.maxTokenSupply.value
-                  ? parseFloat(values.maxTokenSupply.value).toLocaleString()
-                  : t('selectTokenFirst')
+                values.maxTokenSupply.value && selectedToken
+                  ? parseFloat(
+                      formatUnits(
+                        BigInt(values.maxTokenSupply.value),
+                        selectedToken.decimals || 18,
+                      ),
+                    ).toLocaleString()
+                  : values.maxTokenSupply.value
+                    ? parseFloat(values.maxTokenSupply.value).toLocaleString()
+                    : t('selectTokenFirst')
               }
               isDisabled={true}
               bg="color-neutral-900"
