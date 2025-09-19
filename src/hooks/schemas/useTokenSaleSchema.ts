@@ -41,37 +41,25 @@ export const useTokenSaleSchema = () => {
         // Sale Timing - handle string dates from form inputs
         startDate: Yup.string()
           .required(t('startDateRequiredError', { ns: 'tokenSale' }))
-          .test(
-            'valid-date',
-            t('startDateInvalidError', { ns: 'tokenSale' }),
-            function (value) {
-              if (!value) return false;
-              const date = new Date(value);
-              return !isNaN(date.getTime());
-            },
-          )
-          .test(
-            'future-date',
-            t('startDateFutureError', { ns: 'tokenSale' }),
-            function (value) {
-              if (!value) return false;
-              const date = new Date(value);
-              return date > new Date();
-            },
-          ),
+          .test('valid-date', t('startDateInvalidError', { ns: 'tokenSale' }), function (value) {
+            if (!value) return false;
+            const date = new Date(value);
+            return !isNaN(date.getTime());
+          })
+          .test('future-date', t('startDateFutureError', { ns: 'tokenSale' }), function (value) {
+            if (!value) return false;
+            const date = new Date(value);
+            return date > new Date();
+          }),
 
         // Sale Pricing & Terms - handle string inputs from form
         valuation: Yup.string()
           .required(t('valuationRequiredError', { ns: 'tokenSale' }))
-          .test(
-            'valid-number',
-            t('valuationInvalidError', { ns: 'tokenSale' }),
-            function (value) {
-              if (!value) return false;
-              const num = parseFloat(value);
-              return !isNaN(num) && num > 0 && num >= 1000;
-            },
-          ),
+          .test('valid-number', t('valuationInvalidError', { ns: 'tokenSale' }), function (value) {
+            if (!value) return false;
+            const num = parseFloat(value);
+            return !isNaN(num) && num > 0 && num >= 1000;
+          }),
 
         minimumFundraise: Yup.string()
           .required(t('minimumFundraiseRequiredError', { ns: 'tokenSale' }))
@@ -245,15 +233,11 @@ export const useTokenSaleSchema = () => {
         // End date - required and must be after start date
         endDate: Yup.string()
           .required(t('endDateRequiredError', { ns: 'tokenSale' }))
-          .test(
-            'valid-date',
-            t('endDateInvalidError', { ns: 'tokenSale' }),
-            function (value) {
-              if (!value) return false;
-              const date = new Date(value);
-              return !isNaN(date.getTime());
-            },
-          )
+          .test('valid-date', t('endDateInvalidError', { ns: 'tokenSale' }), function (value) {
+            if (!value) return false;
+            const date = new Date(value);
+            return !isNaN(date.getTime());
+          })
           .test(
             'end-after-start',
             t('endDateAfterStartError', { ns: 'tokenSale' }),
@@ -262,7 +246,11 @@ export const useTokenSaleSchema = () => {
               if (!value || !startDate) return true;
               const endDate = new Date(value);
               const startDateObj = new Date(startDate);
-              return !isNaN(endDate.getTime()) && !isNaN(startDateObj.getTime()) && endDate > startDateObj;
+              return (
+                !isNaN(endDate.getTime()) &&
+                !isNaN(startDateObj.getTime()) &&
+                endDate > startDateObj
+              );
             },
           ),
       }),
