@@ -129,7 +129,18 @@ export const useTokenSaleSchema = () => {
         buyerRequirements: Yup.array().of(
           Yup.object().shape({
             type: Yup.string().oneOf(['token', 'nft', 'whitelist']),
-            // Additional validation for buyer requirements can be added here
+            name: Yup.string(),
+            // Whitelist-specific validation
+            addresses: Yup.array().when('type', {
+              is: 'whitelist',
+              then: schema => schema
+                .min(1, t('whitelistMinOneAddressError', { ns: 'tokenSale' }))
+                .of(
+                  Yup.string()
+                    .required(t('whitelistAddressRequiredError', { ns: 'tokenSale' }))
+                    .test(addressValidationTestSimple)
+                ),
+            }),
           }),
         ),
 

@@ -236,6 +236,7 @@ export function SafeTokenSaleCreatePage() {
       });
 
       // 2. Update KeyValuePairs with new token sale info
+      console.log('🚀 ~ values.buyerRequirements:', values.buyerRequirements);
       const tokenSaleMetadata = {
         tokenSaleAddress: predictedTokenSaleAddress,
         saleName: tokenSaleData.saleName,

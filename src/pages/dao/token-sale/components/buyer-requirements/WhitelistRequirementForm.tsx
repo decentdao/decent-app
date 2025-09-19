@@ -2,7 +2,7 @@ import { VStack, Flex, Text, Button, Box, IconButton, Icon } from '@chakra-ui/re
 import { Plus, Trash } from '@phosphor-icons/react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Address, isAddress } from 'viem';
+import { Address } from 'viem';
 import { AddressInputInfoTable } from '../../../../../components/ui/forms/AddressInputInfoTable';
 import { WhitelistBuyerRequirement } from '../../../../../types/tokenSale';
 import { WhitelistDropzone } from './WhitelistDropzone';
@@ -34,19 +34,8 @@ export function WhitelistRequirementForm({ onSubmit, initialData }: WhitelistReq
     if (!newAddress.trim()) {
       return;
     }
-    // todo remove during validation update
-
-    if (!isAddress(newAddress.trim())) {
-      setError(t('whitelistInvalidAddressError'));
-      return;
-    }
 
     const address = newAddress.trim() as Address;
-    if (addresses.some(existing => existing.toLowerCase() === address.toLowerCase())) {
-      setError(t('whitelistAddressExistsError'));
-      return;
-    }
-
     setAddresses([...addresses, address]);
     setNewAddress('');
     setError('');
@@ -57,11 +46,6 @@ export function WhitelistRequirementForm({ onSubmit, initialData }: WhitelistReq
   };
 
   const handleSubmit = () => {
-    if (addresses.length === 0) {
-      setError(t('whitelistMinOneAddressError'));
-      return;
-    }
-
     const requirement: WhitelistBuyerRequirement = {
       type: 'whitelist',
       name: `Whitelist (${addresses.length} addresses)`,
@@ -182,6 +166,12 @@ export function WhitelistRequirementForm({ onSubmit, initialData }: WhitelistReq
                 setNewAddress(e.target.value);
                 setError('');
               }}
+              onKeyDown={e => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  handleAddAddress();
+                }
+              }}
               placeholder={t('whitelistAddressPlaceholder')}
               isInvalid={!!error}
             />
@@ -193,7 +183,7 @@ export function WhitelistRequirementForm({ onSubmit, initialData }: WhitelistReq
             justifyContent="center"
           >
             <IconButton
-              aria-label={t('removeAddressAriaLabel')}
+              aria-label={t('clearInputAriaLabel', 'Clear input')}
               icon={
                 <Icon
                   as={Trash}
@@ -202,7 +192,10 @@ export function WhitelistRequirementForm({ onSubmit, initialData }: WhitelistReq
               }
               variant="ghost"
               size="sm"
-              onClick={() => handleRemoveAddress(addresses.length)}
+              onClick={() => {
+                setNewAddress('');
+                setError('');
+              }}
               color="color-error-400"
               _hover={{ bg: 'color-error-950' }}
               visibility={newAddress ? 'visible' : 'hidden'}

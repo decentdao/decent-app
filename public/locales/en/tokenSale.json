@@ -69,6 +69,7 @@
   "whitelistDropzoneSubtext": "address, one per row",
   "whitelistMinOneAddressError": "At least one address is required",
   "whitelistInvalidAddressError": "Invalid address format",
+  "whitelistAddressRequiredError": "Address is required",
   "whitelistAddressExistsError": "Address already exists in the list",
   "createTokenSaleButton": "Create Token Sale",
   "previousButton": "Previous",
