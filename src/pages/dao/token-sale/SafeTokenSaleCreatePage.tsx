@@ -178,18 +178,18 @@ export function SafeTokenSaleCreatePage() {
       });
 
       // 4. Add approval transaction for the predicted TokenSale contract
+      const approvalCalldata = encodeFunctionData({
+        abi: legacy.abis.VotesERC20,
+        functionName: 'approve',
+        args: [predictedTokenSaleAddress, tokenSaleData.saleTokenEscrowAmount],
+      });
       txs.push({
         targetAddress: tokenSaleData.saleToken,
         ethValue: {
           bigintValue: 0n,
           value: '0',
         },
-        // todo move calldata to variable
-        calldata: encodeFunctionData({
-          abi: legacy.abis.VotesERC20,
-          functionName: 'approve',
-          args: [predictedTokenSaleAddress, tokenSaleData.saleTokenEscrowAmount],
-        }),
+        calldata: approvalCalldata,
         functionName: 'approve',
         parameters: [
           {
