@@ -8,7 +8,7 @@
   "recipients": "Recipients",
   "addRecipientButton": "Add Recipient",
   "removeSplitButtonLabel": "Remove Split",
-  "stakingRecipientDisplay": "Token Holder Staking",
+  "stakingRecipientDisplay": "Staked Token Holders",
   "distributeButton": "Distribute",
   "distributingTokens": "Distributing tokens...",
   "distributeButtonTooltip": "Distribute deposited tokens to recipients.",
