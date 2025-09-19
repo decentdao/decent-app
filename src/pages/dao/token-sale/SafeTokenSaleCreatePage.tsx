@@ -139,12 +139,6 @@ export function SafeTokenSaleCreatePage() {
     const txs: CreateProposalTransaction[] = [];
 
     try {
-      // Debug: Log the escrow calculation
-      // todo update escrow calculation; move to prepareFormData
-      const escrowAmount =
-        (tokenSaleData.maximumTotalCommitment *
-          (BigInt('1000000000000000000') + tokenSaleData.saleTokenProtocolFee)) /
-        tokenSaleData.saleTokenPrice;
       // 1. Generate nonce for deployment
       const tokenSaleNonce = getRandomBytes();
 
@@ -194,7 +188,7 @@ export function SafeTokenSaleCreatePage() {
         calldata: encodeFunctionData({
           abi: legacy.abis.VotesERC20,
           functionName: 'approve',
-          args: [predictedTokenSaleAddress, escrowAmount],
+          args: [predictedTokenSaleAddress, tokenSaleData.saleTokenEscrowAmount],
         }),
         functionName: 'approve',
         parameters: [
@@ -204,7 +198,7 @@ export function SafeTokenSaleCreatePage() {
           },
           {
             signature: 'uint256',
-            value: escrowAmount.toString(),
+            value: tokenSaleData.saleTokenEscrowAmount.toString(),
           },
         ],
       });

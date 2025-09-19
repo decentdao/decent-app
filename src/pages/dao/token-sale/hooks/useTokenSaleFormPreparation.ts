@@ -22,6 +22,7 @@ export interface PreparedTokenSaleData {
   commitmentTokenProtocolFee: bigint;
   saleTokenProtocolFee: bigint;
   saleTokenHolder: Address;
+  saleTokenEscrowAmount: bigint;
   hedgeyLockupParams: {
     enabled: boolean;
     start: bigint;
@@ -31,6 +32,9 @@ export interface PreparedTokenSaleData {
     votingTokenLockupPlans: Address;
   };
 }
+
+/** @notice Precision for sale token price calculations (18 decimals) - matches TokenSaleV1 contract */
+const PRECISION = BigInt('1000000000000000000'); // 10^18
 
 export function useTokenSaleFormPreparation() {
   const { daoKey } = useCurrentDAOKey();
@@ -80,6 +84,11 @@ export function useTokenSaleFormPreparation() {
 
       const commitmentToken = values.commitmentToken as Address;
       const saleToken = values.tokenAddress as Address;
+      const maximumTotalCommitment = 1000000000000000000n; // hardcoded to max value
+
+      // Calculate escrow amount - matches TokenSaleV1 contract logic
+      // This is the maximum amount of sale tokens that can be sold plus the sale token protocol fee
+      const saleTokenEscrowAmount = (maximumTotalCommitment * (PRECISION + values.saleTokenProtocolFee.bigintValue)) / values.saleTokenPrice.bigintValue;
 
       // Prepare the data structure expected by the contract
       const preparedData: PreparedTokenSaleData = {
@@ -94,12 +103,13 @@ export function useTokenSaleFormPreparation() {
         minimumCommitment: minCommitment,
         maximumCommitment: maxCommitment,
         minimumTotalCommitment: 1n, // hardcoded to 0 for now
-        maximumTotalCommitment: 1000000000000000000n, // hardcoded to max value
+        maximumTotalCommitment,
         // Use calculated token price from form
         saleTokenPrice: values.saleTokenPrice.bigintValue,
         commitmentTokenProtocolFee: values.commitmentTokenProtocolFee.bigintValue,
         saleTokenProtocolFee: values.saleTokenProtocolFee.bigintValue,
         saleTokenHolder: safe.address,
+        saleTokenEscrowAmount,
 
         // TODO: if hedgeyLockupEnabled is true, don't default to 0n for the other values
         hedgeyLockupParams: {
