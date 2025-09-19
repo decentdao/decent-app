@@ -91,7 +91,6 @@ export function WhitelistRequirementForm({ onSubmit, initialData }: WhitelistReq
 
     const requirement: WhitelistBuyerRequirement = {
       type: 'whitelist',
-      name: `Whitelist (${addresses.length} addresses)`,
       addresses,
     };
 

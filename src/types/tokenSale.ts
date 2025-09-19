@@ -23,7 +23,6 @@ export interface NFTBuyerRequirement {
 
 export interface WhitelistBuyerRequirement {
   type: 'whitelist';
-  name: string;
   addresses: Address[];
 }
 
