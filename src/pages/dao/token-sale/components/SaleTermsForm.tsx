@@ -56,10 +56,10 @@ export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
     try {
       // Convert raw total supply to human-readable format
       const totalSupplyHuman = parseFloat(formatUnits(BigInt(totalSupplyRaw), tokenDecimals));
-      
+
       // Simple calculation: Price = FDV / Total Supply (in human units)
       const priceInUSD = fdv / totalSupplyHuman;
-      
+
       return priceInUSD;
     } catch (error) {
       console.error('Error calculating token price:', error);
