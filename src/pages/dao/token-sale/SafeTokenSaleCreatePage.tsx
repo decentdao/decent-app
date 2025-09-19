@@ -27,16 +27,15 @@ import { useTokenSaleRequirementsPreparation } from './hooks/useTokenSaleRequire
 
 const stages = ['Sale Terms', 'Buyer Requirements'];
 
-// todo remove mocked values
-const getInitialValues = (usdcAddress?: Address): TokenSaleFormValues => ({
+const getInitialValues = (safeAddress: Address, usdcAddress?: Address): TokenSaleFormValues => ({
   // @dev these values are calculated in the form
-  saleTokenHolder: null, // Will be set to DAO address
-  saleTokenPrice: { value: '', bigintValue: undefined }, // Will be calculated from FDV and token supply
+  saleTokenHolder: safeAddress, // Will be set to DAO address
+  saleTokenPrice: { value: '', bigintValue: undefined }, // Will be auto-calculated from FDV and token supply
   // TODO this need to be set to specific address for base, sepolia, ethereum mainnet
-  protocolFeeReceiver: '0x629750317d320B8bB4d48D345A6d699Cc855c4a6' as Address,
+  protocolFeeReceiver: '0x629750317d320B8bB4d48D345A6d699Cc855c4a6',
   commitmentToken: usdcAddress || null, // Set to current network's USDC
 
-  saleName: 'DecentDAO Token Sale',
+  saleName: '',
 
   // Token Details
   tokenAddress: '',
@@ -45,24 +44,24 @@ const getInitialValues = (usdcAddress?: Address): TokenSaleFormValues => ({
   maxTokenSupply: { value: '', bigintValue: undefined },
 
   // Sale Timing
-  startDate: new Date(Date.now() + 86400 * 1000), // Start in 24 hours
-  endDate: new Date(Date.now() + 86400 * 30 * 1000), // End in 30 days
+  startDate: '',
+  endDate: '',
 
   // Sale Pricing & Terms
-  minimumFundraise: 5, // $5 minimum
-  fundraisingCap: 9500, // $9,500 maximum
-  valuation: 1000000,
-  minPurchase: 1, // $1 minimum purchase
-  maxPurchase: 50, // $50 maximum purchase
+  minimumFundraise: '',
+  fundraisingCap: '',
+  valuation: '',
+  minPurchase: '',
+  maxPurchase: '',
 
-  verifier: null, // Will be set from network config
-  saleProceedsReceiver: null, // Will be set to DAO address
-  minimumCommitment: { value: '1', bigintValue: BigInt('1000000') }, // $1 USDC (6 decimals)
-  maximumCommitment: { value: '50', bigintValue: BigInt('50000000') }, // $50 USDC
-  minimumTotalCommitment: { value: '5', bigintValue: BigInt('5000000') }, // $5 USDC
-  maximumTotalCommitment: { value: '9500', bigintValue: BigInt('9500000000') }, // $9,500 USDC
-  commitmentTokenProtocolFee: { value: '5', bigintValue: BigInt('50000000000000000') }, // 5% (18 decimal precision)
-  saleTokenProtocolFee: { value: '5', bigintValue: BigInt('50000000000000000') }, // 5%
+  verifier: null,
+  saleProceedsReceiver: null,
+  minimumCommitment: { value: '', bigintValue: undefined },
+  maximumCommitment: { value: '', bigintValue: undefined },
+  minimumTotalCommitment: { value: '', bigintValue: undefined },
+  maximumTotalCommitment: { value: '', bigintValue: undefined },
+  commitmentTokenProtocolFee: { value: '', bigintValue: undefined },
+  saleTokenProtocolFee: { value: '', bigintValue: undefined },
 
   // Hedgey Lockup Configuration (disabled by default)
   hedgeyLockupEnabled: false,
@@ -70,7 +69,7 @@ const getInitialValues = (usdcAddress?: Address): TokenSaleFormValues => ({
   hedgeyLockupCliff: { value: '0', bigintValue: 0n },
   hedgeyLockupRatePercentage: { value: '0', bigintValue: 0n },
   hedgeyLockupPeriod: { value: '0', bigintValue: 0n },
-  hedgeyVotingTokenLockupPlans: '0x0000000000000000000000000000000000000000' as Address,
+  hedgeyVotingTokenLockupPlans: '',
 
   // Buyer Requirements
   kycEnabled: false,
@@ -328,7 +327,7 @@ export function SafeTokenSaleCreatePage() {
       />
 
       <Formik
-        initialValues={getInitialValues(stablecoins.usdc)}
+        initialValues={getInitialValues(safe.address, stablecoins.usdc)}
         validationSchema={tokenSaleValidationSchema}
         onSubmit={handleSubmit}
       >

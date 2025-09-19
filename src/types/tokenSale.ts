@@ -100,29 +100,29 @@ export interface TokenSaleFormValues {
   maxTokenSupply: BigIntValuePair;
 
   // Sale Timing
-  startDate: Date | null;
-  endDate: Date | null;
+  startDate: string;
+  endDate: string;
 
   // Sale Pricing & Terms
-  minimumFundraise: number;
-  fundraisingCap: number;
-  valuation: number;
-  minPurchase: number;
-  maxPurchase: number;
+  minimumFundraise: string;
+  fundraisingCap: string;
+  valuation: string;
+  minPurchase: string;
+  maxPurchase: string;
 
   // Sale Configuration
   commitmentToken: Address | null; // Will be set based on commitmentToken selection
   verifier: Address | null; // Will be set from network config
-  saleProceedsReceiver: Address | null; // Will be set to DAO address
-  protocolFeeReceiver: Address | null; // Will be set from network config
+  saleProceedsReceiver: string | null; // Will be set to DAO address
+  protocolFeeReceiver: string | null; // Will be set from network config
   minimumCommitment: BigIntValuePair;
   maximumCommitment: BigIntValuePair;
   minimumTotalCommitment: BigIntValuePair;
   maximumTotalCommitment: BigIntValuePair;
-  saleTokenPrice: BigIntValuePair; // Keep mocked as requested
+  saleTokenPrice: BigIntValuePair;
   commitmentTokenProtocolFee: BigIntValuePair;
   saleTokenProtocolFee: BigIntValuePair;
-  saleTokenHolder: Address | null; // Will be set to DAO address
+  saleTokenHolder: string | null; // Will be set to DAO address
 
   // Hedgey Lockup Configuration
   hedgeyLockupEnabled: boolean;
@@ -130,7 +130,7 @@ export interface TokenSaleFormValues {
   hedgeyLockupCliff: BigIntValuePair;
   hedgeyLockupRatePercentage: BigIntValuePair;
   hedgeyLockupPeriod: BigIntValuePair;
-  hedgeyVotingTokenLockupPlans: Address | null;
+  hedgeyVotingTokenLockupPlans: string | null;
 
   // Buyer Requirements
   kycEnabled: boolean;

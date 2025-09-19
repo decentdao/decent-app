@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { Address, zeroAddress } from 'viem';
+import { Address, getAddress, zeroAddress } from 'viem';
 import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
 import { useDAOStore } from '../../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../../providers/NetworkConfig/useNetworkConfigStore';
@@ -62,7 +62,9 @@ export function useTokenSaleFormPreparation() {
         !values.protocolFeeReceiver ||
         !values.commitmentTokenProtocolFee.bigintValue ||
         !values.saleTokenProtocolFee.bigintValue ||
-        !values.saleTokenPrice.bigintValue
+        !values.saleTokenPrice.bigintValue ||
+        !values.startDate ||
+        !values.endDate
       ) {
         throw new Error('Sale Form not ready');
       }
@@ -79,8 +81,8 @@ export function useTokenSaleFormPreparation() {
       }
 
       // Convert dates to timestamps
-      const saleStartTimestamp = Math.floor(values.startDate.getTime() / 1000);
-      const saleEndTimestamp = Math.floor(values.endDate.getTime() / 1000);
+      const saleStartTimestamp = Math.floor(new Date(values.startDate).getTime() / 1000);
+      const saleEndTimestamp = Math.floor(new Date(values.endDate).getTime() / 1000);
 
       const commitmentToken = values.commitmentToken as Address;
       const saleToken = values.tokenAddress as Address;
@@ -101,7 +103,7 @@ export function useTokenSaleFormPreparation() {
         saleToken,
         verifier: decentVerifierV1,
         saleProceedsReceiver: safe.address,
-        protocolFeeReceiver: values.protocolFeeReceiver,
+        protocolFeeReceiver: getAddress(values.protocolFeeReceiver),
         minimumCommitment: minCommitment,
         maximumCommitment: maxCommitment,
         minimumTotalCommitment: 1n, // hardcoded to 0 for now
@@ -120,7 +122,9 @@ export function useTokenSaleFormPreparation() {
           cliff: values.hedgeyLockupCliff.bigintValue || 0n,
           ratePercentage: values.hedgeyLockupRatePercentage.bigintValue || 0n,
           period: values.hedgeyLockupPeriod.bigintValue || 0n,
-          votingTokenLockupPlans: values.hedgeyVotingTokenLockupPlans || zeroAddress,
+          votingTokenLockupPlans: values.hedgeyVotingTokenLockupPlans
+            ? getAddress(values.hedgeyVotingTokenLockupPlans)
+            : zeroAddress,
         },
       };
 

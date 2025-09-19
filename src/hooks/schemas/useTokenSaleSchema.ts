@@ -38,51 +38,111 @@ export const useTokenSaleSchema = () => {
           bigintValue: Yup.mixed().required(),
         }),
 
-        // Sale Timing
-        startDate: Yup.date()
+        // Sale Timing - handle string dates from form inputs
+        startDate: Yup.string()
           .required(t('startDateRequiredError', { ns: 'tokenSale' }))
-          .min(new Date(), t('startDateFutureError', { ns: 'tokenSale' })),
+          .test(
+            'valid-date',
+            t('startDateInvalidError', { ns: 'tokenSale' }),
+            function (value) {
+              if (!value) return false;
+              const date = new Date(value);
+              return !isNaN(date.getTime());
+            },
+          )
+          .test(
+            'future-date',
+            t('startDateFutureError', { ns: 'tokenSale' }),
+            function (value) {
+              if (!value) return false;
+              const date = new Date(value);
+              return date > new Date();
+            },
+          ),
 
-        // Sale Pricing & Terms - all required with proper constraints
-        valuation: Yup.number()
+        // Sale Pricing & Terms - handle string inputs from form
+        valuation: Yup.string()
           .required(t('valuationRequiredError', { ns: 'tokenSale' }))
-          .positive(t('valuationPositiveError', { ns: 'tokenSale' }))
-          .min(1000, t('valuationMinimumError', { ns: 'tokenSale' })),
+          .test(
+            'valid-number',
+            t('valuationInvalidError', { ns: 'tokenSale' }),
+            function (value) {
+              if (!value) return false;
+              const num = parseFloat(value);
+              return !isNaN(num) && num > 0 && num >= 1000;
+            },
+          ),
 
-        minimumFundraise: Yup.number()
+        minimumFundraise: Yup.string()
           .required(t('minimumFundraiseRequiredError', { ns: 'tokenSale' }))
-          .positive(t('minimumFundraisePositiveError', { ns: 'tokenSale' }))
-          .min(1, t('minimumFundraiseMinimumError', { ns: 'tokenSale' })),
+          .test(
+            'valid-number',
+            t('minimumFundraiseInvalidError', { ns: 'tokenSale' }),
+            function (value) {
+              if (!value) return false;
+              const num = parseFloat(value);
+              return !isNaN(num) && num > 0 && num >= 1;
+            },
+          ),
 
-        fundraisingCap: Yup.number()
+        fundraisingCap: Yup.string()
           .required(t('fundraisingCapRequiredError', { ns: 'tokenSale' }))
-          .positive(t('fundraisingCapPositiveError', { ns: 'tokenSale' }))
-          .min(1, t('fundraisingCapMinimumError', { ns: 'tokenSale' }))
+          .test(
+            'valid-number',
+            t('fundraisingCapInvalidError', { ns: 'tokenSale' }),
+            function (value) {
+              if (!value) return false;
+              const num = parseFloat(value);
+              return !isNaN(num) && num > 0 && num >= 1;
+            },
+          )
           .test(
             'cap-greater-than-minimum',
             t('fundraisingCapGreaterThanMinimumError', { ns: 'tokenSale' }),
             function (value) {
               const { minimumFundraise } = this.parent;
-              return !value || !minimumFundraise || value > minimumFundraise;
+              if (!value || !minimumFundraise) return true;
+              const capNum = parseFloat(value);
+              const minNum = parseFloat(minimumFundraise);
+              return !isNaN(capNum) && !isNaN(minNum) && capNum > minNum;
             },
           ),
 
         // Purchase limits - optional but must be positive if provided
-        minPurchase: Yup.number()
+        minPurchase: Yup.string()
           .nullable()
           .transform((value, originalValue) => (originalValue === '' ? null : value))
-          .positive(t('minPurchasePositiveError', { ns: 'tokenSale' })),
+          .test(
+            'valid-number',
+            t('minPurchaseInvalidError', { ns: 'tokenSale' }),
+            function (value) {
+              if (!value) return true; // Optional field
+              const num = parseFloat(value);
+              return !isNaN(num) && num > 0;
+            },
+          ),
 
-        maxPurchase: Yup.number()
+        maxPurchase: Yup.string()
           .nullable()
           .transform((value, originalValue) => (originalValue === '' ? null : value))
-          .positive(t('maxPurchasePositiveError', { ns: 'tokenSale' }))
+          .test(
+            'valid-number',
+            t('maxPurchaseInvalidError', { ns: 'tokenSale' }),
+            function (value) {
+              if (!value) return true; // Optional field
+              const num = parseFloat(value);
+              return !isNaN(num) && num > 0;
+            },
+          )
           .test(
             'max-greater-than-min',
             t('maxPurchaseGreaterThanMinError', { ns: 'tokenSale' }),
             function (value) {
               const { minPurchase } = this.parent;
-              return !value || !minPurchase || value > minPurchase;
+              if (!value || !minPurchase) return true;
+              const maxNum = parseFloat(value);
+              const minNum = parseFloat(minPurchase);
+              return !isNaN(maxNum) && !isNaN(minNum) && maxNum > minNum;
             },
           ),
 
@@ -183,14 +243,26 @@ export const useTokenSaleSchema = () => {
         ),
 
         // End date - required and must be after start date
-        endDate: Yup.date()
+        endDate: Yup.string()
           .required(t('endDateRequiredError', { ns: 'tokenSale' }))
+          .test(
+            'valid-date',
+            t('endDateInvalidError', { ns: 'tokenSale' }),
+            function (value) {
+              if (!value) return false;
+              const date = new Date(value);
+              return !isNaN(date.getTime());
+            },
+          )
           .test(
             'end-after-start',
             t('endDateAfterStartError', { ns: 'tokenSale' }),
             function (value) {
               const { startDate } = this.parent;
-              return !value || !startDate || value > startDate;
+              if (!value || !startDate) return true;
+              const endDate = new Date(value);
+              const startDateObj = new Date(startDate);
+              return !isNaN(endDate.getTime()) && !isNaN(startDateObj.getTime()) && endDate > startDateObj;
             },
           ),
       }),

@@ -79,7 +79,7 @@ export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
   // Reactive price calculation when FDV or total supply changes
   useEffect(() => {
     const totalSupply = values.maxTokenSupply.value;
-    const fdv = values.valuation;
+    const fdv = parseFloat(values.valuation) || 0;
 
     // Only calculate if we have both FDV and actual token total supply (no defaults)
     if (fdv > 0 && totalSupply && values.tokenAddress) {
@@ -121,9 +121,10 @@ export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
         });
 
         // Recalculate price with the selected token's actual total supply
-        if (values.valuation > 0) {
+        const fdvValue = parseFloat(values.valuation) || 0;
+        if (fdvValue > 0) {
           const calculatedPrice = calculateTokenPrice(
-            values.valuation,
+            fdvValue,
             tokenToSelect.totalSupply,
             tokenToSelect.decimals || 18,
           );
@@ -287,7 +288,7 @@ export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
               onChange={() => {}} // No-op since it's calculated automatically
               min={0}
               placeholder={
-                values.valuation > 0 && values.tokenAddress
+                (parseFloat(values.valuation) || 0) > 0 && values.tokenAddress
                   ? t('calculatedFromFdv')
                   : t('enterFdvAndSelectToken')
               }
@@ -326,7 +327,7 @@ export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
           >
             <NumberInputWithAddon
               value={values.minimumFundraise}
-              onChange={val => setFieldValue('minimumFundraise', parseFloat(val) || 0)}
+              onChange={val => setFieldValue('minimumFundraise', val)}
               min={0}
               precision={2}
               step={0.01}
@@ -347,7 +348,7 @@ export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
           >
             <NumberInputWithAddon
               value={values.fundraisingCap}
-              onChange={val => setFieldValue('fundraisingCap', parseFloat(val) || 0)}
+              onChange={val => setFieldValue('fundraisingCap', val)}
               min={0}
               precision={2}
               step={0.01}
@@ -368,8 +369,7 @@ export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
           <NumberInputWithAddon
             value={values.valuation}
             onChange={val => {
-              const fdvValue = parseFloat(val) || 0;
-              setFieldValue('valuation', fdvValue);
+              setFieldValue('valuation', val);
               // Price calculation will be handled by useEffect
             }}
             min={0}
@@ -393,8 +393,8 @@ export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
             }}
           >
             <DatePicker
-              selectedDate={values.startDate || undefined}
-              onChange={date => setFieldValue('startDate', date)}
+              selectedDate={values.startDate ? new Date(values.startDate) : undefined}
+              onChange={date => setFieldValue('startDate', date ? date.toISOString() : '')}
               minDate={new Date()}
             />
           </LabelComponent>
@@ -408,9 +408,9 @@ export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
             }}
           >
             <DatePicker
-              selectedDate={values.endDate || undefined}
-              onChange={date => setFieldValue('endDate', date)}
-              minDate={values.startDate || new Date()}
+              selectedDate={values.endDate ? new Date(values.endDate) : undefined}
+              onChange={date => setFieldValue('endDate', date ? date.toISOString() : '')}
+              minDate={values.startDate ? new Date(values.startDate) : new Date()}
             />
           </LabelComponent>
         </Grid>
@@ -489,7 +489,7 @@ export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
           >
             <NumberInputWithAddon
               value={values.minPurchase}
-              onChange={val => setFieldValue('minPurchase', parseFloat(val) || 0)}
+              onChange={val => setFieldValue('minPurchase', val)}
               min={0}
               precision={2}
               step={0.01}
@@ -511,7 +511,7 @@ export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
           >
             <NumberInputWithAddon
               value={values.maxPurchase}
-              onChange={val => setFieldValue('maxPurchase', parseFloat(val) || 0)}
+              onChange={val => setFieldValue('maxPurchase', val)}
               min={0}
               precision={2}
               step={0.01}
