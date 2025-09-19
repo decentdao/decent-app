@@ -3,11 +3,11 @@ import { useTranslation } from 'react-i18next';
 import { LabelComponent } from '../../../../../components/ui/forms/InputComponent';
 
 interface KycKybRequirementProps {
-  requireKYC: boolean;
-  setRequireKYC: (value: boolean) => void;
+  kycEnabled: boolean;
+  setFieldValue: (field: string, value: any) => void;
 }
 
-export function KycKybRequirement({ requireKYC, setRequireKYC }: KycKybRequirementProps) {
+export function KycKybRequirement({ kycEnabled, setFieldValue }: KycKybRequirementProps) {
   const { t } = useTranslation('tokenSale');
   return (
     <VStack
@@ -24,8 +24,8 @@ export function KycKybRequirement({ requireKYC, setRequireKYC }: KycKybRequireme
         }}
       >
         <Switch
-          isChecked={requireKYC}
-          onChange={e => setRequireKYC(e.target.checked)}
+          isChecked={kycEnabled}
+          onChange={e => setFieldValue('kycEnabled', e.target.checked)}
           size="md"
         />
       </LabelComponent>

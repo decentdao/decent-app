@@ -72,6 +72,7 @@ const getInitialValues = (usdcAddress?: Address): TokenSaleFormValues => ({
   hedgeyVotingTokenLockupPlans: '0x0000000000000000000000000000000000000000' as Address,
 
   // Buyer Requirements
+  kycEnabled: false,
   buyerRequirements: [],
 });
 
@@ -240,7 +241,11 @@ export function SafeTokenSaleCreatePage() {
         tokenSaleAddress: predictedTokenSaleAddress,
         saleName: tokenSaleData.saleName,
         buyerRequirements: values.buyerRequirements,
-        kyc: null,
+        kycEnabled: values.kycEnabled,
+        kyc: {
+          type: 'key',
+          provider: 'sumsub',
+        },
       };
 
       const updateValuesCalldata = encodeFunctionData({

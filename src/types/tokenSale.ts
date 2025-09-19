@@ -105,5 +105,6 @@ export interface TokenSaleFormValues {
   hedgeyVotingTokenLockupPlans: Address | null;
 
   // Buyer Requirements
+  kycEnabled: boolean;
   buyerRequirements: BuyerRequirement[];
 }

@@ -16,7 +16,6 @@ interface BuyerRequirementsFormProps {
 
 export function BuyerRequirementsForm({ values, setFieldValue }: BuyerRequirementsFormProps) {
   const { t } = useTranslation('tokenSale');
-  const [requireKYC, setRequireKYC] = useState(false);
   const [requirementMode, setRequirementMode] = useState<'all' | 'any'>('all');
   const [editingRequirement, setEditingRequirement] = useState<{
     requirement: BuyerRequirement;
@@ -60,8 +59,8 @@ export function BuyerRequirementsForm({ values, setFieldValue }: BuyerRequiremen
         align="stretch"
       >
         <KycKybRequirement
-          requireKYC={requireKYC}
-          setRequireKYC={setRequireKYC}
+          kycEnabled={values.kycEnabled}
+          setFieldValue={setFieldValue}
         />
 
         {/* Buyer Requirements Section */}
