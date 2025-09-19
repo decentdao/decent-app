@@ -5,7 +5,7 @@ import { logError } from '../../helpers/errorLogging';
 import useNetworkPublicClient from '../../hooks/useNetworkPublicClient';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
 import { GaslessVotingDaoData } from '../../types';
-import { BuyerRequirement } from '../../types/tokenSale';
+import { TokenSaleMetadata } from '../../types/tokenSale';
 import { useGovernanceFetcher } from '../fetchers/governance';
 import { useKeyValuePairsFetcher } from '../fetchers/keyValuePairs';
 
@@ -24,11 +24,7 @@ export function useKeyValuePairsListener({
   onGaslessVotingDataFetched: (gasslesVotingData: GaslessVotingDaoData) => void;
   onTokenSalesDataFetched: (
     tokenSaleAddresses: string[],
-    tokenSaleMetadata?: Array<{
-      address: string;
-      name?: string;
-      buyerRequirements?: BuyerRequirement[];
-    }>,
+    tokenSaleMetadata?: TokenSaleMetadata[],
   ) => void;
 }) {
   const { getStreamIdsToHatIds, getHatsTreeId, getTokenSaleAddresses } = useKeyValuePairsFetcher();
@@ -78,7 +74,7 @@ export function useKeyValuePairsListener({
         });
 
         if (tokenSaleMetadata.length > 0) {
-          const addresses = tokenSaleMetadata.map(meta => meta.address);
+          const addresses = tokenSaleMetadata.map(meta => meta.tokenSaleAddress);
           onTokenSalesDataFetched(addresses, tokenSaleMetadata);
         }
       } catch (e) {

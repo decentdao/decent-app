@@ -1,5 +1,4 @@
-import { Box, Flex, Text, VStack, Icon } from '@chakra-ui/react';
-import { CheckCircle } from '@phosphor-icons/react';
+import { Box, Flex, Text, VStack } from '@chakra-ui/react';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
@@ -16,6 +15,7 @@ import { useTokenSaleClaimFunds } from '../../../hooks/DAO/proposal/useTokenSale
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import { useDAOStore } from '../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
+import { BuyerRequirementsDisplay } from './components/buyer-requirements/BuyerRequirementsDisplay';
 
 export function SafeTokenSaleDetailsPage() {
   const { t } = useTranslation('tokenSale');
@@ -201,87 +201,22 @@ export function SafeTokenSaleDetailsPage() {
             />
           </TokenSaleInfoCard.Section>
         </TokenSaleInfoCard>
-        {/* TODO this needs to be live data */}
         {/* Buyer Requirements */}
         <TokenSaleInfoCard title={t('buyerRequirementsTitle')}>
           <TokenSaleInfoCard.Section>
             <TokenSaleInfoCard.Item
               label={t('requiresKycKybLabel')}
-              value="Yes"
+              value={tokenSale.kyc ? t('yes') : t('no')}
             />
           </TokenSaleInfoCard.Section>
         </TokenSaleInfoCard>
 
         {/* Requirements List */}
-        <Box
-          border="1px solid"
-          borderColor="color-layout-border-10"
-          borderRadius="12px"
-          p={3}
-        >
-          <VStack
-            spacing={2}
-            align="stretch"
-          >
-            <Text
-              textStyle="text-sm-regular"
-              color="color-content-content1-foreground"
-            >
-              {t('buyerRequirementsDescription', { count: 2, total: 3 })}
-            </Text>
-
-            <Flex
-              justify="space-between"
-              align="center"
-            >
-              <Text
-                textStyle="text-sm-regular"
-                color="color-content-muted"
-              >
-                {t('usdcRequirement')}
-              </Text>
-              <Icon
-                as={CheckCircle}
-                color="color-base-success"
-                boxSize={4}
-              />
-            </Flex>
-
-            <Flex
-              justify="space-between"
-              align="center"
-            >
-              <Text
-                textStyle="text-sm-regular"
-                color="color-content-muted"
-              >
-                {t('foundersClubRequirement')}
-              </Text>
-              <Icon
-                as={CheckCircle}
-                color="color-base-success"
-                boxSize={4}
-              />
-            </Flex>
-
-            <Flex
-              justify="space-between"
-              align="center"
-            >
-              <Text
-                textStyle="text-sm-regular"
-                color="color-content-muted"
-              >
-                {t('whitelistedRequirement')}
-              </Text>
-              <Icon
-                as={CheckCircle}
-                color="color-base-success"
-                boxSize={4}
-              />
-            </Flex>
-          </VStack>
-        </Box>
+        <BuyerRequirementsDisplay
+          requirements={tokenSale.buyerRequirements || []}
+          kycEnabled={!!tokenSale.kyc}
+          orOutOf={tokenSale.orOutOf}
+        />
       </VStack>
     </Box>
   );

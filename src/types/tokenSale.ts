@@ -31,6 +31,17 @@ export type BuyerRequirement =
   | NFTBuyerRequirement
   | WhitelistBuyerRequirement;
 
+export interface TokenSaleMetadata {
+  tokenSaleAddress: string;
+  tokenSaleName?: string;
+  buyerRequirements?: BuyerRequirement[];
+  kyc?: {
+    type: 'kyc';
+    provider: string;
+  } | null;
+  orOutOf?: number;
+}
+
 export interface TokenSaleData {
   address: Address;
   name: string;
@@ -49,8 +60,13 @@ export interface TokenSaleData {
   // TODO create enum
   saleState: number; // 0: NOT_STARTED, 1: ACTIVE, 2: SUCCEEDED, 3: FAILED
   saleProceedsReceiver: Address;
-  // Buyer Requirements
+  // Buyer Requirements from metadata
   buyerRequirements?: BuyerRequirement[];
+  kyc?: {
+    type: 'kyc';
+    provider: string;
+  } | null;
+  orOutOf?: number;
   // Computed fields for compatibility
   isActive: boolean;
 }

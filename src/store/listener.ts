@@ -10,6 +10,7 @@ import {
   ProposalVote,
   ProposalVotesSummary,
 } from '../types';
+import { TokenSaleMetadata } from '../types/tokenSale';
 import { useTokenSalesFetcher } from './fetchers/tokenSales';
 import { useAccountListeners } from './listeners/account';
 import { useGovernanceListeners } from './listeners/governance';
@@ -256,10 +257,7 @@ export const useDAOStoreListener = ({ daoKey }: { daoKey: DAOKey | undefined }) 
   );
 
   const onTokenSalesDataFetched = useCallback(
-    async (
-      tokenSaleAddresses: string[],
-      tokenSaleMetadata?: Array<{ address: string; name?: string; buyerRequirements?: any[] }>,
-    ) => {
+    async (tokenSaleAddresses: string[], tokenSaleMetadata?: TokenSaleMetadata[]) => {
       if (!daoKey) return;
 
       const tokenSalesData = await fetchMultipleTokenSales(tokenSaleAddresses as Address[]);
@@ -268,11 +266,14 @@ export const useDAOStoreListener = ({ daoKey }: { daoKey: DAOKey | undefined }) 
       if (tokenSaleMetadata) {
         const enrichedTokenSalesData = tokenSalesData.map(tokenSale => {
           const metadata = tokenSaleMetadata.find(
-            meta => meta.address.toLowerCase() === tokenSale.address.toLowerCase(),
+            meta => meta.tokenSaleAddress.toLowerCase() === tokenSale.address.toLowerCase(),
           );
           return {
             ...tokenSale,
+            name: metadata?.tokenSaleName || tokenSale.name,
             buyerRequirements: metadata?.buyerRequirements || [],
+            kyc: metadata?.kyc || null,
+            orOutOf: metadata?.orOutOf,
           };
         });
         setTokenSales(daoKey, enrichedTokenSalesData);

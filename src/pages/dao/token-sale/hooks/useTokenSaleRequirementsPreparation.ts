@@ -43,7 +43,7 @@ interface KYCRequirement extends BaseRequirement {
   provider: string;
 }
 
-interface TokenSaleRequirements {
+export interface TokenSaleRequirements {
   tokenSaleAddress: Address;
   tokenSaleName: string;
   buyerRequirements: (

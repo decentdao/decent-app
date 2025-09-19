@@ -376,15 +376,20 @@ export const useDAOStoreFetcher = ({
           });
 
           if (tokenSaleMetadata.length > 0) {
-            const addresses = tokenSaleMetadata.map(meta => meta.address as Address);
+            const addresses = tokenSaleMetadata.map(meta => meta.tokenSaleAddress as Address);
             const tokenSalesData = await fetchMultipleTokenSales(addresses);
 
-            // Merge contract data with metadata names
+            // Merge contract data with metadata names and buyer requirements
             const enrichedTokenSales = tokenSalesData.map(sale => {
-              const metadata = tokenSaleMetadata.find(meta => meta.address === sale.address);
+              const metadata = tokenSaleMetadata.find(
+                meta => meta.tokenSaleAddress === sale.address,
+              );
               return {
                 ...sale,
-                name: metadata?.name || sale.name, // Use metadata name if available, fallback to contract name
+                name: metadata?.tokenSaleName || sale.name, // Use metadata name if available, fallback to contract name
+                buyerRequirements: metadata?.buyerRequirements || [],
+                kyc: metadata?.kyc || null,
+                orOutOf: metadata?.orOutOf,
               };
             });
 

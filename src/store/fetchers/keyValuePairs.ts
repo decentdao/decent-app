@@ -5,7 +5,7 @@ import { Address, GetContractEventsReturnType, getContract } from 'viem';
 import { logError } from '../../helpers/errorLogging';
 import useNetworkPublicClient from '../../hooks/useNetworkPublicClient';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
-import { BuyerRequirement } from '../../types/tokenSale';
+import { TokenSaleMetadata } from '../../types/tokenSale';
 
 export function useKeyValuePairsFetcher() {
   const publicClient = useNetworkPublicClient();
@@ -148,21 +148,19 @@ export function useKeyValuePairsFetcher() {
         event => event.args.key && event.args.key === 'newtokensale',
       );
 
-      const tokenSaleMetadata: Array<{
-        address: string;
-        name?: string;
-        buyerRequirements?: BuyerRequirement[];
-      }> = [];
+      const tokenSaleMetadata: TokenSaleMetadata[] = [];
 
       tokenSaleEvents.forEach(event => {
         if (event.args.value) {
           try {
             const metadata = JSON.parse(event.args.value);
-            if (metadata.address) {
+            if (metadata.tokenSaleAddress) {
               tokenSaleMetadata.push({
-                address: metadata.address,
-                name: metadata.name || metadata.title, // Support both 'name' and 'title' fields
+                tokenSaleAddress: metadata.tokenSaleAddress,
+                tokenSaleName: metadata.tokenSaleName,
                 buyerRequirements: metadata.buyerRequirements || [],
+                kyc: metadata.kyc || null,
+                orOutOf: metadata.orOutOf,
               });
             }
           } catch (error) {

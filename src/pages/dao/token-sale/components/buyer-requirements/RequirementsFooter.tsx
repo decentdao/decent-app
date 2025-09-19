@@ -13,10 +13,10 @@ export function RequirementsFooter({
   requirementsCount,
 }: RequirementsFooterProps) {
   const { t } = useTranslation('tokenSale');
-  
+
   // Generate number options from 1 to requirementsCount - 1
   const numberOptions = Array.from({ length: Math.max(0, requirementsCount - 1) }, (_, i) => i + 1);
-  
+
   return (
     <HStack
       spacing={2}
@@ -47,7 +47,10 @@ export function RequirementsFooter({
       >
         <option value="all">{t('requirementAllOption')}</option>
         {numberOptions.map(num => (
-          <option key={num} value={num}>
+          <option
+            key={num}
+            value={num}
+          >
             {num}
           </option>
         ))}
