@@ -182,9 +182,9 @@ export const useTokenSaleSchema = () => {
           }),
         ),
 
-        // End date - optional but must be after start date if provided
+        // End date - required and must be after start date
         endDate: Yup.date()
-          .nullable()
+          .required(t('endDateRequiredError', { ns: 'tokenSale' }))
           .test(
             'end-after-start',
             t('endDateAfterStartError', { ns: 'tokenSale' }),

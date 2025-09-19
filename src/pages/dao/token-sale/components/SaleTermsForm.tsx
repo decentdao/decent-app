@@ -354,34 +354,33 @@ export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
           </LabelComponent>
         </Grid>
 
+        <LabelComponent
+          label={t('valuationLabel')}
+          isRequired={true}
+          errorMessage={touched.valuation && errors.valuation ? errors.valuation : undefined}
+          gridContainerProps={{
+            templateColumns: '1fr',
+          }}
+        >
+          <NumberInputWithAddon
+            value={values.valuation}
+            onChange={val => {
+              const fdvValue = parseFloat(val) || 0;
+              setFieldValue('valuation', fdvValue);
+              // Price calculation will be handled by useEffect
+            }}
+            min={0}
+            precision={2}
+            step={0.01}
+            placeholder={t('valuationPlaceholder')}
+            leftAddon={<Text color="color-content-muted-foreground">$</Text>}
+          />
+        </LabelComponent>
+
         <Grid
           templateColumns="1fr 1fr"
           gap={4}
         >
-          <LabelComponent
-            label={t('valuationLabel')}
-            isRequired={true}
-            errorMessage={touched.valuation && errors.valuation ? errors.valuation : undefined}
-            gridContainerProps={{
-              templateColumns: '1fr',
-              templateRows: '1fr',
-            }}
-          >
-            <NumberInputWithAddon
-              value={values.valuation}
-              onChange={val => {
-                const fdvValue = parseFloat(val) || 0;
-                setFieldValue('valuation', fdvValue);
-                // Price calculation will be handled by useEffect
-              }}
-              min={0}
-              precision={2}
-              step={0.01}
-              placeholder={t('valuationPlaceholder')}
-              leftAddon={<Text color="color-content-muted-foreground">$</Text>}
-            />
-          </LabelComponent>
-
           <LabelComponent
             label={t('saleStartDateLabel')}
             isRequired={true}
@@ -394,6 +393,21 @@ export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
               selectedDate={values.startDate || undefined}
               onChange={date => setFieldValue('startDate', date)}
               minDate={new Date()}
+            />
+          </LabelComponent>
+
+          <LabelComponent
+            label={t('saleEndDateLabel')}
+            isRequired={true}
+            errorMessage={touched.endDate && errors.endDate ? errors.endDate : undefined}
+            gridContainerProps={{
+              templateColumns: '1fr',
+            }}
+          >
+            <DatePicker
+              selectedDate={values.endDate || undefined}
+              onChange={date => setFieldValue('endDate', date)}
+              minDate={values.startDate || new Date()}
             />
           </LabelComponent>
         </Grid>
