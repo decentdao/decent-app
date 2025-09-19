@@ -11,6 +11,7 @@ import PageHeader from '../../../components/ui/page/Header/PageHeader';
 import { CONTENT_MAXW } from '../../../constants/common';
 import { DAO_ROUTES } from '../../../constants/routes';
 import { getRandomBytes } from '../../../helpers';
+import { logError } from '../../../helpers/errorLogging';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import { useTokenSaleSchema } from '../../../hooks/schemas/useTokenSaleSchema';
 import { generateContractByteCodeLinear, generateSalt } from '../../../models/helpers/utils';
@@ -131,7 +132,7 @@ export function SafeTokenSaleCreatePage() {
         throw new Error('Failed to prepare form data');
       }
     } catch (error) {
-      console.error('Error preparing form data:', error);
+      logError(error);
       return;
     }
 
