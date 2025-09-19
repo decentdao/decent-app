@@ -48,21 +48,19 @@ export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
   }, [availableTokens, values.tokenAddress]);
 
   // Calculate token price based on FDV and total supply
-  const calculateTokenPrice = (fdv: number, totalSupply: string, tokenDecimals: number = 18) => {
-    if (!fdv || !totalSupply || fdv <= 0 || parseFloat(totalSupply) <= 0) {
+  const calculateTokenPrice = (fdv: number, totalSupplyRaw: string, tokenDecimals: number = 18) => {
+    if (!fdv || !totalSupplyRaw || fdv <= 0 || parseFloat(totalSupplyRaw) <= 0) {
       return 0;
     }
 
     try {
-      // Convert total supply to proper decimal format
-      const totalSupplyBigInt = parseUnits(totalSupply, tokenDecimals);
-      const fdvBigInt = parseUnits(fdv.toString(), USDC_DECIMALS); // Assuming USD has 6 decimals (like USDC)
-
-      // Price = FDV / Total Supply
-      const priceBigInt = (fdvBigInt * BigInt(10 ** tokenDecimals)) / totalSupplyBigInt;
-
-      // Convert back to human readable format
-      return parseFloat(formatUnits(priceBigInt, USDC_DECIMALS)); // Price in USD with 6 decimals
+      // Convert raw total supply to human-readable format
+      const totalSupplyHuman = parseFloat(formatUnits(BigInt(totalSupplyRaw), tokenDecimals));
+      
+      // Simple calculation: Price = FDV / Total Supply (in human units)
+      const priceInUSD = fdv / totalSupplyHuman;
+      
+      return priceInUSD;
     } catch (error) {
       console.error('Error calculating token price:', error);
       return 0;
@@ -85,7 +83,8 @@ export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
     if (fdv > 0 && totalSupply && values.tokenAddress) {
       const calculatedPrice = calculateTokenPrice(fdv, totalSupply, tokenDecimals);
       // Update saleTokenPrice BigIntValuePair for contract interaction
-      const priceBigInt = parseUnits(calculatedPrice.toString(), tokenDecimals);
+      // Price should be in commitment token decimals (USDC = 6 decimals)
+      const priceBigInt = parseUnits(calculatedPrice.toString(), USDC_DECIMALS);
       setFieldValue('saleTokenPrice', {
         value: calculatedPrice.toFixed(8),
         bigintValue: priceBigInt,
@@ -129,7 +128,7 @@ export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
             tokenToSelect.decimals || 18,
           );
 
-          const priceBigInt = parseUnits(calculatedPrice.toString(), tokenToSelect.decimals || 18);
+          const priceBigInt = parseUnits(calculatedPrice.toString(), USDC_DECIMALS);
           setFieldValue('saleTokenPrice', {
             value: calculatedPrice.toFixed(8),
             bigintValue: priceBigInt,
