@@ -53,6 +53,7 @@ interface TokenSaleRequirements {
     | WhitelistRequirement
   )[];
   kyc: KYCRequirement | null;
+  orOutOf?: number; // Number of requirements that must be met, undefined means all
 }
 
 export function useTokenSaleRequirementsPreparation() {
@@ -101,11 +102,24 @@ export function useTokenSaleRequirementsPreparation() {
         provider: 'sumsub',
       };
     }
+    // Calculate orOutOf value
+    let orOutOf: number | undefined;
+    if (values.buyerRequirements.length > 0 && values.orOutOf) {
+      if (values.orOutOf === 'all') {
+        // 'all' means all requirements must be met, so we send the full length
+        orOutOf = values.buyerRequirements.length;
+      } else {
+        // Specific number of requirements that must be met
+        orOutOf = values.orOutOf;
+      }
+    }
+
     return {
       tokenSaleAddress: values.tokenAddress,
       tokenSaleName: values.saleName,
       buyerRequirements,
       kyc,
+      orOutOf,
     };
   }, []);
 

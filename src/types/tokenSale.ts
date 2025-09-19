@@ -107,4 +107,5 @@ export interface TokenSaleFormValues {
   // Buyer Requirements
   kycEnabled: boolean;
   buyerRequirements: BuyerRequirement[];
+  orOutOf?: 'all' | number; // Number of requirements that must be met, defaults to 'all'
 }

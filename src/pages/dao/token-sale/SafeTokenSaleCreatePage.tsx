@@ -75,6 +75,7 @@ const getInitialValues = (usdcAddress?: Address): TokenSaleFormValues => ({
   // Buyer Requirements
   kycEnabled: false,
   buyerRequirements: [],
+  orOutOf: 'all', // Default to 'all' requirements must be met
 });
 
 export function SafeTokenSaleCreatePage() {

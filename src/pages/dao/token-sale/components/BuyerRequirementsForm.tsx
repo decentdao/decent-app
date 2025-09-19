@@ -16,12 +16,18 @@ interface BuyerRequirementsFormProps {
 
 export function BuyerRequirementsForm({ values, setFieldValue }: BuyerRequirementsFormProps) {
   const { t } = useTranslation('tokenSale');
-  const [requirementMode, setRequirementMode] = useState<'all' | 'any'>('all');
   const [editingRequirement, setEditingRequirement] = useState<{
     requirement: BuyerRequirement;
     index: number;
   } | null>(null);
   const { isOpen, onOpen, onClose } = useDisclosure();
+
+  // Get requirement mode from form values, default to 'all'
+  const requirementMode = values.orOutOf || 'all';
+
+  const setRequirementMode = (mode: 'all' | number) => {
+    setFieldValue('orOutOf', mode);
+  };
 
   const handleAddRequirement = (requirement: BuyerRequirement) => {
     if (editingRequirement !== null) {
