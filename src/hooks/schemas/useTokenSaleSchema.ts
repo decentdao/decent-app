@@ -133,13 +133,39 @@ export const useTokenSaleSchema = () => {
             // Whitelist-specific validation
             addresses: Yup.array().when('type', {
               is: 'whitelist',
-              then: schema => schema
-                .min(1, t('whitelistMinOneAddressError', { ns: 'tokenSale' }))
-                .of(
+              then: schema =>
+                schema.min(1, t('whitelistMinOneAddressError', { ns: 'tokenSale' })).of(
                   Yup.string()
                     .required(t('whitelistAddressRequiredError', { ns: 'tokenSale' }))
-                    .test(addressValidationTestSimple)
+                    .test(addressValidationTestSimple),
                 ),
+            }),
+            // Token-specific validation
+            tokenAddress: Yup.string().when('type', {
+              is: 'token',
+              then: schema =>
+                schema
+                  .required(t('tokenAddressRequiredError', { ns: 'tokenSale' }))
+                  .test(addressValidationTestSimple),
+            }),
+            minimumBalance: Yup.mixed().when('type', {
+              is: (value: string) => value === 'token' || value === 'nft',
+              then: schema =>
+                schema.test(
+                  'minimum-balance-positive',
+                  t('minimumBalanceGreaterThanZeroError', { ns: 'tokenSale' }),
+                  function (value: any) {
+                    return value && typeof value === 'bigint' && value > 0n;
+                  },
+                ),
+            }),
+            // NFT-specific validation
+            contractAddress: Yup.string().when('type', {
+              is: 'nft',
+              then: schema =>
+                schema
+                  .required(t('nftAddressRequiredError', { ns: 'tokenSale' }))
+                  .test(addressValidationTestSimple),
             }),
           }),
         ),

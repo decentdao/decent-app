@@ -1,7 +1,7 @@
 import { VStack, HStack, Text, Button, Flex } from '@chakra-ui/react';
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Address } from 'viem';
+import { Address, isAddress } from 'viem';
 import { BigIntInput } from '../../../../../components/ui/forms/BigIntInput';
 import { NFTAddressInput } from '../../../../../components/ui/forms/NFTAddressInput';
 import { BigIntValuePair } from '../../../../../types';
@@ -39,6 +39,50 @@ export function NFTRequirementForm({ onSubmit, initialData }: NFTRequirementForm
       : { value: '1', bigintValue: BigInt(1) },
   );
   const [error, setError] = useState<string>('');
+  const [inputError, setInputError] = useState<string>('');
+  const [hasAttemptedLookup, setHasAttemptedLookup] = useState<boolean>(false);
+
+  // Real-time validation for contract address format
+  useEffect(() => {
+    if (!contractAddress.trim()) {
+      setInputError('');
+      setHasAttemptedLookup(false);
+      return;
+    }
+
+    // Basic address format validation - this should show immediately
+    if (!isAddress(contractAddress.trim())) {
+      setInputError(t('nftAddressInvalidError'));
+      setHasAttemptedLookup(false);
+      return;
+    }
+
+    setInputError('');
+    // Reset lookup state when address changes
+    setHasAttemptedLookup(false);
+  }, [contractAddress, t]);
+
+  // Handle NFT info updates from NFTAddressInput - use useCallback to prevent re-fetching
+  const handleNFTInfo = useCallback(
+    (info: NFTInfo | null) => {
+      setNFTInfo(info);
+      setHasAttemptedLookup(true);
+
+      // If we have a valid address but no NFT info after lookup, show error
+      if (contractAddress && isAddress(contractAddress) && !info) {
+        setInputError(t('nftAddressInvalidError'));
+      } else if (info) {
+        // Clear error when we successfully get NFT info
+        setInputError('');
+      }
+
+      setError('');
+    },
+    [contractAddress, t],
+  );
+
+  // Show loading state or error based on lookup status
+  const shouldShowError = inputError && (hasAttemptedLookup || !isAddress(contractAddress));
 
   const handleSubmit = () => {
     if (!contractAddress) {
@@ -101,12 +145,14 @@ export function NFTRequirementForm({ onSubmit, initialData }: NFTRequirementForm
             setContractAddress(e.target.value);
             setError('');
           }}
-          onNFTInfo={info => {
-            setNFTInfo(info);
-            setError('');
-          }}
+          onNFTInfo={handleNFTInfo}
           placeholder={t('nftAddressPlaceholder')}
-          isInvalid={!!error && (error.includes('address') || error.includes('valid NFT'))}
+          isInvalid={
+            !!(
+              shouldShowError ||
+              (error && (error.includes('address') || error.includes('valid NFT')))
+            )
+          }
         />
       </VStack>
 
@@ -124,19 +170,22 @@ export function NFTRequirementForm({ onSubmit, initialData }: NFTRequirementForm
         </Text>
         <BigIntInput
           value={minimumBalance}
-          onChange={setMinimumBalance}
+          onChange={value => {
+            setMinimumBalance(value);
+            setError('');
+          }}
           decimals={0}
           isInvalid={!!error && error.includes('amount')}
         />
       </VStack>
 
       {/* Error Display */}
-      {error && (
+      {(shouldShowError || error) && (
         <Text
           fontSize="sm"
           color="color-error-400"
         >
-          {error}
+          {shouldShowError ? inputError : error}
         </Text>
       )}
 

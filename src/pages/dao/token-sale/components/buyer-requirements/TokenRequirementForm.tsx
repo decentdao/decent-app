@@ -1,7 +1,7 @@
 import { VStack, HStack, Text, Button, Flex } from '@chakra-ui/react';
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Address } from 'viem';
+import { Address, isAddress } from 'viem';
 import { BigIntInput } from '../../../../../components/ui/forms/BigIntInput';
 import { TokenAddressInput } from '../../../../../components/ui/forms/TokenAddressInput';
 import { BigIntValuePair } from '../../../../../types';
@@ -37,9 +37,52 @@ export function TokenRequirementForm({ onSubmit, initialData }: TokenRequirement
       : { value: '1', bigintValue: BigInt(1) },
   );
   const [error, setError] = useState<string>('');
+  const [inputError, setInputError] = useState<string>('');
+  const [hasAttemptedLookup, setHasAttemptedLookup] = useState<boolean>(false);
+
+  // Real-time validation for token address format
+  useEffect(() => {
+    if (!tokenAddress.trim()) {
+      setInputError('');
+      setHasAttemptedLookup(false);
+      return;
+    }
+
+    // Basic address format validation - this should show immediately
+    if (!isAddress(tokenAddress.trim())) {
+      setInputError(t('tokenAddressInvalidError'));
+      setHasAttemptedLookup(false);
+      return;
+    }
+
+    setInputError('');
+    // Reset lookup state when address changes
+    setHasAttemptedLookup(false);
+  }, [tokenAddress, t]);
+
+  // Handle token info updates from TokenAddressInput - use useCallback to prevent re-fetching
+  const handleTokenInfo = useCallback(
+    (info: TokenInfo | null) => {
+      setTokenInfo(info);
+      setHasAttemptedLookup(true);
+
+      // If we have a valid address but no token info after lookup, show error
+      if (tokenAddress && isAddress(tokenAddress) && !info) {
+        setInputError(t('tokenAddressInvalidError'));
+      } else if (info) {
+        // Clear error when we successfully get token info
+        setInputError('');
+      }
+
+      setError('');
+    },
+    [tokenAddress, t],
+  );
+
+  // Show loading state or error based on lookup status
+  const shouldShowError = inputError && (hasAttemptedLookup || !isAddress(tokenAddress));
 
   const handleSubmit = () => {
-    // todo remove during validation update
     if (!tokenAddress) {
       setError(t('tokenAddressRequiredError'));
       return;
@@ -101,9 +144,9 @@ export function TokenRequirementForm({ onSubmit, initialData }: TokenRequirement
             setTokenAddress(e.target.value);
             setError('');
           }}
-          onTokenInfo={setTokenInfo}
+          onTokenInfo={handleTokenInfo}
           placeholder={t('tokenAddressPlaceholder')}
-          isInvalid={!!error && error.includes('address')}
+          isInvalid={!!(shouldShowError || (error && error.includes('address')))}
         />
       </VStack>
 
@@ -121,19 +164,22 @@ export function TokenRequirementForm({ onSubmit, initialData }: TokenRequirement
         </Text>
         <BigIntInput
           value={minimumBalance}
-          onChange={setMinimumBalance}
+          onChange={value => {
+            setMinimumBalance(value);
+            setError('');
+          }}
           decimals={tokenInfo?.decimals || 18}
           isInvalid={!!error && error.includes('balance')}
         />
       </VStack>
 
       {/* Error Display */}
-      {error && (
+      {(shouldShowError || error) && (
         <Text
           fontSize="sm"
           color="color-error-400"
         >
-          {error}
+          {shouldShowError ? inputError : error}
         </Text>
       )}
 

@@ -1,10 +1,11 @@
 import { VStack, Flex, Text, Button, Box, IconButton, Icon } from '@chakra-ui/react';
 import { Plus, Trash } from '@phosphor-icons/react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Address } from 'viem';
+import { Address, isAddress } from 'viem';
 import { AddressInputInfoTable } from '../../../../../components/ui/forms/AddressInputInfoTable';
 import { WhitelistBuyerRequirement } from '../../../../../types/tokenSale';
+import { validateENSName } from '../../../../../utils/url';
 import { WhitelistDropzone } from './WhitelistDropzone';
 
 interface WhitelistRequirementFormProps {
@@ -17,7 +18,39 @@ export function WhitelistRequirementForm({ onSubmit, initialData }: WhitelistReq
   const { t } = useTranslation('tokenSale');
   const [addresses, setAddresses] = useState<Address[]>(initialData?.addresses || []);
   const [newAddress, setNewAddress] = useState<string>('');
-  const [error, setError] = useState<string>('');
+  const [inputError, setInputError] = useState<string>('');
+  const [submitError, setSubmitError] = useState<string>('');
+
+  // Validate input in real-time
+  useEffect(() => {
+    if (!newAddress.trim()) {
+      setInputError('');
+      return;
+    }
+
+    const trimmedAddress = newAddress.trim();
+
+    // Check if it's a valid address or ENS name
+    if (!isAddress(trimmedAddress) && !validateENSName(trimmedAddress)) {
+      setInputError(t('whitelistInvalidAddressError'));
+      return;
+    }
+
+    // Check for duplicates
+    const isDuplicate = addresses.some(existing => {
+      if (isAddress(existing) && isAddress(trimmedAddress)) {
+        return existing.toLowerCase() === trimmedAddress.toLowerCase();
+      }
+      return existing === trimmedAddress;
+    });
+
+    if (isDuplicate) {
+      setInputError(t('whitelistAddressExistsError'));
+      return;
+    }
+
+    setInputError('');
+  }, [newAddress, addresses, t]);
 
   const handleAddFromDropzone = (newAddresses: Address[]) => {
     const uniqueAddresses = [...addresses];
@@ -27,7 +60,7 @@ export function WhitelistRequirementForm({ onSubmit, initialData }: WhitelistReq
       }
     });
     setAddresses(uniqueAddresses);
-    setError('');
+    setSubmitError('');
   };
 
   const handleAddAddress = () => {
@@ -36,9 +69,14 @@ export function WhitelistRequirementForm({ onSubmit, initialData }: WhitelistReq
     }
 
     const address = newAddress.trim() as Address;
+    // Only add if there's no input error
+    if (inputError) {
+      return;
+    }
+
     setAddresses([...addresses, address]);
     setNewAddress('');
-    setError('');
+    setInputError('');
   };
 
   const handleRemoveAddress = (index: number) => {
@@ -46,6 +84,11 @@ export function WhitelistRequirementForm({ onSubmit, initialData }: WhitelistReq
   };
 
   const handleSubmit = () => {
+    if (addresses.length === 0) {
+      setSubmitError(t('whitelistMinOneAddressError'));
+      return;
+    }
+
     const requirement: WhitelistBuyerRequirement = {
       type: 'whitelist',
       name: `Whitelist (${addresses.length} addresses)`,
@@ -164,7 +207,6 @@ export function WhitelistRequirementForm({ onSubmit, initialData }: WhitelistReq
               value={newAddress}
               onChange={e => {
                 setNewAddress(e.target.value);
-                setError('');
               }}
               onKeyDown={e => {
                 if (e.key === 'Enter') {
@@ -173,7 +215,7 @@ export function WhitelistRequirementForm({ onSubmit, initialData }: WhitelistReq
                 }
               }}
               placeholder={t('whitelistAddressPlaceholder')}
-              isInvalid={!!error}
+              isInvalid={!!inputError}
             />
           </Box>
           <Box
@@ -194,7 +236,7 @@ export function WhitelistRequirementForm({ onSubmit, initialData }: WhitelistReq
               size="sm"
               onClick={() => {
                 setNewAddress('');
-                setError('');
+                setInputError('');
               }}
               color="color-error-400"
               _hover={{ bg: 'color-error-950' }}
@@ -239,12 +281,12 @@ export function WhitelistRequirementForm({ onSubmit, initialData }: WhitelistReq
       </Box>
 
       {/* Error Display */}
-      {error && (
+      {(inputError || submitError) && (
         <Text
           fontSize="sm"
           color="color-error-400"
         >
-          {error}
+          {inputError || submitError}
         </Text>
       )}
 
