@@ -9,7 +9,7 @@ import { TokenSaleInfoCard } from '../../../components/TokenSales/TokenSaleInfoC
 import { TokenSaleProgressCard } from '../../../components/TokenSales/TokenSaleProgressCard';
 import { InfoBoxLoader } from '../../../components/ui/loaders/InfoBoxLoader';
 import PageHeader from '../../../components/ui/page/Header/PageHeader';
-import { CONTENT_MAXW } from '../../../constants/common';
+import { CONTENT_MAXW, USDC_DECIMALS } from '../../../constants/common';
 import { DAO_ROUTES } from '../../../constants/routes';
 import { useTokenSaleClaimFunds } from '../../../hooks/DAO/proposal/useTokenSaleClaimFunds';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
@@ -37,7 +37,7 @@ export function SafeTokenSaleDetailsPage() {
     return <InfoBoxLoader />;
   }
 
-  const formatCurrency = (value: bigint, decimals: number = 6) => {
+  const formatCurrency = (value: bigint, decimals: number = USDC_DECIMALS) => {
     const formatted = parseFloat(formatUnits(value, decimals));
     return `$${formatted.toLocaleString('en-US', { maximumFractionDigits: 0 })}`;
   };
@@ -56,12 +56,12 @@ export function SafeTokenSaleDetailsPage() {
     });
   };
 
-  const tokenPrice = formatUnits(tokenSale.saleTokenPrice, 6); // Assuming price is in USDC (6 decimals)
+  const tokenPrice = formatUnits(tokenSale.saleTokenPrice, USDC_DECIMALS); // Assuming price is in USDC (6 decimals)
   const totalSupply = formatTokenAmount(
     tokenSale.maximumTotalCommitment / tokenSale.saleTokenPrice,
     tokenSale.tokenDecimals,
   );
-  const valuation = parseFloat(formatUnits(tokenSale.maximumTotalCommitment, 6)) * 1.6; // Assuming 1.6x multiple for valuation
+  const valuation = parseFloat(formatUnits(tokenSale.maximumTotalCommitment, USDC_DECIMALS)) * 1.6; // Assuming 1.6x multiple for valuation
 
   if (!safe?.address) {
     return <InfoBoxLoader />;

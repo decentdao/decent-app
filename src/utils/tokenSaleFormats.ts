@@ -1,5 +1,6 @@
 import { format } from 'date-fns';
 import { formatUnits } from 'viem';
+import { USDC_DECIMALS } from '../constants/common';
 import { formatUSD } from './numberFormats';
 
 /**
@@ -14,7 +15,7 @@ export const formatSaleDate = (timestamp: number | bigint): string => {
 /**
  * Formats token sale amounts to USD currency
  */
-export const formatSaleAmount = (amount: bigint, decimals: number = 6): string => {
+export const formatSaleAmount = (amount: bigint, decimals: number = USDC_DECIMALS): string => {
   if (amount === 0n) {
     return '$0';
   }
@@ -28,7 +29,7 @@ export const formatSaleAmount = (amount: bigint, decimals: number = 6): string =
 export const calculateSaleProgress = (
   raised: bigint,
   target: bigint,
-  decimals: number = 6,
+  decimals: number = USDC_DECIMALS,
 ): number => {
   if (target === 0n) {
     return 0;

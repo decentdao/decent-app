@@ -9,6 +9,7 @@ import { LabelComponent } from '../../../../components/ui/forms/InputComponent';
 import { NumberInputWithAddon } from '../../../../components/ui/forms/InputWithAddon';
 import { SectionHeader } from '../../../../components/ui/forms/SectionHeader';
 import { DropdownMenu } from '../../../../components/ui/menus/DropdownMenu';
+import { USDC_DECIMALS } from '../../../../constants/common';
 import useFeatureFlag from '../../../../helpers/environmentFeatureFlags';
 import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
 import { useDAOStore } from '../../../../providers/App/AppProvider';
@@ -55,13 +56,13 @@ export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
     try {
       // Convert total supply to proper decimal format
       const totalSupplyBigInt = parseUnits(totalSupply, tokenDecimals);
-      const fdvBigInt = parseUnits(fdv.toString(), 6); // Assuming USD has 6 decimals (like USDC)
+      const fdvBigInt = parseUnits(fdv.toString(), USDC_DECIMALS); // Assuming USD has 6 decimals (like USDC)
 
       // Price = FDV / Total Supply
       const priceBigInt = (fdvBigInt * BigInt(10 ** tokenDecimals)) / totalSupplyBigInt;
 
       // Convert back to human readable format
-      return parseFloat(formatUnits(priceBigInt, 6)); // Price in USD with 6 decimals
+      return parseFloat(formatUnits(priceBigInt, USDC_DECIMALS)); // Price in USD with 6 decimals
     } catch (error) {
       console.error('Error calculating token price:', error);
       return 0;

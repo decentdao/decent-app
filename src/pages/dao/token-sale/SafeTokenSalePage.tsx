@@ -7,7 +7,7 @@ import { formatUnits } from 'viem';
 import { TokenSalesTable } from '../../../components/TokenSales/TokenSalesTable';
 import { InfoBoxLoader } from '../../../components/ui/loaders/InfoBoxLoader';
 import PageHeader from '../../../components/ui/page/Header/PageHeader';
-import { CONTENT_MAXW } from '../../../constants/common';
+import { CONTENT_MAXW, USDC_DECIMALS } from '../../../constants/common';
 import { DAO_ROUTES } from '../../../constants/routes';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import { useDAOStore } from '../../../providers/App/AppProvider';
@@ -46,7 +46,7 @@ export function SafeTokenSalePage() {
     // TODO: This should ideally use the actual commitment token decimals from each sale
     const totalRaisedFormatted =
       totalRaisedWei > 0n
-        ? `$${parseFloat(formatUnits(totalRaisedWei, 6)).toLocaleString('en-US', { maximumFractionDigits: 0 })}`
+        ? `$${parseFloat(formatUnits(totalRaisedWei, USDC_DECIMALS)).toLocaleString('en-US', { maximumFractionDigits: 0 })}`
         : '$0';
     return {
       totalSales: tokenSales.length,
