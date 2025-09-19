@@ -27,7 +27,12 @@ const getRequirementDisplay = (requirement: BuyerRequirement, t: any) => {
   }
 };
 
-export function RequirementsList({ requirements, onAddRequirement, onEditRequirement, onRemoveRequirement }: RequirementsListProps) {
+export function RequirementsList({
+  requirements,
+  onAddRequirement,
+  onEditRequirement,
+  onRemoveRequirement,
+}: RequirementsListProps) {
   const { t } = useTranslation('tokenSale');
   const hasOpenAccess = requirements.length === 0;
 

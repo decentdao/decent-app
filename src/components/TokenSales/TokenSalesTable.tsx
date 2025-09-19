@@ -99,13 +99,14 @@ export function TokenSalesTable({ tokenSales }: TokenSalesTableProps) {
   const { safeAddress } = useCurrentDAOKey();
   const { addressPrefix } = useNetworkConfigStore();
   const { claimFunds, pending } = useTokenSaleClaimFunds();
-  const { sortedSales, sortField, sortDirection, handleSort } = useTokenSalesTableSorting(tokenSales);
+  const { sortedSales, sortField, sortDirection, handleSort } =
+    useTokenSalesTableSorting(tokenSales);
 
-  function SortableHeader({ 
-    children, 
-    field, 
-    onClick 
-  }: { 
+  function SortableHeader({
+    children,
+    field,
+    onClick,
+  }: {
     children: React.ReactNode;
     field: SortField;
     onClick: (field: SortField) => void;
@@ -168,32 +169,50 @@ export function TokenSalesTable({ tokenSales }: TokenSalesTableProps) {
         <Thead>
           <Tr>
             <Th>
-              <SortableHeader field="name" onClick={handleSort}>
+              <SortableHeader
+                field="name"
+                onClick={handleSort}
+              >
                 {t('nameColumnLabel')}
               </SortableHeader>
             </Th>
             <Th>
-              <SortableHeader field="endDate" onClick={handleSort}>
+              <SortableHeader
+                field="endDate"
+                onClick={handleSort}
+              >
                 {t('closingDateColumnLabel')}
               </SortableHeader>
             </Th>
             <Th>
-              <SortableHeader field="status" onClick={handleSort}>
+              <SortableHeader
+                field="status"
+                onClick={handleSort}
+              >
                 {t('statusColumnLabel')}
               </SortableHeader>
             </Th>
             <Th>
-              <SortableHeader field="raised" onClick={handleSort}>
+              <SortableHeader
+                field="raised"
+                onClick={handleSort}
+              >
                 {t('raisedColumnLabel')}
               </SortableHeader>
             </Th>
             <Th>
-              <SortableHeader field="target" onClick={handleSort}>
+              <SortableHeader
+                field="target"
+                onClick={handleSort}
+              >
                 {t('targetRaiseColumnLabel')}
               </SortableHeader>
             </Th>
             <Th>
-              <SortableHeader field="progress" onClick={handleSort}>
+              <SortableHeader
+                field="progress"
+                onClick={handleSort}
+              >
                 {t('progressColumnLabel')}
               </SortableHeader>
             </Th>

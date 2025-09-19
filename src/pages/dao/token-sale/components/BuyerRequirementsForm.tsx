@@ -18,7 +18,10 @@ export function BuyerRequirementsForm({ values, setFieldValue }: BuyerRequiremen
   const { t } = useTranslation('tokenSale');
   const [requireKYC, setRequireKYC] = useState(false);
   const [requirementMode, setRequirementMode] = useState<'all' | 'any'>('all');
-  const [editingRequirement, setEditingRequirement] = useState<{ requirement: BuyerRequirement; index: number } | null>(null);
+  const [editingRequirement, setEditingRequirement] = useState<{
+    requirement: BuyerRequirement;
+    index: number;
+  } | null>(null);
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const handleAddRequirement = (requirement: BuyerRequirement) => {
