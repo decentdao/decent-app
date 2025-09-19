@@ -23,6 +23,7 @@ import { TokenSaleFormValues } from '../../../types/tokenSale';
 import { BuyerRequirementsForm } from './components/BuyerRequirementsForm';
 import { SaleTermsForm } from './components/SaleTermsForm';
 import { useTokenSaleFormPreparation } from './hooks/useTokenSaleFormPreparation';
+import { useTokenSaleRequirementsPreparation } from './hooks/useTokenSaleRequirementsPreparation';
 
 const stages = ['Sale Terms', 'Buyer Requirements'];
 
@@ -92,6 +93,7 @@ export function SafeTokenSaleCreatePage() {
   const navigate = useNavigate();
   const { addressPrefix } = useNetworkConfigStore();
   const { prepareFormData } = useTokenSaleFormPreparation();
+  const { prepareRequirements } = useTokenSaleRequirementsPreparation();
   const { tokenSaleValidationSchema } = useTokenSaleSchema();
 
   const handleNext = async (validateForm: () => Promise<any>) => {
@@ -235,18 +237,7 @@ export function SafeTokenSaleCreatePage() {
       });
 
       // 2. Update KeyValuePairs with new token sale info
-      // todo update for api expected values; update fetcher and listener; update token sale details page
-      console.log('🚀 ~ values.buyerRequirements:', values.buyerRequirements);
-      const tokenSaleMetadata = {
-        tokenSaleAddress: predictedTokenSaleAddress,
-        saleName: tokenSaleData.saleName,
-        buyerRequirements: values.buyerRequirements,
-        kycEnabled: values.kycEnabled,
-        kyc: {
-          type: 'key',
-          provider: 'sumsub',
-        },
-      };
+      const tokenSaleMetadata = prepareRequirements(values);
 
       const updateValuesCalldata = encodeFunctionData({
         abi: legacy.abis.KeyValuePairs,
