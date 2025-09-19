@@ -52,6 +52,7 @@ export interface TokenSaleData {
   tokenDecimals: number;
   saleTokenPrice: bigint;
   maximumTotalCommitment: bigint;
+  minimumTotalCommitment: bigint;
   totalCommitments: bigint;
   saleStartTimestamp: bigint;
   saleEndTimestamp: bigint;

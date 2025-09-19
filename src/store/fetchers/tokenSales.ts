@@ -33,6 +33,10 @@ export function useTokenSalesFetcher() {
           },
           {
             ...tokenSaleContract,
+            functionName: 'minimumTotalCommitment',
+          },
+          {
+            ...tokenSaleContract,
             functionName: 'maximumTotalCommitment',
           },
           {
@@ -71,6 +75,7 @@ export function useTokenSalesFetcher() {
           commitmentTokenData,
           priceData,
           maxTotalCommitmentData,
+          minTotalCommitmentData,
           totalCommitmentsData,
           startTimeData,
           endTimeData,
@@ -133,6 +138,7 @@ export function useTokenSalesFetcher() {
           tokenDecimals: (tokenDecimalsData.result as number) || 18,
           saleTokenPrice: (priceData.result as bigint) || 0n,
           maximumTotalCommitment: (maxTotalCommitmentData.result as bigint) || 0n,
+          minimumTotalCommitment: (minTotalCommitmentData.result as bigint) || 0n,
           totalCommitments: (totalCommitmentsData.result as bigint) || 0n,
           saleStartTimestamp: (startTimeData.result as bigint) || 0n,
           saleEndTimestamp: (endTimeData.result as bigint) || 0n,

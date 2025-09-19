@@ -61,7 +61,7 @@ export function SafeTokenSaleDetailsPage() {
     tokenSale.maximumTotalCommitment / tokenSale.saleTokenPrice,
     tokenSale.tokenDecimals,
   );
-  const valuation = parseFloat(formatUnits(tokenSale.maximumTotalCommitment, USDC_DECIMALS)) * 1.6; // Assuming 1.6x multiple for valuation
+  const valuation = parseFloat(formatUnits(tokenSale.maximumTotalCommitment, USDC_DECIMALS));
 
   if (!safe?.address) {
     return <InfoBoxLoader />;
@@ -111,7 +111,7 @@ export function SafeTokenSaleDetailsPage() {
           <TokenSaleProgressCard
             raised={tokenSale.totalCommitments}
             goal={tokenSale.maximumTotalCommitment}
-            minimum={tokenSale.maximumTotalCommitment / 2n} // Assuming minimum is half of max
+            minimum={tokenSale.minimumTotalCommitment}
             commitmentTokenDecimals={6} // Assuming USDC
           />
 
@@ -134,7 +134,7 @@ export function SafeTokenSaleDetailsPage() {
 
           {/* Successful Sale Banner */}
           {tokenSale.saleState === 2 &&
-            tokenSale.totalCommitments >= tokenSale.maximumTotalCommitment / 2n && (
+            tokenSale.totalCommitments >= tokenSale.minimumTotalCommitment && (
               <TokenSaleBanner
                 title={t('successfulSaleTitle')}
                 description={t('successfulSaleDescription', {
@@ -176,7 +176,7 @@ export function SafeTokenSaleDetailsPage() {
             />
             <TokenSaleInfoCard.Item
               label={t('minimumRaiseInfoLabel')}
-              value={formatCurrency(tokenSale.maximumTotalCommitment / 2n)} // Assuming minimum is half
+              value={formatCurrency(tokenSale.minimumTotalCommitment)}
             />
             <TokenSaleInfoCard.Item
               label={t('fundraisingCapInfoLabel')}
