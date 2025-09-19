@@ -75,7 +75,7 @@ export function SafeTokenSaleDetailsPage() {
       <PageHeader
         breadcrumbs={[
           {
-            terminus: 'Token Sales',
+            terminus: t('tokenSalesBreadcrumb'),
             path: DAO_ROUTES.tokenSale.relative(addressPrefix, safe?.address),
           },
           {

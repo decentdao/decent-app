@@ -155,5 +155,10 @@
   "beIncludedInWhitelist": "Be included in the whitelist",
   "editRequirement": "Edit requirement",
   "removeRequirement": "Remove requirement",
-  "tokenSaleDeployment": "Token Sale Deployment: {{saleName}}"
+  "tokenSaleDeployment": "Token Sale Deployment: {{saleName}}",
+  "buyerRequirementsDescriptionAll": "Buyer must meet all {{total}} requirements:",
+  "kycRequirement": "Must complete KYC/KYB verification",
+  "yes": "Yes",
+  "no": "No",
+  "clearInputAriaLabel": "Clear input"
 }
