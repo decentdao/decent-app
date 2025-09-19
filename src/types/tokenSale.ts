@@ -1,6 +1,13 @@
 import { Address } from 'viem';
 import { BigIntValuePair } from './common';
 
+export enum TokenSaleState {
+  NOT_STARTED = 0,
+  ACTIVE = 1,
+  SUCCEEDED = 2,
+  FAILED = 3,
+}
+
 export type BuyerRequirementType = 'token' | 'nft' | 'whitelist';
 
 export interface TokenBuyerRequirement {
@@ -58,9 +65,13 @@ export interface TokenSaleData {
   saleEndTimestamp: bigint;
   minimumCommitment: bigint;
   maximumCommitment: bigint;
-  // TODO create enum
-  saleState: number; // 0: NOT_STARTED, 1: ACTIVE, 2: SUCCEEDED, 3: FAILED
+  saleState: TokenSaleState;
   saleProceedsReceiver: Address;
+  verifier: Address;
+  protocolFeeReceiver: Address;
+  commitmentTokenProtocolFee: bigint;
+  saleTokenProtocolFee: bigint;
+  sellerSettled: boolean;
   // Buyer Requirements from metadata
   buyerRequirements?: BuyerRequirement[];
   kyc?: {

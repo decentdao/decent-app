@@ -15,6 +15,7 @@ import { useTokenSaleClaimFunds } from '../../../hooks/DAO/proposal/useTokenSale
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import { useDAOStore } from '../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
+import { TokenSaleState } from '../../../types/tokenSale';
 import { BuyerRequirementsDisplay } from './components/buyer-requirements/BuyerRequirementsDisplay';
 
 export function SafeTokenSaleDetailsPage() {
@@ -116,7 +117,7 @@ export function SafeTokenSaleDetailsPage() {
           />
 
           {/* Fundraising Goal Not Met Banner */}
-          {tokenSale.saleState === 3 &&
+          {tokenSale.saleState === TokenSaleState.FAILED &&
             tokenSale.totalCommitments < tokenSale.maximumTotalCommitment / 2n && (
               <TokenSaleBanner
                 title={t('fundraisingGoalNotMetTitle')}
@@ -133,7 +134,7 @@ export function SafeTokenSaleDetailsPage() {
             )}
 
           {/* Successful Sale Banner */}
-          {tokenSale.saleState === 2 &&
+          {tokenSale.saleState === TokenSaleState.SUCCEEDED &&
             tokenSale.totalCommitments >= tokenSale.minimumTotalCommitment && (
               <TokenSaleBanner
                 title={t('successfulSaleTitle')}
