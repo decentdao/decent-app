@@ -1,7 +1,8 @@
 import { Box, VStack, Button, Text } from '@chakra-ui/react';
-import { t } from 'i18next';
+import { useTranslation } from 'react-i18next';
 
 export function EmptyState({ handleCreateSale }: { handleCreateSale: () => void }) {
+  const { t } = useTranslation('tokenSale');
   return (
     <Box
       bg="transparent"
