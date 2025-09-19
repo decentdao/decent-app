@@ -25,6 +25,7 @@ import { useTokenSaleFormPreparation } from './hooks/useTokenSaleFormPreparation
 
 const stages = ['Sale Terms', 'Buyer Requirements'];
 
+// todo remove mocked values
 const getInitialValues = (usdcAddress?: Address): TokenSaleFormValues => ({
   // @dev these values are calculated in the form
   saleTokenHolder: null, // Will be set to DAO address
@@ -138,6 +139,7 @@ export function SafeTokenSaleCreatePage() {
 
     try {
       // Debug: Log the escrow calculation
+      // todo update escrow calculation; move to prepareFormData
       const escrowAmount =
         (tokenSaleData.maximumTotalCommitment *
           (BigInt('1000000000000000000') + tokenSaleData.saleTokenProtocolFee)) /
@@ -187,6 +189,7 @@ export function SafeTokenSaleCreatePage() {
           bigintValue: 0n,
           value: '0',
         },
+        // todo move calldata to variable
         calldata: encodeFunctionData({
           abi: legacy.abis.VotesERC20,
           functionName: 'approve',
@@ -236,6 +239,7 @@ export function SafeTokenSaleCreatePage() {
       });
 
       // 2. Update KeyValuePairs with new token sale info
+      // todo update for api expected values; update fetcher and listener; update token sale details page
       console.log('🚀 ~ values.buyerRequirements:', values.buyerRequirements);
       const tokenSaleMetadata = {
         tokenSaleAddress: predictedTokenSaleAddress,
@@ -278,7 +282,7 @@ export function SafeTokenSaleCreatePage() {
       addAction({
         actionType: ProposalActionType.EDIT,
         transactions: txs,
-        content: <>Token Sale Deployment</>,
+        content: <>{t('tokenSaleDeployment', { saleName: tokenSaleData.saleName })}</>,
       });
 
       // Navigate to proposal creation page with actions

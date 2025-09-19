@@ -152,5 +152,6 @@
   "holdAtLeastNftWithTokenId": "Hold at least {{amount}} {{name}} (Token ID: {{tokenId}})",
   "beIncludedInWhitelist": "Be included in the whitelist",
   "editRequirement": "Edit requirement",
-  "removeRequirement": "Remove requirement"
+  "removeRequirement": "Remove requirement",
+  "tokenSaleDeployment": "Token Sale Deployment: {{saleName}}"
 }
