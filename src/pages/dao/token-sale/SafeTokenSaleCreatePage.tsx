@@ -1,4 +1,4 @@
-import { Box, Button, Flex, VStack, useToast } from '@chakra-ui/react';
+import { Box, Button, Flex, VStack } from '@chakra-ui/react';
 import { abis, legacy } from '@decentdao/decent-contracts';
 import { Formik, Form } from 'formik';
 import { useState } from 'react';
@@ -73,7 +73,6 @@ const getInitialValues = (usdcAddress?: Address): TokenSaleFormValues => ({
 export function SafeTokenSaleCreatePage() {
   const { t } = useTranslation('tokenSale');
   const [currentStage, setCurrentStage] = useState(0);
-  const toast = useToast();
   const {
     contracts: { tokenSaleV1MasterCopy, keyValuePairs, zodiacModuleProxyFactory, decentVerifierV1 },
     stablecoins,
@@ -105,19 +104,6 @@ export function SafeTokenSaleCreatePage() {
         touchedFields[field] = true;
       });
       setTouched(touchedFields);
-
-      // Show user-friendly error notification
-      const errorCount = Object.keys(errors).length;
-      toast({
-        title: t('validationErrorTitle', 'Validation Error'),
-        description: t('validationErrorDescription', {
-          count: errorCount,
-          defaultValue: `Please fix ${errorCount} validation error${errorCount > 1 ? 's' : ''} before continuing.`,
-        }),
-        status: 'error',
-        duration: 5000,
-        isClosable: true,
-      });
 
       // Log errors for debugging
       console.log('Validation errors:', errors);
