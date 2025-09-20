@@ -47,23 +47,52 @@ export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
     }));
   }, [availableTokens, values.tokenAddress]);
 
-  // Calculate token price based on FDV and total supply
+  // Calculate token price based on FDV and total supply using BigInt arithmetic
   const calculateTokenPrice = (fdv: number, totalSupplyRaw: string, tokenDecimals: number = 18) => {
     if (!fdv || !totalSupplyRaw || fdv <= 0 || parseFloat(totalSupplyRaw) <= 0) {
-      return 0;
+      return { priceInUSD: 0, priceBigInt: 0n };
     }
 
     try {
-      // Convert raw total supply to human-readable format
-      const totalSupplyHuman = parseFloat(formatUnits(BigInt(totalSupplyRaw), tokenDecimals));
+      // Validate inputs to prevent overflow
+      if (fdv > Number.MAX_SAFE_INTEGER || tokenDecimals > 77) {
+        console.warn('FDV or token decimals too large for safe calculation');
+        return { priceInUSD: 0, priceBigInt: 0n };
+      }
 
-      // Simple calculation: Price = FDV / Total Supply (in human units)
-      const priceInUSD = fdv / totalSupplyHuman;
+      // Convert FDV to BigInt with USDC decimals precision
+      // Use toFixed to avoid scientific notation issues
+      const fdvBigInt = parseUnits(fdv.toFixed(USDC_DECIMALS), USDC_DECIMALS);
+      const totalSupplyBigInt = BigInt(totalSupplyRaw);
 
-      return priceInUSD;
+      // Prevent division by zero
+      if (totalSupplyBigInt === 0n) {
+        return { priceInUSD: 0, priceBigInt: 0n };
+      }
+
+      // Calculate price as BigInt: (FDV * 10^tokenDecimals) / totalSupply
+      // This gives us the price in USDC units (6 decimals)
+      const priceBigInt = (fdvBigInt * BigInt(10 ** tokenDecimals)) / totalSupplyBigInt;
+
+      // Check for underflow (price too small to represent)
+      if (priceBigInt === 0n) {
+        console.warn('Calculated price is too small to represent with current precision');
+        return { priceInUSD: 0, priceBigInt: 0n };
+      }
+
+      // Convert back to human-readable format for display
+      const priceInUSD = parseFloat(formatUnits(priceBigInt, USDC_DECIMALS));
+
+      // Validate the final result
+      if (!isFinite(priceInUSD) || priceInUSD <= 0) {
+        console.warn('Invalid price calculation result:', priceInUSD);
+        return { priceInUSD: 0, priceBigInt: 0n };
+      }
+
+      return { priceInUSD, priceBigInt };
     } catch (error) {
       console.error('Error calculating token price:', error);
-      return 0;
+      return { priceInUSD: 0, priceBigInt: 0n };
     }
   };
 
@@ -81,14 +110,21 @@ export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
 
     // Only calculate if we have both FDV and actual token total supply (no defaults)
     if (fdv > 0 && totalSupply && values.tokenAddress) {
-      const calculatedPrice = calculateTokenPrice(fdv, totalSupply, tokenDecimals);
-      // Update saleTokenPrice BigIntValuePair for contract interaction
-      // Price should be in commitment token decimals (USDC = 6 decimals)
-      const priceBigInt = parseUnits(calculatedPrice.toString(), USDC_DECIMALS);
-      setFieldValue('saleTokenPrice', {
-        value: calculatedPrice.toFixed(8),
-        bigintValue: priceBigInt,
-      });
+      const { priceInUSD, priceBigInt } = calculateTokenPrice(fdv, totalSupply, tokenDecimals);
+      
+      // Only update if we got a valid price calculation
+      if (priceInUSD > 0 && priceBigInt > 0n) {
+        setFieldValue('saleTokenPrice', {
+          value: priceInUSD.toFixed(8),
+          bigintValue: priceBigInt,
+        });
+      } else {
+        // Clear the price if calculation resulted in zero
+        setFieldValue('saleTokenPrice', {
+          value: '',
+          bigintValue: undefined,
+        });
+      }
     } else {
       // Clear the price if conditions aren't met
       setFieldValue('saleTokenPrice', {
@@ -122,17 +158,19 @@ export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
         // Recalculate price with the selected token's actual total supply
         const fdvValue = parseFloat(values.valuation) || 0;
         if (fdvValue > 0) {
-          const calculatedPrice = calculateTokenPrice(
+          const { priceInUSD, priceBigInt } = calculateTokenPrice(
             fdvValue,
             tokenToSelect.totalSupply,
             tokenToSelect.decimals || 18,
           );
 
-          const priceBigInt = parseUnits(calculatedPrice.toString(), USDC_DECIMALS);
-          setFieldValue('saleTokenPrice', {
-            value: calculatedPrice.toFixed(8),
-            bigintValue: priceBigInt,
-          });
+          // Only update if we got a valid price calculation
+          if (priceInUSD > 0 && priceBigInt > 0n) {
+            setFieldValue('saleTokenPrice', {
+              value: priceInUSD.toFixed(8),
+              bigintValue: priceBigInt,
+            });
+          }
         }
       } else {
         // Clear the total supply if token doesn't have it

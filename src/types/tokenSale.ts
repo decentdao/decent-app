@@ -110,19 +110,17 @@ export interface TokenSaleFormValues {
   minPurchase: string;
   maxPurchase: string;
 
-  // Sale Configuration
   commitmentToken: Address | null; // Will be set based on commitmentToken selection
-  verifier: Address | null; // Will be set from network config
-  saleProceedsReceiver: string | null; // Will be set to DAO address
-  protocolFeeReceiver: string | null; // Will be set from network config
+  protocolFeeReceiver: string | null;
+  commitmentTokenProtocolFee: bigint | null;
+  saleTokenProtocolFee: bigint | null;
+
+  // Sale Configuration
   minimumCommitment: BigIntValuePair;
   maximumCommitment: BigIntValuePair;
   minimumTotalCommitment: BigIntValuePair;
   maximumTotalCommitment: BigIntValuePair;
   saleTokenPrice: BigIntValuePair;
-  commitmentTokenProtocolFee: BigIntValuePair;
-  saleTokenProtocolFee: BigIntValuePair;
-  saleTokenHolder: string | null; // Will be set to DAO address
 
   // Hedgey Lockup Configuration
   hedgeyLockupEnabled: boolean;

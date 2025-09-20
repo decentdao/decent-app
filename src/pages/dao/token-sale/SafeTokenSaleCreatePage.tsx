@@ -1,4 +1,4 @@
-import { Box, Button, Flex, VStack } from '@chakra-ui/react';
+import { Box, Button, Flex, VStack, useToast } from '@chakra-ui/react';
 import { abis, legacy } from '@decentdao/decent-contracts';
 import { Formik, Form } from 'formik';
 import { useState } from 'react';
@@ -27,15 +27,14 @@ import { useTokenSaleRequirementsPreparation } from './hooks/useTokenSaleRequire
 
 const stages = ['Sale Terms', 'Buyer Requirements'];
 
-const getInitialValues = (safeAddress: Address, usdcAddress?: Address): TokenSaleFormValues => ({
-  // @dev these values are calculated in the form
-  saleTokenHolder: safeAddress, // Will be set to DAO address
-  saleTokenPrice: { value: '', bigintValue: undefined }, // Will be auto-calculated from FDV and token supply
-  // TODO this need to be set to specific address for base, sepolia, ethereum mainnet
-  protocolFeeReceiver: '0x629750317d320B8bB4d48D345A6d699Cc855c4a6',
+const getInitialValues = (usdcAddress?: Address): TokenSaleFormValues => ({
+  protocolFeeReceiver: '0x629750317d320B8bB4d48D345A6d699Cc855c4a6', // TODO this need to be set to specific address for base, sepolia, ethereum mainnet
   commitmentToken: usdcAddress || null, // Set to current network's USDC
+  commitmentTokenProtocolFee: null, // todo need to clarify
+  saleTokenProtocolFee: null, // todo need to clarify
 
   saleName: '',
+  saleTokenPrice: { value: '', bigintValue: undefined }, // Will be auto-calculated from FDV and token supply
 
   // Token Details
   tokenAddress: '',
@@ -54,14 +53,10 @@ const getInitialValues = (safeAddress: Address, usdcAddress?: Address): TokenSal
   minPurchase: '',
   maxPurchase: '',
 
-  verifier: null,
-  saleProceedsReceiver: null,
   minimumCommitment: { value: '', bigintValue: undefined },
   maximumCommitment: { value: '', bigintValue: undefined },
   minimumTotalCommitment: { value: '', bigintValue: undefined },
   maximumTotalCommitment: { value: '', bigintValue: undefined },
-  commitmentTokenProtocolFee: { value: '', bigintValue: undefined },
-  saleTokenProtocolFee: { value: '', bigintValue: undefined },
 
   // Hedgey Lockup Configuration (disabled by default)
   hedgeyLockupEnabled: false,
@@ -80,6 +75,7 @@ const getInitialValues = (safeAddress: Address, usdcAddress?: Address): TokenSal
 export function SafeTokenSaleCreatePage() {
   const { t } = useTranslation('tokenSale');
   const [currentStage, setCurrentStage] = useState(0);
+  const toast = useToast();
   const {
     contracts: { tokenSaleV1MasterCopy, keyValuePairs, zodiacModuleProxyFactory, decentVerifierV1 },
     stablecoins,
@@ -96,12 +92,41 @@ export function SafeTokenSaleCreatePage() {
   const { prepareRequirements } = useTokenSaleRequirementsPreparation();
   const { tokenSaleValidationSchema } = useTokenSaleSchema();
 
-  const handleNext = async (validateForm: () => Promise<any>) => {
+  const handleNext = async (
+    validateForm: () => Promise<any>,
+    setTouched: (touched: any) => void,
+  ) => {
     // Validate current stage before proceeding
     const errors = await validateForm();
     const hasErrors = Object.keys(errors).length > 0;
 
-    if (!hasErrors && currentStage < stages.length - 1) {
+    if (hasErrors) {
+      // Mark all fields with errors as touched so validation errors are displayed
+      const touchedFields: any = {};
+      Object.keys(errors).forEach(field => {
+        touchedFields[field] = true;
+      });
+      setTouched(touchedFields);
+
+      // Show user-friendly error notification
+      const errorCount = Object.keys(errors).length;
+      toast({
+        title: t('validationErrorTitle', 'Validation Error'),
+        description: t('validationErrorDescription', {
+          count: errorCount,
+          defaultValue: `Please fix ${errorCount} validation error${errorCount > 1 ? 's' : ''} before continuing.`,
+        }),
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
+      });
+
+      // Log errors for debugging
+      console.log('Validation errors:', errors);
+      return;
+    }
+
+    if (currentStage < stages.length - 1) {
       setCurrentStage(currentStage + 1);
     }
   };
@@ -327,11 +352,11 @@ export function SafeTokenSaleCreatePage() {
       />
 
       <Formik
-        initialValues={getInitialValues(safe.address, stablecoins.usdc)}
+        initialValues={getInitialValues(stablecoins.usdc)}
         validationSchema={tokenSaleValidationSchema}
         onSubmit={handleSubmit}
       >
-        {({ values, setFieldValue, validateForm }) => (
+        {({ values, setFieldValue, validateForm, setTouched }) => (
           <Form>
             <VStack
               spacing={8}
@@ -354,7 +379,7 @@ export function SafeTokenSaleCreatePage() {
                   <Button
                     onClick={e => {
                       e.preventDefault();
-                      handleNext(validateForm);
+                      handleNext(validateForm, setTouched);
                     }}
                     type="button"
                   >

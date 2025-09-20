@@ -34,8 +34,8 @@ export const useTokenSaleSchema = () => {
         }),
 
         saleTokenPrice: Yup.object().shape({
-          value: Yup.string().required(t('saleTokenPriceRequiredError', { ns: 'tokenSale' })),
-          bigintValue: Yup.mixed().required(),
+          value: Yup.string(),
+          bigintValue: Yup.mixed(),
         }),
 
         // Sale Timing - handle string dates from form inputs
@@ -134,25 +134,25 @@ export const useTokenSaleSchema = () => {
             },
           ),
 
-        // Calculated BigIntValuePair fields - required for contract interaction
+        // Calculated BigIntValuePair fields - optional since they're computed
         minimumCommitment: Yup.object().shape({
-          value: Yup.string().required(),
-          bigintValue: Yup.mixed().required(),
+          value: Yup.string(),
+          bigintValue: Yup.mixed(),
         }),
 
         maximumCommitment: Yup.object().shape({
-          value: Yup.string().required(),
-          bigintValue: Yup.mixed().required(),
+          value: Yup.string(),
+          bigintValue: Yup.mixed(),
         }),
 
         minimumTotalCommitment: Yup.object().shape({
-          value: Yup.string().required(),
-          bigintValue: Yup.mixed().required(),
+          value: Yup.string(),
+          bigintValue: Yup.mixed(),
         }),
 
         maximumTotalCommitment: Yup.object().shape({
-          value: Yup.string().required(),
-          bigintValue: Yup.mixed().required(),
+          value: Yup.string(),
+          bigintValue: Yup.mixed(),
         }),
 
         // Address fields - will be set programmatically but must exist
@@ -164,13 +164,13 @@ export const useTokenSaleSchema = () => {
 
         // Protocol fees - calculated fields
         commitmentTokenProtocolFee: Yup.object().shape({
-          value: Yup.string().required(),
-          bigintValue: Yup.mixed().required(),
+          value: Yup.string(),
+          bigintValue: Yup.mixed(),
         }),
 
         saleTokenProtocolFee: Yup.object().shape({
-          value: Yup.string().required(),
-          bigintValue: Yup.mixed().required(),
+          value: Yup.string(),
+          bigintValue: Yup.mixed(),
         }),
 
         // Buyer Requirements - optional array

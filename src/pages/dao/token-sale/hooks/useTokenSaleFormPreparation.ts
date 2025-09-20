@@ -60,8 +60,8 @@ export function useTokenSaleFormPreparation() {
         !values.endDate ||
         !values.commitmentToken ||
         !values.protocolFeeReceiver ||
-        !values.commitmentTokenProtocolFee.bigintValue ||
-        !values.saleTokenProtocolFee.bigintValue ||
+        !values.commitmentTokenProtocolFee ||
+        !values.saleTokenProtocolFee ||
         !values.saleTokenPrice.bigintValue ||
         !values.startDate ||
         !values.endDate
@@ -91,7 +91,7 @@ export function useTokenSaleFormPreparation() {
       // Calculate escrow amount - matches TokenSaleV1 contract logic
       // This is the maximum amount of sale tokens that can be sold plus the sale token protocol fee
       const saleTokenEscrowAmount =
-        (maximumTotalCommitment * (PRECISION + values.saleTokenProtocolFee.bigintValue)) /
+        (maximumTotalCommitment * (PRECISION + values.saleTokenProtocolFee)) /
         values.saleTokenPrice.bigintValue;
 
       // Prepare the data structure expected by the contract
@@ -103,6 +103,7 @@ export function useTokenSaleFormPreparation() {
         saleToken,
         verifier: decentVerifierV1,
         saleProceedsReceiver: safe.address,
+        saleTokenHolder: safe.address,
         protocolFeeReceiver: getAddress(values.protocolFeeReceiver),
         minimumCommitment: minCommitment,
         maximumCommitment: maxCommitment,
@@ -110,9 +111,8 @@ export function useTokenSaleFormPreparation() {
         maximumTotalCommitment,
         // Use calculated token price from form
         saleTokenPrice: values.saleTokenPrice.bigintValue,
-        commitmentTokenProtocolFee: values.commitmentTokenProtocolFee.bigintValue,
-        saleTokenProtocolFee: values.saleTokenProtocolFee.bigintValue,
-        saleTokenHolder: safe.address,
+        commitmentTokenProtocolFee: values.commitmentTokenProtocolFee,
+        saleTokenProtocolFee: values.saleTokenProtocolFee,
         saleTokenEscrowAmount,
 
         // TODO: if hedgeyLockupEnabled is true, don't default to 0n for the other values
