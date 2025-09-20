@@ -111,7 +111,7 @@ export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
     // Only calculate if we have both FDV and actual token total supply (no defaults)
     if (fdv > 0 && totalSupply && values.tokenAddress) {
       const { priceInUSD, priceBigInt } = calculateTokenPrice(fdv, totalSupply, tokenDecimals);
-      
+
       // Only update if we got a valid price calculation
       if (priceInUSD > 0 && priceBigInt > 0n) {
         setFieldValue('saleTokenPrice', {
