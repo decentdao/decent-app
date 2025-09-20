@@ -58,30 +58,27 @@ export const useTokenSaleSchema = () => {
           .test('valid-number', t('valuationInvalidError', { ns: 'tokenSale' }), function (value) {
             if (!value) return false;
             const num = parseFloat(value);
-            return !isNaN(num) && num > 0 && num >= 1000;
+            return !isNaN(num) && num > 0;
           }),
 
-        minimumFundraise: Yup.string()
-          .required(t('minimumFundraiseRequiredError', { ns: 'tokenSale' }))
-          .test(
-            'valid-number',
-            t('minimumFundraiseInvalidError', { ns: 'tokenSale' }),
-            function (value) {
-              if (!value) return false;
-              const num = parseFloat(value);
-              return !isNaN(num) && num > 0 && num >= 1;
-            },
-          ),
+        minimumFundraise: Yup.string().test(
+          'valid-number',
+          t('minimumFundraiseInvalidError', { ns: 'tokenSale' }),
+          function (value) {
+            if (!value) return true; // Optional field
+            const num = parseFloat(value);
+            return !isNaN(num) && num > 0;
+          },
+        ),
 
         fundraisingCap: Yup.string()
-          .required(t('fundraisingCapRequiredError', { ns: 'tokenSale' }))
           .test(
             'valid-number',
             t('fundraisingCapInvalidError', { ns: 'tokenSale' }),
             function (value) {
-              if (!value) return false;
+              if (!value) return true; // Optional field
               const num = parseFloat(value);
-              return !isNaN(num) && num > 0 && num >= 1;
+              return !isNaN(num) && num >= 1;
             },
           )
           .test(
@@ -133,27 +130,6 @@ export const useTokenSaleSchema = () => {
               return !isNaN(maxNum) && !isNaN(minNum) && maxNum > minNum;
             },
           ),
-
-        // Calculated BigIntValuePair fields - optional since they're computed
-        minimumCommitment: Yup.object().shape({
-          value: Yup.string(),
-          bigintValue: Yup.mixed(),
-        }),
-
-        maximumCommitment: Yup.object().shape({
-          value: Yup.string(),
-          bigintValue: Yup.mixed(),
-        }),
-
-        minimumTotalCommitment: Yup.object().shape({
-          value: Yup.string(),
-          bigintValue: Yup.mixed(),
-        }),
-
-        maximumTotalCommitment: Yup.object().shape({
-          value: Yup.string(),
-          bigintValue: Yup.mixed(),
-        }),
 
         // Address fields - will be set programmatically but must exist
         commitmentToken: Yup.string().nullable(),

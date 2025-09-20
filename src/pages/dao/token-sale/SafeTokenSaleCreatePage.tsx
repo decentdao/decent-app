@@ -51,11 +51,6 @@ const getInitialValues = (usdcAddress?: Address): TokenSaleFormValues => ({
   minPurchase: '',
   maxPurchase: '',
 
-  minimumCommitment: { value: '', bigintValue: undefined },
-  maximumCommitment: { value: '', bigintValue: undefined },
-  minimumTotalCommitment: { value: '', bigintValue: undefined },
-  maximumTotalCommitment: { value: '', bigintValue: undefined },
-
   // Hedgey Lockup Configuration (disabled by default)
   hedgeyLockupEnabled: false,
   hedgeyLockupStart: { value: '0', bigintValue: 0n },

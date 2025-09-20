@@ -113,11 +113,7 @@ export interface TokenSaleFormValues {
   commitmentToken: Address | null; // Will be set based on commitmentToken selection
   protocolFeeReceiver: string | null;
 
-  // Sale Configuration
-  minimumCommitment: BigIntValuePair;
-  maximumCommitment: BigIntValuePair;
-  minimumTotalCommitment: BigIntValuePair;
-  maximumTotalCommitment: BigIntValuePair;
+  // Sale Configuration - calculated fields
   saleTokenPrice: BigIntValuePair;
 
   // Hedgey Lockup Configuration

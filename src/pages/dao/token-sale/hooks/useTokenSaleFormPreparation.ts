@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
-import { Address, getAddress, zeroAddress } from 'viem';
+import { Address, getAddress, zeroAddress, parseUnits } from 'viem';
+import { USDC_DECIMALS } from '../../../../constants/common';
 import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
 import { useDAOStore } from '../../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../../providers/NetworkConfig/useNetworkConfigStore';
@@ -71,15 +72,28 @@ export function useTokenSaleFormPreparation() {
         throw new Error('Sale Form not ready');
       }
 
-      // @dev these values may be undefined by logic and validated by the form
-      // if undefined, set to default values
-      let minCommitment = values.minimumCommitment.bigintValue;
-      if (minCommitment === undefined) {
-        minCommitment = 1n;
+      // Convert USD form values to BigInt commitment values (in USDC units)
+      // minPurchase and maxPurchase are in USD strings, convert to USDC BigInt
+      let minCommitment = 1n; // Default minimum commitment (1 wei)
+      if (values.minPurchase && parseFloat(values.minPurchase) > 0) {
+        minCommitment = parseUnits(values.minPurchase, USDC_DECIMALS);
       }
-      let maxCommitment = values.maximumCommitment.bigintValue;
-      if (maxCommitment === undefined) {
-        maxCommitment = PRECISION;
+
+      let maxCommitment = PRECISION; // Default to max value
+      if (values.maxPurchase && parseFloat(values.maxPurchase) > 0) {
+        maxCommitment = parseUnits(values.maxPurchase, USDC_DECIMALS);
+      }
+
+      // Convert fundraising cap to maximum total commitment
+      let maximumTotalCommitment = PRECISION; // Default to max value
+      if (values.fundraisingCap && parseFloat(values.fundraisingCap) > 0) {
+        maximumTotalCommitment = parseUnits(values.fundraisingCap, USDC_DECIMALS);
+      }
+
+      // Convert minimum fundraise to minimum total commitment
+      let minimumTotalCommitment = 1n; // Default minimum
+      if (values.minimumFundraise && parseFloat(values.minimumFundraise) > 0) {
+        minimumTotalCommitment = parseUnits(values.minimumFundraise, USDC_DECIMALS);
       }
 
       // Convert dates to timestamps
@@ -88,7 +102,6 @@ export function useTokenSaleFormPreparation() {
 
       const commitmentToken = values.commitmentToken as Address;
       const saleToken = values.tokenAddress as Address;
-      const maximumTotalCommitment = PRECISION; // hardcoded to max value
 
       // Calculate escrow amount - matches TokenSaleV1 contract logic
       // This is the maximum amount of sale tokens that can be sold plus the sale token protocol fee
@@ -109,7 +122,7 @@ export function useTokenSaleFormPreparation() {
         protocolFeeReceiver: getAddress(values.protocolFeeReceiver),
         minimumCommitment: minCommitment,
         maximumCommitment: maxCommitment,
-        minimumTotalCommitment: 1n, // hardcoded to 0 for now
+        minimumTotalCommitment,
         maximumTotalCommitment,
         // Use calculated token price from form
         saleTokenPrice: values.saleTokenPrice.bigintValue,
