@@ -36,6 +36,10 @@ export interface PreparedTokenSaleData {
 /** @notice Precision for sale token price calculations (18 decimals) - matches TokenSaleV1 contract */
 const PRECISION = BigInt('1000000000000000000'); // 10^18
 
+/** @notice Protocol fees hardcoded per PRD - 2.5% each (totaling 5%) */
+const COMMITMENT_TOKEN_PROTOCOL_FEE = BigInt('25000000000000000'); // 2.5% = 0.025 * 10^18
+const SALE_TOKEN_PROTOCOL_FEE = BigInt('25000000000000000'); // 2.5% = 0.025 * 10^18
+
 export function useTokenSaleFormPreparation() {
   const { daoKey } = useCurrentDAOKey();
   const {
@@ -60,8 +64,6 @@ export function useTokenSaleFormPreparation() {
         !values.endDate ||
         !values.commitmentToken ||
         !values.protocolFeeReceiver ||
-        !values.commitmentTokenProtocolFee ||
-        !values.saleTokenProtocolFee ||
         !values.saleTokenPrice.bigintValue ||
         !values.startDate ||
         !values.endDate
@@ -91,7 +93,7 @@ export function useTokenSaleFormPreparation() {
       // Calculate escrow amount - matches TokenSaleV1 contract logic
       // This is the maximum amount of sale tokens that can be sold plus the sale token protocol fee
       const saleTokenEscrowAmount =
-        (maximumTotalCommitment * (PRECISION + values.saleTokenProtocolFee)) /
+        (maximumTotalCommitment * (PRECISION + SALE_TOKEN_PROTOCOL_FEE)) /
         values.saleTokenPrice.bigintValue;
 
       // Prepare the data structure expected by the contract
@@ -111,8 +113,8 @@ export function useTokenSaleFormPreparation() {
         maximumTotalCommitment,
         // Use calculated token price from form
         saleTokenPrice: values.saleTokenPrice.bigintValue,
-        commitmentTokenProtocolFee: values.commitmentTokenProtocolFee,
-        saleTokenProtocolFee: values.saleTokenProtocolFee,
+        commitmentTokenProtocolFee: COMMITMENT_TOKEN_PROTOCOL_FEE,
+        saleTokenProtocolFee: SALE_TOKEN_PROTOCOL_FEE,
         saleTokenEscrowAmount,
 
         // TODO: if hedgeyLockupEnabled is true, don't default to 0n for the other values

@@ -112,8 +112,6 @@ export interface TokenSaleFormValues {
 
   commitmentToken: Address | null; // Will be set based on commitmentToken selection
   protocolFeeReceiver: string | null;
-  commitmentTokenProtocolFee: bigint | null;
-  saleTokenProtocolFee: bigint | null;
 
   // Sale Configuration
   minimumCommitment: BigIntValuePair;

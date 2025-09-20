@@ -30,8 +30,6 @@ const stages = ['Sale Terms', 'Buyer Requirements'];
 const getInitialValues = (usdcAddress?: Address): TokenSaleFormValues => ({
   protocolFeeReceiver: '0x629750317d320B8bB4d48D345A6d699Cc855c4a6', // TODO this need to be set to specific address for base, sepolia, ethereum mainnet
   commitmentToken: usdcAddress || null, // Set to current network's USDC
-  commitmentTokenProtocolFee: null, // todo need to clarify
-  saleTokenProtocolFee: null, // todo need to clarify
 
   saleName: '',
   saleTokenPrice: { value: '', bigintValue: undefined }, // Will be auto-calculated from FDV and token supply
