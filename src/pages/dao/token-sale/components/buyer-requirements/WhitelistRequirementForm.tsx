@@ -21,6 +21,20 @@ export function WhitelistRequirementForm({ onSubmit, initialData }: WhitelistReq
   const [inputError, setInputError] = useState<string>('');
   const [submitError, setSubmitError] = useState<string>('');
 
+  // Update addresses when initialData changes (for editing mode)
+  useEffect(() => {
+    if (initialData?.addresses) {
+      setAddresses([...initialData.addresses]); // Create a copy to avoid reference issues
+    } else {
+      // Reset to empty when not editing (new requirement)
+      setAddresses([]);
+    }
+    // Also clear any errors and input when switching modes
+    setInputError('');
+    setSubmitError('');
+    setNewAddress('');
+  }, [initialData]);
+
   // Validate input in real-time
   useEffect(() => {
     if (!newAddress.trim()) {
@@ -60,7 +74,7 @@ export function WhitelistRequirementForm({ onSubmit, initialData }: WhitelistReq
       }
     });
     setAddresses(uniqueAddresses);
-    setSubmitError('');
+    setSubmitError(''); // Clear any submit errors when addresses are added
   };
 
   const handleAddAddress = () => {
@@ -77,21 +91,48 @@ export function WhitelistRequirementForm({ onSubmit, initialData }: WhitelistReq
     setAddresses([...addresses, address]);
     setNewAddress('');
     setInputError('');
+    setSubmitError(''); // Clear any submit errors when a new address is added
   };
 
   const handleRemoveAddress = (index: number) => {
-    setAddresses(addresses.filter((_, i) => i !== index));
+    const updatedAddresses = addresses.filter((_, i) => i !== index);
+    setAddresses(updatedAddresses);
+    // Clear submit error if we still have addresses, or if we're removing the last one
+    if (updatedAddresses.length > 0) {
+      setSubmitError('');
+    }
   };
 
   const handleSubmit = () => {
-    if (addresses.length === 0) {
+    // Clear any previous submit errors
+    setSubmitError('');
+    
+    // Check if there's a valid address in the input field that hasn't been added yet
+    let finalAddresses = [...addresses];
+    if (newAddress.trim() && !inputError) {
+      const address = newAddress.trim() as Address;
+      // Check if it's not already in the list
+      const isDuplicate = finalAddresses.some(existing => {
+        if (isAddress(existing) && isAddress(address)) {
+          return existing.toLowerCase() === address.toLowerCase();
+        }
+        return existing === address;
+      });
+      
+      if (!isDuplicate) {
+        finalAddresses.push(address);
+      }
+    }
+    
+    if (finalAddresses.length === 0) {
       setSubmitError(t('whitelistMinOneAddressError'));
       return;
     }
 
+    // Create a fresh copy of addresses to avoid any reference issues
     const requirement: WhitelistBuyerRequirement = {
       type: 'whitelist',
-      addresses,
+      addresses: finalAddresses,
     };
 
     onSubmit(requirement);
