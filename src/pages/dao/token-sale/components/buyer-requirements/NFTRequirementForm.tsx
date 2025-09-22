@@ -1,8 +1,9 @@
-import { VStack, HStack, Text, Button, Flex } from '@chakra-ui/react';
+import { VStack, Button, Flex } from '@chakra-ui/react';
 import { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Address, isAddress } from 'viem';
 import { BigIntInput } from '../../../../../components/ui/forms/BigIntInput';
+import { LabelComponent } from '../../../../../components/ui/forms/InputComponent';
 import { NFTAddressInput } from '../../../../../components/ui/forms/NFTAddressInput';
 import { BigIntValuePair } from '../../../../../types';
 import { NFTBuyerRequirement } from '../../../../../types/tokenSale';
@@ -36,12 +37,12 @@ export function NFTRequirementForm({ onSubmit, initialData }: NFTRequirementForm
   const [minimumBalance, setMinimumBalance] = useState<BigIntValuePair>(
     initialData
       ? { value: initialData.minimumBalance.toString(), bigintValue: initialData.minimumBalance }
-      : { value: '1', bigintValue: BigInt(1) },
+      : { value: '', bigintValue: undefined },
   );
   const [tokenId, setTokenId] = useState<BigIntValuePair>(
     initialData?.tokenId
       ? { value: initialData.tokenId.toString(), bigintValue: initialData.tokenId }
-      : { value: '0', bigintValue: BigInt(0) },
+      : { value: '', bigintValue: undefined },
   );
   const [error, setError] = useState<string>('');
   const [inputError, setInputError] = useState<string>('');
@@ -106,7 +107,7 @@ export function NFTRequirementForm({ onSubmit, initialData }: NFTRequirementForm
     }
 
     // For ERC1155, token ID is required
-    if (nftInfo.standard === 'ERC1155' && (!tokenId.bigintValue || tokenId.bigintValue < 0n)) {
+    if (nftInfo.standard === 'ERC1155' && (tokenId.bigintValue === undefined || tokenId.bigintValue < 0n)) {
       setError(t('tokenIdRequiredError', { ns: 'tokenSale' }));
       return;
     }
@@ -144,36 +145,29 @@ export function NFTRequirementForm({ onSubmit, initialData }: NFTRequirementForm
         align="stretch"
         spacing={2}
       >
-        <HStack spacing={1}>
-          <Text
-            fontSize="sm"
-            fontWeight="medium"
-            color="color-white"
-          >
-            {t('nftFieldLabel')}
-          </Text>
-          <Text
-            fontSize="sm"
-            color="color-error-400"
-          >
-            *
-          </Text>
-        </HStack>
-        <NFTAddressInput
-          value={contractAddress}
-          onChange={e => {
-            setContractAddress(e.target.value);
-            setError('');
+        <LabelComponent
+          isRequired
+          label={t('nftFieldLabel')}
+          gridContainerProps={{
+            templateColumns: '1fr',
           }}
-          onNFTInfo={handleNFTInfo}
-          placeholder={t('nftAddressPlaceholder')}
-          isInvalid={
-            !!(
-              shouldShowError ||
-              (error && (error.includes('address') || error.includes('valid NFT')))
-            )
-          }
-        />
+        >
+          <NFTAddressInput
+            value={contractAddress}
+            onChange={e => {
+              setContractAddress(e.target.value);
+              setError('');
+            }}
+            onNFTInfo={handleNFTInfo}
+            placeholder={t('nftAddressPlaceholder')}
+            isInvalid={
+              !!(
+                shouldShowError ||
+                (error && (error.includes('address') || error.includes('valid NFT')))
+              )
+            }
+          />
+        </LabelComponent>
       </VStack>
 
       {/* Token ID Field - Only for ERC1155 */}
@@ -182,30 +176,23 @@ export function NFTRequirementForm({ onSubmit, initialData }: NFTRequirementForm
           align="stretch"
           spacing={2}
         >
-          <HStack spacing={1}>
-            <Text
-              fontSize="sm"
-              fontWeight="medium"
-              color="color-white"
-            >
-              {t('tokenIdLabel', { ns: 'tokenSale' })}
-            </Text>
-            <Text
-              fontSize="sm"
-              color="color-error-400"
-            >
-              *
-            </Text>
-          </HStack>
-          <BigIntInput
-            value={tokenId}
-            onChange={value => {
-              setTokenId(value);
-              setError('');
+          <LabelComponent
+            isRequired
+            label={t('tokenIdLabel', { ns: 'tokenSale' })}
+            gridContainerProps={{
+              templateColumns: '1fr',
             }}
-            decimals={0}
-            isInvalid={!!error && error.includes('tokenId')}
-          />
+          >
+            <BigIntInput
+              value={tokenId}
+              onChange={value => {
+                setTokenId(value);
+                setError('');
+              }}
+              decimals={0}
+              isInvalid={!!error && error.includes('tokenId')}
+            />
+          </LabelComponent>
         </VStack>
       )}
 
@@ -214,33 +201,25 @@ export function NFTRequirementForm({ onSubmit, initialData }: NFTRequirementForm
         align="stretch"
         spacing={2}
       >
-        <Text
-          fontSize="sm"
-          fontWeight="medium"
-          color="color-white"
-        >
-          {t('minimumAmountLabel')}
-        </Text>
-        <BigIntInput
-          value={minimumBalance}
-          onChange={value => {
-            setMinimumBalance(value);
-            setError('');
+        <LabelComponent
+          isRequired
+          label={t('minimumAmountLabel')}
+          errorMessage={error || (shouldShowError ? inputError : undefined)}
+          gridContainerProps={{
+            templateColumns: '1fr',
           }}
-          decimals={0}
-          isInvalid={!!error && error.includes('amount')}
-        />
-      </VStack>
-
-      {/* Error Display */}
-      {(shouldShowError || error) && (
-        <Text
-          fontSize="sm"
-          color="color-error-400"
         >
-          {shouldShowError ? inputError : error}
-        </Text>
-      )}
+          <BigIntInput
+            value={minimumBalance}
+            onChange={value => {
+              setMinimumBalance(value);
+              setError('');
+            }}
+            decimals={0}
+            isInvalid={!!error && error.includes('amount')}
+          />
+        </LabelComponent>
+      </VStack>
 
       {/* Action Button - Single button aligned right */}
       <Flex
