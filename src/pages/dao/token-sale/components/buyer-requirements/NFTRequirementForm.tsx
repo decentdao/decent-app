@@ -107,7 +107,10 @@ export function NFTRequirementForm({ onSubmit, initialData }: NFTRequirementForm
     }
 
     // For ERC1155, token ID is required
-    if (nftInfo.standard === 'ERC1155' && (tokenId.bigintValue === undefined || tokenId.bigintValue < 0n)) {
+    if (
+      nftInfo.standard === 'ERC1155' &&
+      (tokenId.bigintValue === undefined || tokenId.bigintValue < 0n)
+    ) {
       setError(t('tokenIdRequiredError', { ns: 'tokenSale' }));
       return;
     }
