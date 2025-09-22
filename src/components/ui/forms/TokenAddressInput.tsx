@@ -17,6 +17,7 @@ interface TokenInfo {
 export function TokenAddressInput(
   props: InputProps & { displayValue?: string; onTokenInfo?: (info: TokenInfo | null) => void },
 ) {
+  const { onTokenInfo, ...restProps } = props;
   const { t } = useTranslation('common');
   const publicClient = useNetworkPublicClient();
 
@@ -31,7 +32,7 @@ export function TokenAddressInput(
   useEffect(() => {
     if (!propValue || !isPropValueAddress) {
       setTokenInfo(null);
-      props.onTokenInfo?.(null);
+      onTokenInfo?.(null);
       return;
     }
 
@@ -162,7 +163,7 @@ export function TokenAddressInput(
 
   return (
     <AddressInput
-      {...props}
+      {...restProps}
       onBlur={() => {
         // delay to allow the input's debounce to finish
         setTimeout(() => {
