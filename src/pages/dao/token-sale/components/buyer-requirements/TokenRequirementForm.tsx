@@ -1,7 +1,7 @@
 import { VStack, HStack, Text, Button, Flex } from '@chakra-ui/react';
 import { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Address, isAddress } from 'viem';
+import { Address, isAddress, formatUnits } from 'viem';
 import { BigIntInput } from '../../../../../components/ui/forms/BigIntInput';
 import { TokenAddressInput } from '../../../../../components/ui/forms/TokenAddressInput';
 import { BigIntValuePair } from '../../../../../types';
@@ -33,12 +33,16 @@ export function TokenRequirementForm({ onSubmit, initialData }: TokenRequirement
   );
   const [minimumBalance, setMinimumBalance] = useState<BigIntValuePair>(
     initialData
-      ? { value: initialData.minimumBalance.toString(), bigintValue: initialData.minimumBalance }
-      : { value: '1', bigintValue: BigInt(1) },
+      ? { 
+          value: formatUnits(initialData.minimumBalance, initialData.tokenDecimals || 18), 
+          bigintValue: initialData.minimumBalance 
+        }
+      : { value: '', bigintValue: undefined },
   );
   const [error, setError] = useState<string>('');
   const [inputError, setInputError] = useState<string>('');
   const [hasAttemptedLookup, setHasAttemptedLookup] = useState<boolean>(false);
+
 
   // Real-time validation for token address format
   useEffect(() => {
