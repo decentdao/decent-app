@@ -97,7 +97,8 @@ export interface TokenSaleFormValues {
   tokenAddress: string;
   tokenName: string;
   tokenSymbol: string;
-  maxTokenSupply: BigIntValuePair;
+  maxTokenSupply: BigIntValuePair; // Total supply of the token (for price calculation)
+  saleTokenSupply: BigIntValuePair; // Tokens allocated for this sale (for display)
 
   // Sale Timing
   startDate: string;

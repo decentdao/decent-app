@@ -39,7 +39,8 @@ const getInitialValues = (usdcAddress?: Address): TokenSaleFormValues => ({
   tokenAddress: '',
   tokenName: '',
   tokenSymbol: '',
-  maxTokenSupply: { value: '', bigintValue: undefined },
+  maxTokenSupply: { value: '', bigintValue: undefined }, // Total supply for price calculation
+  saleTokenSupply: { value: '', bigintValue: undefined }, // Tokens for this sale
 
   // Sale Timing
   startDate: '',
@@ -150,30 +151,30 @@ export function SafeTokenSaleCreatePage() {
       // 1. Generate nonce for deployment
       const tokenSaleNonce = getRandomBytes();
 
-      // 2. Encode the initialization data first
+      // 2. Encode the initialization data first - create the exact params object
+      const initializerParams = {
+        saleStartTimestamp: tokenSaleData.saleStartTimestamp,
+        saleEndTimestamp: tokenSaleData.saleEndTimestamp,
+        commitmentToken: tokenSaleData.commitmentToken,
+        saleToken: tokenSaleData.saleToken,
+        verifier: tokenSaleData.verifier,
+        saleProceedsReceiver: tokenSaleData.saleProceedsReceiver,
+        protocolFeeReceiver: tokenSaleData.protocolFeeReceiver,
+        minimumCommitment: tokenSaleData.minimumCommitment,
+        maximumCommitment: tokenSaleData.maximumCommitment,
+        minimumTotalCommitment: tokenSaleData.minimumTotalCommitment,
+        maximumTotalCommitment: tokenSaleData.maximumTotalCommitment,
+        saleTokenPrice: tokenSaleData.saleTokenPrice,
+        commitmentTokenProtocolFee: tokenSaleData.commitmentTokenProtocolFee,
+        saleTokenProtocolFee: tokenSaleData.saleTokenProtocolFee,
+        saleTokenHolder: tokenSaleData.saleTokenHolder,
+        hedgeyLockupParams: tokenSaleData.hedgeyLockupParams,
+      };
+
       const encodedSetupTokenSaleData = encodeFunctionData({
         abi: abis.deployables.TokenSaleV1,
         functionName: 'initialize',
-        args: [
-          {
-            saleStartTimestamp: tokenSaleData.saleStartTimestamp,
-            saleEndTimestamp: tokenSaleData.saleEndTimestamp,
-            commitmentToken: tokenSaleData.commitmentToken,
-            saleToken: tokenSaleData.saleToken,
-            verifier: tokenSaleData.verifier,
-            saleProceedsReceiver: tokenSaleData.saleProceedsReceiver,
-            protocolFeeReceiver: tokenSaleData.protocolFeeReceiver,
-            minimumCommitment: tokenSaleData.minimumCommitment,
-            maximumCommitment: tokenSaleData.maximumCommitment,
-            minimumTotalCommitment: tokenSaleData.minimumTotalCommitment,
-            maximumTotalCommitment: tokenSaleData.maximumTotalCommitment,
-            saleTokenPrice: tokenSaleData.saleTokenPrice,
-            commitmentTokenProtocolFee: tokenSaleData.commitmentTokenProtocolFee,
-            saleTokenProtocolFee: tokenSaleData.saleTokenProtocolFee,
-            saleTokenHolder: tokenSaleData.saleTokenHolder,
-            hedgeyLockupParams: tokenSaleData.hedgeyLockupParams,
-          },
-        ],
+        args: [initializerParams],
       });
 
       // 3. Calculate predicted TokenSale address
@@ -242,7 +243,7 @@ export function SafeTokenSaleCreatePage() {
       });
 
       // 2. Update KeyValuePairs with new token sale info
-      const tokenSaleMetadata = prepareRequirements(values);
+      const tokenSaleMetadata = prepareRequirements(values, predictedTokenSaleAddress);
 
       const updateValuesCalldata = encodeFunctionData({
         abi: legacy.abis.KeyValuePairs,
