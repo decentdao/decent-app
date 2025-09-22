@@ -65,9 +65,7 @@ export function useTokenSaleFormPreparation() {
         !values.endDate ||
         !values.commitmentToken ||
         !values.protocolFeeReceiver ||
-        !values.saleTokenPrice.bigintValue ||
-        !values.startDate ||
-        !values.endDate
+        !values.saleTokenPrice.bigintValue
       ) {
         throw new Error('Sale Form not ready');
       }
@@ -79,13 +77,18 @@ export function useTokenSaleFormPreparation() {
         minCommitment = parseUnits(values.minPurchase, USDC_DECIMALS);
       }
 
-      let maxCommitment = PRECISION; // Default to max value
+      // Use type(uint256).max equivalent for maximum values when not specified
+      const MAX_UINT256 = BigInt(
+        '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff',
+      );
+
+      let maxCommitment = MAX_UINT256; // Default to max uint256 value
       if (values.maxPurchase && parseFloat(values.maxPurchase) > 0) {
         maxCommitment = parseUnits(values.maxPurchase, USDC_DECIMALS);
       }
 
       // Convert fundraising cap to maximum total commitment
-      let maximumTotalCommitment = PRECISION; // Default to max value
+      let maximumTotalCommitment = MAX_UINT256; // Default to max uint256 value
       if (values.fundraisingCap && parseFloat(values.fundraisingCap) > 0) {
         maximumTotalCommitment = parseUnits(values.fundraisingCap, USDC_DECIMALS);
       }
