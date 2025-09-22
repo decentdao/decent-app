@@ -48,8 +48,14 @@ export const useTokenSaleSchema = () => {
           })
           .test('future-date', t('startDateFutureError', { ns: 'tokenSale' }), function (value) {
             if (!value) return false;
-            const date = new Date(value);
-            return date > new Date();
+            const selectedDate = new Date(value);
+            const today = new Date();
+            
+            // For start date validation, only compare against start of today (ignore time)
+            // This allows selecting today as a valid start date
+            const startOfToday = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+            
+            return selectedDate >= startOfToday;
           }),
 
         // Sale Pricing & Terms - handle string inputs from form
