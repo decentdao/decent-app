@@ -20,6 +20,7 @@ import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetwo
 import { useProposalActionsStore } from '../../../store/actions/useProposalActionsStore';
 import { CreateProposalTransaction, ProposalActionType } from '../../../types';
 import { TokenSaleFormValues } from '../../../types/tokenSale';
+import { bigintSerializer } from '../../../utils/bigintSerializer';
 import { BuyerRequirementsForm } from './components/BuyerRequirementsForm';
 import { SaleTermsForm } from './components/SaleTermsForm';
 import { useTokenSaleFormPreparation } from './hooks/useTokenSaleFormPreparation';
@@ -246,7 +247,7 @@ export function SafeTokenSaleCreatePage() {
       const updateValuesCalldata = encodeFunctionData({
         abi: legacy.abis.KeyValuePairs,
         functionName: 'updateValues',
-        args: [['newtokensale'], [JSON.stringify(tokenSaleMetadata)]],
+        args: [['newtokensale'], [JSON.stringify(tokenSaleMetadata, bigintSerializer)]],
       });
 
       txs.push({
@@ -264,7 +265,7 @@ export function SafeTokenSaleCreatePage() {
           },
           {
             signature: 'string[]',
-            valueArray: [JSON.stringify(tokenSaleMetadata)],
+            valueArray: [JSON.stringify(tokenSaleMetadata, bigintSerializer)],
           },
         ],
       });
