@@ -101,12 +101,20 @@ export function useTokenSaleFormPreparation() {
       // Convert USD form values to BigInt commitment values (in USDC units)
       // minPurchase and maxPurchase are in USD strings, convert to USDC BigInt
       let minCommitment = 1n; // Default minimum commitment (1 wei)
-      if (values.minPurchase && parseFloat(values.minPurchase) > 0) {
+      if (
+        values.minPurchase &&
+        values.minPurchase.trim() !== '' &&
+        parseFloat(values.minPurchase) > 0
+      ) {
         minCommitment = parseUnits(values.minPurchase, USDC_DECIMALS);
       }
 
       let maxCommitment = maxPossibleCommitment; // Default to max possible based on token supply
-      if (values.maxPurchase && parseFloat(values.maxPurchase) > 0) {
+      if (
+        values.maxPurchase &&
+        values.maxPurchase.trim() !== '' &&
+        parseFloat(values.maxPurchase) > 0
+      ) {
         maxCommitment = parseUnits(values.maxPurchase, USDC_DECIMALS);
       }
 
@@ -115,7 +123,11 @@ export function useTokenSaleFormPreparation() {
 
       // Convert minimum fundraise to minimum total commitment
       let minimumTotalCommitment = 1n; // Default minimum
-      if (values.minimumFundraise && parseFloat(values.minimumFundraise) > 0) {
+      if (
+        values.minimumFundraise &&
+        values.minimumFundraise.trim() !== '' &&
+        parseFloat(values.minimumFundraise) > 0
+      ) {
         minimumTotalCommitment = parseUnits(values.minimumFundraise, USDC_DECIMALS);
       }
 

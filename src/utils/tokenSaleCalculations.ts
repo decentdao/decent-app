@@ -206,20 +206,6 @@ export function formatUSDAmount(amount: bigint): string {
   return `$${(Number(amount) / 1e6).toLocaleString()}`;
 }
 
-// Contract Interface Functions
-// The contract expects 18-decimal precision regardless of actual token decimals
-
-/**
- * Scale token price from USDC units (6 decimals) to contract precision (18 decimals)
- * @param priceInUSDC - Price in USDC units (6 decimals)
- * @returns Price scaled to 18-decimal precision for contract
- */
-export function scaleTokenPriceForContract(priceInUSDC: bigint): bigint {
-  // Contract expects price in 18-decimal precision
-  // Scale from USDC (6) to contract precision (18)
-  return priceInUSDC * BigInt(10 ** 12); // 10^(18-6)
-}
-
 /**
  * Calculate sale token protocol fee for contract (always 18-decimal precision)
  * @returns Protocol fee in 18-decimal precision for contract
