@@ -14,6 +14,7 @@ export const formatSaleDate = (timestamp: number | bigint): string => {
 
 /**
  * Formats token sale amounts to USD currency
+ * For commitment amounts, use the commitment token's decimals (typically 6 for USDC)
  */
 export const formatSaleAmount = (amount: bigint, decimals: number = USDC_DECIMALS): string => {
   if (amount === 0n) {
@@ -21,6 +22,34 @@ export const formatSaleAmount = (amount: bigint, decimals: number = USDC_DECIMAL
   }
   const formatted = parseFloat(formatUnits(amount, decimals));
   return formatUSD(formatted);
+};
+
+/**
+ * Formats token sale price from contract storage
+ * The contract stores saleTokenPrice in USDC units (6 decimals)
+ */
+export const formatTokenPrice = (priceFromContract: bigint): string => {
+  if (priceFromContract === 0n) {
+    return '$0';
+  }
+  const formatted = parseFloat(formatUnits(priceFromContract, USDC_DECIMALS));
+  return formatUSD(formatted);
+};
+
+/**
+ * Calculate token supply for sale from commitment amount and price
+ * Both values come from contract in their stored formats
+ */
+export const calculateTokenSupplyForSale = (
+  maxCommitment: bigint,
+  tokenPrice: bigint,
+  tokenDecimals: number,
+): bigint => {
+  if (tokenPrice === 0n) return 0n;
+  // maxCommitment is in USDC units (6 decimals)
+  // tokenPrice is in USDC units (6 decimals)
+  // Result should be in token raw units (tokenDecimals)
+  return (maxCommitment * BigInt(10 ** tokenDecimals)) / tokenPrice;
 };
 
 /**

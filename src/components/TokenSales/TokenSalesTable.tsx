@@ -15,6 +15,7 @@ import { CaretDown, CaretUp, CaretUpDown, DotsThree } from '@phosphor-icons/reac
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
+import { USDC_DECIMALS } from '../../constants/common';
 import { DAO_ROUTES } from '../../constants/routes';
 import { useTokenSaleClaimFunds } from '../../hooks/DAO/proposal/useTokenSaleClaimFunds';
 import { useCurrentDAOKey } from '../../hooks/DAO/useCurrentDAOKey';
@@ -259,7 +260,7 @@ export function TokenSalesTable({ tokenSales }: TokenSalesTableProps) {
                     textStyle="text-sm-regular"
                     color="color-content-content1-foreground"
                   >
-                    {formatSaleAmount(sale.totalCommitments)}
+                    {formatSaleAmount(sale.totalCommitments, USDC_DECIMALS)}
                   </Text>
                 </Td>
                 <Td>
@@ -267,7 +268,7 @@ export function TokenSalesTable({ tokenSales }: TokenSalesTableProps) {
                     textStyle="text-sm-regular"
                     color="color-content-content1-foreground"
                   >
-                    {formatSaleAmount(sale.maximumTotalCommitment)}
+                    {formatSaleAmount(sale.maximumTotalCommitment, USDC_DECIMALS)}
                   </Text>
                 </Td>
                 <Td>

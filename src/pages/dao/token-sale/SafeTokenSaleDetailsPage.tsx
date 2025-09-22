@@ -16,6 +16,11 @@ import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import { useDAOStore } from '../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
 import { TokenSaleState } from '../../../types/tokenSale';
+import {
+  formatTokenPrice,
+  calculateTokenSupplyForSale,
+  formatSaleAmount,
+} from '../../../utils/tokenSaleFormats';
 import { BuyerRequirementsDisplay } from './components/buyer-requirements/BuyerRequirementsDisplay';
 
 export function SafeTokenSaleDetailsPage() {
@@ -39,8 +44,7 @@ export function SafeTokenSaleDetailsPage() {
   }
 
   const formatCurrency = (value: bigint, decimals: number = USDC_DECIMALS) => {
-    const formatted = parseFloat(formatUnits(value, decimals));
-    return `$${formatted.toLocaleString('en-US', { maximumFractionDigits: 0 })}`;
+    return formatSaleAmount(value, decimals);
   };
 
   const formatTokenAmount = (value: bigint, decimals: number) => {
@@ -57,12 +61,15 @@ export function SafeTokenSaleDetailsPage() {
     });
   };
 
-  const tokenPrice = formatUnits(tokenSale.saleTokenPrice, USDC_DECIMALS); // Assuming price is in USDC (6 decimals)
-  const totalSupply = formatTokenAmount(
-    tokenSale.maximumTotalCommitment / tokenSale.saleTokenPrice,
+  // Use proper formatting functions for contract data
+  const tokenPriceFormatted = formatTokenPrice(tokenSale.saleTokenPrice);
+  const tokenSupplyForSale = calculateTokenSupplyForSale(
+    tokenSale.maximumTotalCommitment,
+    tokenSale.saleTokenPrice,
     tokenSale.tokenDecimals,
   );
-  const valuation = parseFloat(formatUnits(tokenSale.maximumTotalCommitment, USDC_DECIMALS));
+  const totalSupplyFormatted = formatTokenAmount(tokenSupplyForSale, tokenSale.tokenDecimals);
+  const valuationFormatted = formatSaleAmount(tokenSale.maximumTotalCommitment, USDC_DECIMALS);
 
   if (!safe?.address) {
     return <InfoBoxLoader />;
@@ -160,11 +167,11 @@ export function SafeTokenSaleDetailsPage() {
             />
             <TokenSaleInfoCard.Item
               label={t('totalSupplyInfoLabel')}
-              value={totalSupply}
+              value={totalSupplyFormatted}
             />
             <TokenSaleInfoCard.Item
               label={t('priceInfoLabel')}
-              value={`$${tokenPrice}`}
+              value={tokenPriceFormatted}
             />
           </TokenSaleInfoCard.Section>
 
@@ -185,7 +192,7 @@ export function SafeTokenSaleDetailsPage() {
             />
             <TokenSaleInfoCard.Item
               label={t('valuationInfoLabel')}
-              value={`$${valuation.toLocaleString('en-US', { maximumFractionDigits: 0 })}`}
+              value={valuationFormatted}
             />
           </TokenSaleInfoCard.Section>
 
