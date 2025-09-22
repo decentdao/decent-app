@@ -347,7 +347,6 @@ export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
         >
           <LabelComponent
             label={t('saleTokenSupplyLabel', 'Sale Token Supply')}
-            helper={t('saleTokenSupplyHelper', 'Tokens allocated for this sale')}
             isRequired={false}
             gridContainerProps={{
               templateColumns: '1fr',
