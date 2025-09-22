@@ -50,11 +50,11 @@ export const useTokenSaleSchema = () => {
             if (!value) return false;
             const selectedDate = new Date(value);
             const today = new Date();
-            
+
             // For start date validation, only compare against start of today (ignore time)
             // This allows selecting today as a valid start date
             const startOfToday = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-            
+
             return selectedDate >= startOfToday;
           }),
 
