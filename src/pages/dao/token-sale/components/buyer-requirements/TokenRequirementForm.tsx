@@ -1,8 +1,9 @@
-import { VStack, HStack, Text, Button, Flex } from '@chakra-ui/react';
+import { VStack, Button, Flex } from '@chakra-ui/react';
 import { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Address, isAddress, formatUnits } from 'viem';
 import { BigIntInput } from '../../../../../components/ui/forms/BigIntInput';
+import { LabelComponent } from '../../../../../components/ui/forms/InputComponent';
 import { TokenAddressInput } from '../../../../../components/ui/forms/TokenAddressInput';
 import { BigIntValuePair } from '../../../../../types';
 import { TokenBuyerRequirement } from '../../../../../types/tokenSale';
@@ -33,16 +34,15 @@ export function TokenRequirementForm({ onSubmit, initialData }: TokenRequirement
   );
   const [minimumBalance, setMinimumBalance] = useState<BigIntValuePair>(
     initialData
-      ? { 
-          value: formatUnits(initialData.minimumBalance, initialData.tokenDecimals || 18), 
-          bigintValue: initialData.minimumBalance 
+      ? {
+          value: formatUnits(initialData.minimumBalance, initialData.tokenDecimals || 18),
+          bigintValue: initialData.minimumBalance,
         }
       : { value: '', bigintValue: undefined },
   );
   const [error, setError] = useState<string>('');
   const [inputError, setInputError] = useState<string>('');
   const [hasAttemptedLookup, setHasAttemptedLookup] = useState<boolean>(false);
-
 
   // Real-time validation for token address format
   useEffect(() => {
@@ -127,31 +127,24 @@ export function TokenRequirementForm({ onSubmit, initialData }: TokenRequirement
         align="stretch"
         spacing={2}
       >
-        <HStack spacing={1}>
-          <Text
-            fontSize="sm"
-            fontWeight="medium"
-            color="color-white"
-          >
-            {t('tokenFieldLabel')}
-          </Text>
-          <Text
-            fontSize="sm"
-            color="color-error-400"
-          >
-            *
-          </Text>
-        </HStack>
-        <TokenAddressInput
-          value={tokenAddress}
-          onChange={e => {
-            setTokenAddress(e.target.value);
-            setError('');
+        <LabelComponent
+          isRequired
+          label={t('tokenFieldLabel')}
+          gridContainerProps={{
+            templateColumns: '1fr',
           }}
-          onTokenInfo={handleTokenInfo}
-          placeholder={t('tokenAddressPlaceholder')}
-          isInvalid={!!(shouldShowError || (error && error.includes('address')))}
-        />
+        >
+          <TokenAddressInput
+            value={tokenAddress}
+            onChange={e => {
+              setTokenAddress(e.target.value);
+              setError('');
+            }}
+            onTokenInfo={handleTokenInfo}
+            placeholder={t('tokenAddressPlaceholder')}
+            isInvalid={!!(shouldShowError || (error && error.includes('address')))}
+          />
+        </LabelComponent>
       </VStack>
 
       {/* Minimum Amount Field */}
@@ -159,33 +152,25 @@ export function TokenRequirementForm({ onSubmit, initialData }: TokenRequirement
         align="stretch"
         spacing={2}
       >
-        <Text
-          fontSize="sm"
-          fontWeight="medium"
-          color="color-white"
-        >
-          {t('minimumAmountLabel')}
-        </Text>
-        <BigIntInput
-          value={minimumBalance}
-          onChange={value => {
-            setMinimumBalance(value);
-            setError('');
+        <LabelComponent
+          isRequired
+          label={t('minimumAmountLabel')}
+          errorMessage={error || (shouldShowError ? inputError : undefined)}
+          gridContainerProps={{
+            templateColumns: '1fr',
           }}
-          decimals={tokenInfo?.decimals || 18}
-          isInvalid={!!error && error.includes('balance')}
-        />
-      </VStack>
-
-      {/* Error Display */}
-      {(shouldShowError || error) && (
-        <Text
-          fontSize="sm"
-          color="color-error-400"
         >
-          {shouldShowError ? inputError : error}
-        </Text>
-      )}
+          <BigIntInput
+            value={minimumBalance}
+            onChange={value => {
+              setMinimumBalance(value);
+              setError('');
+            }}
+            decimals={tokenInfo?.decimals || 18}
+            isInvalid={!!error && error.includes('balance')}
+          />
+        </LabelComponent>
+      </VStack>
 
       {/* Action Button - Single button aligned right */}
       <Flex
