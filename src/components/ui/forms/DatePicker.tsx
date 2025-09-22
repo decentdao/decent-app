@@ -92,30 +92,30 @@ function CalendarContainer({
 }
 
 function DesktopPicker({
-  isOpen,
+  onChange,
   maxBoxW,
   minDate,
   maxDate,
-  handleDateChange,
   disabled,
-  onOpen,
-  onClose,
   selectedDate,
 }: {
-  isOpen: boolean;
+  onChange: (date: Date) => void;
   maxBoxW: string | undefined;
   minDate?: Date;
   maxDate?: Date;
-  handleDateChange: (date: DateOrNull | [DateOrNull, DateOrNull]) => void;
   disabled: boolean;
-  onOpen: () => void;
-  onClose: () => void;
   selectedDate?: Date;
 }) {
+  const { isOpen, onClose, onOpen } = useDisclosure();
+  const handleDateChange = (value: OnDateChangeValue) => {
+    if (value instanceof Date) {
+      onChange(value);
+      onClose();
+    }
+  };
   return (
     <Menu
       closeOnSelect={false}
-      isOpen={isOpen}
       onClose={onClose}
     >
       <MenuButton
@@ -157,27 +157,16 @@ export function DatePicker({
   maxDate,
   disabled = false,
 }: DatePickerProps) {
-  const { isOpen, onClose, onOpen } = useDisclosure();
   const maxBoxW = useBreakpointValue({ base: '100%', md: '26.875rem' });
-
-  const handleDateChange = (value: OnDateChangeValue) => {
-    if (value instanceof Date) {
-      onChange(value);
-      onClose();
-    }
-  };
 
   return (
     <>
       <DesktopPicker
-        isOpen={isOpen}
+        onChange={onChange}
         maxBoxW={maxBoxW}
         minDate={minDate}
         maxDate={maxDate}
-        handleDateChange={handleDateChange}
         disabled={disabled}
-        onOpen={onOpen}
-        onClose={onClose}
         selectedDate={selectedDate}
       />
     </>
