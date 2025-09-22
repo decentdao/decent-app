@@ -106,7 +106,7 @@ export function WhitelistRequirementForm({ onSubmit, initialData }: WhitelistReq
   const handleSubmit = () => {
     // Clear any previous submit errors
     setSubmitError('');
-    
+
     // Check if there's a valid address in the input field that hasn't been added yet
     let finalAddresses = [...addresses];
     if (newAddress.trim() && !inputError) {
@@ -118,12 +118,12 @@ export function WhitelistRequirementForm({ onSubmit, initialData }: WhitelistReq
         }
         return existing === address;
       });
-      
+
       if (!isDuplicate) {
         finalAddresses.push(address);
       }
     }
-    
+
     if (finalAddresses.length === 0) {
       setSubmitError(t('whitelistMinOneAddressError'));
       return;

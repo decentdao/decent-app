@@ -217,6 +217,7 @@ export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
         <Grid
           templateColumns="1fr 1fr"
           gap={4}
+          mb="1.25rem"
         >
           <LabelComponent
             label={t('saleTokenLabel')}
@@ -408,6 +409,7 @@ export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
           errorMessage={touched.valuation && errors.valuation ? errors.valuation : undefined}
           gridContainerProps={{
             templateColumns: '1fr',
+            mb: '1.25rem',
           }}
         >
           <NumberInputWithAddon
@@ -427,6 +429,7 @@ export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
         <Grid
           templateColumns="1fr 1fr"
           gap={4}
+          mb="1.25rem"
         >
           <LabelComponent
             label={t('saleStartDateLabel')}
