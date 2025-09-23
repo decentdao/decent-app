@@ -102,7 +102,7 @@ export function EstablishEssentials(props: ICreationStepProps) {
       >
         <InputComponent
           label={t('labelDAOName')}
-          helper={t('helperDAOName')}
+          helper={t(mode === DAOCreateMode.SUBDAO ? 'helperNodeName' : 'helperDAOName')}
           isRequired
           value={values.essentials.daoName}
           id="essentials-daoName"
@@ -118,7 +118,7 @@ export function EstablishEssentials(props: ICreationStepProps) {
         >
           <LabelComponent
             label={t('networks')}
-            helper={t('networkDescription')}
+            helper={t(mode === DAOCreateMode.SUBDAO ? 'networkDescriptionNode' : 'networkDescription')}
             isRequired
             alignLabel="flex-start"
           >
@@ -163,7 +163,7 @@ export function EstablishEssentials(props: ICreationStepProps) {
         >
           <LabelComponent
             label={t('labelChooseGovernance')}
-            helper={t('helperChooseGovernance')}
+            helper={t(mode === DAOCreateMode.SUBDAO ? 'helperChooseGovernanceNode' : 'helperChooseGovernance')}
             isRequired
           >
             <RadioGroup
