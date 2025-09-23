@@ -265,7 +265,7 @@ export function WhitelistRequirementForm({ onSubmit, initialData }: WhitelistReq
             justifyContent="center"
           >
             <IconButton
-              aria-label={t('clearInputAriaLabel', 'Clear input')}
+              aria-label={t('clearInputAriaLabel')}
               icon={
                 <Icon
                   as={Trash}

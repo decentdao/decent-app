@@ -160,5 +160,18 @@
   "kycRequirement": "Must complete KYC/KYB verification",
   "yes": "Yes",
   "no": "No",
-  "clearInputAriaLabel": "Clear input"
+  "clearInputAriaLabel": "Clear input",
+  "availableForSaleLabel": "Available for Sale",
+  "availableForSaleHelper": "Total available in Treasury",
+  "reservedForSaleLabel": "Reserved for Sale",
+  "reservedForSaleHelper": "Amount includes Decent's 2.5% fee",
+  "enterValuationAndFundraisingCap": "Enter valuation and fundraising cap",
+  "saleTokenSupplyRequiredError": "Reserved for sale amount is required",
+  "saleTokenSupplyInvalidError": "Reserved for sale amount must be a valid positive number",
+  "startDateInvalidError": "Start date is invalid",
+  "valuationInvalidError": "Valuation must be a valid positive number",
+  "minimumFundraiseInvalidError": "Minimum fundraise must be a valid positive number",
+  "fundraisingCapInvalidError": "Fundraising cap must be a valid positive number",
+  "minPurchaseInvalidError": "Minimum purchase must be a valid positive number",
+  "maxPurchaseInvalidError": "Maximum purchase must be a valid positive number"
 }

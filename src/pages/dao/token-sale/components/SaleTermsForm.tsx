@@ -313,8 +313,8 @@ export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
           gap={4}
         >
           <LabelComponent
-            label={t('availableForSaleLabel', 'Available for Sale')}
-            helper={t('availableForSaleHelper', 'Total available in Treasury')}
+            label={t('availableForSaleLabel')}
+            helper={t('availableForSaleHelper')}
             isRequired={false}
             gridContainerProps={{
               templateColumns: '1fr',
@@ -331,7 +331,7 @@ export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
               isDisabled={true}
               bg="color-neutral-900"
               opacity={0.5}
-              placeholder={t('selectTokenFirst', 'Select token')}
+              placeholder={t('selectTokenFirst')}
             />
           </LabelComponent>
 
@@ -360,8 +360,8 @@ export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
         </Grid>
 
         <LabelComponent
-          label={t('reservedForSaleLabel', 'Reserved for Sale')}
-          helper={t('reservedForSaleHelper', "Amount includes Decent's 2.5% fee")}
+          label={t('reservedForSaleLabel')}
+          helper={t('reservedForSaleHelper')}
           isRequired={true}
           errorMessage={
             touched.saleTokenSupply && errors.saleTokenSupply
@@ -373,10 +373,7 @@ export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
           }}
         >
           <Input
-            placeholder={t(
-              'enterValuationAndFundraisingCap',
-              'Enter valuation and fundraising cap',
-            )}
+            placeholder={t('enterValuationAndFundraisingCap')}
             value={values.saleTokenSupply.value}
             onChange={e =>
               setFieldValue('saleTokenSupply', {
