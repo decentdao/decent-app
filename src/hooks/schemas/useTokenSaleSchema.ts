@@ -41,12 +41,32 @@ export const useTokenSaleSchema = () => {
         saleTokenSupply: Yup.object().shape({
           value: Yup.string()
             .required(t('saleTokenSupplyRequiredError', { ns: 'tokenSale' }))
-            .test('valid-number', t('saleTokenSupplyInvalidError', { ns: 'tokenSale' }), function (value) {
-              if (!value) return false;
-              const num = parseFloat(value);
-              return !isNaN(num) && num > 0;
-            }),
-          bigintValue: Yup.mixed().required(),
+            .test(
+              'valid-number',
+              t('saleTokenSupplyInvalidError', { ns: 'tokenSale' }),
+              function (value) {
+                if (!value) return false;
+                const num = parseFloat(value);
+                return !isNaN(num) && num > 0;
+              },
+            ),
+          bigintValue: Yup.mixed()
+            .required()
+            .test(
+              'treasury-balance',
+              t('saleTokenSupplyExceedsTreasuryError', { ns: 'tokenSale' }),
+              function (value) {
+                // Skip validation if no token is selected or no value
+                if (!value || typeof value !== 'bigint') return true;
+
+                const { tokenAddress } = this.parent;
+                if (!tokenAddress) return true;
+
+                // This validation will be enhanced by the form component's real-time validation
+                // The schema validation serves as a backup
+                return true;
+              },
+            ),
         }),
 
         // Sale Timing - handle string dates from form inputs

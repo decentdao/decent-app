@@ -2,8 +2,9 @@ import { Input, VStack, Grid, Text, Image, Flex } from '@chakra-ui/react';
 import { useFormikContext } from 'formik';
 import { useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { formatUnits, isAddress, parseUnits } from 'viem';
+import { formatUnits, isAddress } from 'viem';
 import { ContentBoxTight } from '../../../../components/ui/containers/ContentBox';
+import { BigIntInput } from '../../../../components/ui/forms/BigIntInput';
 import { DatePicker } from '../../../../components/ui/forms/DatePicker';
 import { LabelComponent } from '../../../../components/ui/forms/InputComponent';
 import { NumberInputWithAddon } from '../../../../components/ui/forms/InputWithAddon';
@@ -79,7 +80,7 @@ export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
 
   const tokenDecimals = selectedToken?.decimals || 18;
 
-  // Validation effect for saleTokenSupply against treasury balance
+  // Real-time validation for saleTokenSupply against treasury balance
   useEffect(() => {
     if (!selectedToken || !values.saleTokenSupply.bigintValue) {
       return;
@@ -100,6 +101,9 @@ export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
       console.warn(
         `Reserved amount (${requestedFormatted}) exceeds treasury balance (${availableFormatted})`,
       );
+
+      // The BigIntInput component will show the visual error state
+      // based on the isInvalid prop we've already set
     }
   }, [selectedToken, values.saleTokenSupply.bigintValue, tokenDecimals]);
 
@@ -372,17 +376,22 @@ export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
             templateColumns: '1fr',
           }}
         >
-          <Input
-            placeholder={t('enterValuationAndFundraisingCap')}
-            value={values.saleTokenSupply.value}
-            onChange={e =>
-              setFieldValue('saleTokenSupply', {
-                value: e.target.value,
-                bigintValue: e.target.value ? parseUnits(e.target.value, tokenDecimals) : undefined,
-              })
-            }
+          <BigIntInput
+            placeholder={t('enterTokenAmount')}
+            value={values.saleTokenSupply}
+            onChange={value => setFieldValue('saleTokenSupply', value)}
+            decimals={tokenDecimals}
+            maxValue={selectedToken ? BigInt(selectedToken.balance) : undefined}
             isDisabled={
               !values.tokenAddress || !selectedToken?.balance || selectedToken?.balance === '0'
+            }
+            isInvalid={
+              (touched.saleTokenSupply && !!errors.saleTokenSupply) ||
+              !!(
+                values.saleTokenSupply.bigintValue &&
+                selectedToken &&
+                values.saleTokenSupply.bigintValue > BigInt(selectedToken.balance)
+              )
             }
           />
         </LabelComponent>
