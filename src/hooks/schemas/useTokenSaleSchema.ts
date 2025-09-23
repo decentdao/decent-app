@@ -38,6 +38,17 @@ export const useTokenSaleSchema = () => {
           bigintValue: Yup.mixed(),
         }),
 
+        saleTokenSupply: Yup.object().shape({
+          value: Yup.string()
+            .required(t('saleTokenSupplyRequiredError', { ns: 'tokenSale' }))
+            .test('valid-number', t('saleTokenSupplyInvalidError', { ns: 'tokenSale' }), function (value) {
+              if (!value) return false;
+              const num = parseFloat(value);
+              return !isNaN(num) && num > 0;
+            }),
+          bigintValue: Yup.mixed().required(),
+        }),
+
         // Sale Timing - handle string dates from form inputs
         startDate: Yup.string()
           .required(t('startDateRequiredError', { ns: 'tokenSale' }))

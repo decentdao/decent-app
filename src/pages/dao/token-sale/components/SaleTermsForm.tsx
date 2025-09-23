@@ -2,7 +2,7 @@ import { Input, VStack, Grid, Text, Image, Flex } from '@chakra-ui/react';
 import { useFormikContext } from 'formik';
 import { useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { formatUnits, isAddress } from 'viem';
+import { formatUnits, isAddress, parseUnits } from 'viem';
 import { ContentBoxTight } from '../../../../components/ui/containers/ContentBox';
 import { DatePicker } from '../../../../components/ui/forms/DatePicker';
 import { LabelComponent } from '../../../../components/ui/forms/InputComponent';
@@ -14,10 +14,7 @@ import useFeatureFlag from '../../../../helpers/environmentFeatureFlags';
 import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
 import { useDAOStore } from '../../../../providers/App/AppProvider';
 import { TokenSaleFormValues } from '../../../../types/tokenSale';
-import {
-  calculateTokenSaleParameters,
-  calculateTokenPrice,
-} from '../../../../utils/tokenSaleCalculations';
+import { calculateTokenPrice } from '../../../../utils/tokenSaleCalculations';
 
 interface SaleTermsFormProps {
   values: TokenSaleFormValues;
@@ -82,61 +79,31 @@ export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
 
   const tokenDecimals = selectedToken?.decimals || 18;
 
-  // Calculate and update the sale token supply (tokens allocated for this sale)
+  // Validation effect for saleTokenSupply against treasury balance
   useEffect(() => {
-    if (!values.saleTokenPrice.bigintValue || values.saleTokenPrice.bigintValue === 0n) {
-      setFieldValue('saleTokenSupply', { value: '', bigintValue: undefined });
+    if (!selectedToken || !values.saleTokenSupply.bigintValue) {
       return;
     }
 
-    let maxCommitmentAmount: bigint;
-
-    if (!selectedToken) {
-      setFieldValue('saleTokenSupply', { value: '', bigintValue: undefined });
-      return;
-    }
-
-    // Use shared calculation utility
     const treasuryBalance = BigInt(selectedToken.balance);
-    const calculationResult = calculateTokenSaleParameters({
-      treasuryTokenBalance: treasuryBalance,
-      tokenPrice: values.saleTokenPrice.bigintValue,
-      tokenDecimals: selectedToken.decimals,
-      fundraisingCap: values.fundraisingCap,
-    });
+    const reservedAmount = values.saleTokenSupply.bigintValue;
 
-    maxCommitmentAmount = calculationResult.maxPossibleCommitment;
+    // Check if reserved amount exceeds treasury balance
+    if (reservedAmount > treasuryBalance) {
+      const availableFormatted = parseFloat(
+        formatUnits(treasuryBalance, tokenDecimals),
+      ).toLocaleString();
+      const requestedFormatted = parseFloat(
+        formatUnits(reservedAmount, tokenDecimals),
+      ).toLocaleString();
 
-    console.log('🔍 SALE TOKEN SUPPLY DEBUG (Shared Logic):');
-    console.log('Treasury balance (raw):', selectedToken.balance);
-    console.log('Treasury balance (parsed):', treasuryBalance.toString());
-    console.log('Token price:', values.saleTokenPrice.bigintValue?.toString());
-    console.log('Max possible commitment:', maxCommitmentAmount.toString());
-    console.log('Can support fundraising cap:', calculationResult.canSupportFundraisingCap);
-    if (calculationResult.errorMessage) {
-      console.log('Error message:', calculationResult.errorMessage);
+      console.warn(
+        `Reserved amount (${requestedFormatted}) exceeds treasury balance (${availableFormatted})`,
+      );
     }
+  }, [selectedToken, values.saleTokenSupply.bigintValue, tokenDecimals]);
 
-    // Use the tokens for sale from our calculation result
-    const tokensForSale = calculationResult.tokensForSale;
-    const formattedTokensForSale = formatUnits(tokensForSale, tokenDecimals);
-
-    console.log('Final calculation:');
-    console.log('Tokens for sale (raw):', tokensForSale.toString());
-    console.log('Tokens for sale (formatted):', formattedTokensForSale);
-    console.log('Tokens for sale (display):', parseFloat(formattedTokensForSale).toLocaleString());
-
-    setFieldValue('saleTokenSupply', {
-      value: formattedTokensForSale,
-      bigintValue: tokensForSale,
-    });
-  }, [
-    values.fundraisingCap,
-    values.saleTokenPrice.bigintValue,
-    selectedToken,
-    tokenDecimals,
-    setFieldValue,
-  ]);
+  // Removed calculation logic - saleTokenSupply is now user input
 
   // Reactive price calculation when FDV or total supply changes
   useEffect(() => {
@@ -187,7 +154,7 @@ export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
       setFieldValue('tokenName', tokenToSelect.name);
       setFieldValue('tokenSymbol', tokenToSelect.symbol);
 
-      // Clear sale token supply - will be recalculated by useEffect
+      // Clear sale token supply - user will input this manually
       setFieldValue('saleTokenSupply', { value: '', bigintValue: undefined });
 
       // Store the total supply for price calculation (but don't display it)
@@ -346,7 +313,8 @@ export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
           gap={4}
         >
           <LabelComponent
-            label={t('saleTokenSupplyLabel', 'Sale Token Supply')}
+            label={t('availableForSaleLabel', 'Available for Sale')}
+            helper={t('availableForSaleHelper', 'Total available in Treasury')}
             isRequired={false}
             gridContainerProps={{
               templateColumns: '1fr',
@@ -354,16 +322,16 @@ export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
           >
             <Input
               value={
-                values.saleTokenSupply.value
-                  ? parseFloat(values.saleTokenSupply.value).toLocaleString()
-                  : values.tokenAddress
-                    ? t('enterFundraisingCapOrCalculating', 'Calculating...')
-                    : t('selectTokenFirst')
+                selectedToken
+                  ? parseFloat(
+                      formatUnits(BigInt(selectedToken.balance), selectedToken.decimals),
+                    ).toLocaleString()
+                  : ''
               }
               isDisabled={true}
               bg="color-neutral-900"
               opacity={0.5}
-              placeholder={t('saleTokenSupplyPlaceholder', 'Tokens for sale')}
+              placeholder={t('selectTokenFirst', 'Select token')}
             />
           </LabelComponent>
 
@@ -390,6 +358,59 @@ export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
             />
           </LabelComponent>
         </Grid>
+
+        <LabelComponent
+          label={t('reservedForSaleLabel', 'Reserved for Sale')}
+          helper={t('reservedForSaleHelper', "Amount includes Decent's 2.5% fee")}
+          isRequired={true}
+          errorMessage={
+            touched.saleTokenSupply && errors.saleTokenSupply
+              ? (errors.saleTokenSupply as string)
+              : undefined
+          }
+          gridContainerProps={{
+            templateColumns: '1fr',
+          }}
+        >
+          <Input
+            placeholder={t(
+              'enterValuationAndFundraisingCap',
+              'Enter valuation and fundraising cap',
+            )}
+            value={values.saleTokenSupply.value}
+            onChange={e =>
+              setFieldValue('saleTokenSupply', {
+                value: e.target.value,
+                bigintValue: e.target.value ? parseUnits(e.target.value, tokenDecimals) : undefined,
+              })
+            }
+            isDisabled={
+              !values.tokenAddress || !selectedToken?.balance || selectedToken?.balance === '0'
+            }
+          />
+        </LabelComponent>
+
+        <LabelComponent
+          label={t('valuationLabel')}
+          isRequired={true}
+          errorMessage={touched.valuation && errors.valuation ? errors.valuation : undefined}
+          gridContainerProps={{
+            templateColumns: '1fr',
+          }}
+        >
+          <NumberInputWithAddon
+            value={values.valuation}
+            onChange={val => {
+              setFieldValue('valuation', val);
+              // Price calculation will be handled by useEffect
+            }}
+            min={0}
+            precision={2}
+            step={0.01}
+            placeholder={t('valuationPlaceholder')}
+            leftAddon={<Text color="color-content-muted-foreground">$</Text>}
+          />
+        </LabelComponent>
       </ContentBoxTight>
 
       {/* Sale Pricing & Terms Section */}
@@ -448,29 +469,6 @@ export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
             />
           </LabelComponent>
         </Grid>
-
-        <LabelComponent
-          label={t('valuationLabel')}
-          isRequired={true}
-          errorMessage={touched.valuation && errors.valuation ? errors.valuation : undefined}
-          gridContainerProps={{
-            templateColumns: '1fr',
-            mb: '1.25rem',
-          }}
-        >
-          <NumberInputWithAddon
-            value={values.valuation}
-            onChange={val => {
-              setFieldValue('valuation', val);
-              // Price calculation will be handled by useEffect
-            }}
-            min={0}
-            precision={2}
-            step={0.01}
-            placeholder={t('valuationPlaceholder')}
-            leftAddon={<Text color="color-content-muted-foreground">$</Text>}
-          />
-        </LabelComponent>
 
         <Grid
           templateColumns="1fr 1fr"

@@ -7,9 +7,9 @@ import { useNetworkConfigStore } from '../../../../providers/NetworkConfig/useNe
 import { TokenSaleFormValues } from '../../../../types/tokenSale';
 import {
   COMMITMENT_TOKEN_PROTOCOL_FEE,
-  calculateTokenSaleParameters,
   calculateSaleTokenProtocolFeeForContract,
-  calculateContractEscrowAmount,
+  PROTOCOL_FEE_BPS,
+  BPS_DIVISOR,
 } from '../../../../utils/tokenSaleCalculations';
 
 export interface PreparedTokenSaleData {
@@ -61,6 +61,7 @@ export function useTokenSaleFormPreparation() {
       if (
         !values.tokenAddress ||
         !values.maxTokenSupply.bigintValue ||
+        !values.saleTokenSupply.bigintValue ||
         !values.startDate ||
         !values.endDate ||
         !values.commitmentToken ||
@@ -83,20 +84,19 @@ export function useTokenSaleFormPreparation() {
       // selectedTokenBalance.balance is already in raw units, don't convert again!
       const treasuryTokenBalance = BigInt(selectedTokenBalance.balance);
 
-      // Use shared calculation utility
-      const calculationResult = calculateTokenSaleParameters({
-        treasuryTokenBalance,
-        tokenPrice: values.saleTokenPrice.bigintValue,
-        tokenDecimals: selectedTokenBalance.decimals,
-        fundraisingCap: values.fundraisingCap,
-      });
+      // Use the user-provided saleTokenSupply directly as escrow amount
+      // NOTE: User's input INCLUDES Decent's 2.5% fee - they specify the gross amount to reserve
+      // This works correctly with the contract since it expects the total escrow amount (including fee)
+      const saleTokenEscrowAmount = values.saleTokenSupply.bigintValue;
 
-      // If the fundraising cap cannot be supported, throw an error
-      if (!calculationResult.canSupportFundraisingCap && calculationResult.errorMessage) {
-        throw new Error(calculationResult.errorMessage);
-      }
+      // Calculate actual tokens available for buyers (excluding the fee portion)
+      // actualTokensForSale = reservedAmount / 1.025 (remove the fee portion)
+      const actualTokensForSale = (saleTokenEscrowAmount * BPS_DIVISOR) / (BPS_DIVISOR + PROTOCOL_FEE_BPS);
 
-      const maxPossibleCommitment = calculationResult.maxPossibleCommitment;
+      // Calculate max possible commitment based on fundraising cap or actual tokens for sale
+      const maxPossibleCommitment = values.fundraisingCap && parseFloat(values.fundraisingCap) > 0
+        ? parseUnits(values.fundraisingCap, USDC_DECIMALS)
+        : (actualTokensForSale * values.saleTokenPrice.bigintValue) / BigInt(10 ** selectedTokenBalance.decimals);
 
       // Convert USD form values to BigInt commitment values (in USDC units)
       // minPurchase and maxPurchase are in USD strings, convert to USDC BigInt
@@ -138,16 +138,10 @@ export function useTokenSaleFormPreparation() {
       const commitmentToken = values.commitmentToken as Address;
       const saleToken = values.tokenAddress as Address;
 
-      // Calculate escrow amount exactly as the contract will
-      const contractEscrowAmount = calculateContractEscrowAmount(
-        maxPossibleCommitment,
-        values.saleTokenPrice.bigintValue,
-      );
-
-      // Validation: ensure treasury has enough tokens using contract's calculation
-      if (contractEscrowAmount > treasuryTokenBalance) {
+      // Validation: ensure treasury has enough tokens for the user-specified amount
+      if (saleTokenEscrowAmount > treasuryTokenBalance) {
         throw new Error(
-          `Treasury has insufficient tokens. Required: ${(Number(contractEscrowAmount) / Number(10 ** selectedTokenBalance.decimals)).toLocaleString()}, Available: ${(Number(treasuryTokenBalance) / Number(10 ** selectedTokenBalance.decimals)).toLocaleString()}`,
+          `Treasury has insufficient tokens. Required: ${(Number(saleTokenEscrowAmount) / Number(10 ** selectedTokenBalance.decimals)).toLocaleString()}, Available: ${(Number(treasuryTokenBalance) / Number(10 ** selectedTokenBalance.decimals)).toLocaleString()}`,
         );
       }
 
@@ -170,7 +164,7 @@ export function useTokenSaleFormPreparation() {
         saleTokenPrice: values.saleTokenPrice.bigintValue,
         commitmentTokenProtocolFee: COMMITMENT_TOKEN_PROTOCOL_FEE,
         saleTokenProtocolFee: calculateSaleTokenProtocolFeeForContract(),
-        saleTokenEscrowAmount: contractEscrowAmount,
+        saleTokenEscrowAmount: saleTokenEscrowAmount,
 
         // TODO: if hedgeyLockupEnabled is true, don't default to 0n for the other values
         hedgeyLockupParams: {
@@ -186,10 +180,9 @@ export function useTokenSaleFormPreparation() {
       };
       // Log treasury balance validation info
       console.log(`Treasury Balance: ${treasuryTokenBalance.toString()} tokens`);
-      console.log(
-        `Required Escrow (Contract Calculation): ${contractEscrowAmount.toString()} tokens`,
-      );
-      console.log(`Balance Sufficient: ${treasuryTokenBalance >= contractEscrowAmount}`);
+      console.log(`Required Escrow (User Input, includes fee): ${saleTokenEscrowAmount.toString()} tokens`);
+      console.log(`Actual Tokens for Sale (excluding fee): ${actualTokensForSale.toString()} tokens`);
+      console.log(`Balance Sufficient: ${treasuryTokenBalance >= saleTokenEscrowAmount}`);
 
       console.log('🚀 ~ preparedData:', preparedData);
 
