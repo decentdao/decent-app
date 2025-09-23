@@ -136,8 +136,9 @@ export function useTokenSaleFormPreparation() {
       }
 
       // Convert dates to timestamps
-      const saleStartTimestamp = Math.floor(new Date(values.startDate).getTime() / 1000);
-      const saleEndTimestamp = Math.floor(new Date(values.endDate).getTime() / 1000);
+      // Fix timezone issue by parsing dates as UTC
+      const saleStartTimestamp = Math.floor(Date.parse(values.startDate) / 1000);
+      const saleEndTimestamp = Math.floor(Date.parse(values.endDate) / 1000);
 
       const commitmentToken = values.commitmentToken as Address;
       const saleToken = values.tokenAddress as Address;
