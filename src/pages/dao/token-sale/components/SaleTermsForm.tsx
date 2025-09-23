@@ -15,7 +15,10 @@ import useFeatureFlag from '../../../../helpers/environmentFeatureFlags';
 import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
 import { useDAOStore } from '../../../../providers/App/AppProvider';
 import { TokenSaleFormValues } from '../../../../types/tokenSale';
-import { calculateTokenPrice } from '../../../../utils/tokenSaleCalculations';
+import {
+  calculateTokenPrice,
+  calculateSaleTokenProtocolFeeForContract,
+} from '../../../../utils/tokenSaleCalculations';
 
 interface SaleTermsFormProps {
   values: TokenSaleFormValues;
@@ -80,16 +83,20 @@ export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
 
   const tokenDecimals = selectedToken?.decimals || 18;
 
-  // Calculate fundraising cap from reserved tokens and token price
+  // Calculate fundraising cap from net tokens for sale and token price
   const calculatedFundraisingCap = useMemo(() => {
     if (!values.saleTokenSupply.bigintValue || !values.saleTokenPrice.bigintValue) {
       return 0;
     }
 
-    // Calculate: reservedTokens * tokenPrice
+    // Calculate net tokens (user input includes 2.5% fee)
     const PRECISION = BigInt(10 ** 18);
-    const fundraisingCapBigInt =
-      (values.saleTokenSupply.bigintValue * values.saleTokenPrice.bigintValue) / PRECISION;
+    const saleTokenProtocolFee = calculateSaleTokenProtocolFeeForContract(); // 2.5% in 18-decimal precision
+    const netTokensForSale =
+      (values.saleTokenSupply.bigintValue * PRECISION) / (PRECISION + saleTokenProtocolFee);
+
+    // Calculate: netTokens * tokenPrice
+    const fundraisingCapBigInt = (netTokensForSale * values.saleTokenPrice.bigintValue) / PRECISION;
 
     // Convert to USD for display
     return parseFloat(formatUnits(fundraisingCapBigInt, USDC_DECIMALS));
@@ -500,7 +507,6 @@ export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
 
           <LabelComponent
             label={t('fundraisingCapLabel')}
-            helper={t('fundraisingCapHelper')}
             isRequired={false}
             gridContainerProps={{
               templateColumns: '1fr',

@@ -19,7 +19,6 @@
   "minimumFundraiseLabel": "Minimum Fundraise",
   "minimumFundraisePlaceholder": "500,000",
   "fundraisingCapLabel": "Fundraising Cap",
-  "fundraisingCapHelper": "Automatically calculated from reserved tokens × token price",
   "fundraisingCapPlaceholder": "10,000,000",
   "calculatedFromTokens": "Calculated from reserved tokens",
   "enterTokensAndPrice": "Enter reserved tokens and price",
