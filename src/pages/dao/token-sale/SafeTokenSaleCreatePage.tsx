@@ -48,7 +48,6 @@ const getInitialValues = (usdcAddress?: Address): TokenSaleFormValues => ({
 
   // Sale Pricing & Terms
   minimumFundraise: '',
-  fundraisingCap: '',
   valuation: '',
   minPurchase: '',
   maxPurchase: '',

@@ -80,6 +80,21 @@ export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
 
   const tokenDecimals = selectedToken?.decimals || 18;
 
+  // Calculate fundraising cap from reserved tokens and token price
+  const calculatedFundraisingCap = useMemo(() => {
+    if (!values.saleTokenSupply.bigintValue || !values.saleTokenPrice.bigintValue) {
+      return 0;
+    }
+
+    // Calculate: reservedTokens * tokenPrice
+    const PRECISION = BigInt(10 ** 18);
+    const fundraisingCapBigInt =
+      (values.saleTokenSupply.bigintValue * values.saleTokenPrice.bigintValue) / PRECISION;
+
+    // Convert to USD for display
+    return parseFloat(formatUnits(fundraisingCapBigInt, USDC_DECIMALS));
+  }, [values.saleTokenSupply.bigintValue, values.saleTokenPrice.bigintValue]);
+
   // Real-time validation for saleTokenSupply against treasury balance
   useEffect(() => {
     if (!selectedToken || !values.saleTokenSupply.bigintValue) {
@@ -485,22 +500,24 @@ export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
 
           <LabelComponent
             label={t('fundraisingCapLabel')}
-            isRequired={true}
-            errorMessage={
-              touched.fundraisingCap && errors.fundraisingCap ? errors.fundraisingCap : undefined
-            }
+            helper={t('fundraisingCapHelper')}
+            isRequired={false}
             gridContainerProps={{
               templateColumns: '1fr',
             }}
           >
             <NumberInputWithAddon
-              value={values.fundraisingCap}
-              onChange={val => setFieldValue('fundraisingCap', val)}
+              value={calculatedFundraisingCap || ''}
+              onChange={() => {}} // No-op since it's calculated automatically
               min={0}
               precision={2}
-              step={0.01}
-              placeholder={t('fundraisingCapPlaceholder')}
+              placeholder={
+                calculatedFundraisingCap > 0 ? t('calculatedFromTokens') : t('enterTokensAndPrice')
+              }
               leftAddon={<Text color="color-content-muted-foreground">$</Text>}
+              isDisabled={true}
+              bg="color-neutral-900"
+              opacity={0.5}
             />
           </LabelComponent>
         </Grid>

@@ -106,7 +106,6 @@ export interface TokenSaleFormValues {
 
   // Sale Pricing & Terms
   minimumFundraise: string;
-  fundraisingCap: string;
   valuation: string;
   minPurchase: string;
   maxPurchase: string;

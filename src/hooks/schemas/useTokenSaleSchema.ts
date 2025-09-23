@@ -108,28 +108,6 @@ export const useTokenSaleSchema = () => {
           },
         ),
 
-        fundraisingCap: Yup.string()
-          .test(
-            'valid-number',
-            t('fundraisingCapInvalidError', { ns: 'tokenSale' }),
-            function (value) {
-              if (!value) return true; // Optional field
-              const num = parseFloat(value);
-              return !isNaN(num) && num >= 1;
-            },
-          )
-          .test(
-            'cap-greater-than-minimum',
-            t('fundraisingCapGreaterThanMinimumError', { ns: 'tokenSale' }),
-            function (value) {
-              const { minimumFundraise } = this.parent;
-              if (!value || !minimumFundraise) return true;
-              const capNum = parseFloat(value);
-              const minNum = parseFloat(minimumFundraise);
-              return !isNaN(capNum) && !isNaN(minNum) && capNum > minNum;
-            },
-          ),
-
         // Purchase limits - optional but must be positive if provided
         minPurchase: Yup.string()
           .nullable()

@@ -96,16 +96,12 @@ export function useTokenSaleFormPreparation() {
       const saleTokenEscrowAmount = grossTokensReserved;
 
       // Calculate max commitment capacity from net tokens for sale
+      // This is the calculated fundraising cap: netTokensForSale * tokenPrice
       const maxPossibleCommitmentFromTokens =
         (netTokensForSale * values.saleTokenPrice.bigintValue) / PRECISION;
 
-      // Take the minimum of fundraising cap constraint and token supply constraint
-      const finalMaxCommitment =
-        values.fundraisingCap && parseFloat(values.fundraisingCap) > 0
-          ? parseUnits(values.fundraisingCap, USDC_DECIMALS) < maxPossibleCommitmentFromTokens
-            ? parseUnits(values.fundraisingCap, USDC_DECIMALS)
-            : maxPossibleCommitmentFromTokens
-          : maxPossibleCommitmentFromTokens;
+      // Use the calculated fundraising cap (no user input override)
+      const finalMaxCommitment = maxPossibleCommitmentFromTokens;
 
       // Convert USD form values to BigInt commitment values (in USDC units)
       // minPurchase and maxPurchase are in USD strings, convert to USDC BigInt
