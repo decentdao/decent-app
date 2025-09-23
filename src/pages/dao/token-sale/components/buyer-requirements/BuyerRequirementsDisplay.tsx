@@ -18,8 +18,15 @@ export function BuyerRequirementsDisplay({
   const { t } = useTranslation('tokenSale');
   const { getRequirementDisplay } = useRequirementDisplay();
 
-  const totalRequirements = requirements.length + (kycEnabled ? 1 : 0);
-  const requirementsToMeet = orOutOf || totalRequirements;
+  // Filter out invalid requirements
+  const validRequirements = requirements.filter(requirement => {
+    const display = getRequirementDisplay(requirement);
+    return display && display.trim() !== '';
+  });
+
+  const totalRequirements = validRequirements.length + (kycEnabled ? 1 : 0);
+  // Ensure requirementsToMeet doesn't exceed actual total requirements
+  const requirementsToMeet = orOutOf ? Math.min(orOutOf, totalRequirements) : totalRequirements;
 
   // If no requirements and no KYC, show open access
   if (totalRequirements === 0) {
@@ -94,7 +101,7 @@ export function BuyerRequirementsDisplay({
         )}
 
         {/* Other Requirements */}
-        {requirements.map((requirement, index) => (
+        {validRequirements.map((requirement, index) => (
           <Flex
             key={`requirement-${index}`}
             justify="space-between"

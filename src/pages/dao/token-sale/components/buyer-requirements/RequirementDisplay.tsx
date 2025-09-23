@@ -3,6 +3,11 @@ import { formatUnits } from 'viem';
 import { BuyerRequirement } from '../../../../../types/tokenSale';
 
 export const getRequirementDisplay = (requirement: BuyerRequirement, t: any): string => {
+  if (!requirement || !requirement.type) {
+    console.warn('Invalid requirement passed to getRequirementDisplay:', requirement);
+    return '';
+  }
+
   switch (requirement.type) {
     case 'token':
       const decimals = requirement.tokenDecimals || 18;
@@ -25,6 +30,10 @@ export const getRequirementDisplay = (requirement: BuyerRequirement, t: any): st
       return t('holdAtLeastNft', { amount: nftAmount, name: nftName });
     case 'whitelist':
       return t('beIncludedInWhitelist');
+    default:
+      // This should never happen with proper TypeScript typing, but handle it gracefully
+      console.warn('Unknown requirement type:', (requirement as any).type);
+      return '';
   }
 };
 
