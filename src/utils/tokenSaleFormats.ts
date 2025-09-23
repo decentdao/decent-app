@@ -1,15 +1,20 @@
-import { format } from 'date-fns';
 import { formatUnits } from 'viem';
 import { USDC_DECIMALS } from '../constants/common';
 import { formatUSD } from './numberFormats';
 
 /**
  * Formats a timestamp to a readable date string
+ * Shows the date as intended by the sale creator (UTC date without timezone conversion)
  */
 export const formatSaleDate = (timestamp: number | bigint): string => {
   const timestampNum = typeof timestamp === 'bigint' ? Number(timestamp) : timestamp;
   const date = new Date(timestampNum * 1000);
-  return format(date, 'MMM dd, yyyy');
+  return date.toLocaleDateString(undefined, {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    timeZone: 'UTC',
+  });
 };
 
 /**

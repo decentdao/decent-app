@@ -20,6 +20,7 @@ import {
   formatTokenPrice,
   calculateTokenSupplyForSale,
   formatSaleAmount,
+  formatSaleDate,
 } from '../../../utils/tokenSaleFormats';
 import { BuyerRequirementsDisplay } from './components/buyer-requirements/BuyerRequirementsDisplay';
 
@@ -50,15 +51,6 @@ export function SafeTokenSaleDetailsPage() {
   const formatTokenAmount = (value: bigint, decimals: number) => {
     const formatted = parseFloat(formatUnits(value, decimals));
     return formatted.toLocaleString('en-US', { maximumFractionDigits: 0 });
-  };
-
-  const formatDate = (timestamp: bigint) => {
-    const date = new Date(Number(timestamp) * 1000);
-    return date.toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-    });
   };
 
   // Use proper formatting functions for contract data
@@ -180,7 +172,7 @@ export function SafeTokenSaleDetailsPage() {
           <TokenSaleInfoCard.Section>
             <TokenSaleInfoCard.Item
               label={t('closingDateInfoLabel')}
-              value={formatDate(tokenSale.saleEndTimestamp)}
+              value={formatSaleDate(tokenSale.saleEndTimestamp)}
             />
             <TokenSaleInfoCard.Item
               label={t('minimumRaiseInfoLabel')}
