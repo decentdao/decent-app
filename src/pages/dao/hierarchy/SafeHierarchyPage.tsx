@@ -25,6 +25,7 @@ export function SafeHierarchyPage() {
   } = useDAOStore({ daoKey });
 
   const { t } = useTranslation('breadcrumbs');
+  const { t: tHierarchy } = useTranslation('hierarchy');
 
   const HEADER_HEIGHT = useHeaderHeight();
   const navigate = useNavigate();
@@ -50,6 +51,7 @@ export function SafeHierarchyPage() {
           daoName,
           subject: t('nodes'),
         })}
+        description={tHierarchy('description')}
         breadcrumbs={[
           {
             terminus: t('nodes'),

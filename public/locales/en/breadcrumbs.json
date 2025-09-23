@@ -1,6 +1,6 @@
 {
   "createNewDAO": "Create New Project",
-  "createSubDAO": "Create SubDAO",
+  "createSubDAO": "Create Node",
   "headerTitle": "{{daoName}} {{subject}}",
   "proposals": "All Proposals",
   "proposalNew": "Create Proposal",
