@@ -315,7 +315,29 @@ export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
         <Grid
           templateColumns="1fr 1fr"
           gap={4}
+          mb="1.25rem"
         >
+          <LabelComponent
+            label={t('maxTokenSupplyLabel')}
+            helper={t('maxTokenSupplyHelper')}
+            isRequired={false}
+            gridContainerProps={{
+              templateColumns: '1fr',
+            }}
+          >
+            <Input
+              value={
+                selectedToken && values.maxTokenSupply.value
+                  ? parseFloat(values.maxTokenSupply.value).toLocaleString()
+                  : ''
+              }
+              isDisabled={true}
+              bg="color-neutral-900"
+              opacity={0.5}
+              placeholder={t('selectTokenFirst')}
+            />
+          </LabelComponent>
+
           <LabelComponent
             label={t('availableForSaleLabel')}
             helper={t('availableForSaleHelper')}
@@ -338,9 +360,48 @@ export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
               placeholder={t('selectTokenFirst')}
             />
           </LabelComponent>
+        </Grid>
+
+        <Grid
+          templateColumns="1fr 1fr"
+          gap={4}
+        >
+          <LabelComponent
+            label={t('reservedForSaleLabel')}
+            helper={t('reservedForSaleHelper')}
+            isRequired={true}
+            errorMessage={
+              touched.saleTokenSupply && errors.saleTokenSupply
+                ? (errors.saleTokenSupply as string)
+                : undefined
+            }
+            gridContainerProps={{
+              templateColumns: '1fr',
+            }}
+          >
+            <BigIntInput
+              placeholder={t('enterTokenAmount')}
+              value={values.saleTokenSupply}
+              onChange={value => setFieldValue('saleTokenSupply', value)}
+              decimals={tokenDecimals}
+              maxValue={selectedToken ? BigInt(selectedToken.balance) : undefined}
+              isDisabled={
+                !values.tokenAddress || !selectedToken?.balance || selectedToken?.balance === '0'
+              }
+              isInvalid={
+                (touched.saleTokenSupply && !!errors.saleTokenSupply) ||
+                !!(
+                  values.saleTokenSupply.bigintValue &&
+                  selectedToken &&
+                  values.saleTokenSupply.bigintValue > BigInt(selectedToken.balance)
+                )
+              }
+            />
+          </LabelComponent>
 
           <LabelComponent
             label={t('tokenPriceLabel')}
+            helper={t('tokenPriceHelper')}
             isRequired={false}
             gridContainerProps={{
               templateColumns: '1fr',
@@ -364,40 +425,8 @@ export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
         </Grid>
 
         <LabelComponent
-          label={t('reservedForSaleLabel')}
-          helper={t('reservedForSaleHelper')}
-          isRequired={true}
-          errorMessage={
-            touched.saleTokenSupply && errors.saleTokenSupply
-              ? (errors.saleTokenSupply as string)
-              : undefined
-          }
-          gridContainerProps={{
-            templateColumns: '1fr',
-          }}
-        >
-          <BigIntInput
-            placeholder={t('enterTokenAmount')}
-            value={values.saleTokenSupply}
-            onChange={value => setFieldValue('saleTokenSupply', value)}
-            decimals={tokenDecimals}
-            maxValue={selectedToken ? BigInt(selectedToken.balance) : undefined}
-            isDisabled={
-              !values.tokenAddress || !selectedToken?.balance || selectedToken?.balance === '0'
-            }
-            isInvalid={
-              (touched.saleTokenSupply && !!errors.saleTokenSupply) ||
-              !!(
-                values.saleTokenSupply.bigintValue &&
-                selectedToken &&
-                values.saleTokenSupply.bigintValue > BigInt(selectedToken.balance)
-              )
-            }
-          />
-        </LabelComponent>
-
-        <LabelComponent
           label={t('valuationLabel')}
+          helper={t('valuationHelper')}
           isRequired={true}
           errorMessage={touched.valuation && errors.valuation ? errors.valuation : undefined}
           gridContainerProps={{
