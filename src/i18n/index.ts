@@ -62,6 +62,7 @@ i18n
       'daoEdit',
       'dashboard',
       'gaslessVoting',
+      'hierarchy',
       'home',
       'languages',
       'menu',
