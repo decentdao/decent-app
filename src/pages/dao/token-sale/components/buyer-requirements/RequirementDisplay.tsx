@@ -2,7 +2,7 @@ import { useTranslation } from 'react-i18next';
 import { formatUnits } from 'viem';
 import { BuyerRequirement } from '../../../../../types/tokenSale';
 
-export const getRequirementDisplay = (requirement: BuyerRequirement, t: any): string => {
+const getRequirementDisplay = (requirement: BuyerRequirement, t: any): string => {
   if (!requirement || !requirement.type) {
     console.warn('Invalid requirement passed to getRequirementDisplay:', requirement);
     return '';
@@ -12,11 +12,13 @@ export const getRequirementDisplay = (requirement: BuyerRequirement, t: any): st
     case 'token':
       const decimals = requirement.tokenDecimals || 18;
       const tokenAmount = formatUnits(requirement.minimumBalance, decimals);
-      const tokenSymbol = requirement.tokenName || 'Token';
+      const tokenSymbol = requirement.tokenName || requirement.tokenSymbol || 'Token';
       return t('holdAtLeastToken', { amount: tokenAmount, symbol: tokenSymbol });
+
     case 'nft':
       const nftAmount = requirement.minimumBalance.toString();
-      const nftName = requirement.collectionName || `${requirement.tokenStandard} Collection`;
+      const nftName =
+        requirement.collectionName || `${requirement.tokenStandard || 'NFT'} Collection`;
 
       // For ERC1155, include token ID in the display
       if (requirement.tokenStandard === 'ERC1155' && requirement.tokenId !== undefined) {
@@ -28,10 +30,11 @@ export const getRequirementDisplay = (requirement: BuyerRequirement, t: any): st
       }
 
       return t('holdAtLeastNft', { amount: nftAmount, name: nftName });
+
     case 'whitelist':
       return t('beIncludedInWhitelist');
+
     default:
-      // This should never happen with proper TypeScript typing, but handle it gracefully
       console.warn('Unknown requirement type:', (requirement as any).type);
       return '';
   }
