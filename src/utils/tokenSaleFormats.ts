@@ -30,7 +30,7 @@ export const formatSaleAmount = (amount: bigint, decimals: number = USDC_DECIMAL
 };
 
 /**
- * Formats token sale price from contract storage
+ * Formats token sale price from contract storage with high precision
  * The contract stores saleTokenPrice in USDC units (6 decimals)
  */
 export const formatTokenPrice = (priceFromContract: bigint): string => {
@@ -38,7 +38,12 @@ export const formatTokenPrice = (priceFromContract: bigint): string => {
     return '$0';
   }
   const formatted = parseFloat(formatUnits(priceFromContract, USDC_DECIMALS));
-  return formatUSD(formatted);
+  return new Intl.NumberFormat(undefined, {
+    style: 'currency',
+    currency: 'USD',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 8,
+  }).format(formatted);
 };
 
 /**

@@ -65,7 +65,7 @@ export function TokenSaleInfoCard({ title, children }: TokenSaleInfoCardProps) {
       align="stretch"
     >
       <Text
-        textStyle="text-lg-medium"
+        textStyle="text-md-medium"
         color="color-content-content1-foreground"
       >
         {title}

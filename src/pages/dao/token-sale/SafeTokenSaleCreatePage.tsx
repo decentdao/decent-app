@@ -23,6 +23,7 @@ import { TokenSaleFormValues } from '../../../types/tokenSale';
 import { bigintSerializer } from '../../../utils/bigintSerializer';
 import { BuyerRequirementsForm } from './components/BuyerRequirementsForm';
 import { SaleTermsForm } from './components/SaleTermsForm';
+import { TokenSalePreviewPanel } from './components/TokenSalePreviewPanel';
 import { useTokenSaleFormPreparation } from './hooks/useTokenSaleFormPreparation';
 import { useTokenSaleRequirementsPreparation } from './hooks/useTokenSaleRequirementsPreparation';
 
@@ -338,43 +339,54 @@ export function SafeTokenSaleCreatePage() {
       >
         {({ values, setFieldValue, validateForm, setTouched }) => (
           <Form>
-            <VStack
-              spacing={8}
-              align="stretch"
+            <Flex
+              gap={8}
+              align="flex-start"
             >
-              {renderCurrentStage(values, setFieldValue)}
-
-              <Flex
-                justify="space-between"
-                pt={6}
-              >
-                <Button
-                  variant="secondary"
-                  onClick={handlePrevious}
-                  isDisabled={currentStage === 0}
+              {/* Left Column - Form Content */}
+              <Box flex="1">
+                <VStack
+                  spacing={8}
+                  align="stretch"
                 >
-                  {t('previousButton')}
-                </Button>
-                {currentStage !== stages.length - 1 ? (
-                  <Button
-                    onClick={e => {
-                      e.preventDefault();
-                      handleNext(validateForm, setTouched);
-                    }}
-                    type="button"
+                  {renderCurrentStage(values, setFieldValue)}
+
+                  <Flex
+                    justify="space-between"
+                    pt={6}
                   >
-                    {t('continueButton')}
-                  </Button>
-                ) : (
-                  <Button
-                    variant="primary"
-                    type="submit"
-                  >
-                    {t('createTokenSaleButton')}
-                  </Button>
-                )}
-              </Flex>
-            </VStack>
+                    <Button
+                      variant="secondary"
+                      onClick={handlePrevious}
+                      isDisabled={currentStage === 0}
+                    >
+                      {t('previousButton')}
+                    </Button>
+                    {currentStage !== stages.length - 1 ? (
+                      <Button
+                        onClick={e => {
+                          e.preventDefault();
+                          handleNext(validateForm, setTouched);
+                        }}
+                        type="button"
+                      >
+                        {t('continueButton')}
+                      </Button>
+                    ) : (
+                      <Button
+                        variant="primary"
+                        type="submit"
+                      >
+                        {t('createTokenSaleButton')}
+                      </Button>
+                    )}
+                  </Flex>
+                </VStack>
+              </Box>
+
+              {/* Right Column - Preview Panel */}
+              <TokenSalePreviewPanel values={values} />
+            </Flex>
           </Form>
         )}
       </Formik>

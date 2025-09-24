@@ -177,5 +177,9 @@
   "minimumFundraiseInvalidError": "Minimum fundraise must be a valid positive number",
   "fundraisingCapInvalidError": "Fundraising cap must be a valid positive number",
   "minPurchaseInvalidError": "Minimum purchase must be a valid positive number",
-  "maxPurchaseInvalidError": "Maximum purchase must be a valid positive number"
+  "maxPurchaseInvalidError": "Maximum purchase must be a valid positive number",
+  "reviewSaleTitle": "Review Sale",
+  "reviewSaleDescription": "Review your token sale configuration before creating the proposal",
+  "reservedForFeeLabel": "Reserved for Fee",
+  "startDateInfoLabel": "Start Date"
 }
