@@ -50,6 +50,13 @@ export function TokenSalePreviewPanel({ values }: TokenSalePreviewPanelProps) {
         )
       : '--';
 
+    // Available in treasury formatting
+    const availableInTreasuryFormatted = selectedToken
+      ? parseFloat(formatUnits(BigInt(selectedToken.balance), tokenDecimals)).toLocaleString('en-US', {
+          maximumFractionDigits: 0,
+        })
+      : '--';
+
     // Calculate reserved for sale (net tokens) and reserved for fee
     let reservedForSaleFormatted = '--';
     let reservedForFeeFormatted = '--';
@@ -117,6 +124,7 @@ export function TokenSalePreviewPanel({ values }: TokenSalePreviewPanelProps) {
     return {
       tokenPriceFormatted,
       totalSupplyFormatted,
+      availableInTreasuryFormatted,
       valuationFormatted,
       reservedForSaleFormatted,
       reservedForFeeFormatted,
@@ -127,7 +135,7 @@ export function TokenSalePreviewPanel({ values }: TokenSalePreviewPanelProps) {
       minPurchaseFormatted,
       maxPurchaseFormatted,
     };
-  }, [values, selectedToken?.decimals]);
+  }, [values, selectedToken]);
 
   return (
     <Box
@@ -162,6 +170,10 @@ export function TokenSalePreviewPanel({ values }: TokenSalePreviewPanelProps) {
             <TokenSaleInfoCard.Item
               label={t('totalSupplyInfoLabel')}
               value={derivedValues.totalSupplyFormatted}
+            />
+            <TokenSaleInfoCard.Item
+              label={t('availableForSaleLabel')}
+              value={derivedValues.availableInTreasuryFormatted}
             />
             <TokenSaleInfoCard.Item
               label={t('valuationInfoLabel')}

@@ -8,17 +8,13 @@ import { BigIntInput } from '../../../../components/ui/forms/BigIntInput';
 import { DatePicker } from '../../../../components/ui/forms/DatePicker';
 import { LabelComponent } from '../../../../components/ui/forms/InputComponent';
 import { NumberInputWithAddon } from '../../../../components/ui/forms/InputWithAddon';
-import { SectionHeader } from '../../../../components/ui/forms/SectionHeader';
 import { DropdownMenu } from '../../../../components/ui/menus/DropdownMenu';
 import { USDC_DECIMALS } from '../../../../constants/common';
 import useFeatureFlag from '../../../../helpers/environmentFeatureFlags';
 import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
 import { useDAOStore } from '../../../../providers/App/AppProvider';
 import { TokenSaleFormValues } from '../../../../types/tokenSale';
-import {
-  calculateTokenPrice,
-  calculateSaleTokenProtocolFeeForContract,
-} from '../../../../utils/tokenSaleCalculations';
+import { calculateTokenPrice } from '../../../../utils/tokenSaleCalculations';
 
 interface SaleTermsFormProps {
   values: TokenSaleFormValues;
@@ -82,25 +78,6 @@ export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
   }, [availableTokens, values.tokenAddress]);
 
   const tokenDecimals = selectedToken?.decimals || 18;
-
-  // Calculate fundraising cap from net tokens for sale and token price
-  const calculatedFundraisingCap = useMemo(() => {
-    if (!values.saleTokenSupply.bigintValue || !values.saleTokenPrice.bigintValue) {
-      return 0;
-    }
-
-    // Calculate net tokens (user input includes 2.5% fee)
-    const PRECISION = BigInt(10 ** 18);
-    const saleTokenProtocolFee = calculateSaleTokenProtocolFeeForContract(); // 2.5% in 18-decimal precision
-    const netTokensForSale =
-      (values.saleTokenSupply.bigintValue * PRECISION) / (PRECISION + saleTokenProtocolFee);
-
-    // Calculate: netTokens * tokenPrice
-    const fundraisingCapBigInt = (netTokensForSale * values.saleTokenPrice.bigintValue) / PRECISION;
-
-    // Convert to USD for display
-    return parseFloat(formatUnits(fundraisingCapBigInt, USDC_DECIMALS));
-  }, [values.saleTokenSupply.bigintValue, values.saleTokenPrice.bigintValue]);
 
   // Real-time validation for saleTokenSupply against treasury balance
   useEffect(() => {
@@ -241,7 +218,7 @@ export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
           errorMessage={touched.saleName && errors.saleName ? errors.saleName : undefined}
           gridContainerProps={{
             templateColumns: '1fr',
-            mb: '2rem',
+            mb: '1rem',
           }}
         >
           <Input
@@ -252,16 +229,9 @@ export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
           />
         </LabelComponent>
 
-        <SectionHeader
-          title={t('tokenDetailsTitle')}
-          description={t('tokenDetailsDescription')}
-          tooltip="Lorem Ipsum"
-        />
-
         <Grid
           templateColumns="1fr 1fr"
           gap={4}
-          mb="1.25rem"
         >
           <LabelComponent
             label={t('saleTokenLabel')}
@@ -316,135 +286,39 @@ export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
               )}
             />
           </LabelComponent>
-
-          <LabelComponent
-            label={t('tokenSymbolLabel')}
-            isRequired={true}
-            gridContainerProps={{
-              templateColumns: '1fr',
-            }}
-          >
-            <Input
-              placeholder={t('tokenSymbolPlaceholder')}
-              value={values.tokenSymbol}
-              isDisabled={true}
-              bg="color-neutral-900"
-              opacity={0.5}
-            />
-          </LabelComponent>
         </Grid>
 
-        <Grid
-          templateColumns="1fr 1fr"
-          gap={4}
-          mb="1.25rem"
+        <LabelComponent
+          label={t('reservedForSaleLabel')}
+          isRequired={true}
+          errorMessage={
+            touched.saleTokenSupply && errors.saleTokenSupply
+              ? (errors.saleTokenSupply as string)
+              : undefined
+          }
+          gridContainerProps={{
+            templateColumns: '1fr',
+          }}
         >
-          <LabelComponent
-            label={t('maxTokenSupplyLabel')}
-            helper={t('maxTokenSupplyHelper')}
-            isRequired={false}
-            gridContainerProps={{
-              templateColumns: '1fr',
-            }}
-          >
-            <Input
-              value={
-                selectedToken && values.maxTokenSupply.value
-                  ? parseFloat(values.maxTokenSupply.value).toLocaleString()
-                  : ''
-              }
-              isDisabled={true}
-              bg="color-neutral-900"
-              opacity={0.5}
-              placeholder={t('selectTokenFirst')}
-            />
-          </LabelComponent>
-
-          <LabelComponent
-            label={t('availableForSaleLabel')}
-            helper={t('availableForSaleHelper')}
-            isRequired={false}
-            gridContainerProps={{
-              templateColumns: '1fr',
-            }}
-          >
-            <Input
-              value={
-                selectedToken
-                  ? parseFloat(
-                      formatUnits(BigInt(selectedToken.balance), selectedToken.decimals),
-                    ).toLocaleString()
-                  : ''
-              }
-              isDisabled={true}
-              bg="color-neutral-900"
-              opacity={0.5}
-              placeholder={t('selectTokenFirst')}
-            />
-          </LabelComponent>
-        </Grid>
-
-        <Grid
-          templateColumns="1fr 1fr"
-          gap={4}
-        >
-          <LabelComponent
-            label={t('reservedForSaleLabel')}
-            helper={t('reservedForSaleHelper')}
-            isRequired={true}
-            errorMessage={
-              touched.saleTokenSupply && errors.saleTokenSupply
-                ? (errors.saleTokenSupply as string)
-                : undefined
+          <BigIntInput
+            placeholder={t('enterTokenAmount')}
+            value={values.saleTokenSupply}
+            onChange={value => setFieldValue('saleTokenSupply', value)}
+            decimals={tokenDecimals}
+            maxValue={selectedToken ? BigInt(selectedToken.balance) : undefined}
+            isDisabled={
+              !values.tokenAddress || !selectedToken?.balance || selectedToken?.balance === '0'
             }
-            gridContainerProps={{
-              templateColumns: '1fr',
-            }}
-          >
-            <BigIntInput
-              placeholder={t('enterTokenAmount')}
-              value={values.saleTokenSupply}
-              onChange={value => setFieldValue('saleTokenSupply', value)}
-              decimals={tokenDecimals}
-              maxValue={selectedToken ? BigInt(selectedToken.balance) : undefined}
-              isDisabled={
-                !values.tokenAddress || !selectedToken?.balance || selectedToken?.balance === '0'
-              }
-              isInvalid={
-                (touched.saleTokenSupply && !!errors.saleTokenSupply) ||
-                !!(
-                  values.saleTokenSupply.bigintValue &&
-                  selectedToken &&
-                  values.saleTokenSupply.bigintValue > BigInt(selectedToken.balance)
-                )
-              }
-            />
-          </LabelComponent>
-
-          <LabelComponent
-            label={t('tokenPriceLabel')}
-            helper={t('tokenPriceHelper')}
-            isRequired={false}
-            gridContainerProps={{
-              templateColumns: '1fr',
-            }}
-          >
-            <NumberInputWithAddon
-              value={values.saleTokenPrice.value ? parseFloat(values.saleTokenPrice.value) : ''}
-              onChange={() => {}} // No-op since it's calculated automatically
-              min={0}
-              placeholder={
-                (parseFloat(values.valuation) || 0) > 0 && values.tokenAddress
-                  ? t('calculatedFromFdv')
-                  : t('enterFdvAndSelectToken')
-              }
-              leftAddon={<Text color="color-content-muted-foreground">$</Text>}
-              isDisabled={true}
-              bg="color-neutral-900"
-              opacity={0.5}
-            />
-          </LabelComponent>
-        </Grid>
+            isInvalid={
+              (touched.saleTokenSupply && !!errors.saleTokenSupply) ||
+              !!(
+                values.saleTokenSupply.bigintValue &&
+                selectedToken &&
+                values.saleTokenSupply.bigintValue > BigInt(selectedToken.balance)
+              )
+            }
+          />
+        </LabelComponent>
 
         <LabelComponent
           label={t('valuationLabel')}
@@ -468,70 +342,34 @@ export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
             leftAddon={<Text color="color-content-muted-foreground">$</Text>}
           />
         </LabelComponent>
-      </ContentBoxTight>
 
-      {/* Sale Pricing & Terms Section */}
-      <ContentBoxTight>
-        <SectionHeader
-          title={t('salePricingTitle')}
-          tooltip="Lorem Ipsum"
-          description={t('salePricingDescription')}
-        />
-
-        <Grid
-          templateColumns="1fr 1fr"
-          gap={4}
+        <LabelComponent
+          label={t('minimumFundraiseLabel')}
+          isRequired={true}
+          errorMessage={
+            touched.minimumFundraise && errors.minimumFundraise
+              ? errors.minimumFundraise
+              : undefined
+          }
+          gridContainerProps={{
+            templateColumns: '1fr',
+          }}
         >
-          <LabelComponent
-            label={t('minimumFundraiseLabel')}
-            isRequired={true}
-            errorMessage={
-              touched.minimumFundraise && errors.minimumFundraise
-                ? errors.minimumFundraise
-                : undefined
-            }
-            gridContainerProps={{
-              templateColumns: '1fr',
-            }}
-          >
-            <NumberInputWithAddon
-              value={values.minimumFundraise}
-              onChange={val => setFieldValue('minimumFundraise', val)}
-              min={0}
-              precision={2}
-              step={0.01}
-              placeholder={t('minimumFundraisePlaceholder')}
-              leftAddon={<Text color="color-content-muted-foreground">$</Text>}
-            />
-          </LabelComponent>
-
-          <LabelComponent
-            label={t('fundraisingCapLabel')}
-            isRequired={false}
-            gridContainerProps={{
-              templateColumns: '1fr',
-            }}
-          >
-            <NumberInputWithAddon
-              value={calculatedFundraisingCap || ''}
-              onChange={() => {}} // No-op since it's calculated automatically
-              min={0}
-              precision={2}
-              placeholder={
-                calculatedFundraisingCap > 0 ? t('calculatedFromTokens') : t('enterTokensAndPrice')
-              }
-              leftAddon={<Text color="color-content-muted-foreground">$</Text>}
-              isDisabled={true}
-              bg="color-neutral-900"
-              opacity={0.5}
-            />
-          </LabelComponent>
-        </Grid>
+          <NumberInputWithAddon
+            value={values.minimumFundraise}
+            onChange={val => setFieldValue('minimumFundraise', val)}
+            min={0}
+            precision={2}
+            step={0.01}
+            placeholder={t('minimumFundraisePlaceholder')}
+            leftAddon={<Text color="color-content-muted-foreground">$</Text>}
+          />
+        </LabelComponent>
 
         <Grid
           templateColumns="1fr 1fr"
           gap={4}
-          mb="1.25rem"
+          mb="1rem"
         >
           <LabelComponent
             label={t('saleStartDateLabel')}
