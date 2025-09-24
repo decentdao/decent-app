@@ -52,9 +52,12 @@ export function TokenSalePreviewPanel({ values }: TokenSalePreviewPanelProps) {
 
     // Available in treasury formatting
     const availableInTreasuryFormatted = selectedToken
-      ? parseFloat(formatUnits(BigInt(selectedToken.balance), tokenDecimals)).toLocaleString('en-US', {
-          maximumFractionDigits: 0,
-        })
+      ? parseFloat(formatUnits(BigInt(selectedToken.balance), tokenDecimals)).toLocaleString(
+          'en-US',
+          {
+            maximumFractionDigits: 0,
+          },
+        )
       : '--';
 
     // Calculate reserved for sale (net tokens) and reserved for fee
@@ -137,6 +140,8 @@ export function TokenSalePreviewPanel({ values }: TokenSalePreviewPanelProps) {
     };
   }, [values, selectedToken]);
 
+  const tokenNameDisplay =
+    values.tokenName && values.tokenSymbol ? `${values.tokenName} (${values.tokenSymbol})` : '--';
   return (
     <Box
       w="400px"
@@ -165,7 +170,7 @@ export function TokenSalePreviewPanel({ values }: TokenSalePreviewPanelProps) {
           <TokenSaleInfoCard.Section>
             <TokenSaleInfoCard.Item
               label={t('tokenInfoLabel')}
-              value={values.tokenSymbol || '--'}
+              value={tokenNameDisplay}
             />
             <TokenSaleInfoCard.Item
               label={t('totalSupplyInfoLabel')}
