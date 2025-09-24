@@ -68,7 +68,7 @@ export function useKeyValuePairsListener({
           onGaslessVotingDataFetched(gaslessVotingDaoData);
         }
 
-        const tokenSaleMetadata = getTokenSaleAddresses({
+        const tokenSaleMetadata = await getTokenSaleAddresses({
           events: logs,
           chainId: publicClient.chain.id,
         });

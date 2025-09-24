@@ -370,7 +370,7 @@ export const useDAOStoreFetcher = ({
           });
 
           // Fetch token sale data from KeyValuePairs events
-          const tokenSaleMetadata = getTokenSaleAddresses({
+          const tokenSaleMetadata = await getTokenSaleAddresses({
             events: keyValuePairsData.events,
             chainId: chain.id,
           });

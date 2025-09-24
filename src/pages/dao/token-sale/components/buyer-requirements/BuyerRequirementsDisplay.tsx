@@ -5,7 +5,7 @@ import { BuyerRequirement } from '../../../../../types/tokenSale';
 import { useRequirementDisplay } from './RequirementDisplay';
 
 interface BuyerRequirementsDisplayProps {
-  requirements: BuyerRequirement[];
+  requirements?: BuyerRequirement[];
   kycEnabled?: boolean;
   orOutOf?: number;
 }
@@ -19,10 +19,11 @@ export function BuyerRequirementsDisplay({
   const { getRequirementDisplay } = useRequirementDisplay();
 
   // Filter out invalid requirements
-  const validRequirements = requirements.filter(requirement => {
-    const display = getRequirementDisplay(requirement);
-    return display && display.trim() !== '';
-  });
+  const validRequirements =
+    requirements?.filter(requirement => {
+      const display = getRequirementDisplay(requirement);
+      return display && display.trim() !== '';
+    }) || [];
 
   const totalRequirements = validRequirements.length + (kycEnabled ? 1 : 0);
   // Ensure requirementsToMeet doesn't exceed actual total requirements

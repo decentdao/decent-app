@@ -5,56 +5,8 @@ import { Address, GetContractEventsReturnType, getContract } from 'viem';
 import { logError } from '../../helpers/errorLogging';
 import useNetworkPublicClient from '../../hooks/useNetworkPublicClient';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
-import {
-  TokenSaleMetadata,
-  BuyerRequirement,
-  TokenBuyerRequirement,
-  NFTBuyerRequirement,
-} from '../../types/tokenSale';
-
-// Normalize legacy buyer requirements data format
-const normalizeBuyerRequirements = (requirements: any[]): BuyerRequirement[] => {
-  return requirements.map(requirement => {
-    // Handle legacy format where type is 'erc20' instead of 'token'
-    if (requirement.type === 'erc20') {
-      return {
-        type: 'token',
-        tokenAddress: requirement.tokenAddress,
-        tokenName: requirement.tokenName,
-        tokenSymbol: requirement.tokenSymbol,
-        tokenDecimals: requirement.tokenDecimals,
-        minimumBalance: BigInt(requirement.amount || requirement.minimumBalance || '0'),
-      } as TokenBuyerRequirement;
-    }
-
-    // Handle legacy format where type is 'erc721' instead of 'nft'
-    if (requirement.type === 'erc721') {
-      return {
-        type: 'nft',
-        contractAddress: requirement.tokenAddress || requirement.contractAddress,
-        collectionName: requirement.collectionName,
-        tokenStandard: 'ERC721',
-        minimumBalance: BigInt(requirement.amount || requirement.minimumBalance || '1'),
-        tokenId: requirement.tokenId ? BigInt(requirement.tokenId) : undefined,
-      } as NFTBuyerRequirement;
-    }
-
-    // Handle legacy format where type is 'erc1155' instead of 'nft'
-    if (requirement.type === 'erc1155') {
-      return {
-        type: 'nft',
-        contractAddress: requirement.tokenAddress || requirement.contractAddress,
-        collectionName: requirement.collectionName,
-        tokenStandard: 'ERC1155',
-        minimumBalance: BigInt(requirement.amount || requirement.minimumBalance || '1'),
-        tokenId: requirement.tokenId ? BigInt(requirement.tokenId) : undefined,
-      } as NFTBuyerRequirement;
-    }
-
-    // For whitelist and properly formatted requirements, return as-is
-    return requirement as BuyerRequirement;
-  });
-};
+import { TokenSaleMetadata } from '../../types/tokenSale';
+import { normalizeBuyerRequirements } from '../../utils/buyerRequirementsNormalizer';
 
 export function useKeyValuePairsFetcher() {
   const publicClient = useNetworkPublicClient();
@@ -181,7 +133,7 @@ export function useKeyValuePairsFetcher() {
   );
 
   const getTokenSaleAddresses = useCallback(
-    ({
+    async ({
       events,
       chainId,
     }: {
@@ -199,15 +151,19 @@ export function useKeyValuePairsFetcher() {
 
       const tokenSaleMetadata: TokenSaleMetadata[] = [];
 
-      tokenSaleEvents.forEach(event => {
+      for (const event of tokenSaleEvents) {
         if (event.args.value) {
           try {
             const metadata = JSON.parse(event.args.value);
             if (metadata.tokenSaleAddress) {
+              const normalizedRequirements = await normalizeBuyerRequirements(
+                metadata.buyerRequirements || [],
+                publicClient,
+              );
               tokenSaleMetadata.push({
                 tokenSaleAddress: metadata.tokenSaleAddress,
                 tokenSaleName: metadata.tokenSaleName,
-                buyerRequirements: normalizeBuyerRequirements(metadata.buyerRequirements || []),
+                buyerRequirements: normalizedRequirements,
                 kyc: metadata.kyc || null,
                 orOutOf: metadata.orOutOf,
               });
@@ -224,11 +180,11 @@ export function useKeyValuePairsFetcher() {
             });
           }
         }
-      });
+      }
 
       return tokenSaleMetadata;
     },
-    [],
+    [publicClient],
   );
 
   return { getHatsTreeId, getStreamIdsToHatIds, getTokenSaleAddresses, fetchKeyValuePairsData };
