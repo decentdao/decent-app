@@ -8,6 +8,7 @@ import { TokenSaleFormValues } from '../../../../types/tokenSale';
 import {
   COMMITMENT_TOKEN_PROTOCOL_FEE,
   calculateSaleTokenProtocolFeeForContract,
+  calculateGrossTokensFromNet,
 } from '../../../../utils/tokenSaleCalculations';
 
 export interface PreparedTokenSaleData {
@@ -82,21 +83,16 @@ export function useTokenSaleFormPreparation() {
       // selectedTokenBalance.balance is already in raw units, don't convert again!
       const treasuryTokenBalance = BigInt(selectedTokenBalance.balance);
 
-      // Convert user's gross input (includes fee) to net tokens for sale
-      // User input INCLUDES Decent's 2.5% fee, but contract expects net tokens and adds fee separately
-      const grossTokensReserved = values.saleTokenSupply.bigintValue;
-      const PRECISION = BigInt(10 ** 18);
-      const saleTokenProtocolFee = calculateSaleTokenProtocolFeeForContract();
+      // User input is now NET tokens for sale (what buyers actually get)
+      // Calculate gross amount needed (net tokens + protocol fee)
+      const netTokensForSale = values.saleTokenSupply.bigintValue;
 
-      // Calculate net tokens for sale: netTokensForSale = (grossTokensReserved * PRECISION) / (PRECISION + saleTokenProtocolFee)
-      const netTokensForSale =
-        (grossTokensReserved * PRECISION) / (PRECISION + saleTokenProtocolFee);
-
-      // Use gross amount as escrow amount (what we actually reserve from treasury)
-      const saleTokenEscrowAmount = grossTokensReserved;
+      // Calculate gross tokens needed for escrow (includes protocol fee)
+      const saleTokenEscrowAmount = calculateGrossTokensFromNet(netTokensForSale);
 
       // Calculate max commitment capacity from net tokens for sale
       // This is the calculated fundraising cap: netTokensForSale * tokenPrice
+      const PRECISION = BigInt(10 ** 18);
       const maxPossibleCommitmentFromTokens =
         (netTokensForSale * values.saleTokenPrice.bigintValue) / PRECISION;
 

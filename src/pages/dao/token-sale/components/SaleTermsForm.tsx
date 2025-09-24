@@ -14,7 +14,10 @@ import useFeatureFlag from '../../../../helpers/environmentFeatureFlags';
 import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
 import { useDAOStore } from '../../../../providers/App/AppProvider';
 import { TokenSaleFormValues } from '../../../../types/tokenSale';
-import { calculateTokenPrice } from '../../../../utils/tokenSaleCalculations';
+import {
+  calculateTokenPrice,
+  calculateMaxNetTokensForSale,
+} from '../../../../utils/tokenSaleCalculations';
 
 interface SaleTermsFormProps {
   values: TokenSaleFormValues;
@@ -79,32 +82,7 @@ export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
 
   const tokenDecimals = selectedToken?.decimals || 18;
 
-  // Real-time validation for saleTokenSupply against treasury balance
-  useEffect(() => {
-    if (!selectedToken || !values.saleTokenSupply.bigintValue) {
-      return;
-    }
-
-    const treasuryBalance = BigInt(selectedToken.balance);
-    const reservedAmount = values.saleTokenSupply.bigintValue;
-
-    // Check if reserved amount exceeds treasury balance
-    if (reservedAmount > treasuryBalance) {
-      const availableFormatted = parseFloat(
-        formatUnits(treasuryBalance, tokenDecimals),
-      ).toLocaleString();
-      const requestedFormatted = parseFloat(
-        formatUnits(reservedAmount, tokenDecimals),
-      ).toLocaleString();
-
-      console.warn(
-        `Reserved amount (${requestedFormatted}) exceeds treasury balance (${availableFormatted})`,
-      );
-
-      // The BigIntInput component will show the visual error state
-      // based on the isInvalid prop we've already set
-    }
-  }, [selectedToken, values.saleTokenSupply.bigintValue, tokenDecimals]);
+  // Validation is now handled by the schema validation in useTokenSaleSchema.ts
 
   // Removed calculation logic - saleTokenSupply is now user input
 
@@ -305,18 +283,15 @@ export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
             value={values.saleTokenSupply}
             onChange={value => setFieldValue('saleTokenSupply', value)}
             decimals={tokenDecimals}
-            maxValue={selectedToken ? BigInt(selectedToken.balance) : undefined}
+            maxValue={
+              selectedToken
+                ? calculateMaxNetTokensForSale(BigInt(selectedToken.balance))
+                : undefined
+            }
             isDisabled={
               !values.tokenAddress || !selectedToken?.balance || selectedToken?.balance === '0'
             }
-            isInvalid={
-              (touched.saleTokenSupply && !!errors.saleTokenSupply) ||
-              !!(
-                values.saleTokenSupply.bigintValue &&
-                selectedToken &&
-                values.saleTokenSupply.bigintValue > BigInt(selectedToken.balance)
-              )
-            }
+            isInvalid={touched.saleTokenSupply && !!errors.saleTokenSupply}
           />
         </LabelComponent>
 

@@ -41,7 +41,7 @@ const getInitialValues = (usdcAddress?: Address): TokenSaleFormValues => ({
   tokenName: '',
   tokenSymbol: '',
   maxTokenSupply: { value: '', bigintValue: undefined }, // Total supply for price calculation
-  saleTokenSupply: { value: '', bigintValue: undefined }, // Tokens for this sale
+  saleTokenSupply: { value: '', bigintValue: undefined }, // Net tokens for sale (what buyers get)
 
   // Sale Timing
   startDate: '',

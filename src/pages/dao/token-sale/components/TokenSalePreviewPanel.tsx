@@ -7,7 +7,7 @@ import { USDC_DECIMALS } from '../../../../constants/common';
 import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
 import { useDAOStore } from '../../../../providers/App/AppProvider';
 import { TokenSaleFormValues } from '../../../../types/tokenSale';
-import { calculateSaleTokenProtocolFeeForContract } from '../../../../utils/tokenSaleCalculations';
+import { calculateProtocolFeeTokens } from '../../../../utils/tokenSaleCalculations';
 import {
   formatSaleAmount,
   formatSaleDate,
@@ -65,17 +65,13 @@ export function TokenSalePreviewPanel({ values }: TokenSalePreviewPanelProps) {
     let reservedForFeeFormatted = '--';
     let fundraisingCapFormatted = '--';
 
-    // Calculate token amounts even if price isn't set yet
+    // Calculate token amounts - now saleTokenSupply represents NET tokens for sale
     if (values.saleTokenSupply.bigintValue) {
-      const PRECISION = BigInt(10 ** 18);
-      const saleTokenProtocolFee = calculateSaleTokenProtocolFeeForContract(); // 2.5% in 18-decimal precision
+      // User input is now net tokens for sale (what buyers actually get)
+      const netTokensForSale = values.saleTokenSupply.bigintValue;
 
-      // Net tokens available to buyers (after protocol fee)
-      const netTokensForSale =
-        (values.saleTokenSupply.bigintValue * PRECISION) / (PRECISION + saleTokenProtocolFee);
-
-      // Protocol fee amount in tokens
-      const protocolFeeTokens = values.saleTokenSupply.bigintValue - netTokensForSale;
+      // Calculate protocol fee tokens from net tokens
+      const protocolFeeTokens = calculateProtocolFeeTokens(netTokensForSale);
 
       // Format the token amounts
       reservedForSaleFormatted = parseFloat(
@@ -92,6 +88,7 @@ export function TokenSalePreviewPanel({ values }: TokenSalePreviewPanelProps) {
 
       // Only calculate fundraising cap if we also have price
       if (values.saleTokenPrice.bigintValue) {
+        const PRECISION = BigInt(10 ** 18);
         const fundraisingCapBigInt =
           (netTokensForSale * values.saleTokenPrice.bigintValue) / PRECISION;
         fundraisingCapFormatted = formatSaleAmount(fundraisingCapBigInt, USDC_DECIMALS);

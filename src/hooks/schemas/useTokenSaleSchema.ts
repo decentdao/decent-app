@@ -1,6 +1,9 @@
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as Yup from 'yup';
+import { useDAOStore } from '../../providers/App/AppProvider';
+import { calculateGrossTokensFromNet } from '../../utils/tokenSaleCalculations';
+import { useCurrentDAOKey } from '../DAO/useCurrentDAOKey';
 import { useValidationAddress } from './common/useValidationAddress';
 
 /**
@@ -10,6 +13,12 @@ import { useValidationAddress } from './common/useValidationAddress';
 export const useTokenSaleSchema = () => {
   const { t } = useTranslation(['tokenSale', 'common']);
   const { addressValidationTestSimple } = useValidationAddress();
+
+  // Access DAO store for treasury balance validation
+  const daoKeyResult = useCurrentDAOKey();
+  const daoKey =
+    daoKeyResult.invalidQuery || daoKeyResult.wrongNetwork ? undefined : daoKeyResult.daoKey;
+  const { treasury } = useDAOStore({ daoKey });
 
   const tokenSaleValidationSchema = useMemo(
     () =>
@@ -62,9 +71,29 @@ export const useTokenSaleSchema = () => {
                 const { tokenAddress } = this.parent;
                 if (!tokenAddress) return true;
 
-                // This validation will be enhanced by the form component's real-time validation
-                // The schema validation serves as a backup
-                return true;
+                // Find the selected token in treasury
+                const selectedToken = treasury.assetsFungible.find(
+                  token =>
+                    token.tokenAddress.toLowerCase() === tokenAddress.toLowerCase() &&
+                    !token.possibleSpam,
+                );
+
+                if (!selectedToken) return true; // Token not found, let other validation handle this
+
+                try {
+                  const netTokensForSale = value as bigint;
+                  const grossTokensNeeded = calculateGrossTokensFromNet(netTokensForSale);
+                  const treasuryBalance = BigInt(selectedToken.balance);
+
+                  // Check if gross tokens needed (net + protocol fee) exceeds treasury balance
+                  if (grossTokensNeeded > treasuryBalance) {
+                    return false; // Validation fails - not enough tokens in treasury
+                  }
+
+                  return true; // Validation passes
+                } catch {
+                  return false; // Calculation error, fail validation
+                }
               },
             ),
         }),
@@ -245,7 +274,7 @@ export const useTokenSaleSchema = () => {
             },
           ),
       }),
-    [t, addressValidationTestSimple],
+    [t, addressValidationTestSimple, treasury.assetsFungible],
   );
 
   return { tokenSaleValidationSchema };
