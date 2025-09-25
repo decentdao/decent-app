@@ -181,5 +181,9 @@
   "reviewSaleTitle": "Review Sale",
   "reviewSaleDescription": "Review your token sale configuration before creating the proposal",
   "reservedForFeeLabel": "Reserved for Fee",
-  "startDateInfoLabel": "Start Date"
+  "startDateInfoLabel": "Start Date",
+  "saleTokenHelperText": "Select from tokens available in the project treasury",
+  "reservedForSaleHelperText": "Number of tokens from treasury supply up for sale",
+  "valuationHelperText": "USD value of the total token supply, which influences token price and fundraising cap",
+  "minimumFundraiseHelperText": "Optional threshold for the sale to succeed"
 }

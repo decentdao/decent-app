@@ -213,6 +213,7 @@ export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
         >
           <LabelComponent
             label={t('saleTokenLabel')}
+            helper={t('saleTokenHelperText')}
             isRequired={true}
             errorMessage={
               touched.tokenAddress && errors.tokenAddress ? errors.tokenAddress : undefined
@@ -268,6 +269,7 @@ export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
 
         <LabelComponent
           label={t('reservedForSaleLabel')}
+          helper={t('reservedForSaleHelperText')}
           isRequired={true}
           errorMessage={
             touched.saleTokenSupply && errors.saleTokenSupply
@@ -297,7 +299,7 @@ export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
 
         <LabelComponent
           label={t('valuationLabel')}
-          helper={t('valuationHelper')}
+          helper={t('valuationHelperText')}
           isRequired={true}
           errorMessage={touched.valuation && errors.valuation ? errors.valuation : undefined}
           gridContainerProps={{
@@ -320,7 +322,8 @@ export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
 
         <LabelComponent
           label={t('minimumFundraiseLabel')}
-          isRequired={true}
+          helper={t('minimumFundraiseHelperText')}
+          isRequired={false}
           errorMessage={
             touched.minimumFundraise && errors.minimumFundraise
               ? errors.minimumFundraise
