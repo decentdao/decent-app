@@ -121,3 +121,26 @@ export function calculateProtocolFeeTokens(netTokensForSale: bigint): bigint {
 export function calculateMaxNetTokensForSale(treasuryBalance: bigint): bigint {
   return calculateNetTokensFromGross(treasuryBalance);
 }
+
+/**
+ * Calculate FDV (Fully Diluted Valuation) from token price and total supply
+ * This is the reverse of calculateTokenPrice
+ *
+ * @param tokenPrice - Token price in USDC units per whole token (6 decimals)
+ * @param totalSupplyRaw - Total supply in token raw units (e.g., wei for 18-decimal tokens)
+ * @param tokenDecimals - Number of decimals for the sale token
+ * @returns FDV in USDC units (6 decimals)
+ */
+export function calculateFDVFromTokenPrice(
+  tokenPrice: bigint,
+  totalSupplyRaw: bigint,
+  tokenDecimals: number,
+): bigint {
+  if (tokenPrice === 0n || totalSupplyRaw === 0n) return 0n;
+
+  // FDV = Price × (totalSupply / 10^decimals)
+  // Price is in USDC units per whole token (6 decimals)
+  // totalSupply is in raw units, so we divide by 10^decimals to get whole tokens
+  // Result should be in USDC units (6 decimals)
+  return (tokenPrice * totalSupplyRaw) / BigInt(10 ** tokenDecimals);
+}

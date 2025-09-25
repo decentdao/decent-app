@@ -1,8 +1,8 @@
 import { Box, Flex, Text, VStack } from '@chakra-ui/react';
-import { useMemo } from 'react';
+import { useMemo, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
-import { formatUnits } from 'viem';
+import { formatUnits, getContract, erc20Abi } from 'viem';
 import { TokenSaleBanner } from '../../../components/TokenSales/TokenSaleBanner';
 import { TokenSaleCountdown } from '../../../components/TokenSales/TokenSaleCountdown';
 import { TokenSaleInfoCard } from '../../../components/TokenSales/TokenSaleInfoCard';
@@ -13,9 +13,11 @@ import { CONTENT_MAXW, USDC_DECIMALS } from '../../../constants/common';
 import { DAO_ROUTES } from '../../../constants/routes';
 import { useTokenSaleClaimFunds } from '../../../hooks/DAO/proposal/useTokenSaleClaimFunds';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
+import useNetworkPublicClient from '../../../hooks/useNetworkPublicClient';
 import { useDAOStore } from '../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
 import { TokenSaleState } from '../../../types/tokenSale';
+import { calculateFDVFromTokenPrice } from '../../../utils/tokenSaleCalculations';
 import {
   formatTokenPrice,
   calculateTokenSupplyForSale,
@@ -34,11 +36,36 @@ export function SafeTokenSaleDetailsPage() {
     node: { safe },
   } = useDAOStore({ daoKey });
   const { claimFunds, pending } = useTokenSaleClaimFunds();
+  const publicClient = useNetworkPublicClient();
+  const [totalTokenSupply, setTotalTokenSupply] = useState<bigint | null>(null);
 
   const tokenSale = useMemo(() => {
     if (!saleId || !tokenSales) return null;
     return tokenSales.find(sale => sale.address.toLowerCase() === saleId.toLowerCase()) || null;
   }, [saleId, tokenSales]);
+
+  // Fetch total token supply for valuation calculation
+  useEffect(() => {
+    const fetchTotalSupply = async () => {
+      if (!tokenSale?.saleToken || !publicClient) return;
+
+      try {
+        const tokenContract = getContract({
+          address: tokenSale.saleToken,
+          abi: erc20Abi,
+          client: publicClient,
+        });
+
+        const supply = await tokenContract.read.totalSupply();
+        setTotalTokenSupply(supply);
+      } catch (error) {
+        console.error('Failed to fetch total token supply:', error);
+        setTotalTokenSupply(null);
+      }
+    };
+
+    fetchTotalSupply();
+  }, [tokenSale?.saleToken, publicClient]);
 
   if (!tokenSale) {
     return <InfoBoxLoader />;
@@ -61,7 +88,21 @@ export function SafeTokenSaleDetailsPage() {
     tokenSale.tokenDecimals,
   );
   const totalSupplyFormatted = formatTokenAmount(tokenSupplyForSale, tokenSale.tokenDecimals);
-  const valuationFormatted = formatSaleAmount(tokenSale.maximumTotalCommitment, USDC_DECIMALS);
+  // Calculate valuation (FDV) from total token supply and price
+  const valuationFormatted = useMemo(() => {
+    if (!totalTokenSupply || !tokenSale.saleTokenPrice) {
+      return '--';
+    }
+
+    // Calculate FDV: totalTokenSupply * tokenPrice
+    const fdvBigInt = calculateFDVFromTokenPrice(
+      tokenSale.saleTokenPrice,
+      totalTokenSupply,
+      tokenSale.tokenDecimals,
+    );
+
+    return formatSaleAmount(fdvBigInt, USDC_DECIMALS);
+  }, [totalTokenSupply, tokenSale.saleTokenPrice, tokenSale.tokenDecimals]);
 
   if (!safe?.address) {
     return <InfoBoxLoader />;
