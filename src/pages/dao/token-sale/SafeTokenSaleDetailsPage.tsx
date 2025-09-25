@@ -214,7 +214,6 @@ export function SafeTokenSaleDetailsPage() {
         {/* Requirements List */}
         <BuyerRequirementsDisplay
           requirements={tokenSale.buyerRequirements || []}
-          kycEnabled={!!tokenSale.kyc}
           orOutOf={tokenSale.orOutOf}
         />
       </VStack>

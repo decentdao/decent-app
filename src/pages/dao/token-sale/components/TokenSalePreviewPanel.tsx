@@ -241,10 +241,9 @@ export function TokenSalePreviewPanel({ values }: TokenSalePreviewPanelProps) {
         </TokenSaleInfoCard>
 
         {/* Requirements List */}
-        {(values.buyerRequirements.length > 0 || values.kycEnabled) && (
+        {values.buyerRequirements.length > 0 && (
           <BuyerRequirementsDisplay
             requirements={values.buyerRequirements || []}
-            kycEnabled={values.kycEnabled}
             orOutOf={values.orOutOf === 'all' ? undefined : values.orOutOf}
           />
         )}
