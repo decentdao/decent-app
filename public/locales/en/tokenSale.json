@@ -110,7 +110,7 @@
   "successfulSaleTitle": "Congratulations, your sale was successful!",
   "successfulSaleDescription": "You raised {{amount}}. Your funds are ready to be claimed.",
   "claimFundsButton": "Claim Funds",
-  "buyerRequirementsDescription": "Buyer must meet {{count}} out of {{total}} requirements:",
+  "buyerRequirementsDescription": "Curate your available buyers by setting up a whitelist, ERC-20, or NFT eligibility requirements for your sale.",
   "raisedLabel": "{{amount}} Raised",
   "goalLabel": "Goal: {{amount}}",
   "minimumLabel": "Minimum: {{amount}}",
@@ -185,5 +185,6 @@
   "saleTokenHelperText": "Select from tokens available in the project treasury",
   "reservedForSaleHelperText": "Number of tokens from treasury supply up for sale",
   "valuationHelperText": "USD value of the total token supply, which influences token price and fundraising cap",
-  "minimumFundraiseHelperText": "Optional threshold for the sale to succeed"
+  "minimumFundraiseHelperText": "Optional threshold for the sale to succeed",
+  "kycKybHelperText": "If enabled, all buyers will be required to complete KYC through Decent in order to participate in the sale."
 }

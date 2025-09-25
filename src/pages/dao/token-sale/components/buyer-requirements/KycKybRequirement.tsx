@@ -16,7 +16,7 @@ export function KycKybRequirement({ kycEnabled, setFieldValue }: KycKybRequireme
     >
       <LabelComponent
         label={t('requireKycKybLabel')}
-        helper="Lorem Ipsum"
+        helper={t('kycKybHelperText')}
         isRequired={false}
         gridContainerProps={{
           templateColumns: '1fr auto',

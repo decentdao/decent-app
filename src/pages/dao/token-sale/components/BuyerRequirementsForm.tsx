@@ -76,7 +76,7 @@ export function BuyerRequirementsForm({ values, setFieldValue }: BuyerRequiremen
         >
           <LabelComponent
             label={t('buyerRequirementsLabel')}
-            helper={t('buyerRequirementsHelper')}
+            helper={t('buyerRequirementsDescription')}
             isRequired={false}
             gridContainerProps={{
               templateColumns: '1fr',
