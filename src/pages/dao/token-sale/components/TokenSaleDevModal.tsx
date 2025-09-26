@@ -86,6 +86,13 @@ export function TokenSaleDevModal({ isOpen, onClose, tokenSale }: TokenSaleDevMo
   const [erc20Amount, setErc20Amount] = useState('100');
   const [recipientAddress, setRecipientAddress] = useState('');
 
+  const getErrorMessage = (error: any): string => {
+    const message = error?.message || 'Unknown error occurred';
+
+    // Just return the message as-is, it's already user-friendly from the API
+    return message;
+  };
+
   const handleGetVerificationSignature = async () => {
     if (!walletClient?.account) {
       toast.error('Wallet not connected');
@@ -99,9 +106,11 @@ export function TokenSaleDevModal({ isOpen, onClose, tokenSale }: TokenSaleDevMo
           ? `Expires at: ${new Date(verificationSignature.data.expiration * 1000).toLocaleString()}`
           : undefined,
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error getting verification signature:', error);
-      toast.error('Failed to get verification signature');
+      toast.error('Verification Failed', {
+        description: getErrorMessage(error),
+      });
     }
   };
   // @dev not implemented
@@ -140,8 +149,12 @@ export function TokenSaleDevModal({ isOpen, onClose, tokenSale }: TokenSaleDevMo
         signatureExpiration: verificationSignature.data.expiration,
         amount: erc20Amount,
       });
-    } catch (error) {
+      toast.success('ERC20 commitment increased successfully');
+    } catch (error: any) {
       console.error('Error increasing commitment with ERC20 token:', error);
+      toast.error('Commitment Failed', {
+        description: getErrorMessage(error),
+      });
     }
   };
 
@@ -156,8 +169,12 @@ export function TokenSaleDevModal({ isOpen, onClose, tokenSale }: TokenSaleDevMo
         tokenSaleAddress: tokenSale.address,
         recipientAddress: recipientAddress as Address,
       });
-    } catch (error) {
+      toast.success('Buyer settlement completed successfully');
+    } catch (error: any) {
       console.error('Error settling as buyer:', error);
+      toast.error('Settlement Failed', {
+        description: getErrorMessage(error),
+      });
     }
   };
 
@@ -166,8 +183,12 @@ export function TokenSaleDevModal({ isOpen, onClose, tokenSale }: TokenSaleDevMo
       await sellerSettle({
         tokenSaleAddress: tokenSale.address,
       });
-    } catch (error) {
+      toast.success('Seller settlement completed successfully');
+    } catch (error: any) {
       console.error('Error settling as seller:', error);
+      toast.error('Settlement Failed', {
+        description: getErrorMessage(error),
+      });
     }
   };
 
@@ -176,7 +197,6 @@ export function TokenSaleDevModal({ isOpen, onClose, tokenSale }: TokenSaleDevMo
       isOpen={isOpen}
       onClose={onClose}
       title="Token Sale Dev Menu"
-      isCentered={false}
     >
       <VStack
         spacing={6}

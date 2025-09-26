@@ -249,12 +249,41 @@ export async function getTokenSaleVerification(
     );
 
     if (!response.data.success) {
-      return null;
+      throw new Error('API returned unsuccessful response');
     }
 
     return response.data.data;
-  } catch (e) {
+  } catch (e: any) {
     logError(e);
-    return null;
+
+    // Re-throw with more specific error information
+    if (e.response) {
+      // Server responded with error status
+      const status = e.response.status;
+      const message = e.response.data?.message || e.message;
+
+      switch (status) {
+        case 400:
+          throw new Error(`Bad Request: ${message}`);
+        case 401:
+          throw new Error(`Unauthorized: ${message}`);
+        case 403:
+          throw new Error(`Forbidden: ${message}`);
+        case 404:
+          throw new Error(`Not Found: Token sale verification endpoint not found`);
+        case 429:
+          throw new Error(`Too Many Requests: ${message}`);
+        case 500:
+          throw new Error(`Server Error: ${message}`);
+        default:
+          throw new Error(`HTTP ${status}: ${message}`);
+      }
+    } else if (e.request) {
+      // Network error
+      throw new Error('Network error: Unable to reach verification service');
+    } else {
+      // Other error
+      throw new Error(`Verification failed: ${e.message}`);
+    }
   }
 }
