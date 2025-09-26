@@ -1,4 +1,5 @@
-import { Box, Flex, Text, VStack } from '@chakra-ui/react';
+import { Box, Button, Flex, Text, VStack } from '@chakra-ui/react';
+import { Wrench } from '@phosphor-icons/react';
 import { useMemo, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
@@ -11,6 +12,7 @@ import { InfoBoxLoader } from '../../../components/ui/loaders/InfoBoxLoader';
 import PageHeader from '../../../components/ui/page/Header/PageHeader';
 import { CONTENT_MAXW, USDC_DECIMALS } from '../../../constants/common';
 import { DAO_ROUTES } from '../../../constants/routes';
+import useFeatureFlag from '../../../helpers/environmentFeatureFlags';
 import { useTokenSaleClaimFunds } from '../../../hooks/DAO/proposal/useTokenSaleClaimFunds';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import useNetworkPublicClient from '../../../hooks/useNetworkPublicClient';
@@ -24,6 +26,7 @@ import {
   formatSaleAmount,
   formatSaleDate,
 } from '../../../utils/tokenSaleFormats';
+import { TokenSaleDevModal } from './components/TokenSaleDevModal';
 import { BuyerRequirementsDisplay } from './components/buyer-requirements/BuyerRequirementsDisplay';
 
 export function SafeTokenSaleDetailsPage() {
@@ -38,11 +41,29 @@ export function SafeTokenSaleDetailsPage() {
   const { claimFunds, pending } = useTokenSaleClaimFunds();
   const publicClient = useNetworkPublicClient();
   const [totalTokenSupply, setTotalTokenSupply] = useState<bigint | null>(null);
+  const [isDevModalOpen, setIsDevModalOpen] = useState(false);
+  const devFeatureEnabled = useFeatureFlag('flag_dev');
 
   const tokenSale = useMemo(() => {
     if (!saleId || !tokenSales) return null;
     return tokenSales.find(sale => sale.address.toLowerCase() === saleId.toLowerCase()) || null;
   }, [saleId, tokenSales]);
+
+  // Calculate valuation (FDV) from total token supply and price
+  const valuationFormatted = useMemo(() => {
+    if (!tokenSale || !totalTokenSupply || !tokenSale.saleTokenPrice) {
+      return '--';
+    }
+
+    // Calculate FDV: totalTokenSupply * tokenPrice
+    const fdvBigInt = calculateFDVFromTokenPrice(
+      tokenSale.saleTokenPrice,
+      totalTokenSupply,
+      tokenSale.tokenDecimals,
+    );
+
+    return formatSaleAmount(fdvBigInt, USDC_DECIMALS);
+  }, [tokenSale, totalTokenSupply]);
 
   // Fetch total token supply for valuation calculation
   useEffect(() => {
@@ -88,21 +109,6 @@ export function SafeTokenSaleDetailsPage() {
     tokenSale.tokenDecimals,
   );
   const totalSupplyFormatted = formatTokenAmount(tokenSupplyForSale, tokenSale.tokenDecimals);
-  // Calculate valuation (FDV) from total token supply and price
-  const valuationFormatted = useMemo(() => {
-    if (!totalTokenSupply || !tokenSale.saleTokenPrice) {
-      return '--';
-    }
-
-    // Calculate FDV: totalTokenSupply * tokenPrice
-    const fdvBigInt = calculateFDVFromTokenPrice(
-      tokenSale.saleTokenPrice,
-      totalTokenSupply,
-      tokenSale.tokenDecimals,
-    );
-
-    return formatSaleAmount(fdvBigInt, USDC_DECIMALS);
-  }, [totalTokenSupply, tokenSale.saleTokenPrice, tokenSale.tokenDecimals]);
 
   if (!safe?.address) {
     return <InfoBoxLoader />;
@@ -146,7 +152,21 @@ export function SafeTokenSaleDetailsPage() {
             >
               {tokenSale.name}
             </Text>
-            <TokenSaleCountdown endTimestamp={tokenSale.saleEndTimestamp} />
+            <Flex
+              align="center"
+              gap={4}
+            >
+              <TokenSaleCountdown endTimestamp={tokenSale.saleEndTimestamp} />
+              {devFeatureEnabled && (
+                <Button
+                  leftIcon={<Wrench size={16} />}
+                  variant="secondary"
+                  onClick={() => setIsDevModalOpen(true)}
+                >
+                  Dev Menu
+                </Button>
+              )}
+            </Flex>
           </Flex>
 
           <TokenSaleProgressCard
@@ -258,6 +278,15 @@ export function SafeTokenSaleDetailsPage() {
           orOutOf={tokenSale.orOutOf}
         />
       </VStack>
+
+      {/* Dev Modal */}
+      {devFeatureEnabled && (
+        <TokenSaleDevModal
+          isOpen={isDevModalOpen}
+          onClose={() => setIsDevModalOpen(false)}
+          tokenSale={tokenSale}
+        />
+      )}
     </Box>
   );
 }

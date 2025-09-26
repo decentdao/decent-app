@@ -7,7 +7,9 @@ import { RevenueSharingWallet } from '../../types/revShare';
 
 const DECENT_API_URL = import.meta.env.VITE_APP_DECENT_API_URL;
 
-const axiosClient = axios.create({ baseURL: DECENT_API_URL });
+const axiosClient = axios.create({
+  baseURL: DECENT_API_URL || 'https://api.decent.build', // Fallback to production API
+});
 
 type SubDaoInfo = {
   address: Address;
@@ -211,5 +213,48 @@ export async function syncAllSafeProposals(chainId: number, daoAddress: Address)
     }
     logError(e);
     return [];
+  }
+}
+
+export type VerificationData = {
+  verifierSignature: Hex;
+  expiration: number;
+  verified: boolean;
+};
+
+export type VerificationSignature = {
+  data: VerificationData;
+  signature: Hex;
+};
+
+type TokenSaleVerificationResponse = {
+  success: boolean;
+  data: VerificationSignature;
+};
+
+export async function getTokenSaleVerification(
+  chainId: number,
+  daoAddress: Address,
+  tokenSaleAddress: Address,
+  payload: {
+    address: Address;
+    message: any;
+    signature: Hex;
+  },
+): Promise<VerificationSignature | null> {
+  try {
+    const response: AxiosResponse<TokenSaleVerificationResponse> = await axiosClient.post(
+      `/d/${chainId}/${daoAddress}/sales/${tokenSaleAddress}/verify`,
+      payload,
+    );
+
+    if (!response.data.success) {
+      return null;
+    }
+
+    return response.data.data;
+  } catch (e) {
+    logError(e);
+    return null;
   }
 }
