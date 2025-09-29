@@ -69,7 +69,7 @@ export function TokenSaleProgressCard({
       </Box>
 
       {/* Minimum marker */}
-      {minimumPercentage > 0 && (
+      {minimum > 1n && (
         <Box
           position="absolute"
           left={`${Math.min(minimumPercentage, 95)}%`}
