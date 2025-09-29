@@ -22,13 +22,16 @@ import {
   UserMinus,
   Info,
 } from '@phosphor-icons/react';
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { toast } from 'sonner';
-import { Address } from 'viem';
+import { Address, formatUnits, parseUnits } from 'viem';
+import { useAccount } from 'wagmi';
 import { ModalBase } from '../../../../components/ui/modals/ModalBase';
 import { useTokenSaleContract } from '../../../../hooks/DAO/tokenSale/useTokenSaleContract';
 import { useTokenSaleVerification } from '../../../../hooks/DAO/tokenSale/useTokenSaleVerification';
 import { useNetworkWalletClient } from '../../../../hooks/useNetworkWalletClient';
+import { useTransaction } from '../../../../hooks/utils/useTransaction';
+import { useGovernanceFetcher } from '../../../../store/fetchers/governance';
 import { TokenSaleData, TokenSaleState } from '../../../../types/tokenSale';
 
 interface TokenSaleDevModalProps {
@@ -69,6 +72,8 @@ const getSaleStateColor = (state: TokenSaleState): string => {
 
 export function TokenSaleDevModal({ isOpen, onClose, tokenSale }: TokenSaleDevModalProps) {
   const { data: walletClient } = useNetworkWalletClient();
+  const { address: account } = useAccount();
+  const { fetchERC20TokenAccountData } = useGovernanceFetcher();
 
   const {
     getVerificationSignature,
@@ -84,15 +89,79 @@ export function TokenSaleDevModal({ isOpen, onClose, tokenSale }: TokenSaleDevMo
     isLoading: contractLoading,
   } = useTokenSaleContract();
 
+  const [approveCall, approveCallPending] = useTransaction();
+
   const [nativeAmount, setNativeAmount] = useState('0.01');
   const [erc20Amount, setErc20Amount] = useState('100');
   const [recipientAddress, setRecipientAddress] = useState('');
+
+  // Commitment token data
+  const [commitmentTokenBalance, setCommitmentTokenBalance] = useState(0n);
+  const [commitmentTokenAllowance, setCommitmentTokenAllowance] = useState(0n);
+  const commitmentTokenDecimals = 6; // Default to USDC decimals
+
+  // Fetch commitment token data
+  const fetchCommitmentTokenData = useCallback(async () => {
+    if (!account || !tokenSale.commitmentToken) return;
+
+    try {
+      const tokenData = await fetchERC20TokenAccountData(
+        tokenSale.commitmentToken,
+        account,
+        tokenSale.address,
+      );
+      setCommitmentTokenBalance(tokenData.balance);
+      setCommitmentTokenAllowance(tokenData.allowance);
+    } catch (error) {
+      console.error('Error fetching commitment token data:', error);
+    }
+  }, [account, tokenSale.commitmentToken, tokenSale.address, fetchERC20TokenAccountData]);
+
+  // Fetch token data when component mounts or token sale changes
+  useEffect(() => {
+    if (isOpen && account) {
+      fetchCommitmentTokenData();
+    }
+  }, [isOpen, account, fetchCommitmentTokenData]);
 
   const getErrorMessage = (error: any): string => {
     const message = error?.message || 'Unknown error occurred';
 
     // Just return the message as-is, it's already user-friendly from the API
     return message;
+  };
+
+  const handleApproveCommitmentToken = async () => {
+    if (!walletClient?.account || !tokenSale.commitmentToken) {
+      toast.error('Wallet not connected');
+      return;
+    }
+
+    try {
+      const { getContract, maxUint256 } = await import('viem');
+      const { abis } = await import('@decentdao/decent-contracts');
+
+      const tokenContract = getContract({
+        address: tokenSale.commitmentToken,
+        abi: abis.deployables.VotesERC20V1,
+        client: walletClient,
+      });
+
+      approveCall({
+        contractFn: () => tokenContract.write.approve([tokenSale.address, maxUint256]),
+        pendingMessage: 'Approving commitment token...',
+        successMessage: 'Commitment token approved successfully',
+        failedMessage: 'Failed to approve commitment token',
+        successCallback: () => {
+          fetchCommitmentTokenData(); // Refresh token data
+        },
+      });
+    } catch (error: any) {
+      console.error('Error approving commitment token:', error);
+      toast.error('Approval Failed', {
+        description: getErrorMessage(error),
+      });
+    }
   };
 
   const handleGetVerificationSignature = async () => {
@@ -144,6 +213,26 @@ export function TokenSaleDevModal({ isOpen, onClose, tokenSale }: TokenSaleDevMo
       return;
     }
 
+    if (!walletClient?.account) {
+      toast.error('Wallet not connected');
+      return;
+    }
+
+    // Check if user has sufficient balance
+    const amountWei = parseUnits(erc20Amount, commitmentTokenDecimals);
+    if (amountWei > commitmentTokenBalance) {
+      toast.error('Insufficient balance');
+      return;
+    }
+
+    // Check if approval is needed
+    const needsApproval = amountWei > commitmentTokenAllowance;
+
+    if (needsApproval) {
+      toast.warning('Please approve the commitment token first');
+      return;
+    }
+
     try {
       await increaseCommitmentERC20({
         tokenSaleAddress: tokenSale.address,
@@ -152,6 +241,8 @@ export function TokenSaleDevModal({ isOpen, onClose, tokenSale }: TokenSaleDevMo
         amount: erc20Amount,
       });
       toast.success('ERC20 commitment increased successfully');
+      // Refresh token data after successful commitment
+      fetchCommitmentTokenData();
     } catch (error: any) {
       console.error('Error increasing commitment with ERC20 token:', error);
       toast.error('Commitment Failed', {
@@ -339,6 +430,68 @@ export function TokenSaleDevModal({ isOpen, onClose, tokenSale }: TokenSaleDevMo
                   placeholder="100"
                 />
               </FormControl>
+
+              {/* Token Balance and Allowance Info */}
+              <Box
+                p={3}
+                bg="color-neutral-900"
+                borderRadius="0.5rem"
+                border="1px solid"
+                borderColor="color-neutral-800"
+                mt={2}
+              >
+                <VStack
+                  spacing={2}
+                  align="stretch"
+                >
+                  <HStack justify="space-between">
+                    <Text
+                      fontSize="xs"
+                      color="color-neutral-400"
+                    >
+                      Balance:
+                    </Text>
+                    <Text
+                      fontSize="xs"
+                      color="color-neutral-200"
+                    >
+                      {formatUnits(commitmentTokenBalance, commitmentTokenDecimals)} USDC
+                    </Text>
+                  </HStack>
+                  <HStack justify="space-between">
+                    <Text
+                      fontSize="xs"
+                      color="color-neutral-400"
+                    >
+                      Allowance:
+                    </Text>
+                    <Text
+                      fontSize="xs"
+                      color="color-neutral-200"
+                    >
+                      {formatUnits(commitmentTokenAllowance, commitmentTokenDecimals)} USDC
+                    </Text>
+                  </HStack>
+                </VStack>
+              </Box>
+
+              {/* Approval Button */}
+              {parseUnits(erc20Amount || '0', commitmentTokenDecimals) >
+                commitmentTokenAllowance && (
+                <Button
+                  onClick={handleApproveCommitmentToken}
+                  isLoading={approveCallPending}
+                  loadingText="Approving..."
+                  variant="outline"
+                  leftIcon={<CheckCircle />}
+                  width="100%"
+                  mt={2}
+                  colorScheme="blue"
+                >
+                  Approve Commitment Token
+                </Button>
+              )}
+
               <Button
                 onClick={handleIncreaseCommitmentERC20}
                 isLoading={contractLoading.increaseCommitmentERC20}
@@ -347,6 +500,9 @@ export function TokenSaleDevModal({ isOpen, onClose, tokenSale }: TokenSaleDevMo
                 leftIcon={<Coins />}
                 width="100%"
                 mt={2}
+                isDisabled={
+                  parseUnits(erc20Amount || '0', commitmentTokenDecimals) > commitmentTokenAllowance
+                }
               >
                 increaseCommitmentERC20
               </Button>
