@@ -216,15 +216,9 @@ export async function syncAllSafeProposals(chainId: number, daoAddress: Address)
   }
 }
 
-export type VerificationData = {
-  verifierSignature: Hex;
-  expiration: number;
-  verified: boolean;
-};
-
 export type VerificationSignature = {
-  data: VerificationData;
   signature: Hex;
+  expiration: number;
 };
 
 type TokenSaleVerificationResponse = {

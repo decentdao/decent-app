@@ -79,14 +79,9 @@ export function useTokenSaleVerification() {
 
         // Create the final verification signature object
         // The verifier's signature is what the smart contract will verify
-        const finalVerificationSignature: VerificationSignature = {
-          data: apiVerificationData.data,
-          signature: apiVerificationData.data.verifierSignature, // Use verifier's signature for contracts
-        };
+        setVerificationSignature(apiVerificationData);
 
-        setVerificationSignature(finalVerificationSignature);
-
-        return finalVerificationSignature;
+        return apiVerificationData;
       } catch (error) {
         logError(error, 'Error getting token sale verification signature');
         throw error;

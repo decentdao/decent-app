@@ -103,7 +103,7 @@ export function TokenSaleDevModal({ isOpen, onClose, tokenSale }: TokenSaleDevMo
       await getVerificationSignature(tokenSale.address, walletClient.account.address);
       toast.success('Verification signature obtained', {
         description: verificationSignature
-          ? `Expires at: ${new Date(verificationSignature.data.expiration * 1000).toLocaleString()}`
+          ? `Expires at: ${new Date(verificationSignature.expiration * 1000).toLocaleString()}`
           : undefined,
       });
     } catch (error: any) {
@@ -137,7 +137,7 @@ export function TokenSaleDevModal({ isOpen, onClose, tokenSale }: TokenSaleDevMo
   // };
 
   const handleIncreaseCommitmentERC20 = async () => {
-    if (!verificationSignature?.signature || !verificationSignature?.data.expiration) {
+    if (!verificationSignature?.signature || !verificationSignature?.expiration) {
       toast.warning('Please get verification signature first');
       return;
     }
@@ -146,7 +146,7 @@ export function TokenSaleDevModal({ isOpen, onClose, tokenSale }: TokenSaleDevMo
       await increaseCommitmentERC20({
         tokenSaleAddress: tokenSale.address,
         verificationSignature: verificationSignature.signature,
-        signatureExpiration: verificationSignature.data.expiration,
+        signatureExpiration: verificationSignature.expiration,
         amount: erc20Amount,
       });
       toast.success('ERC20 commitment increased successfully');
@@ -198,6 +198,7 @@ export function TokenSaleDevModal({ isOpen, onClose, tokenSale }: TokenSaleDevMo
       onClose={onClose}
       title="Token Sale Dev Menu"
       isCentered={false}
+      size="2xl"
     >
       <VStack
         spacing={6}
@@ -261,21 +262,20 @@ export function TokenSaleDevModal({ isOpen, onClose, tokenSale }: TokenSaleDevMo
                   mt={3}
                   spacing={4}
                 >
-                  {verificationSignature?.data.expiration && (
+                  {verificationSignature?.expiration && (
                     <Text
                       textStyle="text-xs"
                       color="color-neutral-400"
                     >
-                      Expires:{' '}
-                      {new Date(verificationSignature.data.expiration * 1000).toLocaleString()}
+                      Expires: {new Date(verificationSignature.expiration * 1000).toLocaleString()}
                     </Text>
                   )}
-                  {verificationSignature?.data.verified !== undefined && (
+                  {verificationSignature?.signature !== undefined && (
                     <Text
                       textStyle="text-xs"
                       color="color-neutral-400"
                     >
-                      Verified: {verificationSignature.data.verified ? 'Yes' : 'No'}
+                      Verified: {verificationSignature.signature ? 'Yes' : 'No'}
                     </Text>
                   )}
                 </HStack>
