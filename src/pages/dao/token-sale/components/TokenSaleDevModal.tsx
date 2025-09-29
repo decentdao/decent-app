@@ -77,12 +77,14 @@ export function TokenSaleDevModal({ isOpen, onClose, tokenSale }: TokenSaleDevMo
   } = useTokenSaleVerification();
 
   const {
+    increaseCommitmentNative,
     increaseCommitmentERC20,
     buyerSettle,
     sellerSettle,
     isLoading: contractLoading,
   } = useTokenSaleContract();
 
+  const [nativeAmount, setNativeAmount] = useState('0.01');
   const [erc20Amount, setErc20Amount] = useState('100');
   const [recipientAddress, setRecipientAddress] = useState('');
 
@@ -113,28 +115,28 @@ export function TokenSaleDevModal({ isOpen, onClose, tokenSale }: TokenSaleDevMo
       });
     }
   };
-  // @dev not implemented
-  // const handleIncreaseCommitmentNative = async () => {
-  //   if (!verificationSignature?.signature || !verificationSignature?.data.expiration) {
-  //     toast({
-  //       title: 'Please get verification signature first',
-  //       status: 'warning',
-  //       duration: 3000,
-  //     });
-  //     return;
-  //   }
 
-  //   try {
-  //     await increaseCommitmentNative({
-  //       tokenSaleAddress: tokenSale.address,
-  //       verificationSignature: verificationSignature.signature,
-  //       signatureExpiration: verificationSignature.data.expiration,
-  //       amount: nativeAmount,
-  //     });
-  //   } catch (error) {
-  //     console.error('Error increasing commitment with native token:', error);
-  //   }
-  // };
+  const handleIncreaseCommitmentNative = async () => {
+    if (!verificationSignature?.signature || !verificationSignature?.expiration) {
+      toast.warning('Please get verification signature first');
+      return;
+    }
+
+    try {
+      await increaseCommitmentNative({
+        tokenSaleAddress: tokenSale.address,
+        verificationSignature: verificationSignature.signature,
+        signatureExpiration: verificationSignature.expiration,
+        amount: nativeAmount,
+      });
+      toast.success('Native token commitment increased successfully');
+    } catch (error: any) {
+      console.error('Error increasing commitment with native token:', error);
+      toast.error('Commitment Failed', {
+        description: getErrorMessage(error),
+      });
+    }
+  };
 
   const handleIncreaseCommitmentERC20 = async () => {
     if (!verificationSignature?.signature || !verificationSignature?.expiration) {
@@ -305,7 +307,7 @@ export function TokenSaleDevModal({ isOpen, onClose, tokenSale }: TokenSaleDevMo
             align="stretch"
           >
             {/* Native Token Commitment */}
-            {/* <Box>
+            <Box>
               <FormControl>
                 <FormLabel fontSize="sm">Native Token Amount (ETH)</FormLabel>
                 <Input
@@ -325,7 +327,7 @@ export function TokenSaleDevModal({ isOpen, onClose, tokenSale }: TokenSaleDevMo
               >
                 increaseCommitmentNative
               </Button>
-            </Box> */}
+            </Box>
 
             {/* ERC20 Token Commitment */}
             <Box>
