@@ -27,6 +27,7 @@ import { toast } from 'sonner';
 import { Address, formatUnits, parseUnits } from 'viem';
 import { useAccount } from 'wagmi';
 import { ModalBase } from '../../../../components/ui/modals/ModalBase';
+import { NATIVE_TOKEN_ADDRESS } from '../../../../components/ui/utils/AssetSelector';
 import { useTokenSaleContract } from '../../../../hooks/DAO/tokenSale/useTokenSaleContract';
 import { useTokenSaleVerification } from '../../../../hooks/DAO/tokenSale/useTokenSaleVerification';
 import { useNetworkWalletClient } from '../../../../hooks/useNetworkWalletClient';
@@ -285,6 +286,10 @@ export function TokenSaleDevModal({ isOpen, onClose, tokenSale }: TokenSaleDevMo
     }
   };
 
+  const isNativeCommitmentToken = tokenSale.commitmentToken === NATIVE_TOKEN_ADDRESS;
+  const isApproved =
+    parseUnits(erc20Amount || '0', commitmentTokenDecimals) <= commitmentTokenAllowance;
+
   return (
     <ModalBase
       isOpen={isOpen}
@@ -297,280 +302,7 @@ export function TokenSaleDevModal({ isOpen, onClose, tokenSale }: TokenSaleDevMo
         spacing={6}
         align="stretch"
       >
-        {/* Verification Section */}
-        <Box>
-          <HStack mb={4}>
-            <Icon
-              as={CheckCircle}
-              color="color-lilac-100"
-            />
-            <Text
-              textStyle="text-lg-semibold"
-              color="color-white"
-            >
-              Verification
-            </Text>
-          </HStack>
-          <VStack
-            spacing={4}
-            align="stretch"
-          >
-            <Button
-              onClick={handleGetVerificationSignature}
-              isLoading={verificationLoading}
-              loadingText="Getting signature..."
-              variant="primary"
-              leftIcon={<Wrench />}
-            >
-              Get Verification Signature
-            </Button>
-
-            {verificationSignature?.signature && (
-              <Box
-                p={4}
-                bg="color-neutral-900"
-                borderRadius="0.75rem"
-                border="1px solid"
-                borderColor="color-neutral-800"
-              >
-                <Text
-                  textStyle="text-sm-medium"
-                  mb={3}
-                  color="color-lilac-100"
-                >
-                  Verification Signature:
-                </Text>
-                <Code
-                  p={3}
-                  fontSize="xs"
-                  wordBreak="break-all"
-                  bg="color-neutral-950"
-                  color="color-neutral-200"
-                  borderRadius="0.5rem"
-                  display="block"
-                >
-                  {verificationSignature.signature}
-                </Code>
-                <HStack
-                  mt={3}
-                  spacing={4}
-                >
-                  {verificationSignature?.expiration && (
-                    <Text
-                      textStyle="text-xs"
-                      color="color-neutral-400"
-                    >
-                      Expires: {new Date(verificationSignature.expiration * 1000).toLocaleString()}
-                    </Text>
-                  )}
-                  {verificationSignature?.signature !== undefined && (
-                    <Text
-                      textStyle="text-xs"
-                      color="color-neutral-400"
-                    >
-                      Verified: {verificationSignature.signature ? 'Yes' : 'No'}
-                    </Text>
-                  )}
-                </HStack>
-              </Box>
-            )}
-          </VStack>
-        </Box>
-
-        <Divider />
-
-        {/* Commitment Section */}
-        <Box>
-          <HStack mb={4}>
-            <Icon
-              as={CurrencyEth}
-              color="color-lilac-100"
-            />
-            <Text
-              textStyle="text-lg-semibold"
-              color="color-white"
-            >
-              Commitment Functions
-            </Text>
-          </HStack>
-          <VStack
-            spacing={4}
-            align="stretch"
-          >
-            {/* Native Token Commitment */}
-            <Box>
-              <FormControl>
-                <FormLabel fontSize="sm">Native Token Amount (ETH)</FormLabel>
-                <Input
-                  value={nativeAmount}
-                  onChange={e => setNativeAmount(e.target.value)}
-                  placeholder="0.01"
-                />
-              </FormControl>
-              <Button
-                onClick={handleIncreaseCommitmentNative}
-                isLoading={contractLoading.increaseCommitmentNative}
-                loadingText="Calling..."
-                variant="secondary"
-                leftIcon={<CurrencyEth />}
-                width="100%"
-                mt={2}
-              >
-                increaseCommitmentNative
-              </Button>
-            </Box>
-
-            {/* ERC20 Token Commitment */}
-            <Box>
-              <FormControl>
-                <FormLabel fontSize="sm">ERC20 Amount (USDC)</FormLabel>
-                <Input
-                  value={erc20Amount}
-                  onChange={e => setErc20Amount(e.target.value)}
-                  placeholder="100"
-                />
-              </FormControl>
-
-              {/* Token Balance and Allowance Info */}
-              <Box
-                p={3}
-                bg="color-neutral-900"
-                borderRadius="0.5rem"
-                border="1px solid"
-                borderColor="color-neutral-800"
-                mt={2}
-              >
-                <VStack
-                  spacing={2}
-                  align="stretch"
-                >
-                  <HStack justify="space-between">
-                    <Text
-                      fontSize="xs"
-                      color="color-neutral-400"
-                    >
-                      Balance:
-                    </Text>
-                    <Text
-                      fontSize="xs"
-                      color="color-neutral-200"
-                    >
-                      {formatUnits(commitmentTokenBalance, commitmentTokenDecimals)} USDC
-                    </Text>
-                  </HStack>
-                  <HStack justify="space-between">
-                    <Text
-                      fontSize="xs"
-                      color="color-neutral-400"
-                    >
-                      Allowance:
-                    </Text>
-                    <Text
-                      fontSize="xs"
-                      color="color-neutral-200"
-                    >
-                      {formatUnits(commitmentTokenAllowance, commitmentTokenDecimals)} USDC
-                    </Text>
-                  </HStack>
-                </VStack>
-              </Box>
-
-              {/* Approval Button */}
-              {parseUnits(erc20Amount || '0', commitmentTokenDecimals) >
-                commitmentTokenAllowance && (
-                <Button
-                  onClick={handleApproveCommitmentToken}
-                  isLoading={approveCallPending}
-                  loadingText="Approving..."
-                  variant="outline"
-                  leftIcon={<CheckCircle />}
-                  width="100%"
-                  mt={2}
-                  colorScheme="blue"
-                >
-                  Approve Commitment Token
-                </Button>
-              )}
-
-              <Button
-                onClick={handleIncreaseCommitmentERC20}
-                isLoading={contractLoading.increaseCommitmentERC20}
-                loadingText="Calling..."
-                variant="secondary"
-                leftIcon={<Coins />}
-                width="100%"
-                mt={2}
-                isDisabled={
-                  parseUnits(erc20Amount || '0', commitmentTokenDecimals) > commitmentTokenAllowance
-                }
-              >
-                increaseCommitmentERC20
-              </Button>
-            </Box>
-          </VStack>
-        </Box>
-
-        <Divider />
-
-        {/* Settlement Section */}
-        <Box>
-          <HStack mb={4}>
-            <Icon
-              as={Handshake}
-              color="color-lilac-100"
-            />
-            <Text
-              textStyle="text-lg-semibold"
-              color="color-white"
-            >
-              Settlement Functions
-            </Text>
-          </HStack>
-          <VStack
-            spacing={4}
-            align="stretch"
-          >
-            {/* Buyer Settlement */}
-            <Box>
-              <FormControl>
-                <FormLabel fontSize="sm">Recipient Address (for buyerSettle)</FormLabel>
-                <Input
-                  value={recipientAddress}
-                  onChange={e => setRecipientAddress(e.target.value)}
-                  placeholder="0x..."
-                />
-              </FormControl>
-              <Button
-                onClick={handleBuyerSettle}
-                isLoading={contractLoading.buyerSettle}
-                loadingText="Calling..."
-                leftIcon={<Handshake />}
-                width="100%"
-                mt={2}
-              >
-                buyerSettle
-              </Button>
-            </Box>
-
-            {/* Seller Settlement */}
-            <Box>
-              <FormControl>
-                <FormLabel fontSize="sm">Seller Settlement</FormLabel>
-              </FormControl>
-              <Button
-                onClick={handleSellerSettle}
-                isLoading={contractLoading.sellerSettle}
-                loadingText="Calling..."
-                leftIcon={<UserMinus />}
-                width="100%"
-              >
-                sellerSettle
-              </Button>
-            </Box>
-          </VStack>
-        </Box>
-
-        {/* Token Sale Info */}
+        {/* Token Sale Info - Moved to top */}
         <Box>
           <HStack mb={4}>
             <Icon
@@ -676,6 +408,283 @@ export function TokenSaleDevModal({ isOpen, onClose, tokenSale }: TokenSaleDevMo
               </GridItem>
             </Grid>
           </Box>
+        </Box>
+
+        <Divider />
+
+        {/* Verification Section */}
+        <Box>
+          <HStack mb={4}>
+            <Icon
+              as={CheckCircle}
+              color="color-lilac-100"
+            />
+            <Text
+              textStyle="text-lg-semibold"
+              color="color-white"
+            >
+              Verification
+            </Text>
+          </HStack>
+          <VStack
+            spacing={4}
+            align="stretch"
+          >
+            <Button
+              onClick={handleGetVerificationSignature}
+              isLoading={verificationLoading}
+              loadingText="Getting signature..."
+              variant="primary"
+              leftIcon={<Wrench />}
+            >
+              Get Verification Signature
+            </Button>
+
+            {verificationSignature?.signature && (
+              <Box
+                p={4}
+                bg="color-neutral-900"
+                borderRadius="0.75rem"
+                border="1px solid"
+                borderColor="color-neutral-800"
+              >
+                <Text
+                  textStyle="text-sm-medium"
+                  mb={3}
+                  color="color-lilac-100"
+                >
+                  Verification Signature:
+                </Text>
+                <Code
+                  p={3}
+                  fontSize="xs"
+                  wordBreak="break-all"
+                  bg="color-neutral-950"
+                  color="color-neutral-200"
+                  borderRadius="0.5rem"
+                  display="block"
+                >
+                  {verificationSignature.signature}
+                </Code>
+                <HStack
+                  mt={3}
+                  spacing={4}
+                >
+                  {verificationSignature?.expiration && (
+                    <Text
+                      textStyle="text-xs"
+                      color="color-neutral-400"
+                    >
+                      Expires: {new Date(verificationSignature.expiration * 1000).toLocaleString()}
+                    </Text>
+                  )}
+                  {verificationSignature?.signature !== undefined && (
+                    <Text
+                      textStyle="text-xs"
+                      color="color-neutral-400"
+                    >
+                      Verified: {verificationSignature.signature ? 'Yes' : 'No'}
+                    </Text>
+                  )}
+                </HStack>
+              </Box>
+            )}
+          </VStack>
+        </Box>
+
+        <Divider />
+
+        {/* Commitment Section */}
+        <Box>
+          <HStack mb={4}>
+            <Icon
+              as={CurrencyEth}
+              color="color-lilac-100"
+            />
+            <Text
+              textStyle="text-lg-semibold"
+              color="color-white"
+            >
+              Commitment Functions
+            </Text>
+          </HStack>
+          <VStack
+            spacing={4}
+            align="stretch"
+          >
+            {/* Native Token Commitment - Only show if commitment token is native */}
+            {isNativeCommitmentToken && (
+              <Box>
+                <FormControl>
+                  <FormLabel fontSize="sm">Native Token Amount (ETH)</FormLabel>
+                  <Input
+                    value={nativeAmount}
+                    onChange={e => setNativeAmount(e.target.value)}
+                    placeholder="0.01"
+                  />
+                </FormControl>
+                <Button
+                  onClick={handleIncreaseCommitmentNative}
+                  isLoading={contractLoading.increaseCommitmentNative}
+                  loadingText="Calling..."
+                  variant="secondary"
+                  leftIcon={<CurrencyEth />}
+                  width="100%"
+                  mt={2}
+                >
+                  increaseCommitmentNative
+                </Button>
+              </Box>
+            )}
+
+            {/* ERC20 Token Commitment - Only show if commitment token is not native */}
+            {!isNativeCommitmentToken && (
+              <Box>
+                <FormControl>
+                  <FormLabel fontSize="sm">ERC20 Amount (USDC)</FormLabel>
+                  <Input
+                    value={erc20Amount}
+                    onChange={e => setErc20Amount(e.target.value)}
+                    placeholder="100"
+                  />
+                </FormControl>
+
+                {/* Token Balance and Approval Status */}
+                <Box
+                  p={3}
+                  bg="color-neutral-900"
+                  borderRadius="0.5rem"
+                  border="1px solid"
+                  borderColor="color-neutral-800"
+                  mt={2}
+                >
+                  <VStack
+                    spacing={2}
+                    align="stretch"
+                  >
+                    <HStack justify="space-between">
+                      <Text
+                        fontSize="xs"
+                        color="color-neutral-400"
+                      >
+                        Balance:
+                      </Text>
+                      <Text
+                        fontSize="xs"
+                        color="color-neutral-200"
+                      >
+                        {formatUnits(commitmentTokenBalance, commitmentTokenDecimals)} USDC
+                      </Text>
+                    </HStack>
+                    <HStack justify="space-between">
+                      <Text
+                        fontSize="xs"
+                        color="color-neutral-400"
+                      >
+                        Approved:
+                      </Text>
+                      <Text
+                        fontSize="xs"
+                        color={isApproved ? 'color-green-400' : 'color-error-400'}
+                      >
+                        {isApproved ? 'Yes' : 'No'}
+                      </Text>
+                    </HStack>
+                  </VStack>
+                </Box>
+
+                {/* Approval Button */}
+                {!isApproved && (
+                  <Button
+                    onClick={handleApproveCommitmentToken}
+                    isLoading={approveCallPending}
+                    loadingText="Approving..."
+                    variant="outline"
+                    leftIcon={<CheckCircle />}
+                    width="100%"
+                    mt={2}
+                    colorScheme="blue"
+                  >
+                    Approve Commitment Token
+                  </Button>
+                )}
+
+                <Button
+                  onClick={handleIncreaseCommitmentERC20}
+                  isLoading={contractLoading.increaseCommitmentERC20}
+                  loadingText="Calling..."
+                  variant="secondary"
+                  leftIcon={<Coins />}
+                  width="100%"
+                  mt={2}
+                  isDisabled={!isApproved}
+                >
+                  increaseCommitmentERC20
+                </Button>
+              </Box>
+            )}
+          </VStack>
+        </Box>
+
+        <Divider />
+
+        {/* Settlement Section - Grid layout */}
+        <Box>
+          <HStack mb={4}>
+            <Icon
+              as={Handshake}
+              color="color-lilac-100"
+            />
+            <Text
+              textStyle="text-lg-semibold"
+              color="color-white"
+            >
+              Settlement Functions
+            </Text>
+          </HStack>
+          <Grid
+            templateColumns="1fr 1fr"
+            gap={4}
+          >
+            {/* Buyer Settlement */}
+            <GridItem>
+              <FormControl>
+                <FormLabel fontSize="sm">Recipient Address (for buyerSettle)</FormLabel>
+                <Input
+                  value={recipientAddress}
+                  onChange={e => setRecipientAddress(e.target.value)}
+                  placeholder="0x..."
+                />
+              </FormControl>
+              <Button
+                onClick={handleBuyerSettle}
+                isLoading={contractLoading.buyerSettle}
+                loadingText="Calling..."
+                leftIcon={<Handshake />}
+                width="100%"
+                mt={2}
+              >
+                buyerSettle
+              </Button>
+            </GridItem>
+
+            {/* Seller Settlement */}
+            <GridItem>
+              <FormControl>
+                <FormLabel fontSize="sm">Seller Settlement</FormLabel>
+              </FormControl>
+              <Button
+                onClick={handleSellerSettle}
+                isLoading={contractLoading.sellerSettle}
+                loadingText="Calling..."
+                leftIcon={<UserMinus />}
+                width="100%"
+                mt={2}
+              >
+                sellerSettle
+              </Button>
+            </GridItem>
+          </Grid>
         </Box>
       </VStack>
     </ModalBase>
