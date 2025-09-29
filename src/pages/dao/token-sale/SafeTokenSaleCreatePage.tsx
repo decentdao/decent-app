@@ -47,7 +47,7 @@ const getInitialValues = (usdcAddress?: Address): TokenSaleFormValues => ({
   startDate: (() => {
     // todo remove after testing
     const twentyMinutesFromNow = new Date();
-    twentyMinutesFromNow.setMinutes(twentyMinutesFromNow.getMinutes() + 20);
+    twentyMinutesFromNow.setMinutes(twentyMinutesFromNow.getMinutes() + 10);
     return twentyMinutesFromNow.toISOString();
   })(),
   endDate: '',
