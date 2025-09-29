@@ -197,6 +197,7 @@ export function TokenSaleDevModal({ isOpen, onClose, tokenSale }: TokenSaleDevMo
       isOpen={isOpen}
       onClose={onClose}
       title="Token Sale Dev Menu"
+      isCentered={false}
     >
       <VStack
         spacing={6}
