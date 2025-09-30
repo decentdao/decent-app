@@ -218,7 +218,7 @@ export function SafeTokenSaleDetailsPage() {
               value={tokenSale.tokenSymbol}
             />
             <TokenSaleInfoCard.Item
-              label={t('totalSupplyInfoLabel')}
+              label={t('availableForSaleLabel')}
               value={totalSupplyFormatted}
             />
             <TokenSaleInfoCard.Item
