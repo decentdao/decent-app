@@ -11,8 +11,17 @@ const base = definePartsStyle({
   },
 });
 
+const small = definePartsStyle({
+  track: {},
+  label: {},
+  filledTrack: {
+    height: '8px',
+  },
+});
+
 const sizes = {
   base,
+  small,
 };
 
 export default sizes;
