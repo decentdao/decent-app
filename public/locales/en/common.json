@@ -145,6 +145,6 @@
   "hour": "hour",
   "minute": "minute",
   "addressInfoTooltip": "While Project Name or ENS is displayed, the full wallet address will appear in the proposal.",
-  "stakingPeriodMoreThanZero": "Staking period must be more than zero",
+  "stakingPeriodMoreThanZero": "Staking period must be greater than zero.",
   "close": "Close"
 }
