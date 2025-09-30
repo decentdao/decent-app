@@ -1,5 +1,5 @@
 import { formatUnits } from 'viem';
-import { USDC_DECIMALS } from '../constants/common';
+import { PRECISION, USDC_DECIMALS } from '../constants/common';
 import { formatUSD } from './numberFormats';
 
 /**
@@ -50,16 +50,12 @@ export const formatTokenPrice = (priceFromContract: bigint): string => {
  * Calculate token supply for sale from commitment amount and price
  * Both values come from contract in their stored formats
  */
-export const calculateTokenSupplyForSale = (
-  maxCommitment: bigint,
-  tokenPrice: bigint,
-  tokenDecimals: number,
-): bigint => {
+export const calculateTokenSupplyForSale = (maxCommitment: bigint, tokenPrice: bigint): bigint => {
   if (tokenPrice === 0n) return 0n;
   // maxCommitment is in USDC units (6 decimals)
-  // tokenPrice is in USDC units (6 decimals)
+  // tokenPrice is in USDC units per PRECISION sale tokens (contract format)
   // Result should be in token raw units (tokenDecimals)
-  return (maxCommitment * BigInt(10 ** tokenDecimals)) / tokenPrice;
+  return (maxCommitment * PRECISION) / tokenPrice;
 };
 
 /**

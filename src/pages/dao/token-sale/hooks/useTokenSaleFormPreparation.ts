@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { Address, getAddress, zeroAddress, parseUnits } from 'viem';
-import { USDC_DECIMALS } from '../../../../constants/common';
+import { PRECISION, USDC_DECIMALS } from '../../../../constants/common';
 import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
 import { useDAOStore } from '../../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../../providers/NetworkConfig/useNetworkConfigStore';
@@ -92,7 +92,8 @@ export function useTokenSaleFormPreparation() {
 
       // Calculate max commitment capacity from net tokens for sale
       // This is the calculated fundraising cap: netTokensForSale * tokenPrice
-      const PRECISION = BigInt(10 ** 18);
+      // Token price is in USDC units per PRECISION sale tokens (contract format)
+      // netTokensForSale is in token raw units, so we need to convert to PRECISION units
       const maxPossibleCommitmentFromTokens =
         (netTokensForSale * values.saleTokenPrice.bigintValue) / PRECISION;
 

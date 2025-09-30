@@ -3,7 +3,7 @@ import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { formatUnits } from 'viem';
 import { TokenSaleInfoCard } from '../../../../components/TokenSales/TokenSaleInfoCard';
-import { USDC_DECIMALS } from '../../../../constants/common';
+import { PRECISION, USDC_DECIMALS } from '../../../../constants/common';
 import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
 import { useDAOStore } from '../../../../providers/App/AppProvider';
 import { TokenSaleFormValues } from '../../../../types/tokenSale';
@@ -88,7 +88,8 @@ export function TokenSalePreviewPanel({ values }: TokenSalePreviewPanelProps) {
 
       // Only calculate fundraising cap if we also have price
       if (values.saleTokenPrice.bigintValue) {
-        const PRECISION = BigInt(10 ** 18);
+        // Token price is in USDC units per PRECISION sale tokens (contract format)
+        // netTokensForSale is in token raw units, so we need to convert to PRECISION units
         const fundraisingCapBigInt =
           (netTokensForSale * values.saleTokenPrice.bigintValue) / PRECISION;
         fundraisingCapFormatted = formatSaleAmount(fundraisingCapBigInt, USDC_DECIMALS);

@@ -68,3 +68,9 @@ export const ERC6551_REGISTRY_SALT: Hex =
  * USDC token decimals - used for token sale calculations and formatting
  */
 export const USDC_DECIMALS = 6;
+
+/**
+ * PRECISION - used for token sale calculations and formatting
+ * Contract expects all protocol fees in 18-decimal precision
+ */
+export const PRECISION = BigInt(10 ** 18);

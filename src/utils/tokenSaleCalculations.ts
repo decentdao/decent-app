@@ -1,12 +1,12 @@
 import { parseUnits, formatUnits } from 'viem';
-import { USDC_DECIMALS } from '../constants/common';
+import { PRECISION, USDC_DECIMALS } from '../constants/common';
 
 // Token Sale Constants
 // Protocol fee in basis points (2.5% = 250 basis points)
 export const PROTOCOL_FEE_BPS = 250n;
 export const BPS_DIVISOR = 10000n;
 
-export const COMMITMENT_TOKEN_PROTOCOL_FEE = (PROTOCOL_FEE_BPS * BigInt(10 ** 18)) / BPS_DIVISOR; // 2.5% = 0.025 * 10^18 (contract expects 18-decimal precision)
+export const COMMITMENT_TOKEN_PROTOCOL_FEE = (PROTOCOL_FEE_BPS * PRECISION) / BPS_DIVISOR; // 2.5% = 0.025 * 10^18 (contract expects 18-decimal precision)
 
 /**
  * Calculate token price from FDV and total supply
@@ -49,7 +49,7 @@ export function formatUSDAmount(amount: bigint): string {
  */
 export function calculateSaleTokenProtocolFeeForContract(): bigint {
   // Contract expects 18-decimal precision regardless of token decimals
-  return (PROTOCOL_FEE_BPS * BigInt(10 ** 18)) / BPS_DIVISOR;
+  return (PROTOCOL_FEE_BPS * PRECISION) / BPS_DIVISOR;
 }
 
 /**
@@ -63,7 +63,6 @@ export function calculateContractEscrowAmount(
   commitmentAmount: bigint,
   tokenPrice: bigint,
 ): bigint {
-  const PRECISION = BigInt(10 ** 18);
   const saleTokenProtocolFee = calculateSaleTokenProtocolFeeForContract();
 
   // Match contract's exact calculation
@@ -78,7 +77,6 @@ export function calculateContractEscrowAmount(
  * @returns Gross tokens needed (including protocol fee)
  */
 export function calculateGrossTokensFromNet(netTokensForSale: bigint): bigint {
-  const PRECISION = BigInt(10 ** 18);
   const saleTokenProtocolFee = calculateSaleTokenProtocolFeeForContract();
 
   // grossTokens = (netTokens * (PRECISION + fee)) / PRECISION
@@ -93,7 +91,6 @@ export function calculateGrossTokensFromNet(netTokensForSale: bigint): bigint {
  * @returns Net tokens available to buyers
  */
 export function calculateNetTokensFromGross(grossTokens: bigint): bigint {
-  const PRECISION = BigInt(10 ** 18);
   const saleTokenProtocolFee = calculateSaleTokenProtocolFeeForContract();
 
   // netTokens = (grossTokens * PRECISION) / (PRECISION + fee)
