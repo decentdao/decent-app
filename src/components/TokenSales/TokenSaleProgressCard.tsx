@@ -55,15 +55,8 @@ export function TokenSaleProgressCard({
           <Progress
             value={progressPercentage}
             max={100}
-            bg="color-alpha-white-900"
-            h="8px"
-            borderRadius="9999px"
-            sx={{
-              '& > div': {
-                bg: 'color-base-primary',
-                borderRadius: '9999px',
-              },
-            }}
+            variant="primary"
+            size="small"
           />
         </Box>
       </Box>
