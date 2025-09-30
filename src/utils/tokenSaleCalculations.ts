@@ -2,11 +2,11 @@ import { parseUnits, formatUnits } from 'viem';
 import { USDC_DECIMALS } from '../constants/common';
 
 // Token Sale Constants
-export const COMMITMENT_TOKEN_PROTOCOL_FEE = BigInt('25000'); // 2.5% = 0.025 * 10^6 (for USDC with 6 decimals)
-
 // Protocol fee in basis points (2.5% = 250 basis points)
 export const PROTOCOL_FEE_BPS = 250n;
 export const BPS_DIVISOR = 10000n;
+
+export const COMMITMENT_TOKEN_PROTOCOL_FEE = (PROTOCOL_FEE_BPS * BigInt(10 ** 18)) / BPS_DIVISOR; // 2.5% = 0.025 * 10^18 (contract expects 18-decimal precision)
 
 /**
  * Calculate token price from FDV and total supply
