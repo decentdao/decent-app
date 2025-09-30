@@ -106,7 +106,6 @@ export function SafeTokenSaleDetailsPage() {
   const tokenSupplyForSale = calculateTokenSupplyForSale(
     tokenSale.maximumTotalCommitment,
     tokenSale.saleTokenPrice,
-    tokenSale.tokenDecimals,
   );
   const totalSupplyFormatted = formatTokenAmount(tokenSupplyForSale, tokenSale.tokenDecimals);
 
