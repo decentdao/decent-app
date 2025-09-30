@@ -11,7 +11,7 @@
   "updatesSafeName": "Update Project Name",
   "enableGaslessVoting": "Enable Gasless Voting",
   "disableGaslessVoting": "Disable Gasless Voting",
-  "topupGasTank": "Top up Gas Tank",
+  "topupGasTank": "Top up Paymaster",
   "updateSnapshotSpace": "Update Snapshot Space",
   "lidoWithdrawalTitle": "Lido Withdrawal",
   "lidoWithdrawalDescription": "This proposal will burn your Lido Withdrawal NFT and return the ETH to your treasury.",
@@ -25,7 +25,7 @@
   "changeQuorumThreshold": "Update quorum threshold",
   "deployToken": "Deploy token",
   "updateERC20Address": "Update ERC20 Address",
-  "deployStakingContract": "Deploy Staking Contract",
+  "deployStakingContract": "Enable Staking",
   "updateStakingMinPeriod": "Update Staking Min Period",
   "addStakingRewardTokens": "Add Staking Reward Tokens"
 }
