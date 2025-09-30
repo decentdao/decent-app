@@ -278,14 +278,8 @@ export function TokenSalesTable({ tokenSales }: TokenSalesTableProps) {
                   >
                     <Progress
                       value={progress}
-                      h="8px"
-                      borderRadius="full"
-                      bg="color-alpha-white-900"
-                      sx={{
-                        '& > div': {
-                          bg: 'color-lilac-100',
-                        },
-                      }}
+                      variant="primary"
+                      size="small"
                     />
                   </Box>
                 </Td>
