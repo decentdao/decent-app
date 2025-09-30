@@ -1,6 +1,7 @@
 import { abis } from '@decentdao/decent-contracts';
 import { useCallback, useState } from 'react';
 import { Address, getContract, parseUnits } from 'viem';
+import { USDC_DECIMALS } from '../../../constants/common';
 import { logError } from '../../../helpers/errorLogging';
 // eslint-disable-next-line import/extensions
 import { useNetworkWalletClient } from '../../useNetworkWalletClient';
@@ -108,7 +109,7 @@ export function useTokenSaleContract() {
         });
 
         // Convert amount to token units (assuming 6 decimals for USDC)
-        const amountWei = parseUnits(amount, 6);
+        const amountWei = parseUnits(amount, USDC_DECIMALS);
 
         contractCall({
           contractFn: () =>
