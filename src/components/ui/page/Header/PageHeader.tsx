@@ -17,6 +17,7 @@ type ButtonPropsWithTestId = ButtonProps & {
 
 interface PageHeaderProps {
   title?: string;
+  description?: string;
   showSafeAddress?: boolean;
   breadcrumbs: Crumb[];
   hasDAOLink?: boolean;
@@ -30,6 +31,7 @@ interface PageHeaderProps {
  */
 function PageHeader({
   title,
+  description,
   breadcrumbs,
   hasDAOLink = true,
   ButtonIcon,
@@ -112,6 +114,16 @@ function PageHeader({
           color="color-white"
         >
           {title}
+        </Text>
+      )}
+      {description && (
+        <Text
+          marginTop="0.75rem"
+          textStyle="text-base-regular"
+          color="color-content-content2-foreground"
+          whiteSpace="pre-wrap"
+        >
+          {description}
         </Text>
       )}
       {safeAddress && showSafeAddress && (

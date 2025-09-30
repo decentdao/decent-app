@@ -1,7 +1,7 @@
 {
-  "createChildSafe": "Create a SubDAO",
+  "createChildSafe": "Create a Node",
   "clawbackProposal": "Clawback Proposal",
-  "clawbackDescription": "Transfer all funds from the targeted child DAO to the parent project ",
+  "clawbackDescription": "Transfer all funds from the targeted node to the parent project ",
   "createProposalTemplateTitle": "New Proposal Template (Please Edit)",
   "createProposalTemplateDescription": "Please update this description to explain the purpose of your template.",
   "createProposalTemplateTitlePrefix": "Create Proposal Template: ",
