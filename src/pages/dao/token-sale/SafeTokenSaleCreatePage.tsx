@@ -50,12 +50,14 @@ const getInitialValues = (usdcAddress?: Address): TokenSaleFormValues => ({
     twentyMinutesFromNow.setMinutes(twentyMinutesFromNow.getMinutes() + 10);
     return twentyMinutesFromNow.toISOString();
   })(),
+  startTime: '09:00', // 9 AM default
   endDate: (() => {
     // todo remove after testing
     const twentyMinutesFromNow = new Date();
     twentyMinutesFromNow.setMinutes(twentyMinutesFromNow.getMinutes() + 30);
     return twentyMinutesFromNow.toISOString();
   })(),
+  endTime: '17:00',   // 5 PM default
 
   // Sale Pricing & Terms
   minimumFundraise: '',

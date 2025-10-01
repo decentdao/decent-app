@@ -250,6 +250,11 @@ export const useTokenSaleSchema = () => {
           }),
         ),
 
+        // Start time - required and must be valid time format
+        startTime: Yup.string()
+          .required(t('startTimeRequiredError', { ns: 'tokenSale' }))
+          .matches(/^([01]?[0-9]|2[0-3]):[0-5][0-9]$/, t('startTimeInvalidError', { ns: 'tokenSale' })),
+
         // End date - required and must be after start date
         endDate: Yup.string()
           .required(t('endDateRequiredError', { ns: 'tokenSale' }))
@@ -262,10 +267,17 @@ export const useTokenSaleSchema = () => {
             'end-after-start',
             t('endDateAfterStartError', { ns: 'tokenSale' }),
             function (value) {
-              const { startDate } = this.parent;
+              const { startDate, startTime, endTime } = this.parent;
               if (!value || !startDate) return true;
               const endDate = new Date(value);
               const startDateObj = new Date(startDate);
+              
+              // If same date, end time must be after start time
+              if (endDate.toDateString() === startDateObj.toDateString()) {
+                if (!startTime || !endTime) return true;
+                return endTime > startTime;
+              }
+              
               return (
                 !isNaN(endDate.getTime()) &&
                 !isNaN(startDateObj.getTime()) &&
@@ -273,6 +285,11 @@ export const useTokenSaleSchema = () => {
               );
             },
           ),
+
+        // End time - required and must be valid time format
+        endTime: Yup.string()
+          .required(t('endTimeRequiredError', { ns: 'tokenSale' }))
+          .matches(/^([01]?[0-9]|2[0-3]):[0-5][0-9]$/, t('endTimeInvalidError', { ns: 'tokenSale' })),
       }),
     [t, addressValidationTestSimple, treasury.assetsFungible],
   );

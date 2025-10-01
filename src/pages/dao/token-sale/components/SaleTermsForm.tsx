@@ -8,6 +8,7 @@ import { BigIntInput } from '../../../../components/ui/forms/BigIntInput';
 import { DatePicker } from '../../../../components/ui/forms/DatePicker';
 import { LabelComponent } from '../../../../components/ui/forms/InputComponent';
 import { NumberInputWithAddon } from '../../../../components/ui/forms/InputWithAddon';
+import { TimeInput } from '../../../../components/ui/forms/TimeInput';
 import { DropdownMenu } from '../../../../components/ui/menus/DropdownMenu';
 import { USDC_DECIMALS } from '../../../../constants/common';
 import useFeatureFlag from '../../../../helpers/environmentFeatureFlags';
@@ -349,40 +350,79 @@ export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
           gap={4}
           mb="1rem"
         >
-          <LabelComponent
-            label={t('saleStartDateLabel')}
-            isRequired={true}
-            errorMessage={touched.startDate && errors.startDate ? errors.startDate : undefined}
-            gridContainerProps={{
-              templateColumns: '1fr',
-            }}
-          >
-            <DatePicker
-              selectedDate={values.startDate ? new Date(values.startDate) : undefined}
-              onChange={date => setFieldValue('startDate', date ? date.toISOString() : '')}
-              minDate={(() => {
-                const tomorrow = new Date();
-                tomorrow.setDate(tomorrow.getDate() + 1);
-                return tomorrow;
-              })()}
-            />
-          </LabelComponent>
+          <VStack align="stretch" spacing={4}>
+            <LabelComponent
+              label={t('saleStartDateLabel')}
+              isRequired={true}
+              errorMessage={touched.startDate && errors.startDate ? errors.startDate : undefined}
+              gridContainerProps={{
+                templateColumns: '1fr',
+              }}
+            >
+              <DatePicker
+                selectedDate={values.startDate ? new Date(values.startDate) : undefined}
+                onChange={date => setFieldValue('startDate', date ? date.toISOString() : '')}
+                minDate={(() => {
+                  const tomorrow = new Date();
+                  tomorrow.setDate(tomorrow.getDate() + 1);
+                  return tomorrow;
+                })()}
+              />
+            </LabelComponent>
+            <LabelComponent
+              label={t('startTimeLabel')}
+              isRequired={true}
+              errorMessage={touched.startTime && errors.startTime ? errors.startTime : undefined}
+              gridContainerProps={{
+                templateColumns: '1fr',
+              }}
+            >
+              <TimeInput
+                value={values.startTime}
+                onChange={time => setFieldValue('startTime', time)}
+              />
+            </LabelComponent>
+          </VStack>
 
-          <LabelComponent
-            label={t('saleEndDateLabel')}
-            isRequired={true}
-            errorMessage={touched.endDate && errors.endDate ? errors.endDate : undefined}
-            gridContainerProps={{
-              templateColumns: '1fr',
-            }}
-          >
-            <DatePicker
-              selectedDate={values.endDate ? new Date(values.endDate) : undefined}
-              onChange={date => setFieldValue('endDate', date ? date.toISOString() : '')}
-              minDate={values.startDate ? new Date(values.startDate) : new Date()}
-            />
-          </LabelComponent>
+          <VStack align="stretch" spacing={4}>
+            <LabelComponent
+              label={t('saleEndDateLabel')}
+              isRequired={true}
+              errorMessage={touched.endDate && errors.endDate ? errors.endDate : undefined}
+              gridContainerProps={{
+                templateColumns: '1fr',
+              }}
+            >
+              <DatePicker
+                selectedDate={values.endDate ? new Date(values.endDate) : undefined}
+                onChange={date => setFieldValue('endDate', date ? date.toISOString() : '')}
+                minDate={values.startDate ? new Date(values.startDate) : new Date()}
+              />
+            </LabelComponent>
+            <LabelComponent
+              label={t('endTimeLabel')}
+              isRequired={true}
+              errorMessage={touched.endTime && errors.endTime ? errors.endTime : undefined}
+              gridContainerProps={{
+                templateColumns: '1fr',
+              }}
+            >
+              <TimeInput
+                value={values.endTime}
+                onChange={time => setFieldValue('endTime', time)}
+              />
+            </LabelComponent>
+          </VStack>
         </Grid>
+
+        {/* Timezone Note */}
+        <Text
+          textStyle="text-xs-regular"
+          color="color-neutral-400"
+          mb="1rem"
+        >
+          {t('timezoneNote', { timezone: Intl.DateTimeFormat().resolvedOptions().timeZone })}
+        </Text>
 
         <LabelComponent
           label={t('acceptedPaymentTokenLabel')}

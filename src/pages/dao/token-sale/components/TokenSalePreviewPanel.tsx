@@ -11,8 +11,10 @@ import { calculateProtocolFeeTokens } from '../../../../utils/tokenSaleCalculati
 import {
   formatSaleAmount,
   formatSaleDate,
+  formatSaleDateWithTime,
   formatTokenPrice,
 } from '../../../../utils/tokenSaleFormats';
+import { combineDateTimeToUTC } from '../../../../utils/timezoneUtils';
 import { BuyerRequirementsDisplay } from './buyer-requirements/BuyerRequirementsDisplay';
 
 interface TokenSalePreviewPanelProps {
@@ -97,11 +99,15 @@ export function TokenSalePreviewPanel({ values }: TokenSalePreviewPanelProps) {
     }
 
     // Date formatting
-    const startDateFormatted = values.startDate
-      ? formatSaleDate(Math.floor(new Date(values.startDate).getTime() / 1000))
+    const startDateFormatted = values.startDate && values.startTime
+      ? formatSaleDateWithTime(
+          combineDateTimeToUTC(values.startDate, values.startTime)
+        )
       : '--';
-    const endDateFormatted = values.endDate
-      ? formatSaleDate(Math.floor(new Date(values.endDate).getTime() / 1000))
+    const endDateFormatted = values.endDate && values.endTime
+      ? formatSaleDateWithTime(
+          combineDateTimeToUTC(values.endDate, values.endTime)
+        )
       : '--';
 
     // Amount formatting
