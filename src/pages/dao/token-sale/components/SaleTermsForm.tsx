@@ -365,11 +365,7 @@ export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
               <DatePicker
                 selectedDate={values.startDate ? new Date(values.startDate) : undefined}
                 onChange={date => setFieldValue('startDate', date ? date.toISOString() : '')}
-                minDate={(() => {
-                  const tomorrow = new Date();
-                  tomorrow.setDate(tomorrow.getDate() + 1);
-                  return tomorrow;
-                })()}
+                minDate={new Date()}
               />
             </LabelComponent>
             <LabelComponent
