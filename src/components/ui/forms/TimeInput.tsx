@@ -7,7 +7,13 @@ interface TimeInputProps extends Omit<InputProps, 'type' | 'value' | 'onChange'>
   placeholder?: string;
 }
 
-export function TimeInput({ value, onChange, disabled = false, placeholder = "09:00", ...props }: TimeInputProps) {
+export function TimeInput({
+  value,
+  onChange,
+  disabled = false,
+  placeholder = '09:00',
+  ...props
+}: TimeInputProps) {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     onChange(e.target.value);
   };

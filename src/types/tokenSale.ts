@@ -102,9 +102,9 @@ export interface TokenSaleFormValues {
 
   // Sale Timing
   startDate: string;
-  startTime: string;     // New: "HH:MM" format
+  startTime: string; // New: "HH:MM" format
   endDate: string;
-  endTime: string;       // New: "HH:MM" format
+  endTime: string; // New: "HH:MM" format
 
   // Sale Pricing & Terms
   minimumFundraise: string;

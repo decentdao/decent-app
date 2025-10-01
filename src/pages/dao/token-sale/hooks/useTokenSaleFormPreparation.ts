@@ -1,16 +1,17 @@
 import { useMemo } from 'react';
 import { Address, getAddress, zeroAddress, parseUnits } from 'viem';
+
 import { PRECISION, USDC_DECIMALS } from '../../../../constants/common';
 import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
 import { useDAOStore } from '../../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../../providers/NetworkConfig/useNetworkConfigStore';
 import { TokenSaleFormValues } from '../../../../types/tokenSale';
+import { combineDateTimeToUTC } from '../../../../utils/timezoneUtils';
 import {
   COMMITMENT_TOKEN_PROTOCOL_FEE,
   calculateSaleTokenProtocolFeeForContract,
   calculateGrossTokensFromNet,
 } from '../../../../utils/tokenSaleCalculations';
-import { combineDateTimeToUTC } from '../../../../utils/timezoneUtils';
 
 export interface PreparedTokenSaleData {
   saleName: string;

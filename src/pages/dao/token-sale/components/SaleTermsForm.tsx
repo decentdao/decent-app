@@ -350,7 +350,10 @@ export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
           gap={4}
           mb="1rem"
         >
-          <VStack align="stretch" spacing={4}>
+          <VStack
+            align="stretch"
+            spacing={4}
+          >
             <LabelComponent
               label={t('saleStartDateLabel')}
               isRequired={true}
@@ -384,7 +387,10 @@ export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
             </LabelComponent>
           </VStack>
 
-          <VStack align="stretch" spacing={4}>
+          <VStack
+            align="stretch"
+            spacing={4}
+          >
             <LabelComponent
               label={t('saleEndDateLabel')}
               isRequired={true}
