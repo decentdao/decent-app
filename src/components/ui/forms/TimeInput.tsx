@@ -21,7 +21,7 @@ export function TimeInput({
 
   return (
     <InputGroup>
-      <InputLeftElement 
+      <InputLeftElement
         cursor={disabled ? 'not-allowed' : 'pointer'}
         onClick={() => {
           if (!disabled) {
@@ -46,7 +46,10 @@ export function TimeInput({
           />
         </Flex>
       </InputLeftElement>
-      <Box position="relative" flex="1">
+      <Box
+        position="relative"
+        flex="1"
+      >
         <Input
           type="time"
           value={value || ''}
