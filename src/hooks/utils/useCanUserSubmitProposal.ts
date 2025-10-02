@@ -68,7 +68,10 @@ export function useCanUserCreateProposal() {
           return checkIsMultisigOwner(safeInfo.owners);
         }
       } else {
-        if (isAzorius && (type === GovernanceType.AZORIUS_ERC721 || votesToken?.delegatee === user.address)) {
+        if (
+          isAzorius &&
+          (type === GovernanceType.AZORIUS_ERC721 || votesToken?.delegatee === user.address)
+        ) {
           const isProposerPerStrategy = await Promise.all(
             [
               linearVotingErc20Address,
