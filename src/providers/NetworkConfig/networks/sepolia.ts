@@ -159,8 +159,8 @@ const sepoliaConfig: NetworkConfig = {
     },
   },
   tokenSale: {
-    protocolFeeReceiver: '0x',
-  }, // Will be set to DAO deploying token sale
+    protocolFeeReceiver: '0x0000000000000000000000000000000000000000', // Will be set to connected account deploying token sale
+  },
 };
 
 export default sepoliaConfig;
