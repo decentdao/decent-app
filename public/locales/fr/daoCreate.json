@@ -29,6 +29,7 @@
   "labelVotingPeriod": "Période de vote",
   "labelChooseGovernance": "Gouvernance",
   "helperChooseGovernance": "Sélectionnez un schéma de gouvernance pour votre DAO.",
+  "helperChooseGovernanceNode": "Sélectionnez un schéma de gouvernance pour votre nœud.",
   "helperVotingPeriod": "Durée pendant laquelle le vote est autorisé après la création d'une proposition.",
   "helperQuorumERC20": "Le pourcentage du total des votes symboliques possibles requis pour voter sur une proposition afin que le résultat soit valide.",
   "helperQuorumERC721": "Le poids minimum du total des votes par jetons disponibles requis pour voter sur une proposition afin que le résultat soit valide.",
@@ -75,6 +76,7 @@
   "labelDAOName": "Nom",
   "daoNamePlaceholder": "Nom",
   "helperDAOName": "Quel est le nom de votre DAO ?",
+  "helperNodeName": "Quel est le nom de votre nœud ?",
   "labelDeploySubDAO": "Créer une proposition de sous-ODA",
   "labelDeployAzorius": "Créer une proposition de déploiement d'Azorius",
   "titleAllocations": "Allocations",
@@ -88,6 +90,7 @@
   "createSubDAOSuccessToastMessage": "Déploiement réussi",
   "createSubDAOFailureToastMessage": "Échec du déploiement",
   "helperAllocations": "Les jetons non alloués seront placés dans la trésorerie de la DAO nouvellement déployée.",
+  "helperAllocationsNode": "Les jetons non alloués seront placés dans la trésorerie du nœud nouvellement déployé.",
   "helperProposers": "Seuls les membres de ces rôles inscrits sur la liste blanche pourront créer des propositions.",
   "radioLabelNewToken": "Nouveau jeton",
   "radioLabelExistingToken": "Adresse du contrat de jeton",
@@ -105,6 +108,7 @@
   "attachFractalModuleLabel": "Autoriser la récupération",
   "networks": "Réseaux",
   "networkDescription": "Sur quel réseau souhaitez-vous déployer cette DAO ?",
+  "networkDescriptionNode": "Sur quel réseau souhaitez-vous déployer ce nœud ?",
   "attachFractalModuleDescription": "Ce paramètre détermine si le DAO parent pourra exécuter des transactions arbitraires sur le DAO enfant en contournant le processus de vote sur le DAO enfant.",
   "fractalModuleAttachedDescription": "Ce paramètre ne peut pas être modifié car le module Fractal est déjà attaché au DAO."
 }

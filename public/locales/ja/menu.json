@@ -10,5 +10,7 @@
   "optionRemoveTemplate": "テンプレートの削除",
   "optionForkTemplate": "フォークテンプレート",
   "optionModifyGovernance": "ガバナンスの変更",
-  "optionSettings": "設定"
+  "optionSettings": "設定",
+  "viewDetails": "詳細を見る",
+  "claimFunds": "資金の請求"
 }

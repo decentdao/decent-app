@@ -29,6 +29,7 @@
   "labelVotingPeriod": "Період голосування",
   "labelChooseGovernance": "Управління",
   "helperChooseGovernance": "Виберіть схему управління для вашої DAO.",
+  "helperChooseGovernanceNode": "Виберіть схему управління для вашого вузла.",
   "helperVotingPeriod": "Час, протягом якого голосування доступне після створення пропозиції.",
   "helperQuorumERC20": "Відсоток від загальної кількості можливих символічних голосів, який необхідно набрати для того, щоб результат був дійсним.",
   "helperQuorumERC721": "Мінімальна вага загальної доступної ваги токенів, необхідна для голосування за пропозицію, щоб результат був дійсним.",
@@ -75,6 +76,7 @@
   "labelDAOName": "Ім'я",
   "daoNamePlaceholder": "Ім'я",
   "helperDAOName": "Як називається ваша DAO?",
+  "helperNodeName": "Як називається ваш вузол?",
   "labelDeploySubDAO": "Створити пропозицію SubDAO",
   "labelDeployAzorius": "Створіть пропозицію щодо розгортання Azorius",
   "titleAllocations": "Асигнування",
@@ -88,6 +90,7 @@
   "createSubDAOSuccessToastMessage": "Розгортання пройшло успішно",
   "createSubDAOFailureToastMessage": "Розгортання не вдалося",
   "helperAllocations": "Будь-які нерозподілені токени будуть розміщені у новоствореній скарбниці DAO.",
+  "helperAllocationsNode": "Всі нерозподілені токени будуть поміщені в скарбницю нового розгорнутого вузла.",
   "helperProposers": "Лише ці учасники з білого списку ролей зможуть створювати пропозиції.",
   "radioLabelNewToken": "Новий жетон",
   "radioLabelExistingToken": "Адреса токен-контракту",
@@ -105,6 +108,7 @@
   "attachFractalModuleLabel": "Ввімкнути Clawback",
   "networks": "Мережі",
   "networkDescription": "В якій мережі ви хотіли б розгорнути цей DAO?",
+  "networkDescriptionNode": "У якій мережі ви хочете розгорнути цей вузол?",
   "attachFractalModuleDescription": "Цей параметр контролює, чи зможе батьківська DAO виконувати довільні транзакції на дочірній DAO в обхід процесу голосування на дочірній DAO.",
   "fractalModuleAttachedDescription": "Цей параметр не може бути змінено, оскільки Fractal Module вже приєднано до DAO."
 }

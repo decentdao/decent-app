@@ -10,5 +10,7 @@
   "optionRemoveTemplate": "Rimuovi modello",
   "optionForkTemplate": "Modello di forcella",
   "optionModifyGovernance": "Modificare la governance",
-  "optionSettings": "Impostazioni"
+  "optionSettings": "Impostazioni",
+  "viewDetails": "Visualizza dettagli",
+  "claimFunds": "Richiesta di fondi"
 }

@@ -29,6 +29,7 @@
   "labelVotingPeriod": "投票期間",
   "labelChooseGovernance": "治理",
   "helperChooseGovernance": "為您的DAO選擇治理模式。",
+  "helperChooseGovernanceNode": "為您的節點選擇治理模式。",
   "helperVotingPeriod": "提案建立後啟用投票的時間長度。",
   "helperQuorumERC20": "為使投票結果有效，對某項提案進行投票所需的代幣投票佔可能投票總數的百分比。",
   "helperQuorumERC721": "為使投票結果有效，對某項提案進行投票所需的最小可用代幣投票權重。",
@@ -75,6 +76,7 @@
   "labelDAOName": "名稱",
   "daoNamePlaceholder": "名稱",
   "helperDAOName": "您的 DAO 叫什麼？",
+  "helperNodeName": "您的節點名稱是什麼？",
   "labelDeploySubDAO": "建立SubDAO提案",
   "labelDeployAzorius": "建立Azorius部署提案",
   "titleAllocations": "分配",
@@ -88,6 +90,7 @@
   "createSubDAOSuccessToastMessage": "部署成功",
   "createSubDAOFailureToastMessage": "部署失敗",
   "helperAllocations": "任何未分配的代幣將放入新部署的DAO金庫。",
+  "helperAllocationsNode": "任何未分配的代幣將放入新部署的節點金庫。",
   "helperProposers": "只有這些列入白名單的角色成員才能建立提案。",
   "radioLabelNewToken": "新代幣",
   "radioLabelExistingToken": "代幣合約地址",
@@ -105,6 +108,7 @@
   "attachFractalModuleLabel": "啟用回溯機制",
   "networks": "網路",
   "networkDescription": "您想在哪個網路部署這個DAO？",
+  "networkDescriptionNode": "您希望將此節點部署在哪個網路？",
   "attachFractalModuleDescription": "此設定可控制父DAO是否能繞過子DAO的投票程序，在子DAO上執行任意交易。",
   "fractalModuleAttachedDescription": "由於Fractal模組已連接至DAO，因此無法修改此設定。"
 }

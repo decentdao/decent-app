@@ -10,5 +10,7 @@
   "optionRemoveTemplate": "Remover modelo",
   "optionForkTemplate": "Modelo de garfo",
   "optionModifyGovernance": "Modificar a governação",
-  "optionSettings": "Definições"
+  "optionSettings": "Definições",
+  "viewDetails": "Ver detalhes",
+  "claimFunds": "Fundos de reclamação"
 }

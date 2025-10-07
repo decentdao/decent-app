@@ -10,5 +10,7 @@
   "optionRemoveTemplate": "Supprimer le modèle",
   "optionForkTemplate": "Modèle de fourchette",
   "optionModifyGovernance": "Modifier la gouvernance",
-  "optionSettings": "Paramètres"
+  "optionSettings": "Paramètres",
+  "viewDetails": "Voir les détails",
+  "claimFunds": "Fonds de réclamation"
 }

@@ -29,6 +29,7 @@
   "labelVotingPeriod": "Periodo di votazione",
   "labelChooseGovernance": "La governance",
   "helperChooseGovernance": "Selezionare uno schema di governance per il DAO.",
+  "helperChooseGovernanceNode": "Selezionare uno schema di governance per il nodo.",
   "helperVotingPeriod": "Il periodo di tempo in cui è possibile votare dopo la creazione di una proposta.",
   "helperQuorumERC20": "La percentuale del totale dei possibili voti per gettone necessari per votare una proposta e rendere valido il risultato.",
   "helperQuorumERC721": "Il peso minimo del peso totale disponibile dei gettoni di voto necessario per votare una proposta e rendere valido il risultato.",
@@ -75,6 +76,7 @@
   "labelDAOName": "Nome",
   "daoNamePlaceholder": "Nome",
   "helperDAOName": "Come si chiama il vostro DAO?",
+  "helperNodeName": "Come si chiama il vostro nodo?",
   "labelDeploySubDAO": "Creare una proposta di subDAO",
   "labelDeployAzorius": "Creare una proposta di distribuzione di Azorius",
   "titleAllocations": "Assegnazioni",
@@ -88,6 +90,7 @@
   "createSubDAOSuccessToastMessage": "Distribuzione riuscita",
   "createSubDAOFailureToastMessage": "Installazione non riuscita",
   "helperAllocations": "Tutti i gettoni non assegnati saranno collocati nella nuova tesoreria della DAO.",
+  "helperAllocationsNode": "Tutti i gettoni non allocati verranno messi nella tesoreria del nuovo nodo.",
   "helperProposers": "Solo i membri di questi ruoli possono creare proposte.",
   "radioLabelNewToken": "Nuovo gettone",
   "radioLabelExistingToken": "Indirizzo del contratto del token",
@@ -105,6 +108,7 @@
   "attachFractalModuleLabel": "Abilitazione del Clawback",
   "networks": "Reti",
   "networkDescription": "Su quale rete vorreste distribuire questo DAO?",
+  "networkDescriptionNode": "Su quale rete si desidera distribuire questo nodo?",
   "attachFractalModuleDescription": "Questa impostazione controlla se il DAO genitore sarà in grado di eseguire transazioni arbitrarie sul DAO figlio, aggirando il processo di votazione sul DAO figlio.",
   "fractalModuleAttachedDescription": "Questa impostazione non può essere modificata in quanto il modulo Fractal è già collegato al DAO."
 }

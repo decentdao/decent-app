@@ -29,6 +29,7 @@
   "labelVotingPeriod": "Período de votação",
   "labelChooseGovernance": "Governação",
   "helperChooseGovernance": "Selecione um esquema de governação para o seu DAO.",
+  "helperChooseGovernanceNode": "Selecione um esquema de governação para o seu nó.",
   "helperVotingPeriod": "O período de tempo durante o qual a votação é activada após a criação de uma proposta.",
   "helperQuorumERC20": "A percentagem do total de votos simbólicos possíveis que é necessário votar numa proposta para que o resultado seja válido.",
   "helperQuorumERC721": "O peso mínimo do total do peso do token de votação disponível necessário para votar numa proposta para que o resultado seja válido.",
@@ -75,6 +76,7 @@
   "labelDAOName": "Nome",
   "daoNamePlaceholder": "Nome",
   "helperDAOName": "Como se chama o seu DAO?",
+  "helperNodeName": "Como se chama o seu nó?",
   "labelDeploySubDAO": "Criar proposta de SubDAO",
   "labelDeployAzorius": "Criar proposta de implantação do Azorius",
   "titleAllocations": "Atribuições",
@@ -88,6 +90,7 @@
   "createSubDAOSuccessToastMessage": "Implementação bem sucedida",
   "createSubDAOFailureToastMessage": "A implementação falhou",
   "helperAllocations": "Quaisquer tokens não atribuídos serão colocados na tesouraria da DAO recentemente criada.",
+  "helperAllocationsNode": "Quaisquer tokens não atribuídos serão colocados na tesouraria do nó recém-implantado.",
   "helperProposers": "Apenas estes membros das funções na lista branca podem criar propostas.",
   "radioLabelNewToken": "Novo Token",
   "radioLabelExistingToken": "Endereço do contrato de token",
@@ -105,6 +108,7 @@
   "attachFractalModuleLabel": "Ativar o Clawback",
   "networks": "Redes",
   "networkDescription": "Em que rede gostaria de implementar este DAO?",
+  "networkDescriptionNode": "Em que rede gostaria de implementar este nó?",
   "attachFractalModuleDescription": "Esta definição controla se o DAO pai será capaz de executar transacções arbitrárias no DAO filho, contornando o processo de votação no DAO filho.",
   "fractalModuleAttachedDescription": "Esta definição não pode ser modificada porque o Módulo Fractal já está ligado ao DAO."
 }

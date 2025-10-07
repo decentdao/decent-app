@@ -10,5 +10,7 @@
   "optionRemoveTemplate": "移除範本",
   "optionForkTemplate": "叉子範本",
   "optionModifyGovernance": "修改治理",
-  "optionSettings": "設定"
+  "optionSettings": "設定",
+  "viewDetails": "檢視詳細資訊",
+  "claimFunds": "索賠基金"
 }
