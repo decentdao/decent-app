@@ -1,5 +1,6 @@
 import { Input, InputGroup, InputLeftElement, InputProps, Icon, Flex, Box } from '@chakra-ui/react';
 import { Clock } from '@phosphor-icons/react';
+import { useRef } from 'react';
 
 interface TimeInputProps extends Omit<InputProps, 'type' | 'value' | 'onChange'> {
   value?: string; // Format: "HH:MM" (24-hour)
@@ -15,6 +16,8 @@ export function TimeInput({
   placeholder = '09:00',
   ...props
 }: TimeInputProps) {
+  const inputRef = useRef<HTMLInputElement>(null);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     onChange(e.target.value);
   };
@@ -26,9 +29,8 @@ export function TimeInput({
         onClick={() => {
           if (!disabled) {
             // Focus the input to trigger the native time picker
-            const input = document.querySelector('input[type="time"]') as HTMLInputElement;
-            input?.focus();
-            input?.showPicker?.();
+            inputRef.current?.focus();
+            inputRef.current?.showPicker?.();
           }
         }}
       >
@@ -51,6 +53,7 @@ export function TimeInput({
         flex="1"
       >
         <Input
+          ref={inputRef}
           type="time"
           value={value || ''}
           onChange={handleChange}
