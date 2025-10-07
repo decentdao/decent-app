@@ -2,17 +2,20 @@ import { Box, Text, VStack } from '@chakra-ui/react';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { formatUnits } from 'viem';
+
 import { TokenSaleInfoCard } from '../../../../components/TokenSales/TokenSaleInfoCard';
 import { PRECISION, USDC_DECIMALS } from '../../../../constants/common';
 import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
 import { useDAOStore } from '../../../../providers/App/AppProvider';
 import { TokenSaleFormValues } from '../../../../types/tokenSale';
+import { combineDateTimeToUTC } from '../../../../utils/timezoneUtils';
 import { calculateProtocolFeeTokens } from '../../../../utils/tokenSaleCalculations';
 import {
   formatSaleAmount,
-  formatSaleDate,
+  formatSaleDateWithTime,
   formatTokenPrice,
 } from '../../../../utils/tokenSaleFormats';
+
 import { BuyerRequirementsDisplay } from './buyer-requirements/BuyerRequirementsDisplay';
 
 interface TokenSalePreviewPanelProps {
@@ -97,12 +100,14 @@ export function TokenSalePreviewPanel({ values }: TokenSalePreviewPanelProps) {
     }
 
     // Date formatting
-    const startDateFormatted = values.startDate
-      ? formatSaleDate(Math.floor(new Date(values.startDate).getTime() / 1000))
-      : '--';
-    const endDateFormatted = values.endDate
-      ? formatSaleDate(Math.floor(new Date(values.endDate).getTime() / 1000))
-      : '--';
+    const startDateFormatted =
+      values.startDate && values.startTime
+        ? formatSaleDateWithTime(combineDateTimeToUTC(values.startDate, values.startTime))
+        : '--';
+    const endDateFormatted =
+      values.endDate && values.endTime
+        ? formatSaleDateWithTime(combineDateTimeToUTC(values.endDate, values.endTime))
+        : '--';
 
     // Amount formatting
     const minimumFundraiseFormatted = values.minimumFundraise

@@ -1,4 +1,6 @@
+import { formatInTimeZone } from 'date-fns-tz';
 import { formatUnits } from 'viem';
+
 import { PRECISION, USDC_DECIMALS } from '../constants/common';
 import { formatUSD } from './numberFormats';
 
@@ -15,6 +17,19 @@ export const formatSaleDate = (timestamp: number | bigint): string => {
     day: 'numeric',
     timeZone: 'UTC',
   });
+};
+
+/**
+ * Formats timestamp with date and time, showing user's local timezone
+ */
+export const formatSaleDateWithTime = (
+  timestamp: number | bigint,
+  userTimezone?: string,
+): string => {
+  const timestampNum = typeof timestamp === 'bigint' ? Number(timestamp) : timestamp;
+  const userTz = userTimezone || Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+  return formatInTimeZone(timestampNum * 1000, userTz, 'MMM dd, yyyy, h:mm aa zzz');
 };
 
 /**

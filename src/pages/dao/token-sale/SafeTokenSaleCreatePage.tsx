@@ -44,18 +44,10 @@ const getInitialValues = (usdcAddress?: Address): TokenSaleFormValues => ({
   saleTokenSupply: { value: '', bigintValue: undefined }, // Net tokens for sale (what buyers get)
 
   // Sale Timing
-  startDate: (() => {
-    // todo remove after testing
-    const twentyMinutesFromNow = new Date();
-    twentyMinutesFromNow.setMinutes(twentyMinutesFromNow.getMinutes() + 10);
-    return twentyMinutesFromNow.toISOString();
-  })(),
-  endDate: (() => {
-    // todo remove after testing
-    const twentyMinutesFromNow = new Date();
-    twentyMinutesFromNow.setMinutes(twentyMinutesFromNow.getMinutes() + 30);
-    return twentyMinutesFromNow.toISOString();
-  })(),
+  startDate: '',
+  startTime: '09:00', // 9 AM default
+  endDate: '',
+  endTime: '17:00', // 5 PM default
 
   // Sale Pricing & Terms
   minimumFundraise: '',

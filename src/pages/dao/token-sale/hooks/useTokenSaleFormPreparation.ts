@@ -1,10 +1,12 @@
 import { useMemo } from 'react';
 import { Address, getAddress, zeroAddress, parseUnits } from 'viem';
+
 import { PRECISION, USDC_DECIMALS } from '../../../../constants/common';
 import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
 import { useDAOStore } from '../../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../../providers/NetworkConfig/useNetworkConfigStore';
 import { TokenSaleFormValues } from '../../../../types/tokenSale';
+import { combineDateTimeToUTC } from '../../../../utils/timezoneUtils';
 import {
   COMMITMENT_TOKEN_PROTOCOL_FEE,
   calculateSaleTokenProtocolFeeForContract,
@@ -133,9 +135,9 @@ export function useTokenSaleFormPreparation() {
       }
 
       // Convert dates to timestamps
-      // Fix timezone issue by parsing dates as UTC
-      const saleStartTimestamp = Math.floor(Date.parse(values.startDate) / 1000);
-      const saleEndTimestamp = Math.floor(Date.parse(values.endDate) / 1000);
+      // Combine date and time in user's timezone, then convert to UTC
+      const saleStartTimestamp = combineDateTimeToUTC(values.startDate, values.startTime);
+      const saleEndTimestamp = combineDateTimeToUTC(values.endDate, values.endTime);
 
       const commitmentToken = values.commitmentToken as Address;
       const saleToken = values.tokenAddress as Address;
