@@ -91,7 +91,13 @@ type NetworkConfigBase = {
 
   createOptions: GovernanceType[];
   stablecoins: {
-    usdc: Address;
+    usdc: {
+      address: Address;
+      decimals: number;
+      icon: string;
+      name: string;
+      symbol: string;
+    };
   };
 };
 

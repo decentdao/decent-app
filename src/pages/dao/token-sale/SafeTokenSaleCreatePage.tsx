@@ -335,7 +335,7 @@ export function SafeTokenSaleCreatePage() {
       />
 
       <Formik
-        initialValues={getInitialValues(stablecoins.usdc)}
+        initialValues={getInitialValues(stablecoins.usdc.address)}
         validationSchema={tokenSaleValidationSchema}
         onSubmit={handleSubmit}
       >

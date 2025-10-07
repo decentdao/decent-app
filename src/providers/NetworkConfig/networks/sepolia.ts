@@ -150,7 +150,13 @@ const sepoliaConfig: NetworkConfig = {
   ],
   bundlerMinimumStake: 100_000_000_000_000_000n, // 0.1 ETH,
   stablecoins: {
-    usdc: '0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238',
+    usdc: {
+      address: '0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238',
+      decimals: 6,
+      icon: '/images/coin-icon-usdc.svg',
+      name: 'USDC',
+      symbol: 'USDC',
+    },
   },
 };
 

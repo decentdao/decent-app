@@ -141,7 +141,13 @@ const baseConfig: NetworkConfig = {
     GovernanceType.AZORIUS_ERC721,
   ],
   stablecoins: {
-    usdc: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913',
+    usdc: {
+      address: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913',
+      decimals: 6,
+      icon: '/images/coin-icon-usdc.svg',
+      name: 'USDC',
+      symbol: 'USDC',
+    },
   },
 };
 

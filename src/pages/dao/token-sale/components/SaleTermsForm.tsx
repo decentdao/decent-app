@@ -14,6 +14,7 @@ import { USDC_DECIMALS } from '../../../../constants/common';
 import useFeatureFlag from '../../../../helpers/environmentFeatureFlags';
 import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
 import { useDAOStore } from '../../../../providers/App/AppProvider';
+import { useNetworkConfigStore } from '../../../../providers/NetworkConfig/useNetworkConfigStore';
 import { TokenSaleFormValues } from '../../../../types/tokenSale';
 import {
   calculateTokenPrice,
@@ -28,6 +29,9 @@ interface SaleTermsFormProps {
 export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
   const { t } = useTranslation('tokenSale');
   const { errors, touched } = useFormikContext<TokenSaleFormValues>();
+  const {
+    stablecoins: { usdc },
+  } = useNetworkConfigStore();
   const devFeatureEnabled = useFeatureFlag('flag_dev');
   const daoKeyResult = useCurrentDAOKey();
   const daoKey =
@@ -445,15 +449,15 @@ export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
             w="fit-content"
           >
             <Image
-              src="/images/coin-icon-usdc.svg"
-              alt="USDC"
+              src={usdc.icon}
+              alt={usdc.symbol}
               boxSize="1rem"
             />
             <Text
               textStyle="text-xs-medium"
               color="color-white"
             >
-              USDC
+              {usdc.name}
             </Text>
           </Flex>
         </LabelComponent>

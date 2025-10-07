@@ -140,7 +140,13 @@ const polygonConfig: NetworkConfig = {
     GovernanceType.AZORIUS_ERC721,
   ],
   stablecoins: {
-    usdc: '0x3c499c542cEF5E3811e1192ce70d8cC03d5c3359',
+    usdc: {
+      address: '0x3c499c542cEF5E3811e1192ce70d8cC03d5c3359',
+      decimals: 6,
+      icon: '/images/coin-icon-usdc.svg',
+      name: 'USDC',
+      symbol: 'USDC',
+    },
   },
 };
 

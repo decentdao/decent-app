@@ -141,7 +141,13 @@ const optimismConfig: NetworkConfig = {
   ],
   stablecoins: {
     // native USDC on Optimism
-    usdc: '0x0b2C639c533813f4Aa9D7837CAf62653d097Ff85',
+    usdc: {
+      address: '0x0b2C639c533813f4Aa9D7837CAf62653d097Ff85',
+      decimals: 6,
+      icon: '/images/coin-icon-usdc.svg',
+      name: 'USDC',
+      symbol: 'USDC',
+    },
   },
 };
 
