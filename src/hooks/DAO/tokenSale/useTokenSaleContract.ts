@@ -107,7 +107,7 @@ export function useTokenSaleContract() {
           client: walletClient,
         });
 
-        // Convert amount to token units (assuming 6 decimals for USDC)
+        // @dev assuming commitment token is 6 decimals (USDC)
         const amountWei = parseUnits(amount, USDC_DECIMALS);
 
         contractCall({

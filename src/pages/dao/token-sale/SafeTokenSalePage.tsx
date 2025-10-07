@@ -42,8 +42,7 @@ export function SafeTokenSalePage() {
       return total + sale.totalCommitments;
     }, 0n);
 
-    // Format total raised (assuming commitment token is typically USDC with 6 decimals)
-    // TODO: This should ideally use the actual commitment token decimals from each sale
+    // @dev assuming commitment token is 6 decimals (USDC)
     const totalRaisedFormatted =
       totalRaisedWei > 0n
         ? `$${parseFloat(formatUnits(totalRaisedWei, USDC_DECIMALS)).toLocaleString('en-US', { maximumFractionDigits: 0 })}`

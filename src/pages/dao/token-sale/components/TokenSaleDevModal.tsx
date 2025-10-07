@@ -28,6 +28,7 @@ import { Address, formatUnits, parseUnits } from 'viem';
 import { useAccount } from 'wagmi';
 import { ModalBase } from '../../../../components/ui/modals/ModalBase';
 import { NATIVE_TOKEN_ADDRESS } from '../../../../components/ui/utils/AssetSelector';
+import { USDC_DECIMALS } from '../../../../constants/common';
 import { useTokenSaleContract } from '../../../../hooks/DAO/tokenSale/useTokenSaleContract';
 import { useTokenSaleVerification } from '../../../../hooks/DAO/tokenSale/useTokenSaleVerification';
 import { useNetworkWalletClient } from '../../../../hooks/useNetworkWalletClient';
@@ -99,7 +100,8 @@ export function TokenSaleDevModal({ isOpen, onClose, tokenSale }: TokenSaleDevMo
   // Commitment token data
   const [commitmentTokenBalance, setCommitmentTokenBalance] = useState(0n);
   const [commitmentTokenAllowance, setCommitmentTokenAllowance] = useState(0n);
-  const commitmentTokenDecimals = 6; // Default to USDC decimals
+  // @dev assuming commitment token is 6 decimals (USDC)
+  const commitmentTokenDecimals = USDC_DECIMALS;
 
   // Fetch commitment token data
   const fetchCommitmentTokenData = useCallback(async () => {

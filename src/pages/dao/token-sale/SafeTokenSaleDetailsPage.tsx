@@ -172,7 +172,7 @@ export function SafeTokenSaleDetailsPage() {
             raised={tokenSale.totalCommitments}
             goal={tokenSale.maximumTotalCommitment}
             minimum={tokenSale.minimumTotalCommitment}
-            commitmentTokenDecimals={6} // Assuming USDC
+            commitmentTokenDecimals={USDC_DECIMALS} // @dev assuming commitment token is 6 decimals (USDC)
           />
 
           {/* Fundraising Goal Not Met Banner */}
