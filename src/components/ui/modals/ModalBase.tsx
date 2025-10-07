@@ -27,6 +27,7 @@ interface ModuleBaseProps {
   zIndex?: number;
   closeOnOverlayClick?: boolean;
   contentStyle?: ModalContentStyle;
+  isCentered?: boolean;
 }
 /**
  * The base wrapper component for a modal.  This displays the Chakra components necessary to open a modal,
@@ -43,10 +44,11 @@ export function ModalBase({
   size = 'lg',
   closeOnOverlayClick = true,
   contentStyle,
+  isCentered = true,
 }: ModuleBaseProps) {
   return (
     <Modal
-      isCentered
+      isCentered={isCentered}
       size={size}
       closeOnOverlayClick={closeOnOverlayClick}
       isOpen={isOpen}

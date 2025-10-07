@@ -7,7 +7,9 @@ import { RevenueSharingWallet } from '../../types/revShare';
 
 const DECENT_API_URL = import.meta.env.VITE_APP_DECENT_API_URL;
 
-const axiosClient = axios.create({ baseURL: DECENT_API_URL });
+const axiosClient = axios.create({
+  baseURL: DECENT_API_URL || 'https://api.decent.build', // Fallback to production API
+});
 
 type SubDaoInfo = {
   address: Address;
@@ -211,5 +213,71 @@ export async function syncAllSafeProposals(chainId: number, daoAddress: Address)
     }
     logError(e);
     return [];
+  }
+}
+
+export type VerificationSignature = {
+  signature: Hex;
+  expiration: number;
+};
+
+type TokenSaleVerificationResponse = {
+  success: boolean;
+  data: VerificationSignature;
+};
+
+export async function getTokenSaleVerification(
+  chainId: number,
+  daoAddress: Address,
+  tokenSaleAddress: Address,
+  payload: {
+    address: Address;
+    message: any;
+    signature: Hex;
+  },
+): Promise<VerificationSignature | null> {
+  try {
+    const response: AxiosResponse<TokenSaleVerificationResponse> = await axiosClient.post(
+      `/d/${chainId}/${daoAddress}/sales/${tokenSaleAddress}/verify`,
+      payload,
+    );
+
+    if (!response.data.success) {
+      throw new Error('API returned unsuccessful response');
+    }
+
+    return response.data.data;
+  } catch (e: any) {
+    logError(e);
+
+    // Re-throw with more specific error information
+    if (e.response) {
+      // Server responded with error status
+      const status = e.response.status;
+      const message = e.response.data?.message || e.message;
+
+      switch (status) {
+        case 400:
+          throw new Error(`Bad Request: ${message}`);
+        case 401:
+          throw new Error(`Unauthorized: ${message}`);
+        case 403:
+          throw new Error(`Forbidden: ${message}`);
+        case 404:
+          throw new Error(`Not Found: Token sale verification endpoint not found`);
+        case 429:
+          throw new Error(`Too Many Requests: ${message}`);
+        case 500:
+          throw new Error(`Server Error: ${message}`);
+        default:
+          throw new Error(`HTTP ${status}: ${message}`);
+      }
+    } else if (e.request) {
+      // Network error
+      throw new Error('Network error: Unable to reach verification service');
+    } else {
+      // Other error
+      throw new Error(`Verification failed: ${e.message}`);
+    }
   }
 }

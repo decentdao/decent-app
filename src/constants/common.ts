@@ -63,3 +63,14 @@ export const MAX_CONTENT_WIDTH = '80rem';
  */
 export const ERC6551_REGISTRY_SALT: Hex =
   '0x5d0e6ce4fd951366cc55da93f6e79d8b81483109d79676a04bcc2bed6a4b5072';
+
+/**
+ * USDC token decimals - used for token sale calculations and formatting
+ */
+export const USDC_DECIMALS = 6;
+
+/**
+ * PRECISION - used for token sale calculations and formatting
+ * Contract expects all protocol fees in 18-decimal precision
+ */
+export const PRECISION = BigInt(10 ** 18);

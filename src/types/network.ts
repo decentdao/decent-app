@@ -91,7 +91,16 @@ type NetworkConfigBase = {
 
   createOptions: GovernanceType[];
   stablecoins: {
-    usdc: Address;
+    usdc: {
+      address: Address;
+      decimals: number;
+      icon: string;
+      name: string;
+      symbol: string;
+    };
+  };
+  tokenSale: {
+    protocolFeeReceiver?: Address; // If not set, token sale is not enabled
   };
 };
 

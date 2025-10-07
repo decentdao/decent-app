@@ -100,7 +100,7 @@ function StakingForm() {
   // Add staking contract holdings, DAO token and USDC
   const mergeTokens: TokenBalance[] = [
     ...(stakedToken?.assetsFungible || []),
-    emptyTokenBalanceForAddress(usdc, 'USDC', 'USD Coin', 6),
+    emptyTokenBalanceForAddress(usdc.address, usdc.name, usdc.symbol, usdc.decimals),
   ];
   let daoErc20Token: ERC20TokenData | undefined;
   if (type === GovernanceType.AZORIUS_ERC20) {

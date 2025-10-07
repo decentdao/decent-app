@@ -1,43 +1,99 @@
-import { Box, Flex, Text, VStack, Icon } from '@chakra-ui/react';
-import { CheckCircle } from '@phosphor-icons/react';
-import { useMemo } from 'react';
+import { Box, Button, Flex, Text, VStack } from '@chakra-ui/react';
+import { Wrench } from '@phosphor-icons/react';
+import { useMemo, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
-import { formatUnits } from 'viem';
+import { formatUnits, getContract, erc20Abi } from 'viem';
 import { TokenSaleBanner } from '../../../components/TokenSales/TokenSaleBanner';
 import { TokenSaleCountdown } from '../../../components/TokenSales/TokenSaleCountdown';
 import { TokenSaleInfoCard } from '../../../components/TokenSales/TokenSaleInfoCard';
 import { TokenSaleProgressCard } from '../../../components/TokenSales/TokenSaleProgressCard';
+import { InfoBoxLoader } from '../../../components/ui/loaders/InfoBoxLoader';
 import PageHeader from '../../../components/ui/page/Header/PageHeader';
-import { CONTENT_MAXW } from '../../../constants/common';
+import { CONTENT_MAXW, USDC_DECIMALS } from '../../../constants/common';
+import { DAO_ROUTES } from '../../../constants/routes';
+import useFeatureFlag from '../../../helpers/environmentFeatureFlags';
 import { useTokenSaleClaimFunds } from '../../../hooks/DAO/proposal/useTokenSaleClaimFunds';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
+import useNetworkPublicClient from '../../../hooks/useNetworkPublicClient';
 import { useDAOStore } from '../../../providers/App/AppProvider';
+import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
+import { TokenSaleState } from '../../../types/tokenSale';
+import { calculateFDVFromTokenPrice } from '../../../utils/tokenSaleCalculations';
+import {
+  formatTokenPrice,
+  calculateTokenSupplyForSale,
+  formatSaleAmount,
+  formatSaleDate,
+} from '../../../utils/tokenSaleFormats';
+import { TokenSaleDevModal } from './components/TokenSaleDevModal';
+import { BuyerRequirementsDisplay } from './components/buyer-requirements/BuyerRequirementsDisplay';
 
 export function SafeTokenSaleDetailsPage() {
+  const { t } = useTranslation('tokenSale');
   const { saleId } = useParams<{ saleId: string }>();
   const { daoKey } = useCurrentDAOKey();
-  const { tokenSales } = useDAOStore({ daoKey });
+  const { addressPrefix } = useNetworkConfigStore();
+  const {
+    tokenSales,
+    node: { safe },
+  } = useDAOStore({ daoKey });
   const { claimFunds, pending } = useTokenSaleClaimFunds();
+  const publicClient = useNetworkPublicClient();
+  const [totalTokenSupply, setTotalTokenSupply] = useState<bigint | null>(null);
+  const [isDevModalOpen, setIsDevModalOpen] = useState(false);
+  const devFeatureEnabled = useFeatureFlag('flag_dev');
 
   const tokenSale = useMemo(() => {
     if (!saleId || !tokenSales) return null;
     return tokenSales.find(sale => sale.address.toLowerCase() === saleId.toLowerCase()) || null;
   }, [saleId, tokenSales]);
 
-  if (!tokenSale) {
-    return (
-      <Box
-        maxW={CONTENT_MAXW}
-        mx="auto"
-      >
-        <Text>Token sale not found</Text>
-      </Box>
+  // Calculate valuation (FDV) from total token supply and price
+  const valuationFormatted = useMemo(() => {
+    if (!tokenSale || !totalTokenSupply || !tokenSale.saleTokenPrice) {
+      return '--';
+    }
+
+    // Calculate FDV: totalTokenSupply * tokenPrice
+    const fdvBigInt = calculateFDVFromTokenPrice(
+      tokenSale.saleTokenPrice,
+      totalTokenSupply,
+      tokenSale.tokenDecimals,
     );
+
+    return formatSaleAmount(fdvBigInt, USDC_DECIMALS);
+  }, [tokenSale, totalTokenSupply]);
+
+  // Fetch total token supply for valuation calculation
+  useEffect(() => {
+    const fetchTotalSupply = async () => {
+      if (!tokenSale?.saleToken || !publicClient) return;
+
+      try {
+        const tokenContract = getContract({
+          address: tokenSale.saleToken,
+          abi: erc20Abi,
+          client: publicClient,
+        });
+
+        const supply = await tokenContract.read.totalSupply();
+        setTotalTokenSupply(supply);
+      } catch (error) {
+        console.error('Failed to fetch total token supply:', error);
+        setTotalTokenSupply(null);
+      }
+    };
+
+    fetchTotalSupply();
+  }, [tokenSale?.saleToken, publicClient]);
+
+  if (!tokenSale) {
+    return <InfoBoxLoader />;
   }
 
-  const formatCurrency = (value: bigint, decimals: number = 6) => {
-    const formatted = parseFloat(formatUnits(value, decimals));
-    return `$${formatted.toLocaleString('en-US', { maximumFractionDigits: 0 })}`;
+  const formatCurrency = (value: bigint, decimals: number = USDC_DECIMALS) => {
+    return formatSaleAmount(value, decimals);
   };
 
   const formatTokenAmount = (value: bigint, decimals: number) => {
@@ -45,21 +101,17 @@ export function SafeTokenSaleDetailsPage() {
     return formatted.toLocaleString('en-US', { maximumFractionDigits: 0 });
   };
 
-  const formatDate = (timestamp: bigint) => {
-    const date = new Date(Number(timestamp) * 1000);
-    return date.toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-    });
-  };
-
-  const tokenPrice = formatUnits(tokenSale.saleTokenPrice, 6); // Assuming price is in USDC (6 decimals)
-  const totalSupply = formatTokenAmount(
-    tokenSale.maximumTotalCommitment / tokenSale.saleTokenPrice,
-    tokenSale.tokenDecimals,
+  // Use proper formatting functions for contract data
+  const tokenPriceFormatted = formatTokenPrice(tokenSale.saleTokenPrice);
+  const tokenSupplyForSale = calculateTokenSupplyForSale(
+    tokenSale.maximumTotalCommitment,
+    tokenSale.saleTokenPrice,
   );
-  const valuation = parseFloat(formatUnits(tokenSale.maximumTotalCommitment, 6)) * 1.6; // Assuming 1.6x multiple for valuation
+  const totalSupplyFormatted = formatTokenAmount(tokenSupplyForSale, tokenSale.tokenDecimals);
+
+  if (!safe?.address) {
+    return <InfoBoxLoader />;
+  }
 
   return (
     <Box
@@ -69,12 +121,8 @@ export function SafeTokenSaleDetailsPage() {
       <PageHeader
         breadcrumbs={[
           {
-            terminus: 'My DAO',
-            path: '',
-          },
-          {
-            terminus: 'Token Sales',
-            path: '',
+            terminus: t('tokenSalesBreadcrumb'),
+            path: DAO_ROUTES.tokenSale.relative(addressPrefix, safe?.address),
           },
           {
             terminus: tokenSale.name,
@@ -103,23 +151,39 @@ export function SafeTokenSaleDetailsPage() {
             >
               {tokenSale.name}
             </Text>
-            <TokenSaleCountdown endTimestamp={tokenSale.saleEndTimestamp} />
+            <Flex
+              align="center"
+              gap={4}
+            >
+              <TokenSaleCountdown endTimestamp={tokenSale.saleEndTimestamp} />
+              {devFeatureEnabled && (
+                <Button
+                  leftIcon={<Wrench size={16} />}
+                  variant="secondary"
+                  onClick={() => setIsDevModalOpen(true)}
+                >
+                  Dev Menu
+                </Button>
+              )}
+            </Flex>
           </Flex>
 
           <TokenSaleProgressCard
             raised={tokenSale.totalCommitments}
             goal={tokenSale.maximumTotalCommitment}
-            minimum={tokenSale.maximumTotalCommitment / 2n} // Assuming minimum is half of max
-            commitmentTokenDecimals={6} // Assuming USDC
+            minimum={tokenSale.minimumTotalCommitment}
+            commitmentTokenDecimals={USDC_DECIMALS} // @dev assuming commitment token is 6 decimals (USDC)
           />
 
           {/* Fundraising Goal Not Met Banner */}
-          {tokenSale.saleState === 3 &&
+          {tokenSale.saleState === TokenSaleState.FAILED &&
             tokenSale.totalCommitments < tokenSale.maximumTotalCommitment / 2n && (
               <TokenSaleBanner
-                title="You did not meet your minimum fundraising goal."
-                description={`You only raised ${formatCurrency(tokenSale.totalCommitments)}. Reclaim your sale tokens to return funds.`}
-                buttonText="Reclaim Tokens"
+                title={t('fundraisingGoalNotMetTitle')}
+                description={t('fundraisingGoalNotMetDescription', {
+                  amount: formatCurrency(tokenSale.totalCommitments),
+                })}
+                buttonText={t('reclaimTokensButton')}
                 onButtonClick={() => {
                   claimFunds(tokenSale.address, tokenSale.name);
                 }}
@@ -129,12 +193,14 @@ export function SafeTokenSaleDetailsPage() {
             )}
 
           {/* Successful Sale Banner */}
-          {tokenSale.saleState === 2 &&
-            tokenSale.totalCommitments >= tokenSale.maximumTotalCommitment / 2n && (
+          {tokenSale.saleState === TokenSaleState.SUCCEEDED &&
+            tokenSale.totalCommitments >= tokenSale.minimumTotalCommitment && (
               <TokenSaleBanner
-                title="Congratulations, your sale was successful!"
-                description={`You raised ${formatCurrency(tokenSale.totalCommitments)}. Your funds are ready to be claimed.`}
-                buttonText="Claim Funds"
+                title={t('successfulSaleTitle')}
+                description={t('successfulSaleDescription', {
+                  amount: formatCurrency(tokenSale.totalCommitments),
+                })}
+                buttonText={t('claimFundsButton')}
                 onButtonClick={() => {
                   claimFunds(tokenSale.address, tokenSale.name);
                 }}
@@ -145,19 +211,19 @@ export function SafeTokenSaleDetailsPage() {
         </VStack>
 
         {/* Sale Configuration */}
-        <TokenSaleInfoCard title="Sale Configuration">
+        <TokenSaleInfoCard title={t('saleConfigurationTitle')}>
           <TokenSaleInfoCard.Section>
             <TokenSaleInfoCard.Item
-              label="Token:"
+              label={t('tokenInfoLabel')}
               value={tokenSale.tokenSymbol}
             />
             <TokenSaleInfoCard.Item
-              label="Total Supply:"
-              value={totalSupply}
+              label={t('availableForSaleLabel')}
+              value={totalSupplyFormatted}
             />
             <TokenSaleInfoCard.Item
-              label="Price:"
-              value={`$${tokenPrice}`}
+              label={t('priceInfoLabel')}
+              value={tokenPriceFormatted}
             />
           </TokenSaleInfoCard.Section>
 
@@ -165,20 +231,20 @@ export function SafeTokenSaleDetailsPage() {
 
           <TokenSaleInfoCard.Section>
             <TokenSaleInfoCard.Item
-              label="Closing Date:"
-              value={formatDate(tokenSale.saleEndTimestamp)}
+              label={t('closingDateInfoLabel')}
+              value={formatSaleDate(tokenSale.saleEndTimestamp)}
             />
             <TokenSaleInfoCard.Item
-              label="Minimum Raise:"
-              value={formatCurrency(tokenSale.maximumTotalCommitment / 2n)} // Assuming minimum is half
+              label={t('minimumRaiseInfoLabel')}
+              value={formatCurrency(tokenSale.minimumTotalCommitment)}
             />
             <TokenSaleInfoCard.Item
-              label="Fundraising Cap:"
+              label={t('fundraisingCapInfoLabel')}
               value={formatCurrency(tokenSale.maximumTotalCommitment)}
             />
             <TokenSaleInfoCard.Item
-              label="Valuation:"
-              value={`$${valuation.toLocaleString('en-US', { maximumFractionDigits: 0 })}`}
+              label={t('valuationInfoLabel')}
+              value={valuationFormatted}
             />
           </TokenSaleInfoCard.Section>
 
@@ -186,97 +252,40 @@ export function SafeTokenSaleDetailsPage() {
 
           <TokenSaleInfoCard.Section>
             <TokenSaleInfoCard.Item
-              label="Min Purchase:"
+              label={t('minPurchaseInfoLabel')}
               value={formatCurrency(tokenSale.minimumCommitment)}
             />
             <TokenSaleInfoCard.Item
-              label="Max Purchase:"
+              label={t('maxPurchaseInfoLabel')}
               value={formatCurrency(tokenSale.maximumCommitment)}
             />
           </TokenSaleInfoCard.Section>
         </TokenSaleInfoCard>
-        {/* TODO this needs to be live data */}
         {/* Buyer Requirements */}
-        <TokenSaleInfoCard title="Buyer Requirements">
+        <TokenSaleInfoCard title={t('buyerRequirementsTitle')}>
           <TokenSaleInfoCard.Section>
             <TokenSaleInfoCard.Item
-              label="Requires KYC/KYB"
-              value="Yes"
+              label={t('requiresKycKybLabel')}
+              value={tokenSale.kyc ? t('yes') : t('no')}
             />
           </TokenSaleInfoCard.Section>
         </TokenSaleInfoCard>
 
         {/* Requirements List */}
-        <Box
-          border="1px solid"
-          borderColor="color-layout-border-10"
-          borderRadius="12px"
-          p={3}
-        >
-          <VStack
-            spacing={2}
-            align="stretch"
-          >
-            <Text
-              textStyle="text-sm-regular"
-              color="color-content-content1-foreground"
-            >
-              Buyer must meet 2 out of 3 requirements:
-            </Text>
-
-            <Flex
-              justify="space-between"
-              align="center"
-            >
-              <Text
-                textStyle="text-sm-regular"
-                color="color-content-muted"
-              >
-                Must hold at least 1,000 USDC
-              </Text>
-              <Icon
-                as={CheckCircle}
-                color="color-base-success"
-                boxSize={4}
-              />
-            </Flex>
-
-            <Flex
-              justify="space-between"
-              align="center"
-            >
-              <Text
-                textStyle="text-sm-regular"
-                color="color-content-muted"
-              >
-                Must hold at least 1 Founder&apos;s Club NFT
-              </Text>
-              <Icon
-                as={CheckCircle}
-                color="color-base-success"
-                boxSize={4}
-              />
-            </Flex>
-
-            <Flex
-              justify="space-between"
-              align="center"
-            >
-              <Text
-                textStyle="text-sm-regular"
-                color="color-content-muted"
-              >
-                Must be whitelisted
-              </Text>
-              <Icon
-                as={CheckCircle}
-                color="color-base-success"
-                boxSize={4}
-              />
-            </Flex>
-          </VStack>
-        </Box>
+        <BuyerRequirementsDisplay
+          requirements={tokenSale.buyerRequirements || []}
+          orOutOf={tokenSale.orOutOf}
+        />
       </VStack>
+
+      {/* Dev Modal */}
+      {devFeatureEnabled && (
+        <TokenSaleDevModal
+          isOpen={isDevModalOpen}
+          onClose={() => setIsDevModalOpen(false)}
+          tokenSale={tokenSale}
+        />
+      )}
     </Box>
   );
 }

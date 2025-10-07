@@ -150,7 +150,17 @@ export const mainnetConfig: NetworkConfig = {
   ],
   bundlerMinimumStake: 100_000_000_000_000_000n, // 0.1 ETH
   stablecoins: {
-    usdc: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
+    usdc: {
+      address: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
+      decimals: 6,
+      icon: '/images/coin-icon-usdc.svg',
+      name: 'USDC',
+      symbol: 'USDC',
+    },
+  },
+  tokenSale: {
+    // Decent DAO Mainnet Address
+    protocolFeeReceiver: '0xD26c85D435F02DaB8B220cd4D2d398f6f646e235',
   },
 };
 

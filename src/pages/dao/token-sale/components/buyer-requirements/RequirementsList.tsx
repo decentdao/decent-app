@@ -1,13 +1,24 @@
-import { VStack, Box, Flex, HStack, Text, Button, Icon } from '@chakra-ui/react';
-import { CheckCircle, Plus } from '@phosphor-icons/react';
-import { BuyerRequirement } from './types';
+import { VStack, Box, Flex, HStack, Text, Button, Icon, IconButton } from '@chakra-ui/react';
+import { CheckCircle, Plus, PencilSimple, Trash } from '@phosphor-icons/react';
+import { useTranslation } from 'react-i18next';
+import { BuyerRequirement } from '../../../../../types/tokenSale';
+import { useRequirementDisplay } from './RequirementDisplay';
 
 interface RequirementsListProps {
   requirements: BuyerRequirement[];
   onAddRequirement: () => void;
+  onEditRequirement: (requirement: BuyerRequirement, index: number) => void;
+  onRemoveRequirement: (index: number) => void;
 }
 
-export function RequirementsList({ requirements, onAddRequirement }: RequirementsListProps) {
+export function RequirementsList({
+  requirements,
+  onAddRequirement,
+  onEditRequirement,
+  onRemoveRequirement,
+}: RequirementsListProps) {
+  const { t } = useTranslation('tokenSale');
+  const { getRequirementDisplay } = useRequirementDisplay();
   const hasOpenAccess = requirements.length === 0;
 
   return (
@@ -42,49 +53,61 @@ export function RequirementsList({ requirements, onAddRequirement }: Requirement
                 fontSize="sm"
                 fontWeight="medium"
               >
-                Open Access
+                {t('openAccess')}
               </Text>
             </HStack>
           </Flex>
         )}
 
-        {requirements.map(requirement => (
-          <Flex
-            key={requirement.id}
-            align="center"
-            justify="space-between"
-            p={4}
-            borderBottom="1px solid"
-            borderBottomColor="color-neutral-800"
-            _last={{ borderBottom: 'none' }}
-          >
-            <HStack spacing={3}>
-              <CheckCircle
-                size={16}
-                color="#5bc89c"
-                weight="fill"
-              />
-              <VStack
-                align="start"
-                spacing={0}
-              >
+        {requirements.map((requirement, index) => {
+          const displayText = getRequirementDisplay(requirement);
+          return (
+            <Flex
+              key={`requirement-${index}`}
+              align="center"
+              justify="space-between"
+              p={4}
+              borderBottom="1px solid"
+              borderBottomColor="color-neutral-800"
+              _last={{ borderBottom: 'none' }}
+            >
+              <HStack spacing={3}>
+                <Icon
+                  as={CheckCircle}
+                  boxSize="1rem"
+                  color="color-base-success"
+                />
                 <Text
                   color="color-white"
                   fontSize="sm"
                   fontWeight="medium"
                 >
-                  {requirement.name}
+                  {displayText}
                 </Text>
-                <Text
+              </HStack>
+              <HStack spacing={2}>
+                <IconButton
+                  aria-label={t('editRequirement')}
+                  icon={<PencilSimple size="1rem" />}
+                  variant="ghost"
+                  size="sm"
                   color="color-neutral-400"
-                  fontSize="xs"
-                >
-                  {requirement.description}
-                </Text>
-              </VStack>
-            </HStack>
-          </Flex>
-        ))}
+                  _hover={{ color: 'color-white', bg: 'color-neutral-800' }}
+                  onClick={() => onEditRequirement(requirement, index)}
+                />
+                <IconButton
+                  aria-label={t('removeRequirement')}
+                  icon={<Trash size="1rem" />}
+                  variant="ghost"
+                  size="sm"
+                  color="color-neutral-400"
+                  _hover={{ color: 'color-base-error', bg: 'color-neutral-800' }}
+                  onClick={() => onRemoveRequirement(index)}
+                />
+              </HStack>
+            </Flex>
+          );
+        })}
 
         <Button
           variant="ghost"
@@ -98,7 +121,7 @@ export function RequirementsList({ requirements, onAddRequirement }: Requirement
           borderTopRadius="0"
           _hover={{ bg: 'color-neutral-800' }}
         >
-          Add Requirement
+          {t('addRequirementButton')}
         </Button>
       </Box>
     </VStack>

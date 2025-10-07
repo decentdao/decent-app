@@ -1,20 +1,42 @@
-import { format } from 'date-fns';
+import { formatInTimeZone } from 'date-fns-tz';
 import { formatUnits } from 'viem';
+
+import { PRECISION, USDC_DECIMALS } from '../constants/common';
 import { formatUSD } from './numberFormats';
 
 /**
  * Formats a timestamp to a readable date string
+ * Shows the date as intended by the sale creator (UTC date without timezone conversion)
  */
 export const formatSaleDate = (timestamp: number | bigint): string => {
   const timestampNum = typeof timestamp === 'bigint' ? Number(timestamp) : timestamp;
   const date = new Date(timestampNum * 1000);
-  return format(date, 'MMM dd, yyyy');
+  return date.toLocaleDateString(undefined, {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    timeZone: 'UTC',
+  });
+};
+
+/**
+ * Formats timestamp with date and time, showing user's local timezone
+ */
+export const formatSaleDateWithTime = (
+  timestamp: number | bigint,
+  userTimezone?: string,
+): string => {
+  const timestampNum = typeof timestamp === 'bigint' ? Number(timestamp) : timestamp;
+  const userTz = userTimezone || Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+  return formatInTimeZone(timestampNum * 1000, userTz, 'MMM dd, yyyy, h:mm aa zzz');
 };
 
 /**
  * Formats token sale amounts to USD currency
+ * For commitment amounts, use the commitment token's decimals (typically 6 for USDC)
  */
-export const formatSaleAmount = (amount: bigint, decimals: number = 6): string => {
+export const formatSaleAmount = (amount: bigint, decimals: number = USDC_DECIMALS): string => {
   if (amount === 0n) {
     return '$0';
   }
@@ -23,12 +45,41 @@ export const formatSaleAmount = (amount: bigint, decimals: number = 6): string =
 };
 
 /**
+ * Formats token sale price from contract storage with high precision
+ * The contract stores saleTokenPrice in USDC units (6 decimals)
+ */
+export const formatTokenPrice = (priceFromContract: bigint): string => {
+  if (priceFromContract === 0n) {
+    return '$0';
+  }
+  const formatted = parseFloat(formatUnits(priceFromContract, USDC_DECIMALS));
+  return new Intl.NumberFormat(undefined, {
+    style: 'currency',
+    currency: 'USD',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 8,
+  }).format(formatted);
+};
+
+/**
+ * Calculate token supply for sale from commitment amount and price
+ * Both values come from contract in their stored formats
+ */
+export const calculateTokenSupplyForSale = (maxCommitment: bigint, tokenPrice: bigint): bigint => {
+  if (tokenPrice === 0n) return 0n;
+  // maxCommitment is in USDC units (6 decimals)
+  // tokenPrice is in USDC units per PRECISION sale tokens (contract format)
+  // Result should be in token raw units (tokenDecimals)
+  return (maxCommitment * PRECISION) / tokenPrice;
+};
+
+/**
  * Calculates progress percentage for token sale
  */
 export const calculateSaleProgress = (
   raised: bigint,
   target: bigint,
-  decimals: number = 6,
+  decimals: number = USDC_DECIMALS,
 ): number => {
   if (target === 0n) {
     return 0;

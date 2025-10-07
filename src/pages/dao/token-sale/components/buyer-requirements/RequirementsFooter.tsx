@@ -1,8 +1,9 @@
 import { HStack, Text, Select } from '@chakra-ui/react';
+import { useTranslation } from 'react-i18next';
 
 interface RequirementsFooterProps {
-  requirementMode: 'all' | 'any';
-  setRequirementMode: (mode: 'all' | 'any') => void;
+  requirementMode: 'all' | number;
+  setRequirementMode: (mode: 'all' | number) => void;
   requirementsCount: number;
 }
 
@@ -11,6 +12,11 @@ export function RequirementsFooter({
   setRequirementMode,
   requirementsCount,
 }: RequirementsFooterProps) {
+  const { t } = useTranslation('tokenSale');
+
+  // Generate number options from 1 to requirementsCount - 1
+  const numberOptions = Array.from({ length: Math.max(0, requirementsCount - 1) }, (_, i) => i + 1);
+
   return (
     <HStack
       spacing={2}
@@ -20,11 +26,14 @@ export function RequirementsFooter({
         color="color-white"
         fontSize="sm"
       >
-        Should meet
+        {t('requirementShouldMeet')}
       </Text>
       <Select
         value={requirementMode}
-        onChange={e => setRequirementMode(e.target.value as 'all' | 'any')}
+        onChange={e => {
+          const value = e.target.value;
+          setRequirementMode(value === 'all' ? 'all' : parseInt(value, 10));
+        }}
         size="sm"
         w="auto"
         minW="80px"
@@ -36,14 +45,21 @@ export function RequirementsFooter({
         isDisabled={requirementsCount === 0}
         opacity={requirementsCount === 0 ? 0.5 : 1}
       >
-        <option value="all">All</option>
-        <option value="any">Any</option>
+        <option value="all">{t('requirementAllOption')}</option>
+        {numberOptions.map(num => (
+          <option
+            key={num}
+            value={num}
+          >
+            {num}
+          </option>
+        ))}
       </Select>
       <Text
         color="color-white"
         fontSize="sm"
       >
-        requirements out of {requirementsCount}
+        {t('requirementOutOfText')} {requirementsCount}
       </Text>
     </HStack>
   );

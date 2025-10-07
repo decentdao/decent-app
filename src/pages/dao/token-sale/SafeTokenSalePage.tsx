@@ -1,23 +1,27 @@
-import { Box, Button, Grid, GridItem, Text, VStack } from '@chakra-ui/react';
+import { Box, Grid, GridItem, VStack } from '@chakra-ui/react';
 import { TrendUp, Play, CurrencyDollar } from '@phosphor-icons/react';
 import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { formatUnits } from 'viem';
 import { TokenSalesTable } from '../../../components/TokenSales/TokenSalesTable';
+import { InfoBoxLoader } from '../../../components/ui/loaders/InfoBoxLoader';
 import PageHeader from '../../../components/ui/page/Header/PageHeader';
-import { CONTENT_MAXW } from '../../../constants/common';
+import { CONTENT_MAXW, USDC_DECIMALS } from '../../../constants/common';
 import { DAO_ROUTES } from '../../../constants/routes';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import { useDAOStore } from '../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
+import { EmptyState } from './components/EmptyState';
+import { StatCard } from './components/StatCard';
 
 export function SafeTokenSalePage() {
+  const { t } = useTranslation('tokenSale');
   const { daoKey } = useCurrentDAOKey();
   const {
     node: { safe },
     tokenSales,
   } = useDAOStore({ daoKey });
-  console.log('🚀 ~ tokenSales:', tokenSales);
   const navigate = useNavigate();
   const { addressPrefix } = useNetworkConfigStore();
 
@@ -38,11 +42,10 @@ export function SafeTokenSalePage() {
       return total + sale.totalCommitments;
     }, 0n);
 
-    // Format total raised (assuming commitment token is typically USDC with 6 decimals)
-    // TODO: This should ideally use the actual commitment token decimals from each sale
+    // @dev assuming commitment token is 6 decimals (USDC)
     const totalRaisedFormatted =
       totalRaisedWei > 0n
-        ? `$${parseFloat(formatUnits(totalRaisedWei, 6)).toLocaleString('en-US', { maximumFractionDigits: 0 })}`
+        ? `$${parseFloat(formatUnits(totalRaisedWei, USDC_DECIMALS)).toLocaleString('en-US', { maximumFractionDigits: 0 })}`
         : '$0';
     return {
       totalSales: tokenSales.length,
@@ -56,101 +59,8 @@ export function SafeTokenSalePage() {
     navigate(DAO_ROUTES.tokenSaleNew.relative(addressPrefix, safe.address));
   };
 
-  function StatCard({
-    icon,
-    label,
-    value,
-  }: {
-    icon: React.ReactNode;
-    label: string;
-    value: string;
-  }) {
-    return (
-      <Box
-        bg="transparent"
-        borderRadius="12px"
-        p={6}
-        border="1px solid"
-        borderColor="color-layout-border-10"
-        position="relative"
-      >
-        <Box
-          position="absolute"
-          top={6}
-          right={6}
-          color="color-content-muted"
-        >
-          {icon}
-        </Box>
-        <Text
-          textStyle="text-sm-medium"
-          color="color-content-content1-foreground"
-          mb={2}
-        >
-          {label}
-        </Text>
-        <Text
-          textStyle="text-2xl-semibold"
-          color="color-content-content1-foreground"
-        >
-          {value}
-        </Text>
-      </Box>
-    );
-  }
-
-  function EmptyState() {
-    return (
-      <Box
-        bg="transparent"
-        borderRadius="12px"
-        p={6}
-        textAlign="center"
-        border="1px solid"
-        borderColor="color-layout-border-10"
-        position="relative"
-      >
-        <Box
-          w={24}
-          h={24}
-          mx="auto"
-          mb={4}
-        >
-          <img
-            src="/images/decentsquare.png"
-            alt="Token Sale Icon"
-            width="96"
-            height="96"
-            style={{ width: '100%', height: '100%' }}
-          />
-        </Box>
-        <VStack
-          spacing={6}
-          align="center"
-        >
-          <VStack
-            spacing={1}
-            align="center"
-          >
-            <Text
-              textStyle="text-2xl-regular"
-              color="color-content-content1-foreground"
-            >
-              No sales yet
-            </Text>
-            <Text
-              textStyle="text-sm-regular"
-              color="color-content-content2-foreground"
-              maxW="464px"
-            >
-              Get started by creating your first token sale. Our guided setup will help you
-              configure everything properly.
-            </Text>
-          </VStack>
-          <Button onClick={handleCreateSale}>Create Your First Sale</Button>
-        </VStack>
-      </Box>
-    );
+  if (!safe?.address) {
+    return <InfoBoxLoader />;
   }
 
   return (
@@ -161,7 +71,7 @@ export function SafeTokenSalePage() {
       <PageHeader
         breadcrumbs={[
           {
-            terminus: 'Token Sales',
+            terminus: t('tokenSalesBreadcrumb'),
             path: '',
           },
         ]}
@@ -169,7 +79,7 @@ export function SafeTokenSalePage() {
           stats.totalSales > 0
             ? {
                 onClick: handleCreateSale,
-                children: 'Create Token Sale',
+                children: t('createTokenSaleButtonLabel'),
                 'data-testid': 'create-token-sale-button',
               }
             : undefined
@@ -189,21 +99,21 @@ export function SafeTokenSalePage() {
           <GridItem>
             <StatCard
               icon={<TrendUp size={20} />}
-              label="Total Sales"
+              label={t('totalSalesLabel')}
               value={stats.totalSales.toString()}
             />
           </GridItem>
           <GridItem>
             <StatCard
               icon={<Play size={20} />}
-              label="Active Sales"
+              label={t('activeSalesLabel')}
               value={stats.activeSales.toString()}
             />
           </GridItem>
           <GridItem>
             <StatCard
               icon={<CurrencyDollar size={20} />}
-              label="Total Raised"
+              label={t('totalRaisedLabel')}
               value={stats.totalRaised}
             />
           </GridItem>
@@ -211,7 +121,7 @@ export function SafeTokenSalePage() {
 
         {/* Show table when sales exist, empty state when no sales */}
         {stats.totalSales === 0 ? (
-          <EmptyState />
+          <EmptyState handleCreateSale={handleCreateSale} />
         ) : (
           <TokenSalesTable tokenSales={tokenSales || []} />
         )}

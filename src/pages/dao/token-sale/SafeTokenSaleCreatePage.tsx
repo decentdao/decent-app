@@ -2,80 +2,96 @@ import { Box, Button, Flex, VStack } from '@chakra-ui/react';
 import { abis, legacy } from '@decentdao/decent-contracts';
 import { Formik, Form } from 'formik';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { Address, encodeFunctionData, encodePacked, getCreate2Address, keccak256 } from 'viem';
+import { useAccount } from 'wagmi';
 import { ZodiacModuleProxyFactoryAbi } from '../../../assets/abi/ZodiacModuleProxyFactoryAbi';
+import { InfoBoxLoader } from '../../../components/ui/loaders/InfoBoxLoader';
 import PageHeader from '../../../components/ui/page/Header/PageHeader';
 import { CONTENT_MAXW } from '../../../constants/common';
 import { DAO_ROUTES } from '../../../constants/routes';
 import { getRandomBytes } from '../../../helpers';
+import { logError } from '../../../helpers/errorLogging';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
+import { useTokenSaleSchema } from '../../../hooks/schemas/useTokenSaleSchema';
 import { generateContractByteCodeLinear, generateSalt } from '../../../models/helpers/utils';
 import { useDAOStore } from '../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
 import { useProposalActionsStore } from '../../../store/actions/useProposalActionsStore';
 import { CreateProposalTransaction, ProposalActionType } from '../../../types';
+import { TokenSaleFormValues } from '../../../types/tokenSale';
+import { bigintSerializer } from '../../../utils/bigintSerializer';
 import { BuyerRequirementsForm } from './components/BuyerRequirementsForm';
 import { SaleTermsForm } from './components/SaleTermsForm';
+import { TokenSalePreviewPanel } from './components/TokenSalePreviewPanel';
 import { useTokenSaleFormPreparation } from './hooks/useTokenSaleFormPreparation';
-import { TokenSaleFormValues } from './types';
+import { useTokenSaleRequirementsPreparation } from './hooks/useTokenSaleRequirementsPreparation';
 
 const stages = ['Sale Terms', 'Buyer Requirements'];
-const initialValues: TokenSaleFormValues = {
-  // Project Overview
-  saleName: 'DecentDAO Token Sale',
 
-  // Token Details
-  tokenAddress: '',
-  tokenName: '',
-  tokenSymbol: '',
-  maxTokenSupply: { value: '', bigintValue: undefined },
-  tokenPrice: 0,
+const getInitialValues = (
+  commitmentToken?: Address,
+  protocolFeeReceiver?: Address,
+): TokenSaleFormValues => {
+  if (!protocolFeeReceiver) {
+    throw new Error('Token sale feature is not enabled on this network');
+  }
+  if (!commitmentToken) {
+    logError(`Commitment token is not configured on this network`);
+    throw new Error('Commitment token is not configured');
+  }
 
-  // Sale Timing
-  startDate: new Date(Date.now() + 86400 * 1000), // Start in 24 hours
-  endDate: new Date(Date.now() + 86400 * 30 * 1000), // End in 30 days
+  return {
+    protocolFeeReceiver: protocolFeeReceiver,
+    commitmentToken: commitmentToken, // Set to current network's USDC
 
-  // Sale Pricing & Terms
-  minimumFundraise: 5, // $5 minimum
-  fundraisingCap: 9500, // $9,500 maximum
-  valuation: 0,
-  minPurchase: 1, // $1 minimum purchase
-  maxPurchase: 50, // $50 maximum purchase
+    saleName: '',
+    saleTokenPrice: { value: '', bigintValue: undefined }, // Will be auto-calculated from FDV and token supply
 
-  // TODO hardcoded to a sepolia token (SUSDC) for testing
-  commitmentToken: '0x0A7ECA73Bfecbc20fc73FE9Af480D12306d39e34', // Will be set based on acceptedToken
-  verifier: null, // Will be set from network config
-  saleProceedsReceiver: null, // Will be set to DAO address
-  // TODO this need to be set to specific address for base, sepolia, ethereum mainnet
-  protocolFeeReceiver: '0x629750317d320B8bB4d48D345A6d699Cc855c4a6' as Address,
-  minimumCommitment: { value: '1', bigintValue: BigInt('1000000') }, // $1 USDC (6 decimals)
-  maximumCommitment: { value: '50', bigintValue: BigInt('50000000') }, // $50 USDC
-  minimumTotalCommitment: { value: '5', bigintValue: BigInt('5000000') }, // $5 USDC
-  maximumTotalCommitment: { value: '9500', bigintValue: BigInt('9500000000') }, // $9,500 USDC
-  saleTokenPrice: { value: '1.00', bigintValue: BigInt('1000000') }, // $1.00 per token (USDC 6 decimals)
-  commitmentTokenProtocolFee: { value: '5', bigintValue: BigInt('50000000000000000') }, // 5% (18 decimal precision)
-  saleTokenProtocolFee: { value: '5', bigintValue: BigInt('50000000000000000') }, // 5%
-  saleTokenHolder: null, // Will be set to DAO address
+    // Token Details
+    tokenAddress: '',
+    tokenName: '',
+    tokenSymbol: '',
+    maxTokenSupply: { value: '', bigintValue: undefined }, // Total supply for price calculation
+    saleTokenSupply: { value: '', bigintValue: undefined }, // Net tokens for sale (what buyers get)
 
-  // Hedgey Lockup Configuration (disabled by default)
-  hedgeyLockupEnabled: false,
-  hedgeyLockupStart: { value: '0', bigintValue: 0n },
-  hedgeyLockupCliff: { value: '0', bigintValue: 0n },
-  hedgeyLockupRatePercentage: { value: '0', bigintValue: 0n },
-  hedgeyLockupPeriod: { value: '0', bigintValue: 0n },
-  hedgeyVotingTokenLockupPlans: '0x0000000000000000000000000000000000000000' as Address,
+    // Sale Timing
+    startDate: '',
+    startTime: '09:00', // 9 AM default
+    endDate: '',
+    endTime: '17:00', // 5 PM default
 
-  totalSupply: '',
-  salePrice: '',
-  whitelistAddress: '',
-  kycProvider: '',
+    // Sale Pricing & Terms
+    minimumFundraise: '',
+    valuation: '',
+    minPurchase: '',
+    maxPurchase: '',
+
+    // Hedgey Lockup Configuration (disabled by default)
+    hedgeyLockupEnabled: false,
+    hedgeyLockupStart: { value: '0', bigintValue: 0n },
+    hedgeyLockupCliff: { value: '0', bigintValue: 0n },
+    hedgeyLockupRatePercentage: { value: '0', bigintValue: 0n },
+    hedgeyLockupPeriod: { value: '0', bigintValue: 0n },
+    hedgeyVotingTokenLockupPlans: '',
+
+    // Buyer Requirements
+    kycEnabled: false,
+    buyerRequirements: [],
+    orOutOf: 'all', // Default to 'all' requirements must be met
+  };
 };
 
 export function SafeTokenSaleCreatePage() {
+  const { t } = useTranslation('tokenSale');
   const [currentStage, setCurrentStage] = useState(0);
+  const { address: userAddress } = useAccount();
   const {
     contracts: { tokenSaleV1MasterCopy, keyValuePairs, zodiacModuleProxyFactory, decentVerifierV1 },
+    stablecoins,
+    tokenSale,
+    chain,
   } = useNetworkConfigStore();
 
   const { daoKey } = useCurrentDAOKey();
@@ -86,8 +102,41 @@ export function SafeTokenSaleCreatePage() {
   const navigate = useNavigate();
   const { addressPrefix } = useNetworkConfigStore();
   const { prepareFormData } = useTokenSaleFormPreparation();
+  const { prepareRequirements } = useTokenSaleRequirementsPreparation();
+  const { tokenSaleValidationSchema } = useTokenSaleSchema();
 
-  const handleNext = () => {
+  // Determine protocol fee receiver based on network
+  const getProtocolFeeReceiver = (): Address | undefined => {
+    // For Sepolia network, use the user's connected address
+    if (chain.id === 11155111) {
+      // Sepolia chain ID
+      return userAddress;
+    }
+    // For other networks, use the configured protocolFeeReceiver
+    return tokenSale.protocolFeeReceiver;
+  };
+
+  const handleNext = async (
+    validateForm: () => Promise<any>,
+    setTouched: (touched: any) => void,
+  ) => {
+    // Validate current stage before proceeding
+    const errors = await validateForm();
+    const hasErrors = Object.keys(errors).length > 0;
+
+    if (hasErrors) {
+      // Mark all fields with errors as touched so validation errors are displayed
+      const touchedFields: any = {};
+      Object.keys(errors).forEach(field => {
+        touchedFields[field] = true;
+      });
+      setTouched(touchedFields);
+
+      // Log errors for debugging
+      console.log('Validation errors:', errors);
+      return;
+    }
+
     if (currentStage < stages.length - 1) {
       setCurrentStage(currentStage + 1);
     }
@@ -122,45 +171,40 @@ export function SafeTokenSaleCreatePage() {
         throw new Error('Failed to prepare form data');
       }
     } catch (error) {
-      console.error('Error preparing form data:', error);
+      logError(error);
       return;
     }
 
     const txs: CreateProposalTransaction[] = [];
 
     try {
-      // Debug: Log the escrow calculation
-      const escrowAmount =
-        (tokenSaleData.maximumTotalCommitment *
-          (BigInt('1000000000000000000') + tokenSaleData.saleTokenProtocolFee)) /
-        tokenSaleData.saleTokenPrice;
       // 1. Generate nonce for deployment
       const tokenSaleNonce = getRandomBytes();
 
-      // 2. Encode the initialization data first
+      // 2. Encode the initialization data first - create the exact params object
+      const initializerParams = {
+        saleStartTimestamp: tokenSaleData.saleStartTimestamp,
+        saleEndTimestamp: tokenSaleData.saleEndTimestamp,
+        commitmentToken: tokenSaleData.commitmentToken,
+        saleToken: tokenSaleData.saleToken,
+        verifier: tokenSaleData.verifier,
+        saleProceedsReceiver: tokenSaleData.saleProceedsReceiver,
+        protocolFeeReceiver: tokenSaleData.protocolFeeReceiver,
+        minimumCommitment: tokenSaleData.minimumCommitment,
+        maximumCommitment: tokenSaleData.maximumCommitment,
+        minimumTotalCommitment: tokenSaleData.minimumTotalCommitment,
+        maximumTotalCommitment: tokenSaleData.maximumTotalCommitment,
+        saleTokenPrice: tokenSaleData.saleTokenPrice,
+        commitmentTokenProtocolFee: tokenSaleData.commitmentTokenProtocolFee,
+        saleTokenProtocolFee: tokenSaleData.saleTokenProtocolFee,
+        saleTokenHolder: tokenSaleData.saleTokenHolder,
+        hedgeyLockupParams: tokenSaleData.hedgeyLockupParams,
+      };
+
       const encodedSetupTokenSaleData = encodeFunctionData({
         abi: abis.deployables.TokenSaleV1,
         functionName: 'initialize',
-        args: [
-          {
-            saleStartTimestamp: tokenSaleData.saleStartTimestamp,
-            saleEndTimestamp: tokenSaleData.saleEndTimestamp,
-            commitmentToken: tokenSaleData.commitmentToken,
-            saleToken: tokenSaleData.saleToken,
-            verifier: tokenSaleData.verifier,
-            saleProceedsReceiver: tokenSaleData.saleProceedsReceiver,
-            protocolFeeReceiver: tokenSaleData.protocolFeeReceiver,
-            minimumCommitment: tokenSaleData.minimumCommitment,
-            maximumCommitment: tokenSaleData.maximumCommitment,
-            minimumTotalCommitment: tokenSaleData.minimumTotalCommitment,
-            maximumTotalCommitment: tokenSaleData.maximumTotalCommitment,
-            saleTokenPrice: tokenSaleData.saleTokenPrice,
-            commitmentTokenProtocolFee: tokenSaleData.commitmentTokenProtocolFee,
-            saleTokenProtocolFee: tokenSaleData.saleTokenProtocolFee,
-            saleTokenHolder: tokenSaleData.saleTokenHolder,
-            hedgeyLockupParams: tokenSaleData.hedgeyLockupParams,
-          },
-        ],
+        args: [initializerParams],
       });
 
       // 3. Calculate predicted TokenSale address
@@ -173,17 +217,18 @@ export function SafeTokenSaleCreatePage() {
       });
 
       // 4. Add approval transaction for the predicted TokenSale contract
+      const approvalCalldata = encodeFunctionData({
+        abi: legacy.abis.VotesERC20,
+        functionName: 'approve',
+        args: [predictedTokenSaleAddress, tokenSaleData.saleTokenEscrowAmount],
+      });
       txs.push({
         targetAddress: tokenSaleData.saleToken,
         ethValue: {
           bigintValue: 0n,
           value: '0',
         },
-        calldata: encodeFunctionData({
-          abi: legacy.abis.VotesERC20,
-          functionName: 'approve',
-          args: [predictedTokenSaleAddress, escrowAmount],
-        }),
+        calldata: approvalCalldata,
         functionName: 'approve',
         parameters: [
           {
@@ -192,7 +237,7 @@ export function SafeTokenSaleCreatePage() {
           },
           {
             signature: 'uint256',
-            value: escrowAmount.toString(),
+            value: tokenSaleData.saleTokenEscrowAmount.toString(),
           },
         ],
       });
@@ -228,15 +273,12 @@ export function SafeTokenSaleCreatePage() {
       });
 
       // 2. Update KeyValuePairs with new token sale info
-      const tokenSaleMetadata = {
-        address: predictedTokenSaleAddress,
-        name: tokenSaleData.saleName,
-      };
+      const tokenSaleMetadata = prepareRequirements(values, predictedTokenSaleAddress);
 
       const updateValuesCalldata = encodeFunctionData({
         abi: legacy.abis.KeyValuePairs,
         functionName: 'updateValues',
-        args: [['newtokensale'], [JSON.stringify(tokenSaleMetadata)]],
+        args: [['newtokensale'], [JSON.stringify(tokenSaleMetadata, bigintSerializer)]],
       });
 
       txs.push({
@@ -254,7 +296,7 @@ export function SafeTokenSaleCreatePage() {
           },
           {
             signature: 'string[]',
-            valueArray: [JSON.stringify(tokenSaleMetadata)],
+            valueArray: [JSON.stringify(tokenSaleMetadata, bigintSerializer)],
           },
         ],
       });
@@ -267,7 +309,7 @@ export function SafeTokenSaleCreatePage() {
       addAction({
         actionType: ProposalActionType.EDIT,
         transactions: txs,
-        content: <>Token Sale Deployment</>,
+        content: <>{t('tokenSaleDeployment', { saleName: tokenSaleData.saleName })}</>,
       });
 
       // Navigate to proposal creation page with actions
@@ -298,6 +340,10 @@ export function SafeTokenSaleCreatePage() {
     }
   };
 
+  if (!safe?.address) {
+    return <InfoBoxLoader />;
+  }
+
   return (
     <Box
       maxW={CONTENT_MAXW}
@@ -306,59 +352,71 @@ export function SafeTokenSaleCreatePage() {
       <PageHeader
         breadcrumbs={[
           {
-            terminus: 'Token Sale',
-            path: DAO_ROUTES.tokenSale.relative(addressPrefix, safe?.address || ''),
+            terminus: t('tokenSaleBreadcrumb'),
+            path: DAO_ROUTES.tokenSale.relative(addressPrefix, safe.address),
           },
           {
-            terminus: 'Create New Sale',
+            terminus: t('createNewSaleBreadcrumb'),
             path: '',
           },
         ]}
       />
 
       <Formik
-        initialValues={initialValues}
+        initialValues={getInitialValues(stablecoins.usdc.address, getProtocolFeeReceiver())}
+        validationSchema={tokenSaleValidationSchema}
         onSubmit={handleSubmit}
       >
-        {({ values, setFieldValue }) => (
+        {({ values, setFieldValue, validateForm, setTouched }) => (
           <Form>
-            <VStack
-              spacing={8}
-              align="stretch"
+            <Flex
+              gap={8}
+              align="flex-start"
             >
-              {renderCurrentStage(values, setFieldValue)}
-
-              <Flex
-                justify="space-between"
-                pt={6}
-              >
-                <Button
-                  variant="secondary"
-                  onClick={handlePrevious}
-                  isDisabled={currentStage === 0}
+              {/* Left Column - Form Content */}
+              <Box flex="1">
+                <VStack
+                  spacing={8}
+                  align="stretch"
                 >
-                  Previous
-                </Button>
-                {currentStage !== stages.length - 1 ? (
-                  <Button
-                    onClick={e => {
-                      e.preventDefault();
-                      handleNext();
-                    }}
-                    type="button"
+                  {renderCurrentStage(values, setFieldValue)}
+
+                  <Flex
+                    justify="space-between"
+                    pt={6}
                   >
-                    Continue
-                  </Button>
-                ) : (
-                  <Button
-                    variant="primary"
-                    type="submit"
-                  >
-                    Create Token Sale
-                  </Button>
-                )}
-              </Flex>
-            </VStack>
+                    <Button
+                      variant="secondary"
+                      onClick={handlePrevious}
+                      isDisabled={currentStage === 0}
+                    >
+                      {t('previousButton')}
+                    </Button>
+                    {currentStage !== stages.length - 1 ? (
+                      <Button
+                        onClick={e => {
+                          e.preventDefault();
+                          handleNext(validateForm, setTouched);
+                        }}
+                        type="button"
+                      >
+                        {t('continueButton')}
+                      </Button>
+                    ) : (
+                      <Button
+                        variant="primary"
+                        type="submit"
+                      >
+                        {t('createTokenSaleButton')}
+                      </Button>
+                    )}
+                  </Flex>
+                </VStack>
+              </Box>
+
+              {/* Right Column - Preview Panel */}
+              <TokenSalePreviewPanel values={values} />
+            </Flex>
           </Form>
         )}
       </Formik>

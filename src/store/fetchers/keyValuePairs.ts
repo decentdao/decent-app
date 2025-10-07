@@ -5,6 +5,8 @@ import { Address, GetContractEventsReturnType, getContract } from 'viem';
 import { logError } from '../../helpers/errorLogging';
 import useNetworkPublicClient from '../../hooks/useNetworkPublicClient';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
+import { TokenSaleMetadata } from '../../types/tokenSale';
+import { normalizeBuyerRequirements } from '../../utils/buyerRequirementsNormalizer';
 
 export function useKeyValuePairsFetcher() {
   const publicClient = useNetworkPublicClient();
@@ -131,7 +133,7 @@ export function useKeyValuePairsFetcher() {
   );
 
   const getTokenSaleAddresses = useCallback(
-    ({
+    async ({
       events,
       chainId,
     }: {
@@ -147,16 +149,23 @@ export function useKeyValuePairsFetcher() {
         event => event.args.key && event.args.key === 'newtokensale',
       );
 
-      const tokenSaleMetadata: Array<{ address: string; name?: string }> = [];
+      const tokenSaleMetadata: TokenSaleMetadata[] = [];
 
-      tokenSaleEvents.forEach(event => {
+      for (const event of tokenSaleEvents) {
         if (event.args.value) {
           try {
             const metadata = JSON.parse(event.args.value);
-            if (metadata.address) {
+            if (metadata.tokenSaleAddress) {
+              const normalizedRequirements = await normalizeBuyerRequirements(
+                metadata.buyerRequirements || [],
+                publicClient,
+              );
               tokenSaleMetadata.push({
-                address: metadata.address,
-                name: metadata.name || metadata.title, // Support both 'name' and 'title' fields
+                tokenSaleAddress: metadata.tokenSaleAddress,
+                tokenSaleName: metadata.tokenSaleName,
+                buyerRequirements: normalizedRequirements,
+                kyc: metadata.kyc || null,
+                orOutOf: metadata.orOutOf,
               });
             }
           } catch (error) {
@@ -171,11 +180,11 @@ export function useKeyValuePairsFetcher() {
             });
           }
         }
-      });
+      }
 
       return tokenSaleMetadata;
     },
-    [],
+    [publicClient],
   );
 
   return { getHatsTreeId, getStreamIdsToHatIds, getTokenSaleAddresses, fetchKeyValuePairsData };

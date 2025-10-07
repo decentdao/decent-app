@@ -1,20 +1,22 @@
 import { VStack, Switch } from '@chakra-ui/react';
+import { useTranslation } from 'react-i18next';
 import { LabelComponent } from '../../../../../components/ui/forms/InputComponent';
 
 interface KycKybRequirementProps {
-  requireKYC: boolean;
-  setRequireKYC: (value: boolean) => void;
+  kycEnabled: boolean;
+  setFieldValue: (field: string, value: any) => void;
 }
 
-export function KycKybRequirement({ requireKYC, setRequireKYC }: KycKybRequirementProps) {
+export function KycKybRequirement({ kycEnabled, setFieldValue }: KycKybRequirementProps) {
+  const { t } = useTranslation('tokenSale');
   return (
     <VStack
       spacing={6}
       align="stretch"
     >
       <LabelComponent
-        label="Require KYC/KYB"
-        helper="Lorem Ipsum"
+        label={t('requireKycKybLabel')}
+        helper={t('kycKybHelperText')}
         isRequired={false}
         gridContainerProps={{
           templateColumns: '1fr auto',
@@ -22,8 +24,8 @@ export function KycKybRequirement({ requireKYC, setRequireKYC }: KycKybRequireme
         }}
       >
         <Switch
-          isChecked={requireKYC}
-          onChange={e => setRequireKYC(e.target.checked)}
+          isChecked={kycEnabled}
+          onChange={e => setFieldValue('kycEnabled', e.target.checked)}
           size="md"
         />
       </LabelComponent>

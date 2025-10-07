@@ -1,4 +1,5 @@
 import { Box, Flex, Progress, Text } from '@chakra-ui/react';
+import { useTranslation } from 'react-i18next';
 import { formatUnits } from 'viem';
 
 interface TokenSaleProgressCardProps {
@@ -14,6 +15,7 @@ export function TokenSaleProgressCard({
   minimum,
   commitmentTokenDecimals,
 }: TokenSaleProgressCardProps) {
+  const { t } = useTranslation('tokenSale');
   const raisedFormatted = parseFloat(formatUnits(raised, commitmentTokenDecimals));
   const goalFormatted = parseFloat(formatUnits(goal, commitmentTokenDecimals));
   const minimumFormatted = parseFloat(formatUnits(minimum, commitmentTokenDecimals));
@@ -39,13 +41,13 @@ export function TokenSaleProgressCard({
             textStyle="text-sm-medium"
             color="color-content-content1-foreground"
           >
-            {formatCurrency(raisedFormatted)} Raised
+            {t('raisedLabel', { amount: formatCurrency(raisedFormatted) })}
           </Text>
           <Text
             textStyle="text-sm-medium"
             color="color-content-content1-foreground"
           >
-            Goal: {formatCurrency(goalFormatted)}
+            {t('goalLabel', { amount: formatCurrency(goalFormatted) })}
           </Text>
         </Flex>
 
@@ -53,21 +55,14 @@ export function TokenSaleProgressCard({
           <Progress
             value={progressPercentage}
             max={100}
-            bg="color-alpha-white-900"
-            h="8px"
-            borderRadius="9999px"
-            sx={{
-              '& > div': {
-                bg: 'color-base-primary',
-                borderRadius: '9999px',
-              },
-            }}
+            variant="primary"
+            size="small"
           />
         </Box>
       </Box>
 
       {/* Minimum marker */}
-      {minimumPercentage > 0 && (
+      {minimum > 1n && (
         <Box
           position="absolute"
           left={`${Math.min(minimumPercentage, 95)}%`}
@@ -86,7 +81,7 @@ export function TokenSaleProgressCard({
               color="color-base-primary"
               whiteSpace="nowrap"
             >
-              Minimum: {formatCurrency(minimumFormatted)}
+              {t('minimumLabel', { amount: formatCurrency(minimumFormatted) })}
             </Text>
           </Box>
 

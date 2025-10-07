@@ -11,9 +11,11 @@ import {
   Thead,
   Tr,
 } from '@chakra-ui/react';
-import { CaretUpDown, DotsThree } from '@phosphor-icons/react';
-import { useMemo } from 'react';
+import { CaretDown, CaretUp, CaretUpDown, DotsThree } from '@phosphor-icons/react';
+import { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
+import { USDC_DECIMALS } from '../../constants/common';
 import { DAO_ROUTES } from '../../constants/routes';
 import { useTokenSaleClaimFunds } from '../../hooks/DAO/proposal/useTokenSaleClaimFunds';
 import { useCurrentDAOKey } from '../../hooks/DAO/useCurrentDAOKey';
@@ -28,34 +30,101 @@ import {
 import { StatusChip } from '../ui/badges/StatusChip';
 import { OptionMenu } from '../ui/menus/OptionMenu';
 
+type SortField = 'name' | 'endDate' | 'status' | 'raised' | 'target' | 'progress';
+type SortDirection = 'asc' | 'desc';
+
+function useTokenSalesTableSorting(tokenSales: TokenSaleData[]) {
+  const [sortField, setSortField] = useState<SortField>('endDate');
+  const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
+
+  const sortedSales = useMemo(() => {
+    const sorted = [...tokenSales].sort((a, b) => {
+      let comparison = 0;
+
+      switch (sortField) {
+        case 'name':
+          comparison = a.name.localeCompare(b.name);
+          break;
+        case 'endDate':
+          comparison = Number(a.saleEndTimestamp) - Number(b.saleEndTimestamp);
+          break;
+        case 'status':
+          comparison = a.saleState - b.saleState;
+          break;
+        case 'raised':
+          comparison = Number(a.totalCommitments) - Number(b.totalCommitments);
+          break;
+        case 'target':
+          comparison = Number(a.maximumTotalCommitment) - Number(b.maximumTotalCommitment);
+          break;
+        case 'progress': {
+          const progressA = calculateSaleProgress(a.totalCommitments, a.maximumTotalCommitment);
+          const progressB = calculateSaleProgress(b.totalCommitments, b.maximumTotalCommitment);
+          comparison = progressA - progressB;
+          break;
+        }
+        default:
+          return 0;
+      }
+
+      return sortDirection === 'asc' ? comparison : -comparison;
+    });
+
+    return sorted;
+  }, [tokenSales, sortField, sortDirection]);
+
+  const handleSort = (field: SortField) => {
+    if (sortField === field) {
+      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortField(field);
+      setSortDirection('asc');
+    }
+  };
+
+  return {
+    sortedSales,
+    sortField,
+    sortDirection,
+    handleSort,
+  };
+}
+
 interface TokenSalesTableProps {
   tokenSales: TokenSaleData[];
 }
 
 export function TokenSalesTable({ tokenSales }: TokenSalesTableProps) {
+  const { t } = useTranslation('tokenSale');
   const navigate = useNavigate();
   const { safeAddress } = useCurrentDAOKey();
   const { addressPrefix } = useNetworkConfigStore();
   const { claimFunds, pending } = useTokenSaleClaimFunds();
+  const { sortedSales, sortField, sortDirection, handleSort } =
+    useTokenSalesTableSorting(tokenSales);
 
-  const sortedSales = useMemo(() => {
-    // Sort by active status first, then by end date
-    return [...tokenSales].sort((a, b) => {
-      if (a.isActive && !b.isActive) return -1;
-      if (!a.isActive && b.isActive) return 1;
-      return Number(b.saleEndTimestamp) - Number(a.saleEndTimestamp);
-    });
-  }, [tokenSales]);
+  function SortableHeader({
+    children,
+    field,
+    onClick,
+  }: {
+    children: React.ReactNode;
+    field: SortField;
+    onClick: (field: SortField) => void;
+  }) {
+    const isActive = sortField === field;
+    const getSortIcon = () => {
+      if (!isActive) return <CaretUpDown size={16} />;
+      return sortDirection === 'asc' ? <CaretUp size={16} /> : <CaretDown size={16} />;
+    };
 
-  function SortableHeader({ children }: { children: React.ReactNode }) {
     return (
       <Button
         variant="ghost"
         size="sm"
-        rightIcon={<CaretUpDown size={16} />}
-        color="color-content-muted"
-        fontWeight="medium"
-        fontSize="sm"
+        rightIcon={getSortIcon()}
+        color={isActive ? 'color-content-content1-foreground' : 'color-content-muted'}
+        textStyle="text-sm-medium"
         h="36px"
         px={0}
         py={0}
@@ -63,11 +132,16 @@ export function TokenSalesTable({ tokenSales }: TokenSalesTableProps) {
         _hover={{ bg: 'transparent' }}
         _active={{ bg: 'transparent' }}
         _focus={{ bg: 'transparent' }}
+        onClick={() => onClick(field)}
       >
         {children}
       </Button>
     );
   }
+
+  // todo should also account for if there are any unclaimed funds
+  const canClaimFunds = (sale: TokenSaleData) =>
+    sale.saleState === 2 && sale.totalCommitments >= sale.maximumTotalCommitment / 2n;
 
   const getRowActions = (sale: TokenSaleData) => [
     {
@@ -78,7 +152,7 @@ export function TokenSalesTable({ tokenSales }: TokenSalesTableProps) {
         }
       },
     },
-    ...(sale.isActive
+    ...(canClaimFunds(sale)
       ? [
           {
             optionKey: 'claimFunds',
@@ -96,27 +170,52 @@ export function TokenSalesTable({ tokenSales }: TokenSalesTableProps) {
         <Thead>
           <Tr>
             <Th>
-              <Text
-                textStyle="text-sm-medium"
-                color="color-content-muted"
+              <SortableHeader
+                field="name"
+                onClick={handleSort}
               >
-                Name
-              </Text>
+                {t('nameColumnLabel')}
+              </SortableHeader>
             </Th>
             <Th>
-              <SortableHeader>Closing Date</SortableHeader>
+              <SortableHeader
+                field="endDate"
+                onClick={handleSort}
+              >
+                {t('closingDateColumnLabel')}
+              </SortableHeader>
             </Th>
             <Th>
-              <SortableHeader>Status</SortableHeader>
+              <SortableHeader
+                field="status"
+                onClick={handleSort}
+              >
+                {t('statusColumnLabel')}
+              </SortableHeader>
             </Th>
             <Th>
-              <SortableHeader>Raised</SortableHeader>
+              <SortableHeader
+                field="raised"
+                onClick={handleSort}
+              >
+                {t('raisedColumnLabel')}
+              </SortableHeader>
             </Th>
             <Th>
-              <SortableHeader>Target Raise</SortableHeader>
+              <SortableHeader
+                field="target"
+                onClick={handleSort}
+              >
+                {t('targetRaiseColumnLabel')}
+              </SortableHeader>
             </Th>
             <Th>
-              <SortableHeader>Progress</SortableHeader>
+              <SortableHeader
+                field="progress"
+                onClick={handleSort}
+              >
+                {t('progressColumnLabel')}
+              </SortableHeader>
             </Th>
             <Th></Th>
           </Tr>
@@ -161,7 +260,7 @@ export function TokenSalesTable({ tokenSales }: TokenSalesTableProps) {
                     textStyle="text-sm-regular"
                     color="color-content-content1-foreground"
                   >
-                    {formatSaleAmount(sale.totalCommitments)}
+                    {formatSaleAmount(sale.totalCommitments, USDC_DECIMALS)}
                   </Text>
                 </Td>
                 <Td>
@@ -169,7 +268,7 @@ export function TokenSalesTable({ tokenSales }: TokenSalesTableProps) {
                     textStyle="text-sm-regular"
                     color="color-content-content1-foreground"
                   >
-                    {formatSaleAmount(sale.maximumTotalCommitment)}
+                    {formatSaleAmount(sale.maximumTotalCommitment, USDC_DECIMALS)}
                   </Text>
                 </Td>
                 <Td>
@@ -179,14 +278,8 @@ export function TokenSalesTable({ tokenSales }: TokenSalesTableProps) {
                   >
                     <Progress
                       value={progress}
-                      h="8px"
-                      borderRadius="full"
-                      bg="color-alpha-white-900"
-                      sx={{
-                        '& > div': {
-                          bg: 'color-lilac-100',
-                        },
-                      }}
+                      variant="primary"
+                      size="small"
                     />
                   </Box>
                 </Td>
@@ -226,21 +319,7 @@ export function TokenSalesTable({ tokenSales }: TokenSalesTableProps) {
           fontSize="12px"
           lineHeight="16px"
         >
-          Showing{' '}
-          <Text
-            as="span"
-            fontWeight="semibold"
-          >
-            1-{tokenSales.length}
-          </Text>{' '}
-          of{' '}
-          <Text
-            as="span"
-            fontWeight="semibold"
-          >
-            {tokenSales.length}
-          </Text>{' '}
-          sales
+          {t('showingSalesText', { start: 1, end: tokenSales.length, total: tokenSales.length })}
         </Text>
       </Box>
     </Box>

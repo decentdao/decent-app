@@ -3,7 +3,7 @@ import { useCallback } from 'react';
 import { Address, getContract, erc20Abi } from 'viem';
 import { logError } from '../../helpers/errorLogging';
 import useNetworkPublicClient from '../../hooks/useNetworkPublicClient';
-import { TokenSaleData } from '../../types/tokenSale';
+import { TokenSaleData, TokenSaleState } from '../../types/tokenSale';
 
 export function useTokenSalesFetcher() {
   const publicClient = useNetworkPublicClient();
@@ -30,6 +30,10 @@ export function useTokenSalesFetcher() {
           {
             ...tokenSaleContract,
             functionName: 'saleTokenPrice',
+          },
+          {
+            ...tokenSaleContract,
+            functionName: 'minimumTotalCommitment',
           },
           {
             ...tokenSaleContract,
@@ -63,6 +67,26 @@ export function useTokenSalesFetcher() {
             ...tokenSaleContract,
             functionName: 'saleProceedsReceiver',
           },
+          {
+            ...tokenSaleContract,
+            functionName: 'verifier',
+          },
+          {
+            ...tokenSaleContract,
+            functionName: 'protocolFeeReceiver',
+          },
+          {
+            ...tokenSaleContract,
+            functionName: 'commitmentTokenProtocolFee',
+          },
+          {
+            ...tokenSaleContract,
+            functionName: 'saleTokenProtocolFee',
+          },
+          {
+            ...tokenSaleContract,
+            functionName: 'sellerSettled',
+          },
         ];
 
         // Execute multicall for token sale data
@@ -70,6 +94,7 @@ export function useTokenSalesFetcher() {
           saleTokenData,
           commitmentTokenData,
           priceData,
+          minTotalCommitmentData,
           maxTotalCommitmentData,
           totalCommitmentsData,
           startTimeData,
@@ -77,7 +102,12 @@ export function useTokenSalesFetcher() {
           minCommitmentData,
           maxCommitmentData,
           saleStateData,
-          ownerData,
+          saleProceedsReceiverData,
+          verifierData,
+          protocolFeeReceiverData,
+          commitmentTokenProtocolFeeData,
+          saleTokenProtocolFeeData,
+          sellerSettledData,
         ] = await publicClient.multicall({
           contracts: tokenSaleMulticallCalls,
           allowFailure: true,
@@ -121,7 +151,8 @@ export function useTokenSalesFetcher() {
         });
 
         // Construct the token sale data object
-        const saleStateValue = (saleStateData.result as number) || 0;
+        const saleStateValue =
+          (saleStateData.result as TokenSaleState) || TokenSaleState.NOT_STARTED;
         const tokenSaleData: TokenSaleData = {
           address: tokenSaleAddress,
           name: '', // Will be set from metadata in the fetcher orchestrator
@@ -133,6 +164,7 @@ export function useTokenSalesFetcher() {
           tokenDecimals: (tokenDecimalsData.result as number) || 18,
           saleTokenPrice: (priceData.result as bigint) || 0n,
           maximumTotalCommitment: (maxTotalCommitmentData.result as bigint) || 0n,
+          minimumTotalCommitment: (minTotalCommitmentData.result as bigint) || 0n,
           totalCommitments: (totalCommitmentsData.result as bigint) || 0n,
           saleStartTimestamp: (startTimeData.result as bigint) || 0n,
           saleEndTimestamp: (endTimeData.result as bigint) || 0n,
@@ -140,9 +172,18 @@ export function useTokenSalesFetcher() {
           maximumCommitment: (maxCommitmentData.result as bigint) || 0n,
           saleState: saleStateValue,
           saleProceedsReceiver:
-            (ownerData.result as Address) || '0x0000000000000000000000000000000000000000',
-          // Computed field: sale is active if state is 1 (ACTIVE)
-          isActive: saleStateValue === 1,
+            (saleProceedsReceiverData.result as Address) ||
+            '0x0000000000000000000000000000000000000000',
+          verifier:
+            (verifierData.result as Address) || '0x0000000000000000000000000000000000000000',
+          protocolFeeReceiver:
+            (protocolFeeReceiverData.result as Address) ||
+            '0x0000000000000000000000000000000000000000',
+          commitmentTokenProtocolFee: (commitmentTokenProtocolFeeData.result as bigint) || 0n,
+          saleTokenProtocolFee: (saleTokenProtocolFeeData.result as bigint) || 0n,
+          sellerSettled: (sellerSettledData.result as boolean) || false,
+          // Computed field: sale is active if state is ACTIVE
+          isActive: saleStateValue === TokenSaleState.ACTIVE,
         };
 
         return tokenSaleData;
