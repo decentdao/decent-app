@@ -148,6 +148,7 @@ const polygonConfig: NetworkConfig = {
       symbol: 'USDC',
     },
   },
+  tokenSale: {}, // Disabled for polygon
 };
 
 export default polygonConfig;

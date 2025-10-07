@@ -149,6 +149,10 @@ const baseConfig: NetworkConfig = {
       symbol: 'USDC',
     },
   },
+  tokenSale: {
+    // Decent Base DAO Address
+    protocolFeeReceiver: '0x54D7d33F0fD41A1a1B6dD60Cc7731D9930B5157E',
+  },
 };
 
 export default baseConfig;

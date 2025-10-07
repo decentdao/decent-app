@@ -158,6 +158,10 @@ export const mainnetConfig: NetworkConfig = {
       symbol: 'USDC',
     },
   },
+  tokenSale: {
+    // Decent DAO Mainnet Address
+    protocolFeeReceiver: '0xD26c85D435F02DaB8B220cd4D2d398f6f646e235',
+  },
 };
 
 export default mainnetConfig;

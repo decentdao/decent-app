@@ -99,6 +99,9 @@ type NetworkConfigBase = {
       symbol: string;
     };
   };
+  tokenSale: {
+    protocolFeeReceiver?: Address; // If not set, token sale is not enabled
+  };
 };
 
 // Type for networks *with* Account Abstraction

@@ -149,6 +149,7 @@ const optimismConfig: NetworkConfig = {
       symbol: 'USDC',
     },
   },
+  tokenSale: {}, // Disabled for optimism
 };
 
 export default optimismConfig;

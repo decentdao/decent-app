@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { Address, encodeFunctionData, encodePacked, getCreate2Address, keccak256 } from 'viem';
+import { useAccount } from 'wagmi';
 import { ZodiacModuleProxyFactoryAbi } from '../../../assets/abi/ZodiacModuleProxyFactoryAbi';
 import { InfoBoxLoader } from '../../../components/ui/loaders/InfoBoxLoader';
 import PageHeader from '../../../components/ui/page/Header/PageHeader';
@@ -29,52 +30,68 @@ import { useTokenSaleRequirementsPreparation } from './hooks/useTokenSaleRequire
 
 const stages = ['Sale Terms', 'Buyer Requirements'];
 
-const getInitialValues = (usdcAddress?: Address): TokenSaleFormValues => ({
-  protocolFeeReceiver: '0x629750317d320B8bB4d48D345A6d699Cc855c4a6', // TODO this need to be set to specific address for base, sepolia, ethereum mainnet
-  commitmentToken: usdcAddress || null, // Set to current network's USDC
+const getInitialValues = (
+  commitmentToken?: Address,
+  protocolFeeReceiver?: Address,
+): TokenSaleFormValues => {
+  if (!protocolFeeReceiver) {
+    throw new Error('Token sale feature is not enabled on this network');
+  }
+  if (!commitmentToken) {
+    logError(`Commitment token is not configured on this network`);
+    throw new Error('Commitment token is not configured');
+  }
 
-  saleName: '',
-  saleTokenPrice: { value: '', bigintValue: undefined }, // Will be auto-calculated from FDV and token supply
+  return {
+    protocolFeeReceiver: protocolFeeReceiver,
+    commitmentToken: commitmentToken, // Set to current network's USDC
 
-  // Token Details
-  tokenAddress: '',
-  tokenName: '',
-  tokenSymbol: '',
-  maxTokenSupply: { value: '', bigintValue: undefined }, // Total supply for price calculation
-  saleTokenSupply: { value: '', bigintValue: undefined }, // Net tokens for sale (what buyers get)
+    saleName: '',
+    saleTokenPrice: { value: '', bigintValue: undefined }, // Will be auto-calculated from FDV and token supply
 
-  // Sale Timing
-  startDate: '',
-  startTime: '09:00', // 9 AM default
-  endDate: '',
-  endTime: '17:00', // 5 PM default
+    // Token Details
+    tokenAddress: '',
+    tokenName: '',
+    tokenSymbol: '',
+    maxTokenSupply: { value: '', bigintValue: undefined }, // Total supply for price calculation
+    saleTokenSupply: { value: '', bigintValue: undefined }, // Net tokens for sale (what buyers get)
 
-  // Sale Pricing & Terms
-  minimumFundraise: '',
-  valuation: '',
-  minPurchase: '',
-  maxPurchase: '',
+    // Sale Timing
+    startDate: '',
+    startTime: '09:00', // 9 AM default
+    endDate: '',
+    endTime: '17:00', // 5 PM default
 
-  // Hedgey Lockup Configuration (disabled by default)
-  hedgeyLockupEnabled: false,
-  hedgeyLockupStart: { value: '0', bigintValue: 0n },
-  hedgeyLockupCliff: { value: '0', bigintValue: 0n },
-  hedgeyLockupRatePercentage: { value: '0', bigintValue: 0n },
-  hedgeyLockupPeriod: { value: '0', bigintValue: 0n },
-  hedgeyVotingTokenLockupPlans: '',
+    // Sale Pricing & Terms
+    minimumFundraise: '',
+    valuation: '',
+    minPurchase: '',
+    maxPurchase: '',
 
-  // Buyer Requirements
-  kycEnabled: false,
-  buyerRequirements: [],
-  orOutOf: 'all', // Default to 'all' requirements must be met
-});
+    // Hedgey Lockup Configuration (disabled by default)
+    hedgeyLockupEnabled: false,
+    hedgeyLockupStart: { value: '0', bigintValue: 0n },
+    hedgeyLockupCliff: { value: '0', bigintValue: 0n },
+    hedgeyLockupRatePercentage: { value: '0', bigintValue: 0n },
+    hedgeyLockupPeriod: { value: '0', bigintValue: 0n },
+    hedgeyVotingTokenLockupPlans: '',
+
+    // Buyer Requirements
+    kycEnabled: false,
+    buyerRequirements: [],
+    orOutOf: 'all', // Default to 'all' requirements must be met
+  };
+};
 
 export function SafeTokenSaleCreatePage() {
   const { t } = useTranslation('tokenSale');
   const [currentStage, setCurrentStage] = useState(0);
+  const { address: userAddress } = useAccount();
   const {
     contracts: { tokenSaleV1MasterCopy, keyValuePairs, zodiacModuleProxyFactory, decentVerifierV1 },
     stablecoins,
+    tokenSale,
+    chain,
   } = useNetworkConfigStore();
 
   const { daoKey } = useCurrentDAOKey();
@@ -87,6 +104,17 @@ export function SafeTokenSaleCreatePage() {
   const { prepareFormData } = useTokenSaleFormPreparation();
   const { prepareRequirements } = useTokenSaleRequirementsPreparation();
   const { tokenSaleValidationSchema } = useTokenSaleSchema();
+
+  // Determine protocol fee receiver based on network
+  const getProtocolFeeReceiver = (): Address | undefined => {
+    // For Sepolia network, use the user's connected address
+    if (chain.id === 11155111) {
+      // Sepolia chain ID
+      return userAddress;
+    }
+    // For other networks, use the configured protocolFeeReceiver
+    return tokenSale.protocolFeeReceiver;
+  };
 
   const handleNext = async (
     validateForm: () => Promise<any>,
@@ -335,7 +363,7 @@ export function SafeTokenSaleCreatePage() {
       />
 
       <Formik
-        initialValues={getInitialValues(stablecoins.usdc.address)}
+        initialValues={getInitialValues(stablecoins.usdc.address, getProtocolFeeReceiver())}
         validationSchema={tokenSaleValidationSchema}
         onSubmit={handleSubmit}
       >

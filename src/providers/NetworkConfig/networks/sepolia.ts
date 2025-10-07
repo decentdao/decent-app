@@ -158,6 +158,7 @@ const sepoliaConfig: NetworkConfig = {
       symbol: 'USDC',
     },
   },
+  tokenSale: {}, // Will be set to DAO deploying token sale
 };
 
 export default sepoliaConfig;
