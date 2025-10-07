@@ -3,7 +3,6 @@ import { useCallback, useState } from 'react';
 import { Address, getContract, parseUnits } from 'viem';
 import { USDC_DECIMALS } from '../../../constants/common';
 import { logError } from '../../../helpers/errorLogging';
-// eslint-disable-next-line import/extensions
 import { useNetworkWalletClient } from '../../useNetworkWalletClient';
 import { useTransaction } from '../../utils/useTransaction';
 
