@@ -68,14 +68,25 @@ export function useCanUserCreateProposal() {
           return checkIsMultisigOwner(safeInfo.owners);
         }
       } else {
-        if (isAzorius && votesToken?.delegatee === user.address) {
+        if (isAzorius) {
+          const votingStrategies: Address[] = [];
+          // Add all voting strategies to the array
+          for (const votingStrategyAddress of [
+            linearVotingErc20Address,
+            linearVotingErc20WithHatsWhitelistingAddress,
+            linearVotingErc721Address,
+            linearVotingErc721WithHatsWhitelistingAddress,
+          ]) {
+            if (votingStrategyAddress) {
+              votingStrategies.push(votingStrategyAddress);
+            }
+          }
+          // If the votes token is delegated, check if the user is the delegatee
+          if (votesToken?.delegatee && votesToken.delegatee !== user.address) {
+            return false;
+          }
           const isProposerPerStrategy = await Promise.all(
-            [
-              linearVotingErc20Address,
-              linearVotingErc20WithHatsWhitelistingAddress,
-              linearVotingErc721Address,
-              linearVotingErc721WithHatsWhitelistingAddress,
-            ].map(async votingStrategyAddress => {
+            votingStrategies.map(async votingStrategyAddress => {
               if (votingStrategyAddress) {
                 const votingContract = getContract({
                   abi: legacy.abis.LinearERC20Voting,
