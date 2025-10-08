@@ -158,7 +158,9 @@ const sepoliaConfig: NetworkConfig = {
       symbol: 'USDC',
     },
   },
-  tokenSale: {}, // Will be set to DAO deploying token sale
+  tokenSale: {
+    protocolFeeReceiver: '0x0000000000000000000000000000000000000000', // Will be set to connected account deploying token sale
+  },
 };
 
 export default sepoliaConfig;

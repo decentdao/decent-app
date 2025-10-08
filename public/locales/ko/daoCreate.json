@@ -29,6 +29,7 @@
   "labelVotingPeriod": "투표 기간",
   "labelChooseGovernance": "거버넌스",
   "helperChooseGovernance": "DAO의 거버넌스 스키마를 선택합니다.",
+  "helperChooseGovernanceNode": "노드에 대한 거버넌스 스키마를 선택합니다.",
   "helperVotingPeriod": "제안서가 생성된 후 투표를 활성화할 수 있는 기간입니다.",
   "helperQuorumERC20": "제안에 투표하여 결과를 유효하게 만드는 데 필요한 총 가능한 토큰 투표의 비율입니다.",
   "helperQuorumERC721": "제안에 투표하여 결과를 유효하게 만드는 데 필요한 총 사용 가능한 토큰 투표 가중치의 최소 가중치입니다.",
@@ -75,6 +76,7 @@
   "labelDAOName": "이름",
   "daoNamePlaceholder": "이름",
   "helperDAOName": "DAO는 무엇이라고 부르나요?",
+  "helperNodeName": "노드의 이름은 무엇인가요?",
   "labelDeploySubDAO": "SubDAO 제안서 만들기",
   "labelDeployAzorius": "Azorius 배포 제안서 만들기",
   "titleAllocations": "할당",
@@ -88,6 +90,7 @@
   "createSubDAOSuccessToastMessage": "배포 성공",
   "createSubDAOFailureToastMessage": "배포 실패",
   "helperAllocations": "할당되지 않은 토큰은 새로 배포된 DAO 트레저에 배치됩니다.",
+  "helperAllocationsNode": "할당되지 않은 토큰은 새로 배포된 노드 트레저에 배치됩니다.",
   "helperProposers": "화이트리스트에 등록된 역할 구성원만 제안서를 작성할 수 있습니다.",
   "radioLabelNewToken": "새 토큰",
   "radioLabelExistingToken": "토큰 컨트랙트 주소",
@@ -105,6 +108,7 @@
   "attachFractalModuleLabel": "클로백 활성화",
   "networks": "네트워크",
   "networkDescription": "이 DAO를 어떤 네트워크에 배포하시겠습니까?",
+  "networkDescriptionNode": "이 노드를 어떤 네트워크에 배포하시겠습니까?",
   "attachFractalModuleDescription": "이 설정은 부모 DAO가 자식 DAO의 투표 과정을 우회하여 자식 DAO에서 임의의 트랜잭션을 실행할 수 있는지 여부를 제어합니다.",
   "fractalModuleAttachedDescription": "이 설정은 이미 DAO에 연결된 프랙탈 모듈이므로 수정할 수 없습니다."
 }

@@ -10,5 +10,7 @@
   "optionRemoveTemplate": "Eliminar plantilla",
   "optionForkTemplate": "Plantilla de horquilla",
   "optionModifyGovernance": "Modificar la gobernanza",
-  "optionSettings": "Ajustes"
+  "optionSettings": "Ajustes",
+  "viewDetails": "Ver detalles",
+  "claimFunds": "Reclamación de fondos"
 }
