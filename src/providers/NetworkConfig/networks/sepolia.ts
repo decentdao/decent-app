@@ -134,6 +134,9 @@ const sepoliaConfig: NetworkConfig = {
       entryPointv07: '0x0000000071727De22E5E9d8BAf0edAc6f37da032',
       lightAccountFactory: '0x0000000000400CdFef5E2714E63d8040b700BC24',
     },
+
+    tokenSaleV1MasterCopy: addresses.deployables.TokenSaleV1,
+    decentVerifierV1: addresses.services.VerifierV1,
   },
 
   moralis: {
@@ -147,7 +150,16 @@ const sepoliaConfig: NetworkConfig = {
   ],
   bundlerMinimumStake: 100_000_000_000_000_000n, // 0.1 ETH,
   stablecoins: {
-    usdc: '0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238',
+    usdc: {
+      address: '0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238',
+      decimals: 6,
+      icon: '/images/coin-icon-usdc.svg',
+      name: 'USDC',
+      symbol: 'USDC',
+    },
+  },
+  tokenSale: {
+    protocolFeeReceiver: '0x0000000000000000000000000000000000000000', // Will be set to connected account deploying token sale
   },
 };
 

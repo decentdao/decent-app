@@ -5,6 +5,8 @@ import { Address, GetContractEventsReturnType, getContract } from 'viem';
 import { logError } from '../../helpers/errorLogging';
 import useNetworkPublicClient from '../../hooks/useNetworkPublicClient';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
+import { TokenSaleMetadata } from '../../types/tokenSale';
+import { normalizeBuyerRequirements } from '../../utils/buyerRequirementsNormalizer';
 
 export function useKeyValuePairsFetcher() {
   const publicClient = useNetworkPublicClient();
@@ -130,5 +132,60 @@ export function useKeyValuePairsFetcher() {
     [getHatsTreeId, getStreamIdsToHatIds, keyValuePairs, publicClient],
   );
 
-  return { getHatsTreeId, getStreamIdsToHatIds, fetchKeyValuePairsData };
+  const getTokenSaleAddresses = useCallback(
+    async ({
+      events,
+      chainId,
+    }: {
+      events: GetContractEventsReturnType<typeof legacy.abis.KeyValuePairs> | undefined;
+      chainId: number;
+    }) => {
+      if (!events) {
+        return [];
+      }
+
+      // get all events where `newtokensale` was set
+      const tokenSaleEvents = events.filter(
+        event => event.args.key && event.args.key === 'newtokensale',
+      );
+
+      const tokenSaleMetadata: TokenSaleMetadata[] = [];
+
+      for (const event of tokenSaleEvents) {
+        if (event.args.value) {
+          try {
+            const metadata = JSON.parse(event.args.value);
+            if (metadata.tokenSaleAddress) {
+              const normalizedRequirements = await normalizeBuyerRequirements(
+                metadata.buyerRequirements || [],
+                publicClient,
+              );
+              tokenSaleMetadata.push({
+                tokenSaleAddress: metadata.tokenSaleAddress,
+                tokenSaleName: metadata.tokenSaleName,
+                buyerRequirements: normalizedRequirements,
+                kyc: metadata.kyc || null,
+                orOutOf: metadata.orOutOf,
+              });
+            }
+          } catch (error) {
+            logError({
+              message: 'Failed to parse token sale metadata from KVPairs event',
+              network: chainId,
+              args: {
+                transactionHash: event.transactionHash,
+                logIndex: event.logIndex,
+                value: event.args.value,
+              },
+            });
+          }
+        }
+      }
+
+      return tokenSaleMetadata;
+    },
+    [publicClient],
+  );
+
+  return { getHatsTreeId, getStreamIdsToHatIds, getTokenSaleAddresses, fetchKeyValuePairsData };
 }

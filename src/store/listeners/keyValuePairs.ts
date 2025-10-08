@@ -5,6 +5,7 @@ import { logError } from '../../helpers/errorLogging';
 import useNetworkPublicClient from '../../hooks/useNetworkPublicClient';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
 import { GaslessVotingDaoData } from '../../types';
+import { TokenSaleMetadata } from '../../types/tokenSale';
 import { useGovernanceFetcher } from '../fetchers/governance';
 import { useKeyValuePairsFetcher } from '../fetchers/keyValuePairs';
 
@@ -12,6 +13,7 @@ export function useKeyValuePairsListener({
   safeAddress,
   onRolesDataFetched,
   onGaslessVotingDataFetched,
+  onTokenSalesDataFetched,
 }: {
   safeAddress?: Address;
   onRolesDataFetched: (rolesData: {
@@ -20,8 +22,12 @@ export function useKeyValuePairsListener({
     streamIdsToHatIds: { hatId: bigint; streamId: string }[];
   }) => void;
   onGaslessVotingDataFetched: (gasslesVotingData: GaslessVotingDaoData) => void;
+  onTokenSalesDataFetched: (
+    tokenSaleAddresses: string[],
+    tokenSaleMetadata?: TokenSaleMetadata[],
+  ) => void;
 }) {
-  const { getStreamIdsToHatIds, getHatsTreeId } = useKeyValuePairsFetcher();
+  const { getStreamIdsToHatIds, getHatsTreeId, getTokenSaleAddresses } = useKeyValuePairsFetcher();
   const { fetchGaslessVotingDAOData } = useGovernanceFetcher();
   const publicClient = useNetworkPublicClient();
   const {
@@ -61,6 +67,16 @@ export function useKeyValuePairsListener({
         if (gaslessVotingDaoData) {
           onGaslessVotingDataFetched(gaslessVotingDaoData);
         }
+
+        const tokenSaleMetadata = await getTokenSaleAddresses({
+          events: logs,
+          chainId: publicClient.chain.id,
+        });
+
+        if (tokenSaleMetadata.length > 0) {
+          const addresses = tokenSaleMetadata.map(meta => meta.tokenSaleAddress);
+          onTokenSalesDataFetched(addresses, tokenSaleMetadata);
+        }
       } catch (e) {
         logError(e as Error);
       }
@@ -85,7 +101,9 @@ export function useKeyValuePairsListener({
     fetchGaslessVotingDAOData,
     getHatsTreeId,
     getStreamIdsToHatIds,
+    getTokenSaleAddresses,
     onGaslessVotingDataFetched,
     onRolesDataFetched,
+    onTokenSalesDataFetched,
   ]);
 }

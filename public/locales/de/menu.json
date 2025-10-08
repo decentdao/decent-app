@@ -10,5 +10,7 @@
   "optionRemoveTemplate": "Vorlage entfernen",
   "optionForkTemplate": "Gabel Vorlage",
   "optionModifyGovernance": "Ändern der Governance",
-  "optionSettings": "Einstellungen"
+  "optionSettings": "Einstellungen",
+  "viewDetails": "Details anzeigen",
+  "claimFunds": "Mittel beantragen"
 }

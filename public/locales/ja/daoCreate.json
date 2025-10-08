@@ -29,6 +29,7 @@
   "labelVotingPeriod": "投票期間",
   "labelChooseGovernance": "ガバナンス",
   "helperChooseGovernance": "DAOのガバナンススキーマを選択する。",
+  "helperChooseGovernanceNode": "ノードのガバナンス・スキーマを選択します。",
   "helperVotingPeriod": "プロポーザル作成後、投票が有効になる期間。",
   "helperQuorumERC20": "ある議案に対する投票に必要なトークン総投票数の割合。",
   "helperQuorumERC721": "投票可能なトークンの総重量のうち、投票結果を有効にするために必要な最小の重み。",
@@ -75,6 +76,7 @@
   "labelDAOName": "名称",
   "daoNamePlaceholder": "名称",
   "helperDAOName": "DAOの名前は何ですか？",
+  "helperNodeName": "ノードの名前は？",
   "labelDeploySubDAO": "SubDAOプロポーザルの作成",
   "labelDeployAzorius": "アゾリウス配備提案書の作成",
   "titleAllocations": "割り当て",
@@ -88,6 +90,7 @@
   "createSubDAOSuccessToastMessage": "配備成功",
   "createSubDAOFailureToastMessage": "デプロイメントに失敗",
   "helperAllocations": "未割り当てのトークンは、新たに配備されたDAOの宝庫に置かれる。",
+  "helperAllocationsNode": "未割り当てのトークンは新しくデプロイされたノードのトレジャリーに置かれる。",
   "helperProposers": "ホワイトリストに登録されたロールメンバーだけがプロポーザルを作成できます。",
   "radioLabelNewToken": "新しいトークン",
   "radioLabelExistingToken": "トークン契約アドレス",
@@ -105,6 +108,7 @@
   "attachFractalModuleLabel": "クローバックを有効にする",
   "networks": "ネットワーク",
   "networkDescription": "このDAOをどのネットワークにデプロイしたいですか？",
+  "networkDescriptionNode": "このノードをどのネットワークに配置しますか？",
   "attachFractalModuleDescription": "この設定は、親 DAO が子 DAO の投票プロセスをバイパスして子 DAO 上で任意のトランザクションを実行できるかどうかを制御します。",
   "fractalModuleAttachedDescription": "フラクタルモジュールはすでにDAOに取り付けられているため、この設定は変更できない。"
 }

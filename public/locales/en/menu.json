@@ -4,11 +4,13 @@
   "disconnect": "Disconnect",
   "wallet": "Wallet",
   "titleManageProposalTemplate": "Manage Template",
-  "optionCreateSubDAO": "Create SubDAO",
+  "optionCreateSubDAO": "Create Node",
   "optionInitiateFreeze": "Initiate a Freeze",
   "optionInitiateClawback": "Initiate Clawback",
   "optionRemoveTemplate": "Remove Template",
   "optionForkTemplate": "Fork Template",
   "optionModifyGovernance": "Modify Governance",
-  "optionSettings": "Settings"
+  "optionSettings": "Settings",
+  "viewDetails": "View Details",
+  "claimFunds": "Claim Funds"
 }

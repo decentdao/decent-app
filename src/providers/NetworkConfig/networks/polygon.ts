@@ -126,6 +126,8 @@ const polygonConfig: NetworkConfig = {
     sablierV2LockupTranched: '0xBF67f0A1E847564D0eFAD475782236D3Fa7e9Ec2',
     sablierV2LockupLinear: '0x8D4dDc187a73017a5d7Cef733841f55115B13762',
     disperse: '0xD152f549545093347A162Dce210e7293f1452150',
+    tokenSaleV1MasterCopy: addresses.deployables.TokenSaleV1,
+    decentVerifierV1: addresses.services.VerifierV1,
   },
 
   moralis: {
@@ -138,8 +140,15 @@ const polygonConfig: NetworkConfig = {
     GovernanceType.AZORIUS_ERC721,
   ],
   stablecoins: {
-    usdc: '0x3c499c542cEF5E3811e1192ce70d8cC03d5c3359',
+    usdc: {
+      address: '0x3c499c542cEF5E3811e1192ce70d8cC03d5c3359',
+      decimals: 6,
+      icon: '/images/coin-icon-usdc.svg',
+      name: 'USDC',
+      symbol: 'USDC',
+    },
   },
+  tokenSale: {}, // Disabled for polygon
 };
 
 export default polygonConfig;

@@ -9,6 +9,7 @@ export function transformTokenResponse(token: TokenResponse): TokenBalance {
     verifiedContract: token.verified_contract,
     balanceFormatted: token.balance_formatted,
     nativeToken: token.native_token,
+    totalSupply: token.total_supply,
     portfolioPercentage: token.portfolio_percentage,
     logo: token.logo,
     thumbnail: token.thumbnail,
@@ -42,6 +43,7 @@ export function transformDefiResponse(defi: DefiResponse): DefiBalance {
       label: defi.position.label || '',
       tokens: (defi.position.tokens || []).map(token => ({
         contractAddress: token.contract_address,
+        totalSupply: null,
         tokenType: token.token_type as 'supplied' | 'defi-token',
         symbol: token.symbol,
         name: token.name,

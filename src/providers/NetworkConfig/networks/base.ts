@@ -126,6 +126,9 @@ const baseConfig: NetworkConfig = {
     sablierV2LockupTranched: '0xf4937657Ed8B3f3cB379Eed47b8818eE947BEb1e',
     sablierV2LockupLinear: '0x4CB16D4153123A74Bc724d161050959754f378D8',
     disperse: '0xD152f549545093347A162Dce210e7293f1452150',
+
+    tokenSaleV1MasterCopy: addresses.deployables.TokenSaleV1,
+    decentVerifierV1: addresses.services.VerifierV1,
   },
 
   moralis: {
@@ -138,7 +141,17 @@ const baseConfig: NetworkConfig = {
     GovernanceType.AZORIUS_ERC721,
   ],
   stablecoins: {
-    usdc: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913',
+    usdc: {
+      address: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913',
+      decimals: 6,
+      icon: '/images/coin-icon-usdc.svg',
+      name: 'USDC',
+      symbol: 'USDC',
+    },
+  },
+  tokenSale: {
+    // Decent Base DAO Address
+    protocolFeeReceiver: '0x54D7d33F0fD41A1a1B6dD60Cc7731D9930B5157E',
   },
 };
 

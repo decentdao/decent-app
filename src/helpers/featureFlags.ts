@@ -8,6 +8,7 @@ export const FEATURE_FLAGS = [
   'flag_feature_agreement',
   'flag_token_deployment',
   'flag_token_sale',
+  'flag_api',
 ] as const;
 
 export type FeatureFlagKeys = typeof FEATURE_FLAGS;

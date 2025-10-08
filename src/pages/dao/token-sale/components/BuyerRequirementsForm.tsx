@@ -1,7 +1,13 @@
-import { NumberInput, NumberInputField, VStack } from '@chakra-ui/react';
-import { InputComponent, LabelComponent } from '../../../../components/ui/forms/InputComponent';
-import { SectionHeader } from '../../../../components/ui/forms/SectionHeader';
-import { TokenSaleFormValues } from '../types';
+import { VStack, Box, useDisclosure } from '@chakra-ui/react';
+import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { ContentBoxTight } from '../../../../components/ui/containers/ContentBox';
+import { LabelComponent } from '../../../../components/ui/forms/InputComponent';
+import { BuyerRequirement, TokenSaleFormValues } from '../../../../types/tokenSale';
+import { AddRequirementModal } from './buyer-requirements/AddRequirementModal';
+import { KycKybRequirement } from './buyer-requirements/KycKybRequirement';
+import { RequirementsFooter } from './buyer-requirements/RequirementsFooter';
+import { RequirementsList } from './buyer-requirements/RequirementsList';
 
 interface BuyerRequirementsFormProps {
   values: TokenSaleFormValues;
@@ -9,76 +15,97 @@ interface BuyerRequirementsFormProps {
 }
 
 export function BuyerRequirementsForm({ values, setFieldValue }: BuyerRequirementsFormProps) {
-  return (
-    <VStack
-      spacing={8}
-      align="stretch"
-    >
-      <SectionHeader
-        title="Buyer Requirements"
-        description="Set purchase limits and optional verification requirements for your token sale."
-      />
+  const { t } = useTranslation('tokenSale');
+  const [editingRequirement, setEditingRequirement] = useState<{
+    requirement: BuyerRequirement;
+    index: number;
+  } | null>(null);
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
+  // Get requirement mode from form values, default to 'all'
+  const requirementMode = values.orOutOf || 'all';
+
+  const setRequirementMode = (mode: 'all' | number) => {
+    setFieldValue('orOutOf', mode);
+  };
+
+  const handleAddRequirement = (requirement: BuyerRequirement) => {
+    if (editingRequirement !== null) {
+      // Update existing requirement
+      const updatedRequirements = [...values.buyerRequirements];
+      updatedRequirements[editingRequirement.index] = requirement;
+      setFieldValue('buyerRequirements', updatedRequirements);
+      setEditingRequirement(null);
+    } else {
+      // Add new requirement
+      const updatedRequirements = [...values.buyerRequirements, requirement];
+      setFieldValue('buyerRequirements', updatedRequirements);
+    }
+  };
+
+  const handleEditRequirement = (requirement: BuyerRequirement, index: number) => {
+    setEditingRequirement({ requirement, index });
+    onOpen();
+  };
+
+  const handleRemoveRequirement = (index: number) => {
+    const updatedRequirements = values.buyerRequirements.filter((_, i) => i !== index);
+    setFieldValue('buyerRequirements', updatedRequirements);
+  };
+
+  const handleCloseModal = () => {
+    setEditingRequirement(null);
+    onClose();
+  };
+
+  return (
+    <ContentBoxTight>
       <VStack
-        spacing={6}
+        spacing={8}
         align="stretch"
       >
-        <LabelComponent
-          label="Minimum Purchase"
-          isRequired={true}
-          gridContainerProps={{
-            templateColumns: '1fr',
-          }}
-        >
-          <NumberInput
-            value={values.minPurchase}
-            onChange={val => setFieldValue('minPurchase', val)}
-            min={0}
-          >
-            <NumberInputField placeholder="Enter minimum purchase amount" />
-          </NumberInput>
-        </LabelComponent>
-
-        <LabelComponent
-          label="Maximum Purchase"
-          isRequired={true}
-          gridContainerProps={{
-            templateColumns: '1fr',
-          }}
-        >
-          <NumberInput
-            value={values.maxPurchase}
-            onChange={val => setFieldValue('maxPurchase', val)}
-            min={0}
-          >
-            <NumberInputField placeholder="Enter maximum purchase amount" />
-          </NumberInput>
-        </LabelComponent>
-
-        <InputComponent
-          label="Whitelist Address (Optional)"
-          isRequired={false}
-          value={values.whitelistAddress}
-          onChange={e => setFieldValue('whitelistAddress', e.target.value)}
-          testId="whitelist-address"
-          placeholder="Enter whitelist contract address"
-          gridContainerProps={{
-            templateColumns: '1fr',
-          }}
+        <KycKybRequirement
+          kycEnabled={values.kycEnabled}
+          setFieldValue={setFieldValue}
         />
 
-        <InputComponent
-          label="KYC Provider (Optional)"
-          isRequired={false}
-          value={values.kycProvider}
-          onChange={e => setFieldValue('kycProvider', e.target.value)}
-          testId="kyc-provider"
-          placeholder="Enter KYC provider details"
-          gridContainerProps={{
-            templateColumns: '1fr',
-          }}
+        {/* Buyer Requirements Section */}
+        <VStack
+          spacing={6}
+          align="stretch"
+        >
+          <LabelComponent
+            label={t('buyerRequirementsLabel')}
+            helper={t('buyerRequirementsDescription')}
+            isRequired={false}
+            gridContainerProps={{
+              templateColumns: '1fr',
+            }}
+          >
+            <Box />
+          </LabelComponent>
+
+          <RequirementsList
+            requirements={values.buyerRequirements}
+            onAddRequirement={onOpen}
+            onEditRequirement={handleEditRequirement}
+            onRemoveRequirement={handleRemoveRequirement}
+          />
+
+          <RequirementsFooter
+            requirementMode={requirementMode}
+            setRequirementMode={setRequirementMode}
+            requirementsCount={values.buyerRequirements.length}
+          />
+        </VStack>
+
+        <AddRequirementModal
+          isOpen={isOpen}
+          onClose={handleCloseModal}
+          onAddRequirement={handleAddRequirement}
+          editingRequirement={editingRequirement?.requirement}
         />
       </VStack>
-    </VStack>
+    </ContentBoxTight>
   );
 }

@@ -24,9 +24,10 @@ import { LabelComponent } from '../../ui/forms/InputComponent';
 import LabelWrapper from '../../ui/forms/LabelWrapper';
 import CeleryButtonWithIcon from '../../ui/utils/CeleryButtonWithIcon';
 import { AzoriusTokenAllocation } from './AzoriusTokenAllocation';
+import { DAOCreateMode } from './EstablishEssentials';
 
 export function AzoriusTokenAllocations(props: ICreationStepProps) {
-  const { values, errors, setFieldValue, isSubDAO } = props;
+  const { values, errors, setFieldValue, isSubDAO, mode } = props;
   const { t } = useTranslation('daoCreate');
   const { daoKey } = useCurrentDAOKey();
 
@@ -88,7 +89,7 @@ export function AzoriusTokenAllocations(props: ICreationStepProps) {
               color="color-neutral-300"
               textStyle="text-sm-medium"
             >
-              {t('helperAllocations')}
+              {t(mode === DAOCreateMode.SUBDAO ? 'helperAllocationsNode' : 'helperAllocations')}
             </Text>
             <CeleryButtonWithIcon
               onClick={() => push({ address: '', amount: { value: '' } })}

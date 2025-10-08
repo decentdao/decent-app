@@ -50,7 +50,7 @@ function LabelWrapper({
         <Box
           textStyle="text-sm-medium"
           color="color-neutral-300"
-          mt="2"
+          mt="0.25rem"
           h="0.5rem"
         >
           {errorMessage && (

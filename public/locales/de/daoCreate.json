@@ -29,6 +29,7 @@
   "labelVotingPeriod": "Abstimmungszeitraum",
   "labelChooseGovernance": "Governance",
   "helperChooseGovernance": "Wählen Sie ein Governance-Schema für Ihre DAO.",
+  "helperChooseGovernanceNode": "Wählen Sie ein Governance-Schema für Ihren Knoten.",
   "helperVotingPeriod": "Die Zeitspanne, in der die Abstimmung nach der Erstellung eines Vorschlags möglich ist.",
   "helperQuorumERC20": "Der prozentuale Anteil der insgesamt möglichen Token-Stimmen, der für die Abstimmung über einen Vorschlag erforderlich ist, damit das Ergebnis gültig ist.",
   "helperQuorumERC721": "Das Mindestgewicht des gesamten verfügbaren Token-Stimmgewichts, das für die Abstimmung über einen Vorschlag erforderlich ist, damit das Ergebnis gültig ist.",
@@ -75,6 +76,7 @@
   "labelDAOName": "Name",
   "daoNamePlaceholder": "Name",
   "helperDAOName": "Wie lautet der Name Ihrer DAO?",
+  "helperNodeName": "Wie lautet der Name Ihres Knotens?",
   "labelDeploySubDAO": "SubDAO-Vorschlag erstellen",
   "labelDeployAzorius": "Azorius-Bereitstellungsvorschlag erstellen",
   "titleAllocations": "Zuteilungen",
@@ -88,6 +90,7 @@
   "createSubDAOSuccessToastMessage": "Einsatz erfolgreich",
   "createSubDAOFailureToastMessage": "Einsatz fehlgeschlagen",
   "helperAllocations": "Alle nicht zugewiesenen Token werden in die neu eingerichtete DAO-Schatzkammer eingezahlt.",
+  "helperAllocationsNode": "Alle nicht zugewiesenen Token werden in die Schatzkammer des neu eingerichteten Knotens gelegt.",
   "helperProposers": "Nur die Mitglieder dieser Rollen, die auf der Whitelist stehen, können Vorschläge erstellen.",
   "radioLabelNewToken": "Neue Wertmarke",
   "radioLabelExistingToken": "Token-Vertragsadresse",
@@ -105,6 +108,7 @@
   "attachFractalModuleLabel": "Clawback einschalten",
   "networks": "Netzwerke",
   "networkDescription": "In welchem Netz möchten Sie diese DAO einsetzen?",
+  "networkDescriptionNode": "In welchem Netz möchten Sie diesen Knoten einsetzen?",
   "attachFractalModuleDescription": "Diese Einstellung steuert, ob die Parent-DAO in der Lage sein wird, beliebige Transaktionen auf der Child-DAO unter Umgehung des Abstimmungsprozesses auf der Child-DAO auszuführen.",
   "fractalModuleAttachedDescription": "Diese Einstellung kann nicht geändert werden, da das Fractal-Modul bereits mit dem DAO verbunden ist."
 }

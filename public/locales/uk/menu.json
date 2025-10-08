@@ -10,5 +10,7 @@
   "optionRemoveTemplate": "Видалити шаблон",
   "optionForkTemplate": "Шаблон вилки",
   "optionModifyGovernance": "Змінити управління",
-  "optionSettings": "Налаштування"
+  "optionSettings": "Налаштування",
+  "viewDetails": "Переглянути деталі",
+  "claimFunds": "Фонди відшкодування збитків"
 }

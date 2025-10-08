@@ -1,12 +1,12 @@
 import { Box, Flex, Hide } from '@chakra-ui/react';
 import {
   BookOpen,
+  ChartDonut,
   Coins,
   GitFork,
   HandCoins,
   House,
   Question,
-  ShoppingCart,
   UsersThree,
 } from '@phosphor-icons/react';
 import { DAO_ROUTES } from '../../../../constants/routes';
@@ -14,6 +14,7 @@ import { URL_DOCS, URL_FAQ } from '../../../../constants/url';
 import useFeatureFlag from '../../../../helpers/environmentFeatureFlags';
 import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
 import { LanguageSwitcher } from '../../../../i18n/LanguageSwitcher';
+import { useNetworkConfigStore } from '../../../../providers/NetworkConfig/useNetworkConfigStore';
 import Divider from '../../utils/Divider';
 import { NavigationLink } from './NavigationLink';
 
@@ -55,8 +56,9 @@ function ExternalLinks({ closeDrawer }: { closeDrawer?: () => void }) {
 
 function InternalLinks({ closeDrawer }: { closeDrawer?: () => void }) {
   const { safeAddress, addressPrefix } = useCurrentDAOKey();
+  const { tokenSale } = useNetworkConfigStore();
   const isRevShareEnabled = useFeatureFlag('flag_revenue_sharing');
-  const isTokenSaleEnabled = useFeatureFlag('flag_token_sale');
+  const isTokenSaleEnabled = useFeatureFlag('flag_token_sale') && tokenSale.protocolFeeReceiver;
 
   if (!safeAddress) {
     return null;
@@ -128,7 +130,7 @@ function InternalLinks({ closeDrawer }: { closeDrawer?: () => void }) {
             href={DAO_ROUTES.tokenSale.relative(addressPrefix, safeAddress)}
             labelKey="tokenSale"
             testId="navigation-tokenSaleLink"
-            NavigationIcon={ShoppingCart}
+            NavigationIcon={ChartDonut}
             scope="internal"
             closeDrawer={closeDrawer}
           />

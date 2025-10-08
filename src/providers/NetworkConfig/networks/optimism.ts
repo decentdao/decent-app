@@ -126,6 +126,8 @@ const optimismConfig: NetworkConfig = {
     sablierV2LockupTranched: '0x90952912a50079bef00D5F49c975058d6573aCdC',
     sablierV2LockupLinear: '0x5C22471A86E9558ed9d22235dD5E0429207ccf4B',
     disperse: '0xD152f549545093347A162Dce210e7293f1452150',
+    tokenSaleV1MasterCopy: addresses.deployables.TokenSaleV1,
+    decentVerifierV1: addresses.services.VerifierV1,
   },
 
   moralis: {
@@ -139,8 +141,15 @@ const optimismConfig: NetworkConfig = {
   ],
   stablecoins: {
     // native USDC on Optimism
-    usdc: '0x0b2C639c533813f4Aa9D7837CAf62653d097Ff85',
+    usdc: {
+      address: '0x0b2C639c533813f4Aa9D7837CAf62653d097Ff85',
+      decimals: 6,
+      icon: '/images/coin-icon-usdc.svg',
+      name: 'USDC',
+      symbol: 'USDC',
+    },
   },
+  tokenSale: {}, // Disabled for optimism
 };
 
 export default optimismConfig;

@@ -29,6 +29,7 @@
   "labelVotingPeriod": "Período de votación",
   "labelChooseGovernance": "Gobernanza",
   "helperChooseGovernance": "Seleccione un esquema de gobierno para su DAO.",
+  "helperChooseGovernanceNode": "Seleccione un esquema de gobierno para su nodo.",
   "helperVotingPeriod": "Tiempo durante el cual se habilita la votación tras la creación de una propuesta.",
   "helperQuorumERC20": "Porcentaje del total de votos simbólicos posibles que es necesario votar sobre una propuesta para que el resultado sea válido.",
   "helperQuorumERC721": "El peso mínimo del peso total disponible de los votos por fichas necesario para votar una propuesta y que el resultado sea válido.",
@@ -75,6 +76,7 @@
   "labelDAOName": "Nombre",
   "daoNamePlaceholder": "Nombre",
   "helperDAOName": "¿Cómo se llama su DAO?",
+  "helperNodeName": "¿Cómo se llama tu nodo?",
   "labelDeploySubDAO": "Crear propuesta SubDAO",
   "labelDeployAzorius": "Crear una propuesta de implantación de Azorius",
   "titleAllocations": "Asignaciones",
@@ -88,6 +90,7 @@
   "createSubDAOSuccessToastMessage": "Despliegue con éxito",
   "createSubDAOFailureToastMessage": "Error de implantación",
   "helperAllocations": "Los tokens no asignados se colocarán en la tesorería de la DAO recién desplegada.",
+  "helperAllocationsNode": "Los tokens no asignados se colocarán en la tesorería del nodo recién desplegado.",
   "helperProposers": "Sólo estos miembros de la lista blanca de funciones podrán crear propuestas.",
   "radioLabelNewToken": "Nuevo Token",
   "radioLabelExistingToken": "Dirección del contrato de token",
@@ -105,6 +108,7 @@
   "attachFractalModuleLabel": "Activar la devolución",
   "networks": "Redes",
   "networkDescription": "¿En qué red le gustaría desplegar esta DAO?",
+  "networkDescriptionNode": "¿En qué red desea desplegar este nodo?",
   "attachFractalModuleDescription": "Este ajuste controla si la DAO Padre podrá ejecutar transacciones arbitrarias en la DAO Hijo saltándose el proceso de votación en la DAO Hijo.",
   "fractalModuleAttachedDescription": "Este ajuste no se puede modificar porque el módulo Fractal ya está conectado a la DAO."
 }

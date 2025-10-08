@@ -19,7 +19,7 @@ export interface Stream {
   cliffTime: string | null;
   depositAmount: string;
   recipient: string;
-  contract: Address;
+  contract: Address | { address: Address };
   asset: StreamAsset;
 }
 

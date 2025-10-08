@@ -29,6 +29,7 @@
   "labelVotingPeriod": "Период голосования",
   "labelChooseGovernance": "Управление",
   "helperChooseGovernance": "Выберите схему управления для вашей DAO.",
+  "helperChooseGovernanceNode": "Выберите схему управления для своего узла.",
   "helperVotingPeriod": "Период времени, в течение которого голосование разрешено после создания предложения.",
   "helperQuorumERC20": "Процент от общего числа возможных голосов, необходимых для голосования по предложению, чтобы результат был действительным.",
   "helperQuorumERC721": "Минимальный вес общего доступного веса токенов, необходимый для голосования по предложению, чтобы результат был действительным.",
@@ -75,6 +76,7 @@
   "labelDAOName": "Имя",
   "daoNamePlaceholder": "Имя",
   "helperDAOName": "Как называется ваша DAO?",
+  "helperNodeName": "Как называется ваш узел?",
   "labelDeploySubDAO": "Создайте предложение SubDAO",
   "labelDeployAzorius": "Создайте предложение по развертыванию Azorius",
   "titleAllocations": "Распределение",
@@ -88,6 +90,7 @@
   "createSubDAOSuccessToastMessage": "Развертывание прошло успешно",
   "createSubDAOFailureToastMessage": "Развертывание не удалось",
   "helperAllocations": "Все нераспределенные токены будут помещены в казначейство вновь созданной DAO.",
+  "helperAllocationsNode": "Все нераспределенные токены будут помещены в сокровищницу нового развернутого узла.",
   "helperProposers": "Только эти члены \"белого списка ролей\" смогут создавать предложения.",
   "radioLabelNewToken": "Новый токен",
   "radioLabelExistingToken": "Адрес контракта токена",
@@ -105,6 +108,7 @@
   "attachFractalModuleLabel": "Включить обратную связь",
   "networks": "Сети",
   "networkDescription": "В какой сети вы хотели бы развернуть эту DAO?",
+  "networkDescriptionNode": "В какой сети вы хотите развернуть этот узел?",
   "attachFractalModuleDescription": "Эта настройка контролирует, сможет ли родительская DAO выполнять произвольные транзакции на дочерней DAO в обход процесса голосования на дочерней DAO.",
   "fractalModuleAttachedDescription": "Эта настройка не может быть изменена, так как модуль Fractal уже подключен к DAO."
 }

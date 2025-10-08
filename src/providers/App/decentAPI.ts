@@ -1,37 +1,105 @@
 // @todo this file, and the types defined here, should be replaced with decent-sdk package once it's ready
 
 import axios, { AxiosResponse } from 'axios';
-import { Address } from 'viem';
+import { Address, Hex } from 'viem';
 import { logError } from '../../helpers/errorLogging';
 import { RevenueSharingWallet } from '../../types/revShare';
 
-const DECENT_API_BASE_URL = 'https://api.decent.build';
+const DECENT_API_URL = import.meta.env.VITE_APP_DECENT_API_URL;
 
-const axiosClient = axios.create({ baseURL: DECENT_API_BASE_URL });
+const axiosClient = axios.create({
+  baseURL: DECENT_API_URL || 'https://api.decent.build', // Fallback to production API
+});
 
-interface DAOBasic {
+type SubDaoInfo = {
+  address: Address;
+  name: string | null;
+  isAzorius: boolean;
+  subDaos: SubDaoInfo[];
+};
+
+type DAOBasic = {
   name: string;
   address: Address;
+  safe: {
+    nonce: number;
+    threshold: number;
+    owners: Address[];
+  };
   chainId: number;
-}
+  snapshotENS: string | null;
+  parentAddress: Address | null;
+  proposalTemplatesCID: string;
+  governanceModules: {
+    address: Address;
+    type: 'AZORIUS' | 'FRACTAL';
+    executionPeriod: number | null;
+    timelockPeriod: number | null;
+    strategies: {
+      address: Address;
+      version: number;
+      requiredProposerWeight: number | null;
+      votingPeriod: number | null;
+      basisNumerator: number | null;
+      quorumNumerator: number | null;
+      votingTokens: {
+        address: Address;
+        type: 'ERC20' | 'ERC721';
+        weight: number | undefined;
+      }[];
+    }[];
+  }[];
+  governanceGuard: {
+    address: Address;
+    executionPeriod: number | null;
+    timelockPeriod: number | null;
+    freezeVotingStrategy: {
+      address: Address;
+      freezePeriod: number | null;
+      freezeProposalPeriod: number | null;
+      freezeVotesThreshold: number | null;
+      freezeVoteType: string | null;
+    } | null;
+  } | null;
+  roles: {
+    terms:
+      | {
+          active: boolean;
+          wearerAddress: Address | null;
+          eligibility: Address;
+          termEnd: number;
+        }[]
+      | undefined;
+    daoChainId: number;
+    daoAddress: Address;
+    hatId: string;
+    detailsCID: string | null;
+    wearerAddress: Address | null;
+    eligibility: Address | null;
+  }[];
+  creatorAddress: Address | null;
+  createdAt: number;
+  updatedAt: number | null;
+  subDaos: SubDaoInfo[];
+};
 
-interface Token {
+type Token = {
   address: Address;
   symbol: string;
   name: string;
   balance: string;
   decimals: number;
-}
+};
 
-interface DAOWithTokens extends DAOBasic {
+type DAOWithTokens = DAOBasic & {
   token: Token;
   stakedToken?: Token;
-}
+};
 
-interface DAOQueryResponse {
+type DAOQueryResponse = {
   success: boolean;
   data: DAOBasic[];
-}
+};
 
 export async function queryDaosByName(name: string) {
   const response: AxiosResponse<DAOQueryResponse> = await axiosClient.get('/d', {
@@ -82,6 +150,43 @@ export async function getDaoRevenueSharingWallets(
   }
 }
 
+type ProposalTransaction = {
+  to: Address;
+  value: string;
+  data: Hex;
+  operation: number;
+};
+
+type DAOProposal = {
+  id: number;
+  title: string;
+  description: string;
+  proposer: Address;
+  votingStrategyAddress: Address;
+  transactions: ProposalTransaction[];
+  proposedTxHash: string;
+  executedTxHash: string | null;
+  createdAt: number;
+};
+
+export async function getDaoProposals(chainId: number, daoAddress: Address) {
+  try {
+    const response: AxiosResponse<{
+      success: boolean;
+      data: DAOProposal[];
+    }> = await axiosClient.get(`/d/${chainId}/${daoAddress}/proposals`);
+
+    if (!response.data.success) {
+      return [];
+    }
+
+    return response.data.data;
+  } catch (e) {
+    logError(e);
+    return [];
+  }
+}
+
 export async function syncAllSafeProposals(chainId: number, daoAddress: Address) {
   try {
     const response: AxiosResponse<{
@@ -108,5 +213,71 @@ export async function syncAllSafeProposals(chainId: number, daoAddress: Address)
     }
     logError(e);
     return [];
+  }
+}
+
+export type VerificationSignature = {
+  signature: Hex;
+  expiration: number;
+};
+
+type TokenSaleVerificationResponse = {
+  success: boolean;
+  data: VerificationSignature;
+};
+
+export async function getTokenSaleVerification(
+  chainId: number,
+  daoAddress: Address,
+  tokenSaleAddress: Address,
+  payload: {
+    address: Address;
+    message: any;
+    signature: Hex;
+  },
+): Promise<VerificationSignature | null> {
+  try {
+    const response: AxiosResponse<TokenSaleVerificationResponse> = await axiosClient.post(
+      `/d/${chainId}/${daoAddress}/sales/${tokenSaleAddress}/verify`,
+      payload,
+    );
+
+    if (!response.data.success) {
+      throw new Error('API returned unsuccessful response');
+    }
+
+    return response.data.data;
+  } catch (e: any) {
+    logError(e);
+
+    // Re-throw with more specific error information
+    if (e.response) {
+      // Server responded with error status
+      const status = e.response.status;
+      const message = e.response.data?.message || e.message;
+
+      switch (status) {
+        case 400:
+          throw new Error(`Bad Request: ${message}`);
+        case 401:
+          throw new Error(`Unauthorized: ${message}`);
+        case 403:
+          throw new Error(`Forbidden: ${message}`);
+        case 404:
+          throw new Error(`Not Found: Token sale verification endpoint not found`);
+        case 429:
+          throw new Error(`Too Many Requests: ${message}`);
+        case 500:
+          throw new Error(`Server Error: ${message}`);
+        default:
+          throw new Error(`HTTP ${status}: ${message}`);
+      }
+    } else if (e.request) {
+      // Network error
+      throw new Error('Network error: Unable to reach verification service');
+    } else {
+      // Other error
+      throw new Error(`Verification failed: ${e.message}`);
+    }
   }
 }

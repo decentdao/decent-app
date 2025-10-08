@@ -10,5 +10,7 @@
   "optionRemoveTemplate": "删除模板",
   "optionForkTemplate": "叉子模板",
   "optionModifyGovernance": "修改管理",
-  "optionSettings": "设置"
+  "optionSettings": "设置",
+  "viewDetails": "查看详情",
+  "claimFunds": "申请资金"
 }
