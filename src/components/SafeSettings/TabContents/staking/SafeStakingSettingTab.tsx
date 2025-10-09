@@ -130,9 +130,10 @@ function StakingForm() {
   });
 
   const hasTokensToDistribute = distributableTokensWithBalances?.some(token => token.balance > 0n);
+  const isStakingContractDeployed = address !== undefined;
   return (
     <>
-      {address ? (
+      {isStakingContractDeployed ? (
         <LabelComponent
           label={t('stakingAddressTitle')}
           isRequired={false}
@@ -248,7 +249,7 @@ function StakingForm() {
         }}
       />
       {/* Only show rewards section and distribute button when there's an actual staking contract address */}
-      {address && (
+      {isStakingContractDeployed && (
         <Flex
           justifyContent="space-between"
           mt={4}
