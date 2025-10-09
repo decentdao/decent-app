@@ -241,6 +241,10 @@ export function SafeTokenSaleDetailsPage() {
 
           <TokenSaleInfoCard.Section>
             <TokenSaleInfoCard.Item
+              label={t('startDateInfoLabel')}
+              value={formatSaleDate(tokenSale.saleStartTimestamp)}
+            />
+            <TokenSaleInfoCard.Item
               label={t('closingDateInfoLabel')}
               value={formatSaleDate(tokenSale.saleEndTimestamp)}
             />
