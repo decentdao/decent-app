@@ -65,7 +65,7 @@ export function TokenSaleCountdown({ endTimestamp }: TokenSaleCountdownProps) {
       py={0.5}
     >
       <Text
-        textStyle="text-xs-medium"
+        textStyle="text-sm-medium"
         color="color-content-content1-foreground"
       >
         {timeString}
