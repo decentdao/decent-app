@@ -109,6 +109,18 @@ export function SafeTokenSaleDetailsPage() {
   );
   const totalSupplyFormatted = formatTokenAmount(tokenSupplyForSale, tokenSale.tokenDecimals);
 
+  const showSaleOverBanner =
+    (tokenSale.totalCommitments < tokenSale.minimumTotalCommitment ||
+      tokenSale.minimumTotalCommitment === 1n) &&
+    tokenSale.totalCommitments === 0n &&
+    !tokenSale.sellerSettled;
+  const showSaleSuccessfulBanner =
+    (tokenSale.totalCommitments >= tokenSale.maximumTotalCommitment ||
+      tokenSale.saleState === TokenSaleState.SUCCEEDED) &&
+    tokenSale.minimumTotalCommitment === 1n &&
+    tokenSale.totalCommitments > 0n &&
+    !tokenSale.sellerSettled;
+
   if (!safe?.address) {
     return <InfoBoxLoader />;
   }
@@ -175,39 +187,37 @@ export function SafeTokenSaleDetailsPage() {
             commitmentTokenDecimals={USDC_DECIMALS} // @dev assuming commitment token is 6 decimals (USDC)
           />
 
-          {/* Fundraising Goal Not Met Banner */}
-          {tokenSale.saleState === TokenSaleState.FAILED &&
-            tokenSale.totalCommitments < tokenSale.maximumTotalCommitment / 2n && (
-              <TokenSaleBanner
-                title={t('fundraisingGoalNotMetTitle')}
-                description={t('fundraisingGoalNotMetDescription', {
-                  amount: formatCurrency(tokenSale.totalCommitments),
-                })}
-                buttonText={t('reclaimTokensButton')}
-                onButtonClick={() => {
-                  claimFunds(tokenSale.address, tokenSale.name);
-                }}
-                variant="fundraisingBanner"
-                buttonDisabled={pending}
-              />
-            )}
+          {/* Blue Banner - Minimum not reached or no minimum set AND no tokens sold */}
+          {showSaleOverBanner && (
+            <TokenSaleBanner
+              title={t('fundraisingGoalNotMetTitle')}
+              description={t('fundraisingGoalNotMetDescription', {
+                amount: formatCurrency(tokenSale.totalCommitments),
+              })}
+              buttonText={t('reclaimTokensButton')}
+              onButtonClick={() => {
+                claimFunds(tokenSale.address, tokenSale.name);
+              }}
+              variant="fundraisingBanner"
+              buttonDisabled={pending}
+            />
+          )}
 
-          {/* Successful Sale Banner */}
-          {tokenSale.saleState === TokenSaleState.SUCCEEDED &&
-            tokenSale.totalCommitments >= tokenSale.minimumTotalCommitment && (
-              <TokenSaleBanner
-                title={t('successfulSaleTitle')}
-                description={t('successfulSaleDescription', {
-                  amount: formatCurrency(tokenSale.totalCommitments),
-                })}
-                buttonText={t('claimFundsButton')}
-                onButtonClick={() => {
-                  claimFunds(tokenSale.address, tokenSale.name);
-                }}
-                variant="successBanner"
-                buttonDisabled={pending}
-              />
-            )}
+          {/* Green Banner - Maximum reached or sale ended AND no minimum set AND tokens sold */}
+          {showSaleSuccessfulBanner && (
+            <TokenSaleBanner
+              title={t('successfulSaleTitle')}
+              description={t('successfulSaleDescription', {
+                amount: formatCurrency(tokenSale.totalCommitments),
+              })}
+              buttonText={t('claimFundsButton')}
+              onButtonClick={() => {
+                claimFunds(tokenSale.address, tokenSale.name);
+              }}
+              variant="successBanner"
+              buttonDisabled={pending}
+            />
+          )}
         </VStack>
 
         {/* Sale Configuration */}

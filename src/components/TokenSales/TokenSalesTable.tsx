@@ -139,9 +139,17 @@ export function TokenSalesTable({ tokenSales }: TokenSalesTableProps) {
     );
   }
 
-  // todo should also account for if there are any unclaimed funds
+  // Claim funds conditions matching the banner logic
+  const canReclaimTokens = (sale: TokenSaleData) =>
+    (sale.totalCommitments < sale.minimumTotalCommitment || sale.minimumTotalCommitment === 1n) &&
+    sale.totalCommitments === 0n &&
+    !sale.sellerSettled;
+
   const canClaimFunds = (sale: TokenSaleData) =>
-    sale.saleState === 2 && sale.totalCommitments >= sale.maximumTotalCommitment / 2n;
+    (sale.totalCommitments >= sale.maximumTotalCommitment || sale.saleState === 2) &&
+    sale.minimumTotalCommitment === 1n &&
+    sale.totalCommitments > 0n &&
+    !sale.sellerSettled;
 
   const getRowActions = (sale: TokenSaleData) => [
     {
@@ -152,6 +160,16 @@ export function TokenSalesTable({ tokenSales }: TokenSalesTableProps) {
         }
       },
     },
+    ...(canReclaimTokens(sale)
+      ? [
+          {
+            optionKey: 'reclaimTokens',
+            onClick: () => {
+              claimFunds(sale.address, sale.name);
+            },
+          },
+        ]
+      : []),
     ...(canClaimFunds(sale)
       ? [
           {
