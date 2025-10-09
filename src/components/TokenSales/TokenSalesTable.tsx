@@ -20,7 +20,7 @@ import { DAO_ROUTES } from '../../constants/routes';
 import { useTokenSaleClaimFunds } from '../../hooks/DAO/proposal/useTokenSaleClaimFunds';
 import { useCurrentDAOKey } from '../../hooks/DAO/useCurrentDAOKey';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
-import { TokenSaleData } from '../../types/tokenSale';
+import { TokenSaleData, TokenSaleState } from '../../types/tokenSale';
 import {
   formatSaleDate,
   formatSaleAmount,
@@ -146,7 +146,8 @@ export function TokenSalesTable({ tokenSales }: TokenSalesTableProps) {
     !sale.sellerSettled;
 
   const canClaimFunds = (sale: TokenSaleData) =>
-    (sale.totalCommitments >= sale.maximumTotalCommitment || sale.saleState === 2) &&
+    (sale.totalCommitments >= sale.maximumTotalCommitment ||
+      sale.saleState === TokenSaleState.SUCCEEDED) &&
     sale.minimumTotalCommitment === 1n &&
     sale.totalCommitments > 0n &&
     !sale.sellerSettled;
