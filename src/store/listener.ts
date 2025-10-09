@@ -288,13 +288,26 @@ export const useDAOStoreListener = ({ daoKey }: { daoKey: DAOKey | undefined }) 
     async (tokenSaleAddress: Address) => {
       if (!daoKey) return;
 
+      // Get current token sales to preserve existing metadata
+      const currentTokenSales = getTokenSales(daoKey);
+      const existingSale = currentTokenSales.find(sale => sale.address === tokenSaleAddress);
+
       // Fetch only the updated token sale for efficiency
       const updatedTokenSaleData = await fetchTokenSaleData(tokenSaleAddress);
       if (updatedTokenSaleData) {
-        setTokenSale(daoKey, updatedTokenSaleData);
+        // Preserve metadata from existing sale if available
+        const enrichedTokenSaleData = {
+          ...updatedTokenSaleData,
+          name: existingSale?.name || updatedTokenSaleData.name,
+          buyerRequirements: existingSale?.buyerRequirements || [],
+          kyc: existingSale?.kyc || null,
+          orOutOf: existingSale?.orOutOf,
+        };
+
+        setTokenSale(daoKey, enrichedTokenSaleData);
       }
     },
-    [daoKey, fetchTokenSaleData, setTokenSale],
+    [daoKey, fetchTokenSaleData, setTokenSale, getTokenSales],
   );
 
   // Get current token sale addresses for event listening
