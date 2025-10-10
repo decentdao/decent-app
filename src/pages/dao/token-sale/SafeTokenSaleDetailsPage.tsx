@@ -16,9 +16,9 @@ import useFeatureFlag from '../../../helpers/environmentFeatureFlags';
 import { useTokenSaleClaimFunds } from '../../../hooks/DAO/proposal/useTokenSaleClaimFunds';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import useNetworkPublicClient from '../../../hooks/useNetworkPublicClient';
+import { useCanUserCreateProposal } from '../../../hooks/utils/useCanUserSubmitProposal';
 import { useDAOStore } from '../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
-import { TokenSaleState } from '../../../types/tokenSale';
 import { calculateFDVFromTokenPrice } from '../../../utils/tokenSaleCalculations';
 import {
   formatTokenPrice,
@@ -43,6 +43,7 @@ export function SafeTokenSaleDetailsPage() {
   const [totalTokenSupply, setTotalTokenSupply] = useState<bigint | null>(null);
   const [isDevModalOpen, setIsDevModalOpen] = useState(false);
   const devFeatureEnabled = useFeatureFlag('flag_dev');
+  const userHasPermissions = useCanUserCreateProposal();
 
   const tokenSale = useMemo(() => {
     if (!saleId || !tokenSales) return null;
@@ -109,17 +110,21 @@ export function SafeTokenSaleDetailsPage() {
   );
   const totalSupplyFormatted = formatTokenAmount(tokenSupplyForSale, tokenSale.tokenDecimals);
 
+  const isMinimumSet = tokenSale.minimumTotalCommitment !== 1n;
+  const isMinimumReached = tokenSale.totalCommitments >= tokenSale.minimumTotalCommitment;
+  const hasSellerSettled = tokenSale.sellerSettled;
+  const hasSaleEnded =
+    tokenSale.saleEndTimestamp < BigInt(Math.floor(Date.now() / 1000)) ||
+    tokenSale.totalCommitments >= tokenSale.maximumTotalCommitment;
+  const shouldShowBanner = hasSaleEnded && !hasSellerSettled && userHasPermissions;
+
   const showSaleOverBanner =
-    (tokenSale.totalCommitments < tokenSale.minimumTotalCommitment ||
-      tokenSale.minimumTotalCommitment === 1n) &&
-    tokenSale.totalCommitments === 0n &&
-    !tokenSale.sellerSettled;
+    (isMinimumSet && shouldShowBanner && !isMinimumReached) ||
+    (!isMinimumSet && shouldShowBanner && tokenSale.totalCommitments === 0n);
+
   const showSaleSuccessfulBanner =
-    (tokenSale.totalCommitments >= tokenSale.maximumTotalCommitment ||
-      tokenSale.saleState === TokenSaleState.SUCCEEDED) &&
-    tokenSale.minimumTotalCommitment === 1n &&
-    tokenSale.totalCommitments > 0n &&
-    !tokenSale.sellerSettled;
+    (isMinimumSet && shouldShowBanner && isMinimumReached) ||
+    (!isMinimumSet && shouldShowBanner && tokenSale.totalCommitments > 0n);
 
   if (!safe?.address) {
     return <InfoBoxLoader />;
