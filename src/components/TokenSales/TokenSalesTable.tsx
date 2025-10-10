@@ -19,14 +19,16 @@ import { USDC_DECIMALS } from '../../constants/common';
 import { DAO_ROUTES } from '../../constants/routes';
 import { useTokenSaleClaimFunds } from '../../hooks/DAO/proposal/useTokenSaleClaimFunds';
 import { useCurrentDAOKey } from '../../hooks/DAO/useCurrentDAOKey';
+import { useCanUserCreateProposal } from '../../hooks/utils/useCanUserSubmitProposal';
 import { useNetworkConfigStore } from '../../providers/NetworkConfig/useNetworkConfigStore';
-import { TokenSaleData, TokenSaleState } from '../../types/tokenSale';
+import { TokenSaleData } from '../../types/tokenSale';
 import {
   formatSaleDate,
   formatSaleAmount,
   calculateSaleProgress,
   getSaleStatus,
 } from '../../utils/tokenSaleFormats';
+import { getTokenSaleActionState } from '../../utils/tokenSaleStatus';
 import { StatusChip } from '../ui/badges/StatusChip';
 import { OptionMenu } from '../ui/menus/OptionMenu';
 
@@ -100,6 +102,7 @@ export function TokenSalesTable({ tokenSales }: TokenSalesTableProps) {
   const { safeAddress } = useCurrentDAOKey();
   const { addressPrefix } = useNetworkConfigStore();
   const { claimFunds, pending } = useTokenSaleClaimFunds();
+  const { canUserCreateProposal: userHasPermissions } = useCanUserCreateProposal();
   const { sortedSales, sortField, sortDirection, handleSort } =
     useTokenSalesTableSorting(tokenSales);
 
@@ -139,49 +142,47 @@ export function TokenSalesTable({ tokenSales }: TokenSalesTableProps) {
     );
   }
 
-  // Claim funds conditions matching the banner logic
-  const canReclaimTokens = (sale: TokenSaleData) =>
-    (sale.totalCommitments < sale.minimumTotalCommitment || sale.minimumTotalCommitment === 1n) &&
-    sale.totalCommitments === 0n &&
-    !sale.sellerSettled;
+  // Get sale action state using shared utility
+  const getSaleActions = (sale: TokenSaleData) => {
+    return getTokenSaleActionState(sale, userHasPermissions);
+  };
 
-  const canClaimFunds = (sale: TokenSaleData) =>
-    (sale.totalCommitments >= sale.maximumTotalCommitment ||
-      sale.saleState === TokenSaleState.SUCCEEDED) &&
-    sale.minimumTotalCommitment === 1n &&
-    sale.totalCommitments > 0n &&
-    !sale.sellerSettled;
+  const getRowActions = (sale: TokenSaleData) => {
+    const { canReclaimTokens, canClaimProceeds } = getSaleActions(sale);
 
-  const getRowActions = (sale: TokenSaleData) => [
-    {
-      optionKey: 'viewDetails',
-      onClick: () => {
-        if (safeAddress) {
-          navigate(DAO_ROUTES.tokenSaleDetails.relative(addressPrefix, safeAddress, sale.address));
-        }
+    return [
+      {
+        optionKey: 'viewDetails',
+        onClick: () => {
+          if (safeAddress) {
+            navigate(
+              DAO_ROUTES.tokenSaleDetails.relative(addressPrefix, safeAddress, sale.address),
+            );
+          }
+        },
       },
-    },
-    ...(canReclaimTokens(sale)
-      ? [
-          {
-            optionKey: 'reclaimTokens',
-            onClick: () => {
-              claimFunds(sale.address, sale.name);
+      ...(canReclaimTokens
+        ? [
+            {
+              optionKey: 'reclaimTokens',
+              onClick: () => {
+                claimFunds(sale.address, sale.name);
+              },
             },
-          },
-        ]
-      : []),
-    ...(canClaimFunds(sale)
-      ? [
-          {
-            optionKey: 'claimFunds',
-            onClick: () => {
-              claimFunds(sale.address, sale.name);
+          ]
+        : []),
+      ...(canClaimProceeds
+        ? [
+            {
+              optionKey: 'claimFunds',
+              onClick: () => {
+                claimFunds(sale.address, sale.name);
+              },
             },
-          },
-        ]
-      : []),
-  ];
+          ]
+        : []),
+    ];
+  };
 
   return (
     <Box>

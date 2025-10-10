@@ -26,6 +26,7 @@ import {
   formatSaleAmount,
   formatSaleDate,
 } from '../../../utils/tokenSaleFormats';
+import { getTokenSaleActionState } from '../../../utils/tokenSaleStatus';
 import { TokenSaleDevModal } from './components/TokenSaleDevModal';
 import { BuyerRequirementsDisplay } from './components/buyer-requirements/BuyerRequirementsDisplay';
 
@@ -43,7 +44,7 @@ export function SafeTokenSaleDetailsPage() {
   const [totalTokenSupply, setTotalTokenSupply] = useState<bigint | null>(null);
   const [isDevModalOpen, setIsDevModalOpen] = useState(false);
   const devFeatureEnabled = useFeatureFlag('flag_dev');
-  const userHasPermissions = useCanUserCreateProposal();
+  const { canUserCreateProposal: userHasPermissions } = useCanUserCreateProposal();
 
   const tokenSale = useMemo(() => {
     if (!saleId || !tokenSales) return null;
@@ -110,21 +111,11 @@ export function SafeTokenSaleDetailsPage() {
   );
   const totalSupplyFormatted = formatTokenAmount(tokenSupplyForSale, tokenSale.tokenDecimals);
 
-  const isMinimumSet = tokenSale.minimumTotalCommitment !== 1n;
-  const isMinimumReached = tokenSale.totalCommitments >= tokenSale.minimumTotalCommitment;
-  const hasSellerSettled = tokenSale.sellerSettled;
-  const hasSaleEnded =
-    tokenSale.saleEndTimestamp < BigInt(Math.floor(Date.now() / 1000)) ||
-    tokenSale.totalCommitments >= tokenSale.maximumTotalCommitment;
-  const shouldShowBanner = hasSaleEnded && !hasSellerSettled && userHasPermissions;
-
-  const showSaleOverBanner =
-    (isMinimumSet && shouldShowBanner && !isMinimumReached) ||
-    (!isMinimumSet && shouldShowBanner && tokenSale.totalCommitments === 0n);
-
-  const showSaleSuccessfulBanner =
-    (isMinimumSet && shouldShowBanner && isMinimumReached) ||
-    (!isMinimumSet && shouldShowBanner && tokenSale.totalCommitments > 0n);
+  // Get sale action state (what actions user can take)
+  const { canReclaimTokens, canClaimProceeds } = getTokenSaleActionState(
+    tokenSale,
+    userHasPermissions,
+  );
 
   if (!safe?.address) {
     return <InfoBoxLoader />;
@@ -192,8 +183,8 @@ export function SafeTokenSaleDetailsPage() {
             commitmentTokenDecimals={USDC_DECIMALS} // @dev assuming commitment token is 6 decimals (USDC)
           />
 
-          {/* Blue Banner - Minimum not reached or no minimum set AND no tokens sold */}
-          {showSaleOverBanner && (
+          {/* Sale failed (minimum not reached OR no sales) */}
+          {canReclaimTokens && (
             <TokenSaleBanner
               title={t('fundraisingGoalNotMetTitle')}
               description={t('fundraisingGoalNotMetDescription', {
@@ -208,8 +199,8 @@ export function SafeTokenSaleDetailsPage() {
             />
           )}
 
-          {/* Green Banner - Maximum reached or sale ended AND no minimum set AND tokens sold */}
-          {showSaleSuccessfulBanner && (
+          {/* Sale succeeded (minimum reached OR had sales) */}
+          {canClaimProceeds && (
             <TokenSaleBanner
               title={t('successfulSaleTitle')}
               description={t('successfulSaleDescription', {
