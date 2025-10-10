@@ -130,9 +130,10 @@ function StakingForm() {
   });
 
   const hasTokensToDistribute = distributableTokensWithBalances?.some(token => token.balance > 0n);
+  const isStakingContractDeployed = address !== undefined;
   return (
     <>
-      {address ? (
+      {isStakingContractDeployed ? (
         <LabelComponent
           label={t('stakingAddressTitle')}
           isRequired={false}
@@ -247,75 +248,78 @@ function StakingForm() {
           }
         }}
       />
-      <Flex
-        justifyContent="space-between"
-        mt={4}
-      >
-        <LabelComponent
-          label={t('availableRewards')}
-          isRequired={false}
-          gridContainerProps={{
-            templateColumns: '1fr',
-            width: { base: 'fit-content' },
-          }}
+      {/* Only show rewards section and distribute button when there's an actual staking contract address */}
+      {isStakingContractDeployed && (
+        <Flex
+          justifyContent="space-between"
+          mt={4}
         >
-          <>
-            {distributableTokensWithBalances
-              ?.filter(token => token.balance !== 0n)
-              .map((token, index, arr) => (
-                <Flex
-                  key={index}
-                  direction="column"
-                  alignSelf="stretch"
-                >
-                  <Flex
-                    gap="16px"
-                    justifyContent="space-between"
-                    alignItems="center"
-                    alignSelf="stretch"
-                    mb="8px"
-                  >
-                    <Text
-                      textStyle="text-sm-regular"
-                      color="color-layout-foreground"
-                    >
-                      {token.symbol}
-                    </Text>
-                    <Text
-                      textStyle="text-xs-regular"
-                      color="color-content-muted"
-                    >
-                      {token.formattedBalance}
-                    </Text>
-                  </Flex>
-                  {index !== arr.length - 1 && index !== 1 && (
-                    <Divider
-                      variant="darker"
-                      mb="8px"
-                    />
-                  )}
-                </Flex>
-              ))}
-          </>
-        </LabelComponent>
-        <DecentTooltip
-          label={
-            !hasTokensToDistribute
-              ? t('distributeTooltipNoTokens')
-              : !hasStakers
-                ? t('distributeTooltipNoStakers')
-                : t('distributeTooltip')
-          }
-        >
-          <Button
-            variant="secondaryV1"
-            isDisabled={!hasTokensToDistribute || !hasStakers}
-            onClick={distributeRewards}
+          <LabelComponent
+            label={t('availableRewards')}
+            isRequired={false}
+            gridContainerProps={{
+              templateColumns: '1fr',
+              width: { base: 'fit-content' },
+            }}
           >
-            {t('distribute')}
-          </Button>
-        </DecentTooltip>
-      </Flex>
+            <>
+              {distributableTokensWithBalances
+                ?.filter(token => token.balance !== 0n)
+                .map((token, index, arr) => (
+                  <Flex
+                    key={index}
+                    direction="column"
+                    alignSelf="stretch"
+                  >
+                    <Flex
+                      gap="16px"
+                      justifyContent="space-between"
+                      alignItems="center"
+                      alignSelf="stretch"
+                      mb="8px"
+                    >
+                      <Text
+                        textStyle="text-sm-regular"
+                        color="color-layout-foreground"
+                      >
+                        {token.symbol}
+                      </Text>
+                      <Text
+                        textStyle="text-xs-regular"
+                        color="color-content-muted"
+                      >
+                        {token.formattedBalance}
+                      </Text>
+                    </Flex>
+                    {index !== arr.length - 1 && index !== 1 && (
+                      <Divider
+                        variant="darker"
+                        mb="8px"
+                      />
+                    )}
+                  </Flex>
+                ))}
+            </>
+          </LabelComponent>
+          <DecentTooltip
+            label={
+              !hasTokensToDistribute
+                ? t('distributeTooltipNoTokens')
+                : !hasStakers
+                  ? t('distributeTooltipNoStakers')
+                  : t('distributeTooltip')
+            }
+          >
+            <Button
+              variant="secondaryV1"
+              isDisabled={!hasTokensToDistribute || !hasStakers}
+              onClick={distributeRewards}
+            >
+              {t('distribute')}
+            </Button>
+          </DecentTooltip>
+        </Flex>
+      )}
     </>
   );
 }
