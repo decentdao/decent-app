@@ -8,7 +8,7 @@
     "@chakra-ui/anatomy": "^2.2.2",
     "@chakra-ui/react": "^2.8.2",
     "@cloudflare/workers-types": "^4.20241230.0",
-    "@decentdao/decent-contracts": "^2.0.0-rc.7",
+    "@decentdao/decent-contracts": "^2.0.0-rc.8",
     "@fontsource/space-mono": "^5.0.19",
     "@hatsprotocol/modules-sdk": "^1.4.0",
     "@hatsprotocol/sdk-v1-core": "^0.9.0",
