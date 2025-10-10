@@ -39,11 +39,6 @@ export function NFTRequirementForm({ onSubmit, initialData }: NFTRequirementForm
       ? { value: initialData.minimumBalance.toString(), bigintValue: initialData.minimumBalance }
       : { value: '', bigintValue: undefined },
   );
-  const [tokenId, setTokenId] = useState<BigIntValuePair>(
-    initialData?.tokenId
-      ? { value: initialData.tokenId.toString(), bigintValue: initialData.tokenId }
-      : { value: '', bigintValue: undefined },
-  );
   const [error, setError] = useState<string>('');
   const [inputError, setInputError] = useState<string>('');
   const [hasAttemptedLookup, setHasAttemptedLookup] = useState<boolean>(false);
@@ -106,22 +101,12 @@ export function NFTRequirementForm({ onSubmit, initialData }: NFTRequirementForm
       return;
     }
 
-    // For ERC1155, token ID is required
-    if (
-      nftInfo.standard === 'ERC1155' &&
-      (tokenId.bigintValue === undefined || tokenId.bigintValue < 0n)
-    ) {
-      setError(t('tokenIdRequiredError', { ns: 'tokenSale' }));
-      return;
-    }
-
     const requirement: NFTBuyerRequirement = {
       type: 'nft',
       contractAddress: contractAddress as Address,
       collectionName: nftInfo.name,
       tokenStandard: nftInfo.standard,
       minimumBalance: minimumBalance.bigintValue,
-      ...(nftInfo.standard === 'ERC1155' && { tokenId: tokenId.bigintValue }),
     };
 
     onSubmit(requirement);
@@ -131,12 +116,7 @@ export function NFTRequirementForm({ onSubmit, initialData }: NFTRequirementForm
     contractAddress &&
     nftInfo &&
     minimumBalance.bigintValue &&
-    minimumBalance.bigintValue > 0n &&
-    // For ERC1155, token ID must be valid (>= 0)
-    (nftInfo.standard === 'ERC721' ||
-      (nftInfo.standard === 'ERC1155' &&
-        tokenId.bigintValue !== undefined &&
-        tokenId.bigintValue >= 0n));
+    minimumBalance.bigintValue > 0n;
 
   return (
     <VStack
@@ -172,32 +152,6 @@ export function NFTRequirementForm({ onSubmit, initialData }: NFTRequirementForm
           />
         </LabelComponent>
       </VStack>
-
-      {/* Token ID Field - Only for ERC1155 */}
-      {nftInfo?.standard === 'ERC1155' && (
-        <VStack
-          align="stretch"
-          spacing={2}
-        >
-          <LabelComponent
-            isRequired
-            label={t('tokenIdLabel', { ns: 'tokenSale' })}
-            gridContainerProps={{
-              templateColumns: '1fr',
-            }}
-          >
-            <BigIntInput
-              value={tokenId}
-              onChange={value => {
-                setTokenId(value);
-                setError('');
-              }}
-              decimals={0}
-              isInvalid={!!error && error.includes('tokenId')}
-            />
-          </LabelComponent>
-        </VStack>
-      )}
 
       {/* Minimum Amount Field */}
       <VStack
