@@ -113,7 +113,6 @@ export const normalizeBuyerRequirements = async (
         collectionName: metadata?.name,
         tokenStandard: 'ERC721',
         minimumBalance: BigInt(requirement.amount),
-        tokenId: undefined, // ERC721 should never have tokenId
       } as NFTBuyerRequirement;
     }
 
@@ -125,7 +124,6 @@ export const normalizeBuyerRequirements = async (
         collectionName: metadata?.name,
         tokenStandard: 'ERC1155',
         minimumBalance: BigInt(requirement.amount),
-        tokenId: requirement.tokenId ? BigInt(requirement.tokenId) : undefined,
       } as NFTBuyerRequirement;
     }
 
