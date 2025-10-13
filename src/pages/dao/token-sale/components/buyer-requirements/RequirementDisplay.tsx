@@ -20,15 +20,6 @@ const getRequirementDisplay = (requirement: BuyerRequirement, t: any): string =>
       const nftName =
         requirement.collectionName || `${requirement.tokenStandard || 'NFT'} Collection`;
 
-      // For ERC1155, include token ID in the display
-      if (requirement.tokenStandard === 'ERC1155' && requirement.tokenId !== undefined) {
-        return t('holdAtLeastNftWithTokenId', {
-          amount: nftAmount,
-          name: nftName,
-          tokenId: requirement.tokenId.toString(),
-        });
-      }
-
       return t('holdAtLeastNft', { amount: nftAmount, name: nftName });
 
     case 'whitelist':

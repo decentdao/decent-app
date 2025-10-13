@@ -29,7 +29,6 @@ interface ERC721Requirement extends BaseRequirement {
 interface ERC1155Requirement extends BaseRequirement {
   type: TokenSaleRequirementType.ERC1155;
   tokenAddress: Address;
-  tokenId: bigint;
   amount: bigint;
 }
 
@@ -79,13 +78,9 @@ export function useTokenSaleRequirementsPreparation() {
               amount: requirement.minimumBalance,
             });
           } else {
-            if (!requirement.tokenId) {
-              throw new Error('Token ID is required for ERC1155 requirement');
-            }
             buyerRequirements.push({
               type: TokenSaleRequirementType.ERC1155,
               tokenAddress: requirement.contractAddress,
-              tokenId: requirement.tokenId,
               amount: requirement.minimumBalance,
             });
           }
