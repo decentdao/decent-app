@@ -278,7 +278,9 @@ export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
           isRequired={true}
           errorMessage={
             touched.saleTokenSupply && errors.saleTokenSupply
-              ? (errors.saleTokenSupply as string)
+              ? typeof errors.saleTokenSupply === 'string'
+                ? errors.saleTokenSupply
+                : errors.saleTokenSupply.value || errors.saleTokenSupply.bigintValue
               : undefined
           }
           gridContainerProps={{
