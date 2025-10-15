@@ -11,4 +11,5 @@ export * from './fractal';
 export * from './proposalBuilder';
 export * from './safeGlobal';
 export * from './snapshot';
+export * from './subscription';
 export * from './transaction';
