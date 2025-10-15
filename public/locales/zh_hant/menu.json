@@ -12,5 +12,6 @@
   "optionModifyGovernance": "修改治理",
   "optionSettings": "設定",
   "viewDetails": "檢視詳細資訊",
-  "claimFunds": "索賠基金"
+  "claimFunds": "索賠基金",
+  "reclaimTokens": "回收代幣"
 }

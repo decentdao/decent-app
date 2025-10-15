@@ -16,9 +16,9 @@ import useFeatureFlag from '../../../helpers/environmentFeatureFlags';
 import { useTokenSaleClaimFunds } from '../../../hooks/DAO/proposal/useTokenSaleClaimFunds';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import useNetworkPublicClient from '../../../hooks/useNetworkPublicClient';
+import { useCanUserCreateProposal } from '../../../hooks/utils/useCanUserSubmitProposal';
 import { useDAOStore } from '../../../providers/App/AppProvider';
 import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetworkConfigStore';
-import { TokenSaleState } from '../../../types/tokenSale';
 import { calculateFDVFromTokenPrice } from '../../../utils/tokenSaleCalculations';
 import {
   formatTokenPrice,
@@ -26,6 +26,7 @@ import {
   formatSaleAmount,
   formatSaleDate,
 } from '../../../utils/tokenSaleFormats';
+import { getTokenSaleActionState } from '../../../utils/tokenSaleStatus';
 import { TokenSaleDevModal } from './components/TokenSaleDevModal';
 import { BuyerRequirementsDisplay } from './components/buyer-requirements/BuyerRequirementsDisplay';
 
@@ -43,6 +44,7 @@ export function SafeTokenSaleDetailsPage() {
   const [totalTokenSupply, setTotalTokenSupply] = useState<bigint | null>(null);
   const [isDevModalOpen, setIsDevModalOpen] = useState(false);
   const devFeatureEnabled = useFeatureFlag('flag_dev');
+  const { canUserCreateProposal: userHasPermissions } = useCanUserCreateProposal();
 
   const tokenSale = useMemo(() => {
     if (!saleId || !tokenSales) return null;
@@ -108,6 +110,12 @@ export function SafeTokenSaleDetailsPage() {
     tokenSale.saleTokenPrice,
   );
   const totalSupplyFormatted = formatTokenAmount(tokenSupplyForSale, tokenSale.tokenDecimals);
+
+  // Get sale action state (what actions user can take)
+  const { canReclaimTokens, canClaimProceeds } = getTokenSaleActionState(
+    tokenSale,
+    userHasPermissions,
+  );
 
   if (!safe?.address) {
     return <InfoBoxLoader />;
@@ -175,39 +183,37 @@ export function SafeTokenSaleDetailsPage() {
             commitmentTokenDecimals={USDC_DECIMALS} // @dev assuming commitment token is 6 decimals (USDC)
           />
 
-          {/* Fundraising Goal Not Met Banner */}
-          {tokenSale.saleState === TokenSaleState.FAILED &&
-            tokenSale.totalCommitments < tokenSale.maximumTotalCommitment / 2n && (
-              <TokenSaleBanner
-                title={t('fundraisingGoalNotMetTitle')}
-                description={t('fundraisingGoalNotMetDescription', {
-                  amount: formatCurrency(tokenSale.totalCommitments),
-                })}
-                buttonText={t('reclaimTokensButton')}
-                onButtonClick={() => {
-                  claimFunds(tokenSale.address, tokenSale.name);
-                }}
-                variant="fundraisingBanner"
-                buttonDisabled={pending}
-              />
-            )}
+          {/* Sale failed (minimum not reached OR no sales) */}
+          {canReclaimTokens && (
+            <TokenSaleBanner
+              title={t('fundraisingGoalNotMetTitle')}
+              description={t('fundraisingGoalNotMetDescription', {
+                amount: formatCurrency(tokenSale.totalCommitments),
+              })}
+              buttonText={t('reclaimTokensButton')}
+              onButtonClick={() => {
+                claimFunds(tokenSale.address, tokenSale.name);
+              }}
+              variant="fundraisingBanner"
+              buttonDisabled={pending}
+            />
+          )}
 
-          {/* Successful Sale Banner */}
-          {tokenSale.saleState === TokenSaleState.SUCCEEDED &&
-            tokenSale.totalCommitments >= tokenSale.minimumTotalCommitment && (
-              <TokenSaleBanner
-                title={t('successfulSaleTitle')}
-                description={t('successfulSaleDescription', {
-                  amount: formatCurrency(tokenSale.totalCommitments),
-                })}
-                buttonText={t('claimFundsButton')}
-                onButtonClick={() => {
-                  claimFunds(tokenSale.address, tokenSale.name);
-                }}
-                variant="successBanner"
-                buttonDisabled={pending}
-              />
-            )}
+          {/* Sale succeeded (minimum reached OR had sales) */}
+          {canClaimProceeds && (
+            <TokenSaleBanner
+              title={t('successfulSaleTitle')}
+              description={t('successfulSaleDescription', {
+                amount: formatCurrency(tokenSale.totalCommitments),
+              })}
+              buttonText={t('claimFundsButton')}
+              onButtonClick={() => {
+                claimFunds(tokenSale.address, tokenSale.name);
+              }}
+              variant="successBanner"
+              buttonDisabled={pending}
+            />
+          )}
         </VStack>
 
         {/* Sale Configuration */}
@@ -230,6 +236,10 @@ export function SafeTokenSaleDetailsPage() {
           <TokenSaleInfoCard.Divider />
 
           <TokenSaleInfoCard.Section>
+            <TokenSaleInfoCard.Item
+              label={t('startDateInfoLabel')}
+              value={formatSaleDate(tokenSale.saleStartTimestamp)}
+            />
             <TokenSaleInfoCard.Item
               label={t('closingDateInfoLabel')}
               value={formatSaleDate(tokenSale.saleEndTimestamp)}

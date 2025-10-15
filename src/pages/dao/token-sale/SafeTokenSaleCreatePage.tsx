@@ -108,7 +108,7 @@ export function SafeTokenSaleCreatePage() {
   // Determine protocol fee receiver based on network
   const getProtocolFeeReceiver = (): Address | undefined => {
     // For Sepolia network, use the user's connected address
-    if (chain.id === 11155111) {
+    if (chain.id === 11155111 && userAddress) {
       // Sepolia chain ID
       return userAddress;
     }

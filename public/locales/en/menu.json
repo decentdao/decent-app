@@ -12,5 +12,6 @@
   "optionModifyGovernance": "Modify Governance",
   "optionSettings": "Settings",
   "viewDetails": "View Details",
-  "claimFunds": "Claim Funds"
+  "claimFunds": "Claim Funds",
+  "reclaimTokens": "Reclaim Tokens"
 }

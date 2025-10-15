@@ -4,6 +4,7 @@ import axios, { AxiosResponse } from 'axios';
 import { Address, Hex } from 'viem';
 import { logError } from '../../helpers/errorLogging';
 import { RevenueSharingWallet } from '../../types/revShare';
+import { SubscriptionData, SubscriptionTier } from '../../types/subscription';
 
 const DECENT_API_URL = import.meta.env.VITE_APP_DECENT_API_URL;
 
@@ -279,5 +280,37 @@ export async function getTokenSaleVerification(
       // Other error
       throw new Error(`Verification failed: ${e.message}`);
     }
+  }
+}
+
+export async function getSubscriptionStatus(
+  chainId: number,
+  daoAddress: Address,
+): Promise<SubscriptionData | null> {
+  // todo remove when API work is complete
+  if (daoAddress) {
+    return {
+      tier: SubscriptionTier.Free,
+      startTimestamp: null,
+      endTimestamp: null,
+    };
+  }
+  try {
+    const response: AxiosResponse<{
+      success: boolean;
+      data: SubscriptionData;
+    }> = await axiosClient.get(`/d/${chainId}/${daoAddress}/subscription`);
+
+    if (!response.data.success) {
+      return null;
+    }
+
+    return response.data.data;
+  } catch (e) {
+    if (axios.isAxiosError(e) && e.response?.status === 404) {
+      return null; // Default to free tier
+    }
+    logError(e);
+    throw e;
   }
 }

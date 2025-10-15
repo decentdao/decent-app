@@ -25,7 +25,6 @@ export interface NFTBuyerRequirement {
   collectionName?: string;
   tokenStandard: 'ERC721' | 'ERC1155';
   minimumBalance: bigint;
-  tokenId?: bigint; // For ERC1155 specific token requirements
 }
 
 export interface WhitelistBuyerRequirement {

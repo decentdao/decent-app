@@ -12,5 +12,6 @@
   "optionModifyGovernance": "Modificar la gobernanza",
   "optionSettings": "Ajustes",
   "viewDetails": "Ver detalles",
-  "claimFunds": "Reclamación de fondos"
+  "claimFunds": "Reclamación de fondos",
+  "reclaimTokens": "Reclamar fichas"
 }

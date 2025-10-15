@@ -54,7 +54,10 @@ function LabelWrapper({
           h="0.5rem"
         >
           {errorMessage && (
-            <Flex gap="0.25rem">
+            <Flex
+              gap="0.25rem"
+              alignItems="center"
+            >
               <Image src="/images/input-error.svg" />
               <Text
                 color="color-error-500"

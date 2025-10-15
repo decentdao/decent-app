@@ -12,5 +12,6 @@
   "optionModifyGovernance": "Ändern der Governance",
   "optionSettings": "Einstellungen",
   "viewDetails": "Details anzeigen",
-  "claimFunds": "Mittel beantragen"
+  "claimFunds": "Mittel beantragen",
+  "reclaimTokens": "Token zurückfordern"
 }

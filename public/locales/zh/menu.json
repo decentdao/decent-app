@@ -12,5 +12,6 @@
   "optionModifyGovernance": "修改管理",
   "optionSettings": "设置",
   "viewDetails": "查看详情",
-  "claimFunds": "申请资金"
+  "claimFunds": "申请资金",
+  "reclaimTokens": "回收代币"
 }

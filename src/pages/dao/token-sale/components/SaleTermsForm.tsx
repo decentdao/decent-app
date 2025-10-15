@@ -225,6 +225,7 @@ export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
             }
             gridContainerProps={{
               templateColumns: '1fr',
+              mb: touched.tokenAddress && errors.tokenAddress ? '1.5rem' : '1rem',
             }}
           >
             <DropdownMenu
@@ -278,11 +279,14 @@ export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
           isRequired={true}
           errorMessage={
             touched.saleTokenSupply && errors.saleTokenSupply
-              ? (errors.saleTokenSupply as string)
+              ? typeof errors.saleTokenSupply === 'string'
+                ? errors.saleTokenSupply
+                : errors.saleTokenSupply.value || errors.saleTokenSupply.bigintValue
               : undefined
           }
           gridContainerProps={{
             templateColumns: '1fr',
+            mb: touched.saleTokenSupply && errors.saleTokenSupply ? '1.5rem' : '1rem',
           }}
         >
           <BigIntInput
@@ -309,6 +313,7 @@ export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
           errorMessage={touched.valuation && errors.valuation ? errors.valuation : undefined}
           gridContainerProps={{
             templateColumns: '1fr',
+            mb: touched.valuation && errors.valuation ? '1.5rem' : '1rem',
           }}
         >
           <NumberInputWithAddon
@@ -336,6 +341,7 @@ export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
           }
           gridContainerProps={{
             templateColumns: '1fr',
+            mb: touched.minimumFundraise && errors.minimumFundraise ? '1.5rem' : '1rem',
           }}
         >
           <NumberInputWithAddon
@@ -364,6 +370,7 @@ export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
               errorMessage={touched.startDate && errors.startDate ? errors.startDate : undefined}
               gridContainerProps={{
                 templateColumns: '1fr',
+                mb: touched.startDate && errors.startDate ? '1.5rem' : '1rem',
               }}
             >
               <DatePicker
@@ -397,6 +404,7 @@ export function SaleTermsForm({ values, setFieldValue }: SaleTermsFormProps) {
               errorMessage={touched.endDate && errors.endDate ? errors.endDate : undefined}
               gridContainerProps={{
                 templateColumns: '1fr',
+                mb: touched.endDate && errors.endDate ? '1.5rem' : '1rem',
               }}
             >
               <DatePicker
