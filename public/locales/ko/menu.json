@@ -12,5 +12,6 @@
   "optionModifyGovernance": "거버넌스 수정",
   "optionSettings": "설정",
   "viewDetails": "세부 정보 보기",
-  "claimFunds": "자금 청구"
+  "claimFunds": "자금 청구",
+  "reclaimTokens": "토큰 회수"
 }

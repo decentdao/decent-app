@@ -12,5 +12,6 @@
   "optionModifyGovernance": "Modifier la gouvernance",
   "optionSettings": "Paramètres",
   "viewDetails": "Voir les détails",
-  "claimFunds": "Fonds de réclamation"
+  "claimFunds": "Fonds de réclamation",
+  "reclaimTokens": "Récupérer des jetons"
 }
