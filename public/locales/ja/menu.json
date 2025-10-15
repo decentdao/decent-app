@@ -12,5 +12,6 @@
   "optionModifyGovernance": "ガバナンスの変更",
   "optionSettings": "設定",
   "viewDetails": "詳細を見る",
-  "claimFunds": "資金の請求"
+  "claimFunds": "資金の請求",
+  "reclaimTokens": "トークンを取り戻す"
 }

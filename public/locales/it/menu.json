@@ -12,5 +12,6 @@
   "optionModifyGovernance": "Modificare la governance",
   "optionSettings": "Impostazioni",
   "viewDetails": "Visualizza dettagli",
-  "claimFunds": "Richiesta di fondi"
+  "claimFunds": "Richiesta di fondi",
+  "reclaimTokens": "Gettoni di recupero"
 }

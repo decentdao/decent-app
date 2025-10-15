@@ -12,5 +12,6 @@
   "optionModifyGovernance": "Змінити управління",
   "optionSettings": "Налаштування",
   "viewDetails": "Переглянути деталі",
-  "claimFunds": "Фонди відшкодування збитків"
+  "claimFunds": "Фонди відшкодування збитків",
+  "reclaimTokens": "Отримати токени"
 }
