@@ -19,7 +19,7 @@ export function convertStreamIdToBigInt(streamId: string) {
 
 export default function useCreateSablierStream() {
   const {
-    contracts: { sablierV2LockupLinear, sablierV2Batch, decentSablierStreamManagementModule },
+    contracts: { sablierV2Lockup, sablierV2Batch, decentSablierStreamManagementModule },
   } = useNetworkConfigStore();
   const { daoKey } = useCurrentDAOKey();
   const {
@@ -82,8 +82,13 @@ export default function useCreateSablierStream() {
         timestamps: {
           start: startDateTs,
           end: endDateTs,
-          cliff: cliffDateTs,
         },
+        cliffTime: cliffDateTs || 0,
+        unlockAmounts: {
+          start: 0n,
+          cliff: 0n,
+        },
+        shape: '',
       };
     },
     [prepareBasicStreamData],
@@ -112,7 +117,7 @@ export default function useCreateSablierStream() {
       const withdrawMaxFromStreamData = encodeFunctionData({
         abi: legacy.abis.DecentSablierStreamManagementModule,
         functionName: 'withdrawMaxFromStream',
-        args: [sablierV2LockupLinear, smartAccount, convertStreamIdToBigInt(streamId), to],
+        args: [sablierV2Lockup, smartAccount, convertStreamIdToBigInt(streamId), to],
       });
 
       return [
@@ -130,7 +135,7 @@ export default function useCreateSablierStream() {
         },
       ];
     },
-    [safeAddress, decentSablierStreamManagementModule, sablierV2LockupLinear],
+    [safeAddress, decentSablierStreamManagementModule, sablierV2Lockup],
   );
 
   const prepareCancelStreamTxs = useCallback(
@@ -154,7 +159,7 @@ export default function useCreateSablierStream() {
       const cancelStreamData = encodeFunctionData({
         abi: legacy.abis.DecentSablierStreamManagementModule,
         functionName: 'cancelStream',
-        args: [sablierV2LockupLinear, convertStreamIdToBigInt(streamId)],
+        args: [sablierV2Lockup, convertStreamIdToBigInt(streamId)],
       });
 
       return [
@@ -172,7 +177,7 @@ export default function useCreateSablierStream() {
         },
       ];
     },
-    [safeAddress, decentSablierStreamManagementModule, sablierV2LockupLinear],
+    [safeAddress, decentSablierStreamManagementModule, sablierV2Lockup],
   );
 
   const prepareBatchLinearStreamCreation = useCallback(
@@ -196,7 +201,7 @@ export default function useCreateSablierStream() {
           calldata: encodeFunctionData({
             abi: SablierV2BatchAbi,
             functionName: 'createWithTimestampsLL',
-            args: [sablierV2LockupLinear, tokenAddress, assembledStreams],
+            args: [sablierV2Lockup, tokenAddress, assembledStreams],
           }),
           targetAddress: sablierV2Batch,
         });
@@ -209,7 +214,7 @@ export default function useCreateSablierStream() {
 
       return { preparedStreamCreationTransactions, preparedTokenApprovalsTransactions };
     },
-    [prepareLinearStream, prepareStreamTokenCallData, sablierV2Batch, sablierV2LockupLinear],
+    [prepareLinearStream, prepareStreamTokenCallData, sablierV2Batch, sablierV2Lockup],
   );
 
   return {

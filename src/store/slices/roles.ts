@@ -1,7 +1,7 @@
 import { Tree } from '@hatsprotocol/sdk-v1-subgraph';
 import { getContract, Hex, PublicClient } from 'viem';
 import { StateCreator } from 'zustand';
-import { SablierV2LockupLinearAbi } from '../../assets/abi/SablierV2LockupLinear';
+import { SablierV2LockupLinearAbi } from '../../assets/abi/SablierV2Lockup';
 import { convertStreamIdToBigInt } from '../../hooks/streams/useCreateSablierStream';
 import { DAOKey } from '../../types';
 import { DecentRoleHat, DecentTree, RolesStoreData, SablierPayment } from '../../types/roles';
