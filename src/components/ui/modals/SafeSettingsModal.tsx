@@ -18,10 +18,16 @@ import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetwo
 import { useProposalActionsStore } from '../../../store/actions/useProposalActionsStore';
 import { BigIntValuePair } from '../../../types';
 import { RevenueSharingWalletForm, RevenueSharingWalletFormErrors } from '../../../types/revShare';
+import { RevenueSharingSettingsContent } from '../../SafeSettings/RevenueShare/RevenueSharingContent';
 import { handleEditRevenueShare } from '../../SafeSettings/RevenueShare/revenueShareFormHandlers';
-import { SettingsNavigation } from '../../SafeSettings/SettingsNavigation';
+import { SettingsNavigation, SettingsNavigationItem } from '../../SafeSettings/SettingsNavigation';
 import { NewSignerItem } from '../../SafeSettings/Signers/SignersContainer';
 import { SafeGeneralSettingTab } from '../../SafeSettings/TabContents/general/SafeGeneralSettingTab';
+import { SafeGovernanceSettingTab } from '../../SafeSettings/TabContents/governance/SafeGovernanceSettingTab';
+import { SafeModulesSettingTab } from '../../SafeSettings/TabContents/modules-and-guard/SafeModulesSettingTab';
+import { SafePermissionsSettingTab } from '../../SafeSettings/TabContents/permissions/SafePermissionsSettingTab';
+import { SafeStakingSettingTab } from '../../SafeSettings/TabContents/staking/SafeStakingSettingTab';
+import { SafeTokenSettingTab } from '../../SafeSettings/TabContents/token/SafeTokenSettingTab';
 import {
   handleEditPaymaster,
   handleEditGeneral,
@@ -101,12 +107,36 @@ export type SafeSettingsFormikErrors = {
   staking?: StakingEditFormikErrors;
 };
 
+// Helper function to map tab names to their corresponding JSX components
+const getTabComponent = (tab: SettingsNavigationItem): JSX.Element => {
+  switch (tab) {
+    case 'general':
+      return <SafeGeneralSettingTab />;
+    case 'governance':
+      return <SafeGovernanceSettingTab />;
+    case 'modulesAndGuard':
+      return <SafeModulesSettingTab />;
+    case 'permissions':
+      return <SafePermissionsSettingTab />;
+    case 'token':
+      return <SafeTokenSettingTab />;
+    case 'revenueSharing':
+      return <RevenueSharingSettingsContent />;
+    case 'staking':
+      return <SafeStakingSettingTab />;
+    default:
+      return <SafeGeneralSettingTab />;
+  }
+};
+
 export function SafeSettingsModal({
   closeModal,
   closeAllModals,
+  initialTab = 'general',
 }: {
   closeModal: () => void;
   closeAllModals: () => void;
+  initialTab?: SettingsNavigationItem;
 }) {
   const { daoKey } = useCurrentDAOKey();
 
@@ -124,7 +154,7 @@ export function SafeSettingsModal({
 
   const stakingContractAddress = governance?.stakedToken?.address;
 
-  const [settingsContent, setSettingsContent] = useState(<SafeGeneralSettingTab />);
+  const [settingsContent, setSettingsContent] = useState(getTabComponent(initialTab));
 
   const handleSettingsNavigationClick = (content: JSX.Element) => {
     setSettingsContent(content);
@@ -403,7 +433,10 @@ export function SafeSettingsModal({
               height="100%"
               pl="1"
             >
-              <SettingsNavigation onSettingsNavigationClick={handleSettingsNavigationClick} />
+              <SettingsNavigation
+                onSettingsNavigationClick={handleSettingsNavigationClick}
+                initialTab={initialTab}
+              />
               <Divider vertical />
               {settingsContent}
             </Flex>
