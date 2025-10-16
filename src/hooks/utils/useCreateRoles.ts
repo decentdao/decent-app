@@ -115,7 +115,7 @@ export default function useCreateRoles() {
       hatsAccount1ofNMasterCopy,
       erc6551Registry,
       keyValuePairs,
-      sablierV2LockupLinear,
+      sablierV2Lockup,
       linearVotingErc20HatsWhitelistingMasterCopy,
       linearVotingErc20HatsWhitelistingV1MasterCopy,
       linearVotingErc721HatsWhitelistingMasterCopy,
@@ -470,7 +470,7 @@ export default function useCreateRoles() {
       const newHatWithPayments: HatStructWithPayments = {
         ...newHat,
         sablierStreamsParams: payments.map(payment => ({
-          sablier: sablierV2LockupLinear,
+          sablier: sablierV2Lockup,
           sender: safeAddress,
           totalAmount: payment.totalAmount,
           asset: payment.asset,
@@ -487,7 +487,7 @@ export default function useCreateRoles() {
 
       return newHatWithPayments;
     },
-    [createHatStruct, safeAddress, sablierV2LockupLinear],
+    [createHatStruct, safeAddress, sablierV2Lockup],
   );
 
   const parseSablierPaymentsFromFormRolePayments = useCallback(

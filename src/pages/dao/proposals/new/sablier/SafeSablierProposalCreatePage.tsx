@@ -40,7 +40,7 @@ export function SafeSablierProposalCreatePage() {
   } = useDAOStore({ daoKey });
   const {
     addressPrefix,
-    contracts: { sablierV2Batch, sablierV2LockupTranched },
+    contracts: { sablierV2Batch, sablierV2Lockup },
   } = useNetworkConfigStore();
   const filterSpamTokens = useFilterSpamTokens();
   const { t } = useTranslation('proposal');
@@ -82,7 +82,7 @@ export function SafeSablierProposalCreatePage() {
           abi: SablierV2BatchAbi,
           functionName: 'createWithDurationsLT',
           args: [
-            sablierV2LockupTranched,
+            sablierV2Lockup,
             tokenAddress,
             tokenStreams.map(stream => ({
               sender: safe?.address,
@@ -94,10 +94,11 @@ export function SafeSablierProposalCreatePage() {
               },
               cancelable: stream.cancelable,
               transferable: stream.transferable,
-              tranches: stream.tranches.map(tranche => ({
+              tranchesWithDuration: stream.tranches.map(tranche => ({
                 amount: tranche.amount.bigintValue!,
                 duration: Number(tranche.duration.bigintValue!),
               })),
+              shape: '',
             })),
           ],
         });
@@ -114,7 +115,7 @@ export function SafeSablierProposalCreatePage() {
         metaData: proposalMetadata,
       };
     },
-    [sablierV2Batch, sablierV2LockupTranched, safe?.address],
+    [sablierV2Batch, sablierV2Lockup, safe?.address],
   );
 
   const HEADER_HEIGHT = useHeaderHeight();

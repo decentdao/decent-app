@@ -121,9 +121,11 @@ const polygonConfig: NetworkConfig = {
     erc6551Registry: '0x000000006551c19487814612e58FE06813775758',
     hatsAccount1ofNMasterCopy: '0xfEf83A660b7C10a3EdaFdCF62DEee1fD8a875D29',
     hatsElectionsEligibilityMasterCopy: '0xd3b916a8F0C4f9D1d5B6Af29c3C012dbd4f3149E',
-    sablierV2Batch: '0x6cd7bB0f63aFCc9F6CeDd1Bf1E3Bd4ED078CD019',
-    sablierV2LockupDynamic: '0x4994325F8D4B4A36Bd643128BEb3EC3e582192C0',
-    sablierV2LockupTranched: '0xBF67f0A1E847564D0eFAD475782236D3Fa7e9Ec2',
+    sablierV2Batch: '0x1aDd9385F2C5c8e446bbB77c7A36839aB7743AF4',
+    sablierV2Lockup: '0xE0BFe071Da104e571298f8b6e0fcE44C512C1Ff4', // NEW: Unified Sablier V2 Lockup contract
+
+    // LEGACY: Kept for backward compatibility with existing hatIdToStreamId mappings
+    // In Sablier V2, all three lockup types (Linear, Dynamic, Tranched) use the same unified contract
     sablierV2LockupLinear: '0x8D4dDc187a73017a5d7Cef733841f55115B13762',
     disperse: '0xD152f549545093347A162Dce210e7293f1452150',
     tokenSaleV1MasterCopy: addresses.deployables.TokenSaleV1,

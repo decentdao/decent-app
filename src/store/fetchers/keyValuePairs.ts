@@ -11,7 +11,7 @@ import { normalizeBuyerRequirements } from '../../utils/buyerRequirementsNormali
 export function useKeyValuePairsFetcher() {
   const publicClient = useNetworkPublicClient();
   const {
-    contracts: { keyValuePairs, sablierV2LockupLinear },
+    contracts: { keyValuePairs, sablierV2LockupLinear, sablierV2Lockup },
   } = useNetworkConfigStore();
   const getHatsTreeId = useCallback(
     ({
@@ -77,23 +77,57 @@ export function useKeyValuePairsFetcher() {
         return [];
       }
 
-      const hatIdToStreamIdEvents = events.filter(
+      // Support both legacy (hatIdToStreamId) and V2 (hatIdToStreamIdV2) events
+      const legacyEvents = events.filter(
         event => event.args.key && event.args.key === 'hatIdToStreamId',
       );
 
+      const v2Events = events.filter(
+        event => event.args.key && event.args.key === 'hatIdToStreamIdV2',
+      );
+
       const hatIdIdsToStreamIds = [];
-      for (const event of hatIdToStreamIdEvents) {
+
+      // Process legacy events using sablierV2LockupLinear address
+      for (const event of legacyEvents) {
         const hatIdToStreamId = event.args.value;
         if (hatIdToStreamId !== undefined) {
           const [hatId, streamId] = hatIdToStreamId.split(':');
+          const formattedStreamId = `${sablierV2LockupLinear.toLowerCase()}-${chainId}-${streamId}`;
+          const hatIdBigInt = BigInt(hatId);
+
           hatIdIdsToStreamIds.push({
-            hatId: BigInt(hatId),
-            streamId: `${sablierV2LockupLinear.toLowerCase()}-${chainId}-${streamId}`,
+            hatId: hatIdBigInt,
+            streamId: formattedStreamId,
           });
           continue;
         }
         logError({
-          message: "KVPairs 'hatIdToStreamId' without a value",
+          message: "KVPairs 'hatIdToStreamId' (legacy) without a value",
+          network: chainId,
+          args: {
+            transactionHash: event.transactionHash,
+            logIndex: event.logIndex,
+          },
+        });
+      }
+
+      // Process V2 events using sablierV2Lockup address
+      for (const event of v2Events) {
+        const hatIdToStreamId = event.args.value;
+        if (hatIdToStreamId !== undefined) {
+          const [hatId, streamId] = hatIdToStreamId.split(':');
+          const formattedStreamId = `${sablierV2Lockup.toLowerCase()}-${chainId}-${streamId}`;
+          const hatIdBigInt = BigInt(hatId);
+
+          hatIdIdsToStreamIds.push({
+            hatId: hatIdBigInt,
+            streamId: formattedStreamId,
+          });
+          continue;
+        }
+        logError({
+          message: "KVPairs 'hatIdToStreamIdV2' without a value",
           network: chainId,
           args: {
             transactionHash: event.transactionHash,
@@ -103,7 +137,7 @@ export function useKeyValuePairsFetcher() {
       }
       return hatIdIdsToStreamIds;
     },
-    [sablierV2LockupLinear],
+    [sablierV2LockupLinear, sablierV2Lockup],
   );
 
   const fetchKeyValuePairsData = useCallback(
