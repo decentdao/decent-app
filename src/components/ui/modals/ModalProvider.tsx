@@ -6,6 +6,7 @@ import { Address } from 'viem';
 import { NEUTRAL_2_50_TRANSPARENT } from '../../../constants/common';
 import { AirdropData, CreateProposalTransaction, ProposalTemplate } from '../../../types';
 import { SendAssetsData } from '../../../utils/dao/prepareSendAssetsActionData';
+import { SettingsNavigationItem } from '../../SafeSettings/SettingsNavigation';
 import AddSignerModal from '../../SafeSettings/Signers/modals/AddSignerModal';
 import RemoveSignerModal from '../../SafeSettings/Signers/modals/RemoveSignerModal';
 import DraggableDrawer from '../containers/DraggableDrawer';
@@ -140,7 +141,9 @@ export type ModalPropsTypes = {
   [ModalType.DAPP_BROWSER]: {
     appUrl: string;
   };
-  [ModalType.SAFE_SETTINGS]: {};
+  [ModalType.SAFE_SETTINGS]: {
+    initialTab?: SettingsNavigationItem;
+  };
   [ModalType.CONFIRM_NONCE_EXECUTION]: {
     nonce: number | undefined;
     continue: () => void;
@@ -439,6 +442,7 @@ const getModalData = (args: {
         <SafeSettingsModal
           closeModal={popModal}
           closeAllModals={closeAll}
+          initialTab={current.props.initialTab}
         />
       );
       modalSize = '6xl';
