@@ -62,9 +62,12 @@ type ContractsBase = {
   hatsAccount1ofNMasterCopy: Address;
   hatsElectionsEligibilityMasterCopy: Address;
   sablierV2Batch: Address;
-  sablierV2LockupDynamic: Address;
-  sablierV2LockupTranched: Address;
+  sablierV2Lockup: Address; // NEW: Unified Sablier V2 contract for all lockup types (Linear, Dynamic, Tranched)
+
+  // LEGACY: Kept ONLY for backward compatibility with existing hatIdToStreamId mappings
+  // All new streams use sablierV2Lockup
   sablierV2LockupLinear: Address;
+
   disperse: Address;
 
   tokenSaleV1MasterCopy: Address;
