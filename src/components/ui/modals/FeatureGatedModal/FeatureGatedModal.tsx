@@ -1,4 +1,5 @@
 import { Box, Button, Flex, Image, Text } from '@chakra-ui/react';
+import { useTranslation } from 'react-i18next';
 import { FeatureGatedType, getFeatureGatedConfig } from './types';
 
 interface FeatureGatedModalProps {
@@ -8,7 +9,8 @@ interface FeatureGatedModalProps {
 }
 
 export function FeatureGatedModal({ featureType, onGoBack, onUpgrade }: FeatureGatedModalProps) {
-  const config = getFeatureGatedConfig(featureType);
+  const { t } = useTranslation('subscriptions');
+  const config = getFeatureGatedConfig(featureType, t);
 
   const handleUpgrade = () => {
     // TODO: Implement upgrade navigation
@@ -76,7 +78,7 @@ export function FeatureGatedModal({ featureType, onGoBack, onUpgrade }: FeatureG
             px="1rem"
             onClick={onGoBack}
           >
-            Go Back
+            {t('buttonGoBack')}
           </Button>
           <Button
             variant="primary"
@@ -84,7 +86,7 @@ export function FeatureGatedModal({ featureType, onGoBack, onUpgrade }: FeatureG
             px="1rem"
             onClick={handleUpgrade}
           >
-            Upgrade
+            {t('buttonUpgrade')}
           </Button>
         </Flex>
       </Flex>

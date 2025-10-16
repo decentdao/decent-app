@@ -75,6 +75,7 @@ i18n
       'roles',
       'settings',
       'stake',
+      'subscriptions',
       'tokenSale',
       'transaction',
       'treasury',
