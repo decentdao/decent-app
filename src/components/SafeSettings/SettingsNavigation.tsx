@@ -29,7 +29,7 @@ import { SafePermissionsSettingTab } from './TabContents/permissions/SafePermiss
 import { SafeStakingSettingTab } from './TabContents/staking/SafeStakingSettingTab';
 import { SafeTokenSettingTab } from './TabContents/token/SafeTokenSettingTab';
 
-const settingsNavigationItems = [
+export const settingsNavigationItems = [
   'general',
   'governance',
   'modulesAndGuard',
@@ -39,7 +39,9 @@ const settingsNavigationItems = [
   'staking',
 ] as const;
 
-function SettingsNavigationItem({
+export type SettingsNavigationItem = (typeof settingsNavigationItems)[number];
+
+function SettingsNavigationItemComponent({
   title,
   leftIcon,
   children,
@@ -53,8 +55,8 @@ function SettingsNavigationItem({
   title: string;
   leftIcon: ReactNode;
   showDivider?: boolean;
-  item: (typeof settingsNavigationItems)[number];
-  currentItem: (typeof settingsNavigationItems)[number];
+  item: SettingsNavigationItem;
+  currentItem: SettingsNavigationItem;
   onClick?: () => void;
   hasEdits?: boolean;
   testId?: string;
@@ -116,8 +118,10 @@ function SettingsNavigationItem({
 
 export function SettingsNavigation({
   onSettingsNavigationClick,
+  initialTab = 'general',
 }: {
   onSettingsNavigationClick: (content: JSX.Element) => void;
+  initialTab?: SettingsNavigationItem;
 }) {
   const { t } = useTranslation('settings');
   const { daoKey } = useCurrentDAOKey();
@@ -131,7 +135,7 @@ export function SettingsNavigation({
   const isRevShareEnabled = useFeatureFlag('flag_revenue_sharing');
 
   const [currentItem, setCurrentItem] =
-    useState<(typeof settingsNavigationItems)[number]>('general');
+    useState<(typeof settingsNavigationItems)[number]>(initialTab);
 
   const { values } = useFormikContext<SafeSettingsEdits>();
 
@@ -182,7 +186,7 @@ export function SettingsNavigation({
         </Flex>
       ) : (
         <>
-          <SettingsNavigationItem
+          <SettingsNavigationItemComponent
             title={t('daoSettingsGeneral')}
             leftIcon={<GearFine fontSize="1.5rem" />}
             item="general"
@@ -194,7 +198,7 @@ export function SettingsNavigation({
             }}
             hasEdits={generalHasEdits || paymasterHasEdits}
           />
-          <SettingsNavigationItem
+          <SettingsNavigationItemComponent
             title={t('daoSettingsGovernance')}
             leftIcon={<Bank fontSize="1.5rem" />}
             item="governance"
@@ -209,8 +213,8 @@ export function SettingsNavigation({
             <Text color="color-neutral-300">
               {t(azoriusGovernance.votingStrategy?.strategyType ?? 'labelMultisig')}
             </Text>
-          </SettingsNavigationItem>
-          <SettingsNavigationItem
+          </SettingsNavigationItemComponent>
+          <SettingsNavigationItemComponent
             title={t('modulesAndGuardsTitle')}
             leftIcon={<Stack fontSize="1.5rem" />}
             item="modulesAndGuard"
@@ -222,9 +226,9 @@ export function SettingsNavigation({
             }}
           >
             <Text color="color-neutral-300">{(modules ?? []).length + (safe?.guard ? 1 : 0)}</Text>
-          </SettingsNavigationItem>
+          </SettingsNavigationItemComponent>
           {governance.isAzorius && (
-            <SettingsNavigationItem
+            <SettingsNavigationItemComponent
               title={t('permissionsTitle')}
               leftIcon={<CheckSquare fontSize="1.5rem" />}
               item="permissions"
@@ -238,10 +242,10 @@ export function SettingsNavigation({
               hasEdits={values.permissions !== undefined}
             >
               <Text color="color-neutral-300">{azoriusGovernance.votingStrategy ? 1 : 0}</Text>
-            </SettingsNavigationItem>
+            </SettingsNavigationItemComponent>
           )}
           {!governance.isAzorius && isTokenDeploymentEnabled && (
-            <SettingsNavigationItem
+            <SettingsNavigationItemComponent
               title={t('tokenTitle')}
               leftIcon={<RocketLaunch fontSize="1.5rem" />}
               item="token"
@@ -254,7 +258,7 @@ export function SettingsNavigation({
             />
           )}
           {isRevShareEnabled && (
-            <SettingsNavigationItem
+            <SettingsNavigationItemComponent
               title={t('daoSettingsRevenueSharing')}
               leftIcon={<Percent fontSize="1.5rem" />}
               item="revenueSharing"
@@ -268,7 +272,7 @@ export function SettingsNavigation({
             />
           )}
           {isRevShareEnabled && daoErc20Token !== undefined && (
-            <SettingsNavigationItem
+            <SettingsNavigationItemComponent
               title={t('daoSettingsStaking')}
               leftIcon={<PiggyBank fontSize="1.5rem" />}
               item="staking"

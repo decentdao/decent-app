@@ -48,6 +48,8 @@
   "months": "Monate",
   "weeks": "Wochen",
   "addPayment": "Zahlung hinzufügen",
+  "newRolePaymentsDisabledTitle": "Vorübergehend deaktiviert",
+  "newRolePaymentsDisabledSubtitle": "Das Hinzufügen von Zahlungen zu neuen Rollen ist vorübergehend deaktiviert. Sie können jedoch weiterhin Zahlungen zu bestehenden Rollen hinzufügen.",
   "addPaymentStreamSubTitle": "Definieren Sie einen Zahlungsplan, um einen vordefinierten Betrag eines Vermögenswerts nach einer bestimmten Zeit freizugeben.",
   "cancelable": "Kündbar",
   "cancelableSubTitle": "Falls aktiviert, kann dieser Zahlungsstrom zu einem späteren Zeitpunkt abgebrochen werden.",

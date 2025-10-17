@@ -6,6 +6,7 @@ import { Address } from 'viem';
 import { NEUTRAL_2_50_TRANSPARENT } from '../../../constants/common';
 import { AirdropData, CreateProposalTransaction, ProposalTemplate } from '../../../types';
 import { SendAssetsData } from '../../../utils/dao/prepareSendAssetsActionData';
+import { SettingsNavigationItem } from '../../SafeSettings/SettingsNavigation';
 import AddSignerModal from '../../SafeSettings/Signers/modals/AddSignerModal';
 import RemoveSignerModal from '../../SafeSettings/Signers/modals/RemoveSignerModal';
 import DraggableDrawer from '../containers/DraggableDrawer';
@@ -17,6 +18,7 @@ import { ConfirmModifyGovernanceModal } from './ConfirmModifyGovernanceModal';
 import { ConfirmUrlModal } from './ConfirmUrlModal';
 import { ConfirmExecutionModal, ConfirmRejectProposalModal } from './ConfirmationModal';
 import { DelegateModal } from './DelegateModal';
+import { FeatureGatedModal, FeatureGatedType } from './FeatureGatedModal';
 import ForkProposalTemplateModal from './ForkProposalTemplateModal';
 import { GaslessVoteFailedModal } from './GaslessVoting/GaslessVoteFailedModal';
 import { GaslessVoteLoadingModal } from './GaslessVoting/GaslessVoteLoadingModal';
@@ -63,6 +65,13 @@ export enum ModalType {
   CONFIRM_NONCE_EXECUTION,
   CONFIRM_REJECT_PROPOSAL,
   CONFIRM_EXECUTION,
+  FEATURE_GATED_AIRDROP,
+  FEATURE_GATED_DAPP_EXPLORER,
+  FEATURE_GATED_HIERARCHY,
+  FEATURE_GATED_ROLES,
+  FEATURE_GATED_STAKING,
+  FEATURE_GATED_STREAMS,
+  FEATURE_GATED_TOKEN_SALES,
 }
 
 export type ModalPropsTypes = {
@@ -132,7 +141,9 @@ export type ModalPropsTypes = {
   [ModalType.DAPP_BROWSER]: {
     appUrl: string;
   };
-  [ModalType.SAFE_SETTINGS]: {};
+  [ModalType.SAFE_SETTINGS]: {
+    initialTab?: SettingsNavigationItem;
+  };
   [ModalType.CONFIRM_NONCE_EXECUTION]: {
     nonce: number | undefined;
     continue: () => void;
@@ -145,6 +156,13 @@ export type ModalPropsTypes = {
     nonce: number | undefined;
     submitExecution: () => void;
   };
+  [ModalType.FEATURE_GATED_AIRDROP]: {};
+  [ModalType.FEATURE_GATED_DAPP_EXPLORER]: {};
+  [ModalType.FEATURE_GATED_HIERARCHY]: {};
+  [ModalType.FEATURE_GATED_ROLES]: {};
+  [ModalType.FEATURE_GATED_STAKING]: {};
+  [ModalType.FEATURE_GATED_STREAMS]: {};
+  [ModalType.FEATURE_GATED_TOKEN_SALES]: {};
 };
 
 export type ModalTypeWithProps = {
@@ -424,6 +442,7 @@ const getModalData = (args: {
         <SafeSettingsModal
           closeModal={popModal}
           closeAllModals={closeAll}
+          initialTab={current.props.initialTab}
         />
       );
       modalSize = '6xl';
@@ -457,6 +476,97 @@ const getModalData = (args: {
         />
       );
       modalSize = 'md';
+      break;
+
+    case ModalType.FEATURE_GATED_AIRDROP:
+      closeModalOnOverlayClick = false;
+      modalSize = 'md';
+      modalContentStyle = { padding: '0' };
+      modalContent = (
+        <FeatureGatedModal
+          featureType={FeatureGatedType.AIRDROP}
+          onGoBack={popModal}
+          onUpgrade={popModal}
+        />
+      );
+      break;
+
+    case ModalType.FEATURE_GATED_DAPP_EXPLORER:
+      closeModalOnOverlayClick = false;
+      modalSize = 'md';
+      modalContentStyle = { padding: '0' };
+      modalContent = (
+        <FeatureGatedModal
+          featureType={FeatureGatedType.DAPP_EXPLORER}
+          onGoBack={popModal}
+          onUpgrade={popModal}
+        />
+      );
+      break;
+
+    case ModalType.FEATURE_GATED_HIERARCHY:
+      closeModalOnOverlayClick = false;
+      modalSize = 'md';
+      modalContentStyle = { padding: '0' };
+      modalContent = (
+        <FeatureGatedModal
+          featureType={FeatureGatedType.HIERARCHY}
+          onGoBack={popModal}
+          onUpgrade={popModal}
+        />
+      );
+      break;
+
+    case ModalType.FEATURE_GATED_ROLES:
+      closeModalOnOverlayClick = false;
+      modalSize = 'md';
+      modalContentStyle = { padding: '0' };
+      modalContent = (
+        <FeatureGatedModal
+          featureType={FeatureGatedType.ROLES}
+          onGoBack={popModal}
+          onUpgrade={popModal}
+        />
+      );
+      break;
+
+    case ModalType.FEATURE_GATED_STAKING:
+      closeModalOnOverlayClick = false;
+      modalSize = 'md';
+      modalContentStyle = { padding: '0' };
+      modalContent = (
+        <FeatureGatedModal
+          featureType={FeatureGatedType.STAKING}
+          onGoBack={popModal}
+          onUpgrade={popModal}
+        />
+      );
+      break;
+
+    case ModalType.FEATURE_GATED_STREAMS:
+      closeModalOnOverlayClick = false;
+      modalSize = 'md';
+      modalContentStyle = { padding: '0' };
+      modalContent = (
+        <FeatureGatedModal
+          featureType={FeatureGatedType.STREAMS}
+          onGoBack={popModal}
+          onUpgrade={popModal}
+        />
+      );
+      break;
+
+    case ModalType.FEATURE_GATED_TOKEN_SALES:
+      closeModalOnOverlayClick = false;
+      modalSize = 'md';
+      modalContentStyle = { padding: '0' };
+      modalContent = (
+        <FeatureGatedModal
+          featureType={FeatureGatedType.TOKEN_SALES}
+          onGoBack={popModal}
+          onUpgrade={popModal}
+        />
+      );
       break;
 
     default:
@@ -526,7 +636,14 @@ function ModalDisplay({
     type === ModalType.CONFIRM_DELETE_STRATEGY ||
     type === ModalType.GASLESS_VOTE_LOADING ||
     type === ModalType.GASLESS_VOTE_FAILED ||
-    type === ModalType.GASLESS_VOTE_SUCCESS
+    type === ModalType.GASLESS_VOTE_SUCCESS ||
+    type === ModalType.FEATURE_GATED_AIRDROP ||
+    type === ModalType.FEATURE_GATED_DAPP_EXPLORER ||
+    type === ModalType.FEATURE_GATED_HIERARCHY ||
+    type === ModalType.FEATURE_GATED_ROLES ||
+    type === ModalType.FEATURE_GATED_STAKING ||
+    type === ModalType.FEATURE_GATED_STREAMS ||
+    type === ModalType.FEATURE_GATED_TOKEN_SALES
   ) {
     display = (
       <>
@@ -551,6 +668,7 @@ function ModalDisplay({
             isSearchInputModal={isSearchInputModal}
             zIndex={baseZIndex + index + 1}
             size={size}
+            contentStyle={contentStyle}
           >
             {content}
           </ModalBase>

@@ -5,7 +5,7 @@ import { Client } from 'urql';
 import { Address, Hex, PublicClient, formatUnits, getAddress, getContract } from 'viem';
 import ERC6551RegistryAbi from '../../assets/abi/ERC6551RegistryAbi';
 import { HatsElectionsEligibilityAbi } from '../../assets/abi/HatsElectionsEligibilityAbi';
-import { SablierV2LockupLinearAbi } from '../../assets/abi/SablierV2LockupLinear';
+import { SablierV2LockupLinearAbi } from '../../assets/abi/SablierV2Lockup';
 import { ERC6551_REGISTRY_SALT } from '../../constants/common';
 import { StreamsQuery, StreamsQueryResponse, Stream } from '../../graphql/StreamsQueries';
 import { convertStreamIdToBigInt } from '../../hooks/streams/useCreateSablierStream';

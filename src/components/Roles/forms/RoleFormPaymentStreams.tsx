@@ -1,19 +1,22 @@
-import { Box, Button, Flex, Text } from '@chakra-ui/react';
-import { Plus } from '@phosphor-icons/react';
+import { Alert, Box, Button, Flex, Icon, Text } from '@chakra-ui/react';
+import { Info, Plus } from '@phosphor-icons/react';
 import { FieldArray, useFormikContext } from 'formik';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
+import { useDAOStore } from '../../../providers/App/AppProvider';
 import {
   paymentSorterByActiveStatus,
   paymentSorterByStartDate,
   paymentSorterByWithdrawAmount,
   canUserCancelPayment,
 } from '../../../store/roles/rolesStoreUtils';
-import { RoleFormValues, SablierPaymentFormValues } from '../../../types/roles';
+import { EditBadgeStatus, RoleFormValues, SablierPaymentFormValues } from '../../../types/roles';
 import Divider from '../../ui/utils/Divider';
 import { RolePaymentDetails } from '../RolePaymentDetails';
 import { RoleFormPaymentStream } from './RoleFormPaymentStream';
 import RoleFormPaymentStreamTermed from './RoleFormPaymentStreamTermed';
+import { useRoleFormEditedRole } from './useRoleFormEditedRole';
 
 function RoleFormPaymentRenderer() {
   const { values } = useFormikContext<RoleFormValues>();
@@ -35,6 +38,15 @@ export function RoleFormPaymentStreams() {
   const { t } = useTranslation(['roles']);
   const { values, setFieldValue, validateForm } = useFormikContext<RoleFormValues>();
   const payments = values.roleEditing?.payments;
+
+  const { daoKey } = useCurrentDAOKey();
+  const {
+    roles: { hatsTree },
+  } = useDAOStore({ daoKey });
+
+  // TODO: Remove this temporary blocking when contract is updated and feature is fixed
+  const { editedRoleData } = useRoleFormEditedRole({ hatsTree });
+  const isNewRole = editedRoleData?.status === EditBadgeStatus.New;
 
   const sortedPayments = useMemo(
     () =>
@@ -75,11 +87,47 @@ export function RoleFormPaymentStreams() {
     <FieldArray name="roleEditing.payments">
       {({ push: pushPayment }: { push: (streamFormValue: SablierPaymentFormValues) => void }) => (
         <Box>
+          {/* TODO: Remove this Alert when contract is updated and feature is fixed */}
+          {isNewRole && (
+            <Alert
+              variant="warning"
+              my="1.5rem"
+              gap="1rem"
+            >
+              <Box
+                width="1.5rem"
+                height="1.5rem"
+              >
+                <Icon
+                  as={Info}
+                  color="color-base-warning"
+                  boxSize="1.5rem"
+                />
+              </Box>
+              <Flex
+                flexDir="column"
+                gap="0.5rem"
+              >
+                <Text
+                  textStyle="body-base-strong"
+                  whiteSpace="pre-wrap"
+                >
+                  {t('newRolePaymentsDisabledTitle')}
+                </Text>
+                <Text
+                  textStyle="body-base-strong"
+                  whiteSpace="pre-wrap"
+                >
+                  {t('newRolePaymentsDisabledSubtitle')}
+                </Text>
+              </Flex>
+            </Alert>
+          )}
           {values.roleEditing?.roleEditingPaymentIndex === undefined && (
             <Button
               variant="secondary"
               size="sm"
-              isDisabled={values.roleEditing?.isTermed ? !isTermsAvailable : false}
+              isDisabled={isNewRole || (values.roleEditing?.isTermed ? !isTermsAvailable : false)}
               leftIcon={<Plus size="1rem" />}
               iconSpacing={0}
               onClick={async () => {

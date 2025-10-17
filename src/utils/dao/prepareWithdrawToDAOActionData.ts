@@ -1,5 +1,5 @@
 import { Address, encodeFunctionData } from 'viem';
-import { SablierV2LockupLinearAbi } from '../../assets/abi/SablierV2LockupLinear';
+import { SablierV2LockupLinearAbi } from '../../assets/abi/SablierV2Lockup';
 import { convertStreamIdToBigInt } from '../../hooks/streams/useCreateSablierStream';
 import { CreateProposalActionData, ProposalActionType } from '../../types';
 

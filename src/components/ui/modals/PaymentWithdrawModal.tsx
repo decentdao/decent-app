@@ -4,7 +4,7 @@ import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Address, encodeFunctionData, getContract } from 'viem';
 import HatsAccount1ofNAbi from '../../../assets/abi/HatsAccount1ofN';
-import { SablierV2LockupLinearAbi } from '../../../assets/abi/SablierV2LockupLinear';
+import { SablierV2LockupLinearAbi } from '../../../assets/abi/SablierV2Lockup';
 import { convertStreamIdToBigInt } from '../../../hooks/streams/useCreateSablierStream';
 import { useNetworkEnsAvatar } from '../../../hooks/useNetworkEnsAvatar';
 import { useNetworkWalletClient } from '../../../hooks/useNetworkWalletClient';

@@ -124,9 +124,11 @@ export const mainnetConfig: NetworkConfig = {
     erc6551Registry: '0x000000006551c19487814612e58FE06813775758',
     hatsAccount1ofNMasterCopy: '0xfEf83A660b7C10a3EdaFdCF62DEee1fD8a875D29',
     hatsElectionsEligibilityMasterCopy: '0xd3b916a8F0C4f9D1d5B6Af29c3C012dbd4f3149E',
-    sablierV2Batch: '0xB5Ec9706C3Be9d22326D208f491E5DEef7C8d9f0',
-    sablierV2LockupDynamic: '0x9DeaBf7815b42Bf4E9a03EEc35a486fF74ee7459',
-    sablierV2LockupTranched: '0xf86B359035208e4529686A1825F2D5BeE38c28A8',
+    sablierV2Batch: '0x3F6E8a8Cffe377c4649aCeB01e6F20c60fAA356c',
+    sablierV2Lockup: '0x7C01AA3783577E15fD7e272443D44B92d5b21056', // NEW: Unified Sablier V2 Lockup contract
+
+    // LEGACY: Kept for backward compatibility with existing hatIdToStreamId mappings
+    // In Sablier V2, all three lockup types (Linear, Dynamic, Tranched) use the same unified contract
     sablierV2LockupLinear: '0x3962f6585946823440d274aD7C719B02b49DE51E',
     disperse: '0xD152f549545093347A162Dce210e7293f1452150',
 
