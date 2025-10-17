@@ -41,7 +41,8 @@ export function RoleFormTabs({
         setFieldValue('roleEditing', role);
       }
     }
-  }, [values.hats, values.roleEditing, hatId, setFieldValue]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [values.hats, hatId, setFieldValue]);
 
   const isInitialised = useRef(false);
 
@@ -54,7 +55,8 @@ export function RoleFormTabs({
     } else if (!isInitialised.current && hatIndex === -1) {
       isInitialised.current = true;
     }
-  }, [setFieldValue, values.hats, values.roleEditing, hatId]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [setFieldValue, values.hats, hatId]);
 
   if (!safeAddress) return null;
 
@@ -98,6 +100,11 @@ export function RoleFormTabs({
           }
           onClick={() => {
             if (!values.roleEditing) return;
+            console.log('🔍 RoleFormTabs Save - roleEditing:', {
+              name: values.roleEditing.name,
+              paymentsCount: values.roleEditing.payments?.length || 0,
+              payments: values.roleEditing.payments,
+            });
             const roleUpdated = { ...values.roleEditing, editedRole: editedRoleData };
             const hatIndex = values.hats.findIndex(h => h.id === hatId);
             if (hatIndex === -1) {

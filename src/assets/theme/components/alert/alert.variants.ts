@@ -76,10 +76,28 @@ const successBanner = definePartsStyle({
   spinner: {},
 });
 
+const warning = definePartsStyle({
+  title: {},
+  container: {
+    bg: 'color-warning-950',
+    border: '1px solid',
+    borderColor: 'color-base-warning',
+    borderRadius: '0.25rem',
+    p: '1.5rem',
+    display: 'flex',
+    alignItems: 'center',
+    color: 'color-base-warning',
+  },
+  description: {},
+  icon: {},
+  spinner: {},
+});
+
 const alertVariants = {
   info,
   fundraisingBanner,
   successBanner,
+  warning,
 };
 
 export default alertVariants;

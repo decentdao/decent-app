@@ -156,6 +156,7 @@ export interface HatStructWithPayments extends HatStruct {
     cancelable: boolean;
     transferable: boolean;
     timestamps: { start: number; cliff: number; end: number };
+    unlockAmounts: { start: bigint; cliff: bigint };
     broker: { account: Address; fee: bigint };
   }[];
 }
