@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { Address } from 'viem';
 import {
   ANNUAL_DISCOUNT_PERCENTAGE,
-  SUBSCRIPTION_PRICING,
+  getSubscriptionPricing,
 } from '../../../../constants/subscriptionPricing';
 import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
 import { useSubscription } from '../../../../hooks/DAO/useSubscription';
@@ -97,7 +97,7 @@ interface SubscriptionBannerProps {
 
 function SubscriptionBanner({ tier, endDate, isLoading }: SubscriptionBannerProps) {
   const { t } = useTranslation('subscriptions');
-  const pricing = SUBSCRIPTION_PRICING[tier];
+  const pricing = getSubscriptionPricing(t)[tier];
 
   if (isLoading) {
     return (
@@ -202,7 +202,7 @@ interface PricingCardProps {
 
 function PricingCard({ tier, isCurrentPlan, isAnnual }: PricingCardProps) {
   const { t } = useTranslation('subscriptions');
-  const pricing = SUBSCRIPTION_PRICING[tier];
+  const pricing = getSubscriptionPricing(t)[tier];
   const displayPrice = isAnnual ? pricing.annualPrice : pricing.monthlyPrice;
   const originalPrice = pricing.monthlyPrice;
   const showDiscount = isAnnual && pricing.annualPrice > 0 && pricing.annualPrice !== originalPrice;

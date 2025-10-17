@@ -8,58 +8,72 @@ export interface PricingTier {
   badge?: 'popular' | 'save';
   features: string[];
   ctaText: string;
-  ctaUrl?: string; // TODO: Replace with actual sales contact URLs
+  ctaUrl?: string;
 }
 
-export const SUBSCRIPTION_PRICING: Record<SubscriptionTier, PricingTier> = {
+// Function to get subscription pricing with translations
+export const getSubscriptionPricing = (
+  t: (key: string) => string,
+): Record<SubscriptionTier, PricingTier> => ({
   [SubscriptionTier.Free]: {
     tier: SubscriptionTier.Free,
-    name: 'Free',
+    name: t('tiers.free'),
     monthlyPrice: 0,
     annualPrice: 0,
     features: [
-      'Token, NFT, Multsig deployments',
-      'Token imports',
-      'Basic transfers',
-      'Custom proposal templates',
+      t('features.free.tokenDeployments'),
+      t('features.free.tokenImports'),
+      t('features.free.basicTransfers'),
+      t('features.free.customTemplates'),
     ],
-    ctaText: 'Current Plan',
+    ctaText: t('buttons.currentPlan'),
   },
   [SubscriptionTier.Pro]: {
     tier: SubscriptionTier.Pro,
-    name: 'Pro',
+    name: t('tiers.pro'),
     monthlyPrice: 250,
     annualPrice: 210, // 15% discount: 250 * 12 * 0.85 / 12
     badge: 'popular',
     features: [
-      'SubDAOs',
-      'Roles & Permissions',
-      'Elections',
-      'Payroll',
-      'DeFi integrations',
-      'Token Sales',
+      t('features.pro.subDAOs'),
+      t('features.pro.rolesPermissions'),
+      t('features.pro.elections'),
+      t('features.pro.payroll'),
+      t('features.pro.defiIntegrations'),
+      t('features.pro.tokenSales'),
     ],
-    ctaText: 'Contact Sales',
+    ctaText: t('buttons.contactSales'),
     ctaUrl: '#', // TODO: Replace with actual Pro tier sales URL
   },
   [SubscriptionTier.Advanced]: {
     tier: SubscriptionTier.Advanced,
-    name: 'Advanced',
+    name: t('tiers.advanced'),
     monthlyPrice: 1500,
     annualPrice: 1250, // 15% discount: 1500 * 12 * 0.85 / 12
-    features: ['Additional tokens', 'Gasless voting', 'Airdrops', 'Staking', 'Revenue Share'],
-    ctaText: 'Contact Sales',
+    features: [
+      t('features.advanced.additionalTokens'),
+      t('features.advanced.gaslessVoting'),
+      t('features.advanced.airdrops'),
+      t('features.advanced.staking'),
+      t('features.advanced.revenueShare'),
+    ],
+    ctaText: t('buttons.contactSales'),
     ctaUrl: '#', // TODO: Replace with actual Advanced tier sales URL
   },
   [SubscriptionTier.Enterprise]: {
     tier: SubscriptionTier.Enterprise,
-    name: 'Enterprise',
+    name: t('tiers.enterprise'),
     monthlyPrice: 0, // Custom pricing
     annualPrice: 0, // Custom pricing
-    features: ['Whitelabel solution', 'Custom DAO design', 'Custom features', 'Dedicated support'],
-    ctaText: 'Contact Sales',
+    features: [
+      t('features.enterprise.whitelabelSolution'),
+      t('features.enterprise.customDAODesign'),
+      t('features.enterprise.customFeatures'),
+      t('features.enterprise.dedicatedSupport'),
+    ],
+    ctaText: t('buttons.contactSales'),
     ctaUrl: '#', // TODO: Replace with actual Enterprise tier sales URL
   },
-};
+});
 
 export const ANNUAL_DISCOUNT_PERCENTAGE = 15;
