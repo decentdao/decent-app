@@ -209,7 +209,7 @@ function PricingCard({ tier, isCurrentPlan, isAnnual }: PricingCardProps) {
 
   return (
     <Box
-      bg={tier === SubscriptionTier.Free ? 'color-alpha-white-950' : 'color-secondary-950'}
+      bg={isCurrentPlan ? 'color-alpha-white-950' : 'color-secondary-950'}
       border="1px solid"
       borderColor="color-layout-border"
       borderRadius="0.75rem"
