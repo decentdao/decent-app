@@ -286,13 +286,15 @@ export async function getTokenSaleVerification(
 export async function getSubscriptionStatus(
   chainId: number,
   daoAddress: Address,
+  isFeatureFlagEnabled: boolean,
 ): Promise<SubscriptionData | null> {
   // todo remove when API work is complete
-  if (daoAddress) {
+  if (!isFeatureFlagEnabled || chainId === 11155111) {
+    // sepolia
     return {
-      tier: SubscriptionTier.Free,
+      tier: SubscriptionTier.Advanced,
       startTimestamp: null,
-      endTimestamp: null,
+      endTimestamp: Date.now() + 1000 * 60 * 60 * 24 * 365, // 1 year
     };
   }
   try {
