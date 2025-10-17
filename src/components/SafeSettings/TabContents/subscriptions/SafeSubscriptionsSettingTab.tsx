@@ -1,6 +1,7 @@
 import { Badge, Box, Button, Flex, Grid, Icon, Text, Tabs, TabList, Tab } from '@chakra-ui/react';
 import { Check } from '@phosphor-icons/react';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Address } from 'viem';
 import {
   ANNUAL_DISCOUNT_PERCENTAGE,
@@ -28,8 +29,7 @@ function BadgeChip({ children, bg, color }: BadgeChipProps) {
       borderRadius="0.5rem"
       px={1.5}
       py={0.5}
-      fontSize="xs"
-      fontWeight="medium"
+      textStyle="text-xs-medium"
       h="20px"
       minH="20px"
       display="flex"
@@ -71,15 +71,15 @@ function FeatureItem({ children }: FeatureItemProps) {
 const getFeatureListTitle = (tier: SubscriptionTier): string => {
   switch (tier) {
     case SubscriptionTier.Free:
-      return "What's included:";
+      return 'features.whatsIncluded';
     case SubscriptionTier.Pro:
-      return 'Everything in Free, plus:';
+      return 'features.everythingInFree';
     case SubscriptionTier.Advanced:
-      return 'Everything in Pro, plus:';
+      return 'features.everythingInPro';
     case SubscriptionTier.Enterprise:
-      return 'Everything included, plus:';
+      return 'features.everythingIncluded';
     default:
-      return "What's included:";
+      return 'features.whatsIncluded';
   }
 };
 
@@ -96,6 +96,7 @@ interface SubscriptionBannerProps {
 }
 
 function SubscriptionBanner({ tier, endDate, isLoading }: SubscriptionBannerProps) {
+  const { t } = useTranslation('subscriptions');
   const pricing = SUBSCRIPTION_PRICING[tier];
 
   if (isLoading) {
@@ -142,16 +143,14 @@ function SubscriptionBanner({ tier, endDate, isLoading }: SubscriptionBannerProp
               bg="color-lilac-100"
               color="color-lilac-700"
             >
-              Active
+              {t('badges.active')}
             </BadgeChip>
           </Flex>
           <Text
             textStyle="text-sm-regular"
             color="color-neutral-300"
           >
-            {tier === SubscriptionTier.Free
-              ? 'For small teams getting their operations setup onchain.'
-              : 'For small teams starting to scale up their tokenized operations'}
+            {tier === SubscriptionTier.Free ? t('descriptions.free') : t('descriptions.paid')}
           </Text>
         </Flex>
         {tier === SubscriptionTier.Free ? (
@@ -163,7 +162,7 @@ function SubscriptionBanner({ tier, endDate, isLoading }: SubscriptionBannerProp
               console.log('Upgrade to Pro clicked');
             }}
           >
-            Upgrade to Pro
+            {t('buttons.upgradeToPro')}
           </Button>
         ) : (
           <Flex
@@ -175,7 +174,7 @@ function SubscriptionBanner({ tier, endDate, isLoading }: SubscriptionBannerProp
               textStyle="text-xs-medium"
               color="color-neutral-300"
             >
-              Next renewal
+              {t('labels.nextRenewal')}
             </Text>
             <Text
               textStyle="text-sm-regular"
@@ -202,6 +201,7 @@ interface PricingCardProps {
 }
 
 function PricingCard({ tier, isCurrentPlan, isAnnual }: PricingCardProps) {
+  const { t } = useTranslation('subscriptions');
   const pricing = SUBSCRIPTION_PRICING[tier];
   const displayPrice = isAnnual ? pricing.annualPrice : pricing.monthlyPrice;
   const originalPrice = pricing.monthlyPrice;
@@ -242,7 +242,7 @@ function PricingCard({ tier, isCurrentPlan, isAnnual }: PricingCardProps) {
                 bg="color-lilac-100"
                 color="color-lilac-700"
               >
-                Popular
+                {t('badges.popular')}
               </BadgeChip>
             )}
           </Flex>
@@ -278,14 +278,14 @@ function PricingCard({ tier, isCurrentPlan, isAnnual }: PricingCardProps) {
                   textStyle="text-3xl-semibold"
                   color="color-white"
                 >
-                  {pricing.name === 'Enterprise' ? 'Custom' : `$${displayPrice}`}
+                  {pricing.name === 'Enterprise' ? t('pricing.custom') : `$${displayPrice}`}
                 </Text>
                 {pricing.name !== 'Enterprise' && (
                   <Text
                     textStyle="text-sm-regular"
                     color="color-neutral-300"
                   >
-                    / month
+                    {t('pricing.perMonth')}
                   </Text>
                 )}
               </Flex>
@@ -299,7 +299,7 @@ function PricingCard({ tier, isCurrentPlan, isAnnual }: PricingCardProps) {
               isDisabled={isCurrentPlan}
               onClick={() => handleContactSales(pricing.name)}
             >
-              {isCurrentPlan ? 'Current Plan' : pricing.ctaText}
+              {isCurrentPlan ? t('buttons.currentPlan') : t('buttons.contactSales')}
             </Button>
           </Flex>
         </Flex>
@@ -315,7 +315,7 @@ function PricingCard({ tier, isCurrentPlan, isAnnual }: PricingCardProps) {
             textStyle="text-sm-medium"
             color="color-white"
           >
-            {getFeatureListTitle(tier)}
+            {t(getFeatureListTitle(tier))}
           </Text>
           <Flex
             flexDirection="column"
@@ -332,6 +332,7 @@ function PricingCard({ tier, isCurrentPlan, isAnnual }: PricingCardProps) {
 }
 
 export function SafeSubscriptionsSettingTab() {
+  const { t } = useTranslation('subscriptions');
   const { safeAddress } = useCurrentDAOKey();
   const { chain } = useNetworkConfigStore();
   const { tier, isActive, endDate, isLoading } = useSubscription(
@@ -377,7 +378,7 @@ export function SafeSubscriptionsSettingTab() {
               textStyle="text-lg-medium"
               color="color-white"
             >
-              All Plans
+              {t('labels.allPlans')}
             </Text>
 
             {/* Monthly/Annual Toggle */}
@@ -387,19 +388,19 @@ export function SafeSubscriptionsSettingTab() {
               onChange={index => setIsAnnual(index === 1)}
             >
               <TabList>
-                <Tab>Monthly</Tab>
+                <Tab>{t('labels.monthly')}</Tab>
                 <Tab>
                   <Flex
                     alignItems="center"
                     gap={2}
                     h="100%"
                   >
-                    Annual
+                    {t('labels.annual')}
                     <BadgeChip
                       bg="color-lilac-400"
                       color="color-white"
                     >
-                      Save {ANNUAL_DISCOUNT_PERCENTAGE}%
+                      {t('badges.savePercentage', { percentage: ANNUAL_DISCOUNT_PERCENTAGE })}
                     </BadgeChip>
                   </Flex>
                 </Tab>

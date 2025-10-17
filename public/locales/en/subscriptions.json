@@ -1,4 +1,34 @@
 {
+  "badges": {
+    "active": "Active",
+    "popular": "Popular",
+    "savePercentage": "Save {{percentage}}%"
+  },
+  "descriptions": {
+    "free": "For small teams getting their operations setup onchain.",
+    "paid": "For small teams starting to scale up their tokenized operations"
+  },
+  "buttons": {
+    "upgradeToPro": "Upgrade to Pro",
+    "currentPlan": "Current Plan",
+    "contactSales": "Contact Sales"
+  },
+  "labels": {
+    "nextRenewal": "Next renewal",
+    "allPlans": "All Plans",
+    "monthly": "Monthly",
+    "annual": "Annual"
+  },
+  "features": {
+    "whatsIncluded": "What's included:",
+    "everythingInFree": "Everything in Free, plus:",
+    "everythingInPro": "Everything in Pro, plus:",
+    "everythingIncluded": "Everything included, plus:"
+  },
+  "pricing": {
+    "custom": "Custom",
+    "perMonth": "/ month"
+  },
   "featureAirdropTitle": "Unlock Airdrop",
   "featureAirdropDescription": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
   "featureDappExplorerTitle": "Unlock DApp Explorer",
