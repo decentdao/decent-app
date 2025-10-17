@@ -9,6 +9,7 @@ import {
   RocketLaunch,
   Percent,
   PiggyBank,
+  CreditCard,
 } from '@phosphor-icons/react';
 import { useFormikContext } from 'formik';
 import { PropsWithChildren, ReactNode, useState } from 'react';
@@ -27,6 +28,7 @@ import { SafeGovernanceSettingTab } from './TabContents/governance/SafeGovernanc
 import { SafeModulesSettingTab } from './TabContents/modules-and-guard/SafeModulesSettingTab';
 import { SafePermissionsSettingTab } from './TabContents/permissions/SafePermissionsSettingTab';
 import { SafeStakingSettingTab } from './TabContents/staking/SafeStakingSettingTab';
+import { SafeSubscriptionsSettingTab } from './TabContents/subscriptions/SafeSubscriptionsSettingTab';
 import { SafeTokenSettingTab } from './TabContents/token/SafeTokenSettingTab';
 
 export const settingsNavigationItems = [
@@ -37,6 +39,7 @@ export const settingsNavigationItems = [
   'token',
   'revenueSharing',
   'staking',
+  'subscriptions',
 ] as const;
 
 export type SettingsNavigationItem = (typeof settingsNavigationItems)[number];
@@ -133,6 +136,8 @@ export function SettingsNavigation({
 
   const isTokenDeploymentEnabled = useFeatureFlag('flag_token_deployment');
   const isRevShareEnabled = useFeatureFlag('flag_revenue_sharing');
+  const isSubscriptionsEnabled = useFeatureFlag('flag_subscriptions');
+  console.log('🚀 ~ isSubscriptionsEnabled:', isSubscriptionsEnabled);
 
   const [currentItem, setCurrentItem] =
     useState<(typeof settingsNavigationItems)[number]>(initialTab);
@@ -284,6 +289,20 @@ export function SettingsNavigation({
                 setCurrentItem('staking');
               }}
               hasEdits={isNonEmpty(values.staking)}
+            />
+          )}
+          {isSubscriptionsEnabled && (
+            <SettingsNavigationItemComponent
+              title={t('daoSettingsSubscriptions')}
+              leftIcon={<CreditCard fontSize="1.5rem" />}
+              item="subscriptions"
+              currentItem={currentItem}
+              showDivider={false}
+              testId="settings-nav-subscriptions"
+              onClick={() => {
+                onSettingsNavigationClick(<SafeSubscriptionsSettingTab />);
+                setCurrentItem('subscriptions');
+              }}
             />
           )}
         </>
