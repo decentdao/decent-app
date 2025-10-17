@@ -48,6 +48,8 @@
   "months": "月数",
   "weeks": "周数",
   "addPayment": "添加付款",
+  "newRolePaymentsDisabledTitle": "暂时禁用",
+  "newRolePaymentsDisabledSubtitle": "暂时禁用向新角色添加付款。您仍然可以为现有角色添加付款功能。",
   "addPaymentStreamSubTitle": "定义付款时间表，在特定时间后解锁预定金额的资产。",
   "cancelable": "可取消",
   "cancelableSubTitle": "如果启用，以后可以取消该付款流。",

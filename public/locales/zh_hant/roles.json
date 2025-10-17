@@ -48,6 +48,8 @@
   "months": "月數",
   "weeks": "週數",
   "addPayment": "新增付款",
+  "newRolePaymentsDisabledTitle": "暫時停用",
+  "newRolePaymentsDisabledSubtitle": "新增付款至新角色的功能暫時停用。您仍可為現有角色新增付款。",
   "addPaymentStreamSubTitle": "定義付款時間表，在特定時間後解鎖資產的預定金額。",
   "cancelable": "可取消",
   "cancelableSubTitle": "如果啟用，則可在稍後取消此付款串流。",
