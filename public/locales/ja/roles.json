@@ -48,6 +48,8 @@
   "months": "ヶ月",
   "weeks": "週間",
   "addPayment": "支払いの追加",
+  "newRolePaymentsDisabledTitle": "一時的に使用不可",
+  "newRolePaymentsDisabledSubtitle": "新しいロールに支払いを追加することは一時的にできません。既存のロールに支払いを追加することはできます。",
   "addPaymentStreamSubTitle": "支払いスケジュールを定義し、特定の時間経過後にあらかじめ定義された金額の資産のロックを解除します。",
   "cancelable": "キャンセル可能",
   "cancelableSubTitle": "有効になっている場合、この支払いの流れは後でキャンセルすることができる。",

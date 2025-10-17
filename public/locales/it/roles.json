@@ -48,6 +48,8 @@
   "months": "Mesi",
   "weeks": "Settimane",
   "addPayment": "Aggiungi pagamento",
+  "newRolePaymentsDisabledTitle": "Temporaneamente disabilitato",
+  "newRolePaymentsDisabledSubtitle": "L'aggiunta di pagamenti a nuovi ruoli è temporaneamente disattivata. È ancora possibile aggiungere pagamenti ai ruoli esistenti.",
   "addPaymentStreamSubTitle": "Definire un piano di pagamento per sbloccare un importo predefinito di un'attività dopo un periodo di tempo specifico.",
   "cancelable": "Annullabile",
   "cancelableSubTitle": "Se abilitato, questo flusso di pagamento può essere annullato in un secondo momento.",

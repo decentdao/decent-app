@@ -48,6 +48,8 @@
   "months": "Meses",
   "weeks": "Semanas",
   "addPayment": "Añadir pago",
+  "newRolePaymentsDisabledTitle": "Desactivado temporalmente",
+  "newRolePaymentsDisabledSubtitle": "La adición de pagos a nuevos roles está temporalmente desactivada. Aún puede añadir pagos a funciones existentes.",
   "addPaymentStreamSubTitle": "Defina un calendario de pagos para desbloquear una cantidad predefinida de un activo después de un tiempo específico.",
   "cancelable": "Cancelable",
   "cancelableSubTitle": "Si se activa, este flujo de pagos puede cancelarse posteriormente.",
