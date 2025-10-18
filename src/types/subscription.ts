@@ -1,14 +1,14 @@
 export enum SubscriptionTier {
   Free = 'free',
   Pro = 'pro',
-  Ultimate = 'ultimate',
+  Advanced = 'advanced',
   Enterprise = 'enterprise',
 }
 
 export const TIER_HIERARCHY: Record<SubscriptionTier, number> = {
   [SubscriptionTier.Free]: 0,
   [SubscriptionTier.Pro]: 1,
-  [SubscriptionTier.Ultimate]: 2,
+  [SubscriptionTier.Advanced]: 2,
   [SubscriptionTier.Enterprise]: 3,
 } as const;
 

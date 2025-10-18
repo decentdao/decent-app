@@ -27,6 +27,7 @@ import { SafeGovernanceSettingTab } from '../../SafeSettings/TabContents/governa
 import { SafeModulesSettingTab } from '../../SafeSettings/TabContents/modules-and-guard/SafeModulesSettingTab';
 import { SafePermissionsSettingTab } from '../../SafeSettings/TabContents/permissions/SafePermissionsSettingTab';
 import { SafeStakingSettingTab } from '../../SafeSettings/TabContents/staking/SafeStakingSettingTab';
+import { SafeSubscriptionsSettingTab } from '../../SafeSettings/TabContents/subscriptions/SafeSubscriptionsSettingTab';
 import { SafeTokenSettingTab } from '../../SafeSettings/TabContents/token/SafeTokenSettingTab';
 import {
   handleEditPaymaster,
@@ -124,6 +125,8 @@ const getTabComponent = (tab: SettingsNavigationItem): JSX.Element => {
       return <RevenueSharingSettingsContent />;
     case 'staking':
       return <SafeStakingSettingTab />;
+    case 'subscriptions':
+      return <SafeSubscriptionsSettingTab />;
     default:
       return <SafeGeneralSettingTab />;
   }
