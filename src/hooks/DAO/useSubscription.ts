@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useBetween } from 'use-between';
 import { Address } from 'viem';
+import useFeatureFlag from '../../helpers/environmentFeatureFlags';
 import { getSubscriptionStatus } from '../../providers/App/decentAPI';
 import {
   SubscriptionStatus,
@@ -20,28 +21,31 @@ type SubscriptionCache = Record<
 
 const useSharedSubscriptionState = () => {
   const [subscriptionCache, setSubscriptionCache] = useState<SubscriptionCache>({});
+  const isFeatureFlagEnabled = useFeatureFlag('flag_subscriptions');
+  const fetchSubscription = useCallback(
+    async (daoAddress: Address, chainId: number) => {
+      const cacheKey = `${chainId}-${daoAddress}`;
 
-  const fetchSubscription = useCallback(async (daoAddress: Address, chainId: number) => {
-    const cacheKey = `${chainId}-${daoAddress}`;
-
-    setSubscriptionCache(prev => ({
-      ...prev,
-      [cacheKey]: { ...prev[cacheKey], isLoading: true, error: null },
-    }));
-
-    try {
-      const data = await getSubscriptionStatus(chainId, daoAddress);
       setSubscriptionCache(prev => ({
         ...prev,
-        [cacheKey]: { data, isLoading: false, error: null },
+        [cacheKey]: { ...prev[cacheKey], isLoading: true, error: null },
       }));
-    } catch (e) {
-      setSubscriptionCache(prev => ({
-        ...prev,
-        [cacheKey]: { data: null, isLoading: false, error: e as Error },
-      }));
-    }
-  }, []);
+
+      try {
+        const data = await getSubscriptionStatus(chainId, daoAddress, isFeatureFlagEnabled);
+        setSubscriptionCache(prev => ({
+          ...prev,
+          [cacheKey]: { data, isLoading: false, error: null },
+        }));
+      } catch (e) {
+        setSubscriptionCache(prev => ({
+          ...prev,
+          [cacheKey]: { data: null, isLoading: false, error: e as Error },
+        }));
+      }
+    },
+    [isFeatureFlagEnabled],
+  );
 
   return { subscriptionCache, fetchSubscription };
 };

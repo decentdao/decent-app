@@ -1,4 +1,67 @@
 {
+  "badges": {
+    "active": "Active",
+    "popular": "Popular",
+    "savePercentage": "Save {{percentage}}%"
+  },
+  "descriptions": {
+    "free": "For small teams getting their operations setup onchain.",
+    "paid": "For small teams starting to scale up their tokenized operations"
+  },
+  "buttons": {
+    "upgradeToPro": "Upgrade to Pro",
+    "currentPlan": "Current Plan",
+    "contactSales": "Contact Sales"
+  },
+  "labels": {
+    "nextRenewal": "Next renewal",
+    "allPlans": "All Plans",
+    "monthly": "Monthly",
+    "annual": "Annual"
+  },
+  "tiers": {
+    "free": "Free",
+    "pro": "Pro",
+    "advanced": "Advanced",
+    "enterprise": "Enterprise"
+  },
+  "features": {
+    "whatsIncluded": "What's included:",
+    "everythingInFree": "Everything in Free, plus:",
+    "everythingInPro": "Everything in Pro, plus:",
+    "everythingIncluded": "Everything included, plus:",
+    "free": {
+      "tokenDeployments": "Token, NFT, Multsig deployments",
+      "tokenImports": "Token imports",
+      "basicTransfers": "Basic transfers",
+      "customTemplates": "Custom proposal templates"
+    },
+    "pro": {
+      "subDAOs": "SubDAOs",
+      "rolesPermissions": "Roles & Permissions",
+      "elections": "Elections",
+      "payroll": "Payroll",
+      "defiIntegrations": "DeFi integrations",
+      "tokenSales": "Token Sales"
+    },
+    "advanced": {
+      "additionalTokens": "Additional tokens",
+      "gaslessVoting": "Gasless voting",
+      "airdrops": "Airdrops",
+      "staking": "Staking",
+      "revenueShare": "Revenue Share"
+    },
+    "enterprise": {
+      "whitelabelSolution": "Whitelabel solution",
+      "customDAODesign": "Custom DAO design",
+      "customFeatures": "Custom features",
+      "dedicatedSupport": "Dedicated support"
+    }
+  },
+  "pricing": {
+    "custom": "Custom",
+    "perMonth": "/ month"
+  },
   "featureAirdropTitle": "Unlock Airdrop",
   "featureAirdropDescription": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
   "featureDappExplorerTitle": "Unlock DApp Explorer",
