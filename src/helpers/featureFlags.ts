@@ -10,6 +10,11 @@ export const FEATURE_FLAGS = [
   'flag_token_sale',
   'flag_api',
   'flag_subscriptions',
+  // TODO: Remove these temporary subscription tier flags after feature deployment
+  'flag_subscriptions_tier_free',
+  'flag_subscriptions_tier_pro',
+  'flag_subscriptions_tier_advanced',
+  'flag_subscriptions_tier_enterprise',
 ] as const;
 
 export type FeatureFlagKeys = typeof FEATURE_FLAGS;
