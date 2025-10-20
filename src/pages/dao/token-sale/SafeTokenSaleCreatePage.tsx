@@ -149,7 +149,6 @@ export function SafeTokenSaleCreatePage() {
   };
 
   const handleSubmit = (values: TokenSaleFormValues) => {
-    console.log('Form submitted:', values);
     if (!safe?.address) {
       throw new Error('Safe address is not set');
     }
@@ -300,9 +299,6 @@ export function SafeTokenSaleCreatePage() {
           },
         ],
       });
-
-      console.log('Token Sale Deployment Transactions:', txs);
-      console.log('Predicted Token Sale Address:', predictedTokenSaleAddress);
 
       // Add token sale deployment action to proposal actions store
       resetActions();

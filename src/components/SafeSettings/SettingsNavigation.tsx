@@ -137,7 +137,6 @@ export function SettingsNavigation({
   const isTokenDeploymentEnabled = useFeatureFlag('flag_token_deployment');
   const isRevShareEnabled = useFeatureFlag('flag_revenue_sharing');
   const isSubscriptionsEnabled = useFeatureFlag('flag_subscriptions');
-  console.log('🚀 ~ isSubscriptionsEnabled:', isSubscriptionsEnabled);
 
   const [currentItem, setCurrentItem] =
     useState<(typeof settingsNavigationItems)[number]>(initialTab);
