@@ -13,7 +13,6 @@ import { InfoBoxLoader } from '../../../components/ui/loaders/InfoBoxLoader';
 import { ModalType } from '../../../components/ui/modals/ModalProvider';
 import { useDecentModal } from '../../../components/ui/modals/useDecentModal';
 import PageHeader from '../../../components/ui/page/Header/PageHeader';
-import Divider from '../../../components/ui/utils/Divider';
 import { DAO_ROUTES } from '../../../constants/routes';
 import useFeatureFlag from '../../../helpers/environmentFeatureFlags';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
@@ -227,6 +226,7 @@ export function SafeProposalTemplatesPage() {
         flexDirection={proposalTemplates && proposalTemplates.length > 0 ? 'row' : 'column'}
         flexWrap="wrap"
         gap="1rem"
+        mb="1rem"
       >
         {!proposalTemplates ? (
           <Box>
@@ -254,19 +254,15 @@ export function SafeProposalTemplatesPage() {
           />
         )}
       </Flex>
-      <Divider
-        variant="light"
-        my="2rem"
-      />
+
       <Text
         textStyle="text-3xl-regular"
         color="color-white"
-        mb="1rem"
       >
         {tProposalTemplate('defaultTemplates')}
       </Text>
       <Grid
-        templateColumns="repeat(4, 1fr)"
+        templateColumns="repeat(3, 1fr)"
         columnGap="1rem"
       >
         {EXAMPLE_TEMPLATES.map((exampleTemplate, i) => (
