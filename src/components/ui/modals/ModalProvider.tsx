@@ -199,9 +199,10 @@ const getModalData = (args: {
   current: ModalTypeWithProps;
   popModal: () => void;
   closeAll: () => void;
+  pushModal: (modal: ModalTypeWithProps) => void;
   t: (key: string) => string;
 }): ModalData => {
-  const { current, popModal, closeAll, t } = args;
+  const { current, popModal, closeAll, pushModal, t } = args;
 
   let modalSize: ModalBaseSize = 'lg';
   let modalTitle: string | undefined;
@@ -486,7 +487,13 @@ const getModalData = (args: {
         <FeatureGatedModal
           featureType={FeatureGatedType.AIRDROP}
           onGoBack={popModal}
-          onUpgrade={popModal}
+          onUpgrade={() => {
+            popModal();
+            pushModal({
+              type: ModalType.SAFE_SETTINGS,
+              props: { initialTab: 'subscriptions' },
+            });
+          }}
         />
       );
       break;
@@ -499,7 +506,13 @@ const getModalData = (args: {
         <FeatureGatedModal
           featureType={FeatureGatedType.DAPP_EXPLORER}
           onGoBack={popModal}
-          onUpgrade={popModal}
+          onUpgrade={() => {
+            popModal();
+            pushModal({
+              type: ModalType.SAFE_SETTINGS,
+              props: { initialTab: 'subscriptions' },
+            });
+          }}
         />
       );
       break;
@@ -512,7 +525,13 @@ const getModalData = (args: {
         <FeatureGatedModal
           featureType={FeatureGatedType.HIERARCHY}
           onGoBack={popModal}
-          onUpgrade={popModal}
+          onUpgrade={() => {
+            popModal();
+            pushModal({
+              type: ModalType.SAFE_SETTINGS,
+              props: { initialTab: 'subscriptions' },
+            });
+          }}
         />
       );
       break;
@@ -525,7 +544,13 @@ const getModalData = (args: {
         <FeatureGatedModal
           featureType={FeatureGatedType.ROLES}
           onGoBack={popModal}
-          onUpgrade={popModal}
+          onUpgrade={() => {
+            popModal();
+            pushModal({
+              type: ModalType.SAFE_SETTINGS,
+              props: { initialTab: 'subscriptions' },
+            });
+          }}
         />
       );
       break;
@@ -538,7 +563,13 @@ const getModalData = (args: {
         <FeatureGatedModal
           featureType={FeatureGatedType.STAKING}
           onGoBack={popModal}
-          onUpgrade={popModal}
+          onUpgrade={() => {
+            popModal();
+            pushModal({
+              type: ModalType.SAFE_SETTINGS,
+              props: { initialTab: 'subscriptions' },
+            });
+          }}
         />
       );
       break;
@@ -551,7 +582,13 @@ const getModalData = (args: {
         <FeatureGatedModal
           featureType={FeatureGatedType.STREAMS}
           onGoBack={popModal}
-          onUpgrade={popModal}
+          onUpgrade={() => {
+            popModal();
+            pushModal({
+              type: ModalType.SAFE_SETTINGS,
+              props: { initialTab: 'subscriptions' },
+            });
+          }}
         />
       );
       break;
@@ -564,7 +601,13 @@ const getModalData = (args: {
         <FeatureGatedModal
           featureType={FeatureGatedType.TOKEN_SALES}
           onGoBack={popModal}
-          onUpgrade={popModal}
+          onUpgrade={() => {
+            popModal();
+            pushModal({
+              type: ModalType.SAFE_SETTINGS,
+              props: { initialTab: 'subscriptions' },
+            });
+          }}
         />
       );
       break;
@@ -731,6 +774,7 @@ export function ModalProvider({
       current: modal,
       popModal,
       closeAll: closeAllModals,
+      pushModal,
       t,
     });
     return (
