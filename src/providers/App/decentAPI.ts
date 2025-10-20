@@ -4,7 +4,7 @@ import axios, { AxiosResponse } from 'axios';
 import { Address, Hex } from 'viem';
 import { logError } from '../../helpers/errorLogging';
 import { RevenueSharingWallet } from '../../types/revShare';
-import { SubscriptionData, SubscriptionTier } from '../../types/subscription';
+import { SubscriptionData } from '../../types/subscription';
 
 const DECENT_API_URL = import.meta.env.VITE_APP_DECENT_API_URL;
 
@@ -286,17 +286,7 @@ export async function getTokenSaleVerification(
 export async function getSubscriptionStatus(
   chainId: number,
   daoAddress: Address,
-  isFeatureFlagEnabled: boolean,
 ): Promise<SubscriptionData | null> {
-  // todo remove when API work is complete
-  if (!isFeatureFlagEnabled || chainId === 11155111) {
-    // sepolia
-    return {
-      tier: SubscriptionTier.Advanced,
-      startTimestamp: null,
-      endTimestamp: Date.now() + 1000 * 60 * 60 * 24 * 365, // 1 year
-    };
-  }
   try {
     const response: AxiosResponse<{
       success: boolean;
