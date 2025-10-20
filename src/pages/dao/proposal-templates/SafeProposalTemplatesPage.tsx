@@ -15,8 +15,10 @@ import { useDecentModal } from '../../../components/ui/modals/useDecentModal';
 import PageHeader from '../../../components/ui/page/Header/PageHeader';
 import Divider from '../../../components/ui/utils/Divider';
 import { DAO_ROUTES } from '../../../constants/routes';
+import useFeatureFlag from '../../../helpers/environmentFeatureFlags';
 import { useCurrentDAOKey } from '../../../hooks/DAO/useCurrentDAOKey';
 import useSendAssetsActionModal from '../../../hooks/DAO/useSendAssetsActionModal';
+import { useSubscription } from '../../../hooks/DAO/useSubscription';
 import { useCanUserCreateProposal } from '../../../hooks/utils/useCanUserSubmitProposal';
 import { analyticsEvents } from '../../../insights/analyticsEvents';
 import { useDAOStore } from '../../../providers/App/AppProvider';
@@ -24,6 +26,7 @@ import { useNetworkConfigStore } from '../../../providers/NetworkConfig/useNetwo
 import { useProposalActionsStore } from '../../../store/actions/useProposalActionsStore';
 import { AirdropData } from '../../../types';
 import { ProposalActionType } from '../../../types/proposalBuilder';
+import { SubscriptionTier } from '../../../types/subscription';
 
 export function SafeProposalTemplatesPage() {
   useEffect(() => {
@@ -46,7 +49,10 @@ export function SafeProposalTemplatesPage() {
   const {
     addressPrefix,
     contracts: { disperse },
+    chain,
   } = useNetworkConfigStore();
+  const { hasTier } = useSubscription(safe?.address || '0x0', chain.id);
+  const isSubscriptionsEnabled = useFeatureFlag('flag_subscriptions');
   const navigate = useNavigate();
   const { addAction, resetActions, setProposalMetadata } = useProposalActionsStore();
 
@@ -113,8 +119,15 @@ export function SafeProposalTemplatesPage() {
     submitButtonText: tModals('submitProposal'),
   });
 
+  const { open: openFeatureGatedStreamsModal } = useDecentModal(ModalType.FEATURE_GATED_STREAMS);
+  const { open: openFeatureGatedAirdropModal } = useDecentModal(ModalType.FEATURE_GATED_AIRDROP);
+
   const EXAMPLE_TEMPLATES = useMemo(() => {
     if (!safeAddress) return [];
+
+    // Check if user has required tiers for each feature
+    const hasProTier = isSubscriptionsEnabled ? hasTier(SubscriptionTier.Pro) : true;
+    const hasAdvancedTier = isSubscriptionsEnabled ? hasTier(SubscriptionTier.Advanced) : true;
 
     return [
       {
@@ -123,6 +136,8 @@ export function SafeProposalTemplatesPage() {
         description: tProposalTemplate('templateAirdropDescription'),
         onProposalTemplateClick: openAirdropModal,
         testId: 'templateAirdrop',
+        showUpgradeBadge: isSubscriptionsEnabled && !hasAdvancedTier,
+        onUpgradeBadgeClick: openFeatureGatedAirdropModal,
       },
       {
         icon: HourglassMedium,
@@ -136,6 +151,8 @@ export function SafeProposalTemplatesPage() {
           }
         },
         testId: 'templateSablier',
+        showUpgradeBadge: isSubscriptionsEnabled && !hasProTier,
+        onUpgradeBadgeClick: openFeatureGatedStreamsModal,
       },
       {
         icon: ArrowsDownUp,
@@ -154,6 +171,10 @@ export function SafeProposalTemplatesPage() {
     hasAvailableAssetsForSablierStream,
     navigate,
     addressPrefix,
+    isSubscriptionsEnabled,
+    hasTier,
+    openFeatureGatedAirdropModal,
+    openFeatureGatedStreamsModal,
   ]);
 
   const { open: openTransactionBuilderModal } = useDecentModal(ModalType.TRANSACTION_BUILDER, {
@@ -256,6 +277,8 @@ export function SafeProposalTemplatesPage() {
             description={exampleTemplate.description}
             onProposalTemplateClick={exampleTemplate.onProposalTemplateClick}
             testId={exampleTemplate.testId}
+            showUpgradeBadge={exampleTemplate.showUpgradeBadge}
+            onUpgradeBadgeClick={exampleTemplate.onUpgradeBadgeClick}
           />
         ))}
       </Grid>
