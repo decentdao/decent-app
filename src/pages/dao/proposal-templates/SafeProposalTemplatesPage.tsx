@@ -130,13 +130,11 @@ export function SafeProposalTemplatesPage() {
 
     return [
       {
-        icon: Parachute,
-        title: tProposalTemplate('templateAirdropTitle'),
-        description: tProposalTemplate('templateAirdropDescription'),
-        onProposalTemplateClick: openAirdropModal,
-        testId: 'templateAirdrop',
-        showUpgradeBadge: isSubscriptionsEnabled && !hasAdvancedTier,
-        onUpgradeBadgeClick: openFeatureGatedAirdropModal,
+        icon: ArrowsDownUp,
+        title: tProposalTemplate('templateTransferTitle'),
+        description: tProposalTemplate('templateTransferDescription'),
+        onProposalTemplateClick: openSendAssetsModal,
+        testId: 'templateTransfer',
       },
       {
         icon: HourglassMedium,
@@ -154,11 +152,13 @@ export function SafeProposalTemplatesPage() {
         onUpgradeBadgeClick: openFeatureGatedStreamsModal,
       },
       {
-        icon: ArrowsDownUp,
-        title: tProposalTemplate('templateTransferTitle'),
-        description: tProposalTemplate('templateTransferDescription'),
-        onProposalTemplateClick: openSendAssetsModal,
-        testId: 'templateTransfer',
+        icon: Parachute,
+        title: tProposalTemplate('templateAirdropTitle'),
+        description: tProposalTemplate('templateAirdropDescription'),
+        onProposalTemplateClick: openAirdropModal,
+        testId: 'templateAirdrop',
+        showUpgradeBadge: isSubscriptionsEnabled && !hasAdvancedTier,
+        onUpgradeBadgeClick: openFeatureGatedAirdropModal,
       },
     ];
   }, [
