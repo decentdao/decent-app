@@ -16,10 +16,10 @@ import useFeatureFlag from '../../../../helpers/environmentFeatureFlags';
 import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
 import { useSubscription } from '../../../../hooks/DAO/useSubscription';
 import { LanguageSwitcher } from '../../../../i18n/LanguageSwitcher';
-import { useDecentModal } from '../../modals/useDecentModal';
-import { ModalType } from '../../modals/ModalProvider';
 import { useNetworkConfigStore } from '../../../../providers/NetworkConfig/useNetworkConfigStore';
 import { SubscriptionTier } from '../../../../types/subscription';
+import { ModalType } from '../../modals/ModalProvider';
+import { useDecentModal } from '../../modals/useDecentModal';
 import Divider from '../../utils/Divider';
 import { NavigationLink } from './NavigationLink';
 
