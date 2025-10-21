@@ -1,6 +1,7 @@
 import { legacy } from '@decentdao/decent-contracts';
 import { useCallback, useEffect, useState } from 'react';
-import { Address, getContract } from 'viem';
+import { Address, getContract, isAddress, getAddress } from 'viem';
+import { normalize } from 'viem/ens';
 import { useAccount } from 'wagmi';
 import { useDAOStore } from '../../providers/App/AppProvider';
 import { useSafeAPI } from '../../providers/App/hooks/useSafeAPI';
@@ -8,6 +9,7 @@ import { GovernanceType } from '../../types';
 import { isDemoMode } from '../../utils/demoMode';
 import { getChainIdFromPrefix } from '../../utils/url';
 import { useCurrentDAOKey } from '../DAO/useCurrentDAOKey';
+import { useNetworkEnsAddressAsync } from '../useNetworkEnsAddress';
 import useNetworkPublicClient from '../useNetworkPublicClient';
 import useVotingStrategiesAddresses from './useVotingStrategiesAddresses';
 
@@ -27,8 +29,38 @@ export function useCanUserCreateProposal() {
   const safeAPI = useSafeAPI();
   const [canUserCreateProposal, setCanUserCreateProposal] = useState<boolean>();
   const publicClient = useNetworkPublicClient();
+  const { getEnsAddress } = useNetworkEnsAddressAsync();
 
   const { getVotingStrategies } = useVotingStrategiesAddresses();
+
+  /**
+   * Resolves a value that could be an ENS name or address to a checksummed address
+   * @param value - ENS name or address string
+   * @returns Checksummed address or undefined if resolution fails
+   */
+  const resolveToAddress = useCallback(
+    async (value?: string): Promise<Address | undefined> => {
+      if (!value) {
+        return undefined;
+      }
+
+      // If it's already a valid address, return checksummed version
+      if (isAddress(value)) {
+        return getAddress(value);
+      }
+
+      // Try to resolve as ENS name
+      try {
+        const normalizedName = normalize(value);
+        const resolvedAddress = await getEnsAddress({ name: normalizedName });
+        return resolvedAddress || undefined;
+      } catch {
+        // If normalization or resolution fails, return undefined
+        return undefined;
+      }
+    },
+    [getEnsAddress],
+  );
 
   /**
    * Performs a check whether user has access rights to create proposal for DAO
@@ -42,8 +74,22 @@ export function useCanUserCreateProposal() {
         return;
       }
 
-      const checkIsMultisigOwner = (owners?: string[]) => {
-        return !!owners?.includes(user.address || '');
+      // Resolve user address to handle ENS names
+      const resolvedUserAddress = await resolveToAddress(user.address);
+      if (!resolvedUserAddress) {
+        return false;
+      }
+
+      const checkIsMultisigOwner = async (owners?: string[]) => {
+        if (!owners) {
+          return false;
+        }
+        // Resolve all owner addresses to handle ENS names
+        const resolvedOwners = await Promise.all(owners.map(owner => resolveToAddress(owner)));
+        // Check if resolved user address matches any resolved owner address
+        return resolvedOwners.some(
+          owner => owner && owner.toLowerCase() === resolvedUserAddress.toLowerCase(),
+        );
       };
 
       if (safeAddressParam) {
@@ -52,13 +98,13 @@ export function useCanUserCreateProposal() {
           let isProposer = false;
           await Promise.all(
             votingStrategies.map(async strategy => {
-              if (!isProposer && user.address) {
+              if (!isProposer) {
                 const votingContract = getContract({
                   abi: legacy.abis.LinearERC20Voting,
                   address: strategy.strategyAddress,
                   client: publicClient,
                 });
-                isProposer = await votingContract.read.isProposer([user.address]);
+                isProposer = await votingContract.read.isProposer([resolvedUserAddress]);
               }
             }),
           );
@@ -82,8 +128,14 @@ export function useCanUserCreateProposal() {
             }
           }
           // If the votes token is delegated, check if the user is the delegatee
-          if (votesToken?.delegatee && votesToken.delegatee !== user.address) {
-            return false;
+          if (votesToken?.delegatee) {
+            const resolvedDelegatee = await resolveToAddress(votesToken.delegatee);
+            if (
+              resolvedDelegatee &&
+              resolvedDelegatee.toLowerCase() !== resolvedUserAddress.toLowerCase()
+            ) {
+              return false;
+            }
           }
           const isProposerPerStrategy = await Promise.all(
             votingStrategies.map(async votingStrategyAddress => {
@@ -93,12 +145,10 @@ export function useCanUserCreateProposal() {
                   address: votingStrategyAddress,
                   client: publicClient,
                 });
-                if (user.address) {
-                  return {
-                    isProposer: await votingContract.read.isProposer([user.address]),
-                    votingStrategyAddress,
-                  };
-                }
+                return {
+                  isProposer: await votingContract.read.isProposer([resolvedUserAddress]),
+                  votingStrategyAddress,
+                };
               }
             }),
           );
@@ -115,6 +165,7 @@ export function useCanUserCreateProposal() {
     [
       user.address,
       safeAPI,
+      resolveToAddress,
       getVotingStrategies,
       publicClient,
       isAzorius,
