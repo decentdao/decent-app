@@ -11,7 +11,7 @@ import { normalizeBuyerRequirements } from '../../utils/buyerRequirementsNormali
 export function useKeyValuePairsFetcher() {
   const publicClient = useNetworkPublicClient();
   const {
-    contracts: { keyValuePairs, sablierV2LockupLinear, sablierV2Lockup },
+    contracts: { keyValuePairs, sablierV2Lockup },
   } = useNetworkConfigStore();
   const getHatsTreeId = useCallback(
     ({
