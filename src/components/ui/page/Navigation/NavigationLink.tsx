@@ -10,14 +10,18 @@ function LinkContent({
   t,
   isActive,
   scope,
+  customBgColor,
 }: {
   labelKey: string;
   NavigationIcon: Icon | ComponentWithAs<'svg', IconProps>;
   t: TFunction;
   isActive: boolean;
-  scope: 'internal' | 'external';
+  scope: 'internal' | 'external' | 'action';
+  customBgColor?: string;
 }) {
   const shouldApplyBorder = scope === 'internal' && isActive;
+  const shouldApplyCustomBg = scope === 'action' && customBgColor;
+
   return (
     <Box p="0.25rem">
       <Flex
@@ -25,9 +29,17 @@ function LinkContent({
         px="6px"
         borderRadius={{ md: 4 }}
         transition="all ease-out 300ms"
-        _hover={{ bgColor: 'color-neutral-900' }}
+        _hover={{
+          bgColor: shouldApplyCustomBg ? 'color-primary-500' : 'color-neutral-900',
+        }}
         border={shouldApplyBorder ? `1px solid var(--colors-color-neutral-800)` : 'transparent'}
-        bgColor={shouldApplyBorder ? 'color-neutral-900' : 'transparent'}
+        bgColor={
+          shouldApplyCustomBg
+            ? customBgColor
+            : shouldApplyBorder
+              ? 'color-neutral-900'
+              : 'transparent'
+        }
       >
         <Box w={6}>
           <NavigationIcon
@@ -54,17 +66,22 @@ export function NavigationLink({
   NavigationIcon,
   scope,
   closeDrawer,
+  onClick,
+  customBgColor,
   ...rest
 }: {
-  href: string;
+  href?: string;
   labelKey: string;
   testId: string;
   NavigationIcon: Icon | ComponentWithAs<'svg', IconProps>;
-  scope: 'internal' | 'external';
+  scope: 'internal' | 'external' | 'action';
   closeDrawer?: () => void;
+  onClick?: () => void;
+  customBgColor?: string;
 }) {
   const { t } = useTranslation('navigation');
-  const isActive = useMatch(href.substring(0, href.indexOf('?')));
+  const matchResult = useMatch(href?.substring(0, href.indexOf('?')) || '');
+  const isActive = scope === 'internal' && href ? !!matchResult : false;
 
   const linkContent = (
     <LinkContent
@@ -73,6 +90,7 @@ export function NavigationLink({
       t={t}
       isActive={!!isActive}
       scope={scope}
+      customBgColor={customBgColor}
     />
   );
 
@@ -81,7 +99,7 @@ export function NavigationLink({
       <Link
         data-testid={testId}
         aria-label={t(labelKey)}
-        to={href}
+        to={href!}
         onClick={closeDrawer}
         {...rest}
       >
@@ -95,7 +113,7 @@ export function NavigationLink({
       <a
         data-testid={testId}
         aria-label={t(labelKey)}
-        href={href}
+        href={href!}
         onClick={closeDrawer}
         {...rest}
         target="_blank"
@@ -103,6 +121,23 @@ export function NavigationLink({
       >
         {linkContent}
       </a>
+    );
+  }
+
+  if (scope === 'action') {
+    return (
+      <Box
+        data-testid={testId}
+        aria-label={t(labelKey)}
+        cursor="pointer"
+        onClick={() => {
+          onClick?.();
+          closeDrawer?.();
+        }}
+        {...rest}
+      >
+        {linkContent}
+      </Box>
     );
   }
 

@@ -7,18 +7,34 @@ import {
   HandCoins,
   House,
   Question,
+  SketchLogo,
   UsersThree,
 } from '@phosphor-icons/react';
 import { DAO_ROUTES } from '../../../../constants/routes';
 import { URL_DOCS, URL_FAQ } from '../../../../constants/url';
 import useFeatureFlag from '../../../../helpers/environmentFeatureFlags';
 import { useCurrentDAOKey } from '../../../../hooks/DAO/useCurrentDAOKey';
+import { useSubscription } from '../../../../hooks/DAO/useSubscription';
 import { LanguageSwitcher } from '../../../../i18n/LanguageSwitcher';
 import { useNetworkConfigStore } from '../../../../providers/NetworkConfig/useNetworkConfigStore';
+import { SubscriptionTier } from '../../../../types/subscription';
+import { ModalType } from '../../modals/ModalProvider';
+import { useDecentModal } from '../../modals/useDecentModal';
 import Divider from '../../utils/Divider';
 import { NavigationLink } from './NavigationLink';
 
 function ExternalLinks({ closeDrawer }: { closeDrawer?: () => void }) {
+  const { safeAddress } = useCurrentDAOKey();
+  const { chain } = useNetworkConfigStore();
+  const isSubscriptionsEnabled = useFeatureFlag('flag_subscriptions');
+  const { tier, isLoading } = useSubscription(safeAddress || '0x0', chain.id);
+  const { open: openSettingsModal } = useDecentModal(ModalType.SAFE_SETTINGS, {
+    initialTab: 'subscriptions',
+  });
+
+  const shouldShowUpgrade =
+    isSubscriptionsEnabled && !isLoading && tier === SubscriptionTier.Free && safeAddress;
+
   return (
     <Box
       mb={6}
@@ -33,6 +49,17 @@ function ExternalLinks({ closeDrawer }: { closeDrawer?: () => void }) {
       bg={{ md: 'color-neutral-950' }}
       overflow={{ md: 'hidden' }}
     >
+      {shouldShowUpgrade && (
+        <NavigationLink
+          labelKey="upgrade"
+          testId="navigationExternal-upgrade"
+          NavigationIcon={SketchLogo}
+          scope="action"
+          onClick={openSettingsModal}
+          closeDrawer={closeDrawer}
+          customBgColor="color-primary-400"
+        />
+      )}
       <NavigationLink
         href={URL_FAQ}
         labelKey="faq"

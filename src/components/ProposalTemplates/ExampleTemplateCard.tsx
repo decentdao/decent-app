@@ -1,4 +1,4 @@
-import { Flex, Icon, Text } from '@chakra-ui/react';
+import { Box, Flex, Icon, Text } from '@chakra-ui/react';
 import { Icon as PhosphorIcon } from '@phosphor-icons/react';
 import ContentBox from '../ui/containers/ContentBox';
 
@@ -8,6 +8,8 @@ type ExampleTemplateCardProps = {
   description: string;
   onProposalTemplateClick: () => void;
   testId: string;
+  showUpgradeBadge?: boolean;
+  onUpgradeBadgeClick?: () => void;
 };
 
 export default function ExampleTemplateCard({
@@ -16,7 +18,12 @@ export default function ExampleTemplateCard({
   description,
   onProposalTemplateClick,
   testId,
+  showUpgradeBadge = false,
+  onUpgradeBadgeClick,
 }: ExampleTemplateCardProps) {
+  const handleClick =
+    showUpgradeBadge && onUpgradeBadgeClick ? onUpgradeBadgeClick : onProposalTemplateClick;
+
   return (
     <ContentBox
       containerBoxProps={{
@@ -25,16 +32,45 @@ export default function ExampleTemplateCard({
         mx: '0',
         p: '1rem',
       }}
-      onClick={onProposalTemplateClick}
+      onClick={handleClick}
       testId={testId}
     >
-      <Flex>
+      <Flex
+        position="relative"
+        alignItems="flex-start"
+        justifyContent="space-between"
+      >
         <Icon
           boxSize="1.5rem"
           color="color-lilac-100"
           borderRadius={0}
           as={icon}
         />
+        {showUpgradeBadge && (
+          <Box
+            bg="color-primary-400"
+            color="color-white"
+            borderRadius="0.5rem"
+            px="4px"
+            py="2px"
+            textStyle="text-xs-medium"
+            minH="20px"
+            h="20px"
+            display="flex"
+            alignItems="center"
+            justifyContent="center"
+            position="absolute"
+            top="0"
+            right="0"
+            cursor="pointer"
+            onClick={e => {
+              e.stopPropagation();
+              onUpgradeBadgeClick?.();
+            }}
+          >
+            Upgrade
+          </Box>
+        )}
       </Flex>
       <Text
         textStyle="text-sm-regular"
