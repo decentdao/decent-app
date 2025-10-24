@@ -82,10 +82,6 @@ export function useKeyValuePairsFetcher() {
         event => event.args.key && event.args.key === 'hatIdToStreamId',
       );
 
-      const v2Events = events.filter(
-        event => event.args.key && event.args.key === 'hatIdToStreamIdV2',
-      );
-
       const hatIdIdsToStreamIds = [];
 
       // Process legacy events using sablierV2LockupLinear address
@@ -93,7 +89,7 @@ export function useKeyValuePairsFetcher() {
         const hatIdToStreamId = event.args.value;
         if (hatIdToStreamId !== undefined) {
           const [hatId, streamId] = hatIdToStreamId.split(':');
-          const formattedStreamId = `${sablierV2LockupLinear.toLowerCase()}-${chainId}-${streamId}`;
+          const formattedStreamId = `${sablierV2Lockup.toLowerCase()}-${chainId}-${streamId}`;
           const hatIdBigInt = BigInt(hatId);
 
           hatIdIdsToStreamIds.push({
@@ -112,32 +108,9 @@ export function useKeyValuePairsFetcher() {
         });
       }
 
-      // Process V2 events using sablierV2Lockup address
-      for (const event of v2Events) {
-        const hatIdToStreamId = event.args.value;
-        if (hatIdToStreamId !== undefined) {
-          const [hatId, streamId] = hatIdToStreamId.split(':');
-          const formattedStreamId = `${sablierV2Lockup.toLowerCase()}-${chainId}-${streamId}`;
-          const hatIdBigInt = BigInt(hatId);
-
-          hatIdIdsToStreamIds.push({
-            hatId: hatIdBigInt,
-            streamId: formattedStreamId,
-          });
-          continue;
-        }
-        logError({
-          message: "KVPairs 'hatIdToStreamIdV2' without a value",
-          network: chainId,
-          args: {
-            transactionHash: event.transactionHash,
-            logIndex: event.logIndex,
-          },
-        });
-      }
       return hatIdIdsToStreamIds;
     },
-    [sablierV2LockupLinear, sablierV2Lockup],
+    [sablierV2Lockup],
   );
 
   const fetchKeyValuePairsData = useCallback(
