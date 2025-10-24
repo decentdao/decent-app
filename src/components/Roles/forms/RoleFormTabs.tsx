@@ -100,11 +100,7 @@ export function RoleFormTabs({
           }
           onClick={() => {
             if (!values.roleEditing) return;
-            console.log('🔍 RoleFormTabs Save - roleEditing:', {
-              name: values.roleEditing.name,
-              paymentsCount: values.roleEditing.payments?.length || 0,
-              payments: values.roleEditing.payments,
-            });
+
             const roleUpdated = { ...values.roleEditing, editedRole: editedRoleData };
             const hatIndex = values.hats.findIndex(h => h.id === hatId);
             if (hatIndex === -1) {

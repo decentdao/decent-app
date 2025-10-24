@@ -182,14 +182,6 @@ export function useTokenSaleFormPreparation() {
             : zeroAddress,
         },
       };
-      // Log treasury balance validation info
-      console.log(`Treasury Balance: ${treasuryTokenBalance.toString()} tokens`);
-      console.log(
-        `Required Escrow (User Input, includes fee): ${saleTokenEscrowAmount.toString()} tokens`,
-      );
-      console.log(`Balance Sufficient: ${treasuryTokenBalance >= saleTokenEscrowAmount}`);
-
-      console.log('🚀 ~ preparedData:', preparedData);
 
       return preparedData;
     };
